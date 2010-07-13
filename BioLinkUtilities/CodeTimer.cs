@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 
-namespace BioLink.Utilities {
+namespace BioLink.Client.Utilities {
 
-    public class CodeTimer {
+    public class CodeTimer : IDisposable {
 
         public static StopAction DefaultStopAction { get; set; }
 
@@ -46,6 +46,10 @@ namespace BioLink.Utilities {
 
         public delegate void StopAction(string name, TimeSpan elapsed);
 
+
+        public void Dispose() {
+            Stop();            
+        }
     }
 
 

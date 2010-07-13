@@ -5,9 +5,11 @@ using System.Text;
 
 namespace BioLink.Client.Extensibility {
 
-    public interface IProgressMonitor {
+    public delegate bool ProgressHandler(string message, double percentComplete, ProgressEventType progressEventType);
+
+    public interface IProgressObserver {
         void ProgressStart(string message);
-        void ProgressMessage(string message, int percentComplete);
+        void ProgressMessage(string message, double percentComplete);
         void ProgressEnd(string message);
     }
 
@@ -17,7 +19,33 @@ namespace BioLink.Client.Extensibility {
         End
     }
 
-    public delegate bool ProgressHandler(string message, int percentComplete, ProgressEventType progressEventType);
+    public class ProgressObserverAdapter {
 
+        public IProgressObserver _observer;
+
+        public ProgressObserverAdapter(IProgressObserver observer) {
+            _observer = observer;
+        }
+
+        public bool OnProgress(string message, double percentComplete, ProgressEventType progressEventType) {
+            switch (progressEventType) {
+                case ProgressEventType.Start:
+                    _observer.ProgressStart(message);
+                    break;
+                case ProgressEventType.Update:
+                    _observer.ProgressMessage(message, percentComplete);
+                    break;
+                case ProgressEventType.End:
+                    _observer.ProgressEnd(message);
+                    break;
+            }
+            return true;
+        }
+
+        public static ProgressHandler Adapt(IProgressObserver observer) {
+            return new ProgressObserverAdapter(observer).OnProgress;
+        }
+
+    }
     
 }

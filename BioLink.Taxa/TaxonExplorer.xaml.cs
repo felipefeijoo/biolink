@@ -12,7 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace BioLink.Taxa {
+namespace BioLink.Client.Taxa {
     /// <summary>
     /// Interaction logic for UserControl1.xaml
     /// </summary>

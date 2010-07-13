@@ -5,7 +5,7 @@ using System.Text;
 using System.Data.SQLite;
 using System.IO;
 
-namespace BioLink.Utilities { 
+namespace BioLink.Client.Utilities { 
 
     /// <summary>
     /// Global Biolink application preferences store

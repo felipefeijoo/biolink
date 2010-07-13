@@ -11,17 +11,29 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using BioLink.Utilities;
 using BioLink.Client.Extensibility;
+using BioLink.Client.Utilities;
+using System.Net;
+
 
 namespace BioLinkApplication {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window {
+
+        private static MainWindow _instance;
+
         public MainWindow() {
+            System.Threading.Thread.CurrentThread.Name = "Init Thread";
+            Logger.Debug("Main window created: User {0} on {1} (CLR {2})", Environment.UserName, Environment.MachineName, Environment.Version );
             InitializeComponent();
-            CodeTimer.DefaultStopAction += (name, elapsed) => { Debug.Log("{0} took {1} milliseconds.", name, elapsed.TotalMilliseconds); };
+            CodeTimer.DefaultStopAction += (name, elapsed) => { Logger.Debug("{0} took {1} milliseconds.", name, elapsed.TotalMilliseconds); };
+            _instance = this;            
+        }
+
+        public static MainWindow Instance {
+            get { return _instance; }
         }
 
         private void loginControl1_LoginSuccessful(object sender, RoutedEventArgs e) {
