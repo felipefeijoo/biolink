@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BioLink.Utilities;
+using BioLink.Client.Utilities;
 using System.IO;
 using System.Reflection;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace BioLink.Client.Extensibility {
 
@@ -16,71 +20,96 @@ namespace BioLink.Client.Extensibility {
             _plugins = new Dictionary<string, IBioLinkPlugin>();
         }
 
-        public void LoadPlugins(ProgressHandler progress, PluginAction pluginAction) {
-            LoadPlugins(progress, pluginAction, ".", "./plugins");
+        public void LoadPlugins(PluginAction pluginAction) {
+            LoadPlugins(pluginAction, ".|^BioLink[.].*[.]dll$", "./plugins");
         }
 
-        public void LoadPlugins(ProgressHandler progress, PluginAction pluginAction, params string[] paths) {
-            CodeTimer timer = new CodeTimer("Plugin loader");
-            FileSystemTraverser t = new FileSystemTraverser();            
-            SafeProgress(progress, "Searching for plugins...", -1, ProgressEventType.Start);
+        public event ProgressHandler ProgressEvent;
 
-            List<Type> pluginTypes = new List<Type>();
+        public void LoadPlugins( PluginAction pluginAction, params string[] paths) {
+            using (new CodeTimer("Plugin loader")) {
+                FileSystemTraverser t = new FileSystemTraverser();
+                NotifyProgress("Searching for plugins...", -1, ProgressEventType.Start);
 
-            foreach (string path in paths) {                
-                Debug.Log("LoadPlugins: Scanning: {0}", path);
-                t.FilterFiles(path, fileinfo => { return fileinfo.Name.EndsWith(".dll", StringComparison.CurrentCultureIgnoreCase); }, fileinfo => { ProcessAssembly(fileinfo, progress, pluginTypes); }, false);
-            }
+                List<Type> pluginTypes = new List<Type>();
 
-            SafeProgress(progress, "Loading plugins...", 0, ProgressEventType.Start);
-            int i = 0;
-            foreach (Type type in pluginTypes) {
-                Debug.Log("Instantiating type {0}", type.FullName);
-                IBioLinkPlugin plugin = Activator.CreateInstance(type) as IBioLinkPlugin;
-                // Allow the consumer to process this plugin...
-                if (pluginAction != null) {
-                    pluginAction(plugin);
+                foreach (string pathelement in paths) {
+                    string path = pathelement;
+                    string filterexpr = ".*[.]dll$";
+                    if (path.Contains("|")) {
+                        path = pathelement.Substring(0, pathelement.IndexOf("|"));
+                        filterexpr = pathelement.Substring(pathelement.IndexOf("|") + 1);
+                    }
+
+                    Regex regex = new Regex(filterexpr, RegexOptions.IgnoreCase);
+
+                    FileSystemTraverser.Filter filter = (fileinfo) => {
+                        return regex.IsMatch(fileinfo.Name);
+                    };
+
+                    Logger.Debug("LoadPlugins: Scanning: {0}", path);
+                    t.FilterFiles(path, filter, fileinfo => { ProcessAssembly(fileinfo, pluginTypes); }, false);
                 }
 
-                int percentComplete = (++i / pluginTypes.Count) * 100;
-                SafeProgress(progress, plugin.Name, percentComplete, ProgressEventType.Update);
-                _plugins.Add(plugin.Name, plugin);
-            }
+                NotifyProgress("Loading plugins...", 0, ProgressEventType.Start);
+                int i = 0;
+                foreach (Type type in pluginTypes) {
+                    Logger.Debug("Instantiating type {0}", type.FullName);
+                    IBioLinkPlugin plugin = Activator.CreateInstance(type) as IBioLinkPlugin;
+                    // Allow the consumer to process this plugin...
+                    if (pluginAction != null) {
+                        pluginAction(plugin);
+                    }
 
-            SafeProgress(progress, "Plugin loading complete", 100, ProgressEventType.End);
-            timer.Stop();
+                    double percentComplete = ((double)++i / (double) pluginTypes.Count) * 100.0;
+                    NotifyProgress(plugin.Name, percentComplete, ProgressEventType.Update);
+                    _plugins.Add(plugin.Name, plugin);
+                    DoEvents();
+                }
+
+                NotifyProgress("Plugin loading complete", 100, ProgressEventType.End);
+            }
         }
 
-        private static bool SafeProgress(ProgressHandler handler, string format, params object[] args) {
-            return SafeProgress(handler, String.Format(format, args), -1, ProgressEventType.Update);
-        } 
+        private bool NotifyProgress(ProgressHandler handler, string format, params object[] args) {
+            return NotifyProgress(String.Format(format, args), -1, ProgressEventType.Update);
+        }
 
-        private static bool SafeProgress(ProgressHandler handler, string message, int percentComplete, ProgressEventType eventType) {
-            if (handler != null) {
-                return handler(message, percentComplete, eventType);
+        private bool NotifyProgress(string message, double percentComplete, ProgressEventType eventType) {
+            if (ProgressEvent != null) {
+                return ProgressEvent(message, percentComplete, eventType);
             }
             return true;
         }
 
-        private void ProcessAssembly(FileInfo assemblyFileInfo, ProgressHandler progress, List<Type> discovered) {            
+        private void ProcessAssembly(FileInfo assemblyFileInfo, List<Type> discovered) {
 
-            try {                
-                Debug.Log("Checking assembly: {0}", assemblyFileInfo.FullName);
+            try {
+                Logger.Debug("Checking assembly: {0}", assemblyFileInfo.FullName);
                 Assembly candidateAssembly = Assembly.LoadFrom(assemblyFileInfo.FullName);
                 foreach (Type candidate in candidateAssembly.GetExportedTypes()) {
-                    // Debug.Log("testing type {0}", candidate.FullName);
+                    // Logger.Debug("testing type {0}", candidate.FullName);
                     if (candidate.GetInterface("IBioLinkPlugin") != null) {
-                        Debug.Log("Found plugin type: {0}", candidate.Name);
+                        Logger.Debug("Found plugin type: {0}", candidate.Name);
                         discovered.Add(candidate);
                     }
                 }
             } catch (Exception ex) {
-                Debug.Log(ex);
+                Logger.Debug(ex.ToString());
             }
         }
 
         public void Traverse(PluginAction action) {
             _plugins.ForEach(kvp => { action(kvp.Value); });
+        }
+
+        static void DoEvents() {
+            DispatcherFrame frame = new DispatcherFrame(true);
+            Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, (SendOrPostCallback)delegate(object arg) {
+                var f = arg as DispatcherFrame;
+                f.Continue = false;
+            },frame);
+            Dispatcher.PushFrame(frame);
         }
 
         delegate void PluginAggregator(Type pluginType);
@@ -94,6 +123,14 @@ namespace BioLink.Client.Extensibility {
         public static void ForEach<T>(this IEnumerable<T> enumeration, Action<T> action) {
             foreach (T item in enumeration) {
                 action(item);
+            }
+        }
+
+        public static void InvokeIfRequired(this DispatcherObject control, Action action) { 
+            if (control.Dispatcher.Thread != Thread.CurrentThread) {
+                control.Dispatcher.Invoke(action);
+            } else {
+                action();
             }
         }
 

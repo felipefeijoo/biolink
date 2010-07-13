@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace BioLink.Utilities {
+namespace BioLink.Client.Utilities {
 
     /// <summary>
     /// Same as Queue except Dequeue function blocks until there is an object to return.

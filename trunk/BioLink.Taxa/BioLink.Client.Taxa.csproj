@@ -8,8 +8,8 @@
     <ProjectGuid>{C953B974-154F-4F0D-BFB9-FC61C52D6974}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BioLink.Taxa</RootNamespace>
-    <AssemblyName>BioLink.Taxa</AssemblyName>
+    <RootNamespace>BioLink.Client.Taxa</RootNamespace>
+    <AssemblyName>BioLink.Client.Taxa</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -55,9 +55,9 @@
       <Project>{044BD5B6-6213-4B50-9CE9-110FC3A43479}</Project>
       <Name>BioLink.Client.Extensibility</Name>
     </ProjectReference>
-    <ProjectReference Include="..\BioLinkUtilities\BioLinkUtilities.csproj">
+    <ProjectReference Include="..\BioLinkUtilities\BioLink.Client.Utilities.csproj">
       <Project>{85A21739-BE1C-4A09-9BF6-145A6162929E}</Project>
-      <Name>BioLinkUtilities</Name>
+      <Name>BioLink.Client.Utilities</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -68,7 +68,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetPath) $(SolutionDir)\BiolinkApplication\bin\Debug\</PostBuildEvent>
+    <PostBuildEvent>copy $(TargetPath) $(SolutionDir)\BiolinkApplication\bin\Debug\Plugins</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

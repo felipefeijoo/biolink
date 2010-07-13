@@ -5,7 +5,7 @@ using System.Text;
 using Xunit;
 using Newtonsoft.Json;
 
-namespace BioLink.Utilities {
+namespace BioLink.Client.Utilities {
     
     public class PreferencesTests : IDisposable {
 

@@ -13,16 +13,18 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Forms.Integration;
 using BioLink.Client.Extensibility;
+using BioLink.Client.Utilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Threading;
+using System.Windows.Threading;
 
 namespace BioLinkApplication {
     /// <summary>
     /// Interaction logic for BiolinkHost.xaml
     /// </summary>
     public partial class BiolinkHost : UserControl {
-
-        private DebugControl _debug;
+       
         private PluginManager _pluginManager;
 
         public BiolinkHost() {
@@ -30,43 +32,43 @@ namespace BioLinkApplication {
         }
 
         public void StartUp() {
-            
-
-            _debug = new DebugControl();
-            Debug.RegisterObserver(_debug);
-            Debug.Log("Started!");            
-
-            AvalonDock.DocumentContent debugContent = new AvalonDock.DocumentContent();
-            debugContent.Title = "Debug";
-            debugContent.Content = _debug;
-            documentPane.Items.Add(debugContent);
-
-            LoadPlugins();
-
+           
             AvalonDock.DockableContent newContent = new AvalonDock.DockableContent();
             newContent.Title = "Site Explorer";
             this.explorersPane.Items.Add(newContent);
 
             webBrowser.Navigate("http://google.com.au");
+
+            PluginLoaderWindow progress = new PluginLoaderWindow();
+            progress.Owner = MainWindow.Instance;
+            progress.Show();
+            LoadPluginsAsync(progress, () => { progress.Hide(); });
             
         }
 
-        private void LoadPlugins() {
+        private void LoadPluginsAsync(IProgressObserver monitor, Action finished) {
             _pluginManager = new PluginManager();
-            _pluginManager.LoadPlugins((message, percent, eventType) => { Debug.Log("<<{2}>> {0} {1}", message, (percent >= 0 ? "(" + percent + "%)" : ""), eventType); return true; }, AddPluginContributions);
-        }
 
-        void menuItem_Click(object sender, RoutedEventArgs e) {
-            
+            _pluginManager.ProgressEvent += ProgressObserverAdapter.Adapt(monitor);
+            // Debug logging...            
+            _pluginManager.ProgressEvent += (message, percent, eventType) => { Logger.Debug("<<{2}>> {0} {1}", message, (percent >= 0 ? "(" + percent + "%)" : ""), eventType); return true; };
+            Thread t = new Thread(new ThreadStart(() => {
+                this.InvokeIfRequired(() => {
+                    _pluginManager.LoadPlugins(AddPluginContributions);
+                    finished();
+                });
+            }));
+            t.Name = "Plugin Bootstrapper Thread";
+            t.TrySetApartmentState(ApartmentState.STA);
+            t.Start();
         }
 
         private void AddPluginContributions(IBioLinkPlugin plugin) {
-            Debug.Log("Looking for workspace contributions from {0}", plugin.Name);
+            Logger.Debug("Looking for workspace contributions from {0}", plugin.Name);
             List<IWorkspaceContribution> contributions = plugin.Contributions;
             foreach (IWorkspaceContribution contrib in contributions) {
                 if (contrib is WorkspaceMenuContribution) {
-                    AddMenu(contrib as WorkspaceMenuContribution);
-                    
+                    AddMenu(contrib as WorkspaceMenuContribution);                    
                 }
             }
         }
@@ -77,7 +79,7 @@ namespace BioLinkApplication {
 
             foreach (object item in collection) {                
                 if (item is FrameworkElement) {
-                    FrameworkElement element = item as FrameworkElement;                                        
+                    FrameworkElement element = item as FrameworkElement;                    
                     if (element.Name.Equals(name)) {
                         if (adjuster != null) {
                             return adjuster(collection.IndexOf(element), collection);
@@ -100,8 +102,12 @@ namespace BioLinkApplication {
             return index;
         }
 
+        private void Invoke(DispatcherObject element, Action action) {
+            element.Dispatcher.Invoke(action, null);
+        }
+
         private void AddMenu(WorkspaceMenuContribution menuDescriptor) {
-            Debug.Log("Adding menu '{0}'", menuDescriptor.Name);
+            Logger.Debug("Adding menu '{0}'", menuDescriptor.Name);
             ItemCollection parentCollection = menuBar.Items;
             MenuItem child = null;
             foreach (MenuItemDescriptor pathElement in menuDescriptor.Path) {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Xunit;
 
-namespace BioLink.Utilities.tests {
+namespace BioLink.Client.Utilities.tests {
 
     public class FileSystemTraverserTests {
 

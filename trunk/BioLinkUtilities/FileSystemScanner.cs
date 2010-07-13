@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.IO;
 using System.Text;
 
-namespace BioLink.Utilities {
+namespace BioLink.Client.Utilities {
 
     public class FileSystemTraverser {
 

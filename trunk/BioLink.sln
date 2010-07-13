@@ -5,13 +5,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioLinkDAL", "BioLinkDAL\Bi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioLinkDALGenerator", "BioLinkDALGenerator\BioLinkDALGenerator.csproj", "{9AEA3CB0-CEFA-4AB1-AC50-012393963B34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioLinkUtilities", "BioLinkUtilities\BioLinkUtilities.csproj", "{85A21739-BE1C-4A09-9BF6-145A6162929E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioLink.Client.Utilities", "BioLinkUtilities\BioLink.Client.Utilities.csproj", "{85A21739-BE1C-4A09-9BF6-145A6162929E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioLinkApplication", "BioLinkApplication\BioLinkApplication.csproj", "{C388618E-E617-4C9F-947E-55FAEA90B6B9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioLink.Client.Extensibility", "BioLink.Client.Extensibility\BioLink.Client.Extensibility.csproj", "{044BD5B6-6213-4B50-9CE9-110FC3A43479}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioLink.Taxa", "BioLink.Taxa\BioLink.Taxa.csproj", "{C953B974-154F-4F0D-BFB9-FC61C52D6974}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioLink.Client.Taxa", "BioLink.Taxa\BioLink.Client.Taxa.csproj", "{C953B974-154F-4F0D-BFB9-FC61C52D6974}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
