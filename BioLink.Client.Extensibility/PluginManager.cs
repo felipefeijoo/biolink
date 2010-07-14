@@ -9,14 +9,18 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
+using BioLink.Data;
 
 namespace BioLink.Client.Extensibility {
 
     public class PluginManager {
 
+        private User _user;
+
         private Dictionary<string, IBioLinkPlugin> _plugins;
 
-        public PluginManager() {
+        public PluginManager(User user) {
+            _user = user;
             _plugins = new Dictionary<string, IBioLinkPlugin>();
         }
 
@@ -55,17 +59,30 @@ namespace BioLink.Client.Extensibility {
                 int i = 0;
                 foreach (Type type in pluginTypes) {
                     Logger.Debug("Instantiating type {0}", type.FullName);
-                    IBioLinkPlugin plugin = Activator.CreateInstance(type) as IBioLinkPlugin;
-                    // Allow the consumer to process this plugin...
-                    if (pluginAction != null) {
-                        pluginAction(plugin);
+
+                    ConstructorInfo ctor = type.GetConstructor(new Type[] { typeof(User) });
+                    IBioLinkPlugin plugin = null;
+                    if (ctor != null) {                        
+                        plugin = ctor.Invoke(new Object[] { _user }) as IBioLinkPlugin;
+                    } else {
+                        plugin = Activator.CreateInstance(type) as IBioLinkPlugin;
+                        plugin.User = _user;
                     }
 
-                    double percentComplete = ((double)++i / (double) pluginTypes.Count) * 100.0;
-                    NotifyProgress(plugin.Name, percentComplete, ProgressEventType.Update);
-                    _plugins.Add(plugin.Name, plugin);
-                    DoEvents();
+                     
+                    if (plugin != null) {                        
+                        // Allow the consumer to process this plugin...
+                        if (pluginAction != null) {
+                            pluginAction(plugin);
+                        }
+
+                        double percentComplete = ((double)++i / (double)pluginTypes.Count) * 100.0;
+                        NotifyProgress(plugin.Name, percentComplete, ProgressEventType.Update);
+                        _plugins.Add(plugin.Name, plugin);
+                        DoEvents();
+                    }
                 }
+                
 
                 NotifyProgress("Plugin loading complete", 100, ProgressEventType.End);
             }
@@ -89,7 +106,7 @@ namespace BioLink.Client.Extensibility {
                 Assembly candidateAssembly = Assembly.LoadFrom(assemblyFileInfo.FullName);
                 foreach (Type candidate in candidateAssembly.GetExportedTypes()) {
                     // Logger.Debug("testing type {0}", candidate.FullName);
-                    if (candidate.GetInterface("IBioLinkPlugin") != null) {
+                    if (candidate.GetInterface("IBioLinkPlugin") != null && !candidate.IsAbstract) {
                         Logger.Debug("Found plugin type: {0}", candidate.Name);
                         discovered.Add(candidate);
                     }
@@ -115,24 +132,6 @@ namespace BioLink.Client.Extensibility {
         delegate void PluginAggregator(Type pluginType);
 
         public delegate void PluginAction(IBioLinkPlugin plugin);
-
-    }
-
-    public static class Extensions {
-
-        public static void ForEach<T>(this IEnumerable<T> enumeration, Action<T> action) {
-            foreach (T item in enumeration) {
-                action(item);
-            }
-        }
-
-        public static void InvokeIfRequired(this DispatcherObject control, Action action) { 
-            if (control.Dispatcher.Thread != Thread.CurrentThread) {
-                control.Dispatcher.Invoke(action);
-            } else {
-                action();
-            }
-        }
 
     }
 

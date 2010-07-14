@@ -158,6 +158,10 @@
       <Project>{044BD5B6-6213-4B50-9CE9-110FC3A43479}</Project>
       <Name>BioLink.Client.Extensibility</Name>
     </ProjectReference>
+    <ProjectReference Include="..\BioLinkDAL\BioLink.Data.csproj">
+      <Project>{E74AFE93-4A44-43F6-8F94-03E457321ABC}</Project>
+      <Name>BioLink.Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BioLinkUtilities\BioLink.Client.Utilities.csproj">
       <Project>{85A21739-BE1C-4A09-9BF6-145A6162929E}</Project>
       <Name>BioLink.Client.Utilities</Name>

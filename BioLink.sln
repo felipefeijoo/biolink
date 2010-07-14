@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual C# Express 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioLinkDAL", "BioLinkDAL\BioLinkDAL.csproj", "{E74AFE93-4A44-43F6-8F94-03E457321ABC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioLink.Data", "BioLinkDAL\BioLink.Data.csproj", "{E74AFE93-4A44-43F6-8F94-03E457321ABC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioLinkDALGenerator", "BioLinkDALGenerator\BioLinkDALGenerator.csproj", "{9AEA3CB0-CEFA-4AB1-AC50-012393963B34}"
 EndProject

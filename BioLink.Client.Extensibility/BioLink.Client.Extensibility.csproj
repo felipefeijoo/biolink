@@ -39,6 +39,7 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -47,12 +48,17 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BioLinkPluginBase.cs" />
     <Compile Include="IBioLinkPlugin.cs" />
     <Compile Include="IProgressMonitor.cs" />
     <Compile Include="PluginManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BioLinkDAL\BioLink.Data.csproj">
+      <Project>{E74AFE93-4A44-43F6-8F94-03E457321ABC}</Project>
+      <Name>BioLink.Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BioLinkUtilities\BioLink.Client.Utilities.csproj">
       <Project>{85A21739-BE1C-4A09-9BF6-145A6162929E}</Project>
       <Name>BioLink.Client.Utilities</Name>
