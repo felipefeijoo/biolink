@@ -18,6 +18,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Threading;
 using System.Windows.Threading;
+using BioLink.Data;
 
 namespace BioLinkApplication {
     /// <summary>
@@ -26,17 +27,13 @@ namespace BioLinkApplication {
     public partial class BiolinkHost : UserControl {
        
         private PluginManager _pluginManager;
+        public User User { get; set; }
 
         public BiolinkHost() {
             InitializeComponent();
         }
 
-        public void StartUp() {
-           
-            AvalonDock.DockableContent newContent = new AvalonDock.DockableContent();
-            newContent.Title = "Site Explorer";
-            this.explorersPane.Items.Add(newContent);
-
+        public void StartUp() {           
             webBrowser.Navigate("http://google.com.au");
 
             PluginLoaderWindow progress = new PluginLoaderWindow();
@@ -47,15 +44,19 @@ namespace BioLinkApplication {
         }
 
         private void LoadPluginsAsync(IProgressObserver monitor, Action finished) {
-            _pluginManager = new PluginManager();
 
+            Debug.Assert(User != null, "User is null!");
+
+            _pluginManager = new PluginManager(this.User);
             _pluginManager.ProgressEvent += ProgressObserverAdapter.Adapt(monitor);
             // Debug logging...            
             _pluginManager.ProgressEvent += (message, percent, eventType) => { Logger.Debug("<<{2}>> {0} {1}", message, (percent >= 0 ? "(" + percent + "%)" : ""), eventType); return true; };
             Thread t = new Thread(new ThreadStart(() => {
                 this.InvokeIfRequired(() => {
                     _pluginManager.LoadPlugins(AddPluginContributions);
-                    finished();
+                    if (finished != null) {
+                        finished();
+                    }
                 });
             }));
             t.Name = "Plugin Bootstrapper Thread";
@@ -67,8 +68,19 @@ namespace BioLinkApplication {
             Logger.Debug("Looking for workspace contributions from {0}", plugin.Name);
             List<IWorkspaceContribution> contributions = plugin.Contributions;
             foreach (IWorkspaceContribution contrib in contributions) {
-                if (contrib is WorkspaceMenuContribution) {
-                    AddMenu(contrib as WorkspaceMenuContribution);                    
+                if (contrib is MenuWorkspaceContribution) {
+                    AddMenu(contrib as MenuWorkspaceContribution);
+                } else if (contrib is IExplorerWorkspaceContribution) {
+                    IExplorerWorkspaceContribution explorer = contrib as IExplorerWorkspaceContribution;
+                    AvalonDock.DockableContent newContent = new AvalonDock.DockableContent();
+                    newContent.Title = explorer.Title;
+                    newContent.Content = explorer.Content;
+                    
+                    this.explorersPane.Items.Add(newContent);
+
+                    JobExecutor.QueueJob(() => {
+                        explorer.InitializeContent();
+                    });                    
                 }
             }
         }
@@ -106,7 +118,7 @@ namespace BioLinkApplication {
             element.Dispatcher.Invoke(action, null);
         }
 
-        private void AddMenu(WorkspaceMenuContribution menuDescriptor) {
+        private void AddMenu(MenuWorkspaceContribution menuDescriptor) {
             Logger.Debug("Adding menu '{0}'", menuDescriptor.Name);
             ItemCollection parentCollection = menuBar.Items;
             MenuItem child = null;
@@ -152,11 +164,7 @@ namespace BioLinkApplication {
             foreach (Object obj in parentCollection) {
                 if (obj is MenuItem) {
                     MenuItem candidate = obj as MenuItem;
-                    string candidateName = candidate.Header as string;
-                    if (candidateName.StartsWith("_")) {
-                        candidateName = candidateName.Substring(1);
-                    }
-                    if (candidateName.Equals(name, StringComparison.CurrentCultureIgnoreCase)) {
+                    if (candidate.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase)) {
                         return candidate;
                     }
                 }
@@ -170,6 +178,15 @@ namespace BioLinkApplication {
 
             return menuItem;
         }
+
+        private void Exit_Click(object sender, RoutedEventArgs e) {
+            ExitBiolink();
+        }
+
+        public void ExitBiolink() {
+            Environment.Exit(1);
+        }
+
     }
 }
 

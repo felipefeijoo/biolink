@@ -54,6 +54,7 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.SQLite, Version=1.0.66.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
@@ -65,6 +66,7 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
     <Reference Include="xunit">
       <HintPath>lib\xunit.dll</HintPath>
     </Reference>
@@ -72,7 +74,10 @@
   <ItemGroup>
     <Compile Include="BlockingQueue.cs" />
     <Compile Include="CodeTimer.cs" />
+    <Compile Include="Debug.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="FileSystemScanner.cs" />
+    <Compile Include="JobExecutor.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Preferences.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

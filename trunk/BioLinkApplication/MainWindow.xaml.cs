@@ -36,9 +36,10 @@ namespace BioLinkApplication {
             get { return _instance; }
         }
 
-        private void loginControl1_LoginSuccessful(object sender, RoutedEventArgs e) {
+        private void loginControl1_LoginSuccessful(object sender, LoginSuccessfulEventArgs e) {
             contentGrid.Children.Clear();
-            BiolinkHost host = new BiolinkHost();            
+            BiolinkHost host = new BiolinkHost();
+            host.User = e.User;
             contentGrid.Children.Add(host);
             host.StartUp();
         }

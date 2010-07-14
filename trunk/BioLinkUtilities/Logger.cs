@@ -24,6 +24,18 @@ namespace BioLink.Client.Utilities {
             LogImpl("Error", TraceEventType.Error, message, args);
         }
 
+        public static void Error(string message, Exception ex) {
+            LogImpl("Error", TraceEventType.Error, String.Format("{0}: {1}", message, ex));
+        }
+
+        public static void Error(Exception ex) {
+            LogImpl("Error", TraceEventType.Error, ex.ToString());
+        }
+
+        public static void Warn(string message, params object[] args) {
+            LogImpl("Warning", TraceEventType.Warning, message, args);
+        }
+
         private static void LogImpl(string category, TraceEventType severity, string message, params object[] args) {            
             LogEntry entry = new LogEntry(String.Format(message, args), category, 0, 0, severity, "BioLink", null);
             WriteEntry(entry);

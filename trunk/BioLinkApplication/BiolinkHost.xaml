@@ -15,14 +15,8 @@
         <DockPanel LastChildFill="True">            
             <Menu DockPanel.Dock="Top" x:Name="menuBar">
                 <MenuItem Header="_File" x:Name="File">
-                    <MenuItem Header="_New..." x:Name="New"/>
                     <Separator />
-                    <MenuItem Header="_Open..." x:Name="Open"/>
-                    <Separator />
-                    <MenuItem Header="_Save" x:Name="Save"/>
-                    <MenuItem Header="_Save As..." x:Name="SaveAs"/>
-                    <Separator />
-                    <MenuItem Header="_Exit" x:Name="Exit" />
+                    <MenuItem Header="_Exit" x:Name="Exit" Click="Exit_Click" />
                 </MenuItem>
                 <MenuItem Header="_Help" x:Name="Help">
                     <MenuItem Header="_About" x:Name="About" />
