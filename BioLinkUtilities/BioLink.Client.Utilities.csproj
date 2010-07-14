@@ -33,33 +33,37 @@
   <ItemGroup>
     <Reference Include="Microsoft.Practices.EnterpriseLibrary.Common, Version=5.0.414.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Program Files\Microsoft Enterprise Library 5.0\Bin\Microsoft.Practices.EnterpriseLibrary.Common.dll</HintPath>
+      <HintPath>..\shared\lib\Microsoft.Practices.EnterpriseLibrary.Common.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.EnterpriseLibrary.Logging, Version=5.0.414.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Program Files\Microsoft Enterprise Library 5.0\Bin\Microsoft.Practices.EnterpriseLibrary.Logging.dll</HintPath>
+      <HintPath>..\shared\lib\Microsoft.Practices.EnterpriseLibrary.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.PolicyInjection, Version=5.0.414.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\shared\lib\Microsoft.Practices.EnterpriseLibrary.PolicyInjection.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Program Files\Microsoft Enterprise Library 5.0\Bin\Microsoft.Practices.ServiceLocation.dll</HintPath>
+      <HintPath>..\shared\lib\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.Unity, Version=2.0.414.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Program Files\Microsoft Enterprise Library 5.0\Bin\Microsoft.Practices.Unity.dll</HintPath>
+      <HintPath>..\shared\lib\Microsoft.Practices.Unity.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.Unity.Interception, Version=2.0.414.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\Program Files\Microsoft Enterprise Library 5.0\Bin\Microsoft.Practices.Unity.Interception.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>lib\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\shared\lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.SQLite, Version=1.0.66.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\System.Data.SQLite.DLL</HintPath>
+      <HintPath>..\shared\lib\System.Data.SQLite.DLL</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -68,7 +72,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
     <Reference Include="xunit">
-      <HintPath>lib\xunit.dll</HintPath>
+      <HintPath>..\shared\lib\xunit.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
