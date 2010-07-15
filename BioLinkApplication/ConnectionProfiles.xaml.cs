@@ -24,13 +24,15 @@ namespace BioLinkApplication {
         private ObservableCollection<ConnectionProfile> _model;
 
         public ConnectionProfiles() {
-            InitializeComponent();            
-            _model = new ObservableCollection<ConnectionProfile>(Preferences.Get<List<ConnectionProfile>>("connection.profiles", new List<ConnectionProfile>()));
+            InitializeComponent();
+            List<ConnectionProfile> list = Preferences.Get<List<ConnectionProfile>>("connection.profiles", new List<ConnectionProfile>());
+
+            _model = new ObservableCollection<ConnectionProfile>(list);
             cmbProfiles.ItemsSource = _model;
             String lastProfile = Preferences.Get<string>("connection.lastprofile", null);
             if (!String.IsNullOrEmpty(lastProfile)) {
-                // Look in the list for the profile with the same name.                
-                ConnectionProfile lastUserProfile = _model.First((item) => { return item.Name.Equals(lastProfile); });
+                // Look in the list for the profile with the same name.
+                ConnectionProfile lastUserProfile = _model.FirstOrDefault((item) => { return item.Name.Equals(lastProfile); });
                 if (lastUserProfile != null) {
                     cmbProfiles.SelectedItem = lastUserProfile;
                 }
@@ -56,7 +58,7 @@ namespace BioLinkApplication {
 
         private void AddNewProfile() {
             ConnectionProfile profile = new ConnectionProfile();
-            profile.Name = "<New Profile>";            
+            profile.Name = "<New Profile>";           
             _model.Add(profile);
             cmbProfiles.SelectedItem = profile;
             txtName.Focus();
