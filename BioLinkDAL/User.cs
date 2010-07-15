@@ -64,12 +64,4 @@ namespace BioLink.Data {
 
     }
 
-    public class ConnectionProfile {
-        public String Server { get; set; }
-        public String Database { get; set; }
-        public int Timeout { get; set; }
-        public bool IntegratedSecurity { get; set; }
-    }
-
-
 }

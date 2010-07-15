@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Threading;
+using System.Windows.Controls;
+using System.ComponentModel;
 
 namespace BioLink.Client.Utilities {
 
@@ -22,6 +24,33 @@ namespace BioLink.Client.Utilities {
                 action();
             }
         }
+
+        public static bool IsDesignTime(this Control control) {
+            return DesignerProperties.GetIsInDesignMode(control);
+        }
+
+        public static string _R(this Control control, string messageKey, params object[] args) {
+            string message = null;
+            control.InvokeIfRequired(() => {
+
+                try {
+                    message = control.FindResource(messageKey) as string;
+                } catch (Exception) {
+                }
+
+                if (message == null) {
+                    Logger.Warn("Failed for find message for key '{0}' - using key instead", messageKey);
+                    message = messageKey;
+                }
+
+                if (args != null) {
+                    message = String.Format(message, args);
+                }
+            });
+
+            return message;
+        }
+
 
     }
 

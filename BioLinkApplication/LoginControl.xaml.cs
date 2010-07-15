@@ -26,6 +26,48 @@ namespace BioLinkApplication {
 
         public LoginControl() {
             InitializeComponent();
+            if (!this.IsDesignTime()) {
+                SetupProfiles();
+            }
+        }
+
+        private void SetupProfiles() {
+            cmbProfile.ItemsSource = null;
+            List<ConnectionProfile> profiles = Preferences.Get<List<ConnectionProfile>>("connection.profiles", new List<ConnectionProfile>());
+            String lastProfile = Preferences.Get<string>("connection.lastprofile", null);
+            if (!Preferences.Get<bool>("connection.skiplegacyimport", false)) {
+
+                LegacySettings.TraverseSubKeys("Client", "UserProfiles", (key) => {
+                    ConnectionProfile profile = new ConnectionProfile();
+                    string name = key.Name;
+                    profile.Name = key.Name.Substring(name.LastIndexOf('\\') + 1);
+                    profile.Server = key.GetValue("DatabaseServer") as string;
+                    profile.Database = key.GetValue("DatabaseName") as string;
+                    profile.LastUser = key.GetValue("LastUser") as string;                    
+                    profile.Timeout = key.GetValue("CommandTimeout") as Nullable<Int32>;
+                    profiles.Add(profile);
+                });
+
+                if (lastProfile == null) {
+                    lastProfile = LegacySettings.GetRegSetting("Client", "UserProfiles", "LastUsedProfile", "");
+                }
+
+                // Save the new list
+                Preferences.Set("connection.profiles", profiles);
+                // and we don't need to do this again!
+                Preferences.Set("connection.skiplegacyimport", true);
+            }
+
+            cmbProfile.ItemsSource = profiles;
+
+            if (!String.IsNullOrEmpty(lastProfile)) {
+                // Look in the list for the profile with the same name.
+                ConnectionProfile lastUserProfile = profiles.Find((item) => { return item.Name.Equals(lastProfile); });
+                if (lastUserProfile != null) {
+                    cmbProfile.SelectedItem = lastUserProfile;
+                }
+            }
+
         }
 
         public event RoutedEventHandler LoginSuccessful {
@@ -38,20 +80,21 @@ namespace BioLinkApplication {
         }
 
         private void DoLogin() {
+            ConnectionProfile profile = cmbProfile.SelectedItem as ConnectionProfile;
+
+            if (profile == null) {
+                ErrorMessage("LoginControl.Status.SelectProfile");
+            }
+
+            Preferences.Set("connection.lastprofile", profile.Name);
+
             btnCancel.Visibility = Visibility.Hidden;
             btnLogin.Visibility = Visibility.Hidden;
-
-            ConnectionProfile profile = new ConnectionProfile();
-            profile.Server = @"BIOLINKDEV-W7\SQLEXPRESS";
-            profile.Database = "BiolinkDemo";
-            profile.IntegratedSecurity = false;
 
             User user = new User(txtUsername.Text, txtPassword.Password, profile);
             
             string format = FindResource("LoginControl.Status.Connecting") as string;
             lblStatus.Content =  String.Format(format,  profile.Server);
-
-            lblStatus.Foreground = SystemColors.ControlTextBrush;
 
             LoginAsync(user,
                 () => { 
@@ -60,31 +103,37 @@ namespace BioLinkApplication {
                     }); 
                 }, 
                 (errorMsg) => {
-                    this.InvokeIfRequired(() => {
-                        
+                    this.InvokeIfRequired(() => {                        
                         btnCancel.Visibility = Visibility.Visible;
-                        btnLogin.Visibility = Visibility.Visible;
-                        string errorFormat = FindResource("LoginControl.Status.LoginFailed") as string;
-                        lblStatus.Foreground = new SolidColorBrush(Colors.Red);
-                        lblStatus.Content = String.Format(errorFormat, errorMsg);
-
+                        btnLogin.Visibility = Visibility.Visible;                        
+                        ErrorMessage("LoginControl.Status.LoginFailed", errorMsg);
                     });                
                 }
             );
             
         }
 
-        private void StatusUpdate(string format, params object[] args) {
-            String message = String.Format(format, args);
+        private void StatusMessage(string messagekey, params object[] args) {
+            String message = this._R(messagekey, args);
             lblStatus.InvokeIfRequired(() => {
+                lblStatus.Foreground = SystemColors.ControlTextBrush;
                 lblStatus.Content = message;
             });
         }
 
+        private void ErrorMessage(string messageKey, params object[] args) {
+            string message = this._R(messageKey, args);
+            lblStatus.InvokeIfRequired(() => {
+                lblStatus.Foreground = new SolidColorBrush(Colors.Red);
+                lblStatus.Content = message;
+            });
+        }
+
+
         private void LoginAsync(User user, LoginSuccessfulDelegate onSuccess, LoginFailureDelegate onFailure) {
             Thread loginThread = new Thread(new ThreadStart(() => {
 
-                StatusUpdate("Authenticating...");
+                StatusMessage("LoginControl.Status.Authenticating");
 
                 String message = "";
                 if (user.Authenticate(out message)) {
@@ -108,6 +157,34 @@ namespace BioLinkApplication {
 
         private delegate void LoginSuccessfulDelegate();
         private delegate void LoginFailureDelegate(string message);
+
+        private void cmbProfile_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            ConnectionProfile profile = cmbProfile.SelectedItem as ConnectionProfile;
+            if (profile != null) {
+                txtUsername.IsEnabled = !profile.IntegratedSecurity;
+                txtPassword.IsEnabled = !profile.IntegratedSecurity;
+                lblUsername.IsEnabled = !profile.IntegratedSecurity;
+                lblPassword.IsEnabled = !profile.IntegratedSecurity;
+
+                txtPassword.Password = "";
+                if (profile.IntegratedSecurity) {
+                    txtUsername.Text = "";                    
+                } else {
+                    txtUsername.Text = profile.LastUser;
+                }                
+            }
+        }
+
+        private void btnProfile_Click(object sender, RoutedEventArgs e) {
+            ConnectionProfiles window = new ConnectionProfiles();
+            window.Owner = MainWindow.Instance;
+            if (window.ShowDialog().GetValueOrDefault(false)) {
+                SetupProfiles();
+                if (window.SelectedProfile != null) {
+                    cmbProfile.SelectedItem = window.SelectedProfile;
+                }
+            }
+        }
 
     }
 
