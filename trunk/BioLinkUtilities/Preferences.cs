@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Data.SQLite;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace BioLink.Client.Utilities { 
 
@@ -31,7 +32,7 @@ namespace BioLink.Client.Utilities {
         }
 
         public static void Set<T>(string key, T value) {
-            _instance.SetPreference(key, value.ToString());
+            _instance.Set<T>(key, value);
         }
 
         public static PreferenceStore Instance {
@@ -83,18 +84,28 @@ namespace BioLink.Client.Utilities {
 
             try {
                 SQLiteConnection.CreateFile(_fileName);
-                SQLiteConnection conn = getConnection();
-                conn.Open();
-                using (SQLiteCommand cmd = conn.CreateCommand()) {
+                Command((cmd) => {
                     cmd.CommandText = String.Format("CREATE TABLE [{0}] ({1} TEXT PRIMARY KEY, {2} TEXT)", _tableName, _keyField, _valueField);
                     cmd.ExecuteNonQuery();
-                }
-                conn.Close();
+                });
             } catch (Exception ex) {
+                // Clean up if we fail...
                 if (File.Exists(_fileName)) {
                     File.Delete(_fileName);
                 }
                 throw ex;
+            }
+        }
+
+        private void Command(SqliteCommandDelegate action) {
+            if (action == null) {
+                return;
+            }
+            using (SQLiteConnection conn = getConnection()) {
+                conn.Open();
+                using (SQLiteCommand cmd = conn.CreateCommand()) {
+                    action(cmd);                    
+                }
             }
         }
 
@@ -104,20 +115,12 @@ namespace BioLink.Client.Utilities {
         /// <param name="key">The preference key - should be unique</param>
         /// <param name="value">The value to set</param>
         public void SetPreference(string key, string value) {
-            SQLiteConnection conn = getConnection();
-            try {
-                conn.Open();
-                using (SQLiteCommand cmd = conn.CreateCommand()) {
-                    cmd.CommandText = String.Format(@"REPLACE INTO [{0}] VALUES (@key, @value)", _tableName);
-                    cmd.Parameters.Add(new SQLiteParameter("@key", key));
-                    cmd.Parameters.Add(new SQLiteParameter("@value", value));
-                    cmd.ExecuteNonQuery();                    
-                }
-            } finally {
-                if (conn != null) {
-                    conn.Dispose();
-                }
-            }
+            Command((cmd) => {
+                cmd.CommandText = String.Format(@"REPLACE INTO [{0}] VALUES (@key, @value)", _tableName);
+                cmd.Parameters.Add(new SQLiteParameter("@key", key));
+                cmd.Parameters.Add(new SQLiteParameter("@value", value));
+                cmd.ExecuteNonQuery();
+            });
         }
 
         /// <summary>
@@ -136,25 +139,17 @@ namespace BioLink.Client.Utilities {
         /// <param name="default">The default value if the preference key could not be found</param>
         /// <returns>The preference value, or the default value</returns>
         public String GetPreference(string key, string @default) {
-            SQLiteConnection conn = getConnection();
-            try {
-                conn.Open();
-                using (SQLiteCommand cmd = conn.CreateCommand()) {
-                    cmd.CommandText = String.Format(@"SELECT [{0}] from Settings where [{1}] = @key", _valueField, _keyField);
-                    cmd.Parameters.Add(new SQLiteParameter("@key", key));                    
-                    String value = cmd.ExecuteScalar() as string;
-                    if (value != null) {
-                        return value;
-                    }
+            String result = @default;
+            Command((cmd) => {                    
+                cmd.CommandText = String.Format(@"SELECT [{0}] from Settings where [{1}] = @key", _valueField, _keyField);
+                cmd.Parameters.Add(new SQLiteParameter("@key", key));
+                String value = cmd.ExecuteScalar() as string;
+                if (value != null) {
+                    result = value;
                 }
-                
-            } finally {
-                if (conn != null) {
-                    conn.Dispose();
-                }
-            }
-
-            return @default;
+            });
+            
+            return result;
         }
 
         public T Get<T>(string key, T @default) {
@@ -163,40 +158,25 @@ namespace BioLink.Client.Utilities {
                 return @default;
             }
 
-            T t = default(T);
-            if (t != null) {
-                if (TYPE_MAP.ContainsKey(t.GetType())) {
-                    TypeParserDelegate d = TYPE_MAP[t.GetType()];
-                    t = (T)d(str);
-                } else {
-                    throw new UnhandledPreferenceTypeException(t.GetType());
-                }
-            } else {
-                throw new BadPreferenceTypeException();
-            }
+            return JsonConvert.DeserializeObject<T>(str);
+        }
 
-            return (T) t;
+        public void Set<T>(string key, T value) {
+            String str = JsonConvert.SerializeObject(value);
+            SetPreference(key, str);
         }
 
         public void Traverse(PreferencesVisitor visitor) {
-            SQLiteConnection conn = getConnection();
-            try {
-                conn.Open();
-                using (SQLiteCommand cmd = conn.CreateCommand()) {
-                    cmd.CommandText = String.Format(@"SELECT [{0}],[{1}] from Settings;", _keyField, _valueField);
-                    SQLiteDataReader reader = cmd.ExecuteReader();
+            Command((cmd) => {
+                cmd.CommandText = String.Format(@"SELECT [{0}],[{1}] from Settings;", _keyField, _valueField);
+                using (SQLiteDataReader reader = cmd.ExecuteReader()) {
                     if (reader.HasRows) {
-                        while (reader.Read()) {                            
+                        while (reader.Read()) {
                             visitor(reader[_keyField] as string, reader[_valueField] as string);
                         }
                     }
-                    reader.Close();
-                }
-            } finally {
-                if (conn != null) {
-                    conn.Dispose();
-                }
-            }
+                }                
+            });
         }
 
         /// <summary>
@@ -209,17 +189,12 @@ namespace BioLink.Client.Utilities {
         }
 
         private delegate object TypeParserDelegate(string s);
+        private delegate void SqliteCommandDelegate(SQLiteCommand command);
 
     }    
 
     public class UnhandledPreferenceTypeException : Exception {
         public UnhandledPreferenceTypeException(Type t) : base(String.Format("Preferences can't deal with type: {0}", t.FullName)) {
-        }
-    }
-
-    public class BadPreferenceTypeException : Exception {
-        public BadPreferenceTypeException()
-            : base(String.Format("Either the default value is null or the type is unsuitable for storing as a preference. Try using a string instead.")) {
         }
     }
 
