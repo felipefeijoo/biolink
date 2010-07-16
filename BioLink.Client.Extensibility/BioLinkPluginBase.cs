@@ -17,11 +17,13 @@ namespace BioLink.Client.Extensibility {
 
         private ResourceDictionary _resourceDictionary;
 
-        public User User { get; set; }        
+        public User User { get; set; }
+        public PluginManager PluginManager { get; set; }
 
-        public BiolinkPluginBase(User user) {
+        public BiolinkPluginBase(User user, PluginManager pluginManager ) {
 
             this.User = user;
+            this.PluginManager = pluginManager;
 
             string assemblyName = this.GetType().Assembly.GetName().Name;
             string packUri = String.Format("pack://application:,,,/{0};component/StringResources.xaml", assemblyName);
@@ -58,5 +60,9 @@ namespace BioLink.Client.Extensibility {
         public abstract string Name { get; }
 
         public abstract List<IWorkspaceContribution> Contributions { get; }
+
+        public virtual void Dispose() {            
+        }
+
     }
 }

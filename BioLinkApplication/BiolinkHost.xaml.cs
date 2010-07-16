@@ -19,28 +19,38 @@ using Newtonsoft.Json.Linq;
 using System.Threading;
 using System.Windows.Threading;
 using BioLink.Data;
+using System.IO;
 
 namespace BioLinkApplication {
     /// <summary>
     /// Interaction logic for BiolinkHost.xaml
     /// </summary>
-    public partial class BiolinkHost : UserControl {
-       
+    public partial class BiolinkHost : UserControl, IDisposable {
+
+        private static string PREF_DOCK_LAYOUT = "client.dock.layout";
+
         private PluginManager _pluginManager;
         public User User { get; set; }
 
         public BiolinkHost() {
             InitializeComponent();
+            dockManager.IsAnimationEnabled = true;
         }
 
-        public void StartUp() {           
-            webBrowser.Navigate("http://google.com.au");
-
+        public void StartUp() {
             PluginLoaderWindow progress = new PluginLoaderWindow();
             progress.Owner = MainWindow.Instance;
             progress.Show();
-            LoadPluginsAsync(progress, () => { progress.Hide(); });
-            
+            LoadPluginsAsync(progress, () => { 
+                progress.Hide();
+                String layout = Preferences.Get<string>(PREF_DOCK_LAYOUT, null);
+                if (!String.IsNullOrEmpty(layout)) {
+                    StringReader reader = new StringReader(layout);
+                    dockManager.RestoreLayout(reader);
+                }
+
+            });
+
         }
 
         private void LoadPluginsAsync(IProgressObserver monitor, Action finished) {
@@ -48,6 +58,7 @@ namespace BioLinkApplication {
             Debug.Assert(User != null, "User is null!");
 
             _pluginManager = new PluginManager(this.User);
+            _pluginManager.RequestShowDockableContribution += new PluginManager.ShowDockableContributionDelegate(_pluginManager_RequestShowDockableContribution);
             _pluginManager.ProgressEvent += ProgressObserverAdapter.Adapt(monitor);
             // Debug logging...            
             _pluginManager.ProgressEvent += (message, percent, eventType) => { Logger.Debug("<<{2}>> {0} {1}", message, (percent >= 0 ? "(" + percent + "%)" : ""), eventType); return true; };
@@ -64,6 +75,21 @@ namespace BioLinkApplication {
             t.Start();
         }
 
+        void _pluginManager_RequestShowDockableContribution(IBioLinkPlugin plugin, IExplorerWorkspaceContribution contribution) {
+
+            AvalonDock.DockableContent newContent = new AvalonDock.DockableContent();
+            newContent.Title = contribution.Title;
+            newContent.Content = contribution.Content;
+            newContent.Name = plugin.Name + "_" + contribution.Name;
+
+            JobExecutor.QueueJob(() => {
+                contribution.InitializeContent();
+            });
+
+            this.explorersPane.Items.Add(newContent);            
+        }
+
+
         private void AddPluginContributions(IBioLinkPlugin plugin) {
             Logger.Debug("Looking for workspace contributions from {0}", plugin.Name);
             List<IWorkspaceContribution> contributions = plugin.Contributions;
@@ -75,12 +101,13 @@ namespace BioLinkApplication {
                     AvalonDock.DockableContent newContent = new AvalonDock.DockableContent();
                     newContent.Title = explorer.Title;
                     newContent.Content = explorer.Content;
-                    
+                    newContent.Name = plugin.Name + "_" + explorer.Name;
+
                     this.explorersPane.Items.Add(newContent);
 
                     JobExecutor.QueueJob(() => {
                         explorer.InitializeContent();
-                    });                    
+                    });
                 }
             }
         }
@@ -89,9 +116,9 @@ namespace BioLinkApplication {
 
         private int IndexOfItemFromName(ItemCollection collection, string name, IndexAdjuster adjuster = null) {
 
-            foreach (object item in collection) {                
+            foreach (object item in collection) {
                 if (item is FrameworkElement) {
-                    FrameworkElement element = item as FrameworkElement;                    
+                    FrameworkElement element = item as FrameworkElement;
                     if (element.Name.Equals(name)) {
                         if (adjuster != null) {
                             return adjuster(collection.IndexOf(element), collection);
@@ -136,7 +163,7 @@ namespace BioLinkApplication {
                         index = IndexOfItemFromName(parentCollection, pathElement.InsertAfter);
                         if (index >= 0) {
                             index++;
-                        }                        
+                        }
                     }
 
                     if (index < 0) {
@@ -144,7 +171,7 @@ namespace BioLinkApplication {
                     } else {
                         parentCollection.Insert(index, child);
                     }
-                    
+
                     if (pathElement.SeparatorBefore) {
                         parentCollection.Insert(index, new Separator());
                     }
@@ -159,7 +186,7 @@ namespace BioLinkApplication {
         }
 
         private MenuItem FindMenuItem(ItemCollection parentCollection, string pathElement) {
-            string name = (pathElement.StartsWith("_") ? pathElement.Substring(1) : pathElement);                        
+            string name = (pathElement.StartsWith("_") ? pathElement.Substring(1) : pathElement);
 
             foreach (Object obj in parentCollection) {
                 if (obj is MenuItem) {
@@ -184,9 +211,27 @@ namespace BioLinkApplication {
         }
 
         public void ExitBiolink() {
-            Environment.Exit(1);
+            MainWindow.Instance.Shutdown();
         }
 
+
+        public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~BiolinkHost() {
+            Dispose(false);
+        }
+
+        protected virtual void Dispose(bool disposing) {
+            if (disposing) {
+                StringWriter writer = new StringWriter();
+                dockManager.SaveLayout(writer);
+                Preferences.Set<string>(PREF_DOCK_LAYOUT, writer.ToString());
+            }
+        }
+       
     }
 }
 

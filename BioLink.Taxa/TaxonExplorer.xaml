@@ -3,8 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:src="clr-namespace:BioLink.Data;assembly=BioLink.Data"
-             xmlns:data="clr-namespace:BioLink.Data;assembly=BioLink.Data"
+             xmlns:src="clr-namespace:BioLink.Client.Taxa"
+             xmlns:data="clr-namespace:BioLink.Data.Model;assembly=BioLink.Data"
              
              mc:Ignorable="d" 
              d:DesignHeight="376" d:DesignWidth="225">
@@ -12,22 +12,30 @@
         <TreeView Name="treeView">
             <TreeView.Resources>
                 <!--ItemsSource="{Binding Path=Children}" -->
-                <HierarchicalDataTemplate DataType="{x:Type data:Taxon}" >
+                <HierarchicalDataTemplate DataType="{x:Type src:TaxonViewModel}" ItemsSource="{Binding Path=Children}">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Path=TaxaFullName}"/>
+                        <TextBlock Text="{Binding Path=ElemType, StringFormat='[{0}] '}"/>
+                        <TextBlock FontStyle="Oblique" Text="{Binding Path=TaxaFullName}">
+                        </TextBlock>
                     </StackPanel>
                 </HierarchicalDataTemplate>
-                <!--
+                
+                <HierarchicalDataTemplate DataType="{x:Type src:ViewModelPlaceholder}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Path=Label}"/>
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+
                 <Style TargetType="TreeViewItem">
                     <Setter Property="IsExpanded" Value="{Binding Path=IsExpanded, Mode=TwoWay}" />
                     <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsChanged}" Value="True">
-                            <Setter Property="Background" Value="Red" />
+                        <DataTrigger Binding="{Binding Unverified}" Value="True">
+                            <Setter Property="Foreground" Value="Red" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-                -->
+                
             </TreeView.Resources>
             <TreeViewItem>
                 <TreeViewItem.Header>Loading...</TreeViewItem.Header>
@@ -35,5 +43,3 @@
         </TreeView>
     </Grid>
 </UserControl>
-
-    

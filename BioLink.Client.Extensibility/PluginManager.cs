@@ -10,6 +10,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 using BioLink.Data;
+using System.Windows.Controls;
 
 namespace BioLink.Client.Extensibility {
 
@@ -60,15 +61,15 @@ namespace BioLink.Client.Extensibility {
                 foreach (Type type in pluginTypes) {
                     Logger.Debug("Instantiating type {0}", type.FullName);
 
-                    ConstructorInfo ctor = type.GetConstructor(new Type[] { typeof(User) });
+                    ConstructorInfo ctor = type.GetConstructor(new Type[] { typeof(User), typeof(PluginManager) });
                     IBioLinkPlugin plugin = null;
                     if (ctor != null) {                        
-                        plugin = ctor.Invoke(new Object[] { _user }) as IBioLinkPlugin;
+                        plugin = ctor.Invoke(new Object[] { _user, this }) as IBioLinkPlugin;
                     } else {
                         plugin = Activator.CreateInstance(type) as IBioLinkPlugin;
                         plugin.User = _user;
+                        plugin.PluginManager = this;
                     }
-
                      
                     if (plugin != null) {                        
                         // Allow the consumer to process this plugin...
@@ -97,6 +98,12 @@ namespace BioLink.Client.Extensibility {
                 return ProgressEvent(message, percentComplete, eventType);
             }
             return true;
+        }
+
+        public void ContributeDockableContent(IBioLinkPlugin plugin, IExplorerWorkspaceContribution contribution) {
+            if (RequestShowDockableContribution != null) {
+                RequestShowDockableContribution(plugin, contribution);
+            }
         }
 
         private void ProcessAssembly(FileInfo assemblyFileInfo, List<Type> discovered) {
@@ -132,6 +139,10 @@ namespace BioLink.Client.Extensibility {
         delegate void PluginAggregator(Type pluginType);
 
         public delegate void PluginAction(IBioLinkPlugin plugin);
+
+        public delegate void ShowDockableContributionDelegate(IBioLinkPlugin plugin, IExplorerWorkspaceContribution contribution);
+
+        public event ShowDockableContributionDelegate RequestShowDockableContribution;
 
     }
 
