@@ -11,28 +11,37 @@ using BioLink.Data;
 
 namespace BioLink.Client.Extensibility {
 
-    public interface IBioLinkPlugin {
+    public interface IBioLinkPlugin : IDisposable {
         string Name { get; }
         List<IWorkspaceContribution> Contributions { get; }
         User User { get; set; }
+        PluginManager PluginManager { get; set; }
     }
 
     /// <summary>
     /// Marker interface for things that plugins can contribute to the BioLink client
     /// </summary>
     public interface IWorkspaceContribution {
+        string Name { get; }
     }
 
     public abstract class WorkspaceContributionBase : IWorkspaceContribution {
 
-        protected WorkspaceContributionBase(IBioLinkPlugin owner) {
+        private string _name;
+
+        protected WorkspaceContributionBase(IBioLinkPlugin owner, string name) {
+            this._name = name;
             this.Owner = owner;
+        }
+
+        public virtual string Name {
+            get { return _name; }
         }
 
         public IBioLinkPlugin Owner { get; private set; }
     }
 
-    public interface IExplorerWorkspaceContribution {
+    public interface IExplorerWorkspaceContribution : IWorkspaceContribution {
         String Title { get; set; }
         Control Content { get; }
         void InitializeContent();
@@ -44,10 +53,9 @@ namespace BioLink.Client.Extensibility {
     public class ExplorerWorkspaceContribution<T> : WorkspaceContributionBase, IExplorerWorkspaceContribution where T : Control {
 
         private ExplorerInitializerDelegate _initializer;
-
         private T _content;
 
-        public ExplorerWorkspaceContribution(IBioLinkPlugin owner, T content, string title, ExplorerInitializerDelegate initializer = null) : base(owner) {
+        public ExplorerWorkspaceContribution(IBioLinkPlugin owner, string name, T content, string title, ExplorerInitializerDelegate initializer = null) : base(owner, name) {            
             _content = content;
             Title = title;
             _initializer = initializer;
@@ -77,12 +85,12 @@ namespace BioLink.Client.Extensibility {
         public MenuItemDescriptor[] Path { get; private set; }        
         public RoutedEventHandler Action { get; private set; }
 
-        public MenuWorkspaceContribution(IBioLinkPlugin owner, RoutedEventHandler action, MenuItemDescriptor[] path) : base(owner) {
+        public MenuWorkspaceContribution(IBioLinkPlugin owner, string name, RoutedEventHandler action, MenuItemDescriptor[] path) : base(owner, name) {
             this.Action = action;
             this.Path = path;
         }
 
-        public MenuWorkspaceContribution(IBioLinkPlugin owner, RoutedEventHandler action, params string[] path) : base(owner) {
+        public MenuWorkspaceContribution(IBioLinkPlugin owner, string name, RoutedEventHandler action, params string[] path) : base(owner, name) {
             List<MenuItemDescriptor> items = new List<MenuItemDescriptor>();
             foreach (string pathdesc in path) {
                 MenuItemDescriptor desc = null;
@@ -99,7 +107,7 @@ namespace BioLink.Client.Extensibility {
             this.Path = items.ToArray();
         }
 
-        public String Name {
+        public override String Name {
             get { return Path[Path.Length -1].Name; }
         }
 

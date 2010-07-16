@@ -23,6 +23,7 @@ namespace BioLinkApplication {
     public partial class MainWindow : Window {
 
         private static MainWindow _instance;
+        private BiolinkHost _hostControl;
 
         public MainWindow() {
             System.Threading.Thread.CurrentThread.Name = "Init Thread";
@@ -38,10 +39,10 @@ namespace BioLinkApplication {
 
         private void loginControl_LoginSuccessful(object sender, LoginSuccessfulEventArgs e) {
             contentGrid.Children.Clear();
-            BiolinkHost host = new BiolinkHost();
-            host.User = e.User;
-            contentGrid.Children.Add(host);
-            host.StartUp();
+            _hostControl = new BiolinkHost();
+            _hostControl.User = e.User;
+            contentGrid.Children.Add(_hostControl);
+            _hostControl.StartUp();
         }
 
         private void Window_Closed(object sender, EventArgs e) {
@@ -49,6 +50,9 @@ namespace BioLinkApplication {
         }
 
         public void Shutdown() {
+            if (_hostControl != null) {
+                _hostControl.Dispose();
+            }
             Environment.Exit(0);
         }
 

@@ -11,22 +11,16 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Collections.ObjectModel;
-using BioLink.Data;
-using BioLink.Data.Model;
 
-namespace BioLink.Client.Taxa {
+namespace BioLink.Client.Material {
     /// <summary>
     /// Interaction logic for UserControl1.xaml
     /// </summary>
-    public partial class TaxonExplorer : UserControl {
-        public TaxonExplorer() {
+    public partial class MaterialExplorer : UserControl {
+
+        public MaterialExplorer() {
             InitializeComponent();
         }
 
-        internal void SetModel(ObservableCollection<TaxonViewModel> model) {
-            treeView.Items.Clear();            
-            this.treeView.ItemsSource = model;
-        }
     }
 }

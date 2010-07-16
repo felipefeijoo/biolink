@@ -115,12 +115,16 @@ namespace BioLink.Client.Utilities {
         /// <param name="key">The preference key - should be unique</param>
         /// <param name="value">The value to set</param>
         public void SetPreference(string key, string value) {
+
+            Logger.Debug("Setting preference: {0} = {1}", key, value);
+
             Command((cmd) => {
                 cmd.CommandText = String.Format(@"REPLACE INTO [{0}] VALUES (@key, @value)", _tableName);
                 cmd.Parameters.Add(new SQLiteParameter("@key", key));
                 cmd.Parameters.Add(new SQLiteParameter("@value", value));
                 cmd.ExecuteNonQuery();
             });
+            
         }
 
         /// <summary>
@@ -138,7 +142,7 @@ namespace BioLink.Client.Utilities {
         /// <param name="key">the preference key</param>
         /// <param name="default">The default value if the preference key could not be found</param>
         /// <returns>The preference value, or the default value</returns>
-        public String GetPreference(string key, string @default) {
+        public String GetPreference(string key, string @default) {            
             String result = @default;
             Command((cmd) => {                    
                 cmd.CommandText = String.Format(@"SELECT [{0}] from Settings where [{1}] = @key", _valueField, _keyField);
@@ -148,6 +152,8 @@ namespace BioLink.Client.Utilities {
                     result = value;
                 }
             });
+
+            Logger.Debug("Getting preference: {0} = {1}", key, result);
             
             return result;
         }

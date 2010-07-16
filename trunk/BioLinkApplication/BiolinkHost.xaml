@@ -27,10 +27,9 @@
                     <ad:DockablePane x:Name="explorersPane" ad:ResizingPanel.ResizeWidth="200">
                     </ad:DockablePane>                    
                     <ad:DocumentPane x:Name="documentPane">                        
-                        <ad:DocumentContent Title="MyDocument!" IsCloseable="False" IsFloatingAllowed="False" IsLocked="True">
-                            <WebBrowser x:Name="webBrowser" />
-                        </ad:DocumentContent>
-                    </ad:DocumentPane>                    
+                        <!--<ad:DocumentContent Title="MyDocument!" IsCloseable="False" IsFloatingAllowed="False" IsLocked="True">                            
+                        </ad:DocumentContent>-->
+                    </ad:DocumentPane>
                 </ad:ResizingPanel>
             </ad:DockingManager>
         </DockPanel>
