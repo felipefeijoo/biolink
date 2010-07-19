@@ -6,5 +6,6 @@
     <system:String x:Key="Taxa.Menu.View">_View</system:String>
     <system:String x:Key="Taxa.Menu.ShowExplorer">Show _Taxon Explorer</system:String>    
     <system:String x:Key="TaxonExplorer.Title">Taxon Explorer</system:String>
+    <system:String x:Key="TaxonExplorer.Find">Find:</system:String>
     
 </ResourceDictionary>

@@ -28,9 +28,8 @@ namespace BioLink.Client.Taxa {
         public override List<IWorkspaceContribution> Contributions {
             get {
 
-                List<IWorkspaceContribution> contrib = new List<IWorkspaceContribution>();
-                IBioLinkPlugin plugin = this;
-                contrib.Add(new MenuWorkspaceContribution(this, "ShowExplorer", (obj, e) => { PluginManager.ContributeDockableContent(plugin, _explorer); },
+                List<IWorkspaceContribution> contrib = new List<IWorkspaceContribution>();                
+                contrib.Add(new MenuWorkspaceContribution(this, "ShowExplorer", (obj, e) => { PluginManager.EnsureVisible(this, "TaxonExplorer"); },
                     String.Format("{{'Name':'View', 'Header':'{0}','InsertAfter':'File'}}", _R("Taxa.Menu.View")), 
                     String.Format("{{'Name':'ShowTaxaExplorer', 'Header':'{0}'}}", _R("Taxa.Menu.ShowExplorer"))
                 ));
@@ -44,7 +43,7 @@ namespace BioLink.Client.Taxa {
                             TaxonViewModel item = new TaxonViewModel(null, taxon);
                             if (item.NumChildren > 0) {
                                 item.LazyLoadChildren += new ViewModelExpandedDelegate(item_LazyLoadChildren);
-                                item.Children = new ObservableCollection<HierachicalViewModelBase>();
+                                item.Children = new ObservableCollection<HierarchicalViewModelBase>();
                                 item.Children.Add(new ViewModelPlaceholder("Loading..."));
                             }
                             return item;
@@ -63,7 +62,7 @@ namespace BioLink.Client.Taxa {
             }
         }
 
-        void item_LazyLoadChildren(HierachicalViewModelBase item) {
+        void item_LazyLoadChildren(HierarchicalViewModelBase item) {
 
             item.Children.Clear();
 
@@ -75,7 +74,7 @@ namespace BioLink.Client.Taxa {
                     TaxonViewModel child = new TaxonViewModel(null, taxon);
                     if (child.NumChildren > 0) {
                         child.LazyLoadChildren += new ViewModelExpandedDelegate(item_LazyLoadChildren);
-                        child.Children = new ObservableCollection<HierachicalViewModelBase>();
+                        child.Children = new ObservableCollection<HierarchicalViewModelBase>();
                         child.Children.Add(new ViewModelPlaceholder("Loading..."));
                     }
                     item.Children.Add(child);

@@ -101,8 +101,12 @@ namespace BioLink.Client.Extensibility {
         }
 
         public void ContributeDockableContent(IBioLinkPlugin plugin, IExplorerWorkspaceContribution contribution) {
-            if (RequestShowDockableContribution != null) {
-                RequestShowDockableContribution(plugin, contribution);
+            throw new NotImplementedException();
+        }
+
+        public void EnsureVisible(IBioLinkPlugin plugin, string contentName) {
+            if (RequestShowContent != null) {
+                RequestShowContent(plugin, contentName);
             }
         }
 
@@ -140,9 +144,9 @@ namespace BioLink.Client.Extensibility {
 
         public delegate void PluginAction(IBioLinkPlugin plugin);
 
-        public delegate void ShowDockableContributionDelegate(IBioLinkPlugin plugin, IExplorerWorkspaceContribution contribution);
+        public delegate void ShowDockableContributionDelegate(IBioLinkPlugin plugin, string name);
 
-        public event ShowDockableContributionDelegate RequestShowDockableContribution;
+        public event ShowDockableContributionDelegate RequestShowContent;
 
     }
 

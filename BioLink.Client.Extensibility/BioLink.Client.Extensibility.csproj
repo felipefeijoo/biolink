@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BioLinkPluginBase.cs" />
+    <Compile Include="HierarchicalViewModelBase.cs" />
     <Compile Include="IBioLinkPlugin.cs" />
     <Compile Include="IProgressMonitor.cs" />
     <Compile Include="PluginManager.cs" />
