@@ -5,41 +5,59 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:src="clr-namespace:BioLink.Client.Taxa"
              xmlns:data="clr-namespace:BioLink.Data.Model;assembly=BioLink.Data"
+             xmlns:ex="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
              
              mc:Ignorable="d" 
              d:DesignHeight="376" d:DesignWidth="225">
-    <Grid>
-        <TreeView Name="treeView">
-            <TreeView.Resources>
-                <!--ItemsSource="{Binding Path=Children}" -->
-                <HierarchicalDataTemplate DataType="{x:Type src:TaxonViewModel}" ItemsSource="{Binding Path=Children}">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Path=ElemType, StringFormat='[{0}] '}"/>
-                        <TextBlock FontStyle="Oblique" Text="{Binding Path=TaxaFullName}">
-                        </TextBlock>
-                    </StackPanel>
-                </HierarchicalDataTemplate>
-                
-                <HierarchicalDataTemplate DataType="{x:Type src:ViewModelPlaceholder}">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Path=Label}"/>
-                    </StackPanel>
-                </HierarchicalDataTemplate>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="StringResources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+        
+    <Grid>        
+        <TabControl Name="tabControl1">
+            <TabItem Header="All Taxa" Name="tabItem1">
+                <Grid x:Name="allTaxaGrid">
+                    <TreeView Name="treeView" Margin="0,35,0,0">
+                        <TreeView.Resources>
+                            <HierarchicalDataTemplate DataType="{x:Type src:TaxonViewModel}" ItemsSource="{Binding Path=Children}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="{Binding Path=Icon}" Margin="0,1,4,1" />
+                                    <TextBlock Text="{Binding Path=Epithet}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </HierarchicalDataTemplate>
 
-                <Style TargetType="TreeViewItem">
-                    <Setter Property="IsExpanded" Value="{Binding Path=IsExpanded, Mode=TwoWay}" />
-                    <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Unverified}" Value="True">
-                            <Setter Property="Foreground" Value="Red" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-                
-            </TreeView.Resources>
-            <TreeViewItem>
-                <TreeViewItem.Header>Loading...</TreeViewItem.Header>
-            </TreeViewItem>
-        </TreeView>
+                            <HierarchicalDataTemplate DataType="{x:Type ex:ViewModelPlaceholder}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Path=Label}"/>
+                                </StackPanel>
+                            </HierarchicalDataTemplate>
+
+                            <Style TargetType="TreeViewItem">
+                                <Setter Property="IsExpanded" Value="{Binding Path=IsExpanded, Mode=TwoWay}" />
+                                <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Unverified}" Value="True">
+                                        <Setter Property="Foreground" Value="Red" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding AvailableName}" Value="True">
+                                        <Setter Property="FontStyle" Value="Italic" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+
+                        </TreeView.Resources>
+                        <TreeViewItem>
+                            <TreeViewItem.Header>Loading...</TreeViewItem.Header>
+                        </TreeViewItem>
+                    </TreeView>
+                    <Label Content="{StaticResource TaxonExplorer.Find}" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" Width="56" HorizontalContentAlignment="Right" VerticalContentAlignment="Top" />
+                    <TextBox Height="23" Margin="68,6,6,0" Name="txtFind" VerticalAlignment="Top" TextChanged="txtFind_TextChanged" />
+                </Grid>
+            </TabItem>
+        </TabControl>
     </Grid>
 </UserControl>

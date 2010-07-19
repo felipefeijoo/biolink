@@ -2,70 +2,50 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Collections.ObjectModel;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Globalization;
+
 using BioLink.Data.Model;
 using BioLink.Client.Utilities;
-using System.Collections.ObjectModel;
+using BioLink.Client.Extensibility;
 
 namespace BioLink.Client.Taxa {
-
-    public abstract class HierachicalViewModelBase {
-
-        private bool _expanded;
-        
-        public bool IsSelected { get; set; }
-        public bool IsChanged { get; set; }        
-        public abstract string Label { get; }
-        public ObservableCollection<HierachicalViewModelBase> Children { get; set; }
-
-        public bool IsExpanded { 
-            get { return _expanded; }            
-            set {
-                if (value == true && !IsChildrenLoaded) {
-                    if (LazyLoadChildren != null) {
-                        LazyLoadChildren(this);
-                    }
-                }
-                _expanded = value;
-            } 
-        }
-
-        public bool IsChildrenLoaded {
-            get {
-                if (Children == null) { 
-                    return false; 
-                }
-
-                if (Children.Count == 1 && Children[0] is ViewModelPlaceholder) {
-                    return false;
-                }
-
-                return true;
-            } 
-        }
-
-        public event ViewModelExpandedDelegate LazyLoadChildren;
-
-    }
-
-    public delegate void ViewModelExpandedDelegate(HierachicalViewModelBase item);
-
-
-    public class ViewModelPlaceholder : HierachicalViewModelBase {
-
-        private string _label;
-
-        public ViewModelPlaceholder(string label) {
-            _label = label;
-        }
-
-        public override string Label {
-            get { return _label; }
-        }
-
-    }
     
     [Notify]
-    public class TaxonViewModel : HierachicalViewModelBase, ITaxon {
+    public class TaxonViewModel : HierarchicalViewModelBase, ITaxon {
+
+        private static Dictionary<string, string> _TaxaIconNames = new Dictionary<string, string>();
+
+        static TaxonViewModel() {
+            AddIconBindings("HigherOrder", "C", "CHRT", "D", "HO", "INC", "INO", "KING", "O", "P", "SBC", "SBD", "SKING", "SBO", "SBP", "SPC", "SPF", "SPO");
+            AddIconBindings("Family", "F");
+            AddIconBindings("SubFamily", "SF");
+            AddIconBindings("Genus", "G");
+            AddIconBindings("SubGenus", "SG");            
+            AddIconBindings("Species", "SP");
+            AddIconBindings("SubSpecies", "SSP");
+            AddIconBindings("Tribe", "T");
+            AddIconBindings("Section", "SCT");
+            AddIconBindings("Series", "SRS");
+            AddIconBindings("SpeciesGroup", "SGP");
+            AddIconBindings("SuperTribe", "ST");
+            AddIconBindings("Form", "FM");
+            AddIconBindings("SubForm", "SFM");
+            AddIconBindings("Variety", "V");
+            AddIconBindings("SubVariety", "SV");
+            AddIconBindings("SubSection", "SSCT");
+            AddIconBindings("SubSeries", "SSRS");
+            AddIconBindings("SubTribe", "SBT");
+        }
+
+        private static void AddIconBindings(string iconName, params string[] elemTypes) {
+            foreach (string elemType in elemTypes) {
+                _TaxaIconNames.Add(elemType, iconName);
+            }
+        }
 
         public TaxonViewModel(TaxonViewModel parent, Taxon taxon) {
             this.Parent = parent;
@@ -164,6 +144,50 @@ namespace BioLink.Client.Taxa {
             get { return Taxon.NumChildren; }
             set { Taxon.NumChildren = value; }
         }
+        
+        private BitmapSource _image;
 
+        public override BitmapSource Icon {
+            get {
+                if (_image == null) {
+                    lock(this) {
+
+                        // Available names don't have icons
+                        if (AvailableName.HasValue && AvailableName.Value) {
+                            return null;
+                        }
+
+                        string assemblyName = this.GetType().Assembly.GetName().Name;                        
+                        string uri = null;
+                        if (_TaxaIconNames.ContainsKey(this.ElemType)) {
+                            string iconName = _TaxaIconNames[this.ElemType];
+                            uri = String.Format("pack://application:,,,/{0};component/images/{1}.png", assemblyName, iconName);
+                            _image = ImageCache.GetImage(uri);
+                        } else {
+#if DEBUG
+                            RenderTargetBitmap bmp = new RenderTargetBitmap(50, 20, 96, 96, PixelFormats.Pbgra32);
+                            FormattedText text = new FormattedText("[" + this.ElemType + "]", new CultureInfo("en-us"), FlowDirection.LeftToRight, new Typeface(new FontFamily("Tahoma"), FontStyles.Normal, FontWeights.Normal, new FontStretch()), 10, new SolidColorBrush(Colors.Black));
+                            DrawingVisual drawingVisual = new DrawingVisual();
+                            DrawingContext drawingContext = drawingVisual.RenderOpen();
+                            BitmapSource icon = ImageCache.GetImage(String.Format("pack://application:,,,/{0};component/images/UnknownTaxa.png", assemblyName));
+                            drawingContext.DrawImage(icon, new Rect(new Point(0, 0), new Point(20, 20)));
+                            drawingContext.DrawText(text, new Point(20, 0));
+                            drawingContext.Close();
+                            bmp.Render(drawingVisual);
+                            _image = bmp;
+#else
+                            _image = ImageCache.GetImage(String.Format("pack://application:,,,/{0};component/images/UnknownTaxa.png", assemblyName));
+#endif
+                        }
+
+                        if (KingdomCode.Equals("P")) {
+                            _image = ImageCache.ApplyOverlay(_image, String.Format("pack://application:,,,/{0};component/images/PlantOverlay.png", assemblyName));
+                        }
+                        
+                    }
+                }
+                return _image;
+            }
+        }
     }
 }

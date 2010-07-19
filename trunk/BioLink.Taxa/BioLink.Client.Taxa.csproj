@@ -89,6 +89,43 @@
       <LastGenOutput>Taxa.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\UnknownTaxa.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\PlantOverlay.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Family.png" />
+    <Resource Include="images\Genus.png" />
+    <Resource Include="images\HigherOrder.png" />
+    <Resource Include="images\Species.png" />
+    <Resource Include="images\SubFamily.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\SubGenus.png" />
+    <Resource Include="images\SubSpecies.png" />
+    <Resource Include="images\Tribe.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Section.png" />
+    <Resource Include="images\Series.png" />
+    <Resource Include="images\SpeciesGroup.png" />
+    <Resource Include="images\SuperTribe.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Form.png" />
+    <Resource Include="images\SubForm.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\SubVariety.png" />
+    <Resource Include="images\Variety.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\SubSection.png" />
+    <Resource Include="images\SubSeries.png" />
+    <Resource Include="images\SubTribe.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)\BiolinkApplication\bin\Debug\Plugins</PostBuildEvent>

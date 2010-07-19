@@ -58,7 +58,7 @@ namespace BioLinkApplication {
             Debug.Assert(User != null, "User is null!");
 
             _pluginManager = new PluginManager(this.User);
-            _pluginManager.RequestShowDockableContribution += new PluginManager.ShowDockableContributionDelegate(_pluginManager_RequestShowDockableContribution);
+            _pluginManager.RequestShowContent += new PluginManager.ShowDockableContributionDelegate(_pluginManager_RequestShowContent);
             _pluginManager.ProgressEvent += ProgressObserverAdapter.Adapt(monitor);
             // Debug logging...            
             _pluginManager.ProgressEvent += (message, percent, eventType) => { Logger.Debug("<<{2}>> {0} {1}", message, (percent >= 0 ? "(" + percent + "%)" : ""), eventType); return true; };
@@ -75,18 +75,15 @@ namespace BioLinkApplication {
             t.Start();
         }
 
-        void _pluginManager_RequestShowDockableContribution(IBioLinkPlugin plugin, IExplorerWorkspaceContribution contribution) {
-
-            AvalonDock.DockableContent newContent = new AvalonDock.DockableContent();
-            newContent.Title = contribution.Title;
-            newContent.Content = contribution.Content;
-            newContent.Name = plugin.Name + "_" + contribution.Name;
-
-            JobExecutor.QueueJob(() => {
-                contribution.InitializeContent();
+        void _pluginManager_RequestShowContent(IBioLinkPlugin plugin, string name) {
+            String contentName = plugin.Name + "_" + name;
+            AvalonDock.DockableContent content = dockManager.DockableContents.First((candidate) => {
+                return candidate.Name.Equals(contentName);
             });
 
-            this.explorersPane.Items.Add(newContent);            
+            if (content != null) {
+                content.Show();
+            }
         }
 
 
