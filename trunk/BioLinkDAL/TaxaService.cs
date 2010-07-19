@@ -24,11 +24,6 @@ namespace BioLink.Data {
         private Taxon MapTaxon(SqlDataReader reader) {
             Taxon t = new Taxon();
             ReflectMap(t, reader);
-            //t.TaxaID = reader["TaxaID"] as Nullable<int>;
-            //t.TaxaParentID = reader["TaxaParentID"] as Nullable<int>;
-            //t.TaxaFullName = reader["TaxaFullName"] as string;
-            //t.NumChildren = reader["NumChildren"] as Nullable<int>;
-            //t.Author = reader["Author"] as string;
             return t;
         }
 
@@ -37,6 +32,15 @@ namespace BioLink.Data {
             StoredProcReaderForEach("spBiotaList", (reader) => {
                 taxa.Add(MapTaxon(reader));
             }, new SqlParameter("intParentId", taxonId));
+
+            return taxa;
+        }
+
+        public List<Taxon> FindTaxa(string searchTerm) {
+            List<Taxon> taxa = new List<Taxon>();
+            StoredProcReaderForEach("spBiotaFind", (reader) => {
+                taxa.Add(MapTaxon(reader));
+            }, new SqlParameter("vchrLimitations", ""), new SqlParameter("vchrTaxaToFind", searchTerm + "%"));
 
             return taxa;
         }

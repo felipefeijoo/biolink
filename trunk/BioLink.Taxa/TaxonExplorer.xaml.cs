@@ -15,6 +15,7 @@ using System.Collections.ObjectModel;
 using BioLink.Data;
 using BioLink.Data.Model;
 using BioLink.Client.Utilities;
+using BioLink.Client.Extensibility;
 using System.Threading;
 
 namespace BioLink.Client.Taxa {
@@ -25,16 +26,29 @@ namespace BioLink.Client.Taxa {
     /// </summary>
     public partial class TaxonExplorer : UserControl {
 
-        private ListView _searchResults;
+
         private Timer _timer;
+        private IBioLinkPlugin _owner;
+
+        private ObservableCollection<TaxonViewModel> _searchModel;
 
         public TaxonExplorer() {
             InitializeComponent();
+        }
 
-            _searchResults = new ListView();
-            _searchResults.Margin = treeView.Margin;
-            _searchResults.Visibility = Visibility.Hidden;
-            allTaxaGrid.Children.Add(_searchResults);            
+        
+
+        public TaxonExplorer(IBioLinkPlugin owner) {
+            InitializeComponent();
+            _owner = owner;
+            
+            lstResults.Margin = treeView.Margin;
+            lstResults.Visibility = Visibility.Hidden;
+            _searchModel = new ObservableCollection<TaxonViewModel>();
+            lstResults.ItemsSource = _searchModel;
+            _timer = new Timer(new TimerCallback((obj) => {
+                DoFind();
+            }),null, Timeout.Infinite, Timeout.Infinite);
 
         }
 
@@ -46,42 +60,36 @@ namespace BioLink.Client.Taxa {
         private void txtFind_TextChanged(object sender, TextChangedEventArgs e) {
 
             if (String.IsNullOrEmpty(txtFind.Text)) {                                
-                treeView.Visibility = System.Windows.Visibility.Visible;                
-                _searchResults.Visibility = Visibility.Hidden;
-                _searchResults.Items.Clear();
-
+                treeView.Visibility = System.Windows.Visibility.Visible;
+                lstResults.Visibility = Visibility.Hidden;
+                _searchModel.Clear();
             } else {
-
-                _searchResults.Items.Clear();
-
-                FindAsync();
-                
-                _searchResults.Items.Add("Searching...");
-
+                _timer.Change(Timeout.Infinite, Timeout.Infinite);
+                _timer.Change(300, 300);
+                _searchModel.Clear();
                 treeView.Visibility = Visibility.Hidden;
-                _searchResults.Visibility = Visibility.Visible;
+                lstResults.Visibility = Visibility.Visible;
                 
             }
         }
 
-        private void DoFind(object t) {
-        }
-
-        private void FindAsync() {
-            string oldTerm = txtFind.Text;
-            
-            
-            JobExecutor.QueueJob(() => {
-                Thread.Sleep(1000);
-                string currentTerm = null;
-                this.InvokeIfRequired(() => {
-                    currentTerm = txtFind.Text;
-                });
-
-                if (currentTerm != null && currentTerm.Equals(oldTerm)) {
-                    MessageBox.Show("Search!" + currentTerm);
+        private void DoFind() {
+            if (_owner == null) {
+                return;
+            }
+            _timer.Change(Timeout.Infinite, Timeout.Infinite);
+            string searchTerm = null;
+            txtFind.InvokeIfRequired(() => { searchTerm = txtFind.Text; });
+            Logger.Debug("Searching for taxon matching {0}", searchTerm);
+            List<Taxon> results = new TaxaService(_owner.User).FindTaxa(searchTerm);
+            lstResults.InvokeIfRequired(() => {
+                _searchModel.Clear();
+                foreach (Taxon t in results) {
+                    _searchModel.Add(new TaxonViewModel(null, t));
                 }
             });
         }
+
+
     }
 }

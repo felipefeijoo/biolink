@@ -34,7 +34,7 @@ namespace BioLink.Client.Taxa {
                     String.Format("{{'Name':'ShowTaxaExplorer', 'Header':'{0}'}}", _R("Taxa.Menu.ShowExplorer"))
                 ));
 
-                _explorer = new ExplorerWorkspaceContribution<TaxonExplorer>(this, "TaxonExplorer", new TaxonExplorer(), _R("TaxonExplorer.Title"),
+                _explorer = new ExplorerWorkspaceContribution<TaxonExplorer>(this, "TaxonExplorer", new TaxonExplorer(this), _R("TaxonExplorer.Title"),
                     (explorer) => {
                         // Load the model on the background thread
                         List<Taxon> taxa = new TaxaService(User).GetTopLevelTaxa();
