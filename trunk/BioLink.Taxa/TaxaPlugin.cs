@@ -42,8 +42,7 @@ namespace BioLink.Client.Taxa {
                         List<TaxonViewModel> viewModel = taxa.ConvertAll((taxon) => {
                             TaxonViewModel item = new TaxonViewModel(null, taxon);
                             if (item.NumChildren > 0) {
-                                item.LazyLoadChildren += new ViewModelExpandedDelegate(item_LazyLoadChildren);
-                                item.Children = new ObservableCollection<HierarchicalViewModelBase>();
+                                item.LazyLoadChildren += new ViewModelExpandedDelegate(item_LazyLoadChildren);                                
                                 item.Children.Add(new ViewModelPlaceholder("Loading..."));
                             }
                             return item;
@@ -71,10 +70,9 @@ namespace BioLink.Client.Taxa {
                 Debug.Assert(tvm.TaxaID.HasValue, "TaxonViewModel has no taxa id!");
                 List<Taxon> taxa = new TaxaService(User).GetTaxaForParent(tvm.TaxaID.Value);                
                 foreach (Taxon taxon in taxa) {
-                    TaxonViewModel child = new TaxonViewModel(null, taxon);
+                    TaxonViewModel child = new TaxonViewModel(tvm, taxon);                    
                     if (child.NumChildren > 0) {
                         child.LazyLoadChildren += new ViewModelExpandedDelegate(item_LazyLoadChildren);
-                        child.Children = new ObservableCollection<HierarchicalViewModelBase>();
                         child.Children.Add(new ViewModelPlaceholder("Loading..."));
                     }
                     item.Children.Add(child);

@@ -23,7 +23,7 @@ namespace BioLink.Data {
 
         private Taxon MapTaxon(SqlDataReader reader) {
             Taxon t = new Taxon();
-            ReflectMap(t, reader);
+            ReflectMap(t, reader);            
             return t;
         }
 

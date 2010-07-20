@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;SkipPostSharp</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -114,6 +114,10 @@
     <Resource Include="images\SubSection.png" />
     <Resource Include="images\SubSeries.png" />
     <Resource Include="images\SubTribe.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\ChangedOverlay.png" />
+    <Resource Include="images\NewOverlay.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

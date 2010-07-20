@@ -14,48 +14,63 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="StringResources.xaml" />
             </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
+            
+            <Style TargetType="ListBoxItem">
+                <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Unverified}" Value="True">
+                        <Setter Property="Foreground" Value="Red" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding AvailableName}" Value="True">
+                        <Setter Property="FontStyle" Value="Italic" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <HierarchicalDataTemplate DataType="{x:Type ex:ViewModelPlaceholder}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Path=Label}"/>
+                </StackPanel>
+            </HierarchicalDataTemplate>
+
+        </ResourceDictionary>   
     </UserControl.Resources>
         
     <Grid>        
-        <TabControl Name="tabControl1">
-            <TabItem Header="All Taxa" Name="tabItem1">
+        <TabControl Name="tabControl1" SelectionChanged="tabControl1_SelectionChanged">
+            <TabItem Header="{StaticResource TaxonExplorer.Tab.AllTaxa}" Name="tabAllTaxa">
                 <Grid x:Name="allTaxaGrid">
-                    <TreeView Name="treeView" Margin="0,35,0,0">
+                    <Label Content="{StaticResource TaxonExplorer.Find}" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" Width="56" HorizontalContentAlignment="Right" VerticalContentAlignment="Top" />
+                    <TextBox Height="23" Margin="68,6,0,0" Name="txtFind" VerticalAlignment="Top" TextChanged="txtFind_TextChanged" />
+                    <TreeView Name="tvwAllTaxa" Margin="0,35,0,0" PreviewMouseMove="tvwAllTaxa_PreviewMouseMove" PreviewMouseLeftButtonDown="tvwAllTaxa_PreviewMouseLeftButtonDown">
                         <TreeView.Resources>
                             <HierarchicalDataTemplate DataType="{x:Type src:TaxonViewModel}" ItemsSource="{Binding Path=Children}">
                                 <StackPanel Orientation="Horizontal">
-                                    <Image Source="{Binding Path=Icon}" Margin="0,1,4,1" />
+                                    <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,1" />
                                     <TextBlock Text="{Binding Path=Epithet}" VerticalAlignment="Center" />
                                 </StackPanel>
                             </HierarchicalDataTemplate>
-
-                            <HierarchicalDataTemplate DataType="{x:Type ex:ViewModelPlaceholder}">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Path=Label}"/>
-                                </StackPanel>
-                            </HierarchicalDataTemplate>
-
+                            
                             <Style TargetType="TreeViewItem">
                                 <Setter Property="IsExpanded" Value="{Binding Path=IsExpanded, Mode=TwoWay}" />
                                 <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding Unverified}" Value="True">
-                                        <Setter Property="Foreground" Value="Red" />
+                                        <Setter Property="Foreground" Value="Red" />                                        
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding AvailableName}" Value="True">
-                                        <Setter Property="FontStyle" Value="Italic" />
+                                        <Setter Property="FontStyle" Value="Italic" />                                        
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsChanged}" Value="True">                                        
+                                        <Setter Property="Background" Value="Red" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
-
                         </TreeView.Resources>
                         <TreeViewItem>
                             <TreeViewItem.Header>Loading...</TreeViewItem.Header>
                         </TreeViewItem>
                     </TreeView>
-                    <Label Content="{StaticResource TaxonExplorer.Find}" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" Width="56" HorizontalContentAlignment="Right" VerticalContentAlignment="Top" />
-                    <TextBox Height="23" Margin="68,6,6,0" Name="txtFind" VerticalAlignment="Top" TextChanged="txtFind_TextChanged" />
                     <ListBox Name="lstResults" Visibility="Hidden">                     
                         <ListBox.Resources>
                             <DataTemplate DataType="{x:Type src:TaxonViewModel}">
@@ -64,26 +79,25 @@
                                     <TextBlock Text="{Binding Path=TaxaFullName}" VerticalAlignment="Center" />
                                 </StackPanel>
                             </DataTemplate>
-
-                            <DataTemplate DataType="{x:Type ex:ViewModelPlaceholder}">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Path=Label}"/>
-                                </StackPanel>
-                            </DataTemplate>
-
-                            <Style TargetType="ListBoxItem">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Unverified}" Value="True">
-                                        <Setter Property="Foreground" Value="Red" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding AvailableName}" Value="True">
-                                        <Setter Property="FontStyle" Value="Italic" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-
                         </ListBox.Resources>
                     </ListBox>
+                </Grid>
+            </TabItem>
+            <TabItem Header="{StaticResource TaxonExplorer.Tab.Favorites}" Name="tabFavorites">
+                <Grid>
+                    <TreeView Name="tvwFavorites" Margin="0">
+                        <TreeView.Resources>
+                            <HierarchicalDataTemplate DataType="{x:Type src:TaxonViewModel}" ItemsSource="{Binding Path=Children}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="{Binding Path=Icon}" Margin="0,1,4,1" />
+                                    <TextBlock Text="{Binding Path=Epithet}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </HierarchicalDataTemplate>
+                        </TreeView.Resources>
+                        <TreeViewItem>
+                            <TreeViewItem.Header>Loading...</TreeViewItem.Header>
+                        </TreeViewItem>
+                    </TreeView>
                 </Grid>
             </TabItem>
         </TabControl>
