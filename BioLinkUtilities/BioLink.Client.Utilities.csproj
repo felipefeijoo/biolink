@@ -88,6 +88,7 @@
     <Compile Include="Debug.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="FileSystemScanner.cs" />
+    <Compile Include="IChangeable.cs" />
     <Compile Include="JobExecutor.cs" />
     <Compile Include="LegacySettings.cs" />
     <Compile Include="Logger.cs" />

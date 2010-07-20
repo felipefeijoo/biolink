@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Extensibility {
 
@@ -44,16 +45,32 @@ namespace BioLink.Client.Extensibility {
 
     }
 
-    public abstract class HierarchicalViewModelBase {
+    public abstract class HierarchicalViewModelBase : IChangeable {
 
-        private bool _expanded;
+        private bool _expanded;        
 
         public bool IsSelected { get; set; }
-        public bool IsChanged { get; set; }
         public abstract string Label { get; }
-        public abstract BitmapSource Icon { get; }
+        public abstract BitmapSource Icon { get; set; }
+        public HierarchicalViewModelBase Parent { get; set; }
+        public ObservableCollection<HierarchicalViewModelBase> Children { get; private set; }
 
-        public ObservableCollection<HierarchicalViewModelBase> Children { get; set; }
+        public HierarchicalViewModelBase() {
+            this.Children = new ObservableCollection<HierarchicalViewModelBase>();
+        }
+
+        public bool IsChanged { get; set; }
+
+        public bool IsAncestorOf(HierarchicalViewModelBase item) {
+            HierarchicalViewModelBase p = item.Parent;
+            while (p != null) {
+                if (p == this) {
+                    return true;
+                }
+                p = p.Parent;
+            }
+            return false;
+        }
 
         public bool IsExpanded {
             get { return _expanded; }
@@ -91,6 +108,7 @@ namespace BioLink.Client.Extensibility {
     public class ViewModelPlaceholder : HierarchicalViewModelBase {
 
         private string _label;
+        private BitmapSource _icon;
 
         public ViewModelPlaceholder(string label) {
             _label = label;
@@ -103,7 +121,10 @@ namespace BioLink.Client.Extensibility {
 
         public override BitmapSource Icon {
             get {
-                return null;
+                return _icon;
+            }
+            set {
+                _icon = value;
             }
         }
     }

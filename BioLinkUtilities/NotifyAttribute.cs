@@ -62,10 +62,15 @@ namespace BioLink.Client.Utilities {
         public void OnPropertySet(LocationInterceptionArgs args) {
             // Don't go further if the new value is equal to the old one.
             // (Possibly use object.Equals here).
+            Logger.Debug("Here in aspect: {0} :: {1}", args.Value, args.GetCurrentValue());
             if (args.Value == args.GetCurrentValue()) return;
 
             // Actually sets the value.
             args.ProceedSetValue();
+
+            if (args.Instance is IChangeable && !args.Location.Name.Equals("IsChanged")) {
+                (args.Instance as IChangeable).IsChanged = true;
+            }
 
             // Invoke method OnPropertyChanged (our, the base one, or the overridden one).
             this.OnPropertyChangedMethod.Invoke(args.Location.Name);
