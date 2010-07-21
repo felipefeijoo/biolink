@@ -219,9 +219,7 @@ namespace BioLink.Client.Taxa {
                     dest.Children.Add(src);
                     src.Parent = dest;
                     src.TaxaParentID = dest.TaxaID;
-                    dest.NumChildren = dest.Children.Count;
-                    dest.Unverified = true;
-                    src.IsSelected = true;
+                    src.IsSelected = true;           
                 }
             }
 
