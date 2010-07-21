@@ -4,62 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using BioLink.Client.Utilities;
+using System.ComponentModel;
 
 namespace BioLink.Client.Extensibility {
 
-    public static class ImageCache {
+    public abstract class HierarchicalViewModelBase : ViewModelBase {
 
-        private static Dictionary<String, BitmapSource> _cache = new Dictionary<string, BitmapSource>();
-
-        public static BitmapSource GetImage(string uri) {
-
-            if (_cache.ContainsKey(uri)) {
-                return _cache[uri];
-            }
-            
-            BitmapImage image = new BitmapImage();
-            image.BeginInit();
-            image.UriSource = new Uri(uri);            
-            image.EndInit();
-            _cache.Add(uri, image);
-
-            return image;
-        }
-
-        public static BitmapSource ApplyOverlay(BitmapSource image, string overlayUri) {
-            BitmapSource overlay = GetImage(overlayUri);
-            int height = (int) image.Height;
-            int width = (int) image.Width;
-            RenderTargetBitmap bmp = new RenderTargetBitmap(width, height, image.DpiX, image.DpiY, PixelFormats.Pbgra32);
-            DrawingVisual drawingVisual = new DrawingVisual();            
-            DrawingContext drawingContext = drawingVisual.RenderOpen();
-            drawingContext.DrawImage(image, new Rect(new Point(0, 0), new Point(width, height)));
-            drawingContext.DrawImage(overlay, new Rect(new Point(0, 0), new Point(width, height)));
-            drawingContext.Close();            
-            bmp.Render(drawingVisual);
-            return bmp;
-        }
-
-    }
-
-    public abstract class HierarchicalViewModelBase : IChangeable {
-
-        private bool _expanded;        
-
-        public bool IsSelected { get; set; }
-        public abstract string Label { get; }
-        public abstract BitmapSource Icon { get; set; }
-        public HierarchicalViewModelBase Parent { get; set; }
-        public ObservableCollection<HierarchicalViewModelBase> Children { get; private set; }
+        private bool _expanded;
 
         public HierarchicalViewModelBase() {
             this.Children = new ObservableCollection<HierarchicalViewModelBase>();
+            // this.Children.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(Children_CollectionChanged);
         }
 
-        public bool IsChanged { get; set; }
+        void Children_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
+            this.IsChanged = true;
+        }
 
         public bool IsAncestorOf(HierarchicalViewModelBase item) {
             HierarchicalViewModelBase p = item.Parent;
@@ -71,6 +33,7 @@ namespace BioLink.Client.Extensibility {
             }
             return false;
         }
+
 
         public bool IsExpanded {
             get { return _expanded; }
@@ -97,6 +60,10 @@ namespace BioLink.Client.Extensibility {
                 return true;
             }
         }
+
+        public HierarchicalViewModelBase Parent { get; set; }
+
+        public ObservableCollection<HierarchicalViewModelBase> Children { get; private set; }
 
         public event ViewModelExpandedDelegate LazyLoadChildren;
 

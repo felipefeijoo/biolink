@@ -13,8 +13,7 @@ using BioLink.Client.Utilities;
 using BioLink.Client.Extensibility;
 
 namespace BioLink.Client.Taxa {
-
-    [Notify]
+    
     public class TaxonViewModel : HierarchicalViewModelBase, ITaxon {
 
         private static Dictionary<string, string> _TaxaIconNames = new Dictionary<string, string>();
@@ -51,6 +50,13 @@ namespace BioLink.Client.Taxa {
             this.Parent = parent;
             this.Taxon = taxon;
             this.IsChanged = false;
+            this.DataChanged += new DataChangedHandler(TaxonViewModel_DataChanged);
+        }
+
+        void TaxonViewModel_DataChanged() {
+            // Force the icon to be reconstructed, possibly now with a changed badge/overlay
+            _image = null;
+            RaisePropertyChanged("Icon");
         }
        
         public Taxon Taxon { get; private set; }
@@ -59,113 +65,109 @@ namespace BioLink.Client.Taxa {
             get { return TaxaFullName; }
         }
 
-        public new bool IsChanged { get; set; }
-
-
         public int? TaxaID {
             get { return Taxon.TaxaID; }
-            set { Taxon.TaxaID = value; }
+            set { SetProperty("TaxaID", Taxon.TaxaID, value); }
         }
 
         public int? TaxaParentID {
             get { return Taxon.TaxaParentID; }
-            set { Taxon.TaxaParentID = value; }
+            set { SetProperty("TaxaParentID", Taxon.TaxaParentID , value); }
         }
 
         public string Epithet {
             get { return Taxon.Epithet; }
-            set { Taxon.Epithet = value; }
+            set { SetProperty("Epithet", Taxon.Epithet ,value); }
         }
 
         public string TaxaFullName {
             get { return Taxon.TaxaFullName; }
-            set { Taxon.TaxaFullName = value; }
+            set { SetProperty("TaxaFullName", Taxon.TaxaFullName, value); }
         }
 
         public string YearOfPub {
             get { return Taxon.YearOfPub; }
-            set { Taxon.YearOfPub = value; }
+            set { SetProperty("YearOfPub", Taxon.YearOfPub, value); }
         }
 
         public string Author {
             get { return Taxon.Author; }
-            set { Taxon.Author = value; }
+            set { SetProperty("Author", Taxon.Author, value); }
         }
 
         public string ElemType {
             get { return Taxon.ElemType; }
-            set { Taxon.ElemType = value; }
+            set { SetProperty("ElemType", Taxon.ElemType, value); }
         }
 
         public string KingdomCode {
             get { return Taxon.KingdomCode; }
-            set { Taxon.KingdomCode = value; }
+            set { SetProperty("KingdomCode", Taxon.KingdomCode, value); }
         }
 
         public bool? Unplaced {
             get { return Taxon.Unplaced; }
-            set { Taxon.Unplaced = value; }
+            set { SetProperty("Unplaced", Taxon.Unplaced, value); }
         }
 
         public int? Order {
             get { return Taxon.Order; }
-            set { Taxon.Order = value; }
+            set { SetProperty("Order", Taxon.Order, value); }
         }
 
         public string Rank {
             get { return Taxon.Rank; }
-            set { Taxon.Rank = value; }
+            set { SetProperty("Rank", Taxon.Rank, value); }
         }
 
         public bool? ChgComb {
             get { return Taxon.ChgComb; }
-            set { Taxon.ChgComb = value; }
+            set { SetProperty("ChgComb", Taxon.ChgComb, value); }
         }
 
         public bool? Unverified {
             get { return Taxon.Unverified; }
-            set { Taxon.Unverified = value; }
+            set { SetProperty("Unverified", Taxon.Unverified, value); }
         }
 
         public bool? AvailableName {
             get { return Taxon.AvailableName; }
-            set { Taxon.AvailableName = value; }
+            set { SetProperty("AvailableName", Taxon.AvailableName, value); }
         }
 
         public bool? LiteratureName {
             get { return Taxon.LiteratureName; }
-            set { Taxon.LiteratureName = value; }
+            set { SetProperty("LiteratureName", Taxon.LiteratureName, value); }
         }
 
         public string NameStatus {
             get { return Taxon.NameStatus; }
-            set { Taxon.NameStatus = value; }
+            set { SetProperty("NameStatus", Taxon.NameStatus, value); }
         }
 
         public int? NumChildren {
             get { return Taxon.NumChildren; }
-            set { Taxon.NumChildren = value; }
+            set { SetProperty("NumChildren", Taxon.NumChildren, value); }
         }
 
         private BitmapSource _image;
 
-        public override BitmapSource Icon {
-            get {
-                if (_image == null || IsChanged) {
+        private BitmapSource ConstructIcon() {
+            BitmapSource newimage = null;
 
-                    // Available names don't have icons
-                    if (AvailableName.HasValue && AvailableName.Value) {
-                        return null;
-                    }
+            // Available names don't have icons
+            if (AvailableName.HasValue && AvailableName.Value) {
+                return newimage;
+            }
 
-                    string assemblyName = this.GetType().Assembly.GetName().Name;
-                    string uri = null;
-                    if (_TaxaIconNames.ContainsKey(this.ElemType)) {
-                        string iconName = _TaxaIconNames[this.ElemType];
-                        uri = String.Format("pack://application:,,,/{0};component/images/{1}.png", assemblyName, iconName);
-                        _image = ImageCache.GetImage(uri);
-                    } else {
-#if DEBUG
+            string assemblyName = this.GetType().Assembly.GetName().Name;
+            string uri = null;
+            if (_TaxaIconNames.ContainsKey(this.ElemType)) {
+                string iconName = _TaxaIconNames[this.ElemType];
+                uri = String.Format("pack://application:,,,/{0};component/images/{1}.png", assemblyName, iconName);
+                newimage = ImageCache.GetImage(uri);
+            } else {
+#if xDEBUG
                         RenderTargetBitmap bmp = new RenderTargetBitmap(50, 20, 96, 96, PixelFormats.Pbgra32);
                         FormattedText text = new FormattedText("[" + this.ElemType + "]", new CultureInfo("en-us"), FlowDirection.LeftToRight, new Typeface(new FontFamily("Tahoma"), FontStyles.Normal, FontWeights.Normal, new FontStretch()), 10, new SolidColorBrush(Colors.Black));
                         DrawingVisual drawingVisual = new DrawingVisual();
@@ -175,27 +177,33 @@ namespace BioLink.Client.Taxa {
                         drawingContext.DrawText(text, new Point(20, 0));
                         drawingContext.Close();
                         bmp.Render(drawingVisual);
-                        _image = bmp;
+                        SetProperty("Icon", ref _image, bmp);                                                
 #else
-                            _image = ImageCache.GetImage(String.Format("pack://application:,,,/{0};component/images/UnknownTaxa.png", assemblyName));
+                newimage = ImageCache.GetImage(String.Format("pack://application:,,,/{0};component/images/UnknownTaxa.png", assemblyName));                
 #endif
-                    }
+            }
 
-                    if (KingdomCode.Equals("P")) {
-                        _image = ImageCache.ApplyOverlay(_image, String.Format("pack://application:,,,/{0};component/images/PlantOverlay.png", assemblyName));
-                    }
+            if (KingdomCode.Equals("P")) {
+                newimage = ImageCache.ApplyOverlay(newimage, String.Format("pack://application:,,,/{0};component/images/PlantOverlay.png", assemblyName));
+            }
 
-                    if (IsChanged) {
-                        _image = ImageCache.ApplyOverlay(_image, String.Format("pack://application:,,,/{0};component/images/ChangedOverlay.png", assemblyName));
-                    }
+            if (IsChanged) {
+                newimage = ImageCache.ApplyOverlay(newimage, String.Format("pack://application:,,,/{0};component/images/ChangedOverlay.png", assemblyName));
+            }
+            return newimage;
+        }
 
+        public override BitmapSource Icon {
+            get {
+                if (_image == null) {
+                    _image = ConstructIcon();                    
                 }
-
                 return _image;
             }
 
             set {
-                _image = value;
+                _image = value;               
+                RaisePropertyChanged("Icon");               
             }
         }
     }
