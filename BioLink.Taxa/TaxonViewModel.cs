@@ -14,7 +14,7 @@ using BioLink.Client.Extensibility;
 
 namespace BioLink.Client.Taxa {
     
-    public class TaxonViewModel : HierarchicalViewModelBase, ITaxon {
+    public class TaxonViewModel : HierarchicalViewModelBase {
 
         private static Dictionary<string, string> _TaxaIconNames = new Dictionary<string, string>();
 
@@ -67,87 +67,87 @@ namespace BioLink.Client.Taxa {
 
         public int? TaxaID {
             get { return Taxon.TaxaID; }
-            set { SetProperty("TaxaID", Taxon.TaxaID, value); }
+            set { SetProperty(() => Taxon.TaxaID, Taxon, value); }
         }
 
         public int? TaxaParentID {
             get { return Taxon.TaxaParentID; }
-            set { SetProperty("TaxaParentID", Taxon.TaxaParentID , value); }
+            set { SetProperty(() => Taxon.TaxaParentID ,Taxon,  value); }
         }
 
         public string Epithet {
             get { return Taxon.Epithet; }
-            set { SetProperty("Epithet", Taxon.Epithet ,value); }
+            set { SetProperty(() => Taxon.Epithet, Taxon, value); }
         }
 
         public string TaxaFullName {
             get { return Taxon.TaxaFullName; }
-            set { SetProperty("TaxaFullName", Taxon.TaxaFullName, value); }
+            set { SetProperty(() => Taxon.TaxaFullName, Taxon, value); }
         }
 
         public string YearOfPub {
             get { return Taxon.YearOfPub; }
-            set { SetProperty("YearOfPub", Taxon.YearOfPub, value); }
+            set { SetProperty(() => Taxon.YearOfPub, Taxon, value); }
         }
 
         public string Author {
             get { return Taxon.Author; }
-            set { SetProperty("Author", Taxon.Author, value); }
+            set { SetProperty(() => Taxon.Author, Taxon, value); }
         }
 
         public string ElemType {
             get { return Taxon.ElemType; }
-            set { SetProperty("ElemType", Taxon.ElemType, value); }
+            set { SetProperty(() => Taxon.ElemType, Taxon, value); }
         }
 
         public string KingdomCode {
             get { return Taxon.KingdomCode; }
-            set { SetProperty("KingdomCode", Taxon.KingdomCode, value); }
+            set { SetProperty(() => Taxon.KingdomCode, Taxon, value); }
         }
 
         public bool? Unplaced {
             get { return Taxon.Unplaced; }
-            set { SetProperty("Unplaced", Taxon.Unplaced, value); }
+            set { SetProperty(() => Taxon.Unplaced, Taxon, value); }
         }
 
         public int? Order {
             get { return Taxon.Order; }
-            set { SetProperty("Order", Taxon.Order, value); }
+            set { SetProperty(() => Taxon.Order, Taxon, value); }
         }
 
         public string Rank {
             get { return Taxon.Rank; }
-            set { SetProperty("Rank", Taxon.Rank, value); }
+            set { SetProperty(() => Taxon.Rank, Taxon, value); }
         }
 
         public bool? ChgComb {
             get { return Taxon.ChgComb; }
-            set { SetProperty("ChgComb", Taxon.ChgComb, value); }
+            set { SetProperty(() => Taxon.ChgComb, Taxon, value); }
         }
 
         public bool? Unverified {
             get { return Taxon.Unverified; }
-            set { SetProperty("Unverified", Taxon.Unverified, value); }
+            set { SetProperty(() => Taxon.Unverified, Taxon, value); }
         }
 
         public bool? AvailableName {
             get { return Taxon.AvailableName; }
-            set { SetProperty("AvailableName", Taxon.AvailableName, value); }
+            set { SetProperty(() => Taxon.AvailableName, Taxon, value); }
         }
 
         public bool? LiteratureName {
             get { return Taxon.LiteratureName; }
-            set { SetProperty("LiteratureName", Taxon.LiteratureName, value); }
+            set { SetProperty(() => Taxon.LiteratureName, Taxon, value); }
         }
 
         public string NameStatus {
             get { return Taxon.NameStatus; }
-            set { SetProperty("NameStatus", Taxon.NameStatus, value); }
+            set { SetProperty(() => Taxon.NameStatus, Taxon, value); }
         }
 
         public int? NumChildren {
             get { return Taxon.NumChildren; }
-            set { SetProperty("NumChildren", Taxon.NumChildren, value); }
+            set { SetProperty(() => Taxon.NumChildren, Taxon, value); }
         }
 
         private BitmapSource _image;
@@ -155,8 +155,8 @@ namespace BioLink.Client.Taxa {
         private BitmapSource ConstructIcon() {
             BitmapSource newimage = null;
 
-            // Available names don't have icons
-            if (AvailableName.HasValue && AvailableName.Value) {
+            // Available names don't have icons, nor do elements missing an element type
+            if ((AvailableName.HasValue && AvailableName.Value) || ElemType == null) {
                 return newimage;
             }
 
@@ -207,4 +207,5 @@ namespace BioLink.Client.Taxa {
             }
         }
     }
+
 }

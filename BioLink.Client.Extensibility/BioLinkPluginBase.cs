@@ -44,12 +44,16 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        protected String _R(string key) {
+        protected String _R(string key, params object[] args) {
             Object res = _resourceDictionary[key];
             if (res == null) {
                 return key;
             } else {
-                return res.ToString();
+                if (args != null) {
+                    return String.Format(res.ToString(), args);
+                } else {
+                    return res.ToString();
+                }
             }            
         }
 
