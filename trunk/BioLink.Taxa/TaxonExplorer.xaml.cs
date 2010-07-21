@@ -29,7 +29,7 @@ namespace BioLink.Client.Taxa {
 
         private Timer _timer;
         private IBioLinkPlugin _owner;
-
+        private ObservableCollection<TaxonViewModel> _explorerModel;
         private ObservableCollection<TaxonViewModel> _searchModel;
 
         public TaxonExplorer() {
@@ -51,6 +51,7 @@ namespace BioLink.Client.Taxa {
         }
 
         internal void SetModel(ObservableCollection<TaxonViewModel> model) {
+            _explorerModel = model;
             tvwAllTaxa.Items.Clear();
             this.tvwAllTaxa.ItemsSource = model;
         }
@@ -77,7 +78,7 @@ namespace BioLink.Client.Taxa {
             _timer.Change(Timeout.Infinite, Timeout.Infinite);
             string searchTerm = null;
             txtFind.InvokeIfRequired(() => { searchTerm = txtFind.Text; });            
-            List<Taxon> results = new TaxaService(_owner.User).FindTaxa(searchTerm);
+            List<TaxonSearchResult> results = new TaxaService(_owner.User).FindTaxa(searchTerm);
             lstResults.InvokeIfRequired(() => {
                 _searchModel.Clear();
                 foreach (Taxon t in results) {
@@ -202,27 +203,18 @@ namespace BioLink.Client.Taxa {
             if (destItem != null) {
                 TaxonViewModel dest = destItem.Header as TaxonViewModel;
                 if (src != null && dest != null) {
-                    if (dest == src || dest == src.Parent) {
-                        // Error ?                        
-                        return;
-                    }
-
-                    if (src.IsAncestorOf(dest)) {
-                        return;
-                    }
-
-                    if (!dest.IsExpanded) {
-                        dest.IsExpanded = true;
-                    }
-
-                    src.Parent.Children.Remove(src);
-                    dest.Children.Add(src);
-                    src.Parent = dest;
-                    src.TaxaParentID = dest.TaxaID;
-                    src.IsSelected = true;           
+                    ProcessTaxonDragDrop(src, dest);
                 }
             }
 
+        }
+
+        private void ProcessTaxonDragDrop(TaxonViewModel src, TaxonViewModel dest) {
+            try {
+                (_owner as TaxaPlugin).ProcessTaxonDragDrop(src, dest);
+            } catch (IllegalTaxonMoveException ex) {
+                MessageBox.Show(ex.Message, String.Format("Cannot move '{0}'", src.Epithet), MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            }
         }
 
         private void StartDrag(MouseEventArgs e, TreeView treeView, TreeViewItem item) {            

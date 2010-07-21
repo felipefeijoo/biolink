@@ -60,9 +60,11 @@
     <Compile Include="BioLinkService.cs" />
     <Compile Include="ConnectionProfile.cs" />
     <Compile Include="generated\DataObjects.cs" />
+    <Compile Include="Mapper.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TaxaService.cs" />
+    <Compile Include="TaxonRank.cs" />
     <Compile Include="User.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -14,7 +14,7 @@ using System.Windows.Controls;
 
 namespace BioLink.Client.Extensibility {
 
-    public class PluginManager {
+    public class PluginManager : IDisposable {
 
         private User _user;
 
@@ -148,6 +148,19 @@ namespace BioLink.Client.Extensibility {
 
         public event ShowDockableContributionDelegate RequestShowContent;
 
+        public void Dispose(Boolean disposing) {
+            if (disposing) {
+            }
+        }
+
+        ~PluginManager() {
+            Dispose(false);
+        }
+        
+        public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
     }
 
 }
