@@ -50,10 +50,13 @@ namespace BioLink.Client.Taxa {
 
         }
 
-        internal void SetModel(ObservableCollection<TaxonViewModel> model) {
-            _explorerModel = model;
-            tvwAllTaxa.Items.Clear();
-            this.tvwAllTaxa.ItemsSource = model;
+        internal ObservableCollection<TaxonViewModel> ExplorerModel {
+            get { return _explorerModel; }
+            set {
+                _explorerModel = value;
+                tvwAllTaxa.Items.Clear();
+                this.tvwAllTaxa.ItemsSource = _explorerModel;
+            }
         }
 
         private void txtFind_TextChanged(object sender, TextChangedEventArgs e) {
@@ -72,19 +75,29 @@ namespace BioLink.Client.Taxa {
         }
 
         private void DoFind() {
-            if (_owner == null) {
-                return;
-            }
-            _timer.Change(Timeout.Infinite, Timeout.Infinite);
-            string searchTerm = null;
-            txtFind.InvokeIfRequired(() => { searchTerm = txtFind.Text; });            
-            List<TaxonSearchResult> results = new TaxaService(_owner.User).FindTaxa(searchTerm);
-            lstResults.InvokeIfRequired(() => {
-                _searchModel.Clear();
-                foreach (Taxon t in results) {
-                    _searchModel.Add(new TaxonViewModel(null, t));
+
+            try {
+                lstResults.InvokeIfRequired(() => {
+                    lstResults.Cursor = Cursors.Wait;
+                });
+                if (_owner == null) {
+                    return;
                 }
-            });
+                _timer.Change(Timeout.Infinite, Timeout.Infinite);
+                string searchTerm = null;
+                txtFind.InvokeIfRequired(() => { searchTerm = txtFind.Text; });
+                List<TaxonSearchResult> results = new TaxaService(_owner.User).FindTaxa(searchTerm);
+                lstResults.InvokeIfRequired(() => {
+                    _searchModel.Clear();
+                    foreach (Taxon t in results) {
+                        _searchModel.Add(new TaxonViewModel(null, t));
+                    }
+                });
+            } finally {
+                lstResults.InvokeIfRequired(() => {
+                    lstResults.Cursor = Cursors.Arrow;
+                });
+            }
         }
 
         private void tabControl1_SelectionChanged(object sender, SelectionChangedEventArgs e) {

@@ -100,10 +100,6 @@ namespace BioLink.Client.Extensibility {
             return true;
         }
 
-        public void ContributeDockableContent(IBioLinkPlugin plugin, IExplorerWorkspaceContribution contribution) {
-            throw new NotImplementedException();
-        }
-
         public void EnsureVisible(IBioLinkPlugin plugin, string contentName) {
             if (RequestShowContent != null) {
                 RequestShowContent(plugin, contentName);
@@ -150,6 +146,15 @@ namespace BioLink.Client.Extensibility {
 
         public void Dispose(Boolean disposing) {
             if (disposing) {
+                Logger.Debug("Disposing the Plugin Manager");
+                _plugins.ForEach((pluginkvp) => {
+                    Logger.Debug("Disposing plugin '{0}'", pluginkvp.Key);
+                    try {
+                        pluginkvp.Value.Dispose();
+                    } catch (Exception ex) {
+                        Logger.Warn("Exception occured whislt disposing plugin '{0}' : {1}", pluginkvp.Key, ex);
+                    }
+                });
             }
         }
 

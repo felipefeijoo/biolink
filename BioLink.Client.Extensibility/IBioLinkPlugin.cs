@@ -64,6 +64,8 @@ namespace BioLink.Client.Extensibility {
 
         public String Title { get; set; }
 
+        public T ContentControl { get { return _content; } }
+
         public Control Content {
             get { return _content; }
         }
