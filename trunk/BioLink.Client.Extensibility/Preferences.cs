@@ -70,10 +70,9 @@ namespace BioLink.Client.Extensibility {
     /// <summary>
     /// General preferences and settings class
     /// </summary>
-    public class PreferenceStore {
+    public class PreferenceStore : SQLiteServiceBase {
 
-        // Default filename
-        private string _fileName;
+        // Default filename        
         private string _tableName = "Settings";
         private string _keyField = "Key";
         private string _valueField = "Value";
@@ -81,9 +80,9 @@ namespace BioLink.Client.Extensibility {
         /// <summary>
         /// Static initializer - establishes a preferences database if none exists
         /// </summary>
-        public PreferenceStore(string filename) {
-            _fileName = filename;
-            if (!File.Exists(_fileName)) {
+        public PreferenceStore(string filename) : base(filename, false) {
+            
+            if (!File.Exists(FileName)) {
                 ResetPreferences();
             }
         }
@@ -93,34 +92,22 @@ namespace BioLink.Client.Extensibility {
         /// </summary>
         public void ResetPreferences() {
 
-            if (File.Exists(_fileName)) {
-                File.Delete(_fileName);
+            if (File.Exists(FileName)) {
+                File.Delete(FileName);
             }
 
             try {
-                SQLiteConnection.CreateFile(_fileName);
+                SQLiteConnection.CreateFile(FileName);
                 Command((cmd) => {
                     cmd.CommandText = String.Format("CREATE TABLE [{0}] ({1} TEXT PRIMARY KEY, {2} TEXT)", _tableName, _keyField, _valueField);
                     cmd.ExecuteNonQuery();
                 });
             } catch (Exception ex) {
                 // Clean up if we fail...
-                if (File.Exists(_fileName)) {
-                    File.Delete(_fileName);
+                if (File.Exists(FileName)) {
+                    File.Delete(FileName);
                 }
                 throw ex;
-            }
-        }
-
-        private void Command(SqliteCommandDelegate action) {
-            if (action == null) {
-                return;
-            }
-            using (SQLiteConnection conn = getConnection()) {
-                conn.Open();
-                using (SQLiteCommand cmd = conn.CreateCommand()) {
-                    action(cmd);                    
-                }
             }
         }
 
@@ -200,17 +187,7 @@ namespace BioLink.Client.Extensibility {
             });
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        private SQLiteConnection getConnection() {
-            SQLiteConnection conn = new SQLiteConnection(String.Format("Data Source={0}", _fileName));
-            return conn;
-        }
-
-        private delegate object TypeParserDelegate(string s);
-        private delegate void SqliteCommandDelegate(SQLiteCommand command);
+        private delegate object TypeParserDelegate(string s);        
 
     }    
 

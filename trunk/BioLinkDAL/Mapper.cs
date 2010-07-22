@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using BioLink.Data.Model;
 using System.Data.SqlClient;
+using System.Data.Common;
 using System.Reflection;
 using BioLink.Client.Utilities;
 
@@ -16,7 +17,7 @@ namespace BioLink.Data {
 
         private static string KNOWN_TYPE_PREFIXES = "chr,vchr,bit,int,txt,flt,tint,dt";
 
-        public static void ReflectMap(object dest, SqlDataReader reader, params string[] ignore) {
+        public static void ReflectMap(object dest, DbDataReader reader, params string[] ignore) {
             PropertyInfo[] props = dest.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
             Dictionary<string, PropertyInfo> propMap = new Dictionary<string, PropertyInfo>();
             foreach (PropertyInfo propInfo in props) {
