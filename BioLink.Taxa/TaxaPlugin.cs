@@ -70,8 +70,23 @@ namespace BioLink.Client.Taxa {
                 rootNode.Children.Add(item);
             });
 
-            // Now see if we can expand from the last session...
-            List<string> expanded = Preferences.GetProfile(User, "", new List<string>());
+            // Now see if we can auto-expand from the last session...
+            var expanded = Preferences.GetProfile<List<String>>(User, "Taxa.Explorer.ExpandedTaxa", null);
+            if (expanded != null && expanded.Count > 0) {
+                var todo = new Stack<HierarchicalViewModelBase>(rootNode.Children);
+                while (todo.Count > 0) {
+                    var vm = todo.Pop();
+                    if (vm is TaxonViewModel) {
+                        var tvm = vm as TaxonViewModel;
+                        string parentage = tvm.GetParentage();
+                        if (expanded.Contains(parentage)) {
+                            tvm.IsExpanded = true;
+                            expanded.Remove(parentage);
+                            tvm.Children.ForEach(child => todo.Push(child));
+                        }
+                    }                    
+                }
+            }
 
             ObservableCollection<TaxonViewModel> model = new ObservableCollection<TaxonViewModel>();
             model.Add(rootNode);
