@@ -5,8 +5,10 @@ using System.Text;
 using System.Data.SQLite;
 using System.IO;
 using Newtonsoft.Json;
+using BioLink.Client.Utilities;
+using BioLink.Data;
 
-namespace BioLink.Client.Utilities { 
+namespace BioLink.Client.Extensibility { 
 
     /// <summary>
     /// Global Biolink application preferences store
@@ -19,20 +21,44 @@ namespace BioLink.Client.Utilities {
             return _instance.GetPreference(key, null);
         }
 
-        public static string GetPreference(string key, string @default) {
-            return _instance.GetPreference(key, @default);
-        }
-
-        public static void SetPreference(string key, string value) {
-            _instance.SetPreference(key, value);
-        }
-
-        public static T Get<T>(string key, T @default) {
+        public static T GetGlobal<T>(string key, T @default) {
             return _instance.Get<T>(key, @default);
         }
 
-        public static void Set<T>(string key, T value) {
+        public static void SetGlobal<T>(string key, T value) {
             _instance.Set<T>(key, value);
+        }
+
+        public static T GetUser<T>(User user, string key, T @default) {
+            return _instance.Get<T>(UserKey(user,key), @default);
+        }
+
+        public static void SetUser<T>(User user, string key, T value) {
+            _instance.Set<T>(UserKey(user, key), value);
+        }
+
+        public static T GetProfile<T>(User user, string key, T @default) {
+            return _instance.Get<T>(ProfileKey(user, key), @default);
+        }
+
+        public static void SetProfile<T>(User user, string key, T value) {
+            _instance.Set<T>(ProfileKey(user, key), value);
+        }
+
+        private static string UserKey(User user, string key) {
+            string username = user.Username;
+            if (String.IsNullOrEmpty(username)) {
+                username = Environment.UserName;
+            }
+            return String.Format("USERKEY.{0}.{1}", username, key);
+        }
+
+        private static string ProfileKey(User user, string key) {
+            string username = user.Username;
+            if (String.IsNullOrEmpty(username)) {
+                username = Environment.UserName;
+            }
+            return String.Format("USERPROFILEKEY.{0}.{1}.{2}", username, user.ConnectionProfile.Name, key);
         }
 
         public static PreferenceStore Instance {
@@ -45,17 +71,6 @@ namespace BioLink.Client.Utilities {
     /// General preferences and settings class
     /// </summary>
     public class PreferenceStore {
-
-        private static Dictionary<Type, TypeParserDelegate> TYPE_MAP = new Dictionary<Type, TypeParserDelegate>();
-
-        static PreferenceStore() {
-            TYPE_MAP[typeof(string)] = (s) => { return s; };
-            TYPE_MAP[typeof(Int64)] = (s) => { return Int64.Parse(s); };
-            TYPE_MAP[typeof(Int32)] = (s) => { return Int32.Parse(s); };
-            TYPE_MAP[typeof(Decimal)] = (s) => { return Decimal.Parse(s); };
-            TYPE_MAP[typeof(Boolean)] = (s) => { return Boolean.Parse(s); };
-            TYPE_MAP[typeof(DateTime)] = (s) => { return DateTime.Parse(s); };            
-        }
 
         // Default filename
         private string _fileName;

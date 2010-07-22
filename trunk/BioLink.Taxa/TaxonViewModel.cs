@@ -206,6 +206,15 @@ namespace BioLink.Client.Taxa {
                 RaisePropertyChanged("Icon");               
             }
         }
+
+        public string GetParentage() {
+            String parentage = "";
+            TraverseToTop((t) => {
+                parentage = "/" + (t as TaxonViewModel).TaxaID + parentage;
+            });
+            return parentage;
+        }
+
     }
 
 }

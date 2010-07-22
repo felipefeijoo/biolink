@@ -40,7 +40,7 @@ namespace BioLink.Client.Taxa {
                         ObservableCollection<TaxonViewModel> model = LoadTaxonViewModel();
                         // and set it on the the components own thread...
                         explorer.InvokeIfRequired(() => {
-                            explorer.SetModel(model);
+                            explorer.ExplorerModel = model;
                         });
                     });
 
@@ -62,14 +62,16 @@ namespace BioLink.Client.Taxa {
             TaxonViewModel rootNode = new TaxonViewModel(null, root);
 
             taxa.ForEach((taxon) => {
-                TaxonViewModel item = new TaxonViewModel(null, taxon);
-
+                TaxonViewModel item = new TaxonViewModel(rootNode, taxon);
                 if (item.NumChildren > 0) {
-                    item.LazyLoadChildren += new ViewModelExpandedDelegate(item_LazyLoadChildren);
+                    item.LazyLoadChildren += new HierarchicalViewModelDelegate(item_LazyLoadChildren);
                     item.Children.Add(new ViewModelPlaceholder(_R("TaxonExplorer.explorer.loading", item.Epithet)));
                 }                
                 rootNode.Children.Add(item);
             });
+
+            // Now see if we can expand from the last session...
+            List<string> expanded = Preferences.GetProfile(User, "", new List<string>());
 
             ObservableCollection<TaxonViewModel> model = new ObservableCollection<TaxonViewModel>();
             model.Add(rootNode);
@@ -88,7 +90,7 @@ namespace BioLink.Client.Taxa {
                 foreach (Taxon taxon in taxa) {
                     TaxonViewModel child = new TaxonViewModel(tvm, taxon);                    
                     if (child.NumChildren > 0) {
-                        child.LazyLoadChildren += new ViewModelExpandedDelegate(item_LazyLoadChildren);
+                        child.LazyLoadChildren += new HierarchicalViewModelDelegate(item_LazyLoadChildren);
                         child.Children.Add(new ViewModelPlaceholder("Loading..."));
                     }
                     item.Children.Add(child);
@@ -121,6 +123,36 @@ namespace BioLink.Client.Taxa {
             src.TaxaParentID = dest.TaxaID;
             src.IsSelected = true;           
         }
+
+        public override void Dispose() {
+            base.Dispose();
+            if (_explorer != null && _explorer.Content != null) {
+                List<string> expandedElements = GetExpandedParentages(_explorer.ContentControl.ExplorerModel);
+                if (expandedElements != null) {
+                    Preferences.SetProfile(User, "Taxa.Explorer.ExpandedTaxa", expandedElements);
+                }
+
+            }
+        }
+
+        private List<string> GetExpandedParentages(ObservableCollection<TaxonViewModel> model) {
+            List<string> list = new List<string>();
+            ProcessList(model, list);
+            return list;
+        }
+
+        private void ProcessList<T> (ObservableCollection<T> model, List<string> list) where T : HierarchicalViewModelBase {
+            foreach (HierarchicalViewModelBase m in model) {
+                if (m.IsExpanded && m is TaxonViewModel) {
+                    TaxonViewModel tvm = m as TaxonViewModel;
+                    list.Add(tvm.GetParentage());
+                    if (m.Children != null && m.Children.Count > 0) {
+                        ProcessList(m.Children, list);
+                    }
+                }
+            }
+        }
+
     }
 
     public class IllegalTaxonMoveException : Exception {        
@@ -133,5 +165,7 @@ namespace BioLink.Client.Taxa {
         public Taxon SourceTaxon { get; private set; }
         public Taxon DestinationTaxon { get; private set; }        
     }
+
+    
 
 }

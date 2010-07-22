@@ -43,7 +43,7 @@ namespace BioLinkApplication {
             progress.Show();
             LoadPluginsAsync(progress, () => { 
                 progress.Hide();
-                String layout = Preferences.Get<string>(PREF_DOCK_LAYOUT, null);
+                String layout = Preferences.GetUser<string>(User, PREF_DOCK_LAYOUT, null);
                 if (!String.IsNullOrEmpty(layout)) {
                     StringReader reader = new StringReader(layout);
                     dockManager.RestoreLayout(reader);
@@ -223,9 +223,13 @@ namespace BioLinkApplication {
 
         protected virtual void Dispose(bool disposing) {
             if (disposing) {
+                if (_pluginManager != null) {
+                    _pluginManager.Dispose();
+                }
+
                 StringWriter writer = new StringWriter();
                 dockManager.SaveLayout(writer);
-                Preferences.Set<string>(PREF_DOCK_LAYOUT, writer.ToString());
+                Preferences.SetUser<string>(User, PREF_DOCK_LAYOUT, writer.ToString());
             }
         }
        

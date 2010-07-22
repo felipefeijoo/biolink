@@ -33,9 +33,9 @@ namespace BioLinkApplication {
 
         private void SetupProfiles() {
             cmbProfile.ItemsSource = null;
-            List<ConnectionProfile> profiles = Preferences.Get<List<ConnectionProfile>>("connection.profiles", new List<ConnectionProfile>());
-            String lastProfile = Preferences.Get<string>("connection.lastprofile", null);
-            if (!Preferences.Get<bool>("connection.skiplegacyimport", false)) {
+            List<ConnectionProfile> profiles = Preferences.GetGlobal<List<ConnectionProfile>>("connection.profiles", new List<ConnectionProfile>());
+            String lastProfile = Preferences.GetGlobal<string>("connection.lastprofile", null);
+            if (!Preferences.GetGlobal<bool>("connection.skiplegacyimport", false)) {
 
                 LegacySettings.TraverseSubKeys("Client", "UserProfiles", (key) => {
                     ConnectionProfile profile = new ConnectionProfile();
@@ -53,9 +53,9 @@ namespace BioLinkApplication {
                 }
 
                 // Save the new list
-                Preferences.Set("connection.profiles", profiles);
+                Preferences.SetGlobal("connection.profiles", profiles);
                 // and we don't need to do this again!
-                Preferences.Set("connection.skiplegacyimport", true);
+                Preferences.SetGlobal("connection.skiplegacyimport", true);
             }
 
             cmbProfile.ItemsSource = profiles;
@@ -86,7 +86,7 @@ namespace BioLinkApplication {
                 ErrorMessage("LoginControl.Status.SelectProfile");
             }
 
-            Preferences.Set("connection.lastprofile", profile.Name);
+            Preferences.SetGlobal("connection.lastprofile", profile.Name);
 
             btnCancel.Visibility = Visibility.Hidden;
             btnLogin.Visibility = Visibility.Hidden;

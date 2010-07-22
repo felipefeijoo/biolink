@@ -5,7 +5,7 @@ using System.Text;
 using Xunit;
 using Newtonsoft.Json;
 
-namespace BioLink.Client.Utilities {
+namespace BioLink.Client.Extensibility {
     
     public class PreferencesTests : IDisposable {
 
@@ -20,58 +20,58 @@ namespace BioLink.Client.Utilities {
         public void TestSet() {            
             string expected = "test.value";
             string key = "test.key";
-            Preferences.SetPreference(key, expected);
+            Preferences.SetGlobal(key, expected);
             string actual = Preferences.GetPreference(key);
             Assert.Equal(expected, actual);            
         }
 
         [Fact]
         public void testInt1() {
-            Preferences.SetPreference("int.key1", "100");
-            Int32 i = Preferences.Get("int.key1", 0);
+            Preferences.SetGlobal("int.key1", "100");
+            Int32 i = Preferences.GetGlobal("int.key1", 0);
             Assert.Equal((Int32)100, i);
         }
 
         [Fact]
         public void testInt2() {
-            Preferences.SetPreference("int.key2", "1001");
-            int i = Preferences.Get("int.key2", 0);
+            Preferences.SetGlobal("int.key2", "1001");
+            int i = Preferences.GetGlobal("int.key2", 0);
             Assert.Equal(1001, i);
         }
 
         [Fact]
         public void testBool() {
-            Preferences.SetPreference("bool.key", "true");
-            Boolean b = Preferences.Get("bool.key", false);
+            Preferences.SetGlobal("bool.key", "true");
+            Boolean b = Preferences.GetGlobal("bool.key", false);
             Assert.True(b);
         }
 
         [Fact]
         public void testLong() {
-            Preferences.SetPreference("long.key", "10000");
-            long b = Preferences.Get("long.key", 1);
+            Preferences.SetGlobal("long.key", "10000");
+            long b = Preferences.GetGlobal("long.key", 1);
             Assert.Equal(b, 10000);
         }
 
         [Fact]
         public void testInt64() {
-            Preferences.SetPreference("int64.key", Int64.MaxValue.ToString());
-            Int64 b = Preferences.Get("int64.key", (Int64) 1);
+            Preferences.SetGlobal("int64.key", Int64.MaxValue.ToString());
+            Int64 b = Preferences.GetGlobal("int64.key", (Int64) 1);
             Assert.Equal(b, Int64.MaxValue);
         }
 
         [Fact]
         public void testDate() {
             DateTime expected = new DateTime(1988, 1, 1);
-            Preferences.Set("date.key", expected);
-            DateTime actual = Preferences.Get("date.key", new DateTime());
+            Preferences.SetGlobal("date.key", expected);
+            DateTime actual = Preferences.GetGlobal("date.key", new DateTime());
             Assert.Equal(expected, actual);
         }
 
         [Fact]
         public void testManyInserts() {
             for (int i = 0; i < 100; ++i) {
-                Preferences.Set("test.many.key", i);
+                Preferences.SetGlobal("test.many.key", i);
             }
         }
 
@@ -81,8 +81,8 @@ namespace BioLink.Client.Utilities {
             expected.Name = "Test Name";
             expected.Age = 32;
             expected.Date = DateTime.Now;
-            Preferences.Set("test.object", expected);
-            TestObject actual = Preferences.Get<TestObject>("test.object", null);
+            Preferences.SetGlobal("test.object", expected);
+            TestObject actual = Preferences.GetGlobal<TestObject>("test.object", null);
             Assert.Equal(expected, actual);
         }
 

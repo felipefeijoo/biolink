@@ -61,15 +61,23 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
+        public void TraverseToTop(HierarchicalViewModelDelegate func) {
+            HierarchicalViewModelBase p = this;
+            while (p != null) {
+                func(p);
+                p = p.Parent;
+            }
+        }
+
         public HierarchicalViewModelBase Parent { get; set; }
 
         public ObservableCollection<HierarchicalViewModelBase> Children { get; private set; }
 
-        public event ViewModelExpandedDelegate LazyLoadChildren;
+        public event HierarchicalViewModelDelegate LazyLoadChildren;
 
     }
 
-    public delegate void ViewModelExpandedDelegate(HierarchicalViewModelBase item);
+    public delegate void HierarchicalViewModelDelegate(HierarchicalViewModelBase item);
 
 
     public class ViewModelPlaceholder : HierarchicalViewModelBase {

@@ -11,7 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using BioLink.Data;
-using BioLink.Client.Utilities;
+using BioLink.Client.Extensibility;
 using System.Collections.ObjectModel;
 
 namespace BioLinkApplication {
@@ -25,11 +25,11 @@ namespace BioLinkApplication {
 
         public ConnectionProfiles() {
             InitializeComponent();
-            List<ConnectionProfile> list = Preferences.Get<List<ConnectionProfile>>("connection.profiles", new List<ConnectionProfile>());
+            List<ConnectionProfile> list = Preferences.GetGlobal<List<ConnectionProfile>>("connection.profiles", new List<ConnectionProfile>());
 
             _model = new ObservableCollection<ConnectionProfile>(list);
             cmbProfiles.ItemsSource = _model;
-            String lastProfile = Preferences.Get<string>("connection.lastprofile", null);
+            String lastProfile = Preferences.GetGlobal<string>("connection.lastprofile", null);
             if (!String.IsNullOrEmpty(lastProfile)) {
                 // Look in the list for the profile with the same name.
                 ConnectionProfile lastUserProfile = _model.FirstOrDefault((item) => { return item.Name.Equals(lastProfile); });
@@ -73,7 +73,7 @@ namespace BioLinkApplication {
 
         private void btnOk_Click(object sender, RoutedEventArgs e) {
             List<ConnectionProfile> profiles =  new List<ConnectionProfile>(_model);
-            Preferences.Set<List<ConnectionProfile>>("connection.profiles", profiles);
+            Preferences.SetGlobal<List<ConnectionProfile>>("connection.profiles", profiles);
             this.DialogResult = true;
         }
 
