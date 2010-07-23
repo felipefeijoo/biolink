@@ -26,7 +26,7 @@ namespace BioLink.Client.Gazetteer {
 
         public List<PlaceName> FindPlaceNames(string find) {
             List<PlaceName> list = new List<PlaceName>();
-            string sql = "SELECT tPlace as Name, tType as PlaceType, tDivision as Division, tLatitude as LatitudeString, tLongitude as LongitudeString, dblLatitude as Latitude, dblLongitude as Longitude FROM tblGaz WHERE tPlace like @find";
+            string sql = "SELECT tPlace as Name, tType as PlaceType, tDivision as Division, tLatitude as LatitudeString, tLongitude as LongitudeString, dblLatitude as Latitude, dblLongitude as Longitude FROM tblGaz WHERE tPlace like @find ORDER BY tDivision, tPlace, tType";
             SelectReader(sql, (reader) => {
                 PlaceName place = new PlaceName();
                 MapperBase.ReflectMap(place, reader);

@@ -3,10 +3,26 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:src="clr-namespace:BioLink.Client.Gazetteer"
              mc:Ignorable="d" 
              d:DesignHeight="237" d:DesignWidth="370">
     <Grid>
-        <Label Content="Select a gazetteer file to begin..." Height="28" Name="label1" VerticalAlignment="Top" Margin="12,7,0,0" HorizontalAlignment="Left" Width="282" />
+        <Label Content="Select a gazetteer file to begin..." Height="28" Name="lblFile" VerticalAlignment="Top" Margin="12,7,76,0" />
         <Button Content="Select..." Height="23" Margin="0,8,12,0" Name="btnOpen" VerticalAlignment="Top" HorizontalAlignment="Right" Width="58" Click="btnOpen_Click" />
+        <ListBox Margin="12,76,12,12" Name="lstResults">
+            <ListBox.Resources>
+                <DataTemplate DataType="{x:Type src:PlaceName}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Path=Division, StringFormat='[{0}]  '}" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding Path=Name}" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding Path=PlaceType, StringFormat=' - {0}'}" VerticalAlignment="Center" />                        
+                        <TextBlock Text="{Binding Path=LatitudeString, StringFormat='  ({0},'}" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding Path=LongitudeString, StringFormat=' {0})'}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.Resources>
+        </ListBox>
+        <Label Content="Find:" Height="23" HorizontalAlignment="Left" Margin="12,41,0,0" Name="label2" VerticalAlignment="Top" Width="73" HorizontalContentAlignment="Right" />
+        <TextBox Height="23" Margin="91,43,12,0" Name="txtFind" VerticalAlignment="Top" TextChanged="txtFind_TextChanged" />
     </Grid>
 </UserControl>
