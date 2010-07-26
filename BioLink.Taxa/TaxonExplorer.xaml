@@ -5,8 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:src="clr-namespace:BioLink.Client.Taxa"
              xmlns:data="clr-namespace:BioLink.Data.Model;assembly=BioLink.Data"
-             xmlns:ex="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
-             
+             xmlns:ex="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"             
              mc:Ignorable="d" 
              d:DesignHeight="376" d:DesignWidth="225">
     <UserControl.Resources>
@@ -41,7 +40,7 @@
             <TabItem Header="{StaticResource TaxonExplorer.Tab.AllTaxa}" Name="tabAllTaxa">
                 <Grid x:Name="allTaxaGrid">
                     <Label Content="{StaticResource TaxonExplorer.Find}" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" Width="56" HorizontalContentAlignment="Right" VerticalContentAlignment="Top" />
-                    <TextBox Height="23" Margin="68,6,0,0" Name="txtFind" VerticalAlignment="Top" TextChanged="txtFind_TextChanged" />
+                    <ex:DelayedTriggerTextbox Height="23" Margin="68,6,0,0" Name="txtFind" VerticalAlignment="Top" TextChanged="txtFind_TextChanged" TypingPaused="txtFind_TypingPaused" KeyUp="txtFind_KeyUp" />
                     <TreeView Name="tvwAllTaxa" Margin="0,35,0,0" PreviewMouseMove="tvwAllTaxa_PreviewMouseMove" PreviewMouseLeftButtonDown="tvwAllTaxa_PreviewMouseLeftButtonDown">
                         <TreeView.Resources>
                             <HierarchicalDataTemplate DataType="{x:Type src:TaxonViewModel}" ItemsSource="{Binding Path=Children}">

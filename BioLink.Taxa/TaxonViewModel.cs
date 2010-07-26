@@ -215,6 +215,10 @@ namespace BioLink.Client.Taxa {
             return parentage;
         }
 
+        public override string ToString() {
+            return String.Format("TaxonViewModel: [{0}] {1}", ElemType, TaxaFullName);
+        }
+
     }
 
 }

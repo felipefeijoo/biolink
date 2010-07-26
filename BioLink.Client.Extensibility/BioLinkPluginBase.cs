@@ -57,6 +57,10 @@ namespace BioLink.Client.Extensibility {
             }            
         }
 
+        public string GetCaption(string key, params object[] args) {
+            return _R(key, args);
+        }
+
         public ResourceDictionary ResourceDictionary {
             get { return _resourceDictionary; }
         }

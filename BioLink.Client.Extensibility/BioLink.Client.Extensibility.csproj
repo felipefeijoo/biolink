@@ -57,6 +57,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BioLinkPluginBase.cs" />
+    <Compile Include="DelayedTriggerTextbox.xaml.cs">
+      <DependentUpon>DelayedTriggerTextbox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="HierarchicalViewModelBase.cs" />
     <Compile Include="IBioLinkPlugin.cs" />
     <Compile Include="IProgressMonitor.cs" />
@@ -77,6 +80,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="lib\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="DelayedTriggerTextbox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

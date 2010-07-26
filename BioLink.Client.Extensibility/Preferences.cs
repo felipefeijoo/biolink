@@ -80,7 +80,7 @@ namespace BioLink.Client.Extensibility {
         /// <summary>
         /// Static initializer - establishes a preferences database if none exists
         /// </summary>
-        public PreferenceStore(string filename) : base(filename, false) {
+        public PreferenceStore(string filename) : base(filename) {
             
             if (!File.Exists(FileName)) {
                 ResetPreferences();

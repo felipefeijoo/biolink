@@ -16,7 +16,13 @@ namespace BioLink.Client.Utilities {
         }
 
         public static void QueueJob(Action job) {
-            ThreadPool.QueueUserWorkItem((ignored) => { job(); } );
+            ThreadPool.QueueUserWorkItem((ignored) => {
+                try {
+                    job();
+                } catch (Exception ex) {
+                    GlobalExceptionHandler.Handle(ex);
+                }
+            } );
         }
 
     }

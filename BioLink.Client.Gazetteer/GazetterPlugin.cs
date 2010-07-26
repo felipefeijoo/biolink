@@ -30,14 +30,18 @@ namespace BioLink.Client.Gazetteer {
                     String.Format("{{'Name':'ShowGazetteer', 'Header':'{0}'}}", _R("Gazetteer.Menu.ShowExplorer"))
                 ));
 
-                _gazetter = new ExplorerWorkspaceContribution<Gazetteer>(this, "Gazetteer", new Gazetteer(), _R("Gazetteer.Title"),
-                    (explorer) => {
-                    });
+                _gazetter = new ExplorerWorkspaceContribution<Gazetteer>(this, "Gazetteer", new Gazetteer(this), _R("Gazetteer.Title"), (explorer) => {});
 
                 contrib.Add(_gazetter);
 
                 return contrib;            
 
+            }
+        }
+
+        public override void Dispose() {
+            if (_gazetter != null) {
+                (_gazetter.Content as Gazetteer).Dispose();
             }
         }
     }
