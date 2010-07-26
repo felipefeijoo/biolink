@@ -5,6 +5,7 @@ using System.Text;
 using System.Data.SQLite;
 using System.IO;
 using BioLink.Data;
+using BioLink.Client.Utilities;
 using BioLink.Client.Extensibility;
 
 namespace BioLink.Client.Gazetteer {
@@ -14,7 +15,8 @@ namespace BioLink.Client.Gazetteer {
         public string Filename { get; private set; }
         private SQLiteConnection _connection;
 
-        public GazetteerService(string file) : base(file, true) {
+        public GazetteerService(string file)
+            : base(file) {
             Filename = file;
             if (File.Exists(file)) {
                 _connection = new SQLiteConnection(String.Format("Data Source={0}", Filename));
@@ -24,16 +26,50 @@ namespace BioLink.Client.Gazetteer {
             }
         }
 
-        public List<PlaceName> FindPlaceNames(string find) {
+        public List<PlaceName> FindPlaceNames(string find, int maxrows = 1000) {
             List<PlaceName> list = new List<PlaceName>();
-            string sql = "SELECT tPlace as Name, tType as PlaceType, tDivision as Division, tLatitude as LatitudeString, tLongitude as LongitudeString, dblLatitude as Latitude, dblLongitude as Longitude FROM tblGaz WHERE tPlace like @find ORDER BY tDivision, tPlace, tType";
-            SelectReader(sql, (reader) => {
-                PlaceName place = new PlaceName();
-                MapperBase.ReflectMap(place, reader);
-                list.Add(place);
-            }, new SQLiteParameter("@find", find + "%"));
+            try {
+                string sql = "SELECT tPlace as Name, tType as PlaceType, tDivision as Division, tLatitude as LatitudeString, tLongitude as LongitudeString, dblLatitude as Latitude, dblLongitude as Longitude FROM tblGaz WHERE tPlace like @find ORDER BY tDivision, tPlace, tType LIMIT @limit";
+                SelectReader(sql, (reader) => {
+                    PlaceName place = new PlaceName();
+                    MapperBase.ReflectMap(place, reader);
+                    list.Add(place);
+                }, new SQLiteParameter("@find", find + "%"), new SQLiteParameter("@limit", maxrows));
+            } catch (Exception ex) {
+                GlobalExceptionHandler.Handle(ex);
+            }
 
             return list;
+        }
+
+        public List<PlaceName> FindPlaceNamesLimited(string find, string limitToDivision, int maxrows = 1000) {
+            List<PlaceName> list = new List<PlaceName>();
+            try {
+                string sql = "SELECT tPlace as Name, tType as PlaceType, tDivision as Division, tLatitude as LatitudeString, tLongitude as LongitudeString, dblLatitude as Latitude, dblLongitude as Longitude FROM tblGaz WHERE tPlace like @find AND tDivision = @division ORDER BY tDivision, tPlace, tType LIMIT @limit";
+                SelectReader(sql, (reader) => {
+                    PlaceName place = new PlaceName();
+                    MapperBase.ReflectMap(place, reader);
+                    list.Add(place);
+                }, new SQLiteParameter("@find", find + "%"), new SQLiteParameter("@limit", maxrows), new SQLiteParameter("@division", limitToDivision));
+            } catch (Exception ex) {
+                GlobalExceptionHandler.Handle(ex);
+            }
+
+
+            return list;
+        }
+
+        public List<CodeLabelPair> GetDivisions() {
+            List<CodeLabelPair> results = new List<CodeLabelPair>();
+            try {                
+                SelectReader("SELECT tDatabase, tAbbreviation FROM tblDivisions", (reader) => {
+                    results.Add(new CodeLabelPair(reader["tDatabase"] as string, reader["tAbbreviation"] as string));
+                });
+            } catch (Exception ex) {
+                GlobalExceptionHandler.Handle(ex);
+            }
+
+            return results;
         }
 
         private bool ValidateGazFile(SQLiteConnection connection) {

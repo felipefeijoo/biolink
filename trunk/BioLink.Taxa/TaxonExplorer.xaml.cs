@@ -25,9 +25,7 @@ namespace BioLink.Client.Taxa {
     /// Interaction logic for TaxonExplorer.xaml
     /// </summary>
     public partial class TaxonExplorer : UserControl {
-
-
-        private Timer _timer;
+        
         private IBioLinkPlugin _owner;
         private ObservableCollection<TaxonViewModel> _explorerModel;
         private ObservableCollection<TaxonViewModel> _searchModel;
@@ -44,10 +42,6 @@ namespace BioLink.Client.Taxa {
             lstResults.Visibility = Visibility.Hidden;
             _searchModel = new ObservableCollection<TaxonViewModel>();
             lstResults.ItemsSource = _searchModel;
-            _timer = new Timer(new TimerCallback((obj) => {
-                DoFind();
-            }),null, Timeout.Infinite, Timeout.Infinite);
-
         }
 
         internal ObservableCollection<TaxonViewModel> ExplorerModel {
@@ -61,20 +55,19 @@ namespace BioLink.Client.Taxa {
 
         private void txtFind_TextChanged(object sender, TextChangedEventArgs e) {
 
+            _searchModel.Clear();
+
             if (String.IsNullOrEmpty(txtFind.Text)) {
                 tvwAllTaxa.Visibility = System.Windows.Visibility.Visible;
-                lstResults.Visibility = Visibility.Hidden;
-                _searchModel.Clear();
+                lstResults.Visibility = Visibility.Hidden;                
             } else {
-                _timer.Change(Timeout.Infinite, Timeout.Infinite);
-                _timer.Change(300, 300);
                 _searchModel.Clear();
                 tvwAllTaxa.Visibility = Visibility.Hidden;
                 lstResults.Visibility = Visibility.Visible;                
             }
         }
 
-        private void DoFind() {
+        private void DoFind(string searchTerm) {
 
             try {
                 lstResults.InvokeIfRequired(() => {
@@ -83,9 +76,6 @@ namespace BioLink.Client.Taxa {
                 if (_owner == null) {
                     return;
                 }
-                _timer.Change(Timeout.Infinite, Timeout.Infinite);
-                string searchTerm = null;
-                txtFind.InvokeIfRequired(() => { searchTerm = txtFind.Text; });
                 List<TaxonSearchResult> results = new TaxaService(_owner.User).FindTaxa(searchTerm);
                 lstResults.InvokeIfRequired(() => {
                     _searchModel.Clear();
@@ -125,8 +115,10 @@ namespace BioLink.Client.Taxa {
                 Point position = e.GetPosition(null);
                 if (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance) {
                     if (treeView.SelectedItem != null) {
-                        TreeViewItem item = GetTreeViewItemClicked((FrameworkElement) e.OriginalSource, treeView);
-                        if (item != null) {
+                        IInputElement hitelement = treeView.InputHitTest(_startPoint);
+                        TreeViewItem item = GetTreeViewItemClicked((FrameworkElement) hitelement, treeView);
+                        if (item != null) {                            
+                            Logger.Debug("Starting drag: {0}  {1} {2}", hitelement, item.Header, treeView.SelectedItem);
                             StartDrag(e, treeView, item);
                         }
                     }
@@ -136,7 +128,7 @@ namespace BioLink.Client.Taxa {
         }
 
         private TreeViewItem GetTreeViewItemClicked(FrameworkElement sender, TreeView treeView) {
-            Point p = sender.TranslatePoint(new Point(0, 0), treeView);
+            Point p = sender.TranslatePoint(new Point(1, 1), treeView);
             DependencyObject obj = treeView.InputHitTest(p) as DependencyObject;
             while (obj != null && !(obj is TreeViewItem)) {
                 obj = VisualTreeHelper.GetParent(obj);
@@ -145,7 +137,7 @@ namespace BioLink.Client.Taxa {
         }
 
         void tvwAllTaxa_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
-            _startPoint = e.GetPosition(null);
+            _startPoint = e.GetPosition(tvwAllTaxa);
         }
 
         private void DragSource_GiveFeedback(object source, GiveFeedbackEventArgs e) {
@@ -204,6 +196,9 @@ namespace BioLink.Client.Taxa {
         }
 
         private void DragScope_QueryContinueDrag(object source, QueryContinueDragEventArgs e) {
+            if (e.EscapePressed) {
+                e.Action = DragAction.Cancel;                
+            }
             if (this._dragHasLeftScope) {
                 e.Action = DragAction.Cancel;
                 e.Handled = true;
@@ -216,6 +211,14 @@ namespace BioLink.Client.Taxa {
             if (destItem != null) {
                 TaxonViewModel dest = destItem.Header as TaxonViewModel;
                 if (src != null && dest != null) {
+
+                    if (src == dest) {
+                        // if the source and the destination are the same, there is no logical operation that can be perform.
+                        // We could irritate the user with a pop-up, but this situation is more than likely the result
+                        // of an accidently drag, so just cancel the drop...
+                        return;
+                    }
+
                     ProcessTaxonDragDrop(src, dest);
                 }
             }
@@ -246,7 +249,7 @@ namespace BioLink.Client.Taxa {
             _dragScope.PreviewDragOver += draghandler;
 
             DragEventHandler dragleavehandler = new DragEventHandler(DragScope_DragLeave);
-            _dragScope.DragLeave += dragleavehandler;
+            _dragScope.DragLeave += dragleavehandler;            
 
             QueryContinueDragEventHandler queryhandler = new QueryContinueDragEventHandler(DragScope_QueryContinueDrag);
             _dragScope.QueryContinueDrag += queryhandler;
@@ -276,6 +279,24 @@ namespace BioLink.Client.Taxa {
             _IsDragging = false;
 
             InvalidateVisual();
+        }
+
+        private void txtFind_TypingPaused(string text) {
+            DoFind(text);
+        }
+
+        private void txtFind_KeyUp(object sender, KeyEventArgs e) {
+            if (e.Key == Key.Down) {
+                if (lstResults.IsVisible) {
+                    lstResults.SelectedIndex = 0;
+                    if (lstResults.SelectedItem != null) {
+                        ListBoxItem item = lstResults.ItemContainerGenerator.ContainerFromItem(lstResults.SelectedItem) as ListBoxItem;
+                        item.Focus();
+                    }
+                } else {
+                    tvwAllTaxa.Focus();
+                }
+            }
         }
 
     }
