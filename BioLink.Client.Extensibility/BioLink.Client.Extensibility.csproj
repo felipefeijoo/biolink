@@ -63,6 +63,9 @@
     <Compile Include="HierarchicalViewModelBase.cs" />
     <Compile Include="IBioLinkPlugin.cs" />
     <Compile Include="IProgressMonitor.cs" />
+    <Compile Include="LatLongInput.xaml.cs">
+      <DependentUpon>LatLongInput.xaml</DependentUpon>
+    </Compile>
     <Compile Include="PluginManager.cs" />
     <Compile Include="Preferences.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -86,6 +89,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="LatLongInput.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Resource Include="StringResources.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

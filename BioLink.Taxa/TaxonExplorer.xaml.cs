@@ -117,14 +117,12 @@ namespace BioLink.Client.Taxa {
                     if (treeView.SelectedItem != null) {
                         IInputElement hitelement = treeView.InputHitTest(_startPoint);
                         TreeViewItem item = GetTreeViewItemClicked((FrameworkElement) hitelement, treeView);
-                        if (item != null) {                            
-                            Logger.Debug("Starting drag: {0}  {1} {2}", hitelement, item.Header, treeView.SelectedItem);
+                        if (item != null) {                                                        
                             StartDrag(e, treeView, item);
                         }
                     }
                 }
             }
-
         }
 
         private TreeViewItem GetTreeViewItemClicked(FrameworkElement sender, TreeView treeView) {
@@ -213,9 +211,9 @@ namespace BioLink.Client.Taxa {
                 if (src != null && dest != null) {
 
                     if (src == dest) {
-                        // if the source and the destination are the same, there is no logical operation that can be perform.
+                        // if the source and the destination are the same, there is no logical operation that can be performed.
                         // We could irritate the user with a pop-up, but this situation is more than likely the result
-                        // of an accidently drag, so just cancel the drop...
+                        // of an accidental drag, so just cancel the drop...
                         return;
                     }
 
