@@ -179,12 +179,23 @@ namespace BioLinkApplication {
         private void btnProfile_Click(object sender, RoutedEventArgs e) {
             ConnectionProfiles window = new ConnectionProfiles();
             window.Owner = MainWindow.Instance;
+            // Show the profile manager
             if (window.ShowDialog().GetValueOrDefault(false)) {
+                // if ok was pressed, reload the profiles
                 SetupProfiles();
-                if (window.SelectedProfile != null) {
-                    cmbProfile.SelectedItem = window.SelectedProfile;
-                }
+                // and select the last one selected in the profile manager
+                SelectProfileByName(window.SelectedProfile.Name);
             }
+        }
+
+        private void SelectProfileByName(string name) {
+            var profiles = cmbProfile.ItemsSource as List<ConnectionProfile>;
+            foreach (ConnectionProfile profile in profiles) {
+                if (profile.Name.Equals(name)) {
+                    cmbProfile.SelectedItem = profile;
+                    break;
+                }
+            }            
         }
 
     }
