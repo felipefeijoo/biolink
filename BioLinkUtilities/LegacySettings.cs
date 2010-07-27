@@ -34,9 +34,11 @@ namespace BioLink.Client.Utilities {
             }
             String keyPath = String.Format("SOFTWARE\\CSIRO\\BioLink\\{0}\\{1}", client, section);
             using (RegistryKey key = Registry.LocalMachine.OpenSubKey(keyPath)) {
-                foreach (string subkeyname in key.GetSubKeyNames()) {
-                    RegistryKey subkey = key.OpenSubKey(subkeyname);
-                    action(subkey);
+                if (key != null) {
+                    foreach (string subkeyname in key.GetSubKeyNames()) {
+                        RegistryKey subkey = key.OpenSubKey(subkeyname);
+                        action(subkey);
+                    }
                 }
             }
         }
