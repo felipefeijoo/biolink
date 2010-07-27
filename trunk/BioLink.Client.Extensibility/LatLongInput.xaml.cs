@@ -31,7 +31,7 @@ namespace BioLink.Client.Extensibility {
 
         public LatLongAxis Axis {
             get { return _axis; }
-            set { 
+            set {
                 _axis = value;
                 if (lblAxis != null) {
                     lblAxis.Content = this.Resources["LatLong.lblAxis." + value.ToString()];
@@ -41,7 +41,7 @@ namespace BioLink.Client.Extensibility {
 
         public LatLongMode Mode {
             get { return _mode; }
-            set { 
+            set {
                 _mode = value;
                 if (txtDegrees != null) {
                     LayoutControl();
@@ -51,58 +51,32 @@ namespace BioLink.Client.Extensibility {
 
         private static GridLength STAR = new GridLength(1, GridUnitType.Star);
 
-        internal class GridLayout {
-
-            private object[] _widths;           
-
-            public GridLayout() {
-                // default layout for DegreesMinutesSeconds
-                _widths = new object[] { STAR, 15, STAR, 15, STAR, 15, 35 };                
-            }
-
-            public void Widths(params object[] widths) {
-                _widths = widths;
-                Debug.Assert(_widths.Length == 7);
-            }
-
-            public void Traverse(TraverseLayoutDelegate func) {
-                for (int i = 0; i < 7; ++i) {
-                    object w = _widths[i];
-                    GridLength gl;
-                    if (w is GridLength) {
-                        gl = (GridLength) w;
-                    } else {                        
-                        gl = new GridLength((double) (int) w);
-                    }
-                    func(i, gl);
-                }
-            }
-
-            public delegate void TraverseLayoutDelegate(int index, GridLength length);
-        }
-
-
         private void LayoutControl() {
-            // Construct a layout with the default values (for DMS);
-            GridLayout layout = new GridLayout();
+            object[] widths = null;
             switch (Mode) {
                 case LatLongMode.DecimalDegrees:
-                    layout.Widths(STAR, 15, 0, 0, 0, 0, 0);
+                    widths = new object[] { STAR, 15, 0, 0, 0, 0, 0 };
                     break;
                 case LatLongMode.DegreesDecimalMinutes:
-                    layout.Widths(STAR, 15, STAR, 15, 0, 0, 0);
+                    widths = new object[] { STAR, 15, STAR, 15, 0, 0, 0 };
                     break;
                 case LatLongMode.DegreesDecimalMinutesDirection:
-                    layout.Widths(STAR, 15, STAR, 15, 0, 0, 35);
+                    widths = new object[] { STAR, 15, STAR, 15, 0, 0, 35 };
                     break;
                 default: // DMS
+                    widths = new object[] { STAR, 15, STAR, 15, STAR, 15, 35 };
                     break;
             }
 
+            Debug.AssetNotNull(widths);
+            Debug.Assert(widths.Length == 7);
+
             // Now apply the column widths
-            layout.Traverse((index, width) => {
-                grid.ColumnDefinitions[index].Width = width;
-            });
+            for (int i = 0; i < widths.Length; ++i) {
+                object w = widths[i];
+                grid.ColumnDefinitions[i].Width = (w is GridLength ? (GridLength)w : new GridLength((int)w));
+            }
+
         }
 
         public enum LatLongAxis {

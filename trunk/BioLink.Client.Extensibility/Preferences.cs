@@ -15,7 +15,24 @@ namespace BioLink.Client.Extensibility {
     /// </summary>
     public class Preferences {
 
-        private static PreferenceStore _instance = new PreferenceStore("biolink.prefs");
+        // Singletone instance of a preference store to hold the BioLink preferences
+        private static PreferenceStore _instance;
+
+        /// <summary>
+        /// Static initialiser
+        /// </summary>
+        static Preferences() {
+            try {
+                string path = String.Format("{0}\\BioLink", Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData));
+                if (!Directory.Exists(path)) {
+                    Directory.CreateDirectory(path);
+                }
+                string prefsFile = string.Format("{0}\\BioLink.prefs", path);
+                _instance = new PreferenceStore( prefsFile);
+            } catch (Exception ex) {
+                GlobalExceptionHandler.Handle(ex);
+            }
+        }
 
         public static string GetPreference(string key) {
             return _instance.GetPreference(key, null);
