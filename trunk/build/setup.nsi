@@ -20,7 +20,7 @@ Name BioLink
 !define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_VALUE "Path"
 
 # MUI Symbol Definitions
-!define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\orange-install.ico"
+!define MUI_ICON "..\BioLinkApplication\Images\BioLink.ico"
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT HKLM
 !define MUI_STARTMENUPAGE_REGISTRY_KEY ${REGKEY}
