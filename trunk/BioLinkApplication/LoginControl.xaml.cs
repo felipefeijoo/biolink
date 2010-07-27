@@ -84,6 +84,7 @@ namespace BioLinkApplication {
 
             if (profile == null) {
                 ErrorMessage("LoginControl.Status.SelectProfile");
+                return;
             }
 
             Preferences.SetGlobal("connection.lastprofile", profile.Name);
