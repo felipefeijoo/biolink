@@ -6,5 +6,6 @@
 	<Target Name="Build">
 		<MSBuild Projects="../BioLink.sln" />
 		<Exec Command="$(NSISPath) setup.nsi" />
+		<Copy SourceFiles="setup.exe" DestinationFiles="BioLinkInstaller-3.0.$(BuildNumber).exe" />
 	</Target>
 </Project>
