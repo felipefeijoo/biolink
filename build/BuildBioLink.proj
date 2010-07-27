@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	 <PropertyGroup>
+		<NSISPath>&quot;C:\Program Files\NSIS\makensis.exe&quot;</NSISPath>
+	 </PropertyGroup>
 	<Target Name="Build">
 		<MSBuild Projects="../BioLink.sln" />
+		<Exec Command="$(NSISPath) setup.nsi" />
 	</Target>
 </Project>
