@@ -3,6 +3,10 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib" 
                     x:Name="TaxaResources">
 
+    <system:String x:Key="Button.Ok">_OK</system:String>
+    <system:String x:Key="Button.Cancel">_Cancel</system:String>
+    <system:String x:Key="Button.Apply">_Apply</system:String>
+
     <system:String x:Key="Taxa.Menu.View">_View</system:String>
     <system:String x:Key="Taxa.Menu.ShowExplorer">Show _Taxon Explorer</system:String>    
     <system:String x:Key="TaxonExplorer.Title">Taxon Explorer</system:String>
@@ -12,4 +16,16 @@
     <system:String x:Key="TaxonExplorer.explorer.root">All Taxa</system:String>
     <system:String x:Key="TaxonExplorer.explorer.loading">Loading children of {0}</system:String>
     
+    <system:String x:Key="TaxonExplorer.DropError.AlreadyAChild">'{0}' is already a child of '{1}'</system:String>
+    <system:String x:Key="TaxonExplorer.DropError.SourceAncestorOfDest">'{0}' is an ancestor of '{1}'</system:String>
+    <system:String x:Key="TaxonExplorer.DropError.AvailableName">Cannot drop an item on an available or literatue name</system:String>
+    <system:String x:Key="TaxonExplorer.DropError.CannotCoexist">The target element's '{0}' children cannot co-exist with the '{1}' elements being moved</system:String>
+    
+
+    <system:String x:Key="TaxonExplorer.prompt.ConvertAvailableName">Do you wish to convert the {0} Available/Literature name to a {1} Available/Literature name?</system:String>
+    <system:String x:Key="TaxonExplorer.prompt.caption.ConvertAvailableName">Convert available name?</system:String>
+
+    <system:String x:Key="DragDropOptions.lblConvert">Convert from {0} to </system:String>
+
+
 </ResourceDictionary>

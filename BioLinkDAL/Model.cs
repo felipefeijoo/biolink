@@ -8,7 +8,45 @@ namespace BioLink.Data.Model {
     public abstract class BiolinkDataObject {
     }
 
-    public class Taxon : BiolinkDataObject {
+    public interface ITaxon {
+
+        System.Nullable<int> TaxaID { get; set; }
+
+        System.Nullable<int> TaxaParentID { get; set; }
+
+        string Epithet { get; set; }
+
+        string TaxaFullName { get; set; }
+
+        string YearOfPub { get; set; }
+
+        string Author { get; set; }
+
+        string ElemType { get; set; }
+
+        string KingdomCode { get; set; }
+
+        System.Nullable<bool> Unplaced { get; set; }
+
+        System.Nullable<int> Order { get; set; }
+
+        string Rank { get; set; }
+
+        System.Nullable<bool> ChgComb { get; set; }
+
+        System.Nullable<bool> Unverified { get; set; }
+
+        System.Nullable<bool> AvailableName { get; set; }
+
+        System.Nullable<bool> LiteratureName { get; set; }
+
+        string NameStatus { get; set; }
+
+        System.Nullable<int> NumChildren { get; set; }
+
+    }
+
+    public class Taxon : BiolinkDataObject, ITaxon {
 
         public System.Nullable<int> TaxaID { get; set; }
 

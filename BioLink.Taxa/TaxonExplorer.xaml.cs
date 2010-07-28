@@ -112,7 +112,7 @@ namespace BioLink.Client.Taxa {
 
         private void CommonPreviewMouseView(MouseEventArgs e, TreeView treeView) {
             if (e.LeftButton == MouseButtonState.Pressed && !_IsDragging) {
-                Point position = e.GetPosition(null);
+                Point position = e.GetPosition(tvwAllTaxa);
                 if (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance) {
                     if (treeView.SelectedItem != null) {
                         IInputElement hitelement = treeView.InputHitTest(_startPoint);
@@ -218,6 +218,8 @@ namespace BioLink.Client.Taxa {
                     }
 
                     ProcessTaxonDragDrop(src, dest);
+
+                    e.Handled = true;
                 }
             }
 

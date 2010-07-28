@@ -36,6 +36,10 @@ namespace BioLink.Data.Model {
         public string ValidEndingList { get; set; }
 
         public System.Nullable<int> Order { get; set; }
+
+        public override string ToString() {
+            return String.Format("TaxonRank[{0}]: {1} ({2}) #{3}", KingdomCode, LongName, Category, Order);
+        }
         
     }
 }

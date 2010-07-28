@@ -14,9 +14,9 @@ using BioLink.Client.Extensibility;
 
 namespace BioLink.Client.Taxa {
     
-    public class TaxonViewModel : HierarchicalViewModelBase {
+    public class TaxonViewModel : HierarchicalViewModelBase, ITaxon {
 
-        private static Dictionary<string, string> _TaxaIconNames = new Dictionary<string, string>();
+        private static Dictionary<string, string> _TaxaIconNames = new Dictionary<string, string>();        
 
         static TaxonViewModel() {
             AddIconBindings("HigherOrder", "C", "CHRT", "D", "HO", "INC", "INO", "KING", "O", "P", "SBC", "SBD", "SKING", "SBO", "SBP", "SPC", "SPF", "SPO");

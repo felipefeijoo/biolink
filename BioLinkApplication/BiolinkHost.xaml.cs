@@ -11,7 +11,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Windows.Forms.Integration;
 using BioLink.Client.Extensibility;
 using BioLink.Client.Utilities;
 using Newtonsoft.Json;
