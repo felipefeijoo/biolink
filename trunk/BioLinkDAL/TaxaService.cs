@@ -9,6 +9,12 @@ namespace BioLink.Data {
 
     public class TaxaService : BioLinkService {
 
+        public static string SPECIES_INQUIRENDA = "SI";
+        public static string INCERTAE_SEDIS = "IS";
+
+        private List<TaxonRank> _rankList;
+        private byte[] _rankLock = new byte[] { };
+
         public TaxaService(User user) : base(user) {
         }
 
@@ -39,27 +45,49 @@ namespace BioLink.Data {
             return taxa;
         }
 
+        /// <summary>
+        /// The rank list is cached because it rarely, if ever, changes.
+        /// </summary>
+        /// <returns></returns>
         public List<TaxonRank> GetTaxonRanks() {
-            List<TaxonRank> ranks = new List<TaxonRank>();
-            StoredProcReaderForEach("spBiotaDefRankGetAll", (reader) => {
-                ranks.Add(TaxonMapper.MapTaxonRank(reader));
-            });
+            lock (_rankLock) {
+                if (_rankList == null) {
+                    _rankList = new List<TaxonRank>();
+                    StoredProcReaderForEach("spBiotaDefRankGetAll", (reader) => {
+                        _rankList.Add(TaxonMapper.MapTaxonRank(reader));
+                    });
+                    
+                }
+            }
+            return _rankList;
+        }
 
-            return ranks;
+        public Dictionary<string, TaxonRank> GetTaxonRankMap() {
+            return GetTaxonRanks().ToDictionary((rank) => { return RankKey(rank); });
         }
 
         public ValidationResult ValidateTaxonMove(Taxon source, Taxon dest) {
-            List<TaxonRank> ranks = GetTaxonRanks();
-            Dictionary<string, TaxonRank> map = ranks.ToDictionary((rank) => { return rank.KingdomCode + "_" + rank.Code; });
-            if (map.ContainsKey(dest.KingdomCode + "_" + dest.ElemType)) {
-                TaxonRank destrank = map[dest.KingdomCode + "_" + dest.ElemType];
-                TaxonRank srcrank = map[source.KingdomCode + "_" + source.ElemType];
+            var map = GetTaxonRankMap();
+
+            // Can only really validate if the ranks of the source and target are 'known'
+            if (map.ContainsKey(RankKey(dest)) && map.ContainsKey(RankKey(source))) {
+                TaxonRank destrank = map[RankKey(dest)];
+                TaxonRank srcrank = map[RankKey(source)];
                 if (!IsValidChild(srcrank, destrank)) {
                     return new ValidationResult(false, String.Format("{0} is not a valid child of {1}", srcrank.LongName, destrank.LongName));
                 }
             }
 
             return new ValidationResult(true);
+        }
+
+        public TaxonRank GetTaxonRank(string elemType) {
+            foreach (TaxonRank rank in GetTaxonRanks()) {
+                if (rank.Code == elemType) {
+                    return rank;
+                }
+            }
+            return null;
         }
 
         private HashSet<string> SplitCSV(string list) {
@@ -81,6 +109,34 @@ namespace BioLink.Data {
             return valid.Contains(src.Code, StringComparer.OrdinalIgnoreCase);
         }
 
+        private string RankKey(string kingdomCode, string rankCode) {
+            return kingdomCode + "_" + rankCode;
+        }
+
+        private string RankKey(TaxonRank rank) {
+            return RankKey(rank.KingdomCode, rank.Code);
+        }
+
+        private string RankKey(Taxon taxon) {
+            return RankKey(taxon.KingdomCode, taxon.ElemType);
+        }
+
+        public List<TaxonRank> GetChildRanks(TaxonRank targetRank) {
+            var map = GetTaxonRankMap();
+            string[] valid = targetRank.ValidChildList.Split(',');
+            List<TaxonRank> result = new List<TaxonRank>();
+            foreach (string child in valid) {
+                string elemType = child;
+                if (child.StartsWith("'") && child.EndsWith("'")) {
+                    elemType = child.Substring(1, child.Length - 2);
+                }
+                string key = RankKey(targetRank.KingdomCode, elemType);
+                if (map.ContainsKey(key)) {
+                    result.Add(map[key]);
+                }
+            }
+            return result;
+        }
     }
 
     public class ValidationResult {
