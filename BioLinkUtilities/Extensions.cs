@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Threading;
 using System.Windows.Controls;
+using System.Windows;
 using System.ComponentModel;
 
 namespace BioLink.Client.Utilities {
@@ -50,7 +51,6 @@ namespace BioLink.Client.Utilities {
 
             return message;
         }
-
 
     }
 

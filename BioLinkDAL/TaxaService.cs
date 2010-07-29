@@ -66,7 +66,7 @@ namespace BioLink.Data {
             return GetTaxonRanks().ToDictionary((rank) => { return RankKey(rank); });
         }
 
-        public ValidationResult ValidateTaxonMove(Taxon source, Taxon dest) {
+        public DataValidationResult ValidateTaxonMove(Taxon source, Taxon dest) {
             var map = GetTaxonRankMap();
 
             // Can only really validate if the ranks of the source and target are 'known'
@@ -74,11 +74,11 @@ namespace BioLink.Data {
                 TaxonRank destrank = map[RankKey(dest)];
                 TaxonRank srcrank = map[RankKey(source)];
                 if (!IsValidChild(srcrank, destrank)) {
-                    return new ValidationResult(false, String.Format("{0} is not a valid child of {1}", srcrank.LongName, destrank.LongName));
+                    return new DataValidationResult(false, String.Format("{0} is not a valid child of {1}", srcrank.LongName, destrank.LongName));
                 }
             }
 
-            return new ValidationResult(true);
+            return new DataValidationResult(true);
         }
 
         public TaxonRank GetTaxonRank(string elemType) {
@@ -139,9 +139,9 @@ namespace BioLink.Data {
         }
     }
 
-    public class ValidationResult {
+    public class DataValidationResult {
 
-        public ValidationResult(bool success, string message = null) {
+        public DataValidationResult(bool success, string message = null) {
             this.Success = success;
             this.Message = message;
         }
