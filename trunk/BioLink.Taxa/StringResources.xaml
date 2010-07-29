@@ -25,7 +25,10 @@
     <system:String x:Key="TaxonExplorer.prompt.ConvertAvailableName">Do you wish to convert the {0} Available/Literature name to a {1} Available/Literature name?</system:String>
     <system:String x:Key="TaxonExplorer.prompt.caption.ConvertAvailableName">Convert available name?</system:String>
 
-    <system:String x:Key="DragDropOptions.lblConvert">Convert from {0} to </system:String>
 
+    <system:String x:Key="DragDropOptions.Title">Drop taxon options</system:String>
+    <system:String x:Key="DragDropOptions.lblConvert">Convert from {0} to </system:String>
+    <system:String x:Key="DragDropOptions.lblConvertAsChild">Add as a {0} child of '{1}'</system:String>
+    <system:String x:Key="DragDropOptions.lblMerge">Merge/synonymize '{0}' with '{1}'</system:String>
 
 </ResourceDictionary>

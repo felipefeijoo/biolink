@@ -45,6 +45,13 @@
                         <TreeView.Resources>
                             <HierarchicalDataTemplate DataType="{x:Type src:TaxonViewModel}" ItemsSource="{Binding Path=Children}">
                                 <StackPanel Orientation="Horizontal">
+<!--                                    
+                                    <Border Height="22" Width="22" BorderBrush="#00000000" Background="#00000000">
+                                        <Border CornerRadius="3" BorderThickness="1" BorderBrush="#70000076" Background="#000076" Height="20" Width="20">
+                                            <TextBlock Text="H" Foreground="White" FontFamily="Times New Roman" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />                                            
+                                        </Border>
+                                    </Border>                                        
+-->
                                     <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,1" />
                                     <TextBlock Text="{Binding Path=Epithet}" VerticalAlignment="Center" />
                                 </StackPanel>
@@ -59,6 +66,9 @@
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding AvailableName}" Value="True">
                                         <Setter Property="FontStyle" Value="Italic" />                                        
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsChanged}" Value="True">
+                                        <Setter Property="BorderBrush" Value="#FFFF0000" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>

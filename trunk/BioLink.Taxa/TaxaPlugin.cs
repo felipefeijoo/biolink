@@ -6,6 +6,7 @@ using BioLink.Client.Extensibility;
 using BioLink.Client.Utilities;
 using System.Resources;
 using System.Windows;
+using System.Windows.Controls;
 using System.Collections.ObjectModel;
 using System.Data.SqlClient;
 using BioLink.Data;
@@ -116,17 +117,14 @@ namespace BioLink.Client.Taxa {
             }
         }
 
-        private DragDropAction PromptChangeAvailableName(TaxonViewModel source, TaxonViewModel target) {
+        private DragDropAction PromptChangeAvailableName(TaxonDropContext context) {
 
-            TaxonRank sourceRank = _taxaService.GetTaxonRank(source.ElemType);
-            TaxonRank targetRank = _taxaService.GetTaxonRank(target.ElemType);
-
-            if (sourceRank.Category == targetRank.Category) {
-                return new ConvertDropAction(source, target, targetRank);
+            if (context.SourceRank.Category == context.TargetRank.Category) {
+                return new ConvertDropAction(context.Source, context.Target, context.TargetRank);
             } else {
-                MessageBoxResult result = MessageBox.Show(_R("TaxonExplorer.prompt.ConvertAvailableName", sourceRank.LongName, targetRank.LongName), _R("TaxonExplorer.prompt.caption.ConvertAvailableName"), MessageBoxButton.YesNo, MessageBoxImage.Question);
+                MessageBoxResult result = MessageBox.Show(_R("TaxonExplorer.prompt.ConvertAvailableName", context.SourceRank.LongName, context.TargetRank.LongName), _R("TaxonExplorer.prompt.caption.ConvertAvailableName"), MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes) {
-                    return new ConvertDropAction(source, target, targetRank);
+                    return new ConvertDropAction(context.Source, context.Target, context.TargetRank);
                 }
             }
 
@@ -159,81 +157,60 @@ namespace BioLink.Client.Taxa {
             return "";
         }
 
-        private DragDropAction CreateAndValidateDropAction(TaxonViewModel source, TaxonViewModel target) {
+        private DragDropAction CreateAndValidateDropAction(TaxonDropContext context) {
 
-            // More comprehensive Drag and Drop rules (ported from original BioLink)
 
-            TaxaService service = new TaxaService(User);
-
-            TaxonRank sourceRank = service.GetTaxonRank(source.ElemType);
-            TaxonRank targetRank = service.GetTaxonRank(target.ElemType);
-
-            // Work out what kind of elements exist under the target already...
-            string strChildType = GetChildElementType(target);
-            TaxonRank targetChildRank = null;
-            if (!String.IsNullOrEmpty(strChildType)) {            
-                targetChildRank =_taxaService.GetTaxonRank(strChildType);
-            }
-
-            if (target.AvailableName.GetValueOrDefault(false)) {
+            if (context.Target.AvailableName.GetValueOrDefault(false)) {
                 // Can't drop on to an Available Name
-                throw new IllegalTaxonMoveException(source.Taxon, target.Taxon, _R("TaxonExplorer.DropError.AvailableName", source.Epithet, target.Epithet));
-            } else if (source.AvailableName.GetValueOrDefault(false)) {
+                throw new IllegalTaxonMoveException(context.Source.Taxon, context.Target.Taxon, _R("TaxonExplorer.DropError.AvailableName", context.Source.Epithet, context.Target.Epithet));
+            } else if (context.Source.AvailableName.GetValueOrDefault(false)) {
                 // if the source is an Available Name
-                if (source.ElemType != target.ElemType) {
+                if (context.Source.ElemType != context.Target.ElemType) {
                     // If the target is not of the same type as the source, confirm the conversion of available name type (e.g. species available name to Genus available name)
-                    return PromptChangeAvailableName(source, target);
+                    return PromptChangeAvailableName(context);
                 } else {
-                    return new MergeDropAction(source, target);
+                    return new MergeDropAction(context.Source, context.Target);
                 }
-            } else if (targetRank == null || sourceRank == null || targetRank.Order.GetValueOrDefault(-1) < sourceRank.Order.GetValueOrDefault(-1)) {
+            } else if (context.TargetRank == null || context.SourceRank == null || context.TargetRank.Order.GetValueOrDefault(-1) < context.SourceRank.Order.GetValueOrDefault(-1)) {
                 // If the target element is a higher rank than the source, then the drop is acceptable as long as there are no children of the target, 
                 // or they were of the same type.
                 // Check the drag drop rules as defined in the database...
-                ValidationResult result = service.ValidateTaxonMove(source.Taxon, target.Taxon);
+                DataValidationResult result = _taxaService.ValidateTaxonMove(context.Source.Taxon, context.Target.Taxon);
                 if (!result.Success) {
                     // Can't automatically move - check to see if a conversion is a) possible b) desired
-                    if (targetChildRank == null) {
-                        return PromptConvert(source, sourceRank, target, targetRank);
+                    if (context.TargetChildRank == null) {
+                        return PromptConvert(context);
                     } else {
-                        return new ConvertDropAction(source, target, targetChildRank);
+                        return new ConvertDropAction(context.Source, context.Target, context.TargetChildRank);
                     }
-                } else if (source.ElemType == TaxaService.SPECIES_INQUIRENDA || source.ElemType == TaxaService.INCERTAE_SEDIS) {
+                } else if (context.Source.ElemType == TaxaService.SPECIES_INQUIRENDA || context.Source.ElemType == TaxaService.INCERTAE_SEDIS) {
                     // Special 'unplaced' ranks - no real rules for drag and drop (TBA)...
-                    return new MoveDropAction(source, target);
-                } else if (targetChildRank == null || targetChildRank.Code == source.ElemType) {
+                    return new MoveDropAction(context.Source, context.Target);
+                } else if (context.TargetChildRank == null || context.TargetChildRank.Code == context.Source.ElemType) {
                     // Not sure what this means, the old BioLink did it...
-                    return new MoveDropAction(source, target);
+                    return new MoveDropAction(context.Source, context.Target);
                 } else {
-                    throw new IllegalTaxonMoveException(source.Taxon, target.Taxon, _R("TaxonExplorer.DropError.CannotCoexist", targetChildRank.LongName, sourceRank.LongName));
+                    throw new IllegalTaxonMoveException(context.Source.Taxon, context.Target.Taxon, _R("TaxonExplorer.DropError.CannotCoexist", context.TargetChildRank.LongName, context.SourceRank.LongName));
                 }
-            } else if (source.ElemType == target.ElemType) {
+            } else if (context.Source.ElemType == context.Target.ElemType) {
                 // Determine what the user wishes to do when the drag/drop source and target are the same type.
-                return PromptSourceTargetSame(source, sourceRank, target, targetRank, targetChildRank);
+                return PromptSourceTargetSame(context);
             }
-
 
             return null;
         }
 
-        private DragDropAction PromptSourceTargetSame(TaxonViewModel source, TaxonRank sourceRank, TaxonViewModel target, TaxonRank targetRank, TaxonRank targetChildRank) {
-            List<TaxonRank> conversionOptions = new List<TaxonRank>();
-            if (targetChildRank != null) {
-                conversionOptions.Add(targetChildRank);
-            } else {
-                conversionOptions.AddRange(_taxaService.GetChildRanks(targetRank));
-            }
-
-            // TODO: show the dialog which allows you to choose between merging and creating a new child element.
-            return new MoveDropAction(source, target);
+        private DragDropAction PromptSourceTargetSame(TaxonDropContext context) {
+            DragDropOptions form = new DragDropOptions(this);
+            return form.ShowChooseMergeOrConvert(context);            
         }
 
-        private DragDropAction PromptConvert(TaxonViewModel source, TaxonRank sourceRank, TaxonViewModel target, TaxonRank targetRank) {
+        private DragDropAction PromptConvert(TaxonDropContext context) {
             DragDropOptions form = new DragDropOptions(this);
-            List<TaxonRank> validChildren = _taxaService.GetChildRanks(targetRank);
-            TaxonRank choice = form.ShowChooseConversion(sourceRank, validChildren);
+            List<TaxonRank> validChildren = _taxaService.GetChildRanks(context.TargetRank);
+            TaxonRank choice = form.ShowChooseConversion(context.SourceRank, validChildren);
             if (choice != null) {
-                return new ConvertDropAction(source, target, choice);
+                return new ConvertDropAction(context.Source, context.Target, choice);
             }
 
             return null;
@@ -246,6 +223,7 @@ namespace BioLink.Client.Taxa {
             // 2) The drop is a valid move, no conversion or merging required (simplest case)
             // 3) The drop is to that of a sibling rank, and so a merge is required
             // 4) The drop is valid, but requires the source to be converted into a valid child of the target
+            TaxonDropContext context = new TaxonDropContext(source, target, _taxaService);
 
             //Basic sanity checks first....
             if (target == source.Parent) {
@@ -260,7 +238,7 @@ namespace BioLink.Client.Taxa {
                 target.IsExpanded = true;
             }
 
-            DragDropAction action = CreateAndValidateDropAction(source, target);
+            DragDropAction action = CreateAndValidateDropAction(context);
 
             if (action != null) {
                 // process the action...
@@ -316,7 +294,7 @@ namespace BioLink.Client.Taxa {
         public Taxon DestinationTaxon { get; private set; }
     }
 
-    abstract class DragDropAction {
+    internal abstract class DragDropAction {
 
         public DragDropAction(TaxonViewModel source, TaxonViewModel target) {
             this.Source = source;
@@ -327,13 +305,13 @@ namespace BioLink.Client.Taxa {
 
     }
 
-    class MoveDropAction : DragDropAction {
+    internal class MoveDropAction : DragDropAction {
         public MoveDropAction(TaxonViewModel source, TaxonViewModel target)
             : base(source, target) {
         }
     }
 
-    class ConvertDropAction : DragDropAction {
+    internal class ConvertDropAction : DragDropAction {
 
         public ConvertDropAction(TaxonViewModel source, TaxonViewModel target, TaxonRank convertRank)
             : base(source, target) {

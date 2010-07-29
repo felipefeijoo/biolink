@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Globalization;
@@ -13,40 +14,47 @@ using BioLink.Client.Utilities;
 using BioLink.Client.Extensibility;
 
 namespace BioLink.Client.Taxa {
-    
+
     public class TaxonViewModel : HierarchicalViewModelBase, ITaxon {
 
-        private static Dictionary<string, string> _TaxaIconNames = new Dictionary<string, string>();        
+        private static Dictionary<string, string> _TaxaIconNames = new Dictionary<string, string>();
+        private static Dictionary<string, string> _TaxaIconCaptions = new Dictionary<string, string>();
+        private static Dictionary<string, Color> _TaxaIconColors = new Dictionary<string, Color>();
 
-        static TaxonViewModel() {
-            AddIconBindings("HigherOrder", "C", "CHRT", "D", "HO", "INC", "INO", "KING", "O", "P", "SBC", "SBD", "SKING", "SBO", "SBP", "SPC", "SPF", "SPO");
-            AddIconBindings("Family", "F");
-            AddIconBindings("SubFamily", "SF");
-            AddIconBindings("Genus", "G");
-            AddIconBindings("SubGenus", "SG");
-            AddIconBindings("Species", "SP");
-            AddIconBindings("SubSpecies", "SSP");
-            AddIconBindings("Tribe", "T");
-            AddIconBindings("Section", "SCT");
-            AddIconBindings("Series", "SRS");
-            AddIconBindings("SpeciesGroup", "SGP");
-            AddIconBindings("SuperTribe", "ST");
-            AddIconBindings("Form", "FM");
-            AddIconBindings("SubForm", "SFM");
-            AddIconBindings("Variety", "V");
-            AddIconBindings("SubVariety", "SV");
-            AddIconBindings("SubSection", "SSCT");
-            AddIconBindings("SubSeries", "SSRS");
-            AddIconBindings("SubTribe", "SBT");
+        private static Color DefaultBlue = Color.FromRgb(4, 4, 129);
+
+        static TaxonViewModel() {                        
+            AddIconBindings("HigherOrder", "H", DefaultBlue, "C", "CHRT", "D", "HO", "INC", "INO", "KING", "O", "P", "SBC", "SBD", "SKING", "SBO", "SBP", "SPC", "SPF", "SPO");
+            AddIconBindings("Family", "F", Color.FromRgb(135,192,135), "F");
+            AddIconBindings("SubFamily", "SF", Color.FromRgb(86,86,255), "SF");
+            AddIconBindings("Genus", "G", Color.FromRgb(0, 148, 148), "G");
+            AddIconBindings("SubGenus", "sg", Color.FromRgb(44, 135, 192), "SG");
+            AddIconBindings("Species", "Sp", Color.FromRgb(174, 121, 59), "SP");
+            AddIconBindings("SubSpecies", "ssp", Color.FromRgb(135, 135, 192), "SSP");
+            AddIconBindings("Tribe", "T", Color.FromRgb(44, 135, 86), "T");
+            AddIconBindings("Section", "SE", Color.FromRgb(0, 148, 148), "SCT");
+            AddIconBindings("Series", "SR", Color.FromRgb(86, 135, 135), "SRS");
+            AddIconBindings("SpeciesGroup", "SG", Color.FromRgb(255, 254, 193), "SGP");
+            AddIconBindings("SuperTribe", "ST", Color.FromRgb(0, 0, 128), "ST");
+            AddIconBindings("Form", "f", Color.FromRgb(135, 135, 192), "FM");
+            AddIconBindings("SubForm", "sf", Color.FromRgb(177, 196, 255), "SFM");
+            AddIconBindings("Variety", "V", Color.FromRgb(153, 153, 153), "V");
+            AddIconBindings("SubVariety", "sv", Color.FromRgb(76, 76, 76), "SV");
+            AddIconBindings("SubSection", "sse", Color.FromRgb(74, 148, 0), "SSCT");
+            AddIconBindings("SubSeries", "ssr", Color.FromRgb(0, 92, 57), "SSRS");
+            AddIconBindings("SubTribe", "sst", Color.FromRgb(71, 126, 161), "SBT");
         }
 
-        private static void AddIconBindings(string iconName, params string[] elemTypes) {
-            foreach (string elemType in elemTypes) {
+        private static void AddIconBindings(string iconName, string caption, Color color, params string[] elemTypes) {
+            foreach (string elemType in elemTypes) {                
                 _TaxaIconNames.Add(elemType, iconName);
+                _TaxaIconCaptions.Add(elemType, caption);
+                _TaxaIconColors.Add(elemType, color);
             }
         }
 
-        public TaxonViewModel(TaxonViewModel parent, Taxon taxon) : base() {
+        public TaxonViewModel(TaxonViewModel parent, Taxon taxon)
+            : base() {
             this.Parent = parent;
             this.Taxon = taxon;
             this.IsChanged = false;
@@ -58,7 +66,7 @@ namespace BioLink.Client.Taxa {
             _image = null;
             RaisePropertyChanged("Icon");
         }
-       
+
         public Taxon Taxon { get; private set; }
 
         public override string Label {
@@ -72,7 +80,7 @@ namespace BioLink.Client.Taxa {
 
         public int? TaxaParentID {
             get { return Taxon.TaxaParentID; }
-            set { SetProperty(() => Taxon.TaxaParentID ,Taxon,  value); }
+            set { SetProperty(() => Taxon.TaxaParentID, Taxon, value); }
         }
 
         public string Epithet {
@@ -152,6 +160,59 @@ namespace BioLink.Client.Taxa {
 
         private BitmapSource _image;
 
+        private Pen AnimaliaBorder {
+            get { return new Pen(new SolidColorBrush(Colors.Black), 2); }
+        }
+
+        private Pen PlantaeBorder {
+            get { return new Pen(new SolidColorBrush(Color.FromRgb(184,71,19)), 2); }
+        }
+
+        private BitmapSource ConstructIcon2() {
+
+            // Available names don't have icons, nor do elements missing an element type
+            if (String.IsNullOrEmpty(ElemType) || AvailableName.GetValueOrDefault(false)) {
+                return null;
+            }
+            
+            RenderTargetBitmap bmp = new RenderTargetBitmap(22, 22, 96, 96, PixelFormats.Pbgra32);
+            DrawingVisual drawingVisual = new DrawingVisual();
+            DrawingContext dc = drawingVisual.RenderOpen();
+
+            Color taxonColor = DefaultBlue;
+            if (_TaxaIconColors.ContainsKey(ElemType)) {
+                taxonColor = _TaxaIconColors[ElemType];
+            }
+
+            string caption = "?";
+            if (_TaxaIconCaptions.ContainsKey(ElemType)) {
+                caption = _TaxaIconCaptions[ElemType];
+            }
+
+            Pen pen = AnimaliaBorder;
+            if (KingdomCode == "P") {
+                pen = PlantaeBorder;
+            }
+
+            pen = new Pen(new SolidColorBrush(taxonColor), 2);
+            Brush textBrush = new SolidColorBrush(Colors.Black);
+            
+            dc.DrawRoundedRectangle(null, pen, new Rect(1, 1, 20, 20), 4, 4);
+            FormattedText t = new FormattedText(caption, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(new FontFamily("Times New Roman"), FontStyles.Normal, FontWeights.Bold, FontStretches.Normal), 10, textBrush);
+            double originX = (bmp.Width / 2) - (t.Width / 2);
+            double originY = (bmp.Height / 2) - (t.Height / 2);
+            dc.DrawText(t, new Point(originX, originY));
+            dc.Close();
+            bmp.Render(drawingVisual);
+
+            string assemblyName = this.GetType().Assembly.GetName().Name;
+            if (IsChanged) {
+                return ImageCache.ApplyOverlay(bmp, String.Format("pack://application:,,,/{0};component/images/ChangedOverlay.png", assemblyName));
+            }
+
+            return bmp;
+        }
+
         private BitmapSource ConstructIcon() {
             BitmapSource newimage = null;
 
@@ -179,7 +240,7 @@ namespace BioLink.Client.Taxa {
                         bmp.Render(drawingVisual);
                         SetProperty("Icon", ref _image, bmp);                                                
 #else
-                newimage = ImageCache.GetImage(String.Format("pack://application:,,,/{0};component/images/UnknownTaxa.png", assemblyName));                
+                newimage = ImageCache.GetImage(String.Format("pack://application:,,,/{0};component/images/UnknownTaxa.png", assemblyName));
 #endif
             }
 
@@ -196,14 +257,14 @@ namespace BioLink.Client.Taxa {
         public override BitmapSource Icon {
             get {
                 if (_image == null) {
-                    _image = ConstructIcon();                    
+                    _image = ConstructIcon2();
                 }
                 return _image;
             }
 
             set {
-                _image = value;               
-                RaisePropertyChanged("Icon");               
+                _image = value;
+                RaisePropertyChanged("Icon");
             }
         }
 
