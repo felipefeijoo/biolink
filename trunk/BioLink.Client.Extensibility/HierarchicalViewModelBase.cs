@@ -34,7 +34,6 @@ namespace BioLink.Client.Extensibility {
             return false;
         }
 
-
         public bool IsExpanded {
             get { return _expanded; }
             set {
@@ -43,7 +42,8 @@ namespace BioLink.Client.Extensibility {
                         LazyLoadChildren(this);
                     }
                 }
-                SetProperty("IsExpanded", ref _expanded, value, true);
+                _expanded = value;
+                RaisePropertyChanged("IsExpanded");                
             }
         }
 

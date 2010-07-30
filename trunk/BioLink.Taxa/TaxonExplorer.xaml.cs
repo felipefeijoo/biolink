@@ -330,7 +330,7 @@ namespace BioLink.Client.Taxa {
                     JobExecutor.QueueJob(() => {
                         tvwAllTaxa.InvokeIfRequired(() => {
                             tvwAllTaxa.Cursor = Cursors.Wait;
-                            ExpandChildren(taxon);
+                            ExpandChildren(taxon);                            
                             tvwAllTaxa.Cursor = Cursors.Arrow;
                         });
                     });
@@ -345,10 +345,18 @@ namespace BioLink.Client.Taxa {
             source.ContextMenu = menu;
         }
 
-        private void ExpandChildren(TaxonViewModel taxon) {
-            taxon.IsExpanded = true;
+        private void ExpandChildren(TaxonViewModel taxon, List<Taxon> remaining = null) {
+            if (remaining == null) {
+                remaining = _owner.Service.GetExpandFullTree(taxon.TaxaID.Value);
+            }
+            if (!taxon.IsExpanded) {                
+                taxon.BulkAddChildren(remaining.FindAll((elem) => { return elem.TaxaParentID == taxon.TaxaID; }));
+                remaining.RemoveAll((elem) => { return elem.TaxaParentID == taxon.TaxaID; });
+                taxon.IsExpanded = true;
+            }
+
             foreach (HierarchicalViewModelBase child in taxon.Children) {
-                ExpandChildren(child as TaxonViewModel);
+                ExpandChildren(child as TaxonViewModel, remaining);
             }
         }
 
