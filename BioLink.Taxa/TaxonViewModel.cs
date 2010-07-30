@@ -208,7 +208,7 @@ namespace BioLink.Client.Taxa {
 
             pen = new Pen(new SolidColorBrush(taxonColor), 2);
             Brush textBrush = new SolidColorBrush(Color.FromArgb(200,0,0,0));
-            Brush fillBrush = null; //  new SolidColorBrush(Color.FromArgb(10, taxonColor.R, taxonColor.G, taxonColor.B));
+            Brush fillBrush = new SolidColorBrush(Color.FromArgb(50, taxonColor.R, taxonColor.G, taxonColor.B));
             Typeface typeface = new Typeface(new FontFamily("Palatino Linotype,Times New Roman"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
 
             dc.DrawRoundedRectangle(fillBrush, pen, new Rect(1, 1, 20, 20), 4, 4);
