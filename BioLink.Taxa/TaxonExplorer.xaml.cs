@@ -26,15 +26,15 @@ namespace BioLink.Client.Taxa {
     /// </summary>
     public partial class TaxonExplorer : UserControl {
         
-        private IBioLinkPlugin _owner;
-        private ObservableCollection<TaxonViewModel> _explorerModel;
+        private TaxaPlugin _owner;
+        private ObservableCollection<HierarchicalViewModelBase> _explorerModel;
         private ObservableCollection<TaxonViewModel> _searchModel;
 
         public TaxonExplorer() {
             InitializeComponent();
         }
 
-        public TaxonExplorer(IBioLinkPlugin owner) {
+        public TaxonExplorer(TaxaPlugin owner) {
             InitializeComponent();
             _owner = owner;
             
@@ -44,7 +44,7 @@ namespace BioLink.Client.Taxa {
             lstResults.ItemsSource = _searchModel;
         }
 
-        internal ObservableCollection<TaxonViewModel> ExplorerModel {
+        internal ObservableCollection<HierarchicalViewModelBase> ExplorerModel {
             get { return _explorerModel; }
             set {
                 _explorerModel = value;
@@ -296,6 +296,118 @@ namespace BioLink.Client.Taxa {
                 } else {
                     tvwAllTaxa.Focus();
                 }
+            }
+        }
+
+        private void tvwAllTaxa_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            TaxonViewModel item = tvwAllTaxa.SelectedItem as TaxonViewModel;
+            if (item != null) {
+                ShowTaxonMenu(item, tvwAllTaxa);
+            }
+
+        }
+
+        private MenuItem BuildMenuItem(string caption, RoutedEventHandler action) {
+            MenuItem item = new MenuItem();
+            item.Header = caption;
+            if (action != null) {
+                item.Click += action;
+            }
+
+            return item;
+
+        }
+
+        private void ShowTaxonMenu(TaxonViewModel taxon, FrameworkElement source) {
+
+            ContextMenu menu = new ContextMenu();
+
+            if (source is ListBox) {                
+                menu.Items.Add(BuildMenuItem("Show in explorer", (sender, e) => { ShowInExplorer(taxon); }));
+                menu.Items.Add(new Separator());
+            } else if (source is TreeView) {
+                menu.Items.Add(BuildMenuItem("Expand all children", (sender, e) => {
+                    JobExecutor.QueueJob(() => {
+                        tvwAllTaxa.InvokeIfRequired(() => {
+                            tvwAllTaxa.Cursor = Cursors.Wait;
+                            ExpandChildren(taxon);
+                            tvwAllTaxa.Cursor = Cursors.Arrow;
+                        });
+                    });
+                }));
+            }
+
+            MenuItem testitem = new MenuItem();
+            testitem.Header = "Test";
+            testitem.Click += new RoutedEventHandler((sender, e) => { MessageBox.Show("Yeah!"); });
+            menu.Items.Add(testitem);
+
+            source.ContextMenu = menu;
+        }
+
+        private void ExpandChildren(TaxonViewModel taxon) {
+            taxon.IsExpanded = true;
+            foreach (HierarchicalViewModelBase child in taxon.Children) {
+                ExpandChildren(child as TaxonViewModel);
+            }
+        }
+
+        private void ShowInExplorer(TaxonViewModel taxon) {
+            
+            tabAllTaxa.IsSelected = true;
+            tvwAllTaxa.Visibility = Visibility.Visible;
+            lstResults.Visibility = Visibility.Hidden;
+
+            JobExecutor.QueueJob(() => {
+                // First make sure the explorer tree is visible...
+                string parentage = _owner.Service.GetTaxonParentage(taxon.TaxaID.Value);
+                if (!String.IsNullOrEmpty(parentage)) {
+                    this.InvokeIfRequired(() => {
+                        ExpandFromParentage(parentage);
+                    });
+                }
+
+            });
+        }
+
+        public void ExpandFromParentage(string parentage) {
+            string[] bits = ("0" + parentage).Split('\\');
+            // Start at the top...
+            ObservableCollection<HierarchicalViewModelBase> col = _explorerModel;
+            TaxonViewModel child = null;
+            
+            foreach (string taxonId in bits) {
+                if (!String.IsNullOrEmpty(taxonId)) {
+                    int intTaxonId = Int32.Parse(taxonId);
+                    child = col.FirstOrDefault((item) => {
+                        return (item as TaxonViewModel).TaxaID == intTaxonId;
+                    }) as TaxonViewModel;
+                    if (child != null) {
+                        child.IsExpanded = true;
+                        col = child.Children;
+                    }
+                }
+            }
+
+            if (child != null) {
+                tvwAllTaxa.Focus();
+                child.IsSelected = true;
+            }            
+                        
+        }
+
+        private void TreeViewItem_MouseRightButtonDown(object sender, MouseEventArgs e) {
+            TreeViewItem item = sender as TreeViewItem;
+            if (item != null) {
+                item.Focus();
+                e.Handled = true;
+            }
+        }
+
+        private void lstResults_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            TaxonViewModel item = lstResults.SelectedItem as TaxonViewModel;
+            if (item != null) {
+                ShowTaxonMenu(item, lstResults);
             }
         }
 

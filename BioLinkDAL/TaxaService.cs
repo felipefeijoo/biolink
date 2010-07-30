@@ -137,6 +137,16 @@ namespace BioLink.Data {
             }
             return result;
         }
+
+        public string GetTaxonParentage(int taxaId) {
+            string parentage = null;            
+            StoredProcReaderFirst("spBiotaGetParentage", (reader) => {
+                parentage = reader[0] as string;
+            }, new SqlParameter("intBiotaID", taxaId));
+
+            return parentage;
+        }
+
     }
 
     public class DataValidationResult {

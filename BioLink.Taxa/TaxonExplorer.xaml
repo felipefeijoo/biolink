@@ -41,17 +41,10 @@
                 <Grid x:Name="allTaxaGrid">
                     <Label Content="{StaticResource TaxonExplorer.Find}" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" Width="56" HorizontalContentAlignment="Right" VerticalContentAlignment="Top" />
                     <ex:DelayedTriggerTextbox Height="23" Margin="68,6,0,0" Name="txtFind" VerticalAlignment="Top" TextChanged="txtFind_TextChanged" TypingPaused="txtFind_TypingPaused" KeyUp="txtFind_KeyUp" />
-                    <TreeView Name="tvwAllTaxa" Margin="0,35,0,0" PreviewMouseMove="tvwAllTaxa_PreviewMouseMove" PreviewMouseLeftButtonDown="tvwAllTaxa_PreviewMouseLeftButtonDown">
+                    <TreeView Name="tvwAllTaxa" Margin="0,35,0,0" PreviewMouseMove="tvwAllTaxa_PreviewMouseMove" PreviewMouseLeftButtonDown="tvwAllTaxa_PreviewMouseLeftButtonDown" MouseRightButtonUp="tvwAllTaxa_MouseRightButtonUp">
                         <TreeView.Resources>
                             <HierarchicalDataTemplate DataType="{x:Type src:TaxonViewModel}" ItemsSource="{Binding Path=Children}">
                                 <StackPanel Orientation="Horizontal">
-<!--                                    
-                                    <Border Height="22" Width="22" BorderBrush="#00000000" Background="#00000000">
-                                        <Border CornerRadius="3" BorderThickness="1" BorderBrush="#70000076" Background="#000076" Height="20" Width="20">
-                                            <TextBlock Text="H" Foreground="White" FontFamily="Times New Roman" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />                                            
-                                        </Border>
-                                    </Border>                                        
--->
                                     <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,1" />
                                     <TextBlock Text="{Binding Path=Epithet}" VerticalAlignment="Center" />
                                 </StackPanel>
@@ -60,6 +53,7 @@
                             <Style TargetType="TreeViewItem">
                                 <Setter Property="IsExpanded" Value="{Binding Path=IsExpanded, Mode=TwoWay}" />
                                 <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
+                                <EventSetter Event="TreeViewItem.MouseRightButtonDown" Handler="TreeViewItem_MouseRightButtonDown"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding Unverified}" Value="True">
                                         <Setter Property="Foreground" Value="Red" />                                        
@@ -70,18 +64,27 @@
                                     <DataTrigger Binding="{Binding IsChanged}" Value="True">
                                         <Setter Property="BorderBrush" Value="#FFFF0000" />
                                     </DataTrigger>
-                                </Style.Triggers>
+                                </Style.Triggers>                                
                             </Style>
                         </TreeView.Resources>
+                        
+                        <!--
+                        <TreeView.ItemContainerStyle>
+                            <Style TargetType="TreeViewItem">
+                                <EventSetter Event="TreeViewItem.MouseRightButtonDown" Handler="TreeViewItem_MouseRightButtonDown"/>
+                            </Style>
+                        </TreeView.ItemContainerStyle>
+                        -->
+                        
                         <TreeViewItem>
                             <TreeViewItem.Header>Loading...</TreeViewItem.Header>
                         </TreeViewItem>
                     </TreeView>
-                    <ListBox Name="lstResults" Visibility="Hidden">                     
+                    <ListBox Name="lstResults" Visibility="Hidden" MouseRightButtonUp="lstResults_MouseRightButtonUp">                     
                         <ListBox.Resources>
                             <DataTemplate DataType="{x:Type src:TaxonViewModel}">
                                 <StackPanel Orientation="Horizontal">
-                                    <Image Source="{Binding Path=Icon}" Margin="0,1,4,1" />
+                                    <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,1" />                                    
                                     <TextBlock Text="{Binding Path=TaxaFullName}" VerticalAlignment="Center" />
                                 </StackPanel>
                             </DataTemplate>

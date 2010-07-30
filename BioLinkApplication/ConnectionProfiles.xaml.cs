@@ -23,19 +23,25 @@ namespace BioLinkApplication {
 
         private ObservableCollection<ConnectionProfile> _model;
 
+
+
         public ConnectionProfiles() {
+           
             InitializeComponent();
-            List<ConnectionProfile> list = Preferences.GetGlobal<List<ConnectionProfile>>("connection.profiles", new List<ConnectionProfile>());
+            List<ConnectionProfile> list = Config.GetGlobal<List<ConnectionProfile>>("connection.profiles", new List<ConnectionProfile>());
 
             _model = new ObservableCollection<ConnectionProfile>(list);
             cmbProfiles.ItemsSource = _model;
-            String lastProfile = Preferences.GetGlobal<string>("connection.lastprofile", null);
+            String lastProfile = Config.GetGlobal<string>("connection.lastprofile", null);
             if (!String.IsNullOrEmpty(lastProfile)) {
                 // Look in the list for the profile with the same name.
                 ConnectionProfile lastUserProfile = _model.FirstOrDefault((item) => { return item.Name.Equals(lastProfile); });
                 if (lastUserProfile != null) {
                     cmbProfiles.SelectedItem = lastUserProfile;
                 }
+            }
+            if (cmbProfiles.SelectedItem == null) {
+                profileGrid.IsEnabled = false;
             }
 
         }
@@ -48,7 +54,17 @@ namespace BioLinkApplication {
         private void cmbProfiles_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             ConnectionProfile profile = cmbProfiles.SelectedItem as ConnectionProfile;
             if (profile != null) {
+                profileGrid.IsEnabled = true;
                 ProfileBorder.DataContext = profile;
+            } else {
+                // Clear out the fields
+                txtDatabase.Text = "";
+                txtName.Text = "";
+                txtServer.Text = "";
+                txtTimeout.Text = "";
+                chkIntegratedSecurity.IsChecked = false;
+                // and disable them
+                profileGrid.IsEnabled = false;
             }
         }
 
@@ -73,7 +89,7 @@ namespace BioLinkApplication {
 
         private void btnOk_Click(object sender, RoutedEventArgs e) {
             List<ConnectionProfile> profiles =  new List<ConnectionProfile>(_model);
-            Preferences.SetGlobal<List<ConnectionProfile>>("connection.profiles", profiles);
+            Config.SetGlobal<List<ConnectionProfile>>("connection.profiles", profiles);
             this.DialogResult = true;
         }
 
@@ -89,6 +105,10 @@ namespace BioLinkApplication {
                     cmbProfiles.SelectedIndex = 0;
                 }
             }
+        }
+
+        private void button1_Click(object sender, RoutedEventArgs e) {
+
         }
     }
 }
