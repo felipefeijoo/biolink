@@ -17,7 +17,7 @@ namespace BioLink.Data {
 
         private static string KNOWN_TYPE_PREFIXES = "chr,vchr,bit,int,txt,flt,tint,dt";
 
-        public static void ReflectMap(object dest, DbDataReader reader, params string[] ignore) {
+        public static void ReflectMap(object dest, DbDataReader reader, params ConvertingMapper[] columnOverrides) {
             PropertyInfo[] props = dest.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
             Dictionary<string, PropertyInfo> propMap = new Dictionary<string, PropertyInfo>();
             foreach (PropertyInfo propInfo in props) {
@@ -26,17 +26,13 @@ namespace BioLink.Data {
                 }
             }
 
-            HashSet<string> ignoredNames = new HashSet<string>();
-            foreach (string name in ignore) {
-                ignoredNames.Add(name);
+            var overrides = new Dictionary<string, ConvertingMapper>();
+            foreach (ConvertingMapper mapper in columnOverrides) {
+                overrides.Add(mapper.ColumnName, mapper);
             }
 
             for (int i = 0; i < reader.FieldCount; ++i) {
                 string name = reader.GetName(i);
-
-                if (ignoredNames.Contains(name)) {
-                    continue;
-                }
 
                 PropertyInfo target = null;
 
@@ -60,11 +56,16 @@ namespace BioLink.Data {
 
                 if (target != null) {
                     object val = reader[i];
-                    if (val is DBNull) {
-                        val = null;
-                    } else if (val is string) {
-                        val = (val as string).TrimEnd();
+                    if (overrides.ContainsKey(name)) {
+                        val = overrides[name].Converter(val);
+                    } else {
+                        if (val is DBNull) {
+                            val = null;
+                        } else if (val is string) {
+                            val = (val as string).TrimEnd();
+                        }
                     }
+
                     target.SetValue(dest, val, null);
                 } else {
                     Logger.Debug("Could not map field '{0}' to object of type {1}", name, dest.GetType().Name);
@@ -72,13 +73,17 @@ namespace BioLink.Data {
             }
         }
 
+        public static ConvertingMapper ToNull(string columnName) {
+            return new ConvertingMapper(columnName, (@in) => null);
+        }
+
     }
 
     public class TaxonMapper : MapperBase {
 
-        public static Taxon MapTaxon(SqlDataReader reader) {
+        public static Taxon MapTaxon(SqlDataReader reader, params ConvertingMapper[] overrides) {
             Taxon t = new Taxon();
-            ReflectMap(t, reader);
+            ReflectMap(t, reader, overrides);
             return t;
         }
 
@@ -96,5 +101,15 @@ namespace BioLink.Data {
 
     }
 
+    public class ConvertingMapper {
+
+        public ConvertingMapper(string column, Converter<object, object> converter) {
+            this.ColumnName = column;
+            this.Converter = converter;
+        }
+
+        public string ColumnName { get; private set; }
+        public Converter<object, object> Converter { get; set; }
+    }
 
 }

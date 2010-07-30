@@ -147,6 +147,15 @@ namespace BioLink.Data {
             return parentage;
         }
 
+        public List<Taxon> GetExpandFullTree(int taxonId) {
+            List<Taxon> taxa = new List<Taxon>();
+            StoredProcReaderForEach("spBiotaListFullTree", (reader) => {
+                taxa.Add(TaxonMapper.MapTaxon(reader, new ConvertingMapper("NumChildren", (elem) => { return Int32.Parse(elem == null ? "-1" : elem.ToString()); })));
+            }, new SqlParameter("intParentId", taxonId));
+
+            return taxa;
+        }
+
     }
 
     public class DataValidationResult {

@@ -17,9 +17,8 @@ namespace BioLink.Client.Taxa {
 
     public class TaxonViewModel : HierarchicalViewModelBase, ITaxon {
 
-        private static Dictionary<string, string> _TaxaIconNames = new Dictionary<string, string>();
-        private static Dictionary<string, string> _TaxaIconCaptions = new Dictionary<string, string>();
-        private static Dictionary<string, Color> _TaxaIconColors = new Dictionary<string, Color>();
+        private static Dictionary<string, IconMetaData> _TaxaIconMetaData = new Dictionary<string, IconMetaData>();
+        private static Dictionary<string, BitmapSource> _ElemTypeIconCache = new Dictionary<string, BitmapSource>();
 
         private static Color DefaultBlue = Color.FromRgb(4, 4, 129);
 
@@ -49,10 +48,9 @@ namespace BioLink.Client.Taxa {
         }
 
         private static void AddIconBindings(string iconName, string caption, Color color, params string[] elemTypes) {
-            foreach (string elemType in elemTypes) {                
-                _TaxaIconNames.Add(elemType, iconName);
-                _TaxaIconCaptions.Add(elemType, caption);
-                _TaxaIconColors.Add(elemType, color);
+            foreach (string elemType in elemTypes) {
+                IconMetaData md = new IconMetaData(iconName, caption, color);
+                _TaxaIconMetaData.Add(elemType, md);
             }
         }
 
@@ -171,7 +169,20 @@ namespace BioLink.Client.Taxa {
             get { return new Pen(new SolidColorBrush(Color.FromRgb(184,71,19)), 2); }
         }
 
-        private BitmapSource ConstructIcon2() {
+        public void BulkAddChildren(List<Taxon> taxa) {
+
+            if (Children.Count == 1 && Children[0] is ViewModelPlaceholder) {
+                Children.Clear();
+            }
+
+            foreach (Taxon taxon in taxa) {
+                TaxonViewModel model = new TaxonViewModel(this, taxon);
+                Children.Add(model);
+            }
+            
+        }
+
+        private BitmapSource ConstructIcon() {
 
             // Available names don't have icons
             if (AvailableName.GetValueOrDefault(false)) {
@@ -182,96 +193,61 @@ namespace BioLink.Client.Taxa {
             if (TaxaParentID < 0) {
                 return null;
             }
+
+            BitmapSource baseIcon = null;
+
+            if (!IsChanged && _ElemTypeIconCache.ContainsKey(ElemType)) {
+                baseIcon = _ElemTypeIconCache[ElemType];
+            }
+
+            if (baseIcon != null && !IsChanged) {
+                return baseIcon;
+            }
+
+            if (baseIcon == null) {
+                RenderTargetBitmap bmp = new RenderTargetBitmap(22, 22, 96, 96, PixelFormats.Pbgra32);
+                DrawingVisual drawingVisual = new DrawingVisual();
+                DrawingContext dc = drawingVisual.RenderOpen();
+
+                IconMetaData md = null;
+                if (_TaxaIconMetaData.ContainsKey(ElemType)) {
+                    md = _TaxaIconMetaData[ElemType];
+                }
+
+                Color taxonColor = (md == null ? DefaultBlue : md.Color);
+                string caption = (md == null ? "?" : md.Caption);
+
+                Pen pen = new Pen(new SolidColorBrush(taxonColor), 2);
+                Brush textBrush = new SolidColorBrush(Color.FromArgb(200, 0, 0, 0));
+                Brush fillBrush = new SolidColorBrush(Color.FromArgb(20, taxonColor.R, taxonColor.G, taxonColor.B));
+                Typeface typeface = new Typeface(new FontFamily("Palatino Linotype,Times New Roman"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
+
+                dc.DrawRoundedRectangle(fillBrush, pen, new Rect(1, 1, 20, 20), 4, 4);
+                FormattedText t = new FormattedText(caption, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 10, textBrush);
+                double originX = (bmp.Width / 2) - (t.Width / 2);
+                double originY = (bmp.Height / 2) - (t.Height / 2);
+                dc.DrawText(t, new Point(originX, originY));
+                dc.Close();
+                bmp.Render(drawingVisual);
+                if (ElemType != null) {
+                    _ElemTypeIconCache.Add(ElemType, bmp);
+                }
+                baseIcon = bmp;
+            }
+
             
-            RenderTargetBitmap bmp = new RenderTargetBitmap(22, 22, 96, 96, PixelFormats.Pbgra32);
-            DrawingVisual drawingVisual = new DrawingVisual();
-            DrawingContext dc = drawingVisual.RenderOpen();
-
-            Color taxonColor = DefaultBlue;
-            if (_TaxaIconColors.ContainsKey(ElemType)) {
-                taxonColor = _TaxaIconColors[ElemType];
-            }
-
-#if DEBUG
-            string caption = "?" + ElemType;
-#else
-            string caption = "?";
-#endif
-
-            if (_TaxaIconCaptions.ContainsKey(ElemType)) {
-                caption = _TaxaIconCaptions[ElemType];
-            } 
-            Pen pen = AnimaliaBorder;
-            if (KingdomCode == "P") {
-                pen = PlantaeBorder;
-            }
-
-            pen = new Pen(new SolidColorBrush(taxonColor), 2);
-            Brush textBrush = new SolidColorBrush(Color.FromArgb(200,0,0,0));
-            Brush fillBrush = new SolidColorBrush(Color.FromArgb(50, taxonColor.R, taxonColor.G, taxonColor.B));
-            Typeface typeface = new Typeface(new FontFamily("Palatino Linotype,Times New Roman"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
-
-            dc.DrawRoundedRectangle(fillBrush, pen, new Rect(1, 1, 20, 20), 4, 4);
-            FormattedText t = new FormattedText(caption, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 10, textBrush);
-            double originX = (bmp.Width / 2) - (t.Width / 2);
-            double originY = (bmp.Height / 2) - (t.Height / 2);
-            dc.DrawText(t, new Point(originX, originY));
-            dc.Close();
-            bmp.Render(drawingVisual);
-
-            string assemblyName = this.GetType().Assembly.GetName().Name;
             if (IsChanged) {
-                return ImageCache.ApplyOverlay(bmp, String.Format("pack://application:,,,/{0};component/images/ChangedOverlay.png", assemblyName));
+                string assemblyName = this.GetType().Assembly.GetName().Name;
+                return ImageCache.ApplyOverlay(baseIcon, String.Format("pack://application:,,,/{0};component/images/ChangedOverlay.png", assemblyName));
             }
 
-            return bmp;
-        }
-
-        private BitmapSource ConstructIcon() {
-            BitmapSource newimage = null;
-
-            // Available names don't have icons, nor do elements missing an element type
-            if ((AvailableName.HasValue && AvailableName.Value) || ElemType == null) {
-                return newimage;
-            }
-
-            string assemblyName = this.GetType().Assembly.GetName().Name;
-            string uri = null;
-            if (_TaxaIconNames.ContainsKey(this.ElemType)) {
-                string iconName = _TaxaIconNames[this.ElemType];
-                uri = String.Format("pack://application:,,,/{0};component/images/{1}.png", assemblyName, iconName);
-                newimage = ImageCache.GetImage(uri);
-            } else {
-#if xDEBUG
-                        RenderTargetBitmap bmp = new RenderTargetBitmap(50, 20, 96, 96, PixelFormats.Pbgra32);
-                        FormattedText text = new FormattedText("[" + this.ElemType + "]", new CultureInfo("en-us"), FlowDirection.LeftToRight, new Typeface(new FontFamily("Tahoma"), FontStyles.Normal, FontWeights.Normal, new FontStretch()), 10, new SolidColorBrush(Colors.Black));
-                        DrawingVisual drawingVisual = new DrawingVisual();
-                        DrawingContext drawingContext = drawingVisual.RenderOpen();
-                        BitmapSource icon = ImageCache.GetImage(String.Format("pack://application:,,,/{0};component/images/UnknownTaxa.png", assemblyName));
-                        drawingContext.DrawImage(icon, new Rect(new Point(0, 0), new Point(20, 20)));
-                        drawingContext.DrawText(text, new Point(20, 0));
-                        drawingContext.Close();
-                        bmp.Render(drawingVisual);
-                        SetProperty("Icon", ref _image, bmp);                                                
-#else
-                newimage = ImageCache.GetImage(String.Format("pack://application:,,,/{0};component/images/UnknownTaxa.png", assemblyName));
-#endif
-            }
-
-            if (KingdomCode.Equals("P")) {
-                newimage = ImageCache.ApplyOverlay(newimage, String.Format("pack://application:,,,/{0};component/images/PlantOverlay.png", assemblyName));
-            }
-
-            if (IsChanged) {
-                newimage = ImageCache.ApplyOverlay(newimage, String.Format("pack://application:,,,/{0};component/images/ChangedOverlay.png", assemblyName));
-            }
-            return newimage;
+            return baseIcon;
         }
 
         public override BitmapSource Icon {
             get {
                 if (_image == null) {
-                    _image = ConstructIcon2();
+                    _image = ConstructIcon();
                 }
                 return _image;
             }
@@ -293,6 +269,20 @@ namespace BioLink.Client.Taxa {
         public override string ToString() {
             return String.Format("TaxonViewModel: [{0}] {1}", ElemType, TaxaFullName);
         }
+
+    }
+
+    internal class IconMetaData {
+
+        public IconMetaData(string name, string caption, Color color) {
+            this.Name = name;
+            this.Caption = caption;
+            this.Color = color;
+        }
+
+        public string Name { get; set; }
+        public string Caption { get; set; }
+        public Color Color { get; set; }
 
     }
 
