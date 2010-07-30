@@ -40,7 +40,7 @@ namespace BioLink.Client.Gazetteer {
             lstResults.ItemsSource = _searchModel;
             _owner = owner;
             if (_owner != null) {
-                string lastFile = Preferences.GetUser(_owner.User, "gazetteer.lastFile", "");
+                string lastFile = Config.GetUser(_owner.User, "gazetteer.lastFile", "");
                 if (!String.IsNullOrEmpty(lastFile)) {
                     LoadFile(lastFile);
                 }
@@ -147,7 +147,7 @@ namespace BioLink.Client.Gazetteer {
 
         public void Dispose() {
             if (_service != null) {
-                Preferences.SetUser(_owner.User, "gazetteer.lastFile", _service.Filename);
+                Config.SetUser(_owner.User, "gazetteer.lastFile", _service.Filename);
             }
         }
 

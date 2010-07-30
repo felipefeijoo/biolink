@@ -26,7 +26,7 @@ namespace BioLink.Client.Utilities {
         /// <param name="value">The new value</param>
         /// <param name="doIfChanged">An optional Action to be performed if the the property value was changed</param>
         /// <returns>true if the property has changed</returns>
-        protected bool SetProperty<T>(Expression<Func<T>> wrappedPropertyExpr, object wrappedObj, T value, Action doIfChanged = null) {
+        protected bool SetProperty<T>(Expression<Func<T>> wrappedPropertyExpr, object wrappedObj, T value, Action doIfChanged = null, bool changeAgnostic = false) {
 
             var destProp = (PropertyInfo)( (MemberExpression) wrappedPropertyExpr.Body).Member;
             T currVal = (T) destProp.GetValue(wrappedObj, null);
@@ -39,7 +39,7 @@ namespace BioLink.Client.Utilities {
                     doIfChanged();
                 }
                 RaisePropertyChanged(destProp.Name);
-                if (!SuspendChangeMonitoring) {
+                if (!SuspendChangeMonitoring && !changeAgnostic) {
                     IsChanged = true;
                 }
             }
@@ -55,12 +55,12 @@ namespace BioLink.Client.Utilities {
         /// <param name="backingField">A ref to the property backing member</param>
         /// <param name="value">The new value</param>
         /// <returns>true if the property has changed</returns>
-        protected bool SetProperty<T>(string propertyName, ref T backingField, T value) {
+        protected bool SetProperty<T>(string propertyName, ref T backingField, T value, bool changeAgnostic = false) {
             var changed = !EqualityComparer<T>.Default.Equals(backingField, value);
             if (changed) {
                 backingField = value;
                 RaisePropertyChanged(propertyName);
-                if (!SuspendChangeMonitoring) {
+                if (!SuspendChangeMonitoring && !changeAgnostic) {
                     IsChanged = true;
                 }
             }
@@ -95,7 +95,12 @@ namespace BioLink.Client.Utilities {
 
     public abstract class ViewModelBase : ChangeableModelBase {
 
-        public bool IsSelected { get; set; }
+        private bool _selected;
+
+        public bool IsSelected {
+            get { return _selected; }
+            set { SetProperty("IsSelected", ref _selected, value, true); }
+        }
 
         public abstract string Label { get; }
         public abstract BitmapSource Icon { get; set; }

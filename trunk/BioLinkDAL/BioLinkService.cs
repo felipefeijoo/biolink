@@ -71,6 +71,28 @@ namespace BioLink.Data {
             }
         }
 
+        protected void StoredProcReaderFirst(string proc, ServiceReaderAction action, params SqlParameter[] @params) {
+            using (new CodeTimer(String.Format("StoredProcReaderFirst '{0}'", proc))) {
+                Logger.Debug("Calling stored procedure (reader): {0}", proc);
+                Command((con, cmd) => {
+                    cmd.CommandText = proc;
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    foreach (SqlParameter param in @params) {
+                        cmd.Parameters.Add(param);
+                    }
+
+                    using (SqlDataReader reader = cmd.ExecuteReader()) {
+                        if (reader.Read()) {
+                            if (action != null) {
+                                action(reader);
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+
         /// <summary>
         /// Holds user credentials, and is the conduit to gaining a Connection object
         /// </summary>

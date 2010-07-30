@@ -43,7 +43,7 @@ namespace BioLink.Client.Extensibility {
                         LazyLoadChildren(this);
                     }
                 }
-                _expanded = value;
+                SetProperty("IsExpanded", ref _expanded, value, true);
             }
         }
 

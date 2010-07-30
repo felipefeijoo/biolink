@@ -2,92 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Data.SQLite;
 using System.IO;
+using System.Data.SQLite;
 using Newtonsoft.Json;
-using BioLink.Client.Utilities;
-using BioLink.Data;
 
-namespace BioLink.Client.Extensibility { 
-
+namespace BioLink.Data {
     /// <summary>
-    /// Global Biolink application preferences store
+    /// Service for saving and retrieving configuration/preference style information
     /// </summary>
-    public class Preferences {
-
-        // Singletone instance of a preference store to hold the BioLink preferences
-        private static PreferenceStore _instance;
-
-        /// <summary>
-        /// Static initialiser
-        /// </summary>
-        static Preferences() {
-            try {
-                string path = String.Format("{0}\\BioLink", Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData));
-                if (!Directory.Exists(path)) {
-                    Directory.CreateDirectory(path);
-                }
-                string prefsFile = string.Format("{0}\\BioLink.prefs", path);
-                _instance = new PreferenceStore( prefsFile);
-            } catch (Exception ex) {
-                GlobalExceptionHandler.Handle(ex);
-            }
-        }
-
-        public static string GetPreference(string key) {
-            return _instance.GetPreference(key, null);
-        }
-
-        public static T GetGlobal<T>(string key, T @default) {
-            return _instance.Get<T>(key, @default);
-        }
-
-        public static void SetGlobal<T>(string key, T value) {
-            _instance.Set<T>(key, value);
-        }
-
-        public static T GetUser<T>(User user, string key, T @default) {
-            return _instance.Get<T>(UserKey(user,key), @default);
-        }
-
-        public static void SetUser<T>(User user, string key, T value) {
-            _instance.Set<T>(UserKey(user, key), value);
-        }
-
-        public static T GetProfile<T>(User user, string key, T @default) {
-            return _instance.Get<T>(ProfileKey(user, key), @default);
-        }
-
-        public static void SetProfile<T>(User user, string key, T value) {
-            _instance.Set<T>(ProfileKey(user, key), value);
-        }
-
-        private static string UserKey(User user, string key) {
-            string username = user.Username;
-            if (String.IsNullOrEmpty(username)) {
-                username = Environment.UserName;
-            }
-            return String.Format("USERKEY.{0}.{1}", username, key);
-        }
-
-        private static string ProfileKey(User user, string key) {
-            string username = user.Username;
-            if (String.IsNullOrEmpty(username)) {
-                username = Environment.UserName;
-            }
-            return String.Format("USERPROFILEKEY.{0}.{1}.{2}", username, user.ConnectionProfile.Name, key);
-        }
-
-        public static PreferenceStore Instance {
-            get { return _instance; }
-        }
-
-    }
-
-    /// <summary>
-    /// General preferences and settings class
-    /// </summary>
-    public class PreferenceStore : SQLiteServiceBase {
+    public class ConfigurationStore : SQLiteServiceBase {
 
         // Default filename        
         private string _tableName = "Settings";
@@ -97,8 +20,9 @@ namespace BioLink.Client.Extensibility {
         /// <summary>
         /// Static initializer - establishes a preferences database if none exists
         /// </summary>
-        public PreferenceStore(string filename) : base(filename) {
-            
+        public ConfigurationStore(string filename)
+            : base(filename) {
+
             if (!File.Exists(FileName)) {
                 ResetPreferences();
             }
@@ -133,9 +57,7 @@ namespace BioLink.Client.Extensibility {
         /// </summary>
         /// <param name="key">The preference key - should be unique</param>
         /// <param name="value">The value to set</param>
-        public void SetPreference(string key, string value) {
-
-            Logger.Debug("Setting preference: {0} = {1}", key, value);
+        public void SetPreference(string key, string value) {       
 
             Command((cmd) => {
                 cmd.CommandText = String.Format(@"REPLACE INTO [{0}] VALUES (@key, @value)", _tableName);
@@ -143,7 +65,7 @@ namespace BioLink.Client.Extensibility {
                 cmd.Parameters.Add(new SQLiteParameter("@value", value));
                 cmd.ExecuteNonQuery();
             });
-            
+
         }
 
         /// <summary>
@@ -161,9 +83,9 @@ namespace BioLink.Client.Extensibility {
         /// <param name="key">the preference key</param>
         /// <param name="default">The default value if the preference key could not be found</param>
         /// <returns>The preference value, or the default value</returns>
-        public String GetPreference(string key, string @default) {            
+        public String GetPreference(string key, string @default) {
             String result = @default;
-            Command((cmd) => {                    
+            Command((cmd) => {
                 cmd.CommandText = String.Format(@"SELECT [{0}] from Settings where [{1}] = @key", _valueField, _keyField);
                 cmd.Parameters.Add(new SQLiteParameter("@key", key));
                 String value = cmd.ExecuteScalar() as string;
@@ -172,14 +94,15 @@ namespace BioLink.Client.Extensibility {
                 }
             });
 
-            Logger.Debug("Getting preference: {0} = {1}", key, result);
-            
             return result;
         }
 
         public T Get<T>(string key, T @default) {
             string str = GetPreference(key);
             if (str == null) {
+                if (@default != null) {
+                    Set(key, @default);
+                }
                 return @default;
             }
 
@@ -191,7 +114,7 @@ namespace BioLink.Client.Extensibility {
             SetPreference(key, str);
         }
 
-        public void Traverse(PreferencesVisitor visitor) {
+        public void Traverse(ConfigurationItemAction visitor) {
             Command((cmd) => {
                 cmd.CommandText = String.Format(@"SELECT [{0}],[{1}] from Settings;", _keyField, _valueField);
                 using (SQLiteDataReader reader = cmd.ExecuteReader()) {
@@ -200,19 +123,13 @@ namespace BioLink.Client.Extensibility {
                             visitor(reader[_keyField] as string, reader[_valueField] as string);
                         }
                     }
-                }                
+                }
             });
         }
 
-        private delegate object TypeParserDelegate(string s);        
+        private delegate object TypeParserDelegate(string s);
 
-    }    
-
-    public class UnhandledPreferenceTypeException : Exception {
-        public UnhandledPreferenceTypeException(Type t) : base(String.Format("Preferences can't deal with type: {0}", t.FullName)) {
-        }
     }
 
-    public delegate void PreferencesVisitor(string key, string value);
-
+    public delegate void ConfigurationItemAction(string key, string value);
 }

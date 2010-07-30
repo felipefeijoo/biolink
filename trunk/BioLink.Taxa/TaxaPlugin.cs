@@ -29,6 +29,10 @@ namespace BioLink.Client.Taxa {
             get { return "Taxa"; }
         }
 
+        public TaxaService Service {
+            get { return _taxaService; }
+        }
+
         public override List<IWorkspaceContribution> Contributions {
             get {
 
@@ -41,7 +45,7 @@ namespace BioLink.Client.Taxa {
                 _explorer = new ExplorerWorkspaceContribution<TaxonExplorer>(this, "TaxonExplorer", new TaxonExplorer(this), _R("TaxonExplorer.Title"),
                     (explorer) => {
                         // Load the model on the background thread
-                        ObservableCollection<TaxonViewModel> model = LoadTaxonViewModel();
+                        ObservableCollection<HierarchicalViewModelBase> model = LoadTaxonViewModel();
                         // and set it on the the components own thread...
                         explorer.InvokeIfRequired(() => {
                             explorer.ExplorerModel = model;
@@ -54,13 +58,13 @@ namespace BioLink.Client.Taxa {
             }
         }
 
-        public ObservableCollection<TaxonViewModel> LoadTaxonViewModel() {
+        public ObservableCollection<HierarchicalViewModelBase> LoadTaxonViewModel() {
 
             List<Taxon> taxa = _taxaService.GetTopLevelTaxa();
 
             Taxon root = new Taxon();
             root.TaxaID = 0;
-            root.TaxaParentID = 0;
+            root.TaxaParentID = -1;
             root.Epithet = _R("TaxonExplorer.explorer.root");
 
             TaxonViewModel rootNode = new TaxonViewModel(null, root);
@@ -75,24 +79,26 @@ namespace BioLink.Client.Taxa {
             });
 
             // Now see if we can auto-expand from the last session...
-            var expanded = Preferences.GetProfile<List<String>>(User, "Taxa.Explorer.ExpandedTaxa", null);
-            if (expanded != null && expanded.Count > 0) {
-                var todo = new Stack<HierarchicalViewModelBase>(rootNode.Children);
-                while (todo.Count > 0) {
-                    var vm = todo.Pop();
-                    if (vm is TaxonViewModel) {
-                        var tvm = vm as TaxonViewModel;
-                        string parentage = tvm.GetParentage();
-                        if (expanded.Contains(parentage)) {
-                            tvm.IsExpanded = true;
-                            expanded.Remove(parentage);
-                            tvm.Children.ForEach(child => todo.Push(child));
+            if (Config.GetGlobal<bool>("Taxa.RememberExpandedTaxa", true)) {
+                var expanded = Config.GetProfile<List<String>>(User, "Taxa.Explorer.ExpandedTaxa", null);
+                if (expanded != null && expanded.Count > 0) {
+                    var todo = new Stack<HierarchicalViewModelBase>(rootNode.Children);
+                    while (todo.Count > 0) {
+                        var vm = todo.Pop();
+                        if (vm is TaxonViewModel) {
+                            var tvm = vm as TaxonViewModel;
+                            string parentage = tvm.GetParentage();
+                            if (expanded.Contains(parentage)) {
+                                tvm.IsExpanded = true;
+                                expanded.Remove(parentage);
+                                tvm.Children.ForEach(child => todo.Push(child));
+                            }
                         }
                     }
                 }
             }
 
-            ObservableCollection<TaxonViewModel> model = new ObservableCollection<TaxonViewModel>();
+            ObservableCollection<HierarchicalViewModelBase> model = new ObservableCollection<HierarchicalViewModelBase>();
             model.Add(rootNode);
             rootNode.IsExpanded = true;
             return model;
@@ -254,15 +260,16 @@ namespace BioLink.Client.Taxa {
         public override void Dispose() {
             base.Dispose();
             if (_explorer != null && _explorer.Content != null) {
-                List<string> expandedElements = GetExpandedParentages(_explorer.ContentControl.ExplorerModel);
-                if (expandedElements != null) {
-                    Preferences.SetProfile(User, "Taxa.Explorer.ExpandedTaxa", expandedElements);
+                if (Config.GetGlobal<bool>("Taxa.RememberExpandedTaxa", true)) {
+                    List<string> expandedElements = GetExpandedParentages(_explorer.ContentControl.ExplorerModel);
+                    if (expandedElements != null) {
+                        Config.SetProfile(User, "Taxa.Explorer.ExpandedTaxa", expandedElements);
+                    }
                 }
-
             }
         }
 
-        private List<string> GetExpandedParentages(ObservableCollection<TaxonViewModel> model) {
+        private List<string> GetExpandedParentages<T>(ObservableCollection<T> model)  where T : HierarchicalViewModelBase {
             List<string> list = new List<string>();
             ProcessList(model, list);
             return list;

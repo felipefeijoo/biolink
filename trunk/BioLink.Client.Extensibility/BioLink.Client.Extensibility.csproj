@@ -67,7 +67,7 @@
       <DependentUpon>LatLongInput.xaml</DependentUpon>
     </Compile>
     <Compile Include="PluginManager.cs" />
-    <Compile Include="Preferences.cs" />
+    <Compile Include="Config.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="tests\PreferencesTests.cs" />
   </ItemGroup>

@@ -43,6 +43,9 @@ namespace BioLink.Client.Taxa {
             AddIconBindings("SubSection", "sse", Color.FromRgb(74, 148, 0), "SSCT");
             AddIconBindings("SubSeries", "ssr", Color.FromRgb(0, 92, 57), "SSRS");
             AddIconBindings("SubTribe", "sst", Color.FromRgb(71, 126, 161), "SBT");
+            // Special pseudo ranks...
+            AddIconBindings("SpeciesInquirenda", "SI", Color.FromRgb(0, 128, 128), "SI");
+            AddIconBindings("IncertaeSedis", "IS", Color.FromRgb(139, 197, 89), "IS");
         }
 
         private static void AddIconBindings(string iconName, string caption, Color color, params string[] elemTypes) {
@@ -170,8 +173,13 @@ namespace BioLink.Client.Taxa {
 
         private BitmapSource ConstructIcon2() {
 
-            // Available names don't have icons, nor do elements missing an element type
-            if (String.IsNullOrEmpty(ElemType) || AvailableName.GetValueOrDefault(false)) {
+            // Available names don't have icons
+            if (AvailableName.GetValueOrDefault(false)) {
+                return null;
+            }
+
+            // Also the top level container doesn't get an Icon either
+            if (TaxaParentID < 0) {
                 return null;
             }
             
@@ -184,21 +192,27 @@ namespace BioLink.Client.Taxa {
                 taxonColor = _TaxaIconColors[ElemType];
             }
 
+#if DEBUG
+            string caption = "?" + ElemType;
+#else
             string caption = "?";
+#endif
+
             if (_TaxaIconCaptions.ContainsKey(ElemType)) {
                 caption = _TaxaIconCaptions[ElemType];
-            }
-
+            } 
             Pen pen = AnimaliaBorder;
             if (KingdomCode == "P") {
                 pen = PlantaeBorder;
             }
 
             pen = new Pen(new SolidColorBrush(taxonColor), 2);
-            Brush textBrush = new SolidColorBrush(Colors.Black);
-            
-            dc.DrawRoundedRectangle(null, pen, new Rect(1, 1, 20, 20), 4, 4);
-            FormattedText t = new FormattedText(caption, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(new FontFamily("Times New Roman"), FontStyles.Normal, FontWeights.Bold, FontStretches.Normal), 10, textBrush);
+            Brush textBrush = new SolidColorBrush(Color.FromArgb(200,0,0,0));
+            Brush fillBrush = null; //  new SolidColorBrush(Color.FromArgb(10, taxonColor.R, taxonColor.G, taxonColor.B));
+            Typeface typeface = new Typeface(new FontFamily("Palatino Linotype,Times New Roman"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
+
+            dc.DrawRoundedRectangle(fillBrush, pen, new Rect(1, 1, 20, 20), 4, 4);
+            FormattedText t = new FormattedText(caption, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 10, textBrush);
             double originX = (bmp.Width / 2) - (t.Width / 2);
             double originY = (bmp.Height / 2) - (t.Height / 2);
             dc.DrawText(t, new Point(originX, originY));

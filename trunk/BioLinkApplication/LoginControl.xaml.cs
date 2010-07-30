@@ -33,9 +33,9 @@ namespace BioLinkApplication {
 
         private void SetupProfiles() {
             cmbProfile.ItemsSource = null;
-            List<ConnectionProfile> profiles = Preferences.GetGlobal<List<ConnectionProfile>>("connection.profiles", new List<ConnectionProfile>());
-            String lastProfile = Preferences.GetGlobal<string>("connection.lastprofile", null);
-            if (!Preferences.GetGlobal<bool>("connection.skiplegacyimport", false)) {
+            List<ConnectionProfile> profiles = Config.GetGlobal<List<ConnectionProfile>>("connection.profiles", new List<ConnectionProfile>());
+            String lastProfile = Config.GetGlobal<string>("connection.lastprofile", null);
+            if (!Config.GetGlobal<bool>("connection.skiplegacyimport", false)) {
 
                 LegacySettings.TraverseSubKeys("Client", "UserProfiles", (key) => {
                     ConnectionProfile profile = new ConnectionProfile();
@@ -53,9 +53,9 @@ namespace BioLinkApplication {
                 }
 
                 // Save the new list
-                Preferences.SetGlobal("connection.profiles", profiles);
+                Config.SetGlobal("connection.profiles", profiles);
                 // and we don't need to do this again!
-                Preferences.SetGlobal("connection.skiplegacyimport", true);
+                Config.SetGlobal("connection.skiplegacyimport", true);
             }
 
             cmbProfile.ItemsSource = profiles;
@@ -87,7 +87,7 @@ namespace BioLinkApplication {
                 return;
             }
 
-            Preferences.SetGlobal("connection.lastprofile", profile.Name);
+            Config.SetGlobal("connection.lastprofile", profile.Name);
 
             btnCancel.Visibility = Visibility.Hidden;
             btnLogin.Visibility = Visibility.Hidden;
@@ -184,7 +184,9 @@ namespace BioLinkApplication {
                 // if ok was pressed, reload the profiles
                 SetupProfiles();
                 // and select the last one selected in the profile manager
-                SelectProfileByName(window.SelectedProfile.Name);
+                if (window.SelectedProfile != null) {
+                    SelectProfileByName(window.SelectedProfile.Name);
+                }
             }
         }
 
