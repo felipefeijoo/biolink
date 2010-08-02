@@ -41,7 +41,7 @@
                 <Grid x:Name="allTaxaGrid">
                     <Label Content="{StaticResource TaxonExplorer.Find}" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" Width="56" HorizontalContentAlignment="Right" VerticalContentAlignment="Top" />
                     <ex:DelayedTriggerTextbox Height="23" Margin="68,6,0,0" Name="txtFind" VerticalAlignment="Top" TextChanged="txtFind_TextChanged" TypingPaused="txtFind_TypingPaused" KeyUp="txtFind_KeyUp" />
-                    <TreeView Name="tvwAllTaxa" Margin="0,35,0,0" PreviewMouseMove="tvwAllTaxa_PreviewMouseMove" PreviewMouseLeftButtonDown="tvwAllTaxa_PreviewMouseLeftButtonDown" MouseRightButtonUp="tvwAllTaxa_MouseRightButtonUp">
+                    <TreeView Name="tvwAllTaxa" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" Margin="0,35,0,0" PreviewMouseMove="tvwAllTaxa_PreviewMouseMove" PreviewMouseLeftButtonDown="tvwAllTaxa_PreviewMouseLeftButtonDown" MouseRightButtonUp="tvwAllTaxa_MouseRightButtonUp">
                         <TreeView.Resources>
                             <HierarchicalDataTemplate DataType="{x:Type src:TaxonViewModel}" ItemsSource="{Binding Path=Children}">
                                 <StackPanel Orientation="Horizontal">
