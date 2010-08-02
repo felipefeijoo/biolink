@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:src="clr-namespace:BioLink.Client.Taxa"
              xmlns:data="clr-namespace:BioLink.Data.Model;assembly=BioLink.Data"
-             xmlns:ex="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"             
+             xmlns:ex="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"                
              mc:Ignorable="d" 
              d:DesignHeight="376" d:DesignWidth="225">
     <UserControl.Resources>
@@ -41,45 +41,70 @@
                 <Grid x:Name="allTaxaGrid">
                     <Label Content="{StaticResource TaxonExplorer.Find}" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" Width="56" HorizontalContentAlignment="Right" VerticalContentAlignment="Top" />
                     <ex:DelayedTriggerTextbox Height="23" Margin="68,6,0,0" Name="txtFind" VerticalAlignment="Top" TextChanged="txtFind_TextChanged" TypingPaused="txtFind_TypingPaused" KeyUp="txtFind_KeyUp" />
-                    <TreeView Name="tvwAllTaxa" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" Margin="0,35,0,0" PreviewMouseMove="tvwAllTaxa_PreviewMouseMove" PreviewMouseLeftButtonDown="tvwAllTaxa_PreviewMouseLeftButtonDown" MouseRightButtonUp="tvwAllTaxa_MouseRightButtonUp">
-                        <TreeView.Resources>
-                            <HierarchicalDataTemplate DataType="{x:Type src:TaxonViewModel}" ItemsSource="{Binding Path=Children}">
-                                <StackPanel Orientation="Horizontal">
-                                    <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,1" />
-                                    <TextBlock Text="{Binding Path=Epithet}" VerticalAlignment="Center" />
-                                </StackPanel>
-                            </HierarchicalDataTemplate>
+                    <Border x:Name="taxaBorder" Margin="0,35,0,0" Background="White" BorderThickness="1" BorderBrush="#8C8E94">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30"></RowDefinition>
+                                <RowDefinition Height="*"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid Height="30" Background="{x:Static SystemColors.ControlBrush}">       
+                                <ToggleButton x:Name="btnLock" Margin="3,3,0,0" HorizontalAlignment="Left" Width="30" Height="24" VerticalAlignment="Top" Click="ToggleButton_Click">
+                                    <ToggleButton.Style>
+                                        <Style TargetType="{x:Type ToggleButton}">
+                                            <Setter Property="Content">
+                                                <Setter.Value>
+                                                    <Image Source="images\Locked.png" />
+                                                </Setter.Value>
+                                            </Setter>                                            
+                                            <Style.Triggers>
+                                                <Trigger Property="IsChecked" Value="True">
+                                                    <Setter Property="Content">
+                                                        <Setter.Value>
+                                                            <Image Source="images\Unlocked.png" />
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ToggleButton.Style>                                    
+                                </ToggleButton>
+                                <Button x:Name="btnApplyChanges" Margin="0,4,4,0" HorizontalAlignment="Right" Width="50" Height="22" VerticalAlignment="Top" Content="Apply" Visibility="Hidden">                                    
+                                </Button>
+                            </Grid>
+                            <Grid Grid.Row="1">
+                                <TreeView Name="tvwAllTaxa" Margin="0,0,0,0" BorderThickness="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" PreviewMouseMove="tvwAllTaxa_PreviewMouseMove" PreviewMouseLeftButtonDown="tvwAllTaxa_PreviewMouseLeftButtonDown" MouseRightButtonUp="tvwAllTaxa_MouseRightButtonUp">
+                                    <TreeView.Resources>
+                                        <HierarchicalDataTemplate DataType="{x:Type src:TaxonViewModel}" ItemsSource="{Binding Path=Children}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,1" />
+                                                <TextBlock Text="{Binding Path=Epithet}" VerticalAlignment="Center" />
+                                            </StackPanel>
+                                        </HierarchicalDataTemplate>
                             
-                            <Style TargetType="TreeViewItem">
-                                <Setter Property="IsExpanded" Value="{Binding Path=IsExpanded, Mode=TwoWay}" />
-                                <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
-                                <EventSetter Event="TreeViewItem.MouseRightButtonDown" Handler="TreeViewItem_MouseRightButtonDown"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Unverified}" Value="True">
-                                        <Setter Property="Foreground" Value="Red" />                                        
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding AvailableName}" Value="True">
-                                        <Setter Property="FontStyle" Value="Italic" />                                        
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsChanged}" Value="True">
-                                        <Setter Property="BorderBrush" Value="#FFFF0000" />
-                                    </DataTrigger>
-                                </Style.Triggers>                                
-                            </Style>
-                        </TreeView.Resources>
-                        
-                        <!--
-                        <TreeView.ItemContainerStyle>
-                            <Style TargetType="TreeViewItem">
-                                <EventSetter Event="TreeViewItem.MouseRightButtonDown" Handler="TreeViewItem_MouseRightButtonDown"/>
-                            </Style>
-                        </TreeView.ItemContainerStyle>
-                        -->
-                        
-                        <TreeViewItem>
-                            <TreeViewItem.Header>Loading...</TreeViewItem.Header>
-                        </TreeViewItem>
-                    </TreeView>
+                                        <Style TargetType="TreeViewItem">
+                                            <Setter Property="IsExpanded" Value="{Binding Path=IsExpanded, Mode=TwoWay}" />
+                                            <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
+                                            <EventSetter Event="TreeViewItem.MouseRightButtonDown" Handler="TreeViewItem_MouseRightButtonDown"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Unverified}" Value="True">
+                                                    <Setter Property="Foreground" Value="Red" />                                        
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding AvailableName}" Value="True">
+                                                    <Setter Property="FontStyle" Value="Italic" />                                        
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsChanged}" Value="True">
+                                                    <Setter Property="BorderBrush" Value="#FFFF0000" />
+                                                </DataTrigger>
+                                            </Style.Triggers>                                
+                                        </Style>
+                                    </TreeView.Resources>                                                
+                                    <TreeViewItem>
+                                        <TreeViewItem.Header>Loading...</TreeViewItem.Header>
+                                    </TreeViewItem>
+                                </TreeView>
+                            </Grid>
+                        </Grid>
+                    </Border>
                     <ListBox Name="lstResults" Visibility="Hidden" MouseRightButtonUp="lstResults_MouseRightButtonUp">                     
                         <ListBox.Resources>
                             <DataTemplate DataType="{x:Type src:TaxonViewModel}">

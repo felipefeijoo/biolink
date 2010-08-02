@@ -229,9 +229,11 @@ namespace BioLink.Client.Taxa {
                 dc.DrawText(t, new Point(originX, originY));
                 dc.Close();
                 bmp.Render(drawingVisual);
-                if (ElemType != null) {
+
+                if (ElemType != null && !_ElemTypeIconCache.ContainsKey(ElemType)) {
                     _ElemTypeIconCache.Add(ElemType, bmp);
                 }
+
                 baseIcon = bmp;
             }
 

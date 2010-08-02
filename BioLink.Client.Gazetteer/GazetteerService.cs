@@ -10,17 +10,17 @@ using BioLink.Client.Extensibility;
 
 namespace BioLink.Client.Gazetteer {
 
-    public class GazetteerService : SQLiteServiceBase {
+    public class GazetteerService : SQLiteServiceBase, IDisposable {
 
         public string Filename { get; private set; }
-        private SQLiteConnection _connection;
+        
 
         public GazetteerService(string file)
             : base(file) {
             Filename = file;
             if (File.Exists(file)) {
-                _connection = new SQLiteConnection(String.Format("Data Source={0}", Filename));
-                ValidateGazFile(_connection);
+                SQLiteConnection connection = new SQLiteConnection(String.Format("Data Source={0}", Filename));
+                ValidateGazFile(connection);
             } else {
                 throw new Exception("Gazetteer file not found!");
             }
@@ -63,7 +63,12 @@ namespace BioLink.Client.Gazetteer {
             List<CodeLabelPair> results = new List<CodeLabelPair>();
             try {                
                 SelectReader("SELECT tDatabase, tAbbreviation FROM tblDivisions", (reader) => {
-                    results.Add(new CodeLabelPair(reader["tDatabase"] as string, reader["tAbbreviation"] as string));
+                    string code = reader["tDatabase"] as string;
+                    string abbrev = reader["tAbbreviation"] as string;
+                    if (String.IsNullOrEmpty(abbrev)) {
+                        abbrev = code;
+                    }
+                    results.Add(new CodeLabelPair(code, abbrev));
                 });
             } catch (Exception ex) {
                 GlobalExceptionHandler.Handle(ex);
@@ -76,6 +81,10 @@ namespace BioLink.Client.Gazetteer {
             // TODO: check for the necessary tables and version info...
             return true;
         }
+
+        public void Dispose() {
+        }
+
     }
 
     public class PlaceName {

@@ -16,6 +16,7 @@ using BioLink.Client.Extensibility;
 using BioLink.Data;
 using System.Threading;
 using System.Collections.ObjectModel;
+using Microsoft.Win32;
 
 namespace BioLink.Client.Gazetteer {
     /// <summary>
@@ -62,8 +63,19 @@ namespace BioLink.Client.Gazetteer {
         }
 
         private void btnOpen_Click(object sender, RoutedEventArgs e) {
-            LoadFile("c:/zz/Auslig.sqlite");          
+            ChooseFile();            
         }
+
+        private void ChooseFile() {
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Title = _owner.GetCaption("Gazetteer.FileOpen.Title");
+            dlg.Filter = "Gazetteer files (*.gaz)|*.gaz|All files (*.*)|*.*";
+            bool? result = dlg.ShowDialog();
+            if (result.GetValueOrDefault(false)) {
+                LoadFile(dlg.FileName);
+            }
+        }
+
 
         private void delayedTriggerTextbox1_TypingPaused(string text) {
             DoSearch(text);
@@ -78,6 +90,7 @@ namespace BioLink.Client.Gazetteer {
 
                 lstResults.InvokeIfRequired(() => {
                     lstResults.Cursor = Cursors.Wait;
+                    lblResults.Content = _owner.GetCaption("Gazetteer.Search.Searching");
                 });
 
 
@@ -117,6 +130,8 @@ namespace BioLink.Client.Gazetteer {
                             _searchModel.Add(place);
                         }
                     });
+                } else {
+                    lblResults.Content = "";
                 }
             } catch (Exception ex) {
                 GlobalExceptionHandler.Handle(ex);
@@ -131,6 +146,7 @@ namespace BioLink.Client.Gazetteer {
         private void delayedTriggerTextbox1_TextChanged(object sender, TextChangedEventArgs e) {
             if (_searchModel != null) {
                 _searchModel.Clear();
+                lblResults.Content = "";
             }
         }
 
@@ -148,6 +164,7 @@ namespace BioLink.Client.Gazetteer {
         public void Dispose() {
             if (_service != null) {
                 Config.SetUser(_owner.User, "gazetteer.lastFile", _service.Filename);
+                _service.Dispose();
             }
         }
 
