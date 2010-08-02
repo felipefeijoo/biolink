@@ -38,7 +38,7 @@ namespace BioLink.Client.Taxa {
             InitializeComponent();
             _owner = owner;
             
-            lstResults.Margin = tvwAllTaxa.Margin;
+            lstResults.Margin = taxaBorder.Margin;
             lstResults.Visibility = Visibility.Hidden;
             _searchModel = new ObservableCollection<TaxonViewModel>();
             lstResults.ItemsSource = _searchModel;
@@ -111,14 +111,16 @@ namespace BioLink.Client.Taxa {
         }
 
         private void CommonPreviewMouseView(MouseEventArgs e, TreeView treeView) {
-            if (e.LeftButton == MouseButtonState.Pressed && !_IsDragging) {
-                Point position = e.GetPosition(tvwAllTaxa);
-                if (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance) {
-                    if (treeView.SelectedItem != null) {
-                        IInputElement hitelement = treeView.InputHitTest(_startPoint);
-                        TreeViewItem item = GetTreeViewItemClicked((FrameworkElement) hitelement, treeView);
-                        if (item != null) {                                                        
-                            StartDrag(e, treeView, item);
+            if (btnLock.IsChecked.GetValueOrDefault(false)) {
+                if (e.LeftButton == MouseButtonState.Pressed && !_IsDragging) {
+                    Point position = e.GetPosition(tvwAllTaxa);
+                    if (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance) {
+                        if (treeView.SelectedItem != null) {
+                            IInputElement hitelement = treeView.InputHitTest(_startPoint);
+                            TreeViewItem item = GetTreeViewItemClicked((FrameworkElement)hitelement, treeView);
+                            if (item != null) {
+                                StartDrag(e, treeView, item);
+                            }
                         }
                     }
                 }
@@ -365,6 +367,7 @@ namespace BioLink.Client.Taxa {
             tabAllTaxa.IsSelected = true;
             tvwAllTaxa.Visibility = Visibility.Visible;
             lstResults.Visibility = Visibility.Hidden;
+            txtFind.Text = "";
 
             JobExecutor.QueueJob(() => {
                 // First make sure the explorer tree is visible...
@@ -417,6 +420,45 @@ namespace BioLink.Client.Taxa {
             if (item != null) {
                 ShowTaxonMenu(item, lstResults);
             }
+        }
+
+        private void ToggleButton_Click(object sender, RoutedEventArgs e) {
+            
+            if (!btnLock.IsChecked.GetValueOrDefault(false) && AnyChanges()) {
+                if (this.Question("You have unsaved changes. Are you sure that you want to discard your changes without saving?", "Discard changes?")) {
+                    List<string> expanded = _owner.GetExpandedParentages(_explorerModel);
+                    if (expanded != null && expanded.Count > 0) {
+                        // need to reload the tree, and expand out to what it was before the tree was unlocked
+                        _explorerModel = _owner.LoadTaxonViewModel();
+                        if (_explorerModel != null && _explorerModel.Count > 0) {
+                            _owner.ExpandParentages(_explorerModel[0], expanded);
+                        }
+                        tvwAllTaxa.ItemsSource = _explorerModel;
+                    }
+                } else {
+                    btnLock.IsChecked = true;
+                }
+            } else {
+                // _expandedPriorToChange = _owner.GetExpandedParentages(_explorerModel);
+            }
+
+            btnApplyChanges.Visibility = btnLock.IsChecked.GetValueOrDefault(false) ? Visibility.Visible : Visibility.Hidden;
+        }
+
+        // private List<string> _expandedPriorToChange = null;
+
+        private bool AnyChanges() {
+
+            bool changed = false;
+            foreach (HierarchicalViewModelBase item in _explorerModel) {
+                item.Traverse((node) => {
+                    if (node.IsChanged) {
+                        changed = true;
+                    }
+                });
+            }
+
+            return changed;
         }
 
     }

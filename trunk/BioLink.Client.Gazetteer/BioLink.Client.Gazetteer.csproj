@@ -85,9 +85,7 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="data\Auslig.sqlite">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <Folder Include="data\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

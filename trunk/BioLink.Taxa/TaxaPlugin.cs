@@ -46,6 +46,13 @@ namespace BioLink.Client.Taxa {
                     (explorer) => {
                         // Load the model on the background thread
                         ObservableCollection<HierarchicalViewModelBase> model = LoadTaxonViewModel();
+
+                        // Now see if we can auto-expand from the last session...
+                        if (model.Count > 0 && Config.GetGlobal<bool>("Taxa.RememberExpandedTaxa", true)) {
+                            var expanded = Config.GetProfile<List<String>>(User, "Taxa.Explorer.ExpandedTaxa", null);
+                            ExpandParentages(model[0], expanded);
+                        }
+
                         // and set it on the the components own thread...
                         explorer.InvokeIfRequired(() => {
                             explorer.ExplorerModel = model;
@@ -55,6 +62,24 @@ namespace BioLink.Client.Taxa {
                 contrib.Add(_explorer);
 
                 return contrib;
+            }
+        }
+
+        public void ExpandParentages(HierarchicalViewModelBase rootNode, List<string> expanded) {
+            if (expanded != null && expanded.Count > 0) {
+                var todo = new Stack<HierarchicalViewModelBase>(rootNode.Children);
+                while (todo.Count > 0) {
+                    var vm = todo.Pop();
+                    if (vm is TaxonViewModel) {
+                        var tvm = vm as TaxonViewModel;
+                        string parentage = tvm.GetParentage();
+                        if (expanded.Contains(parentage)) {
+                            tvm.IsExpanded = true;
+                            expanded.Remove(parentage);
+                            tvm.Children.ForEach(child => todo.Push(child));
+                        }
+                    }
+                }
             }
         }
 
@@ -72,31 +97,11 @@ namespace BioLink.Client.Taxa {
             taxa.ForEach((taxon) => {
                 TaxonViewModel item = new TaxonViewModel(rootNode, taxon);
                 if (item.NumChildren > 0) {
-                    item.LazyLoadChildren += new HierarchicalViewModelDelegate(item_LazyLoadChildren);
+                    item.LazyLoadChildren += new HierarchicalViewModelAction(item_LazyLoadChildren);
                     item.Children.Add(new ViewModelPlaceholder(_R("TaxonExplorer.explorer.loading", item.Epithet)));
                 }
                 rootNode.Children.Add(item);
             });
-
-            // Now see if we can auto-expand from the last session...
-            if (Config.GetGlobal<bool>("Taxa.RememberExpandedTaxa", true)) {
-                var expanded = Config.GetProfile<List<String>>(User, "Taxa.Explorer.ExpandedTaxa", null);
-                if (expanded != null && expanded.Count > 0) {
-                    var todo = new Stack<HierarchicalViewModelBase>(rootNode.Children);
-                    while (todo.Count > 0) {
-                        var vm = todo.Pop();
-                        if (vm is TaxonViewModel) {
-                            var tvm = vm as TaxonViewModel;
-                            string parentage = tvm.GetParentage();
-                            if (expanded.Contains(parentage)) {
-                                tvm.IsExpanded = true;
-                                expanded.Remove(parentage);
-                                tvm.Children.ForEach(child => todo.Push(child));
-                            }
-                        }
-                    }
-                }
-            }
 
             ObservableCollection<HierarchicalViewModelBase> model = new ObservableCollection<HierarchicalViewModelBase>();
             model.Add(rootNode);
@@ -115,7 +120,7 @@ namespace BioLink.Client.Taxa {
                 foreach (Taxon taxon in taxa) {
                     TaxonViewModel child = new TaxonViewModel(tvm, taxon);
                     if (child.NumChildren > 0) {
-                        child.LazyLoadChildren += new HierarchicalViewModelDelegate(item_LazyLoadChildren);
+                        child.LazyLoadChildren += new HierarchicalViewModelAction(item_LazyLoadChildren);
                         child.Children.Add(new ViewModelPlaceholder("Loading..."));
                     }
                     item.Children.Add(child);
@@ -269,7 +274,7 @@ namespace BioLink.Client.Taxa {
             }
         }
 
-        private List<string> GetExpandedParentages<T>(ObservableCollection<T> model)  where T : HierarchicalViewModelBase {
+        public List<string> GetExpandedParentages<T>(ObservableCollection<T> model)  where T : HierarchicalViewModelBase {
             List<string> list = new List<string>();
             ProcessList(model, list);
             return list;

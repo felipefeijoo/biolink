@@ -61,7 +61,7 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        public void TraverseToTop(HierarchicalViewModelDelegate func) {
+        public void TraverseToTop(HierarchicalViewModelAction func) {
             HierarchicalViewModelBase p = this;
             while (p != null) {
                 func(p);
@@ -69,15 +69,29 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
+        public void Traverse(HierarchicalViewModelAction action) {
+            if (action == null) { 
+                return; 
+            }
+
+            // Firstly visit me...
+            action(this);
+            // then each of my children
+            foreach (HierarchicalViewModelBase child in Children) {
+                child.Traverse(action);
+            }
+            
+        }
+
         public HierarchicalViewModelBase Parent { get; set; }
 
         public ObservableCollection<HierarchicalViewModelBase> Children { get; private set; }
 
-        public event HierarchicalViewModelDelegate LazyLoadChildren;
+        public event HierarchicalViewModelAction LazyLoadChildren;
 
     }
 
-    public delegate void HierarchicalViewModelDelegate(HierarchicalViewModelBase item);
+    public delegate void HierarchicalViewModelAction(HierarchicalViewModelBase item);
 
 
     public class ViewModelPlaceholder : HierarchicalViewModelBase {

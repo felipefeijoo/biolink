@@ -6,8 +6,10 @@
     <system:String x:Key="Gazetteer.Menu.View">_View</system:String>
     <system:String x:Key="Gazetteer.Menu.ShowExplorer">Show _Gazetteer</system:String>
     <system:String x:Key="Gazetteer.Title">Gazetteer</system:String>
+    <system:String x:Key="Gazetteer.FileOpen.Title">Choose a gazetteer file</system:String>
     <system:String x:Key="Gazetteer.Find">Find:</system:String>
     <system:String x:Key="Gazetteer.SelectFile">Select a gazetteer file to begin</system:String>
+    <system:String x:Key="Gazetteer.Search.Searching">Searching...</system:String>    
     <system:String x:Key="Gazetteer.btnOpen">Select file...</system:String>
     <system:String x:Key="Gazetteer.btnOpen.change">Change...</system:String>
     <system:String x:Key="Gazetteer.chkLimit">Limit search to</system:String>
