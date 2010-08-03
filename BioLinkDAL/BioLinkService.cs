@@ -13,6 +13,8 @@ namespace BioLink.Data {
     /// </summary>
     public abstract class BioLinkService {
 
+        private SqlTransaction _transaction = null;
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -33,12 +35,35 @@ namespace BioLink.Data {
             }
 
             // Get a connection
-            using (SqlConnection conn = User.GetConnection()) {
-                // and create a command instance
-                using (SqlCommand command = conn.CreateCommand()) {
+            bool cleanupConnection = false;
+            SqlConnection connection = null;
+            if (_transaction == null || _transaction.Connection == null) {
+                connection = User.GetConnection();
+                cleanupConnection = true;
+            } else {
+                connection = _transaction.Connection;
+            }
+
+            
+            // and create a command instance
+            try {
+                using (SqlCommand command = connection.CreateCommand()) {
                     // invoke the action with the command
-                    action(conn, command);
+                    action(connection, command);
                 }
+            } finally {
+                if (cleanupConnection) {
+                    connection.Dispose();
+                }
+            }
+            
+        }
+
+        private SqlConnection GetConnection() {
+            if (_transaction == null || _transaction.Connection == null) {
+                return User.GetConnection();
+            } else {
+                return _transaction.Connection;
             }
         }
 
@@ -56,6 +81,9 @@ namespace BioLink.Data {
                 Command((con, cmd) => {
                     cmd.CommandText = proc;
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    if (_transaction != null) {
+                        cmd.Transaction = _transaction;
+                    }
                     foreach (SqlParameter param in @params) {
                         cmd.Parameters.Add(param);
                     }
@@ -77,6 +105,9 @@ namespace BioLink.Data {
                 Command((con, cmd) => {
                     cmd.CommandText = proc;
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    if (_transaction != null) {
+                        cmd.Transaction = _transaction;
+                    }
                     foreach (SqlParameter param in @params) {
                         cmd.Parameters.Add(param);
                     }
@@ -92,6 +123,56 @@ namespace BioLink.Data {
             }
         }
 
+        protected int StoredProcUpdate(string proc, params SqlParameter[] @params) {
+            int rowsAffected = -1;
+            using (new CodeTimer(String.Format("StoredProcUpdate '{0}'", proc))) {
+                Logger.Debug("Calling stored procedure (update): {0}", proc);
+                Command((con, cmd) => {
+                    cmd.CommandText = proc;
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    if (_transaction != null) {
+                        cmd.Transaction = _transaction;
+                    }
+                    foreach (SqlParameter param in @params) {
+                        cmd.Parameters.Add(param);
+                    }
+                    rowsAffected = cmd.ExecuteNonQuery();
+                });
+            }
+            return rowsAffected;
+        }
+
+        public void BeginTransaction() {
+            if (_transaction != null) {
+                throw new Exception("A pending transaction already exists!");
+            }
+
+            SqlConnection conn = User.GetConnection();
+            _transaction = conn.BeginTransaction();
+        }
+
+        public void RollbackTransaction() {
+            if (_transaction != null && _transaction.Connection != null) {
+                _transaction.Rollback();
+                _transaction.Dispose();
+                _transaction = null;
+            }
+        }
+
+        public void CommitTransaction() {
+            if (_transaction != null && _transaction.Connection != null) {
+                _transaction.Commit();
+                _transaction.Dispose();
+                _transaction = null;
+            }
+        }
+
+        protected SqlParameter _P(string name, object value, object defIfNull = null) {
+            if (value == null) {
+                value = defIfNull;
+            }
+            return new SqlParameter(name, value);
+        }
 
         /// <summary>
         /// Holds user credentials, and is the conduit to gaining a Connection object

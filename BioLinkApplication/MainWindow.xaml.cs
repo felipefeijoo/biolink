@@ -45,15 +45,24 @@ namespace BioLinkApplication {
             _hostControl.StartUp();
         }
 
-        private void Window_Closed(object sender, EventArgs e) {
-            Shutdown();
+        public bool Shutdown() {
+            if (_hostControl != null) {
+                if (_hostControl.RequestShutdown()) {
+                    _hostControl.Dispose();
+                    Environment.Exit(0);
+                } else {
+                    return false;
+                }
+            } else {
+                Environment.Exit(0);
+            }
+            return false;
         }
 
-        public void Shutdown() {
-            if (_hostControl != null) {
-                _hostControl.Dispose();
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+            if (!Shutdown()) {
+                e.Cancel = true;
             }
-            Environment.Exit(0);
         }
 
     }

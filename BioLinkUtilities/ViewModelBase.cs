@@ -104,6 +104,7 @@ namespace BioLink.Client.Utilities {
 
         public abstract string Label { get; }
         public abstract BitmapSource Icon { get; set; }
+        
     }
 
 }

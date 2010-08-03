@@ -12,12 +12,12 @@ namespace BioLink.Client.Taxa {
     /// </summary>
     public class TaxonDropContext {
 
-        public TaxonDropContext(TaxonViewModel source, TaxonViewModel target, TaxaService service) {
-            this.TaxaService = service;
+        public TaxonDropContext(TaxonViewModel source, TaxonViewModel target, TaxaPlugin plugin) {
+            this.TaxaPlugin = plugin;
             this.Source = source;
             this.Target = target;
-            this.SourceRank = service.GetTaxonRank(source.ElemType);
-            this.TargetRank = service.GetTaxonRank(target.ElemType);
+            this.SourceRank = TaxaPlugin.Service.GetTaxonRank(source.ElemType);
+            this.TargetRank = TaxaPlugin.Service.GetTaxonRank(target.ElemType);
             this.SourceChildRank = GetChildElementType(source);
             this.TargetChildRank = GetChildElementType(target);
         }
@@ -27,7 +27,7 @@ namespace BioLink.Client.Taxa {
         /// </summary>
         /// <param name="parent"></param>
         /// <returns></returns>
-        private TaxonRank GetChildElementType(TaxonViewModel parent) {
+        public TaxonRank GetChildElementType(TaxonViewModel parent) {
 
             if (!parent.IsExpanded) {
                 parent.IsExpanded = true; // This will load the children, if they are not already loaded...
@@ -35,7 +35,11 @@ namespace BioLink.Client.Taxa {
 
             foreach (TaxonViewModel child in parent.Children) {
 
-                if (!String.IsNullOrEmpty(child.ElemType)) {
+                if (String.IsNullOrEmpty(child.ElemType)) {
+                    continue;
+                }
+
+                if (child.AvailableName.GetValueOrDefault(false) || child.LiteratureName.GetValueOrDefault(false)) {
                     continue;
                 }
 
@@ -43,7 +47,7 @@ namespace BioLink.Client.Taxa {
                     continue;
                 }
 
-                return TaxaService.GetTaxonRank(child.ElemType);
+                return TaxaPlugin.Service.GetTaxonRank(child.ElemType);
             }
 
             return null;
@@ -54,9 +58,9 @@ namespace BioLink.Client.Taxa {
         public TaxonViewModel Target { get; private set; }
         public TaxonRank SourceRank { get; private set; }
         public TaxonRank TargetRank { get; private set; }
-        public TaxonRank SourceChildRank { get; private set; }
-        public TaxonRank TargetChildRank { get; private set; }
-        public TaxaService TaxaService { get; private set; }
+        public TaxonRank SourceChildRank { get; set; }
+        public TaxonRank TargetChildRank { get; set; }        
+        public TaxaPlugin TaxaPlugin { get; private set; }
 
     }
 }
