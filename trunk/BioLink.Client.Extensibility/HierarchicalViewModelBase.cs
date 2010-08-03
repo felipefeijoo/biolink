@@ -116,5 +116,6 @@ namespace BioLink.Client.Extensibility {
                 _icon = value;
             }
         }
+
     }
 }

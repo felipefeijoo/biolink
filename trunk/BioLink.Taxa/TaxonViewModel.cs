@@ -54,6 +54,8 @@ namespace BioLink.Client.Taxa {
             }
         }
 
+        private BitmapSource _image;       
+
         public TaxonViewModel(TaxonViewModel parent, Taxon taxon)
             : base() {
             this.Parent = parent;
@@ -159,8 +161,6 @@ namespace BioLink.Client.Taxa {
             set { SetProperty(() => Taxon.NumChildren, Taxon, value); }
         }
 
-        private BitmapSource _image;
-
         private Pen AnimaliaBorder {
             get { return new Pen(new SolidColorBrush(Colors.Black), 2); }
         }
@@ -184,9 +184,17 @@ namespace BioLink.Client.Taxa {
 
         private BitmapSource ConstructIcon() {
 
-            // Available names don't have icons
-            if (AvailableName.GetValueOrDefault(false)) {
-                return null;
+            // This is used to construct image uri's, if required...
+            string assemblyName = this.GetType().Assembly.GetName().Name;
+
+            // Available and Literature names don't have icons
+            if (AvailableName.GetValueOrDefault(false) || LiteratureName.GetValueOrDefault(false)) {
+                // Unless they've been changed, in which they get the 
+                if (IsChanged) {
+                    return ImageCache.GetImage(String.Format("pack://application:,,,/{0};component/images/ChangedOverlay.png", assemblyName));
+                } else {                    
+                    return null;
+                }
             }
 
             // Also the top level container doesn't get an Icon either
@@ -196,7 +204,7 @@ namespace BioLink.Client.Taxa {
 
             BitmapSource baseIcon = null;
 
-            if (!IsChanged && _ElemTypeIconCache.ContainsKey(ElemType)) {
+            if (_ElemTypeIconCache.ContainsKey(ElemType)) {
                 baseIcon = _ElemTypeIconCache[ElemType];
             }
 
@@ -238,8 +246,7 @@ namespace BioLink.Client.Taxa {
             }
 
             
-            if (IsChanged) {
-                string assemblyName = this.GetType().Assembly.GetName().Name;
+            if (IsChanged) {                
                 return ImageCache.ApplyOverlay(baseIcon, String.Format("pack://application:,,,/{0};component/images/ChangedOverlay.png", assemblyName));
             }
 

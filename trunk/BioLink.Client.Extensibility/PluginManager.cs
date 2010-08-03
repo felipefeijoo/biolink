@@ -166,6 +166,15 @@ namespace BioLink.Client.Extensibility {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
+        public bool RequestShutdown() {
+            foreach (IBioLinkPlugin plugin in _plugins.Values) {
+                if (!plugin.RequestShutdown()) {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 
 }

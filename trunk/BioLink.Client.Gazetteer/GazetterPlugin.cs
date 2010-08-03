@@ -39,6 +39,10 @@ namespace BioLink.Client.Gazetteer {
             }
         }
 
+        public override bool RequestShutdown() {
+            return true;
+        }
+
         public override void Dispose() {
             if (_gazetter != null) {
                 (_gazetter.Content as Gazetteer).Dispose();

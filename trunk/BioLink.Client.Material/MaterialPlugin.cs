@@ -40,5 +40,9 @@ namespace BioLink.Client.Material {
             }
         }
 
+        public override bool RequestShutdown() {
+            return true;
+        }
+
     }
 }

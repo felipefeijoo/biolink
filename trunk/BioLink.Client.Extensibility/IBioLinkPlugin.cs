@@ -16,6 +16,7 @@ namespace BioLink.Client.Extensibility {
         List<IWorkspaceContribution> Contributions { get; }
         User User { get; set; }
         PluginManager PluginManager { get; set; }
+        bool RequestShutdown();
     }
 
     /// <summary>

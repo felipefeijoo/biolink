@@ -69,6 +69,8 @@ namespace BioLink.Client.Extensibility {
 
         public abstract List<IWorkspaceContribution> Contributions { get; }
 
+        public abstract bool RequestShutdown();
+
         public virtual void Dispose() {            
         }
 

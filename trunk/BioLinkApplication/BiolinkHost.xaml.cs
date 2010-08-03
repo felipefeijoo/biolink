@@ -210,6 +210,9 @@ namespace BioLinkApplication {
             MainWindow.Instance.Shutdown();
         }
 
+        public bool RequestShutdown() {
+            return _pluginManager.RequestShutdown();
+        }
 
         public void Dispose() {
             Dispose(true);

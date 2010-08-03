@@ -20,12 +20,12 @@ using System.Threading;
 
 namespace BioLink.Client.Taxa {
 
-    
+
     /// <summary>
     /// Interaction logic for TaxonExplorer.xaml
     /// </summary>
     public partial class TaxonExplorer : UserControl {
-        
+
         private TaxaPlugin _owner;
         private ObservableCollection<HierarchicalViewModelBase> _explorerModel;
         private ObservableCollection<TaxonViewModel> _searchModel;
@@ -37,7 +37,7 @@ namespace BioLink.Client.Taxa {
         public TaxonExplorer(TaxaPlugin owner) {
             InitializeComponent();
             _owner = owner;
-            
+
             lstResults.Margin = taxaBorder.Margin;
             lstResults.Visibility = Visibility.Hidden;
             _searchModel = new ObservableCollection<TaxonViewModel>();
@@ -59,11 +59,11 @@ namespace BioLink.Client.Taxa {
 
             if (String.IsNullOrEmpty(txtFind.Text)) {
                 tvwAllTaxa.Visibility = System.Windows.Visibility.Visible;
-                lstResults.Visibility = Visibility.Hidden;                
+                lstResults.Visibility = Visibility.Hidden;
             } else {
                 _searchModel.Clear();
                 tvwAllTaxa.Visibility = Visibility.Hidden;
-                lstResults.Visibility = Visibility.Visible;                
+                lstResults.Visibility = Visibility.Visible;
             }
         }
 
@@ -111,16 +111,19 @@ namespace BioLink.Client.Taxa {
         }
 
         private void CommonPreviewMouseView(MouseEventArgs e, TreeView treeView) {
-            if (btnLock.IsChecked.GetValueOrDefault(false)) {
-                if (e.LeftButton == MouseButtonState.Pressed && !_IsDragging) {
-                    Point position = e.GetPosition(tvwAllTaxa);
-                    if (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance) {
-                        if (treeView.SelectedItem != null) {
+
+            if (e.LeftButton == MouseButtonState.Pressed && !_IsDragging) {
+                Point position = e.GetPosition(tvwAllTaxa);
+                if (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance) {
+                    if (treeView.SelectedItem != null) {
+                        if (btnLock.IsChecked.GetValueOrDefault(false)) {
                             IInputElement hitelement = treeView.InputHitTest(_startPoint);
                             TreeViewItem item = GetTreeViewItemClicked((FrameworkElement)hitelement, treeView);
                             if (item != null) {
                                 StartDrag(e, treeView, item);
                             }
+                        } else {
+                            lblHeader.Visibility = Visibility.Visible;
                         }
                     }
                 }
@@ -150,7 +153,7 @@ namespace BioLink.Client.Taxa {
             DependencyObject elem = tvw.InputHitTest(e.GetPosition(tvw)) as DependencyObject;
             while (elem != null && !(elem is TreeViewItem)) {
                 elem = VisualTreeHelper.GetParent(elem);
-            }            
+            }
             return elem as TreeViewItem;
         }
 
@@ -160,11 +163,11 @@ namespace BioLink.Client.Taxa {
 
             if (t != null && tvw != null) {
 
-                TreeViewItem destItem = GetHoveredTreeViewItem(e);                
-                if (destItem != null) {                    
+                TreeViewItem destItem = GetHoveredTreeViewItem(e);
+                if (destItem != null) {
                     TaxonViewModel destTaxon = destItem.Header as TaxonViewModel;
                     if (destTaxon != null) {
-                        destItem.IsSelected = true;                                            
+                        destItem.IsSelected = true;
                     }
                 }
 
@@ -177,11 +180,11 @@ namespace BioLink.Client.Taxa {
         }
 
         private void DragScope_DragLeave(object source, DragEventArgs e) {
-            
+
             TreeViewItem destItem = GetHoveredTreeViewItem(e);
             if (destItem != null) {
                 TaxonViewModel destTaxon = destItem.Header as TaxonViewModel;
-                if (destTaxon != null) {                    
+                if (destTaxon != null) {
                 }
             }
 
@@ -191,13 +194,13 @@ namespace BioLink.Client.Taxa {
                 if (!r.Contains(p)) {
                     this._dragHasLeftScope = true;
                     e.Handled = true;
-                } 
+                }
             }
         }
 
         private void DragScope_QueryContinueDrag(object source, QueryContinueDragEventArgs e) {
             if (e.EscapePressed) {
-                e.Action = DragAction.Cancel;                
+                e.Action = DragAction.Cancel;
             }
             if (this._dragHasLeftScope) {
                 e.Action = DragAction.Cancel;
@@ -232,10 +235,11 @@ namespace BioLink.Client.Taxa {
                 (_owner as TaxaPlugin).ProcessTaxonDragDrop(src, dest);
             } catch (IllegalTaxonMoveException ex) {
                 MessageBox.Show(ex.Message, String.Format("Cannot move '{0}'", src.Epithet), MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                src.IsSelected = true;
             }
         }
 
-        private void StartDrag(MouseEventArgs e, TreeView treeView, TreeViewItem item) {            
+        private void StartDrag(MouseEventArgs e, TreeView treeView, TreeViewItem item) {
             _dragScope = treeView;
             bool previousDrop = _dragScope.AllowDrop;
             _dragScope.AllowDrop = true;
@@ -251,7 +255,7 @@ namespace BioLink.Client.Taxa {
             _dragScope.PreviewDragOver += draghandler;
 
             DragEventHandler dragleavehandler = new DragEventHandler(DragScope_DragLeave);
-            _dragScope.DragLeave += dragleavehandler;            
+            _dragScope.DragLeave += dragleavehandler;
 
             QueryContinueDragEventHandler queryhandler = new QueryContinueDragEventHandler(DragScope_QueryContinueDrag);
             _dragScope.QueryContinueDrag += queryhandler;
@@ -324,7 +328,7 @@ namespace BioLink.Client.Taxa {
 
             ContextMenu menu = new ContextMenu();
 
-            if (source is ListBox) {                
+            if (source is ListBox) {
                 menu.Items.Add(BuildMenuItem("Show in explorer", (sender, e) => { ShowInExplorer(taxon); }));
                 menu.Items.Add(new Separator());
             } else if (source is TreeView) {
@@ -332,17 +336,29 @@ namespace BioLink.Client.Taxa {
                     JobExecutor.QueueJob(() => {
                         tvwAllTaxa.InvokeIfRequired(() => {
                             tvwAllTaxa.Cursor = Cursors.Wait;
-                            ExpandChildren(taxon);                            
+                            ExpandChildren(taxon);
                             tvwAllTaxa.Cursor = Cursors.Arrow;
                         });
                     });
                 }));
             }
 
-            MenuItem testitem = new MenuItem();
-            testitem.Header = "Test";
-            testitem.Click += new RoutedEventHandler((sender, e) => { MessageBox.Show("Yeah!"); });
-            menu.Items.Add(testitem);
+            menu.Items.Add(new Separator());
+
+            MenuItem refresh = new MenuItem();
+            refresh.Header = "_Refresh";
+
+            refresh.Click += new RoutedEventHandler((sender, e) => {
+                if (AnyChanges()) {
+                    if (this.Question("You have unsaved changes. Refreshing will cause those changes to be discarded. Are you sure you want to discard unsaved changes?", "Discard unsaved changes?")) {
+                        ReloadModel();
+                    }
+                } else {
+                    ReloadModel();
+                }
+            });
+
+            menu.Items.Add(refresh);
 
             source.ContextMenu = menu;
         }
@@ -351,7 +367,7 @@ namespace BioLink.Client.Taxa {
             if (remaining == null) {
                 remaining = _owner.Service.GetExpandFullTree(taxon.TaxaID.Value);
             }
-            if (!taxon.IsExpanded) {                
+            if (!taxon.IsExpanded) {
                 taxon.BulkAddChildren(remaining.FindAll((elem) => { return elem.TaxaParentID == taxon.TaxaID; }));
                 remaining.RemoveAll((elem) => { return elem.TaxaParentID == taxon.TaxaID; });
                 taxon.IsExpanded = true;
@@ -363,7 +379,7 @@ namespace BioLink.Client.Taxa {
         }
 
         private void ShowInExplorer(TaxonViewModel taxon) {
-            
+
             tabAllTaxa.IsSelected = true;
             tvwAllTaxa.Visibility = Visibility.Visible;
             lstResults.Visibility = Visibility.Hidden;
@@ -386,7 +402,7 @@ namespace BioLink.Client.Taxa {
             // Start at the top...
             ObservableCollection<HierarchicalViewModelBase> col = _explorerModel;
             TaxonViewModel child = null;
-            
+
             foreach (string taxonId in bits) {
                 if (!String.IsNullOrEmpty(taxonId)) {
                     int intTaxonId = Int32.Parse(taxonId);
@@ -403,8 +419,8 @@ namespace BioLink.Client.Taxa {
             if (child != null) {
                 tvwAllTaxa.Focus();
                 child.IsSelected = true;
-            }            
-                        
+            }
+
         }
 
         private void TreeViewItem_MouseRightButtonDown(object sender, MouseEventArgs e) {
@@ -423,31 +439,40 @@ namespace BioLink.Client.Taxa {
         }
 
         private void ToggleButton_Click(object sender, RoutedEventArgs e) {
-            
+
+            lblHeader.Visibility = Visibility.Hidden;
+
             if (!btnLock.IsChecked.GetValueOrDefault(false) && AnyChanges()) {
-                if (this.Question("You have unsaved changes. Are you sure that you want to discard your changes without saving?", "Discard changes?")) {
-                    List<string> expanded = _owner.GetExpandedParentages(_explorerModel);
-                    if (expanded != null && expanded.Count > 0) {
-                        // need to reload the tree, and expand out to what it was before the tree was unlocked
-                        _explorerModel = _owner.LoadTaxonViewModel();
-                        if (_explorerModel != null && _explorerModel.Count > 0) {
-                            _owner.ExpandParentages(_explorerModel[0], expanded);
-                        }
-                        tvwAllTaxa.ItemsSource = _explorerModel;
-                    }
+                if (this.Question(_owner.GetCaption("TaxonExplorer.prompt.LockDiscardChanges"), _owner.GetCaption("TaxonExplorer.prompt.ConfirmAction.Caption"))) {
+                    ReloadModel();
                 } else {
                     btnLock.IsChecked = true;
                 }
-            } else {
-                // _expandedPriorToChange = _owner.GetExpandedParentages(_explorerModel);
             }
 
             btnApplyChanges.Visibility = btnLock.IsChecked.GetValueOrDefault(false) ? Visibility.Visible : Visibility.Hidden;
         }
 
-        // private List<string> _expandedPriorToChange = null;
+        public void ReloadModel(bool rememberExpanded = true) {
+            // Keep track of which nodes are expanded.
+            List<string> expanded = null;
+            if (rememberExpanded) {
+                expanded = _owner.GetExpandedParentages(_explorerModel);
+            }
 
-        private bool AnyChanges() {
+            // Reload the model
+            _explorerModel = _owner.LoadTaxonViewModel();
+            if (expanded != null && expanded.Count > 0) {
+                // expand out to what it was before the tree was re-locked                        
+                if (_explorerModel != null && _explorerModel.Count > 0) {
+                    _owner.ExpandParentages(_explorerModel[0], expanded);
+                }
+            }
+            _owner.ClearPendingChanges();
+            tvwAllTaxa.ItemsSource = _explorerModel;
+        }
+
+        public bool AnyChanges() {
 
             bool changed = false;
             foreach (HierarchicalViewModelBase item in _explorerModel) {
@@ -461,18 +486,27 @@ namespace BioLink.Client.Taxa {
             return changed;
         }
 
+        private void btnApplyChanges_Click(object sender, RoutedEventArgs e) {
+
+            if (AnyChanges()) {
+                _owner.CommitPendingChanges();
+            }
+
+        }
+
     }
 
     class DragAdorner : Adorner {
 
-        protected UIElement _child;        
+        protected UIElement _child;
         protected UIElement _owner;
         protected double XCenter;
         protected double YCenter;
 
         public DragAdorner(UIElement owner) : base(owner) { }
 
-        public DragAdorner(UIElement owner, TreeViewItem adornElement, bool useVisualBrush, double opacity, Point offset) : base(owner) {
+        public DragAdorner(UIElement owner, TreeViewItem adornElement, bool useVisualBrush, double opacity, Point offset)
+            : base(owner) {
             System.Diagnostics.Debug.Assert(owner != null);
             System.Diagnostics.Debug.Assert(adornElement != null);
             _owner = owner;
@@ -483,11 +517,11 @@ namespace BioLink.Client.Taxa {
                 _brush.Stretch = Stretch.None;
                 _brush.AlignmentY = AlignmentY.Top;
                 _brush.AlignmentX = AlignmentX.Left;
-                Rectangle r = new Rectangle();                
+                Rectangle r = new Rectangle();
                 r.Width = adornElement.ActualWidth;
                 r.Height = adornElement.ActualHeight;
                 XCenter = offset.X;
-                YCenter = offset.Y;                
+                YCenter = offset.Y;
                 r.Fill = _brush;
                 _child = r;
             } else {

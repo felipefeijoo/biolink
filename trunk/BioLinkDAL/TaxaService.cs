@@ -104,7 +104,7 @@ namespace BioLink.Data {
             return set;
         }
 
-        private bool IsValidChild(TaxonRank src, TaxonRank dest) {
+        public bool IsValidChild(TaxonRank src, TaxonRank dest) {
             ISet<string> valid = SplitCSV(dest.ValidChildList);
             return valid.Contains(src.Code, StringComparer.OrdinalIgnoreCase);
         }
@@ -154,6 +154,39 @@ namespace BioLink.Data {
             }, new SqlParameter("intParentId", taxonId));
 
             return taxa;
+        }
+
+        public void MoveTaxon(int taxonId, int newParentId) {
+            StoredProcUpdate("spBiotaMove", _P("intTaxaID", taxonId), _P("intNewParentID", newParentId));           
+        }
+
+        public void UpdateTaxon(Taxon taxon) {
+            StoredProcUpdate("spBiotaUpdate", 
+                _P("intBiotaID", taxon.TaxaID), 
+                _P("vchrEpithet", taxon.Epithet),
+                _P("vchrAuthor", taxon.Author),
+                _P("vchrYearOfPub", taxon.YearOfPub),
+                _P("bitChgComb", taxon.ChgComb),
+                _P("chrElemType", taxon.ElemType),
+                _P("bitUnplaced", taxon.Unplaced),
+                _P("bitUnverified", taxon.Unverified),
+                _P("vchrRank", taxon.Rank),
+                _P("intOrder", taxon.Order),
+                _P("chrKingdomCode", taxon.KingdomCode),
+                _P("bitAvailableName", taxon.AvailableName),
+                _P("bitLiteratureName", taxon.LiteratureName),
+                _P("vchrAvailableNameStatus", taxon.NameStatus, ""));
+        }
+
+        public void MergeTaxon(int sourceId, int targetId, bool createNewIDRecord) {
+            StoredProcUpdate("spBiotaPreDeleteMerge",
+                _P("intRemovedBiotaID", sourceId),
+                _P("intMergedWithBiotaID", targetId),
+                _P("bitCreateNewIDRecord", createNewIDRecord));
+        }
+
+        public void DeleteTaxon(int taxonId) {
+            StoredProcUpdate("spBiotaDelete", _P("intTaxaID", taxonId));
         }
 
     }

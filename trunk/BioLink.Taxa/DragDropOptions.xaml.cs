@@ -57,7 +57,7 @@ namespace BioLink.Client.Taxa {
 
             List<TaxonRank> conversionOptions = new List<TaxonRank>();
             if (context.TargetChildRank == null) {
-                conversionOptions.AddRange(context.TaxaService.GetChildRanks(context.TargetRank));
+                conversionOptions.AddRange(context.TaxaPlugin.Service.GetChildRanks(context.TargetRank));
             } else {
                 conversionOptions.Add(context.TargetChildRank);
             }
@@ -65,34 +65,53 @@ namespace BioLink.Client.Taxa {
             // Prepare the form depending on how many conversion options there all
             if (conversionOptions.Count == 0) {
                 // No conversion options - only show the merge option
-                grid.RowDefinitions[0].Height = Forty;
+                grid.RowDefinitions[0].Height = new GridLength(80);
                 grid.RowDefinitions[1].Height = Zero;
                 grid.RowDefinitions[2].Height = Zero;                
             } else if (conversionOptions.Count == 1) {
                 var targetRank = conversionOptions[0];
-                grid.RowDefinitions[0].Height = Forty;
+                grid.RowDefinitions[0].Height = new GridLength(80);
                 grid.RowDefinitions[1].Height = Forty;
                 grid.RowDefinitions[2].Height = Zero;
                 optConvert.Content = _owner.GetCaption("DragDropOptions.lblConvertAsChild", targetRank.LongName, context.Target.Epithet);
             } else {                
                 cmbRanks.ItemsSource = conversionOptions;
                 cmbRanks.SelectedIndex = 0;
-                grid.RowDefinitions[0].Height = Forty;
+                grid.RowDefinitions[0].Height = new GridLength(80);
                 grid.RowDefinitions[1].Height = Forty;
                 grid.RowDefinitions[2].Height = Forty;                
                 optConvert.Content = _owner.GetCaption("DragDropOptions.lblConvert", context.SourceRank.LongName);
             }
 
+            DragDropAction result = null;
+
             optMerge.IsChecked = true;
             if (ShowDialog().GetValueOrDefault(false)) {
+                if (optMerge.IsChecked.GetValueOrDefault(false)) {
+                    result = new MergeDropAction(context, chkCreateIDRecord.IsChecked.GetValueOrDefault(false));
+                } else {
+
+                    TaxonRank convertToRank = null;
+                    if (conversionOptions.Count == 1) {
+                        convertToRank = conversionOptions[0];
+                    } else {
+                        convertToRank = cmbRanks.SelectedItem as TaxonRank;
+                    }
+
+                    result = new ConvertingMoveDropAction(context, convertToRank);
+                }
             }
 
-            return null;
+            return result;
         }
 
         private void btnOk_Click(object sender, RoutedEventArgs e) {
             this.DialogResult = true;
             this.Hide();
+        }
+
+        private void optMerge_Click(object sender, RoutedEventArgs e) {
+            chkCreateIDRecord.IsEnabled = optMerge.IsChecked.GetValueOrDefault(false);
         }
     }
 }
