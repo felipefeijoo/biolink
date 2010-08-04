@@ -58,6 +58,12 @@ namespace BioLink.Client.Utilities {
             return result == MessageBoxResult.Yes;
         }
 
+        public static bool ValueOrFalse(this bool? value) {
+            return value.GetValueOrDefault(false);
+        }
+
     }
+
+    public delegate string MessageFormatterFunc(string format, params object[] args);
 
 }

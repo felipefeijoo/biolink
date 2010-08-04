@@ -22,6 +22,9 @@ namespace BioLink.Client.Taxa {
 
         private static Color DefaultBlue = Color.FromRgb(4, 4, 129);
 
+        public const string INCERTAE_SEDIS_ELEM_TYPE = "IS";
+        public const string SPECIES_INQUIRENDA_ELEM_TYPE = "SI";
+
         static TaxonViewModel() {                        
             AddIconBindings("HigherOrder", "H", DefaultBlue, "C", "CHRT", "D", "HO", "INC", "INO", "KING", "O", "P", "SBC", "SBD", "SKING", "SBO", "SBP", "SPC", "SPF", "SPO");
             AddIconBindings("Family", "F", Color.FromRgb(135,192,135), "F");
@@ -43,8 +46,8 @@ namespace BioLink.Client.Taxa {
             AddIconBindings("SubSeries", "ssr", Color.FromRgb(0, 92, 57), "SSRS");
             AddIconBindings("SubTribe", "sst", Color.FromRgb(71, 126, 161), "SBT");
             // Special pseudo ranks...
-            AddIconBindings("SpeciesInquirenda", "SI", Color.FromRgb(0, 128, 128), "SI");
-            AddIconBindings("IncertaeSedis", "IS", Color.FromRgb(139, 197, 89), "IS");
+            AddIconBindings("SpeciesInquirenda", SPECIES_INQUIRENDA_ELEM_TYPE, Color.FromRgb(0, 128, 128), SPECIES_INQUIRENDA_ELEM_TYPE);
+            AddIconBindings("IncertaeSedis", INCERTAE_SEDIS_ELEM_TYPE, Color.FromRgb(139, 197, 89), INCERTAE_SEDIS_ELEM_TYPE);
         }
 
         private static void AddIconBindings(string iconName, string caption, Color color, params string[] elemTypes) {
@@ -54,14 +57,16 @@ namespace BioLink.Client.Taxa {
             }
         }
 
-        private BitmapSource _image;       
+        private BitmapSource _image;
+        private TaxonLabelGenerator _labelGenerator;
 
-        public TaxonViewModel(TaxonViewModel parent, Taxon taxon)
+        public TaxonViewModel(TaxonViewModel parent, Taxon taxon, TaxonLabelGenerator labelGenerator)
             : base() {
             this.Parent = parent;
             this.Taxon = taxon;
             this.IsChanged = false;
             this.DataChanged += new DataChangedHandler(TaxonViewModel_DataChanged);
+            _labelGenerator = labelGenerator;
         }
 
         void TaxonViewModel_DataChanged() {
@@ -70,7 +75,7 @@ namespace BioLink.Client.Taxa {
             RaisePropertyChanged("Icon");
         }
 
-        public Taxon Taxon { get; private set; }
+        public Taxon Taxon { get; private set; }        
 
         public override string Label {
             get { return TaxaFullName; }
@@ -169,14 +174,29 @@ namespace BioLink.Client.Taxa {
             get { return new Pen(new SolidColorBrush(Color.FromRgb(184,71,19)), 2); }
         }
 
-        public void BulkAddChildren(List<Taxon> taxa) {
+        private string _displayLabel;
+
+        public String DisplayLabel {
+            get {
+                if (_displayLabel == null) {
+                    if (_labelGenerator != null) {
+                        _displayLabel = _labelGenerator(this);
+                    } else {
+                        _displayLabel = Epithet;
+                    }
+                }
+                return _displayLabel;
+            }
+        }
+
+        public void BulkAddChildren(List<Taxon> taxa, TaxonLabelGenerator labelGenerator) {
 
             if (Children.Count == 1 && Children[0] is ViewModelPlaceholder) {
                 Children.Clear();
             }
 
-            foreach (Taxon taxon in taxa) {
-                TaxonViewModel model = new TaxonViewModel(this, taxon);
+            foreach (Taxon taxon in taxa) {                
+                TaxonViewModel model = new TaxonViewModel(this, taxon, labelGenerator);
                 Children.Add(model);
             }
             
@@ -280,6 +300,8 @@ namespace BioLink.Client.Taxa {
         }
 
     }
+
+    public delegate string TaxonLabelGenerator(TaxonViewModel taxon);
 
     internal class IconMetaData {
 
