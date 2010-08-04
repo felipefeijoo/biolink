@@ -96,10 +96,16 @@ namespace BioLink.Client.Utilities {
     public abstract class ViewModelBase : ChangeableModelBase {
 
         private bool _selected;
+        private bool _deleted;
 
         public bool IsSelected {
             get { return _selected; }
             set { SetProperty("IsSelected", ref _selected, value, true); }
+        }
+
+        public bool IsDeleted {
+            get { return _deleted; }
+            set { SetProperty("IsDeleted", ref _deleted, value); }
         }
 
         public abstract string Label { get; }

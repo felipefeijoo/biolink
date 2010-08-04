@@ -189,6 +189,21 @@ namespace BioLink.Data {
             StoredProcUpdate("spBiotaDelete", _P("intTaxaID", taxonId));
         }
 
+
+        public TaxonRank GetRankByOrder(int order) {
+
+            List<TaxonRank> ranks = GetTaxonRanks();
+
+            foreach (TaxonRank rank in ranks) {
+                if (rank.Order == order) {
+                    if (rank.Code != "HO") {
+                        return rank;
+                    }
+                }
+            }
+
+            return ranks[0];
+        }
     }
 
     public class DataValidationResult {

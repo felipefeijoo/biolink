@@ -50,8 +50,8 @@
                                 <RowDefinition Height="30"></RowDefinition>
                                 <RowDefinition Height="*"></RowDefinition>
                             </Grid.RowDefinitions>
-                            <Grid Height="30" Background="{x:Static SystemColors.ControlBrush}">       
-                                <ToggleButton x:Name="btnLock" Margin="3,3,0,0" HorizontalAlignment="Left" Width="30" Height="24" VerticalAlignment="Top" Click="ToggleButton_Click">
+                            <Grid x:Name="gridContents" Height="30" Background="{x:Static SystemColors.ControlBrush}">       
+                                <ToggleButton x:Name="btnLock" Margin="3,3,0,0" HorizontalAlignment="Left" Width="30" Height="24" VerticalAlignment="Top">
                                     <ToggleButton.Style>
                                         <Style TargetType="{x:Type ToggleButton}">
                                             <Setter Property="Content">
@@ -79,8 +79,11 @@
                                         </StackPanel>
                                     </Label.Content>                                    
                                 </Label>
-                                <Button x:Name="btnApplyChanges" Margin="0,4,4,0" HorizontalAlignment="Right" Width="80" Height="22" VerticalAlignment="Top" Content="Save changes" Visibility="Hidden" Click="btnApplyChanges_Click">
-                                </Button>
+                                <Grid x:Name="buttonBar" Margin="36,0,0,0" Visibility="Hidden">
+                                    <Button x:Name="btnApplyChanges" Margin="0,0,4,0" HorizontalAlignment="Right" Width="80" Height="22"  Content="Save changes" Click="btnApplyChanges_Click" />
+                                    <Button x:Name="btnCancelEditing" Margin="0,0,90,0" HorizontalAlignment="Right" Width="80" Height="22"  Content="Cancel" Click="btnCancelEditing_Click" />
+                                </Grid>
+                                
                             </Grid>
                             <Grid Grid.Row="1">
                                 <TreeView Name="tvwAllTaxa" Margin="0,0,0,0" BorderThickness="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" PreviewMouseMove="tvwAllTaxa_PreviewMouseMove" PreviewMouseLeftButtonDown="tvwAllTaxa_PreviewMouseLeftButtonDown" MouseRightButtonUp="tvwAllTaxa_MouseRightButtonUp">
@@ -88,7 +91,7 @@
                                         <HierarchicalDataTemplate DataType="{x:Type src:TaxonViewModel}" ItemsSource="{Binding Path=Children}">
                                             <StackPanel Orientation="Horizontal">
                                                 <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,1" />
-                                                <TextBlock Text="{Binding Path=Epithet}" VerticalAlignment="Center" />                                                
+                                                <TextBlock Text="{Binding Path=DisplayLabel}" VerticalAlignment="Center" />
                                             </StackPanel>
                                         </HierarchicalDataTemplate>
                             
@@ -100,14 +103,14 @@
                                                 <DataTrigger Binding="{Binding Unverified}" Value="True">
                                                     <Setter Property="Foreground" Value="Red" />                                        
                                                 </DataTrigger>
-                                                <DataTrigger Binding="{Binding AvailableName}" Value="True">
-                                                    <Setter Property="FontStyle" Value="Italic" />                                        
+                                                <DataTrigger Binding="{Binding AvailableName}" Value="True">                                                    
+                                                    <Setter Property="FontStyle" Value="Italic" />
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding LiteratureName}" Value="True">
                                                     <Setter Property="FontStyle" Value="Italic" />
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding IsChanged}" Value="True">
-                                                    <Setter Property="Background" Value="#10FF0000" />
+                                                    <Setter Property="Background" Value="#20FF0000" />
                                                 </DataTrigger>
                                             </Style.Triggers>                                
                                         </Style>

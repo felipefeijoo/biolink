@@ -95,7 +95,7 @@ namespace BioLink.Data {
 
         public static TaxonRank MapTaxonRank(SqlDataReader reader) {
             TaxonRank tr = new TaxonRank();
-            ReflectMap(tr, reader);
+            ReflectMap(tr, reader, new ConvertingMapper("bitAvailableNameAllowed", (@in) => ((byte?) @in).GetValueOrDefault(0) !=0) );
             return tr;
         }
 

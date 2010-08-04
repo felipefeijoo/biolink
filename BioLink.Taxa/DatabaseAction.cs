@@ -64,6 +64,19 @@ namespace BioLink.Client.Taxa {
             service.MergeTaxon(SourceId, TargetId, CreateNewIDRecord);
             service.DeleteTaxon(SourceId);
         }
+    }
+
+    public class DeleteTaxonDatabaseAction : TaxonDatabaseAction {
+
+        public DeleteTaxonDatabaseAction(int taxonId) {
+            this.TaxonId = taxonId;            
+        }
+
+        public int TaxonId { get; private set; }
+
+        protected override void ProcessImpl(TaxaService service) {
+            service.DeleteTaxon(TaxonId);
+        }
 
     }
 }

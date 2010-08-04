@@ -21,7 +21,7 @@ namespace BioLink.Data.Model {
 
         public string ChecklistDisplayAs { get; set; }
 
-        public System.Nullable<byte> AvailableNameAllowed { get; set; }
+        public System.Nullable<bool> AvailableNameAllowed { get; set; }
 
         public System.Nullable<bool> UnplacedAllowed { get; set; }
 

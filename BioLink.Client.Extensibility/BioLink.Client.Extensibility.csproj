@@ -66,6 +66,7 @@
     <Compile Include="LatLongInput.xaml.cs">
       <DependentUpon>LatLongInput.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MenuItemBuilder.cs" />
     <Compile Include="PluginManager.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
