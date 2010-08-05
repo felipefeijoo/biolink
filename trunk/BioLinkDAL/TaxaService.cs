@@ -163,19 +163,43 @@ namespace BioLink.Data {
         public void UpdateTaxon(Taxon taxon) {
             StoredProcUpdate("spBiotaUpdate", 
                 _P("intBiotaID", taxon.TaxaID), 
-                _P("vchrEpithet", taxon.Epithet),
-                _P("vchrAuthor", taxon.Author),
-                _P("vchrYearOfPub", taxon.YearOfPub),
-                _P("bitChgComb", taxon.ChgComb),
-                _P("chrElemType", taxon.ElemType),
-                _P("bitUnplaced", taxon.Unplaced),
-                _P("bitUnverified", taxon.Unverified),
-                _P("vchrRank", taxon.Rank),
-                _P("intOrder", taxon.Order),
-                _P("chrKingdomCode", taxon.KingdomCode),
-                _P("bitAvailableName", taxon.AvailableName),
-                _P("bitLiteratureName", taxon.LiteratureName),
+                _P("vchrEpithet", taxon.Epithet, ""),
+                _P("vchrAuthor", taxon.Author, ""),
+                _P("vchrYearOfPub", taxon.YearOfPub, ""),
+                _P("bitChgComb", taxon.ChgComb, 0),
+                _P("chrElemType", taxon.ElemType, ""),
+                _P("bitUnplaced", taxon.Unplaced, 0),
+                _P("bitUnverified", taxon.Unverified, 0),
+                _P("vchrRank", taxon.Rank, ""),
+                _P("intOrder", taxon.Order, 0),
+                _P("chrKingdomCode", taxon.KingdomCode, "A"),
+                _P("bitAvailableName", taxon.AvailableName, ""),
+                _P("bitLiteratureName", taxon.LiteratureName, ""),
                 _P("vchrAvailableNameStatus", taxon.NameStatus, ""));
+        }
+
+        public void InsertTaxon(Taxon taxon) {
+            SqlParameter retval = ReturnParam("newTaxonId", System.Data.SqlDbType.Int);
+            StoredProcUpdate("spBiotaInsert",
+                _P("intParentID", taxon.TaxaParentID),
+                _P("vchrEpithet", taxon.Epithet),
+                _P("vchrAuthor", taxon.Author, ""),
+                _P("vchrYearOfPub", taxon.YearOfPub, ""),
+                _P("bitChgComb", taxon.ChgComb, 0),
+                _P("chrElemType", taxon.ElemType, ""),
+                _P("bitUnplaced", taxon.Unplaced, 0),
+                _P("vchrRank", taxon.Rank, ""),
+                _P("intOrder", taxon.Order, 0),
+                _P("bitUnverified", taxon.Unverified, 0),                                
+                _P("chrKingdomCode", taxon.KingdomCode, "A"),
+                _P("bitAvailableName", taxon.AvailableName, 0),
+                _P("bitLiteratureName", taxon.LiteratureName, ""),
+                _P("vchrAvailableNameStatus", taxon.NameStatus, ""),
+                retval);
+
+            if (retval.Value != null) {
+                taxon.TaxaID = (Int32) retval.Value;
+            }            
         }
 
         public void MergeTaxon(int sourceId, int targetId, bool createNewIDRecord) {

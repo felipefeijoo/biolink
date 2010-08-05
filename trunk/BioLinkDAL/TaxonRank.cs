@@ -7,6 +7,11 @@ namespace BioLink.Data.Model {
 
     public class TaxonRank : BiolinkDataObject {
 
+        public const string INCERTAE_SEDIS = "IS";
+        public const string SPECIES_INQUIRENDA = "SI";
+
+        public const string SPECIES = "SP";
+
         public string KingdomCode { get; set; }
 
         public string Code { get; set; }

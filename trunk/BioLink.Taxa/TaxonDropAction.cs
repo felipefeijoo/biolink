@@ -128,7 +128,8 @@ namespace BioLink.Client.Taxa {
 
         protected override List<TaxonDatabaseAction> ProcessImpl() {
 
-            Source.Parent.Children.Remove(Source);
+            // Source.Parent.Children.Remove(Source);
+            Source.IsDeleted = true;
             var actions = new List<TaxonDatabaseAction>();
             List<TaxonViewModel> movelist = new List<TaxonViewModel>();
             // Need to get the children in a separate list to avoid concurrent collection modification errors

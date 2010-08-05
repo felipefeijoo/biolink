@@ -97,6 +97,7 @@ namespace BioLink.Client.Utilities {
 
         private bool _selected;
         private bool _deleted;
+        private bool _renaming;
 
         public bool IsSelected {
             get { return _selected; }
@@ -106,6 +107,11 @@ namespace BioLink.Client.Utilities {
         public bool IsDeleted {
             get { return _deleted; }
             set { SetProperty("IsDeleted", ref _deleted, value); }
+        }
+
+        public bool IsRenaming {
+            get { return _renaming; }
+            set { SetProperty("IsRenaming", ref _renaming, value); }
         }
 
         public abstract string Label { get; }

@@ -4,6 +4,7 @@ using System.Text;
 using System.Data.SqlClient;
 using System.Reflection;
 using BioLink.Client.Utilities;
+using System.Data;
 
 namespace BioLink.Data {
 
@@ -136,7 +137,7 @@ namespace BioLink.Data {
                     foreach (SqlParameter param in @params) {
                         cmd.Parameters.Add(param);
                     }
-                    rowsAffected = cmd.ExecuteNonQuery();
+                    rowsAffected = cmd.ExecuteNonQuery();                    
                 });
             }
             return rowsAffected;
@@ -172,6 +173,12 @@ namespace BioLink.Data {
                 value = defIfNull;
             }
             return new SqlParameter(name, value);
+        }
+
+        protected SqlParameter ReturnParam(string name, SqlDbType type) {
+            SqlParameter param = new SqlParameter(name, type);
+            param.Direction = ParameterDirection.ReturnValue;
+            return param;
         }
 
         /// <summary>
