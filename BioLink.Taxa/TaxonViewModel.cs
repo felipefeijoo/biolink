@@ -22,9 +22,6 @@ namespace BioLink.Client.Taxa {
 
         private static Color DefaultBlue = Color.FromRgb(4, 4, 129);
 
-        public const string INCERTAE_SEDIS_ELEM_TYPE = "IS";
-        public const string SPECIES_INQUIRENDA_ELEM_TYPE = "SI";
-
         static TaxonViewModel() {                        
             AddIconBindings("HigherOrder", "H", DefaultBlue, "C", "CHRT", "D", "HO", "INC", "INO", "KING", "O", "P", "SBC", "SBD", "SKING", "SBO", "SBP", "SPC", "SPF", "SPO");
             AddIconBindings("Family", "F", Color.FromRgb(135,192,135), "F");
@@ -46,8 +43,8 @@ namespace BioLink.Client.Taxa {
             AddIconBindings("SubSeries", "ssr", Color.FromRgb(0, 92, 57), "SSRS");
             AddIconBindings("SubTribe", "sst", Color.FromRgb(71, 126, 161), "SBT");
             // Special pseudo ranks...
-            AddIconBindings("SpeciesInquirenda", SPECIES_INQUIRENDA_ELEM_TYPE, Color.FromRgb(0, 128, 128), SPECIES_INQUIRENDA_ELEM_TYPE);
-            AddIconBindings("IncertaeSedis", INCERTAE_SEDIS_ELEM_TYPE, Color.FromRgb(139, 197, 89), INCERTAE_SEDIS_ELEM_TYPE);
+            AddIconBindings("SpeciesInquirenda", TaxonRank.SPECIES_INQUIRENDA, Color.FromRgb(0, 128, 128), TaxonRank.SPECIES_INQUIRENDA);
+            AddIconBindings("IncertaeSedis", TaxonRank.INCERTAE_SEDIS, Color.FromRgb(139, 197, 89), TaxonRank.INCERTAE_SEDIS);
         }
 
         private static void AddIconBindings(string iconName, string caption, Color color, params string[] elemTypes) {
@@ -58,7 +55,7 @@ namespace BioLink.Client.Taxa {
         }
 
         private BitmapSource _image;
-        private TaxonLabelGenerator _labelGenerator;
+        private TaxonLabelGenerator _labelGenerator;        
 
         public TaxonViewModel(TaxonViewModel parent, Taxon taxon, TaxonLabelGenerator labelGenerator)
             : base() {
@@ -178,14 +175,18 @@ namespace BioLink.Client.Taxa {
 
         public String DisplayLabel {
             get {
-                if (_displayLabel == null) {
+                if (String.IsNullOrEmpty(_displayLabel)) {
                     if (_labelGenerator != null) {
                         _displayLabel = _labelGenerator(this);
                     } else {
                         _displayLabel = Epithet;
-                    }
+                    }                    
                 }
                 return _displayLabel;
+            }
+            set {
+                _displayLabel = value;
+                RaisePropertyChanged("DisplayLabel");                
             }
         }
 
@@ -218,7 +219,7 @@ namespace BioLink.Client.Taxa {
             }
 
             // Also the top level container doesn't get an Icon either
-            if (TaxaParentID < 0) {
+            if (Parent == null) {
                 return null;
             }
 

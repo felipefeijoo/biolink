@@ -62,6 +62,11 @@ namespace BioLink.Client.Utilities {
             return value.GetValueOrDefault(false);
         }
 
+        public static bool IsNumeric(this string value) {
+            int result;
+            return Int32.TryParse(value, out result);            
+        }
+
     }
 
     public delegate string MessageFormatterFunc(string format, params object[] args);

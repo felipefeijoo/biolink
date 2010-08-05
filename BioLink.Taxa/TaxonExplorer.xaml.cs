@@ -112,9 +112,9 @@ namespace BioLink.Client.Taxa {
             string strAuthorYear = "";
             if (taxon.Unplaced.ValueOrFalse()) {
                 return "Unplaced";
-            } else if (taxon.ElemType == TaxonViewModel.SPECIES_INQUIRENDA_ELEM_TYPE) {
+            } else if (taxon.ElemType == TaxonRank.SPECIES_INQUIRENDA) {
                 return "Species Inquirenda";
-            } else if (taxon.ElemType == TaxonViewModel.INCERTAE_SEDIS_ELEM_TYPE) {
+            } else if (taxon.ElemType == TaxonRank.INCERTAE_SEDIS) {
                 return "Incertae Sedis";
             } else {
                 if (!String.IsNullOrEmpty(taxon.Author)) {
@@ -482,7 +482,8 @@ namespace BioLink.Client.Taxa {
 
                 menu.Items.Add(new Separator());
                 if (Unlocked) {
-                    menu.Items.Add(builder.New("TaxonExplorer.menu.Delete", taxon.TaxaFullName).Handler(() => { DeleteTaxon(taxon); }).MenuItem);
+                    menu.Items.Add(builder.New("TaxonExplorer.menu.Delete", taxon.DisplayLabel).Handler(() => { DeleteTaxon(taxon); }).MenuItem);
+                    menu.Items.Add(builder.New("TaxonExplorer.menu.Rename", taxon.DisplayLabel).Handler(() => { RenameTaxon(taxon); }).MenuItem);
 
                     MenuItem addMenu = BuildAddMenuItems(taxon);
                     if (addMenu != null && addMenu.Items.Count > 0) {
@@ -535,8 +536,8 @@ namespace BioLink.Client.Taxa {
                 switch (taxon.ElemType) {
                     case "" :
                         break;
-                    case TaxonViewModel.INCERTAE_SEDIS_ELEM_TYPE:
-                    case TaxonViewModel.SPECIES_INQUIRENDA_ELEM_TYPE:
+                    case TaxonRank.INCERTAE_SEDIS:
+                    case TaxonRank.SPECIES_INQUIRENDA:
                         AddSpecialNameMenuItems(taxon, addMenu, true, false, false, false);
                         break;
                     default:
@@ -546,8 +547,10 @@ namespace BioLink.Client.Taxa {
                             List<TaxonRank> validChildRanks = Service.GetChildRanks(rank);
                             if (validChildRanks != null && validChildRanks.Count > 0) {
                                 foreach (TaxonRank childRank in validChildRanks) {
+                                    // The for loop variable is outside of the scope of the closure, so we need to create a local...
+                                    TaxonRank closureRank = Service.GetTaxonRank(childRank.Code);
                                     addMenu.Items.Add(builder.New(childRank.LongName).Handler(() => {
-                                        AddNewTaxon(taxon, childRank);
+                                        AddNewTaxon(taxon, closureRank);
                                     }).MenuItem);
                                 }
                                 addMenu.Items.Add(new Separator());
@@ -557,8 +560,10 @@ namespace BioLink.Client.Taxa {
                                 addMenu.Items.Add(new Separator());
                                 bool atLeastOneUnplaced = false;
                                 foreach (TaxonRank childRank in validChildRanks) {
-                                    if (childRank.UnplacedAllowed.ValueOrFalse()) {
-                                        addMenu.Items.Add(builder.New("Unplaced " + childRank.LongName).Handler(() => { AddNewTaxon(taxon, childRank, true); }).MenuItem);
+                                    // The for loop variable is outside of the scope of the closure, so we need to create a local...
+                                    TaxonRank closureRank = Service.GetTaxonRank(childRank.Code);
+                                    if (childRank.UnplacedAllowed.ValueOrFalse()) {                                        
+                                        addMenu.Items.Add(builder.New("Unplaced " + childRank.LongName).Handler(() => { AddNewTaxon(taxon, closureRank, true); }).MenuItem);
                                         atLeastOneUnplaced = true;
                                     }
                                 }
@@ -593,35 +598,128 @@ namespace BioLink.Client.Taxa {
             }
         }
 
-        private void AddNewTaxon(TaxonViewModel parent, TaxonViewModelAction action) {
+        internal void RenameTaxon(TaxonViewModel taxon) {
+            // TODO: Permissions!
+            taxon.IsSelected = true;
+            taxon.IsRenaming = true;
+        }
+
+        private string GetDefaultDisplayLabel(TaxonViewModel taxon) {
+
+            if (taxon.Unplaced.ValueOrFalse()) {
+                return "Unplaced";
+            }
+
+            if (taxon.ElemType.Equals(TaxonRank.INCERTAE_SEDIS)) {
+                return "Incertae Sedis";
+            }
+
+            if (taxon.ElemType.Equals(TaxonRank.SPECIES_INQUIRENDA)) {
+                return "Species Inquirenda";
+            }
+
+            if (taxon.AvailableName.ValueOrFalse() || taxon.AvailableName.ValueOrFalse()) {
+                return "Name Author, Year";
+            }
+
+            TaxonRank rank = Service.GetTaxonRank(taxon.ElemType);
+            if (rank != null) {
+                if (rank.JoinToParentInFullName.ValueOrFalse()) {
+                    return "OnlyEpithet Author, Year";
+                }
+            }
+
+            return "Name Author, Year";
+        }
+
+        private TaxonViewModel AddNewTaxon(TaxonViewModel parent, string elemType, TaxonViewModelAction action, bool startRename = true, bool select = true) {
+
+            // TODO: check permissions...
+
             Taxon t = new Taxon();
             t.TaxaParentID = parent.TaxaID.Value;
             t.TaxaID = GetNewTaxonID();
             TaxonViewModel viewModel = new TaxonViewModel(parent, t, GenerateTaxonDisplayLabel);
-            viewModel.IsChanged = true;
-            parent.Children.Add(viewModel);
-            if (action != null) {
-                action(viewModel);
+
+            viewModel.ElemType = elemType;
+            viewModel.KingdomCode = parent.KingdomCode;
+            viewModel.Author = "";
+            viewModel.YearOfPub = "";
+            viewModel.Epithet = "";
+            viewModel.DisplayLabel = GetDefaultDisplayLabel(viewModel);
+            parent.IsExpanded = true;            
+
+            try {
+                if (action != null) {
+                    action(viewModel);
+                }
+
+                parent.Children.Add(viewModel);
+                // Move to the top of the list, until it is saved...
+                parent.Children.Move(parent.Children.IndexOf(viewModel), 0);
+                if (select) {
+                    viewModel.IsSelected = true;
+                }
+
+                if (startRename) {
+                    RenameTaxon(viewModel);
+                }                
+                
+                _pendingChanges.Add(new InsertTaxonDatabaseAction(viewModel));
+
+            } catch (Exception ex) {
+                ErrorMessage.Show(ex.Message);
             }
-            parent.IsExpanded = true;
-            viewModel.IsSelected = true;
+            return viewModel;
+        }
+
+        private TaxonViewModel AddNewTaxon(TaxonViewModel parent, TaxonRank rank, bool unplaced = false) {
+            
+            return AddNewTaxon(parent, rank.Code, (taxon) => {                
+                taxon.Unplaced = unplaced;
+                string parentChildElemType = GetChildElementType(parent);
+                if (taxon.ElemType != parentChildElemType) {
+                    TaxonRank parentChildRank = Service.GetTaxonRank(parentChildElemType);
+                    if (!Service.IsValidChild(parentChildRank, rank)) {
+                        throw new Exception("Cannot insert an " + rank.LongName + " entry because this entry cannot be a valid parent for the current children.");
+                    } else {
+                        // Create a new unplaced to hold the existing children
+                        TaxonViewModel newUnplaced = AddNewTaxon(parent, rank.Code, (t) => {
+                            t.Unplaced = true;
+                            t.DisplayLabel = GetDefaultDisplayLabel(t);
+                        }, false, false);
+
+                        foreach (HierarchicalViewModelBase vm in parent.Children) {
+                            // Don't add the new child as a child of itself! Its already been added to children collection by the other AddNewTaxon method
+                            if (vm != newUnplaced) {
+                                TaxonViewModel child = vm as TaxonViewModel;
+                                newUnplaced.Children.Add(child);
+                                child.TaxaParentID = newUnplaced.TaxaID;
+                                child.Parent = newUnplaced;
+                                _pendingChanges.Add(new UpdateTaxonDatabaseAction(child.Taxon));
+                            }
+                        }
+                        parent.Children.Clear();
+                        parent.Children.Add(newUnplaced);
+                        newUnplaced.IsExpanded = true;
+                    }
+                }                
+            }, true);
+            
         }
 
         private void AddSpeciesInquirenda(TaxonViewModel parent) {
-            AddNewTaxon(parent, (newChild) => {
-                newChild.ElemType = TaxonViewModel.SPECIES_INQUIRENDA_ELEM_TYPE;
-            });
+            AddNewTaxon(parent, TaxonRank.SPECIES_INQUIRENDA, (newChild) => {
+            },false);
         }
 
         private void AddIncertaeSedis(TaxonViewModel parent) {
-            AddNewTaxon(parent, (newChild) => {
-                newChild.ElemType = TaxonViewModel.INCERTAE_SEDIS_ELEM_TYPE;
-            });
+            AddNewTaxon(parent, TaxonRank.INCERTAE_SEDIS, (newChild) => {                
+            }, false);
         }
 
         private void AddLiteratureName(TaxonViewModel parent) {
-            AddNewTaxon(parent, (newChild) => {
-                newChild.ElemType = parent.ElemType;
+            AddNewTaxon(parent, parent.ElemType, (newChild) => {
                 newChild.LiteratureName = true;
             });
         }
@@ -631,36 +729,40 @@ namespace BioLink.Client.Taxa {
         }
 
         private void AddAvailableName(TaxonViewModel parent) {
-            AddNewTaxon(parent, (newChild) => {
-                String newElemType = parent.ElemType;
+            AddNewTaxon(parent, parent.ElemType, (newChild) => {
                 switch (parent.ElemType) {
-                    case TaxonViewModel.INCERTAE_SEDIS_ELEM_TYPE:
-                    case TaxonViewModel.SPECIES_INQUIRENDA_ELEM_TYPE:
+                    case TaxonRank.INCERTAE_SEDIS:
+                    case TaxonRank.SPECIES_INQUIRENDA:
                         // Incerate sedis and species inq only have available species names.
-                        newElemType = "SP";
+                        newChild.ElemType = TaxonRank.SPECIES;
                         break;
                     default:
                         break;
                 }
-                newChild.ElemType = newElemType;
                 newChild.AvailableName = true;
             });
         }
 
-        private void AddNewTaxon(TaxonViewModel parent, TaxonRank rank, bool unranked = false) {
-            MessageBox.Show("Here in add taxon: " + rank);
+        private void MarkItemAsDeleted(HierarchicalViewModelBase taxon) {
+            taxon.IsDeleted = true;
+
+            // the alternate way, don't strikethrough - just remove it, and mark the parent as changed
+            // taxon.Parent.IsChanged = true;
+            // taxon.Parent.Children.Remove(taxon);
+
+            // Although we don't need to delete children explicitly from the database (the stored proc will take care of that for us),
+            // we still need to mark each child as deleted in the UI
+            foreach (HierarchicalViewModelBase child in taxon.Children) {
+                MarkItemAsDeleted(child);
+            }
         }
 
         internal void DeleteTaxon(TaxonViewModel taxon) {
-            if (this.Question(_R("TaxonExplorer.prompt.DeleteTaxon", taxon.TaxaFullName), _R("TaxonExplorer.prompt.DeleteTaxon.Caption"))) {
-                // First the UI bit...
-                taxon.IsDeleted = true;
-                taxon.Parent.IsChanged = true;
-                taxon.Parent.Children.Remove(taxon);
-                // And schedule the database bit...                
-                if (taxon.TaxaID.Value >= 0) {
-                    _pendingChanges.Add(new DeleteTaxonDatabaseAction(taxon.TaxaID.Value));
-                }
+            if (this.Question(_R("TaxonExplorer.prompt.DeleteTaxon", taxon.DisplayLabel), _R("TaxonExplorer.prompt.DeleteTaxon.Caption"))) {
+                // First the UI bit...                
+                MarkItemAsDeleted(taxon);
+                // And schedule the database bit...                                
+                _pendingChanges.Add(new DeleteTaxonDatabaseAction(taxon));
             }
         }
 
@@ -913,7 +1015,7 @@ namespace BioLink.Client.Taxa {
 
             foreach (TaxonViewModel child in parent.Children) {
 
-                if (!String.IsNullOrEmpty(child.ElemType)) {
+                if (String.IsNullOrEmpty(child.ElemType)) {
                     continue;
                 }
 
@@ -951,6 +1053,37 @@ namespace BioLink.Client.Taxa {
 
         private void btnCancelEditing_Click(object sender, RoutedEventArgs e) {
             btnLock.IsChecked = false;
+        }
+
+        private void EditableTextBlock_EditingComplete(object sender, string text) {
+            TaxonViewModel tvm = (sender as EditableTextBlock).ViewModel as TaxonViewModel;
+            ProcessRename(tvm, text);
+        }
+
+        private void EditableTextBlock_EditingCancelled(object sender, string oldtext) {
+            TaxonViewModel tvm = (sender as EditableTextBlock).ViewModel as TaxonViewModel;
+            tvm.DisplayLabel = null;
+        }
+
+        /// <summary>
+        /// Attempt to extract epithet author year and change combination status from the text
+        /// </summary>
+        /// <param name="taxon"></param>
+        /// <param name="label"></param>
+        private void ProcessRename(TaxonViewModel taxon, string label) {
+
+            TaxonName name = TaxonNameParser.ParseName(taxon, label);
+            if (name != null) {
+                taxon.Author = name.Author;
+                taxon.Epithet = name.Epithet;
+                taxon.YearOfPub = name.Year;
+                taxon.ChgComb = name.ChangeCombination;
+                taxon.DisplayLabel = null;
+            } else {
+                ErrorMessage.Show("Please enter at least the epithet, with author and year where appropriate.");
+                RenameTaxon(taxon);
+            }
+
         }
 
     }

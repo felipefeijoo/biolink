@@ -4,17 +4,9 @@ using System.Linq;
 using System.Text;
 using BioLink.Data;
 using BioLink.Data.Model;
+using BioLink.Client.Extensibility;
 
 namespace BioLink.Client.Taxa {
-
-    public abstract class DatabaseAction<T> where T : BioLinkService {
-
-        public void Process(T service) {
-            ProcessImpl(service);
-        }
-
-        protected abstract void ProcessImpl(T service);
-    }
 
     public abstract class TaxonDatabaseAction : DatabaseAction<TaxaService> {
     }
@@ -67,16 +59,38 @@ namespace BioLink.Client.Taxa {
     }
 
     public class DeleteTaxonDatabaseAction : TaxonDatabaseAction {
-
-        public DeleteTaxonDatabaseAction(int taxonId) {
-            this.TaxonId = taxonId;            
+        
+        public DeleteTaxonDatabaseAction(TaxonViewModel taxon) {
+            this.Taxon = taxon;
         }
 
-        public int TaxonId { get; private set; }
+        public TaxonViewModel Taxon { get; private set; }
 
         protected override void ProcessImpl(TaxaService service) {
-            service.DeleteTaxon(TaxonId);
+            service.DeleteTaxon(Taxon.TaxaID.Value);
         }
 
     }
+
+    public class InsertTaxonDatabaseAction : TaxonDatabaseAction {
+
+        private TaxonViewModel _taxon;
+
+        public InsertTaxonDatabaseAction(TaxonViewModel taxon) {
+            _taxon = taxon;
+        }
+
+        protected override void ProcessImpl(TaxaService service) {                           
+            service.InsertTaxon(_taxon.Taxon);
+            // The service will have updated the new taxon with its database identity.
+            // If this taxon has any children we can update their identity too.
+            foreach (HierarchicalViewModelBase child in _taxon.Children) {
+                TaxonViewModel tvm = child as TaxonViewModel;
+                tvm.TaxaParentID = _taxon.Taxon.TaxaID;
+            }
+        }
+
+    }
+
+    
 }

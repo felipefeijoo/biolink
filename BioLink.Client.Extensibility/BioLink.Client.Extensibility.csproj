@@ -60,6 +60,9 @@
     <Compile Include="DelayedTriggerTextbox.xaml.cs">
       <DependentUpon>DelayedTriggerTextbox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EditableTextBlock.xaml.cs">
+      <DependentUpon>EditableTextBlock.xaml</DependentUpon>
+    </Compile>
     <Compile Include="HierarchicalViewModelBase.cs" />
     <Compile Include="IBioLinkPlugin.cs" />
     <Compile Include="IProgressMonitor.cs" />
@@ -89,6 +92,10 @@
     <Page Include="DelayedTriggerTextbox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="EditableTextBlock.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="LatLongInput.xaml">
       <SubType>Designer</SubType>
