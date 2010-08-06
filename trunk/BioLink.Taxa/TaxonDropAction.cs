@@ -57,7 +57,7 @@ namespace BioLink.Client.Taxa {
 
         protected override List<TaxonDatabaseAction> ProcessImpl() {
             MoveSourceToTarget();
-            return Actions(new MoveTaxonDatabaseAction(Context.Source.TaxaID.Value, Context.Target.TaxaID.Value));            
+            return Actions(new MoveTaxonDatabaseAction(Context.Source, Context.Target));            
         }
 
     }
@@ -86,7 +86,7 @@ namespace BioLink.Client.Taxa {
             // Convert this source element to the target child element
             Source.ElemType = ConvertRank.Code;
 
-            dbActions.Add(new MoveTaxonDatabaseAction(Context.Source.TaxaID.Value, Context.Target.TaxaID.Value));
+            dbActions.Add(new MoveTaxonDatabaseAction(Context.Source, Context.Target));
             dbActions.Add(new UpdateTaxonDatabaseAction(Context.Source.Taxon));
 
             // Now convert available names to the new rank...
@@ -140,12 +140,12 @@ namespace BioLink.Client.Taxa {
             // Now we move each child over to the new parent...
             foreach (TaxonViewModel child in movelist) {
                 Move(child, Target);
-                actions.Add(new MoveTaxonDatabaseAction(child.TaxaID.Value, Target.TaxaID.Value));
+                actions.Add(new MoveTaxonDatabaseAction(child, Target));
             }
 
             Target.IsChanged = true;
 
-            actions.Add(new MergeTaxonDatabaseAction(Source.TaxaID.Value, Target.TaxaID.Value, _createNewIdRecord));
+            actions.Add(new MergeTaxonDatabaseAction(Source, Target, _createNewIdRecord));
 
             return actions;
         }

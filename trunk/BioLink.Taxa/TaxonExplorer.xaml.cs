@@ -502,8 +502,19 @@ namespace BioLink.Client.Taxa {
 
             }
 
+            if (menu.HasItems) {
+                menu.Items.Add(new Separator());
+                menu.Items.Add(builder.New("_Edit Details...").Handler(() => { ShowTaxonDetails(taxon); }).MenuItem);
+            }
+
 
             source.ContextMenu = menu;
+        }
+
+        private void ShowTaxonDetails(TaxonViewModel taxon) {
+            TaxonDetails frm = new TaxonDetails(taxon.Taxon);
+            frm.Owner = _owner.ParentWindow;            
+            frm.Show();
         }
 
         private void Refresh() {
@@ -696,7 +707,7 @@ namespace BioLink.Client.Taxa {
                                 newUnplaced.Children.Add(child);
                                 child.TaxaParentID = newUnplaced.TaxaID;
                                 child.Parent = newUnplaced;
-                                _pendingChanges.Add(new UpdateTaxonDatabaseAction(child.Taxon));
+                                _pendingChanges.Add(new MoveTaxonDatabaseAction(child, newUnplaced));
                             }
                         }
                         parent.Children.Clear();
@@ -906,6 +917,14 @@ namespace BioLink.Client.Taxa {
         }
 
         internal void CommitPendingChanges() {
+
+#if DEBUG
+            Logger.Debug("Comming taxon changes:");
+            foreach (TaxonDatabaseAction action in _pendingChanges) {
+                Logger.Debug("{0}",action);
+            }
+
+#endif
             Service.BeginTransaction();
             try {
                 foreach (TaxonDatabaseAction action in _pendingChanges) {
@@ -965,7 +984,7 @@ namespace BioLink.Client.Taxa {
                     if (context.TargetChildRank == null) {
                         return PromptConvert(context);
                     } else {
-                        if (this.Question(_R("TaxonExplorer.prompt.ConvertTaxon", context.Source.Epithet, context.TargetChildRank.LongName, context.Target.Epithet), _R("TaxonExplorer.prompt.ConfirmAction.Caption"))) {
+                        if (this.Question(_R("TaxonExplorer.prompt.ConvertTaxon", context.Source.DisplayLabel, context.TargetChildRank.LongName, context.Target.DisplayLabel), _R("TaxonExplorer.prompt.ConfirmAction.Caption"))) {
                             return new ConvertingMoveDropAction(context, context.TargetChildRank);
                         } else {
                             return null;

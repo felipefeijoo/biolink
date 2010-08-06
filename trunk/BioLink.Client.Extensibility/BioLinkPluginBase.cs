@@ -74,5 +74,8 @@ namespace BioLink.Client.Extensibility {
         public virtual void Dispose() {            
         }
 
+        public Window ParentWindow {
+            get; set;
+        }
     }
 }

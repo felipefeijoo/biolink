@@ -17,6 +17,7 @@ namespace BioLink.Client.Extensibility {
         User User { get; set; }
         PluginManager PluginManager { get; set; }
         bool RequestShutdown();
+        Window ParentWindow { get; set; }
     }
 
     /// <summary>

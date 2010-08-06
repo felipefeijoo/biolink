@@ -17,13 +17,15 @@ namespace BioLink.Client.Extensibility {
     public class PluginManager : IDisposable {
 
         private User _user;
-
         private Dictionary<string, IBioLinkPlugin> _plugins;
 
-        public PluginManager(User user) {
+        public PluginManager(User user, Window parentWindow) {
             _user = user;
             _plugins = new Dictionary<string, IBioLinkPlugin>();
+            this.ParentWindow = parentWindow;
         }
+
+        public Window ParentWindow { get; private set; }
 
         public void LoadPlugins(PluginAction pluginAction) {
             LoadPlugins(pluginAction, ".|^BioLink[.].*[.]dll$", "./plugins");
@@ -67,11 +69,13 @@ namespace BioLink.Client.Extensibility {
                         plugin = ctor.Invoke(new Object[] { _user, this }) as IBioLinkPlugin;
                     } else {
                         plugin = Activator.CreateInstance(type) as IBioLinkPlugin;
-                        plugin.User = _user;
+                        plugin.User = _user;                        
                         plugin.PluginManager = this;
                     }
                      
-                    if (plugin != null) {                        
+                    if (plugin != null) {
+                        plugin.ParentWindow = ParentWindow;
+
                         // Allow the consumer to process this plugin...
                         if (pluginAction != null) {
                             pluginAction(plugin);

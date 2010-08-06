@@ -96,17 +96,11 @@ namespace BioLink.Client.Extensibility {
 
     public class ViewModelPlaceholder : HierarchicalViewModelBase {
 
-        private string _label;
         private BitmapSource _icon;
 
         public ViewModelPlaceholder(string label) {
-            _label = label;
+            this.DisplayLabel = label;
         }
-
-        public override string Label {
-            get { return _label; }
-        }
-
 
         public override BitmapSource Icon {
             get {

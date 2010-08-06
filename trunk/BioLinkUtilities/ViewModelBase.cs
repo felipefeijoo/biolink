@@ -114,7 +114,7 @@ namespace BioLink.Client.Utilities {
             set { SetProperty("IsRenaming", ref _renaming, value); }
         }
 
-        public abstract string Label { get; }
+        public virtual string DisplayLabel { get; set; }
         public abstract BitmapSource Icon { get; set; }
         
     }
