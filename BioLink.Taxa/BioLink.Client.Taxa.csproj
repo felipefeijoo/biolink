@@ -50,6 +50,7 @@
     <Compile Include="DragDropOptions.xaml.cs">
       <DependentUpon>DragDropOptions.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SortedTaxonConverter.cs" />
     <Compile Include="TaxaPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TaxonDatabaseAction.cs" />

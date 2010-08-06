@@ -23,9 +23,6 @@
                     <DataTrigger Binding="{Binding AvailableName}" Value="True">
                         <Setter Property="FontStyle" Value="Italic" />
                     </DataTrigger>
-                    <DataTrigger Binding="{Binding LiteratureName}" Value="True">
-                        <Setter Property="FontStyle" Value="Italic" />
-                    </DataTrigger>
                 </Style.Triggers>
             </Style>
 
@@ -34,6 +31,8 @@
                     <TextBlock Text="{Binding Path=Label}"/>
                 </StackPanel>
             </HierarchicalDataTemplate>
+            
+            <src:SortedTaxonConverter x:Key="SortedTaxonConverter" />            
 
         </ResourceDictionary>   
     </UserControl.Resources>
@@ -50,7 +49,7 @@
                                 <RowDefinition Height="30"></RowDefinition>
                                 <RowDefinition Height="*"></RowDefinition>
                             </Grid.RowDefinitions>
-                            <Grid x:Name="gridContents" Height="30" Background="{x:Static SystemColors.ControlBrush}">       
+                            <Grid x:Name="gridContentsHeader" Height="30" Background="{x:Static SystemColors.ControlBrush}">       
                                 <ToggleButton x:Name="btnLock" Margin="3,3,0,0" HorizontalAlignment="Left" Width="30" Height="24" VerticalAlignment="Top">
                                     <ToggleButton.Style>
                                         <Style TargetType="{x:Type ToggleButton}">
@@ -88,7 +87,7 @@
                             <Grid Grid.Row="1">
                                 <TreeView Name="tvwAllTaxa" Margin="0,0,0,0" BorderThickness="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" PreviewMouseMove="tvwAllTaxa_PreviewMouseMove" PreviewMouseLeftButtonDown="tvwAllTaxa_PreviewMouseLeftButtonDown" MouseRightButtonUp="tvwAllTaxa_MouseRightButtonUp">
                                     <TreeView.Resources>
-                                        <HierarchicalDataTemplate DataType="{x:Type src:TaxonViewModel}" ItemsSource="{Binding Path=Children}">
+                                        <HierarchicalDataTemplate DataType="{x:Type src:TaxonViewModel}" ItemsSource="{Binding Path=Children, Converter={StaticResource SortedTaxonConverter}}">
                                             <StackPanel Orientation="Horizontal">
                                                 <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,1" />                                                
                                                 <ex:EditableTextBlock x:Name="TaxonName" Text="{Binding Path=DisplayLabel,Mode=TwoWay}" VerticalAlignment="Center" IsInEditMode="{Binding Path=IsRenaming, Mode=TwoWay}" EditingComplete="EditableTextBlock_EditingComplete" EditingCancelled="EditableTextBlock_EditingCancelled" ViewModel="{Binding}"/>
@@ -109,9 +108,6 @@
                                                     <Setter Property="Foreground" Value="Red" />                                        
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding AvailableName}" Value="True">                                                    
-                                                    <Setter Property="FontStyle" Value="Italic" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding LiteratureName}" Value="True">
                                                     <Setter Property="FontStyle" Value="Italic" />
                                                 </DataTrigger>
                                                 <!--
@@ -150,7 +146,7 @@
                         <TreeView.Resources>
                             <HierarchicalDataTemplate DataType="{x:Type src:TaxonViewModel}" ItemsSource="{Binding Path=Children}">
                                 <StackPanel Orientation="Horizontal">
-                                    <Image Source="{Binding Path=Icon}" Margin="0,1,4,1" />
+                                    <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,1" />
                                     <TextBlock Text="{Binding Path=Epithet}" VerticalAlignment="Center" />
                                 </StackPanel>
                             </HierarchicalDataTemplate>
