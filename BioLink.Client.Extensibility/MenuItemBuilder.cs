@@ -67,6 +67,11 @@ namespace BioLink.Client.Extensibility {
             return this;
         }
 
+        public MenuItemBuilder Checked(bool @checked) {
+            _menuItem.IsChecked = @checked;
+            return this;
+        }
+
         public MenuItem MenuItem {
             get { return _menuItem; }
         }

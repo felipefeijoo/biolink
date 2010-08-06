@@ -242,7 +242,7 @@ namespace BioLink.Client.Taxa {
                     md = _TaxaIconMetaData[ElemType];
                 }
 
-                Color taxonColor = (md == null ? DefaultBlue : md.Color);
+                Color taxonColor = (md == null ? Colors.Red : md.Color);
                 string caption = (md == null ? "?" : md.Caption);
 
                 Pen pen = new Pen(new SolidColorBrush(taxonColor), 2);

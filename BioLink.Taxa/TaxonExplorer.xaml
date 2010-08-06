@@ -81,6 +81,8 @@
                                 <Grid x:Name="buttonBar" Margin="36,0,0,0" Visibility="Hidden">
                                     <Button x:Name="btnApplyChanges" Margin="0,0,4,0" HorizontalAlignment="Right" Width="80" Height="22"  Content="Save changes" Click="btnApplyChanges_Click" />
                                     <Button x:Name="btnCancelEditing" Margin="0,0,90,0" HorizontalAlignment="Right" Width="80" Height="22"  Content="Cancel" Click="btnCancelEditing_Click" />
+                                    <Button x:Name="btnDown" Margin="0,0,180,0" HorizontalAlignment="Right" Width="22" Height="22"  Content="U" Click="btnDown_Click" Visibility="Hidden" />
+                                    <Button x:Name="btnUp" Margin="0,0,204,0" HorizontalAlignment="Right" Width="22" Height="22"  Content="D" Click="btnUp_Click" Visibility="Hidden" />
                                 </Grid>
                                 
                             </Grid>
