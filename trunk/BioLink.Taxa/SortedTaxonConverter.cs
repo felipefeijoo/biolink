@@ -12,7 +12,8 @@ namespace BioLink.Client.Taxa {
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
             IEnumerable<HierarchicalViewModelBase> taxa = value as IEnumerable<HierarchicalViewModelBase>;
-            ListCollectionView lcv = (ListCollectionView) CollectionViewSource.GetDefaultView(taxa);            
+            ListCollectionView lcv = (ListCollectionView) CollectionViewSource.GetDefaultView(taxa);
+            
             lcv.SortDescriptions.Add(new SortDescription("AvailableName", ListSortDirection.Descending)); // bool
             lcv.SortDescriptions.Add(new SortDescription("Epithet", ListSortDirection.Ascending));
             return lcv;

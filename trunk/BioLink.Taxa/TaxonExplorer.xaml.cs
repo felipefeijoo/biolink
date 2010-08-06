@@ -73,12 +73,12 @@ namespace BioLink.Client.Taxa {
 
         void btnLock_Checked(object sender, RoutedEventArgs e) {
             lblHeader.Visibility = Visibility.Hidden;
-            buttonBar.Visibility = Unlocked ? Visibility.Visible : Visibility.Hidden;            
+            buttonBar.Visibility = Unlocked ? Visibility.Visible : Visibility.Hidden;
             gridContentsHeader.Background = new LinearGradientBrush(Colors.DarkOrange, Colors.Orange, 90.0);
         }
 
-        internal TaxaService Service { 
-            get { return _owner.Service; } 
+        internal TaxaService Service {
+            get { return _owner.Service; }
         }
 
         internal ObservableCollection<HierarchicalViewModelBase> ExplorerModel {
@@ -136,14 +136,14 @@ namespace BioLink.Client.Taxa {
                     strDisplay = taxon.Epithet + " " + strAuthorYear;
                 } else {
                     string format = "#";
-                    TaxonRank rank = Service.GetTaxonRank(taxon.ElemType);                    
+                    TaxonRank rank = Service.GetTaxonRank(taxon.ElemType);
                     if (rank != null) {
-                        format = rank.ChecklistDisplayAs ?? "#";                        
+                        format = rank.ChecklistDisplayAs ?? "#";
                     }
                     strDisplay = format.Replace("#", taxon.Epithet) + " " + strAuthorYear;
                 }
                 return strDisplay;
-            }            
+            }
         }
 
         private void DoFind(string searchTerm) {
@@ -463,62 +463,45 @@ namespace BioLink.Client.Taxa {
 
         private void ShowTaxonMenu(TaxonViewModel taxon, FrameworkElement source) {
 
-            ContextMenu menu = new ContextMenu();
+            TaxonMenuFactory factory = new TaxonMenuFactory(taxon, this, _R);
 
-            MenuItemBuilder builder = new MenuItemBuilder(_R);
-
+            ContextMenu menu = null;
             if (source is ListBox) {
-                menu.Items.Add(builder.New("TaxonExplorer.menu.ShowInContents").Handler(() => { ShowInExplorer(taxon); }).MenuItem);
-                menu.Items.Add(new Separator());
+                menu = factory.BuildFindResultsMenu();
             } else if (source is TreeView) {
-                menu.Items.Add(builder.New("TaxonExplorer.menu.ExpandAll").Handler(() => {
-                    JobExecutor.QueueJob(() => {
-                        tvwAllTaxa.InvokeIfRequired(() => {
-                            tvwAllTaxa.Cursor = Cursors.Wait;
-                            ExpandChildren(taxon);
-                            tvwAllTaxa.Cursor = Cursors.Arrow;
-                        });
-                    });
-                }).MenuItem);
-
-                menu.Items.Add(new Separator());
-                if (Unlocked) {
-                    menu.Items.Add(builder.New("TaxonExplorer.menu.Delete", taxon.DisplayLabel).Handler(() => { DeleteTaxon(taxon); }).MenuItem);
-                    menu.Items.Add(builder.New("TaxonExplorer.menu.Rename", taxon.DisplayLabel).Handler(() => { RenameTaxon(taxon); }).MenuItem);
-
-                    MenuItem addMenu = BuildAddMenuItems(taxon);
-                    if (addMenu != null && addMenu.Items.Count > 0) {
-                        menu.Items.Add(new Separator());
-                        menu.Items.Add(addMenu);
-                    }
-
-                } else {
-                    menu.Items.Add(builder.New("TaxonExplorer.menu.Unlock").Handler(() => { btnLock.IsChecked = true; }).MenuItem);
-                }
-
-                if (!Unlocked) {
-                    menu.Items.Add(new Separator());
-                    menu.Items.Add(builder.New("TaxonExplorer.menu.Refresh").Handler(() => Refresh()).MenuItem);
-                }
-
+                menu = factory.BuildExplorerMenu();
             }
-
-            if (menu.HasItems) {
-                menu.Items.Add(new Separator());
-                menu.Items.Add(builder.New("_Edit Details...").Handler(() => { ShowTaxonDetails(taxon); }).MenuItem);
+            if (menu != null && menu.HasItems) {
+                source.ContextMenu = menu;
             }
-
-
-            source.ContextMenu = menu;
         }
 
-        private void ShowTaxonDetails(TaxonViewModel taxon) {
+        public bool IsManualSort { get; set; }
+
+        internal void ToggleSortOrder() {
+            IsManualSort = !IsManualSort;
+            if (IsManualSort) {
+                btnUp.Visibility = System.Windows.Visibility.Visible;
+                btnDown.Visibility = System.Windows.Visibility.Visible;
+            } else {
+                btnUp.Visibility = System.Windows.Visibility.Hidden;
+                btnDown.Visibility = System.Windows.Visibility.Hidden;
+            }
+        }
+
+        internal void ShiftTaxonUp(TaxonViewModel taxon) {
+        }
+
+        internal void ShiftTaxonDown(TaxonViewModel taxon) {
+        }
+
+        internal void ShowTaxonDetails(TaxonViewModel taxon) {
             TaxonDetails frm = new TaxonDetails(taxon.Taxon);
-            frm.Owner = _owner.ParentWindow;            
+            frm.Owner = _owner.ParentWindow;
             frm.Show();
         }
 
-        private void Refresh() {
+        internal void Refresh() {
             if (AnyChanges()) {
                 if (this.Question("You have unsaved changes. Refreshing will cause those changes to be discarded. Are you sure you want to discard unsaved changes?", "Discard unsaved changes?")) {
                     ReloadModel();
@@ -526,79 +509,6 @@ namespace BioLink.Client.Taxa {
             } else {
                 ReloadModel();
             }
-        }
-
-        private MenuItem BuildAddMenuItems(TaxonViewModel taxon) {
-
-            MenuItemBuilder builder = new MenuItemBuilder(_R);
-
-            MenuItem addMenu = builder.New("TaxonExplorer.menu.Add").MenuItem;
-
-            if (taxon.AvailableName.GetValueOrDefault(false) || taxon.LiteratureName.GetValueOrDefault(false)) {
-                return null;
-            }
-
-            if (taxon.TaxaParentID == -1) {
-                TaxonRank rank = Service.GetRankByOrder(1);
-                if (rank != null) {
-                    addMenu.Items.Add(builder.New(rank.LongName).Handler(() => { AddNewTaxon(taxon, rank); }).MenuItem);
-                    addMenu.Items.Add(builder.New("TaxonExplorer.menu.Add.AllRanks").Handler(() => { AddNewTaxonAllRanks(taxon); }).MenuItem);
-                }
-            } else {
-                switch (taxon.ElemType) {
-                    case "" :
-                        addMenu.Items.Add(builder.New("Unranked Valid").Handler(() => { AddUnrankedValid(taxon); }).MenuItem);
-                        break;
-                    case TaxonRank.INCERTAE_SEDIS:
-                    case TaxonRank.SPECIES_INQUIRENDA:
-                        AddSpecialNameMenuItems(taxon, addMenu, true, false, false, false);
-                        break;
-                    default:
-
-                        TaxonRank rank = Service.GetTaxonRank(taxon.ElemType);
-                        if (rank != null) {
-                            List<TaxonRank> validChildRanks = Service.GetChildRanks(rank);
-                            if (validChildRanks != null && validChildRanks.Count > 0) {
-                                foreach (TaxonRank childRank in validChildRanks) {
-                                    // The for loop variable is outside of the scope of the closure, so we need to create a local...
-                                    TaxonRank closureRank = Service.GetTaxonRank(childRank.Code);
-                                    addMenu.Items.Add(builder.New(childRank.LongName).Handler(() => {
-                                        AddNewTaxon(taxon, closureRank);
-                                    }).MenuItem);
-                                }
-                                addMenu.Items.Add(new Separator());
-                                addMenu.Items.Add(builder.New("Unranked Valid").Handler(() => { AddUnrankedValid(taxon); }).MenuItem);
-                                addMenu.Items.Add(new Separator());
-                                AddSpecialNameMenuItems(taxon, addMenu, rank.AvailableNameAllowed, rank.LituratueNameAllowed, rank.AvailableNameAllowed, rank.AvailableNameAllowed);
-                                addMenu.Items.Add(new Separator());
-                                bool atLeastOneUnplaced = false;
-                                foreach (TaxonRank childRank in validChildRanks) {
-                                    // The for loop variable is outside of the scope of the closure, so we need to create a local...
-                                    TaxonRank closureRank = Service.GetTaxonRank(childRank.Code);
-                                    if (childRank.UnplacedAllowed.ValueOrFalse()) {                                        
-                                        addMenu.Items.Add(builder.New("Unplaced " + childRank.LongName).Handler(() => { AddNewTaxon(taxon, closureRank, true); }).MenuItem);
-                                        atLeastOneUnplaced = true;
-                                    }
-                                }
-                                if (atLeastOneUnplaced) {
-                                    addMenu.Items.Add(new Separator());
-                                }
-                            }
-                            
-                        }
-                        break;
-                }
-            }
-
-            return addMenu;
-        }
-
-        private void AddSpecialNameMenuItems(TaxonViewModel parent, MenuItem parentMenu, bool? availEnabled = true, bool? litEnabled = true, bool? ISEnabled = true, bool? SIEnabled = true) {
-            MenuItemBuilder builder = new MenuItemBuilder(_R);
-            parentMenu.Items.Add(builder.New("TaxonExplorer.menu.Add.AvailableName").Handler(() => { AddAvailableName(parent); }).Enabled(availEnabled.ValueOrFalse()).MenuItem);
-            parentMenu.Items.Add(builder.New("TaxonExplorer.menu.Add.LiteratureName").Handler(() => { AddLiteratureName(parent); }).Enabled(litEnabled.ValueOrFalse()).MenuItem);
-            parentMenu.Items.Add(builder.New("TaxonExplorer.menu.Add.IncertaeSedis").Handler(() => { AddIncertaeSedis(parent); }).Enabled(ISEnabled.ValueOrFalse()).MenuItem);
-            parentMenu.Items.Add(builder.New("TaxonExplorer.menu.Add.SpeciesInquirenda").Handler(() => { AddSpeciesInquirenda(parent); }).Enabled(SIEnabled.ValueOrFalse()).MenuItem);
         }
 
         private int GetNewTaxonID() {
@@ -641,7 +551,7 @@ namespace BioLink.Client.Taxa {
             return "Name Author, Year";
         }
 
-        private TaxonViewModel AddNewTaxon(TaxonViewModel parent, string elemType, TaxonViewModelAction action, bool startRename = true, bool select = true) {
+        internal TaxonViewModel AddNewTaxon(TaxonViewModel parent, string elemType, TaxonViewModelAction action, bool startRename = true, bool select = true) {
 
             // TODO: check permissions...
 
@@ -656,7 +566,7 @@ namespace BioLink.Client.Taxa {
             viewModel.YearOfPub = "";
             viewModel.Epithet = "";
             viewModel.DisplayLabel = GetDefaultDisplayLabel(viewModel);
-            parent.IsExpanded = true;            
+            parent.IsExpanded = true;
 
             try {
                 if (action != null) {
@@ -672,8 +582,8 @@ namespace BioLink.Client.Taxa {
 
                 if (startRename) {
                     RenameTaxon(viewModel);
-                }                
-                
+                }
+
                 _pendingChanges.Add(new InsertTaxonDatabaseAction(viewModel));
 
             } catch (Exception ex) {
@@ -682,12 +592,12 @@ namespace BioLink.Client.Taxa {
             return viewModel;
         }
 
-        private TaxonViewModel AddNewTaxon(TaxonViewModel parent, TaxonRank rank, bool unplaced = false) {
-            
-            return AddNewTaxon(parent, rank.Code, (taxon) => {                
+        internal TaxonViewModel AddNewTaxon(TaxonViewModel parent, TaxonRank rank, bool unplaced = false) {
+
+            return AddNewTaxon(parent, rank.Code, (taxon) => {
                 taxon.Unplaced = unplaced;
                 string parentChildElemType = GetChildElementType(parent);
-                if (taxon.ElemType != parentChildElemType) {
+                if (!String.IsNullOrEmpty(parentChildElemType) && taxon.ElemType != parentChildElemType) {
                     TaxonRank parentChildRank = Service.GetTaxonRank(parentChildElemType);
                     if (!Service.IsValidChild(parentChildRank, rank)) {
                         throw new Exception("Cannot insert an " + rank.LongName + " entry because this entry cannot be a valid parent for the current children.");
@@ -712,38 +622,38 @@ namespace BioLink.Client.Taxa {
                         parent.Children.Add(newUnplaced);
                         newUnplaced.IsExpanded = true;
                     }
-                }                
+                }
             }, true);
-            
+
         }
 
-        private void AddUnrankedValid(TaxonViewModel taxon) {
+        internal void AddUnrankedValid(TaxonViewModel taxon) {
             AddNewTaxon(taxon, "", (child) => {
 
             });
         }
 
-        private void AddSpeciesInquirenda(TaxonViewModel parent) {
+        internal void AddSpeciesInquirenda(TaxonViewModel parent) {
             AddNewTaxon(parent, TaxonRank.SPECIES_INQUIRENDA, (newChild) => {
-            },false);
-        }
-
-        private void AddIncertaeSedis(TaxonViewModel parent) {
-            AddNewTaxon(parent, TaxonRank.INCERTAE_SEDIS, (newChild) => {                
             }, false);
         }
 
-        private void AddLiteratureName(TaxonViewModel parent) {
+        internal void AddIncertaeSedis(TaxonViewModel parent) {
+            AddNewTaxon(parent, TaxonRank.INCERTAE_SEDIS, (newChild) => {
+            }, false);
+        }
+
+        internal void AddLiteratureName(TaxonViewModel parent) {
             AddNewTaxon(parent, parent.ElemType, (newChild) => {
                 newChild.LiteratureName = true;
             });
         }
 
-        private void AddNewTaxonAllRanks(TaxonViewModel parent) {
+        internal void AddNewTaxonAllRanks(TaxonViewModel parent) {
             throw new NotImplementedException();
         }
 
-        private void AddAvailableName(TaxonViewModel parent) {
+        internal void AddAvailableName(TaxonViewModel parent) {
             AddNewTaxon(parent, parent.ElemType, (newChild) => {
                 switch (parent.ElemType) {
                     case TaxonRank.INCERTAE_SEDIS:
@@ -781,7 +691,7 @@ namespace BioLink.Client.Taxa {
             }
         }
 
-        private void ExpandChildren(TaxonViewModel taxon, List<Taxon> remaining = null) {
+        internal void ExpandChildren(TaxonViewModel taxon, List<Taxon> remaining = null) {
             if (remaining == null) {
                 remaining = Service.GetExpandFullTree(taxon.TaxaID.Value);
             }
@@ -796,7 +706,7 @@ namespace BioLink.Client.Taxa {
             }
         }
 
-        private void ShowInExplorer(TaxonViewModel taxon) {
+        internal void ShowInExplorer(TaxonViewModel taxon) {
 
             tabAllTaxa.IsSelected = true;
             tvwAllTaxa.Visibility = Visibility.Visible;
@@ -923,9 +833,9 @@ namespace BioLink.Client.Taxa {
         internal void CommitPendingChanges() {
 
 #if DEBUG
-            Logger.Debug("Comming taxon changes:");
+            Logger.Debug("Committing the following taxon changes:");
             foreach (TaxonDatabaseAction action in _pendingChanges) {
-                Logger.Debug("{0}",action);
+                Logger.Debug("{0}", action);
             }
 
 #endif
@@ -1109,6 +1019,20 @@ namespace BioLink.Client.Taxa {
                 RenameTaxon(taxon);
             }
 
+        }
+
+        private void btnDown_Click(object sender, RoutedEventArgs e) {
+            var taxon = tvwAllTaxa.SelectedItem as TaxonViewModel;
+            if (taxon != null) {
+                ShiftTaxonDown(taxon);
+            }
+        }
+
+        private void btnUp_Click(object sender, RoutedEventArgs e) {
+            var taxon = tvwAllTaxa.SelectedItem as TaxonViewModel;
+            if (taxon != null) {
+                ShiftTaxonUp(taxon);
+            }
         }
 
     }
