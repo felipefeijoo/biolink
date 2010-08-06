@@ -74,10 +74,6 @@ namespace BioLink.Client.Taxa {
 
         public Taxon Taxon { get; private set; }        
 
-        public override string Label {
-            get { return TaxaFullName; }
-        }
-
         public int? TaxaID {
             get { return Taxon.TaxaID; }
             set { SetProperty(() => Taxon.TaxaID, Taxon, value); }
@@ -173,7 +169,7 @@ namespace BioLink.Client.Taxa {
 
         private string _displayLabel;
 
-        public String DisplayLabel {
+        public override String DisplayLabel {
             get {
                 if (String.IsNullOrEmpty(_displayLabel)) {
                     if (_labelGenerator != null) {
@@ -297,7 +293,7 @@ namespace BioLink.Client.Taxa {
         }
 
         public override string ToString() {
-            return String.Format("TaxonViewModel: [{0}] {1}", ElemType, TaxaFullName);
+            return String.Format("TVM: [{0}-{2}] {1}", ElemType, DisplayLabel, TaxaID);
         }
 
     }

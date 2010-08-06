@@ -13,16 +13,20 @@ namespace BioLink.Client.Taxa {
 
     public class MoveTaxonDatabaseAction : TaxonDatabaseAction {
 
-        public MoveTaxonDatabaseAction(int taxonId, int newParentId) {
-            this.TaxonId = taxonId;
-            this.NewParentId = newParentId;
+        public MoveTaxonDatabaseAction(TaxonViewModel taxon, TaxonViewModel newParent) {
+            this.Taxon = taxon;
+            this.NewParent = newParent;
         }
 
-        public int TaxonId { get; private set; }
-        public int NewParentId { get; private set; }
+        public TaxonViewModel Taxon { get; private set; }
+        public TaxonViewModel NewParent { get; private set; }
 
         protected override void ProcessImpl(TaxaService service) {
-            service.MoveTaxon(TaxonId, NewParentId);
+            service.MoveTaxon(Taxon.TaxaID.Value, NewParent.TaxaID.Value);
+        }
+
+        public override string ToString() {
+            return String.Format("Move: {0} to {1}", Taxon, NewParent);
         }
     }
 
@@ -38,24 +42,35 @@ namespace BioLink.Client.Taxa {
             service.UpdateTaxon(Taxon);
         }
 
+        public override string ToString() {
+            return String.Format("Update: {0}", Taxon);
+        }
+
+
     }
 
     public class MergeTaxonDatabaseAction : TaxonDatabaseAction {
 
-        public MergeTaxonDatabaseAction(int sourceId, int targetId, bool createNewIDRecord) {
-            this.SourceId = sourceId;
-            this.TargetId = targetId;
+        public MergeTaxonDatabaseAction(TaxonViewModel source, TaxonViewModel target, bool createNewIDRecord) {
+            this.Source = source;
+            this.Target = target;
             this.CreateNewIDRecord = createNewIDRecord;
         }
 
-        public int SourceId { get; private set; }
-        public int TargetId { get; private set; }
+        public TaxonViewModel Source { get; private set; }
+        public TaxonViewModel Target { get; private set; }
         public bool CreateNewIDRecord { get; private set; }
 
         protected override void ProcessImpl(TaxaService service) {
-            service.MergeTaxon(SourceId, TargetId, CreateNewIDRecord);
-            service.DeleteTaxon(SourceId);
+            service.MergeTaxon(Source.TaxaID.Value, Target.TaxaID.Value, CreateNewIDRecord);
+            service.DeleteTaxon(Source.TaxaID.Value);
         }
+
+        public override string ToString() {
+            return String.Format("Merging: {0} with {1}", Source, Target);
+        }
+
+
     }
 
     public class DeleteTaxonDatabaseAction : TaxonDatabaseAction {
@@ -70,25 +85,34 @@ namespace BioLink.Client.Taxa {
             service.DeleteTaxon(Taxon.TaxaID.Value);
         }
 
+        public override string ToString() {
+            return String.Format("Deleting: {0} ", Taxon);
+        }
+
     }
 
     public class InsertTaxonDatabaseAction : TaxonDatabaseAction {
 
-        private TaxonViewModel _taxon;
-
         public InsertTaxonDatabaseAction(TaxonViewModel taxon) {
-            _taxon = taxon;
+            this.Taxon = taxon;
         }
+
+        public TaxonViewModel Taxon { get; private set; }
 
         protected override void ProcessImpl(TaxaService service) {                           
-            service.InsertTaxon(_taxon.Taxon);
+            service.InsertTaxon(Taxon.Taxon);
             // The service will have updated the new taxon with its database identity.
             // If this taxon has any children we can update their identity too.
-            foreach (HierarchicalViewModelBase child in _taxon.Children) {
+            foreach (HierarchicalViewModelBase child in Taxon.Children) {
                 TaxonViewModel tvm = child as TaxonViewModel;
-                tvm.TaxaParentID = _taxon.Taxon.TaxaID;
+                tvm.TaxaParentID = Taxon.Taxon.TaxaID;
             }
         }
+
+        public override string ToString() {
+            return String.Format("Inserting: {0}", Taxon);
+        }
+
 
     }
 

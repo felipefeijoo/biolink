@@ -33,6 +33,8 @@ namespace BioLink.Data {
                 taxa.Add(TaxonMapper.MapTaxon(reader));
             }, new SqlParameter("intParentId", taxonId));
 
+            taxa.Sort((x, y) => { return x.Epithet.CompareTo(y.Epithet); });
+
             return taxa;
         }
 

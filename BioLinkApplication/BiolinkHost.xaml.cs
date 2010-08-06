@@ -56,7 +56,7 @@ namespace BioLinkApplication {
 
             Debug.Assert(User != null, "User is null!");
 
-            _pluginManager = new PluginManager(this.User);
+            _pluginManager = new PluginManager(this.User, MainWindow.Instance);
             _pluginManager.RequestShowContent += new PluginManager.ShowDockableContributionDelegate(_pluginManager_RequestShowContent);
             _pluginManager.ProgressEvent += ProgressObserverAdapter.Adapt(monitor);
             // Debug logging...            
