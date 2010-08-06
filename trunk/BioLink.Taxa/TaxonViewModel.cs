@@ -57,14 +57,17 @@ namespace BioLink.Client.Taxa {
         private BitmapSource _image;
         private TaxonLabelGenerator _labelGenerator;        
 
-        public TaxonViewModel(TaxonViewModel parent, Taxon taxon, TaxonLabelGenerator labelGenerator)
+        public TaxonViewModel(HierarchicalViewModelBase parent, Taxon taxon, TaxonLabelGenerator labelGenerator, bool isRoot = false)
             : base() {
             this.Parent = parent;
             this.Taxon = taxon;
             this.IsChanged = false;
             this.DataChanged += new DataChangedHandler(TaxonViewModel_DataChanged);
             _labelGenerator = labelGenerator;
+            this.IsRootNode = isRoot;
         }
+
+        public bool IsRootNode { get; private set; }
 
         void TaxonViewModel_DataChanged() {
             // Force the icon to be reconstructed, possibly now with a changed badge/overlay
@@ -201,10 +204,15 @@ namespace BioLink.Client.Taxa {
 
         private BitmapSource ConstructIcon() {
 
+            // The top level container nodes don't get icons...
+            if (IsRootNode) {
+                return null;
+            }
+
             // This is used to construct image uri's, if required...
             string assemblyName = this.GetType().Assembly.GetName().Name;
 
-            // Available and Literature names don't have icons
+            // Available and Literature names don't have icons either
             if (AvailableName.GetValueOrDefault(false) || LiteratureName.GetValueOrDefault(false)) {
                 // Unless they've been changed, in which they get the 
                 if (IsChanged) {
@@ -212,11 +220,6 @@ namespace BioLink.Client.Taxa {
                 } else {                    
                     return null;
                 }
-            }
-
-            // Also the top level container doesn't get an Icon either
-            if (Parent == null) {
-                return null;
             }
 
             BitmapSource baseIcon = null;
@@ -287,7 +290,11 @@ namespace BioLink.Client.Taxa {
         public string GetParentage() {
             String parentage = "";
             TraverseToTop((t) => {
-                parentage = "/" + (t as TaxonViewModel).TaxaID + parentage;
+                if (t is TaxonViewModel) {
+                    parentage = "/" + (t as TaxonViewModel).TaxaID + parentage;
+                } else {
+                    parentage = "/0" + parentage;
+                }
             });
             return parentage;
         }

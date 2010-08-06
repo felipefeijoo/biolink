@@ -15,6 +15,7 @@
         <DockPanel LastChildFill="True">            
             <Menu DockPanel.Dock="Top" x:Name="menuBar">
                 <MenuItem Header="_File" x:Name="File">
+                    <MenuItem Header="_Log out" x:Name="LogOut" Click="LogOut_Click" ></MenuItem>
                     <Separator />
                     <MenuItem Header="_Exit" x:Name="Exit" Click="Exit_Click" />
                 </MenuItem>

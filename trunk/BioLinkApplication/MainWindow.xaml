@@ -3,6 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="439" Width="680" xmlns:my="clr-namespace:BioLinkApplication" WindowState="Maximized" WindowStartupLocation="CenterScreen" Icon="/BioLinkApplication;component/images/Biolink.ico" Closing="Window_Closing">
     <Grid x:Name="contentGrid">
-        <my:LoginControl x:Name="loginControl" LoginSuccessful="loginControl_LoginSuccessful" />
+        <!-- <my:LoginControl x:Name="loginControl" LoginSuccessful="loginControl_LoginSuccessful" /> -->
     </Grid>
 </Window>

@@ -234,6 +234,10 @@ namespace BioLinkApplication {
                 Config.SetUser<string>(User, PREF_DOCK_LAYOUT, writer.ToString());
             }
         }
+
+        private void LogOut_Click(object sender, RoutedEventArgs e) {
+            MainWindow.Instance.LogOut();
+        }
        
     }
 }

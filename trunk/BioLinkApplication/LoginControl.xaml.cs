@@ -22,6 +22,8 @@ namespace BioLinkApplication {
     /// </summary>
     public partial class LoginControl : UserControl {
 
+        List<ConnectionProfile> _profiles;
+
         public static readonly RoutedEvent LoginSuccessfulEvent = EventManager.RegisterRoutedEvent("LoginSuccessful", RoutingStrategy.Bubble, typeof(LoginSuccessfulEventHandler), typeof(LoginControl));
 
         public LoginControl() {
@@ -29,11 +31,20 @@ namespace BioLinkApplication {
             if (!this.IsDesignTime()) {
                 SetupProfiles();
             }
+            this.Loaded += new RoutedEventHandler(LoginControl_Loaded);
+        }
+
+        void LoginControl_Loaded(object sender, RoutedEventArgs e) {
+            if (String.IsNullOrEmpty(txtUsername.Text)) {
+                txtUsername.Focus();
+            } else {
+                txtPassword.Focus();
+            }
         }
 
         private void SetupProfiles() {
             cmbProfile.ItemsSource = null;
-            List<ConnectionProfile> profiles = Config.GetGlobal<List<ConnectionProfile>>("connection.profiles", new List<ConnectionProfile>());
+            _profiles = Config.GetGlobal<List<ConnectionProfile>>("connection.profiles", new List<ConnectionProfile>());
             String lastProfile = Config.GetGlobal<string>("connection.lastprofile", null);
             if (!Config.GetGlobal<bool>("connection.skiplegacyimport", false)) {
 
@@ -45,7 +56,7 @@ namespace BioLinkApplication {
                     profile.Database = key.GetValue("DatabaseName") as string;
                     profile.LastUser = key.GetValue("LastUser") as string;                    
                     profile.Timeout = key.GetValue("CommandTimeout") as Nullable<Int32>;
-                    profiles.Add(profile);
+                    _profiles.Add(profile);
                 });
 
                 if (lastProfile == null) {
@@ -53,16 +64,16 @@ namespace BioLinkApplication {
                 }
 
                 // Save the new list
-                Config.SetGlobal("connection.profiles", profiles);
+                Config.SetGlobal("connection.profiles", _profiles);
                 // and we don't need to do this again!
                 Config.SetGlobal("connection.skiplegacyimport", true);
             }
 
-            cmbProfile.ItemsSource = profiles;
+            cmbProfile.ItemsSource = _profiles;
 
             if (!String.IsNullOrEmpty(lastProfile)) {
                 // Look in the list for the profile with the same name.
-                ConnectionProfile lastUserProfile = profiles.Find((item) => { return item.Name.Equals(lastProfile); });
+                ConnectionProfile lastUserProfile = _profiles.Find((item) => { return item.Name.Equals(lastProfile); });
                 if (lastUserProfile != null) {
                     cmbProfile.SelectedItem = lastUserProfile;
                 }
@@ -93,6 +104,10 @@ namespace BioLinkApplication {
             btnLogin.Visibility = Visibility.Hidden;
 
             User user = new User(txtUsername.Text, txtPassword.Password, profile);
+
+            // Save the last username...
+            profile.LastUser = user.Username;
+            Config.SetGlobal("connection.profiles", _profiles);
             
             string format = FindResource("LoginControl.Status.Connecting") as string;
             lblStatus.Content =  String.Format(format,  profile.Server);

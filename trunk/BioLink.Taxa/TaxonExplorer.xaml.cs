@@ -67,13 +67,14 @@ namespace BioLink.Client.Taxa {
                     btnLock.IsChecked = true;
                 }
             }
-
+            gridContentsHeader.Background = SystemColors.ControlBrush;
             buttonBar.Visibility = Unlocked ? Visibility.Visible : Visibility.Hidden;
         }
 
         void btnLock_Checked(object sender, RoutedEventArgs e) {
             lblHeader.Visibility = Visibility.Hidden;
             buttonBar.Visibility = Unlocked ? Visibility.Visible : Visibility.Hidden;            
+            gridContentsHeader.Background = new LinearGradientBrush(Colors.DarkOrange, Colors.Orange, 90.0);
         }
 
         internal TaxaService Service { 
@@ -134,12 +135,12 @@ namespace BioLink.Client.Taxa {
                 if (taxon.AvailableName.ValueOrFalse() || taxon.LiteratureName.ValueOrFalse()) {
                     strDisplay = taxon.Epithet + " " + strAuthorYear;
                 } else {
-                    TaxonRank rank = Service.GetTaxonRank(taxon.ElemType);
+                    string format = "#";
+                    TaxonRank rank = Service.GetTaxonRank(taxon.ElemType);                    
                     if (rank != null) {
-                        String format = rank.ChecklistDisplayAs ?? "#";
-                        strDisplay = format.Replace("#", taxon.Epithet) + " " + strAuthorYear;
-                    }                                            
-                    // ....
+                        format = rank.ChecklistDisplayAs ?? "#";                        
+                    }
+                    strDisplay = format.Replace("#", taxon.Epithet) + " " + strAuthorYear;
                 }
                 return strDisplay;
             }            
@@ -221,7 +222,7 @@ namespace BioLink.Client.Taxa {
             root.TaxaParentID = -1;
             root.Epithet = _R("TaxonExplorer.explorer.root");
 
-            TaxonViewModel rootNode = new TaxonViewModel(null, root, GenerateTaxonDisplayLabel);
+            TaxonViewModel rootNode = new TaxonViewModel(null, root, GenerateTaxonDisplayLabel, true);
 
             taxa.ForEach((taxon) => {
                 TaxonViewModel item = new TaxonViewModel(rootNode, taxon, GenerateTaxonDisplayLabel);
@@ -546,6 +547,7 @@ namespace BioLink.Client.Taxa {
             } else {
                 switch (taxon.ElemType) {
                     case "" :
+                        addMenu.Items.Add(builder.New("Unranked Valid").Handler(() => { AddUnrankedValid(taxon); }).MenuItem);
                         break;
                     case TaxonRank.INCERTAE_SEDIS:
                     case TaxonRank.SPECIES_INQUIRENDA:
@@ -589,10 +591,6 @@ namespace BioLink.Client.Taxa {
             }
 
             return addMenu;
-        }
-
-        private void AddUnrankedValid(TaxonViewModel taxon) {
-            throw new NotImplementedException();
         }
 
         private void AddSpecialNameMenuItems(TaxonViewModel parent, MenuItem parentMenu, bool? availEnabled = true, bool? litEnabled = true, bool? ISEnabled = true, bool? SIEnabled = true) {
@@ -717,6 +715,12 @@ namespace BioLink.Client.Taxa {
                 }                
             }, true);
             
+        }
+
+        private void AddUnrankedValid(TaxonViewModel taxon) {
+            AddNewTaxon(taxon, "", (child) => {
+
+            });
         }
 
         private void AddSpeciesInquirenda(TaxonViewModel parent) {
@@ -1051,12 +1055,14 @@ namespace BioLink.Client.Taxa {
         public bool AnyChanges() {
 
             bool changed = false;
-            foreach (HierarchicalViewModelBase item in _explorerModel) {
-                item.Traverse((node) => {
-                    if (node.IsChanged) {
-                        changed = true;
-                    }
-                });
+            if (_explorerModel != null) {
+                foreach (HierarchicalViewModelBase item in _explorerModel) {
+                    item.Traverse((node) => {
+                        if (node.IsChanged) {
+                            changed = true;
+                        }
+                    });
+                }
             }
 
             return changed;
