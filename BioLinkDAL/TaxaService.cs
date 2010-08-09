@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using BioLink.Data.Model;
 
 namespace BioLink.Data {
@@ -230,6 +230,15 @@ namespace BioLink.Data {
 
             return ranks[0];
         }
+
+        public DataTable GetStatistics(int taxonId) {
+            return StoredProcDataTable("spBiotaStatistics", _P("intBiotaId", taxonId));
+        }
+
+        public DataTable GetMaterialForTaxon(int taxonId) {
+            return StoredProcDataTable("spMaterialListForTaxon", _P("intBiotaId", taxonId));
+        }
+
     }
 
     public class DataValidationResult {

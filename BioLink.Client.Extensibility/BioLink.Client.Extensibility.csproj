@@ -65,6 +65,7 @@
     </Compile>
     <Compile Include="HierarchicalViewModelBase.cs" />
     <Compile Include="IBioLinkPlugin.cs" />
+    <Compile Include="IBioLinkReport.cs" />
     <Compile Include="IProgressMonitor.cs" />
     <Compile Include="LatLongInput.xaml.cs">
       <DependentUpon>LatLongInput.xaml</DependentUpon>
@@ -73,6 +74,12 @@
     <Compile Include="PluginManager.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReportResults.xaml.cs">
+      <DependentUpon>ReportResults.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TabularDataViewer.xaml.cs">
+      <DependentUpon>TabularDataViewer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="tests\PreferencesTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -98,6 +105,14 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="LatLongInput.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ReportResults.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TabularDataViewer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

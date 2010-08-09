@@ -66,12 +66,16 @@ namespace BioLink.Client.Taxa {
         public override void Dispose() {
             base.Dispose();
             if (_explorer != null && _explorer.Content != null) {
+
                 if (Config.GetGlobal<bool>("Taxa.RememberExpandedTaxa", true)) {
                     List<string> expandedElements = GetExpandedParentages(_explorer.ContentControl.ExplorerModel);
                     if (expandedElements != null) {
                         Config.SetProfile(User, "Taxa.Explorer.ExpandedTaxa", expandedElements);
                     }
                 }
+
+                Config.SetUser(User, "Taxa.ManualSort", TaxonExplorer.IsManualSort);
+
             }
         }
 

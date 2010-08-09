@@ -9,8 +9,8 @@ using BioLink.Client.Utilities;
 using System.Windows.Input;
 using BioLink.Data.Model;
 
-
 namespace BioLink.Client.Taxa {
+
     internal class TaxonMenuFactory {
 
         private MenuItemBuilder _builder;
@@ -36,7 +36,7 @@ namespace BioLink.Client.Taxa {
             }).MenuItem);
 
             menu.Items.Add(new Separator());
-            if (Explorer.Unlocked) {
+            if (Explorer.IsUnlocked) {
                 menu.Items.Add(_builder.New("TaxonExplorer.menu.Delete", Taxon.DisplayLabel).Handler(() => { Explorer.DeleteTaxon(Taxon); }).MenuItem);
                 menu.Items.Add(_builder.New("TaxonExplorer.menu.Rename", Taxon.DisplayLabel).Handler(() => { Explorer.RenameTaxon(Taxon); }).MenuItem);
 
@@ -46,28 +46,52 @@ namespace BioLink.Client.Taxa {
                     menu.Items.Add(addMenu);
                 }
 
-                MenuItem sortMenu = BuildSortMenuItems();
-                if (sortMenu != null && sortMenu.HasItems) {
-                    menu.Items.Add(new Separator());
-                    menu.Items.Add(sortMenu);
-                }
-
             } else {
                 menu.Items.Add(_builder.New("TaxonExplorer.menu.Unlock").Handler(() => { Explorer.btnLock.IsChecked = true; }).MenuItem);
             }
 
-            if (!Explorer.Unlocked) {
+            MenuItem sortMenu = BuildSortMenuItems();
+            if (sortMenu != null && sortMenu.HasItems) {
+                menu.Items.Add(new Separator());
+                menu.Items.Add(sortMenu);
+            }
+
+            if (!Explorer.IsUnlocked) {
                 menu.Items.Add(new Separator());
                 menu.Items.Add(_builder.New("TaxonExplorer.menu.Refresh").Handler(() => Explorer.Refresh()).MenuItem);
             }
+            
+            MenuItem reports = CreateReportMenuItems();
+            if (reports != null && reports.HasItems) {
+                if (menu.HasItems) {
+                    menu.Items.Add(new Separator());
+                }
+                menu.Items.Add(reports);
+            }
 
             if (menu.HasItems) {
-                menu.Items.Add(new Separator());             
+                menu.Items.Add(new Separator());
             }
             menu.Items.Add(_builder.New("_Edit Details...").Handler(() => { Explorer.ShowTaxonDetails(Taxon); }).MenuItem);
 
             return menu;
         
+        }
+
+        private MenuItem CreateReportMenuItems() {
+            MenuItem reports = _builder.New("Reports").MenuItem;
+
+            List<IBioLinkReport> list = new List<IBioLinkReport>();
+
+            list.Add(new TaxonStatisticsReport(Explorer.Service, Taxon));
+            list.Add(new MaterialForTaxonReport(Explorer.Service, Taxon));
+
+            foreach (IBioLinkReport report in list) {
+                IBioLinkReport reportToExecute = report;
+                reports.Items.Add(_builder.New(report.Name).Handler(() => { Explorer.RunReport(reportToExecute); }).MenuItem);
+            }
+
+            return reports;
         }
 
         private MenuItem BuildAddMenuItems() {
@@ -138,11 +162,11 @@ namespace BioLink.Client.Taxa {
         private MenuItem BuildSortMenuItems() {
 
             MenuItem sort = _builder.New("Sort").MenuItem;
-            sort.Items.Add(_builder.New("By Name").Handler(() => { Explorer.ToggleSortOrder(); }).Checked(!Explorer.IsManualSort).MenuItem);
-            sort.Items.Add(_builder.New("Manual").Handler(() => { Explorer.ToggleSortOrder(); }).Checked(Explorer.IsManualSort).MenuItem);
+            sort.Items.Add(_builder.New("By Name").Handler(() => { Explorer.SetManualSortMode(false); }).Checked(!TaxonExplorer.IsManualSort).MenuItem);
+            sort.Items.Add(_builder.New("Manual").Handler(() => { Explorer.SetManualSortMode(true); }).Checked(TaxonExplorer.IsManualSort).MenuItem);
             sort.Items.Add(new Separator());
-            sort.Items.Add(_builder.New("Shift Up").Handler(() => { Explorer.ShiftTaxonUp(Taxon); }).Enabled(Explorer.IsManualSort).MenuItem);
-            sort.Items.Add(_builder.New("Shift Down").Handler(() => { Explorer.ShiftTaxonDown(Taxon); }).Enabled(Explorer.IsManualSort).MenuItem);
+            sort.Items.Add(_builder.New("Shift Up").Handler(() => { Explorer.ShiftTaxonUp(Taxon); }).Enabled(TaxonExplorer.IsManualSort && Explorer.IsUnlocked).MenuItem);
+            sort.Items.Add(_builder.New("Shift Down").Handler(() => { Explorer.ShiftTaxonDown(Taxon); }).Enabled(TaxonExplorer.IsManualSort && Explorer.IsUnlocked).MenuItem);
 
             return sort;
         }
