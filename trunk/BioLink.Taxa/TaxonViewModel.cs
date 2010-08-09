@@ -144,12 +144,20 @@ namespace BioLink.Client.Taxa {
 
         public bool? AvailableName {
             get { return Taxon.AvailableName; }
-            set { SetProperty(() => Taxon.AvailableName, Taxon, value); }
+            set {
+                if (SetProperty(() => Taxon.AvailableName, Taxon, value)) {
+                    RaisePropertyChanged("IsAvailableOrLiteratureName");
+                }
+            }
         }
 
         public bool? LiteratureName {
             get { return Taxon.LiteratureName; }
-            set { SetProperty(() => Taxon.LiteratureName, Taxon, value); }
+            set {
+                if (SetProperty(() => Taxon.LiteratureName, Taxon, value)) {
+                    RaisePropertyChanged("IsAvailableOrLiteratureName");
+                }
+            }
         }
 
         public string NameStatus {
@@ -300,7 +308,13 @@ namespace BioLink.Client.Taxa {
         }
 
         public override string ToString() {
-            return String.Format("TVM: [{0}-{2}] {1}", ElemType, DisplayLabel, TaxaID);
+            return String.Format("TVM: [{0}-{2}] {1} <Order={3}>", ElemType, DisplayLabel, TaxaID, Order);
+        }
+
+        public bool IsAvailableOrLiteratureName {
+            get {
+                return AvailableName.GetValueOrDefault(false) || LiteratureName.GetValueOrDefault(false);
+            }
         }
 
     }

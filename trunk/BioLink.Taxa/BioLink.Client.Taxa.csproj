@@ -47,6 +47,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DefaultDragAdorner.cs" />
+    <Compile Include="StatisticsReport.cs" />
     <Compile Include="TaxonMenuFactory.cs" />
     <Compile Include="DragDropOptions.xaml.cs">
       <DependentUpon>DragDropOptions.xaml</DependentUpon>
@@ -148,6 +150,11 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="images\LeftArrow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\DownArrow.png" />
+    <Resource Include="images\RightArrow.png" />
+    <Resource Include="images\UpArrow.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

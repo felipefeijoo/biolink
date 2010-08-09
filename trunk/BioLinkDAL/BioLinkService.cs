@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Data.SqlClient;
-using System.Reflection;
-using BioLink.Client.Utilities;
 using System.Data;
+using System.Data.SqlClient;
+using BioLink.Client.Utilities;
 
 namespace BioLink.Data {
 
@@ -122,6 +119,30 @@ namespace BioLink.Data {
                     }
                 });
             }
+        }
+
+        protected DataTable StoredProcDataTable(string proc, params SqlParameter[] @params) {
+
+            DataTable table = null;
+            StoredProcReaderForEach(proc, (reader) => {
+
+                if (table == null) {
+                    table = new DataTable();
+                    for (int i = 0; i < reader.FieldCount; ++i) {
+                        table.Columns.Add(reader.GetName(i));
+                    }
+                }
+
+                DataRow row = table.NewRow();
+
+                for (int i = 0; i < reader.FieldCount; ++i) {
+                    row[i] = reader[i];
+                }
+                table.Rows.Add(row);
+
+            }, @params);
+
+            return table;
         }
 
         protected int StoredProcUpdate(string proc, params SqlParameter[] @params) {

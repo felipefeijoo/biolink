@@ -13,9 +13,18 @@ namespace BioLink.Client.Taxa {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
             IEnumerable<HierarchicalViewModelBase> taxa = value as IEnumerable<HierarchicalViewModelBase>;
             ListCollectionView lcv = (ListCollectionView) CollectionViewSource.GetDefaultView(taxa);
-            
-            lcv.SortDescriptions.Add(new SortDescription("AvailableName", ListSortDirection.Descending)); // bool
+
+            // Available and Literature Names are always at the top...
+            lcv.SortDescriptions.Add(new SortDescription("IsAvailableOrLiteratureName", ListSortDirection.Descending)); // bool            
+
+            // We are the sort mode is manual, then the order will take precedence over the name
+            if (TaxonExplorer.IsManualSort) {
+                lcv.SortDescriptions.Add(new SortDescription("Order", ListSortDirection.Ascending)); // int
+            }
+
+            // And finally the name
             lcv.SortDescriptions.Add(new SortDescription("Epithet", ListSortDirection.Ascending));
+
             return lcv;
         }
     
