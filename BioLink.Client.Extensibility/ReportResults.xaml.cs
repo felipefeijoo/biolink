@@ -1,23 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+using BioLink.Client.Utilities;
+using BioLink.Data;
+using System;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Data;
 
 namespace BioLink.Client.Extensibility {
     /// <summary>
     /// Interaction logic for ReportResults.xaml
     /// </summary>
-    public partial class ReportResults : Window {
+    public partial class ReportResults : UserControl, IProgressObserver {
 
         public ReportResults() {
             InitializeComponent();
@@ -25,17 +17,30 @@ namespace BioLink.Client.Extensibility {
 
         public ReportResults(IBioLinkReport report) {
             InitializeComponent();
+            progressBar.Visibility = System.Windows.Visibility.Hidden;
             this.Report = report;
             this.Loaded += new RoutedEventHandler(ReportResults_Loaded);
-
         }
 
         void ReportResults_Loaded(object sender, RoutedEventArgs e) {
+            JobExecutor.QueueJob(() => {
+                try {
+                    this.WaitCursor();                    
+                    StatusMessage("Running report...");
+                    DataMatrix data = Report.ExtractReportData(this);
+                    this.InvokeIfRequired(() => { DisplayReportResults(data); });
+                } finally {
+                    this.NormalCursor();
+                }
+            });
+        }
+
+        internal void DisplayReportResults(DataMatrix data) {
+
+            StatusMessage("Preparing view...");
+
             if (this.Report != null) {
-                DataTable data = Report.ExtractReportData();
-
                 reportContent.Children.Clear();
-
                 if (Report.Viewers.Count == 0 || Report.Viewers.Count == 1) {
                     IReportViewerSource viewerSource = null;
                     if (Report.Viewers.Count == 0) {
@@ -43,24 +48,61 @@ namespace BioLink.Client.Extensibility {
                     } else {
                         viewerSource = Report.Viewers[0];
                     }
-                    FrameworkElement control = viewerSource.ConstructView(data, null);
+                    FrameworkElement control = viewerSource.ConstructView(Report, data, this);
                     reportContent.Children.Add(control);                    
                 } else {
                     TabControl tab = new TabControl();
                     foreach (IReportViewerSource viewerSource in Report.Viewers) {
-                        FrameworkElement control = viewerSource.ConstructView(data, null);
+                        FrameworkElement control = viewerSource.ConstructView(Report, data, this);
                         tab.Items.Add(control);
                     }                    
                     reportContent.Children.Add(tab);    
                 }
             }
+
+            StatusMessage("{0} records retrieved.", data.Rows.Count);
         }
+
+        private void StatusMessage(string format, params object[] args) {
+            string message = String.Format(format, args);
+            statusMessage.InvokeIfRequired(() => {
+                statusMessage.Text = message;
+            });
+        }
+
+        #region ProgressObserver
+
+        public void ProgressStart(string message) {
+            StatusMessage(message);
+            progressBar.InvokeIfRequired(() => {
+                progressBar.Value = 0;
+                progressBar.Visibility = System.Windows.Visibility.Visible;
+            });
+        }
+
+        public void ProgressMessage(string message, double percentComplete) {
+            StatusMessage(message);
+            progressBar.InvokeIfRequired(() => {
+                progressBar.Value = percentComplete;
+            });
+        }
+
+        public void ProgressEnd(string message) {
+            progressBar.InvokeIfRequired(() => {
+                progressBar.Value = 100;
+                progressBar.Visibility = System.Windows.Visibility.Hidden;
+            });
+        }
+
+        #endregion
 
         #region properties
 
         protected IBioLinkReport Report { get; private set; }
 
         #endregion
+
+
 
     }
 }

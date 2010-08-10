@@ -5,8 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
              d:DesignHeight="316" d:DesignWidth="513">
-    <Grid>
-        <DataGrid AutoGenerateColumns="True" Name="dataGrid" ColumnHeaderHeight="25" ItemsSource="{Binding Path=.}" >            
-        </DataGrid>
+    <Grid>        
+        <ListView Name="lvw" ItemsSource="{Binding Path=.}">
+        </ListView>
     </Grid>
 </UserControl>

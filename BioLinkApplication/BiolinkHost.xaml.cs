@@ -19,6 +19,7 @@ using System.Threading;
 using System.Windows.Threading;
 using BioLink.Data;
 using System.IO;
+using AvalonDock;
 
 namespace BioLinkApplication {
     /// <summary>
@@ -56,8 +57,13 @@ namespace BioLinkApplication {
 
             Debug.Assert(User != null, "User is null!");
 
-            _pluginManager = new PluginManager(this.User, MainWindow.Instance);
+
+            PluginManager.Initialize(this.User, MainWindow.Instance);
+
+            _pluginManager = PluginManager.Instance;
+
             _pluginManager.RequestShowContent += new PluginManager.ShowDockableContributionDelegate(_pluginManager_RequestShowContent);
+            _pluginManager.DockableContentAdded += new PluginManager.AddDockableContentDelegate(_pluginManager_DockableContentAdded);
             _pluginManager.ProgressEvent += ProgressObserverAdapter.Adapt(monitor);
             // Debug logging...            
             _pluginManager.ProgressEvent += (message, percent, eventType) => { Logger.Debug("<<{2}>> {0} {1}", message, (percent >= 0 ? "(" + percent + "%)" : ""), eventType); return true; };
@@ -72,6 +78,18 @@ namespace BioLinkApplication {
             t.Name = "Plugin Bootstrapper Thread";
             t.TrySetApartmentState(ApartmentState.STA);
             t.Start();
+        }
+
+        void _pluginManager_DockableContentAdded(IBioLinkPlugin plugin, FrameworkElement content, string title) {
+            
+            DocumentContent newContent = new DocumentContent {
+                Title = title, 
+                Content = content
+            };
+
+            // documentPane.Items.Add(newContent);
+            newContent.Show(dockManager);
+
         }
 
         void _pluginManager_RequestShowContent(IBioLinkPlugin plugin, string name) {

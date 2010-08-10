@@ -231,12 +231,12 @@ namespace BioLink.Data {
             return ranks[0];
         }
 
-        public DataTable GetStatistics(int taxonId) {
-            return StoredProcDataTable("spBiotaStatistics", _P("intBiotaId", taxonId));
+        public DataMatrix GetStatistics(int taxonId) {
+            return StoredProcDataMatrix("spBiotaStatistics", _P("intBiotaId", taxonId));
         }
 
-        public DataTable GetMaterialForTaxon(int taxonId) {
-            return StoredProcDataTable("spMaterialListForTaxon", _P("intBiotaId", taxonId));
+        public DataMatrix GetMaterialForTaxon(int taxonId) {
+            return StoredProcDataMatrix("spMaterialListForTaxon", _P("intBiotaId", taxonId));
         }
 
     }

@@ -1085,7 +1085,8 @@ namespace BioLink.Client.Taxa {
 
         internal void RunReport(IBioLinkReport report) {
             ReportResults results = new ReportResults(report);
-            results.Show();
+            PluginManager.Instance.AddDockableContent(this._owner, results, report.Name);
+            // results.Show();
         }
     }
 

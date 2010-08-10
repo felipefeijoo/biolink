@@ -19,7 +19,25 @@ namespace BioLink.Client.Extensibility {
         private User _user;
         private Dictionary<string, IBioLinkPlugin> _plugins;
 
-        public PluginManager(User user, Window parentWindow) {
+        private static PluginManager _instance;
+
+        public static void Initialize(User user, Window parentWindow) {
+            if (_instance != null) {
+                _instance.Dispose();
+            }
+            _instance = new PluginManager(user, parentWindow);
+        }
+
+        public static PluginManager Instance {
+            get {
+                if (_instance == null) {
+                    throw new Exception("The Plugin Manager has not been initialized!");
+                }
+                return _instance;
+            }
+        }
+
+        private PluginManager(User user, Window parentWindow) {
             _user = user;
             _plugins = new Dictionary<string, IBioLinkPlugin>();
             this.ParentWindow = parentWindow;
@@ -93,6 +111,14 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
+        public void AddDockableContent(IBioLinkPlugin plugin, FrameworkElement content, string title) {
+
+            if (DockableContentAdded != null) {
+                DockableContentAdded(plugin, content, title);
+            }
+
+        }
+
         private bool NotifyProgress(ProgressHandler handler, string format, params object[] args) {
             return NotifyProgress(String.Format(format, args), -1, ProgressEventType.Update);
         }
@@ -146,7 +172,11 @@ namespace BioLink.Client.Extensibility {
 
         public delegate void ShowDockableContributionDelegate(IBioLinkPlugin plugin, string name);
 
+        public delegate void AddDockableContentDelegate(IBioLinkPlugin plugin, FrameworkElement content, string title);
+
         public event ShowDockableContributionDelegate RequestShowContent;
+
+        public event AddDockableContentDelegate DockableContentAdded;
 
         public void Dispose(Boolean disposing) {
             if (disposing) {

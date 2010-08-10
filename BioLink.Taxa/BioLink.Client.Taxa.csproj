@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DefaultDragAdorner.cs" />
+    <Compile Include="MaterialForTaxonReport.cs" />
     <Compile Include="StatisticsReport.cs" />
     <Compile Include="TaxonMenuFactory.cs" />
     <Compile Include="DragDropOptions.xaml.cs">
@@ -66,6 +67,7 @@
       <DependentUpon>TaxonExplorer.xaml</DependentUpon>
     </Compile>
     <Compile Include="TaxonNameParser.cs" />
+    <Compile Include="TaxonReportBase.cs" />
     <Compile Include="TaxonViewModel.cs" />
   </ItemGroup>
   <ItemGroup>

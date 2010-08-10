@@ -67,6 +67,7 @@
     <Compile Include="IBioLinkPlugin.cs" />
     <Compile Include="IBioLinkReport.cs" />
     <Compile Include="IProgressMonitor.cs" />
+    <Compile Include="ITabularDataExporter.cs" />
     <Compile Include="LatLongInput.xaml.cs">
       <DependentUpon>LatLongInput.xaml</DependentUpon>
     </Compile>
