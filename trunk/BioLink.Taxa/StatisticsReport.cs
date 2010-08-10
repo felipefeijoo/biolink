@@ -18,7 +18,7 @@ namespace BioLink.Client.Taxa {
         }
 
         public override string Name {
-            get { return "Statistics..."; }
+            get { return string.Format("Statistics for '{0}'", Taxon.DisplayLabel); }
         }
 
     }

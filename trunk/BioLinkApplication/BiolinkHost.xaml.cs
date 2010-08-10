@@ -84,12 +84,17 @@ namespace BioLinkApplication {
             
             DocumentContent newContent = new DocumentContent {
                 Title = title, 
-                Content = content
+                Content = content,
+                FloatingWindowSize = new Size(400,400)                
             };
 
-            // documentPane.Items.Add(newContent);
-            newContent.Show(dockManager);
-
+            newContent.Closed += new EventHandler((e,a) => {
+                if (content is IDisposable) {
+                    (content as IDisposable).Dispose();
+                }
+            });
+            
+            newContent.Show(dockManager, true);
         }
 
         void _pluginManager_RequestShowContent(IBioLinkPlugin plugin, string name) {
