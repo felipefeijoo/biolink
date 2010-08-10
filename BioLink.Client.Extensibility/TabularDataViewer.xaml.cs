@@ -9,7 +9,7 @@ namespace BioLink.Client.Extensibility {
     /// <summary>
     /// Interaction logic for TabularDataViewer.xaml
     /// </summary>
-    public partial class TabularDataViewer : UserControl {
+    public partial class TabularDataViewer : UserControl, IDisposable {
 
         private GridViewColumnHeader _lastHeaderClicked = null;
         private ListSortDirection _lastDirection = ListSortDirection.Ascending;
@@ -110,6 +110,12 @@ namespace BioLink.Client.Extensibility {
 
         #endregion
 
+
+
+        public void Dispose() {
+            this.Data = null;
+            lvw.ItemsSource = null;
+        }
     }
 
     public class AugmentedTextBlock : TextBlock {

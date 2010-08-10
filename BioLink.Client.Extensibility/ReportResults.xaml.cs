@@ -9,7 +9,7 @@ namespace BioLink.Client.Extensibility {
     /// <summary>
     /// Interaction logic for ReportResults.xaml
     /// </summary>
-    public partial class ReportResults : UserControl, IProgressObserver {
+    public partial class ReportResults : UserControl, IProgressObserver, IDisposable {
 
         public ReportResults() {
             InitializeComponent();
@@ -102,7 +102,13 @@ namespace BioLink.Client.Extensibility {
 
         #endregion
 
-
-
+        public void Dispose() {
+            foreach (FrameworkElement elem in reportContent.Children) {
+                if (elem is IDisposable) {
+                    IDisposable disposable = elem as IDisposable;
+                    disposable.Dispose();
+                }
+            }
+        }
     }
 }

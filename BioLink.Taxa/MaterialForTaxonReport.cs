@@ -113,7 +113,7 @@ namespace BioLink.Client.Taxa {
         }
 
         public override string Name {
-            get { return "Material for taxon list..."; }
+            get { return string.Format("Material for taxon '{0}'", Taxon.DisplayLabel); }
         }
 
     }
