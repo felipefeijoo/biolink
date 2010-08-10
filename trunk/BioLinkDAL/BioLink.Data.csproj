@@ -68,6 +68,7 @@
     <Compile Include="ConfigurationStore.cs" />
     <Compile Include="ConnectionProfile.cs" />
     <Compile Include="DatabaseAction.cs" />
+    <Compile Include="DataMatrix.cs" />
     <Compile Include="generated\DataObjects.cs" />
     <Compile Include="Mapper.cs" />
     <Compile Include="Model.cs" />

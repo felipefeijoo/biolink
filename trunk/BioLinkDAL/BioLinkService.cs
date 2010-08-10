@@ -145,6 +145,32 @@ namespace BioLink.Data {
             return table;
         }
 
+        protected DataMatrix StoredProcDataMatrix(string proc, params SqlParameter[] @params) {
+
+            DataMatrix matrix = null;
+            StoredProcReaderForEach(proc, (reader) => {
+
+                if (matrix == null) {
+                    matrix = new DataMatrix();
+                    for (int i = 0; i < reader.FieldCount; ++i) {
+                        matrix.Columns.Add(new MatrixColumn { Name=reader.GetName(i) });
+                    }
+                }
+
+                MatrixRow row = matrix.AddRow();
+                for (int i = 0; i < reader.FieldCount; ++i) {
+                    if (!reader.IsDBNull(i)) {
+                        row[i] = reader[i];
+                    }
+                }
+                
+
+            }, @params);
+
+            return matrix;
+        }
+
+
         protected int StoredProcUpdate(string proc, params SqlParameter[] @params) {
             int rowsAffected = -1;
             using (new CodeTimer(String.Format("StoredProcUpdate '{0}'", proc))) {

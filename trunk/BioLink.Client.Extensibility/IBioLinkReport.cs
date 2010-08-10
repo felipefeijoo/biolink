@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Data;
+using BioLink.Data;
 
 namespace BioLink.Client.Extensibility {
 
@@ -11,13 +12,26 @@ namespace BioLink.Client.Extensibility {
 
         string Name { get; }
         List<IReportViewerSource> Viewers { get; }
-        DataTable ExtractReportData();
+        DataMatrix ExtractReportData(IProgressObserver progress);
+        List<DisplayColumnDefinition> DisplayColumns { get; }
+
+    }
+
+    public class DisplayColumnDefinition {
+
+        public DisplayColumnDefinition() {
+            this.DisplayFormat = "{0}";
+        }
+
+        public string ColumnName { get; set; }
+        public string DisplayName { get; set; }
+        public string DisplayFormat { get; set; }
 
     }
 
     public interface IReportViewerSource {
         string Name { get; }
-        FrameworkElement ConstructView(DataTable reportData, IProgressObserver progress);
+        FrameworkElement ConstructView(IBioLinkReport report, DataMatrix reportData, IProgressObserver progress);
     }
 
 }

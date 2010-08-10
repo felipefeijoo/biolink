@@ -7,6 +7,7 @@ using System.Windows.Threading;
 using System.Windows.Controls;
 using System.Windows;
 using System.ComponentModel;
+using System.Windows.Input;
 
 namespace BioLink.Client.Utilities {
 
@@ -28,6 +29,20 @@ namespace BioLink.Client.Utilities {
 
         public static bool IsDesignTime(this Control control) {
             return DesignerProperties.GetIsInDesignMode(control);
+        }
+
+        public static void WaitCursor(this Control control) {
+            control.SetCursor(Cursors.Wait);
+        }
+
+        public static void NormalCursor(this Control control) {
+            control.SetCursor(Cursors.Arrow);
+        }
+
+        public static void SetCursor(this Control control, Cursor cursor) {
+            control.InvokeIfRequired( () => {
+                control.Cursor = cursor;
+            });
         }
 
         public static string _R(this Control control, string messageKey, params object[] args) {
