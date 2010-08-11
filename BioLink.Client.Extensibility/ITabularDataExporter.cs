@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using BioLink.Client.Utilities;
 using BioLink.Data;
+using System.Windows;
 
 namespace BioLink.Client.Extensibility {
 
-    public interface ITabularDataExporter {
+    public interface ITabularDataExporter<TOptionType> : IBioLinkExtension {
 
-        void Export(DataMatrix matrix, IProgressObserver progress);
+        TOptionType GetOptions(Window parentWindow);
+
+        void Export(DataMatrix matrix, TOptionType options, IProgressObserver progress);
 
         #region Properties
-
-        string Name { get; }
 
         string Description { get; }
 

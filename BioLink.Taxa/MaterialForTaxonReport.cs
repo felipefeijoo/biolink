@@ -19,10 +19,15 @@ namespace BioLink.Client.Taxa {
         }
 
         public override DataMatrix ExtractReportData(IProgressObserver progress) {
-            progress.ProgressStart(string.Format("Retrieving Material records for {0}", Taxon.DisplayLabel));
+            if (progress != null) {
+                progress.ProgressStart(string.Format("Retrieving Material records for {0}", Taxon.DisplayLabel), true);
+            }
 
             DataMatrix matrix = Service.GetMaterialForTaxon(Taxon.TaxaID.Value);
-            progress.ProgressEnd(string.Format("{0} rows retreived", matrix.Rows.Count));
+
+            if (progress != null) {
+                progress.ProgressEnd(string.Format("{0} rows retreived", matrix.Rows.Count));
+            }
 
             int areaTypeCol = matrix.IndexOf("AreaType");
             int latCol = matrix.IndexOf("Lat");

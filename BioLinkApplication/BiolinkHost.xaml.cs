@@ -1,25 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Windows.Threading;
+using AvalonDock;
 using BioLink.Client.Extensibility;
 using BioLink.Client.Utilities;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Threading;
-using System.Windows.Threading;
 using BioLink.Data;
-using System.IO;
-using AvalonDock;
 
 namespace BioLinkApplication {
     /// <summary>
@@ -32,7 +23,7 @@ namespace BioLinkApplication {
         private PluginManager _pluginManager;
         public User User { get; set; }
 
-        public BiolinkHost() {
+        public BiolinkHost() {                
             InitializeComponent();
             dockManager.IsAnimationEnabled = true;
         }
@@ -64,6 +55,7 @@ namespace BioLinkApplication {
 
             _pluginManager.RequestShowContent += new PluginManager.ShowDockableContributionDelegate(_pluginManager_RequestShowContent);
             _pluginManager.DockableContentAdded += new PluginManager.AddDockableContentDelegate(_pluginManager_DockableContentAdded);
+            _pluginManager.DockableContentClosed += new PluginManager.CloseDockableContentDelegate(_pluginManager_DockableContentClosed);
             _pluginManager.ProgressEvent += ProgressObserverAdapter.Adapt(monitor);
             // Debug logging...            
             _pluginManager.ProgressEvent += (message, percent, eventType) => { Logger.Debug("<<{2}>> {0} {1}", message, (percent >= 0 ? "(" + percent + "%)" : ""), eventType); return true; };
@@ -80,12 +72,19 @@ namespace BioLinkApplication {
             t.Start();
         }
 
+        void _pluginManager_DockableContentClosed(FrameworkElement content) {
+            DocumentContent doc = dockManager.Documents.First((a) => { return a.Content == content; });
+            if (doc != null) {
+                doc.Close();
+            }
+        }
+
         void _pluginManager_DockableContentAdded(IBioLinkPlugin plugin, FrameworkElement content, string title) {
-            
-            DocumentContent newContent = new DocumentContent {
+
+            BiolinkDocumentContent newContent = new BiolinkDocumentContent {
                 Title = title, 
                 Content = content,
-                FloatingWindowSize = new Size(400,400)                
+                FloatingWindowSize = new Size(500,400)                
             };
 
             newContent.Closed += new EventHandler((e,a) => {
@@ -94,7 +93,10 @@ namespace BioLinkApplication {
                 }
             });
             
-            newContent.Show(dockManager, true);
+            newContent.Show(dockManager, false);
+            newContent.BringIntoView();
+            newContent.Focus();
+            
         }
 
         void _pluginManager_RequestShowContent(IBioLinkPlugin plugin, string name) {
@@ -111,7 +113,7 @@ namespace BioLinkApplication {
 
         private void AddPluginContributions(IBioLinkPlugin plugin) {
             Logger.Debug("Looking for workspace contributions from {0}", plugin.Name);
-            List<IWorkspaceContribution> contributions = plugin.Contributions;
+            List<IWorkspaceContribution> contributions = plugin.GetContributions();
             foreach (IWorkspaceContribution contrib in contributions) {
                 if (contrib is MenuWorkspaceContribution) {
                     AddMenu(contrib as MenuWorkspaceContribution);
@@ -263,5 +265,12 @@ namespace BioLinkApplication {
         }
        
     }
+
+    public class BiolinkDocumentContent : DocumentContent {
+
+        public BiolinkDocumentContent() {
+        }
+    }
+
 }
 

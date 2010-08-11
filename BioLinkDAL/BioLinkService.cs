@@ -11,14 +11,14 @@ namespace BioLink.Data {
     /// </summary>
     public abstract class BioLinkService {
 
-        private SqlTransaction _transaction = null;
+        private SqlTransaction _transaction = null;        
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="user">The User instance used to connect to the database</param>
         public BioLinkService(User user) {
-            this.User = user;
+            this.User = user;            
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace BioLink.Data {
                         cmd.Parameters.Add(param);
                     }
 
-                    using (SqlDataReader reader = cmd.ExecuteReader()) {
+                    using (SqlDataReader reader = cmd.ExecuteReader()) {                        
                         while (reader.Read()) {
                             if (action != null) {
                                 action(reader);

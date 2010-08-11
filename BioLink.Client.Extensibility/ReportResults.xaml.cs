@@ -72,11 +72,12 @@ namespace BioLink.Client.Extensibility {
 
         #region ProgressObserver
 
-        public void ProgressStart(string message) {
+        public void ProgressStart(string message, bool indeterminate) {
             StatusMessage(message);
             progressBar.InvokeIfRequired(() => {
                 progressBar.Value = 0;
                 progressBar.Visibility = System.Windows.Visibility.Visible;
+                progressBar.IsIndeterminate = indeterminate;
             });
         }
 
@@ -110,5 +111,11 @@ namespace BioLink.Client.Extensibility {
                 }
             }
         }
+
+
+        //private void mnuFileExit_Click(object sender, RoutedEventArgs e) {
+        //    PluginManager.Instance.CloseContent(this);
+        //}
+
     }
 }

@@ -87,6 +87,7 @@
     <Compile Include="GlobalExceptionHandler.cs" />
     <Compile Include="IChangeable.cs" />
     <Compile Include="ImageCache.cs" />
+    <Compile Include="IProgressMonitor.cs" />
     <Compile Include="JobExecutor.cs" />
     <Compile Include="LegacySettings.cs" />
     <Compile Include="Logger.cs" />

@@ -11,13 +11,20 @@ using BioLink.Data;
 
 namespace BioLink.Client.Extensibility {
 
-    public interface IBioLinkPlugin : IDisposable {
+    public interface IBioLinkExtension : IDisposable {
         string Name { get; }
-        List<IWorkspaceContribution> Contributions { get; }
-        User User { get; set; }
-        PluginManager PluginManager { get; set; }
+    }
+
+    public interface IBioLinkPlugin : IBioLinkExtension {
+
+        void InitializePlugin(User user, PluginManager pluginManager, Window parentWindow);        
         bool RequestShutdown();
-        Window ParentWindow { get; set; }
+
+        List<IWorkspaceContribution> GetContributions();
+
+        User User { get; }
+        PluginManager PluginManager { get; }
+        Window ParentWindow { get; }
     }
 
     /// <summary>

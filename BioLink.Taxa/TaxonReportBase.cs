@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using BioLink.Client.Extensibility;
+using BioLink.Client.Utilities;
 using BioLink.Data;
 
 namespace BioLink.Client.Taxa {
