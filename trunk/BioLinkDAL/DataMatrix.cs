@@ -83,6 +83,30 @@ namespace BioLink.Data {
             set { _data[index] = value; }
         }
 
+        public int Count {
+            get { return _matrix.Columns.Count; }
+        }
+
+        public object First(Predicate<object> predicate) {
+            for (int i = 0; i < _matrix.Columns.Count; ++i) {
+                object val = this[i];
+                if (predicate(val)) {
+                    return val;
+                }
+            }
+            return null;
+        }
+
+        public void ForEach(System.Func<object, bool> func) {
+            for (int i = 0; i < _matrix.Columns.Count; ++i) {
+                object val = this[i];
+                if (!func(val)) {
+                    break;
+                }
+            }
+        }
+
+
         public DataMatrix Matrix { 
             get { return _matrix; } 
         }

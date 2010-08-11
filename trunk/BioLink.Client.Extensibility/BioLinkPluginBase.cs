@@ -20,14 +20,19 @@ namespace BioLink.Client.Extensibility {
         public User User { get; set; }
         public PluginManager PluginManager { get; set; }
 
-        public BiolinkPluginBase(User user, PluginManager pluginManager ) {
+        public BiolinkPluginBase() {
+        }
+
+        public virtual void InitializePlugin(User user, PluginManager pluginManager, Window parentWindow) {
 
             this.User = user;
             this.PluginManager = pluginManager;
-
+            this.ParentWindow = parentWindow;
+            
             string assemblyName = this.GetType().Assembly.GetName().Name;
             string packUri = String.Format("pack://application:,,,/{0};component/StringResources.xaml", assemblyName);
             Logger.Debug("Attempting resource discovery for {0} ({1})", assemblyName, packUri);
+
             try {
                 Uri uri = new Uri(packUri, UriKind.Absolute);
                 StreamResourceInfo info = Application.GetResourceStream(uri);
@@ -67,7 +72,7 @@ namespace BioLink.Client.Extensibility {
 
         public abstract string Name { get; }
 
-        public abstract List<IWorkspaceContribution> Contributions { get; }
+        public abstract List<IWorkspaceContribution> GetContributions();
 
         public abstract bool RequestShutdown();
 

@@ -16,9 +16,8 @@ namespace BioLink.Client.Extensibility {
 
     public class PluginManager : IDisposable {
 
-        private User _user;
-        private Dictionary<string, IBioLinkPlugin> _plugins;
-
+        private User _user;        
+        private List<IBioLinkExtension> _extensions;
         private static PluginManager _instance;
 
         public static void Initialize(User user, Window parentWindow) {
@@ -38,9 +37,13 @@ namespace BioLink.Client.Extensibility {
         }
 
         private PluginManager(User user, Window parentWindow) {
-            _user = user;
-            _plugins = new Dictionary<string, IBioLinkPlugin>();
+            _user = user;            
+            _extensions = new List<IBioLinkExtension>();
             this.ParentWindow = parentWindow;
+        }
+
+        public List<IBioLinkExtension> Extensions {
+            get { return _extensions; }
         }
 
         public Window ParentWindow { get; private set; }
@@ -51,12 +54,12 @@ namespace BioLink.Client.Extensibility {
 
         public event ProgressHandler ProgressEvent;
 
-        public void LoadPlugins( PluginAction pluginAction, params string[] paths) {
+        public void LoadPlugins(PluginAction pluginAction, params string[] paths) {
             using (new CodeTimer("Plugin loader")) {
                 FileSystemTraverser t = new FileSystemTraverser();
-                NotifyProgress("Searching for plugins...", -1, ProgressEventType.Start);
+                NotifyProgress("Searching for extensions...", -1, ProgressEventType.Start);
 
-                List<Type> pluginTypes = new List<Type>();
+                List<Type> extensionTypes = new List<Type>();
 
                 foreach (string pathelement in paths) {
                     string path = pathelement;
@@ -73,42 +76,56 @@ namespace BioLink.Client.Extensibility {
                     };
 
                     Logger.Debug("LoadPlugins: Scanning: {0}", path);
-                    t.FilterFiles(path, filter, fileinfo => { ProcessAssembly(fileinfo, pluginTypes); }, false);
+                    t.FilterFiles(path, filter, fileinfo => { ProcessAssembly(fileinfo, extensionTypes); }, false);
                 }
 
                 NotifyProgress("Loading plugins...", 0, ProgressEventType.Start);
                 int i = 0;
-                foreach (Type type in pluginTypes) {
+
+                foreach (Type type in extensionTypes) {
                     Logger.Debug("Instantiating type {0}", type.FullName);
 
-                    ConstructorInfo ctor = type.GetConstructor(new Type[] { typeof(User), typeof(PluginManager) });
-                    IBioLinkPlugin plugin = null;
-                    if (ctor != null) {                        
-                        plugin = ctor.Invoke(new Object[] { _user, this }) as IBioLinkPlugin;
-                    } else {
-                        plugin = Activator.CreateInstance(type) as IBioLinkPlugin;
-                        plugin.User = _user;                        
-                        plugin.PluginManager = this;
-                    }
-                     
-                    if (plugin != null) {
-                        plugin.ParentWindow = ParentWindow;
+                    IBioLinkExtension extension = InstantiateExtension(type);
 
-                        // Allow the consumer to process this plugin...
-                        if (pluginAction != null) {
-                            pluginAction(plugin);
+                    if (extension != null) {
+                        if (extension is IBioLinkPlugin) {
+
+                            IBioLinkPlugin plugin = extension as IBioLinkPlugin;
+                            Logger.Debug("Initializing Plugin {0}...", plugin.Name);
+                            plugin.InitializePlugin(_user, this, this.ParentWindow);
+
+                            Logger.Debug("Integrating Plugin...", plugin.Name);
+                            // Allow the consumer to process this plugin...
+                            if (pluginAction != null) {
+                                pluginAction(plugin);
+                            }
                         }
 
-                        double percentComplete = ((double)++i / (double)pluginTypes.Count) * 100.0;
-                        NotifyProgress(plugin.Name, percentComplete, ProgressEventType.Update);
-                        _plugins.Add(plugin.Name, plugin);
-                        DoEvents();
-                    }
+                        _extensions.Add(extension);
+
+                        double percentComplete = ((double)++i / (double)extensionTypes.Count) * 100.0;
+                        NotifyProgress(extension.Name, percentComplete, ProgressEventType.Update);
+                    } 
+                    
+                    DoEvents();
+
                 }
                 
 
                 NotifyProgress("Plugin loading complete", 100, ProgressEventType.End);
             }
+        }
+
+        private IBioLinkExtension InstantiateExtension(Type type) {
+            ConstructorInfo ctor = type.GetConstructor(new Type[] { });
+            IBioLinkExtension extension = null;
+            if (ctor != null) {
+                extension = Activator.CreateInstance(type) as IBioLinkExtension;
+            } else {
+                throw new Exception(String.Format("Could not load extension {0} - no default constructor", type.FullName));
+            }
+
+            return extension;
         }
 
         public void AddDockableContent(IBioLinkPlugin plugin, FrameworkElement content, string title) {
@@ -143,8 +160,8 @@ namespace BioLink.Client.Extensibility {
                 Assembly candidateAssembly = Assembly.LoadFrom(assemblyFileInfo.FullName);
                 foreach (Type candidate in candidateAssembly.GetExportedTypes()) {
                     // Logger.Debug("testing type {0}", candidate.FullName);
-                    if (candidate.GetInterface("IBioLinkPlugin") != null && !candidate.IsAbstract) {
-                        Logger.Debug("Found plugin type: {0}", candidate.Name);
+                    if (candidate.GetInterface("IBioLinkExtension") != null && !candidate.IsAbstract) {
+                        Logger.Debug("Found extension type: {0}", candidate.Name);
                         discovered.Add(candidate);
                     }
                 }
@@ -153,8 +170,12 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        public void Traverse(PluginAction action) {
-            _plugins.ForEach(kvp => { action(kvp.Value); });
+        public void TraversePlugins(PluginAction action) {
+            _extensions.ForEach(ext => {
+                if (ext is IBioLinkPlugin) {
+                    action(ext as IBioLinkPlugin);
+                }
+            });
         }
 
         static void DoEvents() {
@@ -166,27 +187,15 @@ namespace BioLink.Client.Extensibility {
             Dispatcher.PushFrame(frame);
         }
 
-        delegate void PluginAggregator(Type pluginType);
-
-        public delegate void PluginAction(IBioLinkPlugin plugin);
-
-        public delegate void ShowDockableContributionDelegate(IBioLinkPlugin plugin, string name);
-
-        public delegate void AddDockableContentDelegate(IBioLinkPlugin plugin, FrameworkElement content, string title);
-
-        public event ShowDockableContributionDelegate RequestShowContent;
-
-        public event AddDockableContentDelegate DockableContentAdded;
-
         public void Dispose(Boolean disposing) {
             if (disposing) {
                 Logger.Debug("Disposing the Plugin Manager");
-                _plugins.ForEach((pluginkvp) => {
-                    Logger.Debug("Disposing plugin '{0}'", pluginkvp.Key);
+                _extensions.ForEach((ext) => {
+                    Logger.Debug("Disposing extension '{0}'", ext);
                     try {
-                        pluginkvp.Value.Dispose();
+                        ext.Dispose();
                     } catch (Exception ex) {
-                        Logger.Warn("Exception occured whislt disposing plugin '{0}' : {1}", pluginkvp.Key, ex);
+                        Logger.Warn("Exception occured whislt disposing plugin '{0}' : {1}", ext, ex);
                     }
                 });
             }
@@ -201,14 +210,46 @@ namespace BioLink.Client.Extensibility {
             GC.SuppressFinalize(this);
         }
 
+        internal List<IBioLinkPlugin> PlugIns {
+            get {
+                return GetExtensionsOfType<IBioLinkPlugin>();                
+            }
+        }
+
+        public List<T> GetExtensionsOfType<T>() {
+            return _extensions.FindAll((ext) => { return ext is T; }).ConvertAll((ext) => { return (T) ext; });
+        }
+
         public bool RequestShutdown() {
-            foreach (IBioLinkPlugin plugin in _plugins.Values) {
+
+            foreach (IBioLinkPlugin plugin in PlugIns) {
                 if (!plugin.RequestShutdown()) {
                     return false;
                 }
             }
             return true;
         }
+
+        internal void CloseContent(FrameworkElement content) {
+            if (DockableContentClosed != null) {
+                DockableContentClosed(content);
+            }
+        }
+
+        public event ShowDockableContributionDelegate RequestShowContent;
+
+        public event AddDockableContentDelegate DockableContentAdded;
+
+        public event CloseDockableContentDelegate DockableContentClosed;
+        
+        public delegate void PluginAction(IBioLinkPlugin plugin);
+
+        public delegate void ShowDockableContributionDelegate(IBioLinkPlugin plugin, string name);
+
+        public delegate void AddDockableContentDelegate(IBioLinkPlugin plugin, FrameworkElement content, string title);
+
+        public delegate void CloseDockableContentDelegate(FrameworkElement content);
+
     }
 
 }

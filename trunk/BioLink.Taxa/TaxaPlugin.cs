@@ -19,10 +19,12 @@ namespace BioLink.Client.Taxa {
         private ExplorerWorkspaceContribution<TaxonExplorer> _explorer;
         private TaxaService _taxaService;        
 
-        public TaxaPlugin(User user, PluginManager pluginManager)
-            : base(user, pluginManager) {
-            Debug.Assert(user != null, "User is null!");
-            _taxaService = new TaxaService(user);
+        public TaxaPlugin() {
+        }
+
+        public override void  InitializePlugin(User user, PluginManager pluginManager, Window parentWindow) {
+ 	        base.InitializePlugin(user, pluginManager, parentWindow);
+            _taxaService = new TaxaService(user);            
         }
 
         public override string Name {
@@ -33,24 +35,21 @@ namespace BioLink.Client.Taxa {
             get { return _taxaService; }
         }
 
-        public override List<IWorkspaceContribution> Contributions {
-            get {
+        public override List<IWorkspaceContribution> GetContributions() {            
+            List<IWorkspaceContribution> contrib = new List<IWorkspaceContribution>();
+            contrib.Add(new MenuWorkspaceContribution(this, "ShowExplorer", (obj, e) => { PluginManager.EnsureVisible(this, "TaxonExplorer"); },
+                String.Format("{{'Name':'View', 'Header':'{0}','InsertAfter':'File'}}", _R("Taxa.Menu.View")),
+                String.Format("{{'Name':'ShowTaxaExplorer', 'Header':'{0}'}}", _R("Taxa.Menu.ShowExplorer"))
+            ));
 
-                List<IWorkspaceContribution> contrib = new List<IWorkspaceContribution>();
-                contrib.Add(new MenuWorkspaceContribution(this, "ShowExplorer", (obj, e) => { PluginManager.EnsureVisible(this, "TaxonExplorer"); },
-                    String.Format("{{'Name':'View', 'Header':'{0}','InsertAfter':'File'}}", _R("Taxa.Menu.View")),
-                    String.Format("{{'Name':'ShowTaxaExplorer', 'Header':'{0}'}}", _R("Taxa.Menu.ShowExplorer"))
-                ));
+            _explorer = new ExplorerWorkspaceContribution<TaxonExplorer>(this, "TaxonExplorer", new TaxonExplorer(this), _R("TaxonExplorer.Title"),
+                (explorer) => {
+                    explorer.InitialiseTaxonExplorer();
+                });
 
-                _explorer = new ExplorerWorkspaceContribution<TaxonExplorer>(this, "TaxonExplorer", new TaxonExplorer(this), _R("TaxonExplorer.Title"),
-                    (explorer) => {
-                        explorer.InitialiseTaxonExplorer();
-                    });
+            contrib.Add(_explorer);
 
-                contrib.Add(_explorer);
-
-                return contrib;
-            }
+            return contrib;            
         }
 
         public override bool RequestShutdown() {

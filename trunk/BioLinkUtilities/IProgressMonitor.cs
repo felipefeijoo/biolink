@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace BioLink.Client.Extensibility {
+namespace BioLink.Client.Utilities {
 
     public delegate bool ProgressHandler(string message, double percentComplete, ProgressEventType progressEventType);
 
     public interface IProgressObserver {
-        void ProgressStart(string message);
+        void ProgressStart(string message, bool indeterminate=false);
         void ProgressMessage(string message, double percentComplete);
         void ProgressEnd(string message);
     }
@@ -28,16 +28,18 @@ namespace BioLink.Client.Extensibility {
         }
 
         public bool OnProgress(string message, double percentComplete, ProgressEventType progressEventType) {
-            switch (progressEventType) {
-                case ProgressEventType.Start:
-                    _observer.ProgressStart(message);
-                    break;
-                case ProgressEventType.Update:
-                    _observer.ProgressMessage(message, percentComplete);
-                    break;
-                case ProgressEventType.End:
-                    _observer.ProgressEnd(message);
-                    break;
+            if (_observer != null) {
+                switch (progressEventType) {
+                    case ProgressEventType.Start:
+                        _observer.ProgressStart(message);
+                        break;
+                    case ProgressEventType.Update:
+                        _observer.ProgressMessage(message, percentComplete);
+                        break;
+                    case ProgressEventType.End:
+                        _observer.ProgressEnd(message);
+                        break;
+                }
             }
             return true;
         }

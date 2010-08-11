@@ -12,32 +12,29 @@ namespace BioLink.Client.Material {
 
         private MaterialExplorer _explorer;
 
-        public MaterialPlugin(User user, PluginManager pluginManager) : base(user, pluginManager) {            
+        public MaterialPlugin() {            
         }
 
         public override string Name {
             get { return "Material"; }
         }
 
-        public override List<IWorkspaceContribution> Contributions {
+        public override List<IWorkspaceContribution> GetContributions() {
+            
+            List<IWorkspaceContribution> contrib = new List<IWorkspaceContribution>();
 
-            get {
-                List<IWorkspaceContribution> contrib = new List<IWorkspaceContribution>();
-
-                contrib.Add(new MenuWorkspaceContribution(this, "ShowExplorer", (obj, e) => { PluginManager.EnsureVisible(this, "MaterialExplorer"); },
-                    String.Format("{{'Name':'View', 'Header':'{0}','InsertAfter':'File'}}", _R("Material.Menu.View")),
-                    String.Format("{{'Name':'ShowMaterialExplorer', 'Header':'{0}'}}", _R("Material.Menu.ShowExplorer"))
-                ));
+            contrib.Add(new MenuWorkspaceContribution(this, "ShowExplorer", (obj, e) => { PluginManager.EnsureVisible(this, "MaterialExplorer"); },
+                String.Format("{{'Name':'View', 'Header':'{0}','InsertAfter':'File'}}", _R("Material.Menu.View")),
+                String.Format("{{'Name':'ShowMaterialExplorer', 'Header':'{0}'}}", _R("Material.Menu.ShowExplorer"))
+            ));
 
 
-                _explorer = new MaterialExplorer();
-                contrib.Add(new ExplorerWorkspaceContribution<MaterialExplorer>(this, "MaterialExplorer", _explorer, _R("MaterialExplorer.Title"), (explorer) => {
-                    // initializer
-                }));
+            _explorer = new MaterialExplorer();
+            contrib.Add(new ExplorerWorkspaceContribution<MaterialExplorer>(this, "MaterialExplorer", _explorer, _R("MaterialExplorer.Title"), (explorer) => {
+                // initializer
+            }));
 
-                return contrib;
-
-            }
+            return contrib;
         }
 
         public override bool RequestShutdown() {

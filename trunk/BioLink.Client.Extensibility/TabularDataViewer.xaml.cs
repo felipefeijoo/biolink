@@ -1,8 +1,9 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.ComponentModel;
+using BioLink.Client.Utilities;
 using BioLink.Data;
 
 namespace BioLink.Client.Extensibility {
@@ -79,19 +80,8 @@ namespace BioLink.Client.Extensibility {
             dataView.SortDescriptions.Clear();
             int columnIndex = Data.IndexOf(coldef.ColumnName);
 
-
-            foreach (MatrixRow row in Data.Rows) {
-                object val = row[columnIndex];
-                if (val == null) {
-                    row[columnIndex] = "XXXX";
-                } else {
-                    if (val.GetType() != typeof(String)) {
-                        row[columnIndex] = "YYYY";
-                    }
-                }
-            }
-
             SortDescription sd = new SortDescription(String.Format("[{0}]", columnIndex), direction);
+
             dataView.SortDescriptions.Add(sd);
             dataView.Refresh();
         }
@@ -102,6 +92,14 @@ namespace BioLink.Client.Extensibility {
             t.Tag = coldef;
             t.Text = coldef.DisplayName;
             return t;
+        }
+
+        private void btnExport_Click(object sender, RoutedEventArgs e) {
+            Export();
+        }
+
+        private void Export() {
+
         }
 
         #region Properties
@@ -115,6 +113,57 @@ namespace BioLink.Client.Extensibility {
         public void Dispose() {
             this.Data = null;
             lvw.ItemsSource = null;
+        }
+
+        private void txtFilter_TypingPaused(string text) {
+            if (String.IsNullOrEmpty(text)) {
+                this.InvokeIfRequired(() => {
+                    ClearFilter();
+                });
+            } else {
+                this.InvokeIfRequired(() => {
+                    SetFilter(text);
+                });
+            }
+        }
+
+        private void SetFilter(string text) {
+            if (String.IsNullOrEmpty(text)) {
+                return;
+            }
+            ICollectionView dataView = CollectionViewSource.GetDefaultView(lvw.ItemsSource);
+            text = text.ToLower();
+            dataView.Filter = (obj) => { 
+                var row = obj as MatrixRow;
+                
+                if (row != null) {
+                    object match = row.First((colval) => {
+                        if (colval != null) {
+                            return colval.ToString().ToLower().Contains(text);
+                        }
+                        return false;
+                    });
+
+                    if (match != null) {
+                        return true;
+                    }
+                }
+                return false; 
+            };            
+
+            dataView.Refresh();                            
+        }
+
+        private void ClearFilter() {
+            ICollectionView dataView = CollectionViewSource.GetDefaultView(lvw.ItemsSource);
+            dataView.Filter = null;
+            dataView.Refresh();
+        }
+
+        private void txtFilter_TextChanged(object sender, TextChangedEventArgs e) {
+            if (String.IsNullOrEmpty(txtFilter.Text)) {
+                ClearFilter();
+            }
         }
     }
 
