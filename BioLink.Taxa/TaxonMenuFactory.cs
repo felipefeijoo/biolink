@@ -83,8 +83,8 @@ namespace BioLink.Client.Taxa {
 
             List<IBioLinkReport> list = new List<IBioLinkReport>();
 
-            list.Add(new TaxonStatisticsReport(Explorer.Service, Taxon));
-            list.Add(new MaterialForTaxonReport(Explorer.Service, Taxon));
+            list.Add(new TaxonStatisticsReport(Explorer.User, Taxon));
+            list.Add(new MaterialForTaxonReport(Explorer.User, Taxon));
 
             foreach (IBioLinkReport report in list) {
                 IBioLinkReport reportToExecute = report;

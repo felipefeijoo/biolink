@@ -46,11 +46,15 @@ namespace BioLink.Data {
 
         private string ConnectionString {
             get {
+                StringBuilder s = new StringBuilder();
                 if (ConnectionProfile.IntegratedSecurity) {
-                    return String.Format("Data Source={0};Initial Catalog={1};Integrated Security=SSPI;", ConnectionProfile.Server, ConnectionProfile.Database);
+                    s.Append(String.Format("Data Source={0};Initial Catalog={1};Integrated Security=SSPI;", ConnectionProfile.Server, ConnectionProfile.Database));
                 } else {
-                    return String.Format("Data Source={0};Initial Catalog={1};User Id={2};Password={3}", ConnectionProfile.Server, ConnectionProfile.Database, Username, Password);
+                    s.Append(String.Format("Data Source={0};Initial Catalog={1};User Id={2};Password={3}", ConnectionProfile.Server, ConnectionProfile.Database, Username, Password));
                 }
+
+                return s.ToString();
+
             }
 
         }
@@ -58,7 +62,7 @@ namespace BioLink.Data {
         public SqlConnection GetConnection() {
             Logger.Debug("Opening connection to {0} (Database {1}) with username '{2}'...", ConnectionProfile.Server, ConnectionProfile.Database, Username);
             SqlConnection connection = new SqlConnection(this.ConnectionString);
-            connection.Open();
+            connection.Open();            
             return connection;
         }
 

@@ -79,6 +79,7 @@
     <Compile Include="ReportResults.xaml.cs">
       <DependentUpon>ReportResults.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ResourceTempFileManager.cs" />
     <Compile Include="TabularDataViewer.xaml.cs">
       <DependentUpon>TabularDataViewer.xaml</DependentUpon>
     </Compile>
@@ -125,6 +126,10 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="images\export.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\loading-big.gif" />
+    <Resource Include="images\loading-small.gif" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

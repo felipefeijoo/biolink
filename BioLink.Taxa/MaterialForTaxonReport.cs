@@ -6,8 +6,8 @@ namespace BioLink.Client.Taxa {
 
     public class MaterialForTaxonReport : TaxonReportBase {
 
-        public MaterialForTaxonReport(TaxaService service, TaxonViewModel taxon)
-            : base(service, taxon) {
+        public MaterialForTaxonReport(User user, TaxonViewModel taxon)
+            : base(user, taxon) {
             RegisterViewer(new TabularDataViewerSource());
             DefineColumn("BiotaFullName", "Taxa");
             DefineColumn("FullRegion", "Region");
@@ -23,7 +23,13 @@ namespace BioLink.Client.Taxa {
                 progress.ProgressStart(string.Format("Retrieving Material records for {0}", Taxon.DisplayLabel), true);
             }
 
+            var serviceMessage = new BioLinkService.ServiceMessageDelegate((message) => {
+                progress.ProgressMessage(message, 0);
+            });
+
+            Service.ServiceMessage += serviceMessage;
             DataMatrix matrix = Service.GetMaterialForTaxon(Taxon.TaxaID.Value);
+            Service.ServiceMessage -= serviceMessage;
 
             if (progress != null) {
                 progress.ProgressEnd(string.Format("{0} rows retreived", matrix.Rows.Count));

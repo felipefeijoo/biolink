@@ -1088,6 +1088,10 @@ namespace BioLink.Client.Taxa {
             PluginManager.Instance.AddDockableContent(this._owner, results, report.Name);
             // results.Show();
         }
+
+        public User User {
+            get { return _owner.User; }
+        }
     }
 
 }
