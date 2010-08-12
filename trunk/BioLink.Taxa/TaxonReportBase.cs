@@ -9,8 +9,8 @@ namespace BioLink.Client.Taxa {
         private List<IReportViewerSource> _viewers = new List<IReportViewerSource>();
         private List<DisplayColumnDefinition> _columnDefinitions = new List<DisplayColumnDefinition>();
 
-        public TaxonReportBase(TaxaService service, TaxonViewModel taxon) {
-            this.Service = service;
+        public TaxonReportBase(User user, TaxonViewModel taxon) {
+            this.Service = new TaxaService(user);
             this.Taxon = taxon;
         }
 

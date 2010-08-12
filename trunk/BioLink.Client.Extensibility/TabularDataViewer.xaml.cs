@@ -151,7 +151,7 @@ namespace BioLink.Client.Extensibility {
                 return false; 
             };            
 
-            dataView.Refresh();                            
+            dataView.Refresh();
         }
 
         private void ClearFilter() {

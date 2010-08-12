@@ -6,7 +6,7 @@ namespace BioLink.Client.Taxa {
 
     public class TaxonStatisticsReport : TaxonReportBase {
 
-        public TaxonStatisticsReport(TaxaService service, TaxonViewModel taxon) : base(service, taxon) {
+        public TaxonStatisticsReport(User user, TaxonViewModel taxon) : base(user, taxon) {
             RegisterViewer(new TabularDataViewerSource());
             DefineColumn("Category");
             DefineColumn("Count");

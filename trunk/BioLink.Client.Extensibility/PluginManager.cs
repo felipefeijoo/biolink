@@ -16,9 +16,11 @@ namespace BioLink.Client.Extensibility {
 
     public class PluginManager : IDisposable {
 
+        private static PluginManager _instance;
+
         private User _user;        
         private List<IBioLinkExtension> _extensions;
-        private static PluginManager _instance;
+        private ResourceTempFileManager _resourceTempFiles = new ResourceTempFileManager();
 
         public static void Initialize(User user, Window parentWindow) {
             if (_instance != null) {
@@ -40,6 +42,10 @@ namespace BioLink.Client.Extensibility {
             _user = user;            
             _extensions = new List<IBioLinkExtension>();
             this.ParentWindow = parentWindow;
+        }
+
+        public ResourceTempFileManager ResourceTempFileManager { 
+            get { return _resourceTempFiles; } 
         }
 
         public List<IBioLinkExtension> Extensions {
@@ -198,6 +204,8 @@ namespace BioLink.Client.Extensibility {
                         Logger.Warn("Exception occured whislt disposing plugin '{0}' : {1}", ext, ex);
                     }
                 });
+                Logger.Debug("Cleaning up temp files...");
+                _resourceTempFiles.CleanUp();
             }
         }
 

@@ -11,28 +11,76 @@ namespace BioLink.Client.Extensibility {
     /// </summary>
     public partial class ReportResults : UserControl, IProgressObserver, IDisposable {
 
+        private bool _ReportExecuted = false;
+
         public ReportResults() {
             InitializeComponent();
         }
 
         public ReportResults(IBioLinkReport report) {
+            
             InitializeComponent();
             progressBar.Visibility = System.Windows.Visibility.Hidden;
+
             this.Report = report;
             this.Loaded += new RoutedEventHandler(ReportResults_Loaded);
+            
         }
 
         void ReportResults_Loaded(object sender, RoutedEventArgs e) {
-            JobExecutor.QueueJob(() => {
-                try {
-                    this.WaitCursor();                    
-                    StatusMessage("Running report...");
-                    DataMatrix data = Report.ExtractReportData(this);
-                    this.InvokeIfRequired(() => { DisplayReportResults(data); });
-                } finally {
-                    this.NormalCursor();
-                }
-            });
+            if (!_ReportExecuted) {
+                _ReportExecuted = true;
+                JobExecutor.QueueJob(() => {
+                    try {
+                        this.WaitCursor();
+                        StatusMessage("Running report...");
+                        this.InvokeIfRequired(() => { DisplayLoading(); });
+                        DataMatrix data = Report.ExtractReportData(this);
+                        this.InvokeIfRequired(() => { DisplayReportResults(data); });                        
+                    } catch (Exception ex) {
+                        this.NormalCursor();
+                        this.ProgressEnd("An error occured executing the report");
+                        this.InvokeIfRequired(() => { DisplayException(ex); });
+                    } finally {                        
+                        this.NormalCursor();
+                    }
+                });
+            }
+        }
+
+        private string _R(string key, params object[] args) {
+            string format = FindResource(key) as string;
+            if (format != null) {                
+                return String.Format(format, args);
+            }
+            return string.Format(key, args);
+        }
+
+        private void DisplayLoading() {
+            string assemblyName = this.GetType().Assembly.GetName().Name;
+            string imageFile = PluginManager.Instance.ResourceTempFileManager.ProxyResource(new Uri(String.Format("pack://application:,,,/{0};component/images/loading-big.gif", assemblyName)));
+            string html = _R("ReportResults.Loading.Template", Report.Name, imageFile);
+            DisplayHTML(html);
+        }
+
+        private void DisplayHTML(String html) {
+            reportContent.Children.Clear();
+            WebBrowser browser = new WebBrowser();
+            browser.Navigating += new System.Windows.Navigation.NavigatingCancelEventHandler(browser_Navigating);                        
+            browser.NavigateToString(html);
+            reportContent.Children.Add(browser);
+        }
+
+        private void DisplayException(Exception ex) {
+            
+            string title = _R("ReportResults.Error.Title", Report.Name);
+            string stacktrace = ex.StackTrace;
+            string html = _R("ReportResults.Error.Template", title, ex.Message, stacktrace);
+            DisplayHTML(html);
+        }
+
+        void browser_Navigating(object sender, System.Windows.Navigation.NavigatingCancelEventArgs e) {
+            Logger.Debug("Navigating to {0}", e.Uri == null ? null : e.Uri.ToString());
         }
 
         internal void DisplayReportResults(DataMatrix data) {

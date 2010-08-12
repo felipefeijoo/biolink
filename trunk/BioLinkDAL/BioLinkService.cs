@@ -46,6 +46,11 @@ namespace BioLink.Data {
             // and create a command instance
             try {
                 using (SqlCommand command = connection.CreateCommand()) {
+
+                    if (User.ConnectionProfile.Timeout.GetValueOrDefault(-1) > 0) {
+                        command.CommandTimeout = User.ConnectionProfile.Timeout.Value;
+                    }
+                    
                     // invoke the action with the command
                     action(connection, command);
                 }
@@ -74,6 +79,7 @@ namespace BioLink.Data {
         /// <param name="func">The action to be called for each row</param>
         /// <param name="params">A params array for the arguments of the stored proc</param>
         protected void StoredProcReaderForEach(string proc, ServiceReaderAction action, params SqlParameter[] @params) {
+            Message("Executing query...");
             using (new CodeTimer(String.Format("StoredProcReaderForEach '{0}'", proc))) {
                 Logger.Debug("Calling stored procedure (reader): {0}", proc);
                 Command((con, cmd) => {
@@ -86,10 +92,15 @@ namespace BioLink.Data {
                         cmd.Parameters.Add(param);
                     }
 
-                    using (SqlDataReader reader = cmd.ExecuteReader()) {                        
-                        while (reader.Read()) {
+                    using (SqlDataReader reader = cmd.ExecuteReader()) {
+                        Message("Fetching records...");
+                        int count = 0;
+                        while (reader.Read()) {                            
                             if (action != null) {
                                 action(reader);
+                            }
+                            if (++count % 1000 == 0) {
+                                Message("{0} records retrieved", count);
                             }
                         }
                     }
@@ -167,6 +178,10 @@ namespace BioLink.Data {
 
             }, @params);
 
+            if (matrix == null) {
+                matrix = new DataMatrix();
+            }
+
             return matrix;
         }
 
@@ -228,6 +243,14 @@ namespace BioLink.Data {
             return param;
         }
 
+        private void Message(string format, params object[] args) {
+            if (ServiceMessage != null) {
+                ServiceMessage(String.Format(format, args));
+            }
+        }
+
+        public event ServiceMessageDelegate ServiceMessage;
+
         /// <summary>
         /// Holds user credentials, and is the conduit to gaining a Connection object
         /// </summary>
@@ -236,6 +259,8 @@ namespace BioLink.Data {
         public delegate void ServiceCommandAction(SqlConnection connection, SqlCommand command);
 
         public delegate void ServiceReaderAction(SqlDataReader reader);
+
+        public delegate void ServiceMessageDelegate(string message);
 
     }
 
