@@ -25,20 +25,12 @@ namespace BioLink.Client.Taxa {
         public ContextMenu BuildExplorerMenu() {
             ContextMenu menu = new ContextMenu();
 
-            menu.Items.Add(_builder.New("TaxonExplorer.menu.ExpandAll").Handler(() => {
-                JobExecutor.QueueJob(() => {
-                    Explorer.tvwAllTaxa.InvokeIfRequired(() => {
-                        Explorer.tvwAllTaxa.Cursor = Cursors.Wait;
-                        Explorer.ExpandChildren(Taxon);
-                        Explorer.tvwAllTaxa.Cursor = Cursors.Arrow;
-                    });
-                });
-            }).MenuItem);
-
-            menu.Items.Add(new Separator());
             if (Explorer.IsUnlocked) {
-                menu.Items.Add(_builder.New("TaxonExplorer.menu.Delete", Taxon.DisplayLabel).Handler(() => { Explorer.DeleteTaxon(Taxon); }).MenuItem);
-                menu.Items.Add(_builder.New("TaxonExplorer.menu.Rename", Taxon.DisplayLabel).Handler(() => { Explorer.RenameTaxon(Taxon); }).MenuItem);
+                if (!Taxon.IsRootNode) {
+                    menu.Items.Add(new Separator());
+                    menu.Items.Add(_builder.New("TaxonExplorer.menu.Delete", Taxon.DisplayLabel).Handler(() => { Explorer.DeleteTaxon(Taxon); }).MenuItem);
+                    menu.Items.Add(_builder.New("TaxonExplorer.menu.Rename", Taxon.DisplayLabel).Handler(() => { Explorer.RenameTaxon(Taxon); }).MenuItem);
+                }
 
                 MenuItem addMenu = BuildAddMenuItems();
                 if (addMenu != null && addMenu.Items.Count > 0) {
@@ -50,6 +42,21 @@ namespace BioLink.Client.Taxa {
                 menu.Items.Add(_builder.New("TaxonExplorer.menu.Unlock").Handler(() => { Explorer.btnLock.IsChecked = true; }).MenuItem);
             }
 
+            if (menu.HasItems) {
+                menu.Items.Add(new Separator());
+            }
+
+            menu.Items.Add(_builder.New("TaxonExplorer.menu.ExpandAll").Handler(() => {
+                JobExecutor.QueueJob(() => {
+                    Explorer.tvwAllTaxa.InvokeIfRequired(() => {
+                        Explorer.tvwAllTaxa.Cursor = Cursors.Wait;
+                        Explorer.ExpandChildren(Taxon);
+                        Explorer.tvwAllTaxa.Cursor = Cursors.Arrow;
+                    });
+                });
+            }).MenuItem);
+            
+
             MenuItem sortMenu = BuildSortMenuItems();
             if (sortMenu != null && sortMenu.HasItems) {
                 menu.Items.Add(new Separator());
@@ -60,19 +67,21 @@ namespace BioLink.Client.Taxa {
                 menu.Items.Add(new Separator());
                 menu.Items.Add(_builder.New("TaxonExplorer.menu.Refresh").Handler(() => Explorer.Refresh()).MenuItem);
             }
-            
-            MenuItem reports = CreateReportMenuItems();
-            if (reports != null && reports.HasItems) {
+
+            if (!Taxon.IsRootNode) {
+                MenuItem reports = CreateReportMenuItems();
+                if (reports != null && reports.HasItems) {
+                    if (menu.HasItems) {
+                        menu.Items.Add(new Separator());
+                    }
+                    menu.Items.Add(reports);
+                }
+
                 if (menu.HasItems) {
                     menu.Items.Add(new Separator());
                 }
-                menu.Items.Add(reports);
+                menu.Items.Add(_builder.New("_Edit Details...").Handler(() => { Explorer.ShowTaxonDetails(Taxon); }).MenuItem);
             }
-
-            if (menu.HasItems) {
-                menu.Items.Add(new Separator());
-            }
-            menu.Items.Add(_builder.New("_Edit Details...").Handler(() => { Explorer.ShowTaxonDetails(Taxon); }).MenuItem);
 
             return menu;
         

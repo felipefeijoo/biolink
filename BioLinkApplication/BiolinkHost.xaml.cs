@@ -84,7 +84,7 @@ namespace BioLinkApplication {
             BiolinkDocumentContent newContent = new BiolinkDocumentContent {
                 Title = title, 
                 Content = content,
-                FloatingWindowSize = new Size(500,400)                
+                FloatingWindowSize = new Size(600,500)
             };
 
             newContent.Closed += new EventHandler((e,a) => {
@@ -92,8 +92,10 @@ namespace BioLinkApplication {
                     (content as IDisposable).Dispose();
                 }
             });
-            
-            newContent.Show(dockManager, false);
+
+            bool addAsFloating = Config.GetUser(User, "client.dock.AddDockableContentAsFloating", false);
+
+            newContent.Show(dockManager, addAsFloating);
             newContent.BringIntoView();
             newContent.Focus();
             

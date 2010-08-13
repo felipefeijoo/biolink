@@ -10,19 +10,23 @@
     <Grid>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="30" />
+            <RowDefinition Height="28" />
             <RowDefinition />            
         </Grid.RowDefinitions>
 
-        <ToolBar Grid.Row="0" Name="toolbar" VerticalAlignment="Top" >
-            <Button x:Name="btnExport" Click="btnExport_Click">
-                <Button.Content>
-                    <Image Source="images/export.png" Height="20" Width="20" />
-                </Button.Content>
-            </Button>
-            <Separator />
-            <TextBlock Text="Filter:" />
-            <src:DelayedTriggerTextbox x:Name="txtFilter" TypingPaused="txtFilter_TypingPaused" Width="140" TextChanged="txtFilter_TextChanged" />
+        <ToolBar Grid.Row="0" Name="toolbar" VerticalAlignment="Center" >
+            <DockPanel Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type ToolBarPanel}}}">
+                <Button x:Name="btnExport" Click="btnExport_Click">
+                    <Button.Content>
+                        <Image Source="images/export.png" Height="20" Width="20" />
+                    </Button.Content>
+                </Button>
+                <Separator />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Text="Filter:" VerticalAlignment="Center" Padding="5,0" HorizontalAlignment="Right" />
+                    <src:DelayedTriggerTextbox x:Name="txtFilter" TypingPaused="txtFilter_TypingPaused" Width="140" TextChanged="txtFilter_TextChanged" VerticalAlignment="Center" Height="23" />
+                </StackPanel>
+            </DockPanel>
         </ToolBar>
 
         <ListView Grid.Row="1" Name="lvw" ItemsSource="{Binding Path=.}">            
