@@ -610,8 +610,17 @@ namespace BioLink.Client.Taxa {
         private void ShiftTaxon(TaxonViewModel taxon, System.Func<int, int> action) {
             if (IsManualSort && taxon.Parent != null) {
                 ListCollectionView view = CollectionViewSource.GetDefaultView(taxon.Parent.Children) as ListCollectionView;                
-                int oldIndex = view.IndexOf(taxon);                
+
+                int oldIndex = view.IndexOf(taxon);
                 int newIndex = action(oldIndex);
+                
+                // It's possible/probable that this set of taxa has never been ordered before, so we 
+                // assign an order based on the current view.
+                foreach (TaxonViewModel child in taxon.Parent.Children) {                    
+                    child.Order = view.IndexOf(child);
+                    InsertUniquePendingUpdate(child);
+                }
+
                 if (newIndex >= 0 && newIndex < taxon.Parent.Children.Count) {
                     TaxonViewModel swapee = view.GetItemAt(newIndex) as TaxonViewModel;
                     int tmp = taxon.Order ?? 0;
