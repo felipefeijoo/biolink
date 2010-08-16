@@ -9,7 +9,7 @@ namespace BioLink.Client.Utilities {
 
     public interface IProgressObserver {
         void ProgressStart(string message, bool indeterminate=false);
-        void ProgressMessage(string message, double percentComplete);
+        void ProgressMessage(string message, double? percentComplete = null);        
         void ProgressEnd(string message);
     }
 

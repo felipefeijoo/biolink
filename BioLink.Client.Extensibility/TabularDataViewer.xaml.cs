@@ -14,6 +14,7 @@ namespace BioLink.Client.Extensibility {
 
         private GridViewColumnHeader _lastHeaderClicked = null;
         private ListSortDirection _lastDirection = ListSortDirection.Ascending;
+        private IProgressObserver _progress;
 
         #region DesignTime Constructor
         public TabularDataViewer() {
@@ -21,10 +22,10 @@ namespace BioLink.Client.Extensibility {
         }
         #endregion
 
-
-        public TabularDataViewer(IBioLinkReport report, DataMatrix data) {
+        public TabularDataViewer(IBioLinkReport report, DataMatrix data, IProgressObserver progress) {
             InitializeComponent();
-            this.Data = data;            
+            this.Data = data;
+            _progress = progress;
             GridView view = new GridView();
 
             foreach (DisplayColumnDefinition c in report.DisplayColumns) {
@@ -76,14 +77,14 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void Sort(DisplayColumnDefinition coldef, ListSortDirection direction) {
-            ICollectionView dataView = CollectionViewSource.GetDefaultView(lvw.ItemsSource);
+            ListCollectionView dataView = CollectionViewSource.GetDefaultView(lvw.ItemsSource) as ListCollectionView;
             dataView.SortDescriptions.Clear();
             int columnIndex = Data.IndexOf(coldef.ColumnName);
 
             SortDescription sd = new SortDescription(String.Format("[{0}]", columnIndex), direction);
 
             dataView.SortDescriptions.Add(sd);
-            dataView.Refresh();
+            dataView.Refresh();            
         }
 
         private object BuildColumnHeader(DisplayColumnDefinition coldef) {
@@ -99,7 +100,9 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void Export() {
-
+            ExportData exporter = new ExportData(Data, _progress);
+            exporter.Owner = PluginManager.Instance.ParentWindow;
+            bool ok = exporter.ShowDialog().GetValueOrDefault(false);
         }
 
         #region Properties
@@ -131,7 +134,7 @@ namespace BioLink.Client.Extensibility {
             if (String.IsNullOrEmpty(text)) {
                 return;
             }
-            ICollectionView dataView = CollectionViewSource.GetDefaultView(lvw.ItemsSource);
+            ListCollectionView dataView = CollectionViewSource.GetDefaultView(lvw.ItemsSource) as ListCollectionView;
             text = text.ToLower();
             dataView.Filter = (obj) => { 
                 var row = obj as MatrixRow;
@@ -152,12 +155,18 @@ namespace BioLink.Client.Extensibility {
             };            
 
             dataView.Refresh();
+            if (_progress != null) {
+                _progress.ProgressMessage(String.Format("Showing {0} of {1} rows", dataView.Count, Data.Rows.Count));
+            }
         }
 
         private void ClearFilter() {
             ICollectionView dataView = CollectionViewSource.GetDefaultView(lvw.ItemsSource);
             dataView.Filter = null;
             dataView.Refresh();
+            if (_progress != null) {
+                _progress.ProgressMessage(String.Format("{0} rows retrieved.", Data.Rows.Count));
+            }
         }
 
         private void txtFilter_TextChanged(object sender, TextChangedEventArgs e) {
@@ -178,7 +187,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         public FrameworkElement ConstructView(IBioLinkReport report, DataMatrix reportData, IProgressObserver progress) {
-            TabularDataViewer viewer = new TabularDataViewer(report, reportData);
+            TabularDataViewer viewer = new TabularDataViewer(report, reportData, progress);
             return viewer;
         }
 
