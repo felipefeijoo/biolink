@@ -111,7 +111,7 @@ namespace BioLink.Client.Extensibility {
             StatusMessage("{0} records retrieved.", data.Rows.Count);
         }
 
-        private void StatusMessage(string format, params object[] args) {
+        internal void StatusMessage(string format, params object[] args) {
             string message = String.Format(format, args);
             statusMessage.InvokeIfRequired(() => {
                 statusMessage.Text = message;
@@ -129,11 +129,13 @@ namespace BioLink.Client.Extensibility {
             });
         }
 
-        public void ProgressMessage(string message, double percentComplete) {
+        public void ProgressMessage(string message, double? percentComplete) {
             StatusMessage(message);
-            progressBar.InvokeIfRequired(() => {
-                progressBar.Value = percentComplete;
-            });
+            if (percentComplete.HasValue) {
+                progressBar.InvokeIfRequired(() => {
+                    progressBar.Value = percentComplete.Value;
+                });
+            }
         }
 
         public void ProgressEnd(string message) {

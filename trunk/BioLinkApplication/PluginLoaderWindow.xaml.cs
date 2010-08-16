@@ -18,13 +18,16 @@ namespace BioLinkApplication {
             lblProgress.Content = message;
         }
 
-        public void ProgressMessage(string message, double percentComplete) {
+        public void ProgressMessage(string message, double? percentComplete) {
             lblProgress.Content = message;
-            progressBar.SetValue(ProgressBar.ValueProperty, percentComplete) ;
+            if (percentComplete.HasValue) {
+                progressBar.Value = percentComplete.Value;                
+            }
         }
 
         public void ProgressEnd(string message) {
             lblProgress.Content = message;
         }
+
     }
 }

@@ -27,6 +27,11 @@ namespace BioLink.Client.Utilities {
             return image;
         }
 
+        public static BitmapSource GetPackedImage(string localpath, string assemblyName) {
+            string uri = String.Format("pack://application:,,,/{0};component/{1}", assemblyName, localpath);
+            return GetImage(uri);
+        }
+
         public static BitmapSource ApplyOverlay(BitmapSource image, string overlayUri) {
             BitmapSource overlay = GetImage(overlayUri);
             int height = (int)image.Height;

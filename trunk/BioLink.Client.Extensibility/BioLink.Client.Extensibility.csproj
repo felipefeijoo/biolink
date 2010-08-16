@@ -44,6 +44,7 @@
       <HintPath>..\shared\lib\System.Data.SQLite.DLL</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -58,23 +59,33 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BioLinkPluginBase.cs" />
-    <Compile Include="CSVExporter.cs" />
+    <Compile Include="Export\CSVExporter.cs" />
     <Compile Include="DelayedTriggerTextbox.xaml.cs">
       <DependentUpon>DelayedTriggerTextbox.xaml</DependentUpon>
     </Compile>
     <Compile Include="EditableTextBlock.xaml.cs">
       <DependentUpon>EditableTextBlock.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Export\CSVExporterOptionsWindow.xaml.cs">
+      <DependentUpon>CSVExporterOptionsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Export\ExcelExporter.cs" />
+    <Compile Include="Export\ExportData.xaml.cs">
+      <DependentUpon>ExportData.xaml</DependentUpon>
+    </Compile>
     <Compile Include="HierarchicalViewModelBase.cs" />
     <Compile Include="IBioLinkPlugin.cs" />
     <Compile Include="IBioLinkReport.cs" />
-    <Compile Include="ITabularDataExporter.cs" />
+    <Compile Include="Export\TabularDataExporter.cs" />
     <Compile Include="LatLongInput.xaml.cs">
       <DependentUpon>LatLongInput.xaml</DependentUpon>
     </Compile>
     <Compile Include="MenuItemBuilder.cs" />
     <Compile Include="PluginManager.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="ProgressWindow.xaml.cs">
+      <DependentUpon>ProgressWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReportResults.xaml.cs">
       <DependentUpon>ReportResults.xaml</DependentUpon>
@@ -107,7 +118,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Export\CSVExporterOptionsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Export\ExportData.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="LatLongInput.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ProgressWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -130,6 +153,12 @@
   <ItemGroup>
     <Resource Include="images\loading-big.gif" />
     <Resource Include="images\loading-small.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\csv_exporter.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\excel_exporter.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
