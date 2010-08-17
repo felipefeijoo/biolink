@@ -82,9 +82,6 @@ namespace BioLink.Client.Gazetteer {
             return true;
         }
 
-        public void Dispose() {
-        }
-
     }
 
     public class PlaceName {
