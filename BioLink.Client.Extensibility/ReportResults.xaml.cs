@@ -139,6 +139,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         public void ProgressEnd(string message) {
+            StatusMessage(message);
             progressBar.InvokeIfRequired(() => {
                 progressBar.Value = 100;
                 progressBar.Visibility = System.Windows.Visibility.Hidden;

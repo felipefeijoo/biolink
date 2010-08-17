@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ExcelPackage">
+      <HintPath>..\shared\lib\ExcelPackage.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=3.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\shared\lib\Newtonsoft.Json.dll</HintPath>
@@ -69,10 +72,12 @@
     <Compile Include="Export\CSVExporterOptionsWindow.xaml.cs">
       <DependentUpon>CSVExporterOptionsWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Export\ExcelExporter.cs" />
+    <Compile Include="Export\Excel2003Exporter.cs" />
+    <Compile Include="Export\Excel2007Exporter.cs" />
     <Compile Include="Export\ExportData.xaml.cs">
       <DependentUpon>ExportData.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Export\SQLiteExporter.cs" />
     <Compile Include="HierarchicalViewModelBase.cs" />
     <Compile Include="IBioLinkPlugin.cs" />
     <Compile Include="IBioLinkReport.cs" />
@@ -158,7 +163,13 @@
     <Resource Include="images\csv_exporter.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="images\excel_exporter.png" />
+    <Resource Include="images\excel2007_exporter.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\excel2003_exporter.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\sqlite_exporter.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
