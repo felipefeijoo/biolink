@@ -66,6 +66,9 @@
     <Compile Include="TaxonExplorer.xaml.cs">
       <DependentUpon>TaxonExplorer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="TaxonNameDetails.xaml.cs">
+      <DependentUpon>TaxonNameDetails.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TaxonNameParser.cs" />
     <Compile Include="TaxonReportBase.cs" />
     <Compile Include="TaxonViewModel.cs" />
@@ -85,6 +88,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="TaxonNameDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Resource Include="StringResources.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

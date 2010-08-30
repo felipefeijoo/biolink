@@ -32,7 +32,7 @@ namespace BioLink.Client.Gazetteer {
                 string sql = "SELECT tPlace as Name, tType as PlaceType, tDivision as Division, tLatitude as LatitudeString, tLongitude as LongitudeString, dblLatitude as Latitude, dblLongitude as Longitude FROM tblGaz WHERE tPlace like @find ORDER BY tDivision, tPlace, tType LIMIT @limit";
                 SelectReader(sql, (reader) => {
                     PlaceName place = new PlaceName();
-                    MapperBase.ReflectMap(place, reader);
+                    MapperBase.ReflectMap(place, reader, null);
                     list.Add(place);
                 }, new SQLiteParameter("@find", find + "%"), new SQLiteParameter("@limit", maxrows));
             } catch (Exception ex) {
@@ -48,7 +48,7 @@ namespace BioLink.Client.Gazetteer {
                 string sql = "SELECT tPlace as Name, tType as PlaceType, tDivision as Division, tLatitude as LatitudeString, tLongitude as LongitudeString, dblLatitude as Latitude, dblLongitude as Longitude FROM tblGaz WHERE tPlace like @find AND tDivision = @division ORDER BY tDivision, tPlace, tType LIMIT @limit";
                 SelectReader(sql, (reader) => {
                     PlaceName place = new PlaceName();
-                    MapperBase.ReflectMap(place, reader);
+                    MapperBase.ReflectMap(place, reader, null);
                     list.Add(place);
                 }, new SQLiteParameter("@find", find + "%"), new SQLiteParameter("@limit", maxrows), new SQLiteParameter("@division", limitToDivision));
             } catch (Exception ex) {
