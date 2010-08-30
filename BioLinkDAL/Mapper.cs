@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using BioLink.Data.Model;
-using System.Data.SqlClient;
 using System.Data.Common;
+using System.Data.SqlClient;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using BioLink.Client.Utilities;
+using BioLink.Data.Model;
 
 namespace BioLink.Data {
 
@@ -17,9 +15,23 @@ namespace BioLink.Data {
 
         private static string KNOWN_TYPE_PREFIXES = "chr,vchr,bit,int,txt,flt,tint,dt";
 
-        public static void ReflectMap(object dest, DbDataReader reader, params ConvertingMapper[] columnOverrides) {
+        public static void ReflectMap(object dest, DbDataReader reader, ColumnMapping[] columnMappings, params ConvertingMapper[] columnOverrides) {
             PropertyInfo[] props = dest.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
             Dictionary<string, PropertyInfo> propMap = new Dictionary<string, PropertyInfo>();
+
+            if (columnMappings != null && columnMappings.Length > 0) {
+                foreach (ColumnMapping mapping in columnMappings) {
+                    // find the property by the name...
+                    PropertyInfo pinfo = Array.Find(props, (prop) => {
+                        return prop.Name == mapping.PropertyName;
+                    });
+
+                    if (pinfo != null && pinfo.CanWrite) {
+                        propMap[mapping.ColumnName] = pinfo;
+                    }
+                }
+            }
+
             foreach (PropertyInfo propInfo in props) {
                 if (propInfo.CanWrite) {
                     propMap.Add(propInfo.Name, propInfo);
@@ -83,22 +95,86 @@ namespace BioLink.Data {
 
         public static Taxon MapTaxon(SqlDataReader reader, params ConvertingMapper[] overrides) {
             Taxon t = new Taxon();
-            ReflectMap(t, reader, overrides);
+            ReflectMap(t, reader, null, overrides);
             return t;
         }
 
         public static TaxonSearchResult MapTaxonSearchResult(SqlDataReader reader) {
             TaxonSearchResult t = new TaxonSearchResult();
-            ReflectMap(t, reader);
+            ReflectMap(t, reader, null);
             return t;
         }
 
+        private static ConvertingMapper _taxonMapper = new ConvertingMapper("bitAvailableNameAllowed", (@in) => ((byte?) @in).GetValueOrDefault(0) !=0);
+
         public static TaxonRank MapTaxonRank(SqlDataReader reader) {
             TaxonRank tr = new TaxonRank();
-            ReflectMap(tr, reader, new ConvertingMapper("bitAvailableNameAllowed", (@in) => ((byte?) @in).GetValueOrDefault(0) !=0) );
+            ReflectMap(tr, reader, null, _taxonMapper);
             return tr;
         }
 
+    }
+
+    public class GenericMapper<T> : MapperBase where T : new() {
+
+        public GenericMapper() {
+        }
+
+        public GenericMapper(params ConvertingMapper[] overrides) {
+            Overrides = overrides;
+        }
+
+        public T Map(SqlDataReader reader) {
+            T t = new T();
+            ReflectMap(t, reader, Mappings, Overrides);
+            return t;
+        }
+
+        public ConvertingMapper[] Overrides { get; set; }
+
+        public ColumnMapping[] Mappings { get; set; }
+    }
+
+    public class GenericMapperBuilder<T> where T : new() {
+
+        private List<ConvertingMapper> _overrides = new List<ConvertingMapper>();
+        private List<ColumnMapping> _mappings = new List<ColumnMapping>();
+
+        public GenericMapperBuilder() {
+        }
+
+        public GenericMapperBuilder<T> @Override(params ConvertingMapper[] overrides) {
+            foreach (ConvertingMapper o in overrides) {
+                _overrides.Add(o);
+            }            
+            return this;            
+        }
+
+        public GenericMapperBuilder<T> @Override(string column, Converter<object, object> converter) {
+            ConvertingMapper @override = new ConvertingMapper(column, converter);
+            _overrides.Add(@override);
+            return this;
+        }
+
+        public GenericMapperBuilder<T> Map(params ColumnMapping[] mappings) {
+            foreach (ColumnMapping mapping in mappings) {
+                _mappings.Add(mapping);
+            }
+            return this;
+        }
+
+        public GenericMapperBuilder<T> Map(string columnName, string propertyName) {
+            ColumnMapping mapping = new ColumnMapping(columnName, propertyName);
+            _mappings.Add(mapping);
+            return this;
+        }
+
+        public GenericMapper<T> build() {
+            var mapper = new GenericMapper<T>();
+            mapper.Overrides = _overrides.ToArray();
+            mapper.Mappings = _mappings.ToArray();
+            return mapper;
+        }
     }
 
     public class ConvertingMapper {
@@ -110,6 +186,17 @@ namespace BioLink.Data {
 
         public string ColumnName { get; private set; }
         public Converter<object, object> Converter { get; set; }
+    }
+
+    public class ColumnMapping {
+
+        public ColumnMapping(string column, string propertyname) {
+            this.ColumnName = column;
+            this.PropertyName = propertyname;
+        }
+
+        public string ColumnName { get; set; }
+        public string PropertyName { get; set; }
     }
 
 }

@@ -80,6 +80,7 @@ namespace BioLink.Client.Taxa {
                 if (menu.HasItems) {
                     menu.Items.Add(new Separator());
                 }
+                menu.Items.Add(_builder.New("_Edit Name...").Handler(() => { Explorer.EditTaxonName(Taxon); }).MenuItem);
                 menu.Items.Add(_builder.New("_Edit Details...").Handler(() => { Explorer.ShowTaxonDetails(Taxon); }).MenuItem);
             }
 

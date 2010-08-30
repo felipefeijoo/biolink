@@ -70,8 +70,11 @@
     <Compile Include="DatabaseAction.cs" />
     <Compile Include="DataMatrix.cs" />
     <Compile Include="generated\DataObjects.cs" />
+    <Compile Include="KingdomType.cs" />
     <Compile Include="Mapper.cs" />
-    <Compile Include="Model.cs" />
+    <Compile Include="Phrase.cs" />
+    <Compile Include="SupportService.cs" />
+    <Compile Include="Taxon.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SQLiteServiceBase.cs" />
     <Compile Include="TaxaService.cs" />

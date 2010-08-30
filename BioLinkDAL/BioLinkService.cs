@@ -2,6 +2,7 @@
 using System.Data;
 using System.Data.SqlClient;
 using BioLink.Client.Utilities;
+using System.Collections.Generic;
 
 namespace BioLink.Data {
 
@@ -130,6 +131,16 @@ namespace BioLink.Data {
                     }
                 });
             }
+        }
+
+        protected List<T> StoredProcToList<T>(string storedproc, GenericMapper<T> mapper, params SqlParameter[] @params) where T : new() {
+            List<T> list = new List<T>();
+
+            StoredProcReaderForEach(storedproc, (reader) => {
+                list.Add(mapper.Map(reader));
+            }, @params);
+
+            return list;
         }
 
         protected DataTable StoredProcDataTable(string proc, params SqlParameter[] @params) {
