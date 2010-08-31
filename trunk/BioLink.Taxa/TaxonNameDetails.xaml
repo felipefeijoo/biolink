@@ -23,7 +23,7 @@
             <Button Content="OK" Height="23" HorizontalAlignment="Right" Margin="0,12,177,12" Name="btnOk" VerticalAlignment="Bottom" Width="75" IsDefault="True" Click="btnOk_Click" />
         </Grid>
         <CheckBox Content="Verified" Height="16" Margin="105,183,12,0" Name="chkVerified" VerticalAlignment="Top" IsChecked="{Binding IsVerified,Mode=TwoWay}"/>
-        <my:PhraseSelector Height="23" Margin="105,212,13,0" Name="phraseSelector1" VerticalAlignment="Top" />
+        <my:PhraseSelector Height="23" Margin="105,212,13,0" Name="txtNameStatus" VerticalAlignment="Top" />
         <Label Content="Name Status:" Height="28" HorizontalAlignment="Left" Margin="12,211,0,0" Name="label4" VerticalAlignment="Top" Width="87" />
     </Grid>
 </Window>

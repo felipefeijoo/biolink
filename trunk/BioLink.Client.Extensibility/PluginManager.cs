@@ -18,7 +18,6 @@ namespace BioLink.Client.Extensibility {
 
         private static PluginManager _instance;
 
-        private User _user;        
         private List<IBioLinkExtension> _extensions;
         private ResourceTempFileManager _resourceTempFiles = new ResourceTempFileManager();
 
@@ -39,7 +38,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         private PluginManager(User user, Window parentWindow) {
-            _user = user;            
+            User = user;            
             _extensions = new List<IBioLinkExtension>();
             this.ParentWindow = parentWindow;
         }
@@ -98,7 +97,7 @@ namespace BioLink.Client.Extensibility {
 
                             IBioLinkPlugin plugin = extension as IBioLinkPlugin;
                             Logger.Debug("Initializing Plugin {0}...", plugin.Name);
-                            plugin.InitializePlugin(_user, this, this.ParentWindow);
+                            plugin.InitializePlugin(User, this, this.ParentWindow);
 
                             Logger.Debug("Integrating Plugin...", plugin.Name);
                             // Allow the consumer to process this plugin...
@@ -217,6 +216,8 @@ namespace BioLink.Client.Extensibility {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
+        public User User { get; private set; }
 
         internal List<IBioLinkPlugin> PlugIns {
             get {

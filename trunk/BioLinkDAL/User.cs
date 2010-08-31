@@ -9,7 +9,21 @@ namespace BioLink.Data {
 
     public class User {
 
-        public String Username { get; private set; }
+        private string _username;
+
+        public String Username {
+            get {
+                if (ConnectionProfile.IntegratedSecurity || String.IsNullOrEmpty(_username)) {
+                    return Environment.UserName;
+                } else {
+                    return _username;
+                }
+            }
+            private set {
+                _username = value;
+            }
+        }
+
         private String Password;
         public ConnectionProfile ConnectionProfile { get; private set; }
 

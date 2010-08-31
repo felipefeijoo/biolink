@@ -87,6 +87,9 @@
     <Compile Include="GlobalExceptionHandler.cs" />
     <Compile Include="IChangeable.cs" />
     <Compile Include="ImageCache.cs" />
+    <Compile Include="InputBox.xaml.cs">
+      <DependentUpon>InputBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="IProgressMonitor.cs" />
     <Compile Include="JobExecutor.cs" />
     <Compile Include="LegacySettings.cs" />
@@ -105,6 +108,12 @@
     <Content Include="tests\testData\empty3.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="InputBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

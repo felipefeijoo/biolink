@@ -7,6 +7,7 @@ using System.IO;
 using Newtonsoft.Json;
 using BioLink.Client.Utilities;
 using BioLink.Data;
+using System.Windows;
 
 namespace BioLink.Client.Extensibility { 
 
@@ -77,6 +78,29 @@ namespace BioLink.Client.Extensibility {
 
         public static ConfigurationStore Instance {
             get { return _instance; }
+        }
+
+        public static void SaveWindowPosition(User user, Window window) {
+            Rect rect = new Rect(window.Left, window.Top, window.Width, window.Height);
+            SetUser(user, WindowPositionKey(window), new Nullable<Rect>(rect));
+        }
+
+        private static string WindowPositionKey(Window w) {
+            String name = w.Name;
+            if (String.IsNullOrEmpty(name)) {
+                name = w.GetType().Name;
+            }
+            return String.Format("Windows.{0}.Position", name);
+        }
+
+        public static void RestoreWindowPosition(User user, Window window) {
+            Nullable<Rect> r = GetUser<Nullable<Rect>>(user, WindowPositionKey(window), null);
+            if (r.HasValue) {
+                window.Width = r.Value.Width;
+                window.Height = r.Value.Height;
+                window.Top = r.Value.Top;
+                window.Left = r.Value.Left;
+            }
         }
 
     }

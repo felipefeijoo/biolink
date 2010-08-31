@@ -133,6 +133,30 @@ namespace BioLink.Data {
             }
         }
 
+        protected T StoredProcReturnVal<T>(string proc, params SqlParameter[] @params) {
+            using (new CodeTimer(String.Format("StoredProcReaderFirst '{0}'", proc))) {
+                
+                Array.Resize(ref @params, @params.Length + 1);
+                SqlParameter ret = ReturnParam("Return Value", SqlDbType.Variant);
+                @params[@params.Length - 1] = ret;
+
+                Command((con, cmd) => {
+                    cmd.CommandText = proc;
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    if (_transaction != null) {
+                        cmd.Transaction = _transaction;
+                    }
+                    foreach (SqlParameter param in @params) {
+                        cmd.Parameters.Add(param);
+                    }
+                    cmd.ExecuteNonQuery();                    
+
+                });
+
+                return (T) ret.Value;
+            }
+        }
+
         protected List<T> StoredProcToList<T>(string storedproc, GenericMapper<T> mapper, params SqlParameter[] @params) where T : new() {
             List<T> list = new List<T>();
 

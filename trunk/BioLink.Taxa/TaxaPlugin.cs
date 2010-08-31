@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Collections.ObjectModel;
+using System.Windows;
 using BioLink.Client.Extensibility;
 using BioLink.Client.Utilities;
-using System.Resources;
-using System.Windows;
-using System.Windows.Controls;
-using System.Collections.ObjectModel;
-using System.Data.SqlClient;
 using BioLink.Data;
 using BioLink.Data.Model;
 
