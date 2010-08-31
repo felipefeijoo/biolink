@@ -90,6 +90,9 @@
     <Compile Include="PhraseSelector.xaml.cs">
       <DependentUpon>PhraseSelector.xaml</DependentUpon>
     </Compile>
+    <Compile Include="PhraseSelectorWindow.xaml.cs">
+      <DependentUpon>PhraseSelectorWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="PluginManager.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="ProgressWindow.xaml.cs">
@@ -143,6 +146,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="PhraseSelectorWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ProgressWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -155,6 +162,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Resource Include="images\AddNew.png" />
     <Resource Include="StringResources.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

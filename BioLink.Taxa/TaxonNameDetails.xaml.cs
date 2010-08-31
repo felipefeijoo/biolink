@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using BioLink.Data;
 using BioLink.Data.Model;
+using BioLink.Client.Extensibility;
 
 namespace BioLink.Client.Taxa {
     /// <summary>
@@ -25,7 +26,8 @@ namespace BioLink.Client.Taxa {
             _model = new TaxonNameViewModel(taxon, _rank.LongName);
             this.DataContext = _model;            
             InitializeComponent();
-            
+
+            txtNameStatus.BindUser(PluginManager.Instance.User, "GAN Name Status", true);
 
             this.chkChangedCombination.Visibility = (_rank.Category == "S" ? Visibility.Visible : Visibility.Hidden);
         }
