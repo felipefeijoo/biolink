@@ -7,7 +7,10 @@ using System.Windows;
 using BioLink.Data;
 
 namespace BioLink.Client.Tools {
+
     public class ToolsPlugin : BiolinkPluginBase {
+
+        private PhraseManager _phraseManager;
 
         public override string Name {
             get { return "Tools"; }
@@ -31,7 +34,12 @@ namespace BioLink.Client.Tools {
         }
 
         private void ShowPhraseManager() {
-            MessageBox.Show("Here");
+            if (_phraseManager == null) {
+                _phraseManager = new PhraseManager(User);
+            }
+
+            _phraseManager.Show();
+
         }
     }
 }

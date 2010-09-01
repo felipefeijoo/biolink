@@ -31,6 +31,11 @@ namespace BioLink.Data {
         public void AddPhrase(int CategoryId, string phrase) {
             StoredProcUpdate("spPhraseInsert", new SqlParameter("intPhraseCatID", CategoryId), new SqlParameter("vchrPhrase", phrase));
         }
+
+        public void RenamePhrase(int phraseId, string phrase) {
+            StoredProcUpdate("spPhraseRename", new SqlParameter("intPhraseID", phraseId), new SqlParameter("vchrPhrase", phrase)); 
+        }
+
     }
 
 }

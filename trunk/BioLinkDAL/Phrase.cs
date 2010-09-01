@@ -7,7 +7,7 @@ namespace BioLink.Data.Model {
 
     public class PhraseCategory : BiolinkDataObject {
 
-        public int PhraseCatID { get; set; }
+        public int CategoryID { get; set; }
 
         public string Category { get; set; }
 
