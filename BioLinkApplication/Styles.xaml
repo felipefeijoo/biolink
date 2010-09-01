@@ -6,9 +6,13 @@
                     xmlns:local="clr-namespace:BioLinkApplication">
 
     <ResourceDictionary.MergedDictionaries>
+
+        <ResourceDictionary Source="/AvalonDock;component/resources/brushes.xaml"/>
+        
         <ResourceDictionary Source="/AvalonDock;component/themes/generic.xaml"/>
         <!--Aero colors-->
-        <ResourceDictionary Source="/AvalonDock;component/themes/aero.normalcolor.brushes.xaml"/>
+        <ResourceDictionary Source="/AvalonDock;component/themes/aero.normalcolor.xaml"/>
+        
     </ResourceDictionary.MergedDictionaries>
 
     <!--DocumentTabItemStyle-->

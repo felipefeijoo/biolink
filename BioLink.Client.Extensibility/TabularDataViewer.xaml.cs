@@ -120,13 +120,9 @@ namespace BioLink.Client.Extensibility {
 
         private void txtFilter_TypingPaused(string text) {
             if (String.IsNullOrEmpty(text)) {
-                this.InvokeIfRequired(() => {
-                    ClearFilter();
-                });
+                ClearFilter();
             } else {
-                this.InvokeIfRequired(() => {
-                    SetFilter(text);
-                });
+                SetFilter(text);
             }
         }
 

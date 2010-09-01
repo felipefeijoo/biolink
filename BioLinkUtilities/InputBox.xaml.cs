@@ -27,10 +27,20 @@ namespace BioLink.Client.Utilities {
         }
 
         public static void Show(Window owner, string title, object question, Action<string> handler) {
+            Show(owner, title, question, null, handler);
+        }
+
+        public static void Show(Window owner, string title, object question, string prefill, Action<string> handler) {
             InputBox frm = new InputBox();
             frm.Owner = owner;
             frm.Title = title;
-            frm.lblQuestion.Content = question;            
+            frm.lblQuestion.Content = question;
+
+            if (!String.IsNullOrEmpty(prefill)) {
+                frm.txt.Text = prefill;
+                frm.txt.SelectAll();
+            }
+
             if (frm.ShowDialog().GetValueOrDefault(false)) {
                 if (handler != null) {
                     handler(frm.txt.Text);

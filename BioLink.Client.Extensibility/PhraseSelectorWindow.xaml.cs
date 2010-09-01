@@ -22,9 +22,12 @@ namespace BioLink.Client.Extensibility {
         #endregion
 
         public PhraseSelectorWindow(User user, String categoryName, bool @fixed) {
-            InitializeComponent();
             this.User = user;
             this.Service = new SupportService(user);
+            InitializeComponent();            
+            
+            Config.RestoreWindowPosition(User, this);
+            
             Title = String.Format("Values for '{0}'", categoryName);
             this.CategoryId = Service.GetPhraseCategoryId(categoryName, @fixed);
             LoadModel();
@@ -40,9 +43,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void txtFilter_TypingPaused(string text) {
-            this.InvokeIfRequired(() => {
-                FilterList(text);
-            });
+            FilterList(text);
         }
 
         private void FilterList(string text) {
@@ -85,8 +86,7 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e) {
-            Config.RestoreWindowPosition(User, this);
+        private void Window_Loaded(object sender, RoutedEventArgs e) {            
             lst.Focus();
         }
 
@@ -109,6 +109,13 @@ namespace BioLink.Client.Extensibility {
                 // reload the model...
                 LoadModel();
             });
+        }
+
+        private void lst_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
+            if (lst.SelectedItem != null) {
+                this.DialogResult = true;
+                this.Hide();
+            }
         }
     }
 }

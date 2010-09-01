@@ -41,8 +41,8 @@ namespace BioLink.Client.Extensibility {
                     string text = null;
                     textBox.InvokeIfRequired(() => {
                         text = textBox.Text;
-                    });
-                    TypingPaused(text);
+                        TypingPaused(text);
+                    });                    
                 }
             } catch (Exception ex) {
                 GlobalExceptionHandler.Handle(ex);
@@ -57,7 +57,9 @@ namespace BioLink.Client.Extensibility {
                 }
 
                 if (TextChanged != null) {
-                    TextChanged(sender, e);
+                    this.InvokeIfRequired(() => {
+                        TextChanged(sender, e);
+                    });
                 }
             } catch (Exception ex) {
                 GlobalExceptionHandler.Handle(ex);

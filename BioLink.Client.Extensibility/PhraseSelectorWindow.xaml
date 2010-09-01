@@ -18,7 +18,7 @@
             <ext:DelayedTriggerTextbox x:Name="txtFilter" Margin="57,6,6,0" Height="23" VerticalAlignment="Top" TypingPaused="txtFilter_TypingPaused" KeyUp="txtFilter_KeyUp" />
         </Grid>
 
-        <ListView x:Name="lst" Grid.Row="1" Margin="7,0,6,0">
+        <ListView x:Name="lst" Grid.Row="1" Margin="7,0,6,0" MouseDoubleClick="lst_MouseDoubleClick">
             <ListView.Resources>
                 <DataTemplate DataType="{x:Type data:Phrase}">
                     <StackPanel Orientation="Horizontal">                        
