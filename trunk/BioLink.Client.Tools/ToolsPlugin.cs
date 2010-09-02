@@ -5,6 +5,7 @@ using System.Text;
 using BioLink.Client.Extensibility;
 using System.Windows;
 using BioLink.Data;
+using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Tools {
 
@@ -30,7 +31,21 @@ namespace BioLink.Client.Tools {
         }
 
         public override bool RequestShutdown() {
+            if (_phraseManager != null) {
+                PhraseManager manager = _phraseManager.Control as PhraseManager;
+                if (manager.HasPendingChanges) {
+                    return manager.Question("You have unsaved changes in the Phrases window. Are you sure you wish to discard them?", "Discard Phrase changes?");
+                }
+            }
             return true;
+        }
+
+        public override void Dispose() {
+            base.Dispose();
+            if (_phraseManager != null) {
+                _phraseManager.Close();
+                _phraseManager = null;
+            }
         }
 
         private void ShowPhraseManager() {

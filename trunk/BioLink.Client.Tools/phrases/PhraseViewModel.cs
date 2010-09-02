@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using BioLink.Client.Extensibility;
 using BioLink.Data.Model;
+using System.Windows.Media.Imaging;
 
 namespace BioLink.Client.Tools {
 
@@ -26,6 +27,11 @@ namespace BioLink.Client.Tools {
             get { return Model.Fixed; }
             set { SetProperty(() => Model.Fixed, value); }
         }
+
+        protected override string RelativeImagePath {
+            get { return (Fixed ?  "images/Phrase_fixed.png" :  "images/Phrase.png" ); }
+        }
+
     }
 
     public class PhraseViewModel : GenericViewModelBase<Phrase> {

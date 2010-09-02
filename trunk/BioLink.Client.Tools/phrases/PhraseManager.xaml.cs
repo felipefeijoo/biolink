@@ -86,7 +86,7 @@ namespace BioLink.Client.Tools {
             text = text.ToLower();
 
             dataView.Filter = (obj) => {
-                var category = obj as PhraseCategory;
+                var category = obj as PhraseCategoryViewModel;
                 return category.Category.ToLower().Contains(text);
             };
 
