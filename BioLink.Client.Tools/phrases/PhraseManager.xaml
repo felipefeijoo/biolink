@@ -58,6 +58,7 @@
                     <ListView.Resources>
                         <DataTemplate DataType="{x:Type src:PhraseCategoryViewModel}">
                             <StackPanel Orientation="Horizontal">
+                                <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,1" Height="20" Width="20" Stretch="None"/>
                                 <TextBlock x:Name="Category" Text="{Binding Path=Category, Mode=TwoWay}" VerticalAlignment="Center" />
                             </StackPanel>
                             <DataTemplate.Triggers>
