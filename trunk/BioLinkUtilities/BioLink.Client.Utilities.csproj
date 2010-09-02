@@ -96,7 +96,6 @@
     <Compile Include="Logger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="tests\FileSystemTraverserTests.cs" />
-    <Compile Include="ViewModelBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="tests\testData\empty1.txt">

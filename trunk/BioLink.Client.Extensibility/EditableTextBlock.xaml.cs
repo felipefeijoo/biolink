@@ -56,7 +56,6 @@ namespace BioLink.Client.Extensibility {
 
         public bool IsInEditMode {
             get {
-                _cancelled = false;
                 if (IsEditable) {
                     return (bool)GetValue(IsInEditModeProperty);
                 } else {
@@ -65,15 +64,12 @@ namespace BioLink.Client.Extensibility {
             }
             set {
                 if (IsEditable) {
-                    if (value) {
-                        oldText = Text;
-                    }
                     SetValue(IsInEditModeProperty, value);
                 }
             }
         }
 
-        public static readonly DependencyProperty IsInEditModeProperty = DependencyProperty.Register("IsInEditMode", typeof(bool), typeof(EditableTextBlock), new PropertyMetadata(false));
+        public static readonly DependencyProperty IsInEditModeProperty = DependencyProperty.Register("IsInEditMode", typeof(bool), typeof(EditableTextBlock), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnIsInEditModeChanged));
 
         public string TextFormat {
             get { return (string) GetValue(TextFormatProperty); }
@@ -86,6 +82,14 @@ namespace BioLink.Client.Extensibility {
         }
 
         public static readonly RoutedEvent TextChangedEvent = EventManager.RegisterRoutedEvent("TextChanged", RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<string>), typeof(EditableTextBlock));
+
+        private static void OnIsInEditModeChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            var tb = (EditableTextBlock)obj;
+            if ((bool)args.NewValue) {
+                tb._cancelled = false;
+                tb.oldText = tb.Text;
+            }
+        }
         
         private static void OnTextChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
             if (args.OldValue != null) {

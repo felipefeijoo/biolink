@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Data.SqlClient;
 using BioLink.Client.Utilities;
+using BioLink.Data.Model;
 
 namespace BioLink.Data {
 

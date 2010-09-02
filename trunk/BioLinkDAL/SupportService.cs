@@ -27,15 +27,23 @@ namespace BioLink.Data {
             return StoredProcToList<Phrase>("spPhraseList", mapper, new SqlParameter("intCategory", categoryId));
         }
 
-
-        public void AddPhrase(int CategoryId, string phrase) {
-            StoredProcUpdate("spPhraseInsert", new SqlParameter("intPhraseCatID", CategoryId), new SqlParameter("vchrPhrase", phrase));
+        public void AddPhrase(Phrase phrase) {
+            // Obviously a copy-pasta error in the Stored Proc, as the return value is called NewRegionID...oh well...
+            SqlParameter retval = ReturnParam("NewRegionID", System.Data.SqlDbType.Int);
+            StoredProcUpdate("spPhraseInsert", _P("intPhraseCatID", phrase.PhraseCatID), _P("vchrPhrase", phrase.PhraseText), retval);
+            if (retval != null && retval.Value != null) {
+                phrase.PhraseID = (Int32)retval.Value;
+            }
         }
 
         public void RenamePhrase(int phraseId, string phrase) {
-            StoredProcUpdate("spPhraseRename", new SqlParameter("intPhraseID", phraseId), new SqlParameter("vchrPhrase", phrase)); 
+            StoredProcUpdate("spPhraseRename", _P("intPhraseID", phraseId), _P("vchrPhrase", phrase)); 
         }
 
+
+        public void DeletePhrase(int phraseId) {
+            StoredProcUpdate("spPhraseDelete", _P("intPhraseID", phraseId));
+        }
     }
 
 }

@@ -73,14 +73,14 @@ namespace BioLink.Client.Taxa {
             }
         }
 
-        public List<string> GetExpandedParentages<T>(ObservableCollection<T> model)  where T : HierarchicalViewModelBase {
+        public List<string> GetExpandedParentages(ObservableCollection<HierarchicalViewModelBase> model) {
             List<string> list = new List<string>();
             ProcessList(model, list);
             return list;
         }
 
-        private void ProcessList<T>(ObservableCollection<T> model, List<string> list) where T : HierarchicalViewModelBase {
-            foreach (HierarchicalViewModelBase m in model) {
+        private void ProcessList(ObservableCollection<HierarchicalViewModelBase> model, List<string> list) {
+            foreach (TaxonViewModel m in model) {
                 if (m.IsExpanded && m is TaxonViewModel) {
                     TaxonViewModel tvm = m as TaxonViewModel;
                     list.Add(tvm.GetParentage());

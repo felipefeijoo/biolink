@@ -15,6 +15,7 @@ using System.Threading;
 using BioLink.Client.Utilities;
 using BioLink.Client.Extensibility;
 using BioLink.Data;
+using BioLink.Data.Model;
 
 namespace BioLinkApplication {
     /// <summary>

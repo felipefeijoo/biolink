@@ -103,9 +103,14 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void AddNewPhrase() {
-            InputBox.Show(this, "Add a new phrase value", "Enter the new phrase value, and click OK", (phrase) => {
+            InputBox.Show(this, "Add a new phrase value", "Enter the new phrase value, and click OK", (phrasetext) => {
+
+                Phrase phrase = new Phrase();
+                phrase.PhraseID = -1;
+                phrase.PhraseCatID = this.CategoryId;
+                phrase.PhraseText = phrasetext;
                 // Save the new phrase value...
-                Service.AddPhrase(CategoryId, phrase);
+                Service.AddPhrase(phrase);
                 // reload the model...
                 LoadModel();
             });

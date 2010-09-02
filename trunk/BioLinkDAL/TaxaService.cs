@@ -91,20 +91,6 @@ namespace BioLink.Data {
             return null;
         }
 
-        private HashSet<string> SplitCSV(string list) {
-            String[] items = list.Split(',');
-            HashSet<string> set = new HashSet<string>();
-            foreach (string item in items) {
-                if (item.StartsWith("'") && item.EndsWith("'")) {
-                    set.Add(item.Substring(1, item.Length - 2));
-                } else {
-                    set.Add(item);
-                }
-            }            
-            
-            return set;
-        }
-
         public bool IsValidChild(TaxonRank src, TaxonRank dest) {
             ISet<string> valid = SplitCSV(dest.ValidChildList);
             return valid.Contains(src.Code, StringComparer.OrdinalIgnoreCase);

@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using BioLink.Client.Utilities;
 using System.ComponentModel;
+using BioLink.Data.Model;
 
 namespace BioLink.Client.Extensibility {
 
@@ -93,22 +94,10 @@ namespace BioLink.Client.Extensibility {
 
     public delegate void HierarchicalViewModelAction(HierarchicalViewModelBase item);
 
-
     public class ViewModelPlaceholder : HierarchicalViewModelBase {
-
-        private BitmapSource _icon;
 
         public ViewModelPlaceholder(string label) {
             this.DisplayLabel = label;
-        }
-
-        public override BitmapSource Icon {
-            get {
-                return _icon;
-            }
-            set {
-                _icon = value;
-            }
         }
 
     }
