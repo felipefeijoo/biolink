@@ -141,6 +141,32 @@ namespace BioLink.Client.Extensibility {
 
         }
 
+        public ControlHostWindow AddNonDockableContent(IBioLinkPlugin plugin, UIElement content, string title, bool autoSavePosition = true, Action<Window> initFunc = null) {
+
+            ControlHostWindow form = new ControlHostWindow(content);
+            form.Owner = ParentWindow;
+            form.Title = title;
+            form.Name = "HostFor_" + content.GetType().Name;
+
+            form.Loaded += new RoutedEventHandler((source, e) => {
+                Config.RestoreWindowPosition(User, form);
+            });
+
+            form.Closing += new System.ComponentModel.CancelEventHandler((source, e) => {
+                Config.SaveWindowPosition(User, form);
+            });
+            
+            if (initFunc != null) {
+                initFunc(form);
+            }
+            form.Show();
+            return form;
+        }
+
+        void form_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+            throw new NotImplementedException();
+        }
+
         private bool NotifyProgress(ProgressHandler handler, string format, params object[] args) {
             return NotifyProgress(String.Format(format, args), -1, ProgressEventType.Update);
         }

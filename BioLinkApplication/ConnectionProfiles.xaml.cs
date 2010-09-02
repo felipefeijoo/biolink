@@ -13,6 +13,7 @@ using System.Windows.Shapes;
 using BioLink.Data;
 using BioLink.Client.Extensibility;
 using System.Collections.ObjectModel;
+using BioLink.Data.Model;
 
 namespace BioLinkApplication {
     /// <summary>
@@ -21,21 +22,22 @@ namespace BioLinkApplication {
     public partial class ConnectionProfiles : Window {
 
 
-        private ObservableCollection<ConnectionProfile> _model;
-
-
+        private ObservableCollection<ConnectionProfileViewModel> _model;
 
         public ConnectionProfiles() {
            
             InitializeComponent();
             List<ConnectionProfile> list = Config.GetGlobal<List<ConnectionProfile>>("connection.profiles", new List<ConnectionProfile>());
 
-            _model = new ObservableCollection<ConnectionProfile>(list);
+            _model = new ObservableCollection<ConnectionProfileViewModel>(list.ConvertAll((model) => {
+                return new ConnectionProfileViewModel(model);
+            }));
+
             cmbProfiles.ItemsSource = _model;
             String lastProfile = Config.GetGlobal<string>("connection.lastprofile", null);
             if (!String.IsNullOrEmpty(lastProfile)) {
                 // Look in the list for the profile with the same name.
-                ConnectionProfile lastUserProfile = _model.FirstOrDefault((item) => { return item.Name.Equals(lastProfile); });
+                ConnectionProfileViewModel lastUserProfile = _model.FirstOrDefault((item) => { return item.Name.Equals(lastProfile); });
                 if (lastUserProfile != null) {
                     cmbProfiles.SelectedItem = lastUserProfile;
                 }
@@ -52,7 +54,7 @@ namespace BioLinkApplication {
         }
 
         private void cmbProfiles_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            ConnectionProfile profile = cmbProfiles.SelectedItem as ConnectionProfile;
+            ConnectionProfileViewModel profile = cmbProfiles.SelectedItem as ConnectionProfileViewModel;
             if (profile != null) {
                 profileGrid.IsEnabled = true;
                 ProfileBorder.DataContext = profile;
@@ -73,23 +75,25 @@ namespace BioLinkApplication {
         }
 
         private void AddNewProfile() {
-            ConnectionProfile profile = new ConnectionProfile();
-            profile.Name = "<New Profile>";           
+            ConnectionProfile model = new ConnectionProfile();
+            model.Name = "<New Profile>";
+
+            var profile = new ConnectionProfileViewModel(model);
             _model.Add(profile);
             cmbProfiles.SelectedItem = profile;
             txtName.Focus();
             txtName.SelectAll();
         }
 
-        public ConnectionProfile SelectedProfile {
+        public ConnectionProfileViewModel SelectedProfile {
             get {                
-                return cmbProfiles.SelectedItem as ConnectionProfile;
+                return cmbProfiles.SelectedItem as ConnectionProfileViewModel;
             }
         }
 
-        private void btnOk_Click(object sender, RoutedEventArgs e) {
-            List<ConnectionProfile> profiles =  new List<ConnectionProfile>(_model);
-            Config.SetGlobal<List<ConnectionProfile>>("connection.profiles", profiles);
+        private void btnOk_Click(object sender, RoutedEventArgs e) {            
+            var profiles = _model.Select((viewmodel) => viewmodel.Model);
+            Config.SetGlobal("connection.profiles", profiles);
             this.DialogResult = true;
         }
 
@@ -98,7 +102,7 @@ namespace BioLinkApplication {
         }
 
         private void DeleteSelected() {
-            ConnectionProfile profile = SelectedProfile;
+            ConnectionProfileViewModel profile = SelectedProfile;
             if (profile != null) {
                 _model.Remove(profile);
                 if (_model.Count > 0) {
@@ -107,8 +111,5 @@ namespace BioLinkApplication {
             }
         }
 
-        private void button1_Click(object sender, RoutedEventArgs e) {
-
-        }
     }
 }

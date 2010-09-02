@@ -1,10 +1,12 @@
-﻿<UserControl x:Class="BioLink.Client.Taxa.TaxonExplorer"
+﻿<ex:DatabaseActionControl x:Class="BioLink.Client.Taxa.TaxonExplorer"
+             x:TypeArguments="data:TaxaService"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:src="clr-namespace:BioLink.Client.Taxa"
-             xmlns:data="clr-namespace:BioLink.Data.Model;assembly=BioLink.Data"
+             xmlns:data="clr-namespace:BioLink.Data;assembly=BioLink.Data"
+             xmlns:model="clr-namespace:BioLink.Data.Model;assembly=BioLink.Data"
              xmlns:ex="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"                
              mc:Ignorable="d" 
              d:DesignHeight="376" d:DesignWidth="225">
@@ -13,7 +15,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="StringResources.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            
+
             <Style TargetType="ListBoxItem">
                 <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
                 <Style.Triggers>
@@ -26,17 +28,17 @@
                 </Style.Triggers>
             </Style>
 
-            <HierarchicalDataTemplate DataType="{x:Type ex:ViewModelPlaceholder}">
+            <!--<HierarchicalDataTemplate DataType="{x:Type ex:ViewModelPlaceholder}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{Binding Path=Label}"/>
                 </StackPanel>
-            </HierarchicalDataTemplate>
-            
-            <src:SortedTaxonConverter x:Key="SortedTaxonConverter" />            
+            </HierarchicalDataTemplate>-->
 
-        </ResourceDictionary>   
+            <src:SortedTaxonConverter x:Key="SortedTaxonConverter" />
+
+        </ResourceDictionary>
     </UserControl.Resources>
-        
+
     <Grid>        
         <TabControl Name="tabControl1" SelectionChanged="tabControl1_SelectionChanged">
             <TabItem Header="{StaticResource TaxonExplorer.Tab.AllTaxa}" Name="tabAllTaxa">
@@ -169,4 +171,4 @@
             </TabItem>
         </TabControl>
     </Grid>
-</UserControl>
+</ex:DatabaseActionControl>

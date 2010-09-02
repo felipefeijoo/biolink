@@ -6,8 +6,10 @@ using System.Text;
 using System.ComponentModel;
 using System.Windows.Media.Imaging;
 using System.Reflection;
+using BioLink.Client.Utilities;
+using BioLink.Data.Model;
 
-namespace BioLink.Client.Utilities {
+namespace BioLink.Client.Extensibility {
 
     /// <summary>
     /// Abstract base class for view model objects that can change. It basically supports the INotifyPropertyChanged interface
@@ -99,6 +101,9 @@ namespace BioLink.Client.Utilities {
         private bool _deleted;
         private bool _renaming;
 
+        public ViewModelBase() {
+        }
+
         public bool IsSelected {
             get { return _selected; }
             set { SetProperty("IsSelected", ref _selected, value, true); }
@@ -115,8 +120,21 @@ namespace BioLink.Client.Utilities {
         }
 
         public virtual string DisplayLabel { get; set; }
-        public abstract BitmapSource Icon { get; set; }
+        public virtual BitmapSource Icon { get; set; }
         
+    }
+
+    public abstract class GenericViewModelBase<T> : ViewModelBase where T : BiolinkDataObject {
+
+        protected GenericViewModelBase(T model) {
+            this.Model = model;
+        }
+
+        protected void SetProperty<K>(Expression<Func<K>> wrappedPropertyExpr, K value, Action doIfChanged = null, bool changeAgnostic = false) {
+            SetProperty(wrappedPropertyExpr, Model, value, doIfChanged, changeAgnostic);
+        }
+
+        public T Model { get; private set; }
     }
 
 }

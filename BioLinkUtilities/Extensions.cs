@@ -45,6 +45,18 @@ namespace BioLink.Client.Utilities {
             });
         }
 
+        public static Window FindParentWindow(this FrameworkElement control) {            
+            var p = control.Parent as FrameworkElement;
+            while (!(p is Window) && p != null) {
+                p = p.Parent as FrameworkElement;
+            }
+
+            if (p != null) {
+                return p as Window;
+            }
+            return null;
+        }
+
         public static string _R(this Control control, string messageKey, params object[] args) {
             string message = null;
             control.InvokeIfRequired(() => {

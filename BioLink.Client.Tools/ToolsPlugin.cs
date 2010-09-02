@@ -10,7 +10,7 @@ namespace BioLink.Client.Tools {
 
     public class ToolsPlugin : BiolinkPluginBase {
 
-        private PhraseManager _phraseManager;
+        private ControlHostWindow _phraseManager;
 
         public override string Name {
             get { return "Tools"; }
@@ -35,11 +35,19 @@ namespace BioLink.Client.Tools {
 
         private void ShowPhraseManager() {
             if (_phraseManager == null) {
-                _phraseManager = new PhraseManager(User);
+
+                _phraseManager = PluginManager.Instance.AddNonDockableContent(this, new PhraseManager(User), "Phrases", true, (window) => {
+
+                });
+
+                _phraseManager.Closed += new EventHandler((sender, e) => {
+                    _phraseManager = null;
+                });
             }
 
             _phraseManager.Show();
 
         }
+
     }
 }

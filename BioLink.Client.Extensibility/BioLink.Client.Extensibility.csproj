@@ -63,6 +63,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BioLinkPluginBase.cs" />
+    <Compile Include="ControlHostWindow.xaml.cs">
+      <DependentUpon>ControlHostWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DatabaseActionControl.cs" />
     <Compile Include="Export\CSVExporter.cs" />
     <Compile Include="DelayedTriggerTextbox.xaml.cs">
       <DependentUpon>DelayedTriggerTextbox.xaml</DependentUpon>
@@ -107,6 +111,7 @@
       <DependentUpon>TabularDataViewer.xaml</DependentUpon>
     </Compile>
     <Compile Include="tests\PreferencesTests.cs" />
+    <Compile Include="ViewModelBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BioLinkDAL\BioLink.Data.csproj">
@@ -122,6 +127,10 @@
     <Folder Include="lib\" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="ControlHostWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="DelayedTriggerTextbox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -186,6 +195,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="images\sqlite_exporter.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Delete.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Rename.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

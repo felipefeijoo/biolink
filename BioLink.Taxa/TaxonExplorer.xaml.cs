@@ -20,7 +20,7 @@ namespace BioLink.Client.Taxa {
     /// <summary>
     /// Interaction logic for TaxonExplorer.xaml
     /// </summary>
-    public partial class TaxonExplorer : UserControl {
+    public partial class TaxonExplorer : DatabaseActionControl<TaxaService> {
 
         private TaxaPlugin _owner;
         private ObservableCollection<HierarchicalViewModelBase> _explorerModel;
@@ -31,8 +31,6 @@ namespace BioLink.Client.Taxa {
         private DragAdorner _adorner;
         private AdornerLayer _layer;
         private bool _dragHasLeftScope = false;
-        private List<TaxonDatabaseAction> _pendingChanges = new List<TaxonDatabaseAction>();
-
         private int _nextNewTaxonID = -100;
 
         public TaxonExplorer() {
@@ -403,7 +401,7 @@ namespace BioLink.Client.Taxa {
                     // process the action...
                     List<TaxonDatabaseAction> dbActions = action.ProcessUI();
                     if (dbActions != null && dbActions.Count > 0) {
-                        _pendingChanges.AddRange(dbActions);
+                        RegisterPendingActions(dbActions);
                     }
                 }
             } catch (IllegalTaxonMoveException ex) {
@@ -596,14 +594,14 @@ namespace BioLink.Client.Taxa {
         }
 
         private bool InsertUniquePendingUpdate(TaxonViewModel taxon) {
-            foreach (TaxonDatabaseAction action in _pendingChanges) {
+            foreach (DatabaseAction<TaxaService> action in this.PendingChanges) {
                 if (action is UpdateTaxonDatabaseAction) {
                     if ((action as UpdateTaxonDatabaseAction).Taxon == taxon.Taxon) {
                         return false;
                     }
                 }
             }
-            _pendingChanges.Add(new UpdateTaxonDatabaseAction(taxon.Taxon));
+            RegisterPendingAction(new UpdateTaxonDatabaseAction(taxon.Taxon));
             return true;
         }
        
@@ -734,7 +732,7 @@ namespace BioLink.Client.Taxa {
                     RenameTaxon(viewModel);
                 }
 
-                _pendingChanges.Add(new InsertTaxonDatabaseAction(viewModel));
+                RegisterPendingAction(new InsertTaxonDatabaseAction(viewModel));
 
             } catch (Exception ex) {
                 ErrorMessage.Show(ex.Message);
@@ -765,7 +763,7 @@ namespace BioLink.Client.Taxa {
                                 newUnplaced.Children.Add(child);
                                 child.TaxaParentID = newUnplaced.TaxaID;
                                 child.Parent = newUnplaced;
-                                _pendingChanges.Add(new MoveTaxonDatabaseAction(child, newUnplaced));
+                                RegisterPendingAction(new MoveTaxonDatabaseAction(child, newUnplaced));
                             }
                         }
                         parent.Children.Clear();
@@ -839,7 +837,7 @@ namespace BioLink.Client.Taxa {
                 // First the UI bit...                
                 MarkItemAsDeleted(taxon);
                 // And schedule the database bit...                                
-                _pendingChanges.Add(new DeleteTaxonDatabaseAction(taxon));
+                RegisterPendingAction(new DeleteTaxonDatabaseAction(taxon));
             }
         }
 
@@ -937,34 +935,6 @@ namespace BioLink.Client.Taxa {
             tvwAllTaxa.ItemsSource = _explorerModel;
         }
 
-        internal void ClearPendingChanges() {
-            _pendingChanges.Clear();
-        }
-
-        internal void CommitPendingChanges() {
-
-#if DEBUG
-            Logger.Debug("Committing the following taxon changes:");
-            foreach (TaxonDatabaseAction action in _pendingChanges) {
-                Logger.Debug("{0}", action);
-            }
-
-#endif
-            Service.BeginTransaction();
-            try {
-                foreach (TaxonDatabaseAction action in _pendingChanges) {
-                    action.Process(Service);
-                }
-                Service.CommitTransaction();
-                // Now reload the model
-                ReloadModel();
-                //
-            } catch (Exception ex) {
-                Service.RollbackTransaction();
-                GlobalExceptionHandler.Handle(ex);
-            }
-        }
-
         private string _R(string key, params object[] args) {
             return _owner.GetCaption(key, args);
         }
@@ -1014,7 +984,9 @@ namespace BioLink.Client.Taxa {
         private void btnApplyChanges_Click(object sender, RoutedEventArgs e) {
 
             if (AnyChanges()) {
-                CommitPendingChanges();
+                CommitPendingChanges(Service, () => {
+                    ReloadModel();
+                });
             }
 
         }
@@ -1047,6 +1019,7 @@ namespace BioLink.Client.Taxa {
                 taxon.YearOfPub = name.Year;
                 taxon.ChgComb = name.ChangeCombination;
                 taxon.DisplayLabel = null;
+                InsertUniquePendingUpdate(taxon);
             } else {
                 ErrorMessage.Show("Please enter at least the epithet, with author and year where appropriate.");
                 RenameTaxon(taxon);

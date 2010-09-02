@@ -51,9 +51,11 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PhraseManager.xaml.cs">
+    <Compile Include="phrases\PhraseDatabaseAction.cs" />
+    <Compile Include="phrases\PhraseManager.xaml.cs">
       <DependentUpon>PhraseManager.xaml</DependentUpon>
     </Compile>
+    <Compile Include="phrases\PhraseViewModel.cs" />
     <Compile Include="ToolsPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -78,7 +80,7 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="PhraseManager.xaml">
+    <Page Include="phrases\PhraseManager.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -6,7 +6,7 @@
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility"
              xmlns:data="clr-namespace:BioLink.Data.Model;assembly=BioLink.Data"
              mc:Ignorable="d" 
-             d:DesignHeight="334" d:DesignWidth="291" MinWidth="260" MinHeight="200" Width="300" Height="300" Loaded="Window_Loaded" Deactivated="Window_Deactivated">
+             d:DesignHeight="334" d:DesignWidth="291" MinWidth="260" MinHeight="200" Width="300" Height="300" Loaded="Window_Loaded" Deactivated="Window_Deactivated" UseLayoutRounding="True">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="34" />
