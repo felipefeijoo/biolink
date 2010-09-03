@@ -99,7 +99,7 @@
                         </Button.Content>
                     </Button>
                     <Label Content="Filter:" VerticalContentAlignment="Center" Width="50"/>
-                    <ext:DelayedTriggerTextbox x:Name="txtPhraseFilter" Width="150" Height="23" TypingPaused="txtPhraseFilter_TypingPaused" />
+                    <ext:DelayedTriggerTextbox x:Name="txtPhraseFilter" Width="150" Height="23" TypingPaused="txtPhraseFilter_TypingPaused" TextChanged="txtPhraseFilter_TextChanged" />
                 </ToolBar>
                 <ListView Grid.Row="1" Margin="0,0,6,0" Name="lvwPhrases" MouseRightButtonUp="lvwPhrases_MouseRightButtonUp" SelectionMode="Single">
                     <ListView.Resources>
