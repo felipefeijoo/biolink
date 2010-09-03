@@ -328,6 +328,12 @@ namespace BioLink.Client.Tools {
             ShowCategoryContextMenu();
         }
 
+        private void txtPhraseFilter_TextChanged(object sender, TextChangedEventArgs e) {
+            if (String.IsNullOrEmpty(txtPhraseFilter.Text)) {
+                ClearFilter(lvwPhrases, txtPhraseFilter);
+            }
+        }
+
     }
 
 }
