@@ -5,9 +5,6 @@ using System.Text;
 
 namespace BioLink.Data.Model {
 
-    public abstract class BiolinkDataObject {
-    }
-
     public interface ITaxon {
 
         System.Nullable<int> TaxaID { get; set; }

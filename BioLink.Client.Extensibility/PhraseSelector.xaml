@@ -11,7 +11,7 @@
             <ColumnDefinition Width="3"/>
             <ColumnDefinition Width="25"/>
         </Grid.ColumnDefinitions>
-        <TextBox Grid.Column="0" x:Name="txt"></TextBox>
+        <TextBox Grid.Column="0" x:Name="txt" TextChanged="txt_TextChanged"></TextBox>
         <Button Grid.Column="2" x:Name="btn" Content="..." VerticalContentAlignment="Top" Click="btn_Click" />
     </Grid>
 </UserControl>

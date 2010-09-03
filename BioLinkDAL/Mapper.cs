@@ -39,8 +39,10 @@ namespace BioLink.Data {
             }
 
             var overrides = new Dictionary<string, ConvertingMapper>();
-            foreach (ConvertingMapper mapper in columnOverrides) {
-                overrides.Add(mapper.ColumnName, mapper);
+            if (columnOverrides != null) {
+                foreach (ConvertingMapper mapper in columnOverrides) {
+                    overrides.Add(mapper.ColumnName, mapper);
+                }
             }
 
             for (int i = 0; i < reader.FieldCount; ++i) {

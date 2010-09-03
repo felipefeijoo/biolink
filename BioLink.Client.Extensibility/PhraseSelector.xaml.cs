@@ -49,11 +49,27 @@ namespace BioLink.Client.Extensibility {
             };
         }
 
+        public static readonly DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(PhraseSelector), new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnTextChanged)));
+
+        private static void OnTextChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            var control = (PhraseSelector) obj;
+            control.txt.Text = args.NewValue as String;
+        }
+
+        public String Text {
+            get { return (string) GetValue(TextProperty); }
+            set { SetValue(TextProperty, value); }
+        }
+
         protected User User { get; private set; }
 
         protected string PhraseCategory { get; private set; }
 
         protected bool IsFixedPhrase { get; private set; }
+
+        private void txt_TextChanged(object sender, TextChangedEventArgs e) {
+            Text = txt.Text;
+        }
 
     }
 }

@@ -1075,7 +1075,7 @@ namespace BioLink.Client.Taxa {
             get { return _owner.User; }
         }
 
-        internal void EditTaxonName(TaxonViewModel taxon) {
+        internal void EditTaxonName(TaxonViewModel taxon) {            
             TaxonNameDetails details = new TaxonNameDetails(taxon, _owner.Service);
             details.Owner = PluginManager.Instance.ParentWindow;
             details.Show();
