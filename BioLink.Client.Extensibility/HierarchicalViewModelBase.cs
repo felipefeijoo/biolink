@@ -84,6 +84,16 @@ namespace BioLink.Client.Extensibility {
             
         }
 
+        public Stack<HierarchicalViewModelBase> GetParentStack() {
+            var p = this;
+            var stack = new Stack<HierarchicalViewModelBase>();
+            while (p != null) {
+                stack.Push(p);
+                p = p.Parent;
+            }
+            return stack;
+        }
+
         public HierarchicalViewModelBase Parent { get; set; }
 
         public ObservableCollection<HierarchicalViewModelBase> Children { get; private set; }

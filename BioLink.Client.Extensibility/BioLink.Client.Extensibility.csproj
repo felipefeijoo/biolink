@@ -112,7 +112,6 @@
       <DependentUpon>TabularDataViewer.xaml</DependentUpon>
     </Compile>
     <Compile Include="tests\PreferencesTests.cs" />
-    <Compile Include="TreeViewItemBehaviour.cs" />
     <Compile Include="ViewModelBase.cs" />
   </ItemGroup>
   <ItemGroup>

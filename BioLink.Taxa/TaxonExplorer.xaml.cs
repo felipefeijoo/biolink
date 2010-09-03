@@ -13,6 +13,7 @@ using BioLink.Client.Extensibility;
 using BioLink.Client.Utilities;
 using BioLink.Data;
 using BioLink.Data.Model;
+using System.Windows.Threading;
 
 namespace BioLink.Client.Taxa {
 
@@ -856,6 +857,15 @@ namespace BioLink.Client.Taxa {
             }
         }
 
+        internal void CollapseChildren(HierarchicalViewModelBase taxon) {
+            foreach (HierarchicalViewModelBase m in taxon.Children) {
+                if (m.IsExpanded) {
+                    CollapseChildren(m);
+                    m.IsExpanded = false;
+                }
+            }
+        }
+
         internal void ShowInExplorer(TaxonViewModel taxon) {
 
             tabAllTaxa.IsSelected = true;
@@ -864,7 +874,11 @@ namespace BioLink.Client.Taxa {
             txtFind.Text = "";
 
             JobExecutor.QueueJob(() => {
-                // First make sure the explorer tree is visible...
+                // Collapse the currently expanded nodes...
+
+                CollapseChildren(_explorerModel[0]);
+
+                // make sure the explorer tree is visible...
                 string parentage = Service.GetTaxonParentage(taxon.TaxaID.Value);
                 if (!String.IsNullOrEmpty(parentage)) {
                     this.InvokeIfRequired(() => {
@@ -895,6 +909,9 @@ namespace BioLink.Client.Taxa {
             }
 
             if (child != null) {
+
+                BringModelToView(tvwAllTaxa, child);
+
                 tvwAllTaxa.Focus();
                 child.IsSelected = true;
             }
@@ -1080,6 +1097,94 @@ namespace BioLink.Client.Taxa {
             details.Owner = PluginManager.Instance.ParentWindow;
             details.Show();
         }
+
+        public void BringModelToView(TreeView tvw, HierarchicalViewModelBase item) {
+            ItemsControl itemsControl = tvw;
+
+            // Get the stack of parentages...
+            var stack = item.GetParentStack();
+
+            // Descend through the levels until the desired TreeViewItem is found.
+            while (stack.Count > 0) {
+                HierarchicalViewModelBase model = stack.Pop();
+
+                bool foundContainer = false;
+                int index = (model.Parent == null ? 0 : model.Parent.Children.IndexOf(model));
+                
+                // Access the custom VSP that exposes BringIntoView
+                MyVirtualizingStackPanel itemsHost = FindVisualChild<MyVirtualizingStackPanel>(itemsControl);
+                if (itemsHost != null) {
+                    // Due to virtualization, BringIntoView may not predict the offset correctly the first time.
+                    ItemsControl nextItemsControl = null;
+                    while (nextItemsControl == null) {
+                        foundContainer = true;
+                        itemsHost.BringIntoView(index);
+                        Dispatcher.Invoke(DispatcherPriority.Background, (DispatcherOperationCallback)delegate(object unused) {
+                            nextItemsControl = (ItemsControl)itemsControl.ItemContainerGenerator.ContainerFromIndex(index);
+                            return null;
+                        }, null);
+                    }
+
+                    itemsControl = nextItemsControl;
+                }
+
+                if (!foundContainer || (itemsControl == null)) {
+                    // Abort the operation
+                    return;
+                }
+            }
+        }
+
+        private T FindVisualChild<T>(Visual visual) where T : Visual {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(visual); i++) {
+                Visual child = (Visual)VisualTreeHelper.GetChild(visual, i);
+                if (child != null) {
+                    T correctlyTyped = child as T;
+                    if (correctlyTyped != null) {
+                        return correctlyTyped;
+                    }
+
+                    T descendent = FindVisualChild<T>(child);
+                    if (descendent != null) {
+                        return descendent;
+                    }
+                }
+            }
+
+            return null;
+        }
+
     }
+
+    [StyleTypedProperty(Property = "ItemContainerStyle", StyleTargetType = typeof(MyTreeViewItem))]
+    public class MyTreeView : TreeView {
+        protected override DependencyObject GetContainerForItemOverride() {
+            return new MyTreeViewItem();
+        }
+
+        protected override void PrepareContainerForItemOverride(DependencyObject element, object item) {
+            base.PrepareContainerForItemOverride(element, item);
+            ((TreeViewItem)element).IsExpanded = true;
+        }
+    }
+
+    [StyleTypedProperty(Property = "ItemContainerStyle", StyleTargetType = typeof(MyTreeViewItem))]
+    public class MyTreeViewItem : TreeViewItem {
+        protected override DependencyObject GetContainerForItemOverride() {
+            return new MyTreeViewItem();
+        }
+
+        protected override void PrepareContainerForItemOverride(DependencyObject element, object item) {
+            base.PrepareContainerForItemOverride(element, item);
+            // ((TreeViewItem)element).IsExpanded = true;
+        }
+    }
+
+    public class MyVirtualizingStackPanel : VirtualizingStackPanel {
+        public void BringIntoView(int index) {
+            this.BringIndexIntoView(index);
+        }
+    }
+
 
 }
