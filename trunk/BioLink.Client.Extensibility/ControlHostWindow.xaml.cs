@@ -31,6 +31,15 @@ namespace BioLink.Client.Extensibility {
         }
 
         public UIElement Control { get; private set; }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+            if (Control != null && Control is IClosable) {
+                var closable = Control as IClosable;
+                if (!closable.RequestClose()) {
+                    e.Cancel = true;
+                }
+            }
+        }
     }
 
 }

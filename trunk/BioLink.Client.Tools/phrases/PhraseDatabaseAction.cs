@@ -51,4 +51,18 @@ namespace BioLink.Client.Tools {
         }
 
     }
+
+    class DeletePhraseCategoryAction : DatabaseAction<SupportService> {
+
+        public DeletePhraseCategoryAction(PhraseCategory category) {
+            this.PhraseCategory = category;
+        }
+
+        protected override void ProcessImpl(SupportService service) {
+            service.DeletePhraseCategory(PhraseCategory.CategoryID);
+        }
+
+        public PhraseCategory PhraseCategory { get; private set; }
+    }
+
 }

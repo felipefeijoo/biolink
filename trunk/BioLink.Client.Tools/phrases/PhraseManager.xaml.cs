@@ -21,7 +21,7 @@ namespace BioLink.Client.Tools {
     /// <summary>
     /// Interaction logic for PhraseManager.xaml
     /// </summary>
-    public partial class PhraseManager : DatabaseActionControl<SupportService> {
+    public partial class PhraseManager : DatabaseActionControl<SupportService>, IClosable {
 
         private ObservableCollection<PhraseCategoryViewModel> _model;
 
@@ -54,7 +54,7 @@ namespace BioLink.Client.Tools {
 
             lvwCategories.ItemsSource = _model;
             if (oldCategoryId >= 0) {
-                var oldSelectedCategory = _model.First((category) => {
+                var oldSelectedCategory = _model.FirstOrDefault((category) => {
                     return category.CategoryID == oldCategoryId;
                 });
 
@@ -65,11 +65,11 @@ namespace BioLink.Client.Tools {
             // ClearFilter();
         }
 
-        private void ClearFilter() {
-            ListCollectionView dataView = CollectionViewSource.GetDefaultView(lvwCategories.ItemsSource) as ListCollectionView;
+        private void ClearFilter(ListView lvw, DelayedTriggerTextbox txtbox) {
+            ListCollectionView dataView = CollectionViewSource.GetDefaultView(lvw.ItemsSource) as ListCollectionView;
             dataView.Filter = null;
             dataView.Refresh();
-            txtFilter.Text = "";
+            txtbox.Text = "";
         }
 
         protected User User { get; private set; }
@@ -79,7 +79,7 @@ namespace BioLink.Client.Tools {
         private void txtFilter_TypingPaused(string text) {
 
             if (String.IsNullOrEmpty(text)) {
-                ClearFilter();
+                ClearFilter(lvwCategories, txtFilter);
             }
 
             ListCollectionView dataView = CollectionViewSource.GetDefaultView(lvwCategories.ItemsSource) as ListCollectionView;
@@ -116,7 +116,7 @@ namespace BioLink.Client.Tools {
 
         private void txtFilter_TextChanged(object sender, TextChangedEventArgs e) {
             if (String.IsNullOrEmpty(txtFilter.Text)) {
-                ClearFilter();
+                ClearFilter(lvwCategories, txtFilter);
             }
         }
 
@@ -162,7 +162,8 @@ namespace BioLink.Client.Tools {
 
 
         private void btnRenamePhrase_Click(object sender, RoutedEventArgs e) {
-            RenameCurrentPhrase();
+            var phrase = lvwPhrases.SelectedItem as PhraseViewModel;
+            RenamePhrase(phrase);
         }
 
         private void AddNewPhraseValue() {
@@ -185,8 +186,7 @@ namespace BioLink.Client.Tools {
             viewModel.IsRenaming = true;
         }
 
-        private void DeleteCurrentPhrase() {
-            var phrase = lvwPhrases.SelectedItem as PhraseViewModel;
+        private void DeletePhrase(PhraseViewModel phrase) {            
             if (phrase == null || phrase.IsDeleted) {
                 return;
             }
@@ -195,11 +195,9 @@ namespace BioLink.Client.Tools {
                 RegisterPendingAction(new DeletePhraseAction(phrase.Model));
                 phrase.IsDeleted = true;                
             }
-
         }
 
-        private void RenameCurrentPhrase() {
-            var phrase = lvwPhrases.SelectedItem as PhraseViewModel;
+        private void RenamePhrase(PhraseViewModel phrase) {            
             if (phrase == null || phrase.IsDeleted) {
                 return;
             }
@@ -207,12 +205,9 @@ namespace BioLink.Client.Tools {
             phrase.IsRenaming = true;
         }
 
-        private void btnDelete_Click(object sender, RoutedEventArgs e) {
-
-        }
-
         private void btnDeletePhrase_Click(object sender, RoutedEventArgs e) {
-            DeleteCurrentPhrase();
+            var phrase = lvwPhrases.SelectedItem as PhraseViewModel;
+            DeletePhrase(phrase);
         }
 
         private void btnAddPhrase_Click(object sender, RoutedEventArgs e) {
@@ -236,6 +231,101 @@ namespace BioLink.Client.Tools {
         private void PhraseText_EditingCancelled(object sender, string oldtext) {
             PhraseViewModel vm = (sender as EditableTextBlock).ViewModel as PhraseViewModel;
             vm.PhraseText = oldtext;
+        }
+
+        private void lvwPhrases_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            ShowPhraseContextMenu();
+        }
+
+        private void ShowPhraseContextMenu() {
+
+            PhraseViewModel phrase = lvwPhrases.SelectedItem as PhraseViewModel;
+
+            if (phrase == null) {
+                return;
+            }
+
+            ContextMenu menu = new ContextMenu();
+
+            MenuItemBuilder builder = new MenuItemBuilder();
+            menu.Items.Add(builder.New("Delete").Handler(() => {
+                DeletePhrase(phrase);
+            }).MenuItem);
+
+            menu.Items.Add(builder.New("Rename").Handler(() => {
+                RenamePhrase(phrase);
+            }).MenuItem);
+
+            menu.Items.Add(new Separator());
+
+            menu.Items.Add(builder.New("Add new phrase value").Handler(() => {
+                AddNewPhraseValue();
+            }).MenuItem);
+
+            lvwPhrases.ContextMenu = menu;
+        }
+
+        private void ShowCategoryContextMenu() {
+            PhraseCategoryViewModel category = CurrentCategory;
+            if (category == null) {
+                return;
+            }
+
+            ContextMenu menu = new ContextMenu();
+
+            MenuItemBuilder builder = new MenuItemBuilder();
+            menu.Items.Add(builder.New("Delete Category").Handler(() => {
+                DeleteCategory(category);
+            }).MenuItem);
+            lvwCategories.ContextMenu = menu;
+        }
+
+        private void btnDeleteCategory_Click(object sender, RoutedEventArgs e) {
+            DeleteCategory(CurrentCategory);
+        }
+
+        private void DeleteCategory(PhraseCategoryViewModel category) {
+            if (category.Fixed) {
+                ErrorMessage.Show("The phrase category '{0}' is required by the system, and cannot be deleted.", category.Category);
+                return;
+            }
+
+            if (this.Question(String.Format("Are you sure you want to delete the phrase category \"{0}\"?", category.Category), "Delete category?")) {
+                RegisterPendingAction(new DeletePhraseCategoryAction(category.Model));
+                category.IsDeleted = true;
+            }
+
+        }
+
+        public bool RequestClose() {
+            if (HasPendingChanges) {
+                return this.Question("You have unsaved changes. Are you sure you wish to discard these changes?", "Discard changes?");
+            }
+            return true;
+        }
+
+        public void Dispose() {
+        }
+
+        private void txtPhraseFilter_TypingPaused(string text) {
+            if (String.IsNullOrEmpty(text)) {
+                ClearFilter(lvwPhrases, txtPhraseFilter);
+            }
+
+            ListCollectionView dataView = CollectionViewSource.GetDefaultView(lvwPhrases.ItemsSource) as ListCollectionView;
+            text = text.ToLower();
+
+            dataView.Filter = (obj) => {
+                var phrase = obj as PhraseViewModel;
+                return phrase.PhraseText.ToLower().Contains(text);
+            };
+
+            dataView.Refresh();
+
+        }
+
+        private void lvwCategories_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            ShowCategoryContextMenu();
         }
 
     }

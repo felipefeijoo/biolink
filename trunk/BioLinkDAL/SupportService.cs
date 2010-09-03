@@ -40,9 +40,12 @@ namespace BioLink.Data {
             StoredProcUpdate("spPhraseRename", _P("intPhraseID", phraseId), _P("vchrPhrase", phrase)); 
         }
 
-
         public void DeletePhrase(int phraseId) {
             StoredProcUpdate("spPhraseDelete", _P("intPhraseID", phraseId));
+        }
+
+        public void DeletePhraseCategory(int categoryId) {
+            StoredProcUpdate("spPhraseCategoryDelete", _P("intCatID", categoryId));
         }
     }
 
