@@ -163,10 +163,6 @@ namespace BioLink.Client.Extensibility {
             return form;
         }
 
-        void form_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-            throw new NotImplementedException();
-        }
-
         private bool NotifyProgress(ProgressHandler handler, string format, params object[] args) {
             return NotifyProgress(String.Format(format, args), -1, ProgressEventType.Update);
         }

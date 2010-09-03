@@ -23,13 +23,11 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>        
-        <Grid.RowDefinitions>
-            <RowDefinition Height="23" />
+        <Grid.RowDefinitions>            
             <RowDefinition Height="*" />
             <RowDefinition Height="40" />
-        </Grid.RowDefinitions>
-        <Menu Grid.Row="0" />
-        <Grid Grid.Row="1">
+        </Grid.RowDefinitions>        
+        <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition />                
@@ -45,7 +43,7 @@
                         <RowDefinition />
                     </Grid.RowDefinitions>
                     <ToolBar x:Name="CategoriesToolBar" Grid.Row="0">
-                        <Button x:Name="btnDelete" Width="24" Click="btnDelete_Click">
+                        <Button x:Name="btnDeleteCategory" Width="24" Click="btnDeleteCategory_Click">
                             <Button.Content>
                                 <Image Source="pack://application:,,,/Biolink.Client.Extensibility;component/Images/Delete.png" Stretch="None" SnapsToDevicePixels="True" />
                             </Button.Content>
@@ -54,7 +52,7 @@
                     </ToolBar>
                     <ext:DelayedTriggerTextbox Height="23" x:Name="txtFilter" TypingPaused="txtFilter_TypingPaused" TextChanged="txtFilter_TextChanged" KeyUp="txtFilter_KeyUp" Margin="106,6,20,0" VerticalAlignment="Top" />
                 </Grid>
-                <ListView Grid.Row="1" Margin="6,0" Grid.RowSpan="2" Name="lvwCategories" SelectionChanged="lvwCategories_SelectionChanged">
+                <ListView Grid.Row="1" Margin="6,0" Grid.RowSpan="2" Name="lvwCategories" SelectionChanged="lvwCategories_SelectionChanged" MouseRightButtonUp="lvwCategories_MouseRightButtonUp" SelectionMode="Single">
                     <ListView.Resources>
                         <DataTemplate DataType="{x:Type src:PhraseCategoryViewModel}">
                             <StackPanel Orientation="Horizontal">
@@ -101,9 +99,9 @@
                         </Button.Content>
                     </Button>
                     <Label Content="Filter:" VerticalContentAlignment="Center" Width="50"/>
-                    <ext:DelayedTriggerTextbox Width="150" Height="23"/>
+                    <ext:DelayedTriggerTextbox x:Name="txtPhraseFilter" Width="150" Height="23" TypingPaused="txtPhraseFilter_TypingPaused" />
                 </ToolBar>
-                <ListView Grid.Row="1" Margin="0,0,6,0" Name="lvwPhrases">
+                <ListView Grid.Row="1" Margin="0,0,6,0" Name="lvwPhrases" MouseRightButtonUp="lvwPhrases_MouseRightButtonUp" SelectionMode="Single">
                     <ListView.Resources>
                         <DataTemplate DataType="{x:Type src:PhraseViewModel}">
                             <StackPanel Orientation="Horizontal">
@@ -122,7 +120,7 @@
             
             
         </Grid>
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="1">
             <Button Content="_Cancel" Height="23" HorizontalAlignment="Right" Margin="0,0,8,8" Name="btnCancel" VerticalAlignment="Bottom" Width="75" IsCancel="True" Click="btnCancel_Click" />
             <Button Content="_Apply" Height="23" HorizontalAlignment="Right" Margin="0,0,89,8" Name="btnApply" VerticalAlignment="Bottom" Width="75" IsEnabled="False" Click="btnApply_Click" />
             <Button Content="OK" Height="23" HorizontalAlignment="Right" Margin="0,0,170,8" Name="btnOK" VerticalAlignment="Bottom" Width="75" IsDefault="True" Click="btnOK_Click" />

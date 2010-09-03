@@ -87,6 +87,7 @@
     <Compile Include="IBioLinkPlugin.cs" />
     <Compile Include="IBioLinkReport.cs" />
     <Compile Include="Export\TabularDataExporter.cs" />
+    <Compile Include="IClosable.cs" />
     <Compile Include="LatLongInput.xaml.cs">
       <DependentUpon>LatLongInput.xaml</DependentUpon>
     </Compile>

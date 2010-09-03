@@ -6,7 +6,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:src="clr-namespace:BioLink.Client.Extensibility"
              mc:Ignorable="d" 
-             d:DesignHeight="294" d:DesignWidth="467" Height="500" Width="400" WindowStartupLocation="CenterOwner" UseLayoutRounding="True">
+             d:DesignHeight="294" d:DesignWidth="467" Height="408" Width="549" WindowStartupLocation="CenterOwner" UseLayoutRounding="True" Closing="Window_Closing">
     <Grid x:Name="grid">            
     </Grid>
 </Window>

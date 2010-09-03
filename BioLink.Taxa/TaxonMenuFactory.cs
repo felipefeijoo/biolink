@@ -26,8 +26,7 @@ namespace BioLink.Client.Taxa {
             ContextMenu menu = new ContextMenu();
 
             if (Explorer.IsUnlocked) {
-                if (!Taxon.IsRootNode) {
-                    menu.Items.Add(new Separator());
+                if (!Taxon.IsRootNode) {                    
                     menu.Items.Add(_builder.New("TaxonExplorer.menu.Delete", Taxon.DisplayLabel).Handler(() => { Explorer.DeleteTaxon(Taxon); }).MenuItem);
                     menu.Items.Add(_builder.New("TaxonExplorer.menu.Rename", Taxon.DisplayLabel).Handler(() => { Explorer.RenameTaxon(Taxon); }).MenuItem);
                 }
