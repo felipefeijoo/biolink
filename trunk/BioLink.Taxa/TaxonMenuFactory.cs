@@ -183,8 +183,17 @@ namespace BioLink.Client.Taxa {
         internal ContextMenu BuildFindResultsMenu() {
             ContextMenu menu = new ContextMenu();
 
-            menu.Items.Add(_builder.New("TaxonExplorer.menu.ShowInContents").Handler(() => { Explorer.ShowInExplorer(Taxon); }).MenuItem);
+            menu.Items.Add(_builder.New("TaxonExplorer.menu.ShowInContents").Handler(() => { Explorer.ShowInExplorer(Taxon); }).MenuItem);            
+            MenuItem reports = CreateReportMenuItems();
+            if (reports != null && reports.HasItems) {
+                if (menu.HasItems) {
+                    menu.Items.Add(new Separator());
+                }
+                menu.Items.Add(reports);
+            }
+
             menu.Items.Add(new Separator());
+            menu.Items.Add(_builder.New("_Edit Name...").Handler(() => { Explorer.EditTaxonName(Taxon); }).MenuItem);
             menu.Items.Add(_builder.New("_Edit Details...").Handler(() => { Explorer.ShowTaxonDetails(Taxon); }).MenuItem);
 
             return menu;

@@ -224,6 +224,11 @@ namespace BioLink.Data {
             return StoredProcDataMatrix("spMaterialListForTaxon", _P("intBiotaId", taxonId));
         }
 
+        public List<Kingdom> GetKingdomList() {
+            var mapper = new GenericMapper<Kingdom>();
+            return StoredProcToList("spBiotaDefKingdomList", mapper);
+        }
+
     }
 
     public class DataValidationResult {
