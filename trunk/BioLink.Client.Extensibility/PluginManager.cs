@@ -20,6 +20,7 @@ namespace BioLink.Client.Extensibility {
 
         private List<IBioLinkExtension> _extensions;
         private ResourceTempFileManager _resourceTempFiles = new ResourceTempFileManager();
+        private List<ControlHostWindow> _hostWindows = new List<ControlHostWindow>();
 
         public static void Initialize(User user, Window parentWindow) {
             if (_instance != null) {
@@ -141,14 +142,15 @@ namespace BioLink.Client.Extensibility {
 
         }
 
-        public ControlHostWindow AddNonDockableContent(IBioLinkPlugin plugin, UIElement content, string title, bool autoSavePosition = true, Action<Window> initFunc = null) {
+        public ControlHostWindow AddNonDockableContent(IBioLinkPlugin plugin, UIElement content, string title, SizeToContent sizeToContent, bool autoSavePosition = true, Action<Window> initFunc = null) {
 
-            ControlHostWindow form = new ControlHostWindow(content);
+            ControlHostWindow form = new ControlHostWindow(content, sizeToContent);
             form.Owner = ParentWindow;
             form.Title = title;
             form.Name = "HostFor_" + content.GetType().Name;
+            form.SizeToContent = sizeToContent;
 
-            form.Loaded += new RoutedEventHandler((source, e) => {
+            form.Initialized +=new EventHandler((source, e) => {
                 Config.RestoreWindowPosition(User, form);
             });
 
@@ -159,6 +161,12 @@ namespace BioLink.Client.Extensibility {
             if (initFunc != null) {
                 initFunc(form);
             }
+
+            form.Closed += new EventHandler((source, e) => {
+                _hostWindows.Remove(form);
+            });
+
+            _hostWindows.Add(form);
             form.Show();
             return form;
         }
@@ -217,14 +225,28 @@ namespace BioLink.Client.Extensibility {
         public void Dispose(Boolean disposing) {
             if (disposing) {
                 Logger.Debug("Disposing the Plugin Manager");
+
+                List<ControlHostWindow> temp = new List<ControlHostWindow>(_hostWindows);
+                foreach (ControlHostWindow window in temp) {
+                    Logger.Debug("Disposing control host window '{0}'...", window.Title);
+                    try {
+                        window.Close();
+                        window.Dispose();
+                    } catch (Exception ex) {
+                        Logger.Warn("Exception occured whilst disposing host window '{0}' : {1}", window.Title, ex);
+                    }
+                }
+
                 _extensions.ForEach((ext) => {
                     Logger.Debug("Disposing extension '{0}'", ext);
                     try {
                         ext.Dispose();
                     } catch (Exception ex) {
-                        Logger.Warn("Exception occured whislt disposing plugin '{0}' : {1}", ext, ex);
+                        Logger.Warn("Exception occured whilst disposing plugin '{0}' : {1}", ext, ex);
                     }
                 });
+                _extensions.Clear();
+
                 Logger.Debug("Cleaning up temp files...");
                 _resourceTempFiles.CleanUp();
             }
@@ -253,11 +275,18 @@ namespace BioLink.Client.Extensibility {
 
         public bool RequestShutdown() {
 
+            foreach (ControlHostWindow window in _hostWindows) {
+                if (!window.RequestClose()) {
+                    return false;
+                }
+            }
+
             foreach (IBioLinkPlugin plugin in PlugIns) {
                 if (!plugin.RequestShutdown()) {
                     return false;
                 }
             }
+
             return true;
         }
 

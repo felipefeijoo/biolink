@@ -15,7 +15,7 @@ using BioLink.Client.Extensibility;
 
 namespace BioLink.Client.Taxa {
 
-    public class TaxonViewModel : HierarchicalViewModelBase, ITaxon {
+    public class TaxonViewModel : HierarchicalViewModelBase {
 
         private static Dictionary<string, IconMetaData> _TaxaIconMetaData = new Dictionary<string, IconMetaData>();
         private static Dictionary<string, BitmapSource> _ElemTypeIconCache = new Dictionary<string, BitmapSource>();
@@ -168,6 +168,26 @@ namespace BioLink.Client.Taxa {
         public int? NumChildren {
             get { return Taxon.NumChildren; }
             set { SetProperty(() => Taxon.NumChildren, Taxon, value); }
+        }
+
+        public DateTime DateCreated {
+            get { return Taxon.DateCreated; }
+            set { SetProperty(() => Taxon.DateCreated, Taxon, value); }
+        }
+
+        public string WhoCreated {
+            get { return Taxon.WhoCreated; }
+            set { SetProperty(() => Taxon.WhoCreated, Taxon, value); }
+        }
+
+        public DateTime DateLastUpdated {
+            get { return Taxon.DateLastUpdated; } 
+            set { SetProperty( () => Taxon.DateLastUpdated, Taxon, value); }
+        }
+
+        public string WhoLastUpdated {
+            get { return Taxon.WhoLastUpdated; }
+            set { SetProperty(() => Taxon.WhoLastUpdated, Taxon, value); } 
         }
 
         private Pen AnimaliaBorder {

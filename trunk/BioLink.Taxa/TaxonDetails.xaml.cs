@@ -13,19 +13,25 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using BioLink.Data.Model;
 using System.Reflection;
+using BioLink.Data;
+using BioLink.Client.Extensibility;
 
 namespace BioLink.Client.Taxa {
     /// <summary>
     /// Interaction logic for TaxonDetails.xaml
     /// </summary>
-    public partial class TaxonDetails : Window {
+    public partial class TaxonDetails : DatabaseActionControl<TaxaService> {
 
+        #region designer constructor
         public TaxonDetails() {
             InitializeComponent();
         }
+        #endregion
 
-        public TaxonDetails(Taxon taxon) {
+        public TaxonDetails(TaxonViewModel taxon) {
             InitializeComponent();
+            TaxaService service = new TaxaService(PluginManager.Instance.User);
+            tabNameDetails.Content = new TaxonNameDetails(taxon, service);
             this.Taxon = taxon;
             // Build dynamic content...
 
@@ -55,17 +61,9 @@ namespace BioLink.Client.Taxa {
 
         #region properties
 
-        public Taxon Taxon { get; private set; }
+        public TaxonViewModel Taxon { get; private set; }
 
         #endregion
-
-        private void btnCancel_Click(object sender, RoutedEventArgs e) {
-            this.Hide();
-        }
-
-        private void btnOK_Click(object sender, RoutedEventArgs e) {
-            this.Hide();
-        }
 
     }
 }

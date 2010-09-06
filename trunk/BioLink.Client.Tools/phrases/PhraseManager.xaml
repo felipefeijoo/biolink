@@ -24,8 +24,7 @@
     </UserControl.Resources>
     <Grid>        
         <Grid.RowDefinitions>            
-            <RowDefinition Height="*" />
-            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />            
         </Grid.RowDefinitions>        
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
@@ -116,14 +115,7 @@
                         </DataTemplate>
                     </ListView.Resources>
                 </ListView>
-            </Grid>
-            
-            
-        </Grid>
-        <Grid Grid.Row="1">
-            <Button Content="_Cancel" Height="23" HorizontalAlignment="Right" Margin="0,0,8,8" Name="btnCancel" VerticalAlignment="Bottom" Width="75" IsCancel="True" Click="btnCancel_Click" />
-            <Button Content="_Apply" Height="23" HorizontalAlignment="Right" Margin="0,0,89,8" Name="btnApply" VerticalAlignment="Bottom" Width="75" IsEnabled="False" Click="btnApply_Click" />
-            <Button Content="OK" Height="23" HorizontalAlignment="Right" Margin="0,0,170,8" Name="btnOK" VerticalAlignment="Bottom" Width="75" IsDefault="True" Click="btnOK_Click" />
+            </Grid>            
         </Grid>
     </Grid>
 </ext:DatabaseActionControl>

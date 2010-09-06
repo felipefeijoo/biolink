@@ -147,6 +147,16 @@ namespace BioLink.Data {
             StoredProcUpdate("spBiotaMove", _P("intTaxaID", taxonId), _P("intNewParentID", newParentId));           
         }
 
+        public Taxon GetTaxon(int taxonId) {
+            Taxon t = null;
+            var mapper = new GenericMapperBuilder<Taxon>().Map("intBiotaID", "TaxaID").Map("intParentID","TaxaParentID").Map("bitChangedComb","ChgComb").Map("vchrAvailableNameStatus", "NameStatus").Map("vchrFullName","TaxaFullName").build();
+            StoredProcReaderFirst("spBiotaGet", (reader) => {
+                t = mapper.Map(reader);
+            }, _P("intBiotaID", taxonId));
+
+            return t;
+        }
+
         public void UpdateTaxon(Taxon taxon) {
             StoredProcUpdate("spBiotaUpdate", 
                 _P("intBiotaID", taxon.TaxaID), 
