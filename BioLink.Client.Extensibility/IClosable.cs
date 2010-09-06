@@ -9,5 +9,18 @@ namespace BioLink.Client.Extensibility {
 
         bool RequestClose();
 
+        bool HasPendingChanges { get; }
+
+        void ApplyChanges();
+
+        event PendingChangedRegisteredHandler PendingChangedRegistered;
+
+        event PendingChangesCommittedHandler PendingChangesCommitted;
+
     }
+
+    public delegate void PendingChangedRegisteredHandler(object sender, object action);
+
+    public delegate void PendingChangesCommittedHandler(object sender);
+
 }

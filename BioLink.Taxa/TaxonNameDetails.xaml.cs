@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using BioLink.Data;
 using BioLink.Data.Model;
 using BioLink.Client.Extensibility;
@@ -9,7 +10,7 @@ namespace BioLink.Client.Taxa {
     /// <summary>
     /// Interaction logic for TaxonNameDetails.xaml
     /// </summary>
-    public partial class TaxonNameDetails : Window {
+    public partial class TaxonNameDetails : DatabaseActionControl<TaxaService>, IClosable {
 
         private TaxonViewModel _taxon;
         private TaxonRank _rank;
@@ -66,16 +67,16 @@ namespace BioLink.Client.Taxa {
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e) {
-            this.Hide();
+            HideMe();
         }
 
         private void btnOk_Click(object sender, RoutedEventArgs e) {
-            SaveChanges();
-            this.Hide();
+            ApplyChanges();
+            HideMe();
         }
 
-        private void SaveChanges() {
-
+        private void HideMe() {
+            this.FindParentWindow().Close();
         }
 
     }

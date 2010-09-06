@@ -1,16 +1,27 @@
-﻿<Window x:Class="BioLink.Client.Taxa.TaxonDetails"
+﻿<ext:DatabaseActionControl x:Class="BioLink.Client.Taxa.TaxonDetails"
+                           x:TypeArguments="data:TaxaService"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+             xmlns:data="clr-namespace:BioLink.Data;assembly=BioLink.Data"                           
              mc:Ignorable="d"              
-             MinWidth="400" d:DesignHeight="324" d:DesignWidth="543" SizeToContent="WidthAndHeight" Title="Taxon Details" WindowStartupLocation="CenterOwner">    
+             MinWidth="400" d:DesignHeight="324" d:DesignWidth="543">    
     <Grid >
-        <ScrollViewer Margin="0,0,0,41">
-            <StackPanel x:Name="contentStack">                
-            </StackPanel>
-        </ScrollViewer>
-        <Button Content="Cancel" Height="23" HorizontalAlignment="Right" Margin="0,0,12,12" Name="btnCancel" VerticalAlignment="Bottom" Width="75" IsCancel="True" Click="btnCancel_Click" />
-        <Button Content="OK" Height="23" HorizontalAlignment="Right" Margin="0,0,93,12" Name="btnOK" VerticalAlignment="Bottom" Width="75" IsDefault="True" Click="btnOK_Click" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>            
+        </Grid.RowDefinitions>
+        <TabControl Margin="12">
+            <TabItem x:Name="tabNameDetails" Header="Name Details" HorizontalContentAlignment="Left" VerticalContentAlignment="Top">
+            </TabItem>
+            <TabItem Header="Reflect-O-Matic">                
+                <ScrollViewer Margin="0,0,0,41">
+                    <StackPanel x:Name="contentStack">
+                    </StackPanel>
+                </ScrollViewer>                
+            </TabItem>            
+        </TabControl>
     </Grid>
-</Window>
+    
+</ext:DatabaseActionControl>

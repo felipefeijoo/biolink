@@ -11,6 +11,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using BioLink.Data;
+using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Extensibility {
     /// <summary>
@@ -24,10 +26,23 @@ namespace BioLink.Client.Extensibility {
         }
         #endregion
 
-        public ControlHostWindow(UIElement element) {
+        public ControlHostWindow(UIElement element, SizeToContent sizeToContent) {
             InitializeComponent();
             this.Control = element;
-            grid.Children.Add(element);
+            this.SizeToContent = sizeToContent;
+            ControlHost.Children.Add(element);
+
+            IClosable closable = element as IClosable;
+            if (closable != null) {
+                closable.PendingChangedRegistered +=new PendingChangedRegisteredHandler((source, action) => {
+                    btnApply.IsEnabled = true;
+                });
+
+                closable.PendingChangesCommitted += new PendingChangesCommittedHandler((source) => {
+                    btnApply.IsEnabled = false;
+                });
+
+            }
         }
 
         public UIElement Control { get; private set; }
@@ -40,6 +55,64 @@ namespace BioLink.Client.Extensibility {
                 }
             }
         }
+
+        public bool RequestClose() {
+            if (Control != null && Control is IClosable) {
+                var closable = Control as IClosable;
+                return closable.RequestClose();
+            }
+            return true;
+        }
+
+        public void ApplyChanges() {
+
+            if (Control != null && Control is IClosable) {
+                var closable = Control as IClosable;
+                closable.ApplyChanges();
+            }
+        }
+
+        public void Dispose() {
+            if (Control != null && Control is IDisposable) {
+                (Control as IDisposable).Dispose();
+            }
+        }
+
+        public bool HasPendingChanges {
+            get {
+                if (Control is IClosable) {
+                    return (Control as IClosable).HasPendingChanges;
+                }
+                return false;
+            }
+        }
+
+
+        private void btnCancel_Click(object sender, RoutedEventArgs e) {
+            //IClosable closable = Control as IClosable;
+            //if (closable != null) {
+            //    if (!closable.RequestClose()) {
+            //        return;
+            //    }
+            //}
+            this.Close();
+        }
+
+        private void btnApply_Click(object sender, RoutedEventArgs e) {
+            IClosable closable = Control as IClosable;
+            if (closable != null && closable.HasPendingChanges) {
+                closable.ApplyChanges();
+            }
+        }
+
+        private void btnOk_Click(object sender, RoutedEventArgs e) {
+            IClosable closable = Control as IClosable;
+            if (closable != null && closable.HasPendingChanges) {
+                closable.ApplyChanges();
+            }
+            this.Close();
+        }
+
     }
 
 }

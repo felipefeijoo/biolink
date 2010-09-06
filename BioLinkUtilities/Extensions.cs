@@ -94,6 +94,17 @@ namespace BioLink.Client.Utilities {
             return Int32.TryParse(value, out result);            
         }
 
+        public static bool IsSubclassOfRawGeneric(this Type toCheck, Type generic) {
+            while (toCheck != typeof(object)) {
+                var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
+                if (generic == cur) {
+                    return true;
+                }
+                toCheck = toCheck.BaseType;
+            }
+            return false;
+        }
+
     }
 
     public delegate string MessageFormatterFunc(string format, params object[] args);

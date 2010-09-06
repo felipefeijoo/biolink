@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using BioLink.Data;
 using BioLink.Data.Model;
 using System.Collections.ObjectModel;
@@ -33,14 +34,12 @@ namespace BioLink.Client.Tools {
         }
         #endregion
 
-        public PhraseManager(User user) {
-            InitializeComponent();
-            this.User = user;
-            Service = new SupportService(User);
+        public PhraseManager(SupportService service) : base(service) {
+            InitializeComponent();            
             ReloadModel();
 
-            PendingChangedRegistered +=new PendingChangedRegisteredHandler((source, action) => {
-                btnApply.IsEnabled = true;
+            PendingChangesCommitted += new PendingChangesCommittedHandler((source) => {
+                ReloadModel();                
             });
 
         }
@@ -71,10 +70,6 @@ namespace BioLink.Client.Tools {
             dataView.Refresh();
             txtbox.Text = "";
         }
-
-        protected User User { get; private set; }
-
-        protected SupportService Service { get; private set; }
 
         private void txtFilter_TypingPaused(string text) {
 
@@ -130,37 +125,6 @@ namespace BioLink.Client.Tools {
             }
         }
 
-        private void btnOK_Click(object sender, RoutedEventArgs e) {
-            if (HasPendingChanges) {
-                if (this.Question("You have unsaved changes. Do you wish to save them before closing?", "Save changes?")) {
-                    CommitPendingChanges(Service, () => {
-                        ReloadModel();
-                    });
-                }
-            }
-            HideMe();
-        }
-
-        private void btnCancel_Click(object sender, RoutedEventArgs e) {
-            bool okToHide = true;
-            if (HasPendingChanges) {
-                okToHide = this.Question("You have unsaved changes. Are you sure you wish to discard these changes?", "Discard changes?");
-            } 
-            
-            if (okToHide) {
-                HideMe();
-            }
-
-        }
-
-        protected void HideMe() {
-            _phraseCache = null;
-            _model = null;
-            ClearPendingChanges();
-            this.FindParentWindow().Close();
-        }
-
-
         private void btnRenamePhrase_Click(object sender, RoutedEventArgs e) {
             var phrase = lvwPhrases.SelectedItem as PhraseViewModel;
             RenamePhrase(phrase);
@@ -180,6 +144,14 @@ namespace BioLink.Client.Tools {
             PhraseViewModel viewModel = new PhraseViewModel(phrase);
             (lvwPhrases.ItemsSource as ObservableCollection<PhraseViewModel>).Add(viewModel);
             viewModel.IsSelected = true;
+
+            lvwPhrases.Dispatcher.BeginInvoke(new Action(() => {
+                lvwPhrases.ScrollIntoView(viewModel);
+                ListViewItem item = (ListViewItem)lvwPhrases.ItemContainerGenerator.ContainerFromItem(viewModel);
+                if (item != null) {
+                    item.Focus();
+                }
+            }));
             
             RegisterPendingAction(new AddPhraseAction(phrase));
 
@@ -212,15 +184,6 @@ namespace BioLink.Client.Tools {
 
         private void btnAddPhrase_Click(object sender, RoutedEventArgs e) {
             AddNewPhraseValue();
-        }
-
-        private void btnApply_Click(object sender, RoutedEventArgs e) {
-
-            CommitPendingChanges(Service, () => {
-                ReloadModel();
-                btnApply.IsEnabled = false;
-            });
-
         }
 
         private void PhraseText_EditingComplete(object sender, string text) {
@@ -297,16 +260,6 @@ namespace BioLink.Client.Tools {
 
         }
 
-        public bool RequestClose() {
-            if (HasPendingChanges) {
-                return this.Question("You have unsaved changes. Are you sure you wish to discard these changes?", "Discard changes?");
-            }
-            return true;
-        }
-
-        public void Dispose() {
-        }
-
         private void txtPhraseFilter_TypingPaused(string text) {
             if (String.IsNullOrEmpty(text)) {
                 ClearFilter(lvwPhrases, txtPhraseFilter);
@@ -334,6 +287,9 @@ namespace BioLink.Client.Tools {
             }
         }
 
+        public bool HasChanges {
+            get { return HasPendingChanges; }
+        }
     }
 
 }

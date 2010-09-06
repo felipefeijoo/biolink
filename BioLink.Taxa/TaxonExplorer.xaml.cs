@@ -34,12 +34,17 @@ namespace BioLink.Client.Taxa {
         private bool _dragHasLeftScope = false;
         private int _nextNewTaxonID = -100;
 
+        #region Designer Constructor
         public TaxonExplorer() {
             InitializeComponent();
         }
+        #endregion
 
-        public TaxonExplorer(TaxaPlugin owner) {
+        public TaxonExplorer(TaxaPlugin owner) 
+            : base(new TaxaService(owner.User)) {
+
             InitializeComponent();
+
             _owner = owner;
 
             lstResults.Margin = taxaBorder.Margin;
@@ -643,9 +648,21 @@ namespace BioLink.Client.Taxa {
         }
 
         internal void ShowTaxonDetails(TaxonViewModel taxon) {
-            TaxonDetails frm = new TaxonDetails(taxon.Taxon);
-            frm.Owner = _owner.ParentWindow;
-            frm.Show();
+            Taxon fullDetails = Service.GetTaxon(taxon.TaxaID.Value);
+            TaxonViewModel model = new TaxonViewModel(null, fullDetails, null);
+            TaxonDetails control = new TaxonDetails(model);
+            TaxonRank taxonRank = Service.GetTaxonRank(taxon.ElemType);
+
+            string fullRank = taxonRank.LongName;
+            if (model.AvailableName.ValueOrFalse()) {
+                fullRank += " Available Name";
+            } else if (model.LiteratureName.ValueOrFalse()) {
+                fullRank += " Literature Name";
+            }
+
+            String title = String.Format("Taxon Detail: {0} ({1}) [{2}]", model.TaxaFullName, fullRank, model.TaxaID);
+
+            PluginManager.Instance.AddNonDockableContent(_owner, control, title, SizeToContent.Manual);
         }
 
         internal void Refresh() {
@@ -1001,7 +1018,7 @@ namespace BioLink.Client.Taxa {
         private void btnApplyChanges_Click(object sender, RoutedEventArgs e) {
 
             if (AnyChanges()) {
-                CommitPendingChanges(Service, () => {
+                CommitPendingChanges(() => {
                     ReloadModel();
                 });
             }
@@ -1060,10 +1077,6 @@ namespace BioLink.Client.Taxa {
 
         #region Properties
 
-        internal TaxaService Service {
-            get { return _owner.Service; }
-        }
-
         internal ObservableCollection<HierarchicalViewModelBase> ExplorerModel {
             get { return _explorerModel; }
             set {
@@ -1094,8 +1107,7 @@ namespace BioLink.Client.Taxa {
 
         internal void EditTaxonName(TaxonViewModel taxon) {            
             TaxonNameDetails details = new TaxonNameDetails(taxon, _owner.Service);
-            details.Owner = PluginManager.Instance.ParentWindow;
-            details.Show();
+            PluginManager.Instance.AddNonDockableContent(this._owner, details, "Taxon name details",SizeToContent.WidthAndHeight);
         }
 
         public void BringModelToView(TreeView tvw, HierarchicalViewModelBase item) {

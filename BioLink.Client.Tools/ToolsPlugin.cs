@@ -51,7 +51,7 @@ namespace BioLink.Client.Tools {
         private void ShowPhraseManager() {
             if (_phraseManager == null) {
 
-                _phraseManager = PluginManager.Instance.AddNonDockableContent(this, new PhraseManager(User), "Phrases", true, (window) => {
+                _phraseManager = PluginManager.Instance.AddNonDockableContent(this, new PhraseManager(new SupportService(User)), "Phrases", SizeToContent.Manual, true, (window) => {
 
                 });
 
