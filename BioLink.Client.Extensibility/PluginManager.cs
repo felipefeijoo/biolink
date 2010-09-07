@@ -213,6 +213,11 @@ namespace BioLink.Client.Extensibility {
             });
         }
 
+        public void PinObject(IPinnable pinnable) {
+            BioLinkCorePlugin core = GetExtensionsOfType<BioLinkCorePlugin>()[0];
+            core.PinObject(pinnable);
+        }
+
         static void DoEvents() {
             DispatcherFrame frame = new DispatcherFrame(true);
             Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, (SendOrPostCallback)delegate(object arg) {

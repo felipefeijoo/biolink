@@ -45,6 +45,16 @@ namespace BioLink.Data.Model {
         public override string ToString() {
             return String.Format("TaxonRank[{0}]: {1} ({2}) #{3}", KingdomCode, LongName, Category, Order);
         }
+
+        public String GetElementTypeLongName(Taxon taxon) {
+            string longrank = LongName;
+            if (taxon.AvailableName.GetValueOrDefault(false)) {
+                longrank += " Available Name";
+            } else if (taxon.LiteratureName.GetValueOrDefault(false)) {
+                longrank += " Literature Name";
+            }
+            return longrank;
+        }
         
     }
 }

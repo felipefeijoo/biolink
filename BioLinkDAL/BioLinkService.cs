@@ -306,6 +306,10 @@ namespace BioLink.Data {
         /// </summary>
         public User User { get; private set; }
 
+        public bool InTransaction {
+            get { return _transaction != null; }
+        }
+
         public delegate void ServiceCommandAction(SqlConnection connection, SqlCommand command);
 
         public delegate void ServiceReaderAction(SqlDataReader reader);

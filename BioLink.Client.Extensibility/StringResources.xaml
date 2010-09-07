@@ -7,7 +7,7 @@
     <system:String x:Key="LatLong.lblAxis.Longitude">Longitude</system:String>
     <system:String x:Key="LatLong.DegreeSeparator">&#176;</system:String>
     <system:String x:Key="LatLong.MinuteSeparator">'</system:String>
-    <system:String x:Key="LatLong.SecondSeparator">"</system:String>
+    <system:String x:Key="LatLong.SecondSeparator">"</system:String>    
 
     <system:String x:Key="ReportResults.Error.CSS">
         * {	font-family: Calibri, Tahoma, Verdana, sans-serif; }

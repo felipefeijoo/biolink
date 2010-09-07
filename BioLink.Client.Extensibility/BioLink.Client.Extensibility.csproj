@@ -62,6 +62,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BioLinkCorePlugin.cs" />
     <Compile Include="BioLinkPluginBase.cs" />
     <Compile Include="ControlHostWindow.xaml.cs">
       <DependentUpon>ControlHostWindow.xaml</DependentUpon>
@@ -92,11 +93,17 @@
       <DependentUpon>LatLongInput.xaml</DependentUpon>
     </Compile>
     <Compile Include="MenuItemBuilder.cs" />
+    <Compile Include="OwnershipDetails.xaml.cs">
+      <DependentUpon>OwnershipDetails.xaml</DependentUpon>
+    </Compile>
     <Compile Include="PhraseSelector.xaml.cs">
       <DependentUpon>PhraseSelector.xaml</DependentUpon>
     </Compile>
     <Compile Include="PhraseSelectorWindow.xaml.cs">
       <DependentUpon>PhraseSelectorWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PinBoard.xaml.cs">
+      <DependentUpon>PinBoard.xaml</DependentUpon>
     </Compile>
     <Compile Include="PluginManager.cs" />
     <Compile Include="Config.cs" />
@@ -112,6 +119,9 @@
       <DependentUpon>TabularDataViewer.xaml</DependentUpon>
     </Compile>
     <Compile Include="tests\PreferencesTests.cs" />
+    <Compile Include="TraitControl.xaml.cs">
+      <DependentUpon>TraitControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModelBase.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -152,11 +162,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="OwnershipDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="PhraseSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="PhraseSelectorWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PinBoard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -169,6 +187,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="TabularDataViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TraitControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
