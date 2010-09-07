@@ -86,7 +86,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         public delegate void ExplorerInitializerDelegate(T content);
-        
+
     }
 
     

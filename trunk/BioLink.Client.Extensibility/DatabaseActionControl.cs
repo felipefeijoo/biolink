@@ -35,6 +35,16 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
+        protected bool RegisterUniquePendingAction<K>(K action) where K : DatabaseAction<T> {
+            foreach (DatabaseAction<T> existingaction in _pendingChanges) {
+                if (existingaction.Equals(action)) {
+                    return false;
+                }
+            }
+            RegisterPendingAction(action);
+            return true;
+        }
+
         protected void RegisterPendingActions<K>(List<K> actions) where K : DatabaseAction<T> {
             foreach (DatabaseAction<T> action in actions) {
                 RegisterPendingAction(action);
@@ -57,12 +67,21 @@ namespace BioLink.Client.Extensibility {
             }
 #endif
 
-            Service.BeginTransaction();
+            // It may be that this control is aggregated as part of a larger control. This means that, come save time, there
+            // may already be a transaction pending. If so, don't create a new one, just piggy back on the existing
+            bool commitTrans = false;  // flag to let us know if we are responsible for the transaction...
+            if (!Service.InTransaction) {
+                Service.BeginTransaction();
+                commitTrans = true;
+            }
             try {
                 foreach (DatabaseAction<T> action in _pendingChanges) {
                     action.Process(Service);
                 }
-                Service.CommitTransaction();
+
+                if (commitTrans) {
+                    Service.CommitTransaction();
+                }
 
                 if (successAction != null) {
                     successAction();
@@ -74,7 +93,9 @@ namespace BioLink.Client.Extensibility {
 
                 _pendingChanges.Clear();
             } catch (Exception ex) {
-                Service.RollbackTransaction();
+                if (commitTrans) {
+                    Service.RollbackTransaction();
+                }
                 GlobalExceptionHandler.Handle(ex);
             }
         }

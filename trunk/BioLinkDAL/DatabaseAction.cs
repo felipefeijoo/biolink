@@ -16,4 +16,19 @@ namespace BioLink.Data {
         protected abstract void ProcessImpl(T service);
     }
 
+    public class GenericDatbaseAction<T> : DatabaseAction<T> where T : BioLinkService {
+
+        private Action<T> _action;
+
+        public GenericDatbaseAction(Action<T> action) {
+            _action = action;
+        }
+
+        protected override void ProcessImpl(T service) {
+            if (_action != null) {
+                _action(service);
+            }
+        }
+    }
+
 }

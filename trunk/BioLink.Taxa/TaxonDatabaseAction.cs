@@ -46,6 +46,17 @@ namespace BioLink.Client.Taxa {
             return String.Format("Update: {0}", Taxon);
         }
 
+        public override bool Equals(object obj) {
+            UpdateTaxonDatabaseAction other = obj as UpdateTaxonDatabaseAction;
+            if (other != null) {
+                return other.Taxon.TaxaID == this.Taxon.TaxaID;
+            }
+            return false;
+        }
+
+        public override int GetHashCode() {
+            return Taxon.GetHashCode();
+        }
 
     }
 

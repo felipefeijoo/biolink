@@ -74,6 +74,7 @@
     <Compile Include="Mapper.cs" />
     <Compile Include="Model\Kingdom.cs" />
     <Compile Include="Model\Phrase.cs" />
+    <Compile Include="Model\Trait.cs" />
     <Compile Include="SupportService.cs" />
     <Compile Include="Model\Taxon.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

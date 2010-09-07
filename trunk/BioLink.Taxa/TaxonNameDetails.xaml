@@ -8,10 +8,10 @@
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
              xmlns:data="clr-namespace:BioLink.Data;assembly=BioLink.Data"
              mc:Ignorable="d" 
-             d:DesignHeight="248" d:DesignWidth="380" MinWidth="380" MinHeight="248">
+             d:DesignHeight="294" d:DesignWidth="380" MinWidth="380" MinHeight="248">
     <Grid>      
         <Label Content="Type:" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" Name="lblTypeLabel" VerticalAlignment="Top" Width="76" />        
-        <Label Content="{Binding Rank}" Height="28" Margin="105,12,12,0" Name="lblType" VerticalAlignment="Top" />                
+        <Label Content="{Binding RankLongName}" Height="28" Margin="105,12,12,0" Name="lblType" VerticalAlignment="Top" />                
         <Label Content="Kingdom:" Height="28" HorizontalAlignment="Left" Margin="12,49,0,0" Name="label1" VerticalAlignment="Top" Width="76" />
         <ComboBox Height="23" Margin="105,49,12,0" Name="cmbKingdom" VerticalAlignment="Top" DisplayMemberPath="KingdomName" SelectedValue="{Binding Kingdom}">
             <ComboBox.Resources>
@@ -21,11 +21,11 @@
             </ComboBox.Resources>
         </ComboBox>
         <Label Content="Name:" Height="28" HorizontalAlignment="Left" Margin="12,78,0,0" Name="label2" VerticalAlignment="Top" Width="76" />
-        <TextBox Height="23" Margin="105,80,12,0" Name="txtName" VerticalAlignment="Top" Text="{Binding Name,Mode=TwoWay}" />
+        <TextBox Height="23" Margin="105,80,12,0" Name="txtName" VerticalAlignment="Top" Text="{Binding Epithet,Mode=TwoWay}" />
         <Label Content="Author:" Height="28" HorizontalAlignment="Left" Margin="12,110,0,0" Name="lblAuthor" VerticalAlignment="Top" Width="76" />
         <TextBox Height="23" Margin="105,112,12,0" Name="txtAuthor" VerticalAlignment="Top" Text="{Binding Author,Mode=TwoWay}"/>
         <Label Content="Year:" HorizontalAlignment="Left" Margin="12,144,0,0" Name="label3" Width="76" Height="28" VerticalAlignment="Top" />
-        <TextBox Height="23" Margin="105,146,0,0" Name="txtYear" VerticalAlignment="Top" Text="{Binding Year,Mode=TwoWay}" HorizontalAlignment="Left" Width="87" />
+        <TextBox Height="23" Margin="105,146,0,0" Name="txtYear" VerticalAlignment="Top" Text="{Binding YearOfPub,Mode=TwoWay}" HorizontalAlignment="Left" Width="87" />
         <CheckBox Content="Changed Combination" Height="16" Margin="226,149,0,0" Name="chkChangedCombination" VerticalAlignment="Top" IsChecked="{Binding IsChangedCombination,Mode=TwoWay}" HorizontalAlignment="Left" Width="142" />
         <CheckBox Content="Verified" Height="16" Margin="105,183,12,0" Name="chkVerified" VerticalAlignment="Top" IsChecked="{Binding IsVerified,Mode=TwoWay}"/>
         <ext:PhraseSelector Height="23" Margin="105,212,13,0" Name="txtNameStatus" VerticalAlignment="Top" Text="{Binding NameStatus,Mode=TwoWay}"/>

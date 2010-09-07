@@ -28,7 +28,7 @@ namespace BioLink.Client.Taxa {
         private ObservableCollection<TaxonViewModel> _searchModel;
         private Point _startPoint;
         private bool _IsDragging = false;
-        private TreeView _dragScope;
+        private UIElement _dragScope;
         private DragAdorner _adorner;
         private AdornerLayer _layer;
         private bool _dragHasLeftScope = false;
@@ -98,7 +98,7 @@ namespace BioLink.Client.Taxa {
             }
         }
 
-        private string GenerateTaxonDisplayLabel(TaxonViewModel taxon) {
+        public string GenerateTaxonDisplayLabel(TaxonViewModel taxon) {
 
             if (taxon.TaxaParentID == -1) {
                 return _R("TaxonExplorer.explorer.root");
@@ -600,15 +600,7 @@ namespace BioLink.Client.Taxa {
         }
 
         private bool InsertUniquePendingUpdate(TaxonViewModel taxon) {
-            foreach (DatabaseAction<TaxaService> action in this.PendingChanges) {
-                if (action is UpdateTaxonDatabaseAction) {
-                    if ((action as UpdateTaxonDatabaseAction).Taxon == taxon.Taxon) {
-                        return false;
-                    }
-                }
-            }
-            RegisterPendingAction(new UpdateTaxonDatabaseAction(taxon.Taxon));
-            return true;
+            return RegisterUniquePendingAction(new UpdateTaxonDatabaseAction(taxon.Taxon));
         }
        
         private void ShiftTaxon(TaxonViewModel taxon, System.Func<int, int> action) {
@@ -650,17 +642,10 @@ namespace BioLink.Client.Taxa {
         internal void ShowTaxonDetails(TaxonViewModel taxon) {
             Taxon fullDetails = Service.GetTaxon(taxon.TaxaID.Value);
             TaxonViewModel model = new TaxonViewModel(null, fullDetails, null);
-            TaxonDetails control = new TaxonDetails(model);
+            TaxonDetails control = new TaxonDetails(model, Service);
             TaxonRank taxonRank = Service.GetTaxonRank(taxon.ElemType);
 
-            string fullRank = taxonRank.LongName;
-            if (model.AvailableName.ValueOrFalse()) {
-                fullRank += " Available Name";
-            } else if (model.LiteratureName.ValueOrFalse()) {
-                fullRank += " Literature Name";
-            }
-
-            String title = String.Format("Taxon Detail: {0} ({1}) [{2}]", model.TaxaFullName, fullRank, model.TaxaID);
+            String title = String.Format("Taxon Detail: {0} ({1}) [{2}]", model.TaxaFullName, taxonRank.GetElementTypeLongName(model.Taxon), model.TaxaID);
 
             PluginManager.Instance.AddNonDockableContent(_owner, control, title, SizeToContent.Manual);
         }

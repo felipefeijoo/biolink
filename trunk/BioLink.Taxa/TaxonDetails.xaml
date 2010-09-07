@@ -12,15 +12,15 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>            
         </Grid.RowDefinitions>
-        <TabControl Margin="12">
-            <TabItem x:Name="tabNameDetails" Header="Name Details" HorizontalContentAlignment="Left" VerticalContentAlignment="Top">
-            </TabItem>
+        <TabControl x:Name="tabControl" Margin="12">
+            
             <TabItem Header="Reflect-O-Matic">                
                 <ScrollViewer Margin="0,0,0,41">
                     <StackPanel x:Name="contentStack">
                     </StackPanel>
                 </ScrollViewer>                
             </TabItem>            
+            
         </TabControl>
     </Grid>
     

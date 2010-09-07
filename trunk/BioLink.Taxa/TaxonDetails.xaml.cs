@@ -28,10 +28,12 @@ namespace BioLink.Client.Taxa {
         }
         #endregion
 
-        public TaxonDetails(TaxonViewModel taxon) {
-            InitializeComponent();
-            TaxaService service = new TaxaService(PluginManager.Instance.User);
-            tabNameDetails.Content = new TaxonNameDetails(taxon, service);
+        public TaxonDetails(TaxonViewModel taxon, TaxaService service) : base(service) {
+            InitializeComponent();           
+
+            AddTabItem("General", new TaxonNameDetails(taxon, service));            
+            AddTabItem("Ownership", new OwnershipDetails(taxon.Taxon));
+
             this.Taxon = taxon;
             // Build dynamic content...
 
@@ -59,6 +61,34 @@ namespace BioLink.Client.Taxa {
 
         }
 
+        private void AddTabItem(string title, UIElement content) {            
+            TabItem tabItem = new TabItem();
+            tabItem.Header = title;
+            tabItem.Content = WireUpContent(content);
+            tabControl.Items.Add(tabItem);
+        }
+
+        public UIElement WireUpContent(UIElement element) {
+            if (element is IClosable) {
+                var closable = element as IClosable;                
+                closable.PendingChangedRegistered += new PendingChangedRegisteredHandler((source, a) => {
+                    if (PendingChanges.Count == 0) {
+                        RegisterPendingAction(new GenericDatbaseAction<TaxaService>((service) => {
+                            foreach (TabItem item in tabControl.Items) {
+                                if (item.Content is DatabaseActionControl<TaxaService>) {
+                                    var control = item.Content as DatabaseActionControl<TaxaService>;
+                                    if (control.HasPendingChanges) {
+                                        control.ApplyChanges();
+                                    }
+                                }
+                            }
+                        }));
+                    }
+                });
+            }
+            return element;
+        }
+
         #region properties
 
         public TaxonViewModel Taxon { get; private set; }
@@ -66,4 +96,7 @@ namespace BioLink.Client.Taxa {
         #endregion
 
     }
+
+
+
 }
