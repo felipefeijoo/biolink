@@ -1,0 +1,30 @@
+﻿<UserControl x:Class="BioLink.Client.Extensibility.TraitElementControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="40" d:DesignWidth="621" MinHeight="40" MaxHeight="40">
+    <Grid>
+        <Grid.ColumnDefinitions>
+
+            <ColumnDefinition Width="200" />
+
+            <ColumnDefinition Width="5" />
+            <!-- Name -->
+            <ColumnDefinition Width="*" />
+            <!-- Value -->
+            <ColumnDefinition Width="5" />
+            <!-- Comment -->
+            <ColumnDefinition Width="*" /> <!-- spacer -->
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="80" />
+            <!-- Delete -->
+        </Grid.ColumnDefinitions>
+        <Label Grid.Column="0" Content="{Binding Name}" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" />
+        <TextBox Grid.Column="2" Text="{Binding Value}" Height="23" />    
+        <TextBlock Grid.Column="4" Text="{Binding Comment}"  MaxHeight="23" TextTrimming="CharacterEllipsis" />
+        <Button Grid.Column="6" Content="Delete" Height="23" Focusable="False" />
+        
+    </Grid>
+</UserControl>
