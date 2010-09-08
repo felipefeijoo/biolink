@@ -28,10 +28,11 @@ namespace BioLink.Client.Taxa {
         }
         #endregion
 
-        public TaxonDetails(TaxonViewModel taxon, TaxaService service) : base(service) {
+        public TaxonDetails(TaxonViewModel taxon, TaxaService service) : base(service, "TaxonDetails::" + taxon.TaxaID.Value) {
             InitializeComponent();           
 
-            AddTabItem("General", new TaxonNameDetails(taxon, service));            
+            AddTabItem("General", new TaxonNameDetails(taxon.TaxaID, service));            
+            AddTabItem("Traits", new TraitControl(service.User, TraitCategoryType.Taxon, taxon.TaxaID));
             AddTabItem("Ownership", new OwnershipDetails(taxon.Taxon));
 
             this.Taxon = taxon;

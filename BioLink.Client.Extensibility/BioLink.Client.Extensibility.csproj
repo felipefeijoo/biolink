@@ -64,6 +64,7 @@
   <ItemGroup>
     <Compile Include="BioLinkCorePlugin.cs" />
     <Compile Include="BioLinkPluginBase.cs" />
+    <Compile Include="Command.cs" />
     <Compile Include="ControlHostWindow.xaml.cs">
       <DependentUpon>ControlHostWindow.xaml</DependentUpon>
     </Compile>
@@ -121,6 +122,9 @@
     <Compile Include="tests\PreferencesTests.cs" />
     <Compile Include="TraitControl.xaml.cs">
       <DependentUpon>TraitControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TraitElementControl.xaml.cs">
+      <DependentUpon>TraitElementControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModelBase.cs" />
   </ItemGroup>
@@ -191,6 +195,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="TraitControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TraitElementControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

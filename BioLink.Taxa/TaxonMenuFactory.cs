@@ -79,10 +79,10 @@ namespace BioLink.Client.Taxa {
                 if (menu.HasItems) {
                     menu.Items.Add(new Separator());
                 }
-                menu.Items.Add(_builder.New("_Pin to pin board").Handler(() => { PluginManager.Instance.PinObject(new PinnableTaxon(Taxon.TaxaID.Value)); }).MenuItem);
+                menu.Items.Add(_builder.New("_Pin to pin board").Handler(() => { PluginManager.Instance.PinObject(new PinnableObject(TaxaPlugin.TAXA_PLUGIN_NAME, "Taxon:" + Taxon.TaxaID.Value)); }).MenuItem);
                 menu.Items.Add(new Separator());
-                menu.Items.Add(_builder.New("_Edit Name...").Handler(() => { Explorer.EditTaxonName(Taxon); }).MenuItem);
-                menu.Items.Add(_builder.New("_Edit Details...").Handler(() => { Explorer.ShowTaxonDetails(Taxon); }).MenuItem);
+                menu.Items.Add(_builder.New("_Edit Name...").Handler(() => { Explorer.EditTaxonName(Taxon.TaxaID); }).MenuItem);
+                menu.Items.Add(_builder.New("_Edit Details...").Handler(() => { Explorer.ShowTaxonDetails(Taxon.TaxaID); }).MenuItem);
             }
 
             return menu;
@@ -91,12 +91,7 @@ namespace BioLink.Client.Taxa {
 
         private MenuItem CreateReportMenuItems() {
             MenuItem reports = _builder.New("Reports").MenuItem;
-
-            List<IBioLinkReport> list = new List<IBioLinkReport>();
-
-            list.Add(new TaxonStatisticsReport(Explorer.User, Taxon));
-            list.Add(new MaterialForTaxonReport(Explorer.User, Taxon));
-
+            var list = Explorer.Owner.GetReportsForTaxon(Taxon);
             foreach (IBioLinkReport report in list) {
                 IBioLinkReport reportToExecute = report;
                 reports.Items.Add(_builder.New(report.Name).Handler(() => { Explorer.RunReport(reportToExecute); }).MenuItem);
@@ -185,7 +180,7 @@ namespace BioLink.Client.Taxa {
         internal ContextMenu BuildFindResultsMenu() {
             ContextMenu menu = new ContextMenu();
 
-            menu.Items.Add(_builder.New("TaxonExplorer.menu.ShowInContents").Handler(() => { Explorer.ShowInExplorer(Taxon); }).MenuItem);            
+            menu.Items.Add(_builder.New("TaxonExplorer.menu.ShowInContents").Handler(() => { Explorer.ShowInExplorer(Taxon.TaxaID); }).MenuItem);            
             MenuItem reports = CreateReportMenuItems();
             if (reports != null && reports.HasItems) {
                 if (menu.HasItems) {
@@ -195,10 +190,10 @@ namespace BioLink.Client.Taxa {
             }
 
             menu.Items.Add(new Separator());
-            menu.Items.Add(_builder.New("_Pin to pin board").Handler(() => { PluginManager.Instance.PinObject(new PinnableTaxon(Taxon.TaxaID.Value)); }).MenuItem);
+            menu.Items.Add(_builder.New("_Pin to pin board").Handler(() => { PluginManager.Instance.PinObject(new PinnableObject(TaxaPlugin.TAXA_PLUGIN_NAME, "Taxon:" + Taxon.TaxaID.Value)); }).MenuItem);
             menu.Items.Add(new Separator());
-            menu.Items.Add(_builder.New("_Edit Name...").Handler(() => { Explorer.EditTaxonName(Taxon); }).MenuItem);
-            menu.Items.Add(_builder.New("_Edit Details...").Handler(() => { Explorer.ShowTaxonDetails(Taxon); }).MenuItem);
+            menu.Items.Add(_builder.New("_Edit Name...").Handler(() => { Explorer.EditTaxonName(Taxon.TaxaID); }).MenuItem);
+            menu.Items.Add(_builder.New("_Edit Details...").Handler(() => { Explorer.ShowTaxonDetails(Taxon.TaxaID); }).MenuItem);
 
             return menu;
         }

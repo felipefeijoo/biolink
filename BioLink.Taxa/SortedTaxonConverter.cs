@@ -17,7 +17,7 @@ namespace BioLink.Client.Taxa {
             // Available and Literature Names are always at the top...
             lcv.SortDescriptions.Add(new SortDescription("IsAvailableOrLiteratureName", ListSortDirection.Descending)); // bool            
 
-            // We are the sort mode is manual, then the order will take precedence over the name
+            // When the sort mode is manual, the order will take precedence over the name
             if (TaxonExplorer.IsManualSort) {
                 lcv.SortDescriptions.Add(new SortDescription("Order", ListSortDirection.Ascending)); // int
             }

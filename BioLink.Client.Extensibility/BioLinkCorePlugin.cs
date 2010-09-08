@@ -14,6 +14,8 @@ namespace BioLink.Client.Extensibility {
         private ExplorerWorkspaceContribution<PinBoard> _pinboard;
 
         public override List<IWorkspaceContribution> GetContributions() {
+
+            PluginManager.Instance.PluginsLoaded += new Action<Extensibility.PluginManager>(Instance_PluginsLoaded);
             List<IWorkspaceContribution> contrib = new List<IWorkspaceContribution>();
 
             contrib.Add(new MenuWorkspaceContribution(this, "ShowPinBoardMenu", (obj, e) => { PluginManager.EnsureVisible(this, "PinBoard"); },
@@ -21,10 +23,7 @@ namespace BioLink.Client.Extensibility {
                 String.Format("{{'Name':'ShowPinBoard', 'Header':'{0}'}}", "Show _Pin board")
             ));
 
-            _pinboard = new ExplorerWorkspaceContribution<PinBoard>(this, "PinBoard", new PinBoard(this), "Pin board",
-                (pb) => {
-                    pb.InitializePinBoard();
-                });
+            _pinboard = new ExplorerWorkspaceContribution<PinBoard>(this, "PinBoard", new PinBoard(this), "Pin board", (pb) => {});
 
             contrib.Add(_pinboard);
 
@@ -33,13 +32,21 @@ namespace BioLink.Client.Extensibility {
             
         }
 
+        void Instance_PluginsLoaded(PluginManager obj) {
+            _pinboard.ContentControl.InitializePinBoard();
+        }
+
         public override bool RequestShutdown() {
             _pinboard.ContentControl.PersistPinnedItems();
             return true;
         }
 
-        internal void PinObject(IPinnable pinnable) {
+        internal void PinObject(PinnableObject pinnable) {
             this._pinboard.ContentControl.Pin(pinnable);
+        }
+
+        public override List<Command> GetCommandsForObject(ViewModelBase obj) {
+            return null;
         }
     }
 }

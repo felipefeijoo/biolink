@@ -22,8 +22,8 @@ namespace BioLink.Client.Taxa {
         }
         #endregion
 
-        public TaxonNameDetails(TaxonViewModel viewModel, TaxaService service)  : base(service) {
-            Taxon taxon = service.GetTaxon(viewModel.TaxaID.Value);
+        public TaxonNameDetails(int? taxonId, TaxaService service)  : base(service, "TaxonNameDetails::" + taxonId.Value) {
+            Taxon taxon = service.GetTaxon(taxonId.Value);
             _rank = service.GetTaxonRank(taxon.ElemType);
             _kingdomList = service.GetKingdomList();
             Kingdom kingdom = _kingdomList.Find((k) => k.KingdomCode.Equals(taxon.KingdomCode));

@@ -76,11 +76,19 @@ namespace BioLink.Client.Extensibility {
 
         public abstract bool RequestShutdown();
 
+        public abstract List<Command> GetCommandsForObject(ViewModelBase obj);
+        
         public virtual void Dispose() {            
         }
+
+        public virtual ViewModelBase CreatePinnableViewModel(object state) {
+            return null;
+        }
+
 
         public Window ParentWindow {
             get; set;
         }
+
     }
 }

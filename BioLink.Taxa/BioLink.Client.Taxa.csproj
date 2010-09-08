@@ -49,7 +49,6 @@
   <ItemGroup>
     <Compile Include="DefaultDragAdorner.cs" />
     <Compile Include="MaterialForTaxonReport.cs" />
-    <Compile Include="PinnableTaxon.cs" />
     <Compile Include="StatisticsReport.cs" />
     <Compile Include="TaxonMenuFactory.cs" />
     <Compile Include="DragDropOptions.xaml.cs">

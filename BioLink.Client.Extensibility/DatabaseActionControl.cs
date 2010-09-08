@@ -9,7 +9,7 @@ using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Extensibility {
 
-    public class DatabaseActionControl<T> : UserControl, IClosable where T : BioLinkService {
+    public class DatabaseActionControl<T> : UserControl, IClosable, IIdentifiableContent where T : BioLinkService {
 
         private List<DatabaseAction<T>> _pendingChanges = new List<DatabaseAction<T>>();
 
@@ -18,10 +18,17 @@ namespace BioLink.Client.Extensibility {
         }
         #endregion
 
-        public DatabaseActionControl(T service)
+        public DatabaseActionControl(T service, string contentId)
             : base() {
 
             this.Service = service;
+            this.ContentIdentifier = contentId;
+        }
+
+        public string ContentIdentifier { get; private set; }
+
+        public bool CompareContentHash(string other) {
+            return ContentIdentifier == other;
         }
 
         public bool HasPendingChanges {
@@ -129,5 +136,8 @@ namespace BioLink.Client.Extensibility {
         public event PendingChangesCommittedHandler PendingChangesCommitted;
     }
 
+    public interface IIdentifiableContent {
+        string ContentIdentifier { get; }        
+    }
     
 }

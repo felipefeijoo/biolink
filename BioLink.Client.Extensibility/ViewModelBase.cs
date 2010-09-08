@@ -121,10 +121,11 @@ namespace BioLink.Client.Extensibility {
 
         public virtual string DisplayLabel { get; set; }
         public virtual BitmapSource Icon { get; set; }
-        
+
+        public object Tag { get; set; }        
     }
 
-    public abstract class GenericViewModelBase<T> : ViewModelBase where T : BiolinkDataObject {
+    public abstract class GenericViewModelBase<T> : ViewModelBase where T : GUIDObject {
 
         private BitmapSource _icon;
 

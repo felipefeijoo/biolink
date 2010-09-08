@@ -22,8 +22,7 @@ namespace BioLink.Client.Taxa {
     /// Interaction logic for TaxonExplorer.xaml
     /// </summary>
     public partial class TaxonExplorer : DatabaseActionControl<TaxaService> {
-
-        private TaxaPlugin _owner;
+        
         private ObservableCollection<HierarchicalViewModelBase> _explorerModel;
         private ObservableCollection<TaxonViewModel> _searchModel;
         private Point _startPoint;
@@ -40,19 +39,25 @@ namespace BioLink.Client.Taxa {
         }
         #endregion
 
-        public TaxonExplorer(TaxaPlugin owner) 
-            : base(new TaxaService(owner.User)) {
+        public TaxonExplorer(TaxaPlugin owner)
+            : base(new TaxaService(owner.User), "TaxonExplorer") {
 
             InitializeComponent();
 
-            _owner = owner;
+            Owner = owner;
 
             lstResults.Margin = taxaBorder.Margin;
             lstResults.Visibility = Visibility.Hidden;
             _searchModel = new ObservableCollection<TaxonViewModel>();
             lstResults.ItemsSource = _searchModel;
 
-            IsManualSort = Config.GetUser(_owner.User, "Taxa.ManualSort", false);
+            ListCollectionView dataView = CollectionViewSource.GetDefaultView(lstResults.ItemsSource) as ListCollectionView;
+            dataView.SortDescriptions.Clear();
+            dataView.SortDescriptions.Add(new SortDescription("IsAvailableOrLiteratureName", ListSortDirection.Ascending));
+            dataView.SortDescriptions.Add(new SortDescription("TaxaFullName", ListSortDirection.Ascending));
+            dataView.Refresh();
+
+            IsManualSort = Config.GetUser(Owner.User, "Taxa.ManualSort", false);
 
             if (IsManualSort) {
                 btnDown.Visibility = System.Windows.Visibility.Visible;
@@ -97,6 +102,8 @@ namespace BioLink.Client.Taxa {
                 lstResults.Visibility = Visibility.Visible;
             }
         }
+
+        
 
         public string GenerateTaxonDisplayLabel(TaxonViewModel taxon) {
 
@@ -146,15 +153,16 @@ namespace BioLink.Client.Taxa {
                 lstResults.InvokeIfRequired(() => {
                     lstResults.Cursor = Cursors.Wait;
                 });
-                if (_owner == null) {
+                if (Owner == null) {
                     return;
                 }
-                List<TaxonSearchResult> results = new TaxaService(_owner.User).FindTaxa(searchTerm);
+                List<TaxonSearchResult> results = new TaxaService(Owner.User).FindTaxa(searchTerm);
                 lstResults.InvokeIfRequired(() => {
                     _searchModel.Clear();
                     foreach (Taxon t in results) {
                         _searchModel.Add(new TaxonViewModel(null, t, GenerateTaxonDisplayLabel));
                     }
+
                 });
             } finally {
                 lstResults.InvokeIfRequired(() => {
@@ -178,7 +186,7 @@ namespace BioLink.Client.Taxa {
 
             // Now see if we can auto-expand from the last session...
             if (model.Count > 0 && Config.GetGlobal<bool>("Taxa.RememberExpandedTaxa", true)) {
-                var expanded = Config.GetProfile<List<String>>(_owner.User, "Taxa.Explorer.ExpandedTaxa", null);
+                var expanded = Config.GetProfile<List<String>>(Owner.User, "Taxa.Explorer.ExpandedTaxa", null);
                 ExpandParentages(model[0], expanded);
             }
 
@@ -386,7 +394,7 @@ namespace BioLink.Client.Taxa {
                 // 2) The drop is a valid move, no conversion or merging required (simplest case)
                 // 3) The drop is to that of a sibling rank, and so a decision is made to either merge or move as child (if possible)
                 // 4) The drop is valid, but requires the source to be converted into a valid child of the target
-                TaxonDropContext context = new TaxonDropContext(source, target, _owner);
+                TaxonDropContext context = new TaxonDropContext(source, target, Owner);
 
                 //Basic sanity checks first....
                 if (target == source.Parent) {
@@ -466,12 +474,12 @@ namespace BioLink.Client.Taxa {
         }
 
         private DragDropAction PromptSourceTargetSame(TaxonDropContext context) {
-            DragDropOptions form = new DragDropOptions(_owner);
+            DragDropOptions form = new DragDropOptions(Owner);
             return form.ShowChooseMergeOrConvert(context);
         }
 
         private DragDropAction PromptConvert(TaxonDropContext context) {
-            DragDropOptions form = new DragDropOptions(_owner);
+            DragDropOptions form = new DragDropOptions(Owner);
             List<TaxonRank> validChildren = Service.GetChildRanks(context.TargetRank);
             TaxonRank choice = form.ShowChooseConversion(context.SourceRank, validChildren);
             if (choice != null) {
@@ -639,15 +647,15 @@ namespace BioLink.Client.Taxa {
             ShiftTaxon(taxon, (oldindex) => { return oldindex + 1; });
         }
 
-        internal void ShowTaxonDetails(TaxonViewModel taxon) {
-            Taxon fullDetails = Service.GetTaxon(taxon.TaxaID.Value);
+        internal void ShowTaxonDetails(int? taxonId) {
+            Taxon fullDetails = Service.GetTaxon(taxonId.Value);
             TaxonViewModel model = new TaxonViewModel(null, fullDetails, null);
             TaxonDetails control = new TaxonDetails(model, Service);
-            TaxonRank taxonRank = Service.GetTaxonRank(taxon.ElemType);
+            TaxonRank taxonRank = Service.GetTaxonRank(model.ElemType);
 
             String title = String.Format("Taxon Detail: {0} ({1}) [{2}]", model.TaxaFullName, taxonRank.GetElementTypeLongName(model.Taxon), model.TaxaID);
 
-            PluginManager.Instance.AddNonDockableContent(_owner, control, title, SizeToContent.Manual);
+            PluginManager.Instance.AddNonDockableContent(Owner, control, title, SizeToContent.Manual);
         }
 
         internal void Refresh() {
@@ -868,7 +876,11 @@ namespace BioLink.Client.Taxa {
             }
         }
 
-        internal void ShowInExplorer(TaxonViewModel taxon) {
+        internal void ShowInExplorer(int? taxonId) {
+
+            if (!taxonId.HasValue) {
+                return;
+            }
 
             tabAllTaxa.IsSelected = true;
             tvwAllTaxa.Visibility = Visibility.Visible;
@@ -881,7 +893,7 @@ namespace BioLink.Client.Taxa {
                 CollapseChildren(_explorerModel[0]);
 
                 // make sure the explorer tree is visible...
-                string parentage = Service.GetTaxonParentage(taxon.TaxaID.Value);
+                string parentage = Service.GetTaxonParentage(taxonId.Value);
                 if (!String.IsNullOrEmpty(parentage)) {
                     this.InvokeIfRequired(() => {
                         ExpandFromParentage(parentage);
@@ -939,7 +951,7 @@ namespace BioLink.Client.Taxa {
             // Keep track of which nodes are expanded.
             List<string> expanded = null;
             if (rememberExpanded) {
-                expanded = _owner.GetExpandedParentages(_explorerModel);
+                expanded = Owner.GetExpandedParentages(_explorerModel);
             }
 
             // Reload the model
@@ -955,7 +967,7 @@ namespace BioLink.Client.Taxa {
         }
 
         private string _R(string key, params object[] args) {
-            return _owner.GetCaption(key, args);
+            return Owner.GetCaption(key, args);
         }
 
         /// <summary>
@@ -1082,17 +1094,16 @@ namespace BioLink.Client.Taxa {
 
         internal void RunReport(IBioLinkReport report) {
             ReportResults results = new ReportResults(report);
-            PluginManager.Instance.AddDockableContent(this._owner, results, report.Name);
-            // results.Show();
+            PluginManager.Instance.AddDockableContent(this.Owner, results, report.Name);            
         }
 
         public User User {
-            get { return _owner.User; }
+            get { return Owner.User; }
         }
 
-        internal void EditTaxonName(TaxonViewModel taxon) {            
-            TaxonNameDetails details = new TaxonNameDetails(taxon, _owner.Service);
-            PluginManager.Instance.AddNonDockableContent(this._owner, details, "Taxon name details",SizeToContent.WidthAndHeight);
+        internal void EditTaxonName(int? taxonId) {
+            TaxonNameDetails details = new TaxonNameDetails(taxonId, Owner.Service);
+            PluginManager.Instance.AddNonDockableContent(this.Owner, details, "Taxon name details",SizeToContent.WidthAndHeight);
         }
 
         public void BringModelToView(TreeView tvw, HierarchicalViewModelBase item) {
@@ -1150,6 +1161,8 @@ namespace BioLink.Client.Taxa {
 
             return null;
         }
+
+        public TaxaPlugin Owner { get; private set; }
 
     }
 
