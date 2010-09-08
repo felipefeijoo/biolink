@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.SqlClient;
 using BioLink.Client.Utilities;
 using System.Collections.Generic;
+using BioLink.Data.Model;
 
 namespace BioLink.Data {
 
@@ -298,8 +299,23 @@ namespace BioLink.Data {
             return set;
         }
 
+        #region Traits
 
-        public event ServiceMessageDelegate ServiceMessage;
+        public TraitCategory GetTraitCategory(string category) {
+            TraitCategory cat = null;
+            int catId = StoredProcReturnVal<int>("spTraitCategoryGetSet",_P("vchrTraitCategory", category), ReturnParam("intTraitCategoryID", SqlDbType.Int));
+            cat = new TraitCategory();
+            cat.Category = category;
+            cat.TraitCategoryID = catId;
+            return cat;
+        }
+
+        public List<Trait> GetTraits(string category, int intraCategoryID) {
+            var mapper = new GenericMapperBuilder<Trait>().Map("Trait", "Name").build();
+            return StoredProcToList("spTraitList", mapper, _P("vchrCategory", category), _P("vchrIntraCatID", intraCategoryID+""));
+        }
+
+        #endregion
 
         /// <summary>
         /// Holds user credentials, and is the conduit to gaining a Connection object
@@ -309,6 +325,8 @@ namespace BioLink.Data {
         public bool InTransaction {
             get { return _transaction != null; }
         }
+
+        public event ServiceMessageDelegate ServiceMessage;
 
         public delegate void ServiceCommandAction(SqlConnection connection, SqlCommand command);
 

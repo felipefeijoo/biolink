@@ -41,5 +41,9 @@ namespace BioLink.Client.Material {
             return true;
         }
 
+
+        public override List<Command> GetCommandsForObject(ViewModelBase obj) {
+            return null;
+        }
     }
 }

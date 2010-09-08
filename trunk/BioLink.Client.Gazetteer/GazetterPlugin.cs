@@ -43,5 +43,9 @@ namespace BioLink.Client.Gazetteer {
                 (_gazetter.Content as Gazetteer).Dispose();
             }
         }
+
+        public override List<Command> GetCommandsForObject(ViewModelBase obj) {
+            return null;
+        }
     }
 }

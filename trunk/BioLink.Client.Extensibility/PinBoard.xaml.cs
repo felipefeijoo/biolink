@@ -21,53 +21,101 @@ namespace BioLink.Client.Extensibility {
     /// </summary>
     public partial class PinBoard : UserControl {
 
-        private ObservableCollection<ViewModelBase> _model = new ObservableCollection<ViewModelBase>();
-        private List<IPinnable> _items = new List<IPinnable>();
+        private ObservableCollection<ViewModelBase> _model = new ObservableCollection<ViewModelBase>();        
 
+        #region Designer Constructor
         public PinBoard() {
             InitializeComponent();
         }
+        #endregion
 
         public PinBoard(IBioLinkPlugin owner) {
             this.Owner = owner;
             InitializeComponent();
             this.DataContext = _model;
             lvw.ItemsSource = _model;
+            lvw.MouseRightButtonUp +=new MouseButtonEventHandler((s,e) => { ShowPopupMenu(); } );
+        }
+
+        private void ShowPopupMenu() {
+
+            ViewModelBase viewmodel = lvw.SelectedItem as ViewModelBase;
+
+            if (viewmodel == null) {
+                return;
+            }
+
+            ContextMenu menu = new ContextMenu();
+            MenuItemBuilder builder = new MenuItemBuilder();
+
+            menu.Items.Add(builder.New("_Unpin").Handler(() => { Unpin(viewmodel); }).MenuItem);
+
+            var commands = PluginManager.Instance.SolicitCommandsForObject(viewmodel);
+
+            if (commands != null && commands.Count > 0) {
+                menu.Items.Add(new Separator());
+                foreach (Command loopvar in commands) {
+                    Command cmd = loopvar; // include this in the closure scope, loopvar is outside, hence will always point to the last item...
+                    if (cmd is CommandSeparator) {
+                        menu.Items.Add(new Separator());
+                    } else {
+                        menu.Items.Add(builder.New(cmd.Caption).Handler(() => { cmd.CommandAction(viewmodel); }).MenuItem);
+                    }
+                }                
+            }
+
+            if (menu.HasItems) {
+                lvw.ContextMenu = menu;
+            }
+        }
+
+        internal void Unpin(ViewModelBase model) {
+            _model.Remove(model);
         }
 
         public void PersistPinnedItems() {
-            Config.SetProfile(Owner.User, "Pinboard.PinnedItems", _items);
+            IEnumerable<PinnableObject> items = _model.Select((vm) => vm.Tag as PinnableObject);
+            Config.SetProfile(Owner.User, "Pinboard.PinnedItems", items);
         }
 
         public void InitializePinBoard() {
-            _items = Config.GetProfile(Owner.User, "Pinboard.PinnedItems", new List<IPinnable>());
+            List<PinnableObject> items = Config.GetProfile(Owner.User, "Pinboard.PinnedItems", new List<PinnableObject>());
+            foreach (PinnableObject pinnable in items) {
+                Pin(pinnable);
+            }
         }
 
-        public void Pin(IPinnable pinnable) {
-            _items.Add(pinnable);
-            _model.Add(pinnable.CreateViewModel());
+        public void Pin(PinnableObject pinnable) {            
+            ViewModelBase model = GetViewModelForPinnable(pinnable);
+            if (model != null) {
+                model.Tag = pinnable;
+                _model.Add(model);
+            }
         }
 
-        public IEnumerable<IPinnable> PinnableItems { get { return _items; } }
+        private ViewModelBase GetViewModelForPinnable(PinnableObject pinnable) {
+            IBioLinkPlugin plugin = PluginManager.Instance.PluginByName(pinnable.PluginID);
+            if (plugin != null) {
+                return plugin.CreatePinnableViewModel(pinnable.State);
+            } else {
+                throw new Exception("Could not find a plugin with the name " + pinnable.PluginID);
+            }
+        }
 
         public IBioLinkPlugin Owner { get; private set; }
 
     }
 
-    public interface IPinnable {
+    public class PinnableObject {
 
-        ViewModelBase CreateViewModel();
+        public PinnableObject(string pluginId, object state) {
+            this.PluginID = pluginId;
+            this.State = state;
+        }
 
-        string PluginID { get; }
+        public object State { get; set; } 
 
-    }
-
-    public abstract class GenericPinnable<T> : IPinnable where T : BiolinkDataObject {
-
-        public abstract ViewModelBase CreateViewModel();
-
-        public abstract string PluginID { get; }
-        
+        public string PluginID { get; set; } 
     }
 
 }

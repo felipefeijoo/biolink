@@ -64,5 +64,9 @@ namespace BioLink.Client.Tools {
 
         }
 
+
+        public override List<Command> GetCommandsForObject(ViewModelBase obj) {
+            return null;
+        }
     }
 }

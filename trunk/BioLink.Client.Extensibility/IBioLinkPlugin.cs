@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Threading;
 using BioLink.Data;
+using BioLink.Data.Model;
 
 namespace BioLink.Client.Extensibility {
 
@@ -19,9 +20,9 @@ namespace BioLink.Client.Extensibility {
 
         void InitializePlugin(User user, PluginManager pluginManager, Window parentWindow);        
         bool RequestShutdown();
-
+        ViewModelBase CreatePinnableViewModel(object state);
+        List<Command> GetCommandsForObject(ViewModelBase obj);
         List<IWorkspaceContribution> GetContributions();
-
         User User { get; }
         PluginManager PluginManager { get; }
         Window ParentWindow { get; }

@@ -78,6 +78,7 @@
   <ItemGroup>
     <Compile Include="BlockingQueue.cs" />
     <Compile Include="CodeTimer.cs" />
+    <Compile Include="Command.cs" />
     <Compile Include="DateUtils.cs" />
     <Compile Include="Debug.cs" />
     <Compile Include="ErrorMessage.cs" />

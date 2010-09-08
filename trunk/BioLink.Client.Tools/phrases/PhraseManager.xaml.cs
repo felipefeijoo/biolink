@@ -34,7 +34,7 @@ namespace BioLink.Client.Tools {
         }
         #endregion
 
-        public PhraseManager(SupportService service) : base(service) {
+        public PhraseManager(SupportService service) : base(service, "PhraseManager") {
             InitializeComponent();            
             ReloadModel();
 

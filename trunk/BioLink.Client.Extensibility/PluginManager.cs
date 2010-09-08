@@ -60,7 +60,7 @@ namespace BioLink.Client.Extensibility {
 
         public event ProgressHandler ProgressEvent;
 
-        public void LoadPlugins(PluginAction pluginAction, params string[] paths) {
+        private void LoadPlugins(PluginAction pluginAction, params string[] paths) {
             using (new CodeTimer("Plugin loader")) {
                 FileSystemTraverser t = new FileSystemTraverser();
                 NotifyProgress("Searching for extensions...", -1, ProgressEventType.Start);
@@ -116,10 +116,20 @@ namespace BioLink.Client.Extensibility {
                     DoEvents();
 
                 }
-                
+
+                // Fire an event signalling plugin loading is complete, and all plugins have been initialized
+                if (this.PluginsLoaded != null) {
+                    PluginsLoaded(this);
+                }
 
                 NotifyProgress("Plugin loading complete", 100, ProgressEventType.End);
             }
+        }
+
+        public IBioLinkPlugin PluginByName(string pluginName) {
+            return _extensions.FirstOrDefault((ext) => {
+                return ext.Name == pluginName;
+            }) as IBioLinkPlugin;
         }
 
         private IBioLinkExtension InstantiateExtension(Type type) {
@@ -143,6 +153,22 @@ namespace BioLink.Client.Extensibility {
         }
 
         public ControlHostWindow AddNonDockableContent(IBioLinkPlugin plugin, UIElement content, string title, SizeToContent sizeToContent, bool autoSavePosition = true, Action<Window> initFunc = null) {
+
+            // First check to see if this content is already being shown...
+            if (content is IIdentifiableContent) {
+                var newhost = content as IIdentifiableContent;
+
+                foreach (ControlHostWindow f in _hostWindows) {
+                    if (f.Control is IIdentifiableContent) {
+                        var host = f.Control as IIdentifiableContent;
+                        if (host.ContentIdentifier == newhost.ContentIdentifier) {
+                            f.Show();
+                            f.Focus();
+                            return f;
+                        }
+                    }
+                }
+            }
 
             ControlHostWindow form = new ControlHostWindow(content, sizeToContent);
             form.Owner = ParentWindow;
@@ -205,6 +231,21 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
+        public List<Command> SolicitCommandsForObject(ViewModelBase viewmodel) {
+            var list = new List<Command>();
+
+            if (viewmodel != null) {
+                TraversePlugins((p) => {
+                    var l = p.GetCommandsForObject(viewmodel);
+                    if (l != null) {
+                        list.AddRange(l);
+                    }
+                });
+            }
+
+            return list;
+        }
+
         public void TraversePlugins(PluginAction action) {
             _extensions.ForEach(ext => {
                 if (ext is IBioLinkPlugin) {
@@ -213,7 +254,7 @@ namespace BioLink.Client.Extensibility {
             });
         }
 
-        public void PinObject(IPinnable pinnable) {
+        public void PinObject(PinnableObject pinnable) {
             BioLinkCorePlugin core = GetExtensionsOfType<BioLinkCorePlugin>()[0];
             core.PinObject(pinnable);
         }
@@ -306,6 +347,8 @@ namespace BioLink.Client.Extensibility {
         public event AddDockableContentDelegate DockableContentAdded;
 
         public event CloseDockableContentDelegate DockableContentClosed;
+
+        public event Action<PluginManager> PluginsLoaded;
         
         public delegate void PluginAction(IBioLinkPlugin plugin);
 
@@ -314,6 +357,8 @@ namespace BioLink.Client.Extensibility {
         public delegate void AddDockableContentDelegate(IBioLinkPlugin plugin, FrameworkElement content, string title);
 
         public delegate void CloseDockableContentDelegate(FrameworkElement content);
+
+        
 
     }
 

@@ -11,6 +11,8 @@ namespace BioLink.Client.Taxa {
 
     public class TaxaPlugin : BiolinkPluginBase {
 
+        public const string TAXA_PLUGIN_NAME = "Taxa";
+
         private ExplorerWorkspaceContribution<TaxonExplorer> _explorer;
         private TaxaService _taxaService;        
 
@@ -23,7 +25,7 @@ namespace BioLink.Client.Taxa {
         }
 
         public override string Name {
-            get { return "Taxa"; }
+            get { return TAXA_PLUGIN_NAME; }
         }
 
         public TaxaService Service {
@@ -79,6 +81,23 @@ namespace BioLink.Client.Taxa {
             return list;
         }
 
+        public override ViewModelBase CreatePinnableViewModel(object state) {
+            string str = state as string;
+            if (str != null) {
+                string[] bits = str.Split(':');
+                switch (bits[0].ToLower()) {
+                    case "taxon":
+                        Taxon t = Service.GetTaxon(Int32.Parse(bits[1]));
+                        TaxonViewModel m = new TaxonViewModel(null, t, _explorer.ContentControl.GenerateTaxonDisplayLabel);
+                        return m;                        
+                    default:
+                        throw new Exception("Unhandled taxa pinnable type: " + str);
+                }
+            }
+
+            return null;            
+        }
+
         private void ProcessList(ObservableCollection<HierarchicalViewModelBase> model, List<string> list) {
             foreach (TaxonViewModel m in model) {
                 if (m.IsExpanded && m is TaxonViewModel) {
@@ -91,6 +110,43 @@ namespace BioLink.Client.Taxa {
             }
         }
 
+
+        public override List<Command> GetCommandsForObject(ViewModelBase obj) {
+            var list = new List<Command>();
+
+            if (obj is TaxonViewModel) {
+
+                var taxon = obj as TaxonViewModel;
+
+                
+                list.Add(new Command("Show in explorer", (dataobj) => { _explorer.ContentControl.ShowInExplorer(taxon.TaxaID); }));
+
+                var reports = GetReportsForTaxon(taxon);
+                if (reports.Count > 0) {
+                    list.Add(new CommandSeparator());
+                    foreach (IBioLinkReport loopreport in reports) {
+                        var report = loopreport;
+                        list.Add(new Command(report.Name, (dataobj) => {
+                            _explorer.ContentControl.RunReport(report);
+                        }));
+                    }
+                }
+
+                list.Add(new CommandSeparator());
+                list.Add(new Command("Edit Name...", (dataobj) => { _explorer.ContentControl.EditTaxonName(taxon.TaxaID); }));
+                list.Add(new Command("Edit Details...", (dataobj) => { _explorer.ContentControl.ShowTaxonDetails(taxon.TaxaID); }));
+            }
+            return list;
+        }
+
+        public List<IBioLinkReport> GetReportsForTaxon(TaxonViewModel taxon) {
+            List<IBioLinkReport> list = new List<IBioLinkReport>();
+
+            list.Add(new TaxonStatisticsReport(User, taxon));
+            list.Add(new MaterialForTaxonReport(User, taxon));
+
+            return list;
+        }
     }
 
     public delegate void TaxonViewModelAction(TaxonViewModel taxon);
