@@ -19,7 +19,7 @@ namespace BioLink.Client.Extensibility {
     /// <summary>
     /// Interaction logic for TraitControl.xaml
     /// </summary>
-    public partial class TraitControl : UserControl {
+    public partial class TraitControl : DatabaseActionControl<SupportService> {
 
         private ObservableCollection<TraitViewModel> _model;
 
@@ -29,7 +29,7 @@ namespace BioLink.Client.Extensibility {
         }
         #endregion
 
-        public TraitControl(User user, TraitCategoryType category, int? nounId) {            
+        public TraitControl(User user, TraitCategoryType category, int? nounId) :base(new SupportService(user), "Traits:" + category.ToString() + ":" + nounId.Value) {            
             InitializeComponent();
 
             if (nounId.HasValue) {
@@ -42,10 +42,49 @@ namespace BioLink.Client.Extensibility {
             }
 
             foreach (TraitViewModel m in _model) {
-                traitsPanel.Children.Add(new TraitElementControl(m));
+                var itemControl = new TraitElementControl(user, m);
+
+                itemControl.TraitChanged += new TraitElementControl.TraitChangedHandler((source, trait) => {
+                    RegisterUniquePendingAction(new UpdateTraitDatabaseAction(trait.Model));
+                });
+
+                traitsPanel.Children.Add(itemControl);
             }
             
         }
+    }
+
+    public abstract class TraitDatabaseActionBase : DatabaseAction<SupportService> {
+
+        public TraitDatabaseActionBase(Trait trait) {
+            this.Trait = trait;
+        }
+
+        public Trait Trait { get; set; }
+    }
+
+    public class UpdateTraitDatabaseAction : TraitDatabaseActionBase {
+
+        public UpdateTraitDatabaseAction(Trait trait)
+            : base(trait) {
+        }
+
+        protected override void ProcessImpl(SupportService service) {
+            Trait.TraitID = service.InsertOrUpdateTrait(Trait);
+        }
+
+        public override bool Equals(object obj) {
+            var other = obj as UpdateTraitDatabaseAction;
+            if (other != null) {
+                return Trait == other.Trait;
+            }
+            return false;
+        }
+
+        public override int GetHashCode() {
+            return base.GetHashCode();
+        }
+
     }
 
     public class TraitViewModel : GenericViewModelBase<Trait> {
@@ -86,7 +125,7 @@ namespace BioLink.Client.Extensibility {
 
         public string Comment {
             get { return Model.Comment; }
-            set { SetProperty(() => Model.Value, value); }
+            set { SetProperty(() => Model.Comment, value); }
         }
 
     }

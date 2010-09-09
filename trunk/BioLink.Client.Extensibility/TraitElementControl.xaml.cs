@@ -11,6 +11,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.IO;
+using BioLink.Data;
+using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Extensibility {
     /// <summary>
@@ -24,12 +27,36 @@ namespace BioLink.Client.Extensibility {
         }
         #endregion
 
-        public TraitElementControl(TraitViewModel model) {
+        public TraitElementControl(User user, TraitViewModel model) {
             this.Model = model;
             DataContext = model;
-            InitializeComponent();            
+            model.Comment = RTFUtils.StripMarkup(model.Comment);
+            InitializeComponent();
+            txtValue.BindUser(user, PickListType.DistinctList, model.Name, TraitCategoryType.Taxon);
+            if (!String.IsNullOrEmpty(model.Comment)) {
+                commentLink.Inlines.Clear();
+                commentLink.Inlines.Add(new Run("Edit comment"));
+            }
+
+            txtValue.ValueChanged +=new PickListControl.ValueChangedHandler((source, txt) => {
+                FireTraitChanged();
+            });
+            
+        }
+
+        protected void FireTraitChanged() {
+            if (TraitChanged != null) {
+                TraitChanged(this, Model);
+            }
         }
 
         public TraitViewModel Model { get; private set; }
+
+        private void commentLink_Click(object sender, RoutedEventArgs e) {            
+        }
+
+        public event TraitChangedHandler TraitChanged;
+
+        public delegate void TraitChangedHandler(object source, TraitViewModel model);
     }
 }

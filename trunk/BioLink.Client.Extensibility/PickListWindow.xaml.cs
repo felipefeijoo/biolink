@@ -7,35 +7,58 @@ using System.Windows.Input;
 using BioLink.Client.Utilities;
 using BioLink.Data;
 using BioLink.Data.Model;
+using System.Collections.Generic;
 
 
 namespace BioLink.Client.Extensibility {
     /// <summary>
-    /// Interaction logic for PhraseSelectorWindow.xaml
+    /// Interaction logic for PickListWindow.xaml
     /// </summary>
-    public partial class PhraseSelectorWindow : Window {
+    public partial class PickListWindow : Window {
 
         #region DesignerConstructor
-        public PhraseSelectorWindow() {
+        public PickListWindow() {
             InitializeComponent();
         }
         #endregion
 
-        public PhraseSelectorWindow(User user, String categoryName, bool @fixed) {
+        public PickListWindow(User user, PickListType pickListType, string categoryName, TraitCategoryType traitCategory) {
             this.User = user;
+            this.CategoryName = categoryName;
+            this.TraitCategory = traitCategory;
             this.Service = new SupportService(user);
-            InitializeComponent();            
-            
+            InitializeComponent();                        
             Config.RestoreWindowPosition(User, this);
+            switch (pickListType) {
+                case PickListType.Phrase:
+                    LoadPhraseModel();
+                    break;
+                case PickListType.DistinctList:
+                    LoadDistinctListModel();
+                    break;
+                default:
+                    throw new Exception("Unhandled pick list type: " + pickListType);
+            }
             
-            Title = String.Format("Values for '{0}'", categoryName);
-            this.CategoryId = Service.GetPhraseCategoryId(categoryName, @fixed);
-            LoadModel();
         }
 
-        private void LoadModel() {
-            ObservableCollection<Phrase> model = new ObservableCollection<Phrase>(Service.GetPhrases(CategoryId));
+        private void LoadDistinctListModel() {
+            Title = String.Format("Values for '{0}'", CategoryName);
+            ObservableCollection<String> model = new ObservableCollection<String>(Service.GetTraitDistinctValues(CategoryName, TraitCategory.ToString()));
             lst.ItemsSource = model;
+        }
+
+        private void LoadPhraseModel() {
+            Title = String.Format("Values for '{0}'", CategoryName);
+            int phraseCategoryID = Service.GetPhraseCategoryId(CategoryName, true);
+            List<Phrase> list = Service.GetPhrases(phraseCategoryID);
+            ObservableCollection<String> model = new ObservableCollection<String>(list.ConvertAll((phrase) => phrase.PhraseText));
+
+            lst.ItemsSource = model;
+            btnAddNew.Visibility = Visibility.Visible;
+            btnAddNew.Click +=new RoutedEventHandler((source, e) => {
+                AddNewPhrase(phraseCategoryID);
+            });
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e) {
@@ -58,15 +81,15 @@ namespace BioLink.Client.Extensibility {
             text = text.ToLower();
             
             dataView.Filter = (obj) => {
-                var phrase = obj as Phrase;
-                return phrase.PhraseText.ToLower().Contains(text);
+                string str = obj as string;
+                return str.ToLower().Contains(text);
             };
 
             dataView.Refresh();
         }
 
-        public Phrase SelectedPhrase {
-            get { return lst.SelectedItem as Phrase; }
+        public string SelectedValue {
+            get { return lst.SelectedItem as string; }
         }
 
         private void btnSelect_Click(object sender, RoutedEventArgs e) {
@@ -90,29 +113,22 @@ namespace BioLink.Client.Extensibility {
             lst.Focus();
         }
 
-        public User User { get; private set; }
-        public int CategoryId { get; private set; }
-        protected SupportService Service { get; private set; }
 
         private void Window_Deactivated(object sender, EventArgs e) {
             Config.SaveWindowPosition(User, this);
         }
 
-        private void btnAddNew_Click(object sender, RoutedEventArgs e) {
-            AddNewPhrase();
-        }
-
-        private void AddNewPhrase() {
+        private void AddNewPhrase(int phraseCategoryId) {
             InputBox.Show(this, "Add a new phrase value", "Enter the new phrase value, and click OK", (phrasetext) => {
 
                 Phrase phrase = new Phrase();
                 phrase.PhraseID = -1;
-                phrase.PhraseCatID = this.CategoryId;
+                phrase.PhraseCatID = phraseCategoryId;
                 phrase.PhraseText = phrasetext;
                 // Save the new phrase value...
                 Service.AddPhrase(phrase);
                 // reload the model...
-                LoadModel();
+                LoadPhraseModel();
             });
         }
 
@@ -122,5 +138,21 @@ namespace BioLink.Client.Extensibility {
                 this.Hide();
             }
         }
+
+        #region Properties
+         
+        public User User { get; private set; }
+
+        public PickListType PickListType { get; private set; }
+
+        protected SupportService Service { get; private set; }
+
+        protected string CategoryName { get; set; }
+
+        protected TraitCategoryType TraitCategory { get; set; }
+
+        #endregion
+
+
     }
 }

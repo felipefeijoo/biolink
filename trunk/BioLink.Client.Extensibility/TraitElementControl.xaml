@@ -3,28 +3,31 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:src="clr-namespace:BioLink.Client.Extensibility"
              mc:Ignorable="d" 
-             d:DesignHeight="40" d:DesignWidth="621" MinHeight="40" MaxHeight="40">
+             d:DesignHeight="70" d:DesignWidth="620">
     <Grid>
         <Grid.ColumnDefinitions>
 
-            <ColumnDefinition Width="200" />
-
-            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="250"/>
             <!-- Name -->
             <ColumnDefinition Width="*" />
-            <!-- Value -->
-            <ColumnDefinition Width="5" />
             <!-- Comment -->
-            <ColumnDefinition Width="*" /> <!-- spacer -->
-            <ColumnDefinition Width="5" />
-            <ColumnDefinition Width="80" />
+            <ColumnDefinition Width="100" /> <!-- spacer -->
             <!-- Delete -->
         </Grid.ColumnDefinitions>
-        <Label Grid.Column="0" Content="{Binding Name}" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" />
-        <TextBox Grid.Column="2" Text="{Binding Value}" Height="23" />    
-        <TextBlock Grid.Column="4" Text="{Binding Comment}"  MaxHeight="23" TextTrimming="CharacterEllipsis" />
-        <Button Grid.Column="6" Content="Delete" Height="23" Focusable="False" />
+        <Label x:Name="lblName" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="0,0,9,0" Height="44" VerticalAlignment="Top" >
+            <Label.Content>
+                <TextBlock Text="{Binding Name}" />
+            </Label.Content>                
+        </Label>
+        <src:PickListControl x:Name="txtValue" Grid.Column="1" Text="{Binding Value}" Height="23" Margin="0,13,0,0" VerticalAlignment="Top" />
+        <Button x:Name="btnDelete" Grid.Column="2" Content="Delete" Height="23" Focusable="False" Margin="0,12,12,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="71" />
         
+        <TextBlock x:Name="txtComments" Grid.Column="1" Height="30" Margin="0,40,0,0" VerticalAlignment="Top" FontStyle="Italic" Text="{Binding Comment}" TextTrimming="CharacterEllipsis" />
+            
+        <Label Grid.Column="2" Height="28" Margin="0,42,0,0" Name="label1" VerticalAlignment="Top" HorizontalContentAlignment="Center">
+            <Hyperlink Focusable="False" x:Name="commentLink" Click="commentLink_Click">Add comment</Hyperlink>
+        </Label>
     </Grid>
 </UserControl>

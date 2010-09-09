@@ -97,11 +97,11 @@
     <Compile Include="OwnershipDetails.xaml.cs">
       <DependentUpon>OwnershipDetails.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PhraseSelector.xaml.cs">
-      <DependentUpon>PhraseSelector.xaml</DependentUpon>
+    <Compile Include="PickListControl.xaml.cs">
+      <DependentUpon>PickListControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PhraseSelectorWindow.xaml.cs">
-      <DependentUpon>PhraseSelectorWindow.xaml</DependentUpon>
+    <Compile Include="PickListWindow.xaml.cs">
+      <DependentUpon>PickListWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="PinBoard.xaml.cs">
       <DependentUpon>PinBoard.xaml</DependentUpon>
@@ -170,11 +170,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="PhraseSelector.xaml">
+    <Page Include="PickListControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="PhraseSelectorWindow.xaml">
+    <Page Include="PickListWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

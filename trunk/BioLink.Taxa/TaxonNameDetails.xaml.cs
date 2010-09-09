@@ -53,7 +53,7 @@ namespace BioLink.Client.Taxa {
                     }
                 }
 
-                txtNameStatus.BindUser(PluginManager.Instance.User, phraseCategory, true);
+                txtNameStatus.BindUser(PluginManager.Instance.User,  PickListType.Phrase, phraseCategory, TraitCategoryType.Taxon);
             } else {
                 txtNameStatus.Visibility = System.Windows.Visibility.Collapsed;
                 lblNameStatus.Visibility = System.Windows.Visibility.Collapsed;

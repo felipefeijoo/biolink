@@ -129,18 +129,24 @@ namespace BioLink.Data {
         public T Map(SqlDataReader reader) {
             T t = new T();
             ReflectMap(t, reader, Mappings, Overrides);
+            if (PostMapAction != null) {
+                PostMapAction(t);
+            }
             return t;
         }
 
         public ConvertingMapper[] Overrides { get; set; }
 
         public ColumnMapping[] Mappings { get; set; }
+
+        public Action<T> PostMapAction { get; set; }
     }
 
     public class GenericMapperBuilder<T> where T : new() {
 
         private List<ConvertingMapper> _overrides = new List<ConvertingMapper>();
         private List<ColumnMapping> _mappings = new List<ColumnMapping>();
+        private Action<T> _postMapAction;
 
         public GenericMapperBuilder() {
         }
@@ -171,10 +177,16 @@ namespace BioLink.Data {
             return this;
         }
 
+        public GenericMapperBuilder<T> PostMapAction(Action<T> action) {
+            _postMapAction = action;
+            return this;
+        }
+
         public GenericMapper<T> build() {
             var mapper = new GenericMapper<T>();
             mapper.Overrides = _overrides.ToArray();
             mapper.Mappings = _mappings.ToArray();
+            mapper.PostMapAction = _postMapAction;
             return mapper;
         }
     }

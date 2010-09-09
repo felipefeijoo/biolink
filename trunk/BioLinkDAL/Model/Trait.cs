@@ -21,6 +21,8 @@ namespace BioLink.Data.Model {
 
         public string Validation { get; set; }
 
+        public string Category { get; set; }
+
     }
 
     public class TraitCategory : GUIDObject {
