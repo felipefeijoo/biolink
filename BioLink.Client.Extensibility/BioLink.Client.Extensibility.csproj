@@ -80,7 +80,6 @@
       <DependentUpon>CSVExporterOptionsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Export\Excel2003Exporter.cs" />
-    <Compile Include="Export\Excel2007Exporter.cs" />
     <Compile Include="Export\ExportData.xaml.cs">
       <DependentUpon>ExportData.xaml</DependentUpon>
     </Compile>
