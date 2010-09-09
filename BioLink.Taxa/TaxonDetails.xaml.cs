@@ -81,6 +81,11 @@ namespace BioLink.Client.Taxa {
                                     if (control.HasPendingChanges) {
                                         control.ApplyChanges();
                                     }
+                                } else if (item.Content is DatabaseActionControl<SupportService>) {
+                                    var control = item.Content as DatabaseActionControl<SupportService>;
+                                    if (control.HasPendingChanges) {
+                                        control.ApplyChanges();
+                                    }
                                 }
                             }
                         }));

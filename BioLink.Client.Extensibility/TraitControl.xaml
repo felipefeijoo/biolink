@@ -1,9 +1,11 @@
-﻿<UserControl x:Class="BioLink.Client.Extensibility.TraitControl"
+﻿<src:DatabaseActionControl x:Class="BioLink.Client.Extensibility.TraitControl"
+                           x:TypeArguments="data:SupportService"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:src="clr-namespace:BioLink.Client.Extensibility"
+            xmlns:data="clr-namespace:BioLink.Data;assembly=BioLink.Data"
              mc:Ignorable="d" 
              d:DesignHeight="249" d:DesignWidth="463">
     <Grid>
@@ -12,4 +14,4 @@
         </ScrollViewer>
     </Grid>
     
-</UserControl>
+</src:DatabaseActionControl>

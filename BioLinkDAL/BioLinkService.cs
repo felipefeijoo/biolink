@@ -311,8 +311,42 @@ namespace BioLink.Data {
         }
 
         public List<Trait> GetTraits(string category, int intraCategoryID) {
-            var mapper = new GenericMapperBuilder<Trait>().Map("Trait", "Name").build();
+            var mapper = new GenericMapperBuilder<Trait>().Map("Trait", "Name").PostMapAction((t) => {
+                t.Category = category;
+            }).build();
             return StoredProcToList("spTraitList", mapper, _P("vchrCategory", category), _P("vchrIntraCatID", intraCategoryID+""));
+        }
+
+        public List<String> GetTraitDistinctValues(string traitName, string category) {
+            var results = new List<string>();
+            StoredProcReaderForEach("spTraitDistinctValues", (reader) => {
+                results.Add(reader[0] as string);
+            }, _P("vchrTraitType", traitName), _P("vchrCategory", category)); 
+
+            return results;
+        }
+
+        public int InsertOrUpdateTrait(Trait trait) {
+            if (trait.TraitID < 0) {
+                var retval = ReturnParam("NewTraitId", SqlDbType.Int);
+                StoredProcUpdate("spTraitInsert",
+                    _P("vchrCategory", trait.Category),
+                    _P("intIntraCatID", trait.IntraCatID),
+                    _P("vchrTrait", trait.Name),
+                    _P("vchrValue", trait.Value),
+                    _P("vchrComment", trait.Comment),
+                    retval);
+                return (int)retval.Value;
+            } else {
+                StoredProcUpdate("spTraitUpdate",
+                    _P("intTraitID", trait.TraitID),
+                    _P("vchrCategory", trait.Category),
+                    _P("vchrTrait", trait.Name),
+                    _P("vchrValue", trait.Value),
+                    _P("vchrComment", trait.Comment));
+
+                return trait.TraitID;
+            }
         }
 
         #endregion
