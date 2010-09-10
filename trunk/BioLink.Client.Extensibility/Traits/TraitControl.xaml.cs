@@ -64,8 +64,14 @@ namespace BioLink.Client.Extensibility {
 
         private void AddTraitEditor(TraitViewModel model) {
             var itemControl = new TraitElementControl(User, model);
-            itemControl.TraitChanged += new TraitElementControl.TraitChangedHandler((source, trait) => {
+            itemControl.TraitChanged += new TraitElementControl.TraitEventHandler((source, trait) => {
                 RegisterUniquePendingAction(new UpdateTraitDatabaseAction(trait.Model));
+            });
+
+            itemControl.TraitDeleted += new TraitElementControl.TraitEventHandler((source, trait) => {
+                _model.Remove(trait);
+                ReloadTraitPanel();
+                RegisterPendingAction(new DeleteTraitDatabaseAction(trait.Model));                
             });
             traitsPanel.Children.Add(itemControl);
         }
@@ -133,6 +139,18 @@ namespace BioLink.Client.Extensibility {
             return base.GetHashCode();
         }
 
+    }
+
+    public class DeleteTraitDatabaseAction : TraitDatabaseActionBase {
+
+        public DeleteTraitDatabaseAction(Trait trait)
+            : base(trait) {
+        }
+
+        protected override void ProcessImpl(SupportService service) {
+            service.DeleteTrait(Trait.TraitID);
+        }
+        
     }
 
     public class TraitViewModel : GenericViewModelBase<Trait> {

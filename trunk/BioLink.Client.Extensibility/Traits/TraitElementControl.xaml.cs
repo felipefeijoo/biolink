@@ -50,13 +50,22 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        public TraitViewModel Model { get; private set; }
+        private void btnDelete_Click(object sender, RoutedEventArgs e) {
+            if (TraitDeleted != null) {
+                TraitDeleted(this, this.Model);
+            }
+        }
 
         private void commentLink_Click(object sender, RoutedEventArgs e) {            
         }
 
-        public event TraitChangedHandler TraitChanged;
+        public TraitViewModel Model { get; private set; }
 
-        public delegate void TraitChangedHandler(object source, TraitViewModel model);
+        public event TraitEventHandler TraitChanged;
+
+        public event TraitEventHandler TraitDeleted;
+
+        public delegate void TraitEventHandler(object source, TraitViewModel model);
+
     }
 }
