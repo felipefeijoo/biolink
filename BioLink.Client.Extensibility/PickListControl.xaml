@@ -12,6 +12,6 @@
             <ColumnDefinition Width="25"/>
         </Grid.ColumnDefinitions>
         <TextBox Grid.Column="0" x:Name="txt" TextChanged="txt_TextChanged" KeyDown="txt_KeyDown"></TextBox>
-        <Button Grid.Column="2" x:Name="btn" Content="..." VerticalContentAlignment="Top" Click="btn_Click" />
+        <Button Grid.Column="2" x:Name="btn" Content="..." VerticalContentAlignment="Top" Click="btn_Click" Focusable="False" />
     </Grid>
 </UserControl>

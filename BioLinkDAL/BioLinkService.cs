@@ -326,6 +326,10 @@ namespace BioLink.Data {
             return results;
         }
 
+        public void DeleteTrait(int traitId) {
+            StoredProcUpdate("spTraitDelete", _P("intTraitID", traitId));
+        }
+
         public List<String> GetTraitNamesForCategory(string traitCategory) {
             var results = new List<string>();
             StoredProcReaderForEach("spTraitTypeListForCategory", (reader) => {
