@@ -326,6 +326,14 @@ namespace BioLink.Data {
             return results;
         }
 
+        public List<String> GetTraitNamesForCategory(string traitCategory) {
+            var results = new List<string>();
+            StoredProcReaderForEach("spTraitTypeListForCategory", (reader) => {
+                results.Add(reader["Trait"] as string);
+            }, _P("vchrCategory", traitCategory));
+            return results;
+        }
+
         public int InsertOrUpdateTrait(Trait trait) {
             if (trait.TraitID < 0) {
                 var retval = ReturnParam("NewTraitId", SqlDbType.Int);
@@ -333,8 +341,8 @@ namespace BioLink.Data {
                     _P("vchrCategory", trait.Category),
                     _P("intIntraCatID", trait.IntraCatID),
                     _P("vchrTrait", trait.Name),
-                    _P("vchrValue", trait.Value),
-                    _P("vchrComment", trait.Comment),
+                    _P("vchrValue", trait.Value ?? ""),
+                    _P("vchrComment", trait.Comment ?? ""),
                     retval);
                 return (int)retval.Value;
             } else {

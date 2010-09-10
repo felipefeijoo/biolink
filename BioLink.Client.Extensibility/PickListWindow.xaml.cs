@@ -36,10 +36,19 @@ namespace BioLink.Client.Extensibility {
                 case PickListType.DistinctList:
                     LoadDistinctListModel();
                     break;
+                case PickListType.Trait:
+                    LoadTraitModel();
+                    break;
                 default:
                     throw new Exception("Unhandled pick list type: " + pickListType);
             }
             
+        }
+
+        private void LoadTraitModel() {
+            Title = String.Format("Existing trait names for {0}", TraitCategory.ToString());
+            ObservableCollection<String> model = new ObservableCollection<String>(Service.GetTraitNamesForCategory(TraitCategory.ToString()));
+            lst.ItemsSource = model;
         }
 
         private void LoadDistinctListModel() {

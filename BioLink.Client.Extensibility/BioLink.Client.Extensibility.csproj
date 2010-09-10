@@ -116,10 +116,13 @@
       <DependentUpon>TabularDataViewer.xaml</DependentUpon>
     </Compile>
     <Compile Include="tests\PreferencesTests.cs" />
-    <Compile Include="TraitControl.xaml.cs">
+    <Compile Include="Traits\AddNewTraitWindow.xaml.cs">
+      <DependentUpon>AddNewTraitWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Traits\TraitControl.xaml.cs">
       <DependentUpon>TraitControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="TraitElementControl.xaml.cs">
+    <Compile Include="Traits\TraitElementControl.xaml.cs">
       <DependentUpon>TraitElementControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModelBase.cs" />
@@ -190,11 +193,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="TraitControl.xaml">
+    <Page Include="Traits\AddNewTraitWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="TraitElementControl.xaml">
+    <Page Include="Traits\TraitControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Traits\TraitElementControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
