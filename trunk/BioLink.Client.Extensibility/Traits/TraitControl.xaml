@@ -9,9 +9,16 @@
              mc:Ignorable="d" 
              d:DesignHeight="249" d:DesignWidth="463">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
         <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
             <StackPanel x:Name="traitsPanel" />
         </ScrollViewer>
+        <Grid Grid.Row="1">
+            <Button Content="_Add trait..." Height="23" HorizontalAlignment="Left" Margin="6,7,0,0" Name="btnAddTrait" VerticalAlignment="Top" Width="75" Click="btnAddTrait_Click" />
+        </Grid>
     </Grid>
     
 </src:DatabaseActionControl>

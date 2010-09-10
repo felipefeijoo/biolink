@@ -21,7 +21,7 @@ namespace BioLink.Client.Extensibility {
     /// </summary>
     public partial class TraitControl : DatabaseActionControl<SupportService> {
 
-        private ObservableCollection<TraitViewModel> _model;
+        private List<TraitViewModel> _model;
 
         #region Designer Constructor
         public TraitControl() {
@@ -29,29 +29,77 @@ namespace BioLink.Client.Extensibility {
         }
         #endregion
 
-        public TraitControl(User user, TraitCategoryType category, int? nounId) :base(new SupportService(user), "Traits:" + category.ToString() + ":" + nounId.Value) {            
+        public TraitControl(User user, TraitCategoryType category, int? intraCatId) :base(new SupportService(user), "Traits:" + category.ToString() + ":" + intraCatId.Value) {
+
+            this.User = user;
+            this.TraitCategory = category;
+            this.IntraCatID = intraCatId.Value;
+
             InitializeComponent();
 
-            if (nounId.HasValue) {
+            if (intraCatId.HasValue) {
                 SupportService s = new SupportService(user);
-                var list = s.GetTraits(category.ToString(), nounId.Value);
+                var list = s.GetTraits(category.ToString(), intraCatId.Value);
                 var modellist = list.Select((t) => {
                     return new TraitViewModel(t);
                 });
-                _model = new ObservableCollection<TraitViewModel>(modellist);
+                _model = new List<TraitViewModel>(modellist);
             }
+
+            ReloadTraitPanel();            
+        }
+
+        private void ReloadTraitPanel() {
+
+            traitsPanel.Children.Clear();
+
+            _model.Sort(new Comparison<TraitViewModel>((a , b) => {
+                return a.Name.CompareTo(b.Name);
+            }));
 
             foreach (TraitViewModel m in _model) {
-                var itemControl = new TraitElementControl(user, m);
-
-                itemControl.TraitChanged += new TraitElementControl.TraitChangedHandler((source, trait) => {
-                    RegisterUniquePendingAction(new UpdateTraitDatabaseAction(trait.Model));
-                });
-
-                traitsPanel.Children.Add(itemControl);
+                AddTraitEditor(m);
             }
-            
         }
+
+        private void AddTraitEditor(TraitViewModel model) {
+            var itemControl = new TraitElementControl(User, model);
+            itemControl.TraitChanged += new TraitElementControl.TraitChangedHandler((source, trait) => {
+                RegisterUniquePendingAction(new UpdateTraitDatabaseAction(trait.Model));
+            });
+            traitsPanel.Children.Add(itemControl);
+        }
+
+        private void btnAddTrait_Click(object sender, RoutedEventArgs e) {
+            AddNewTrait();
+        }
+
+        private void AddNewTrait() {
+            var frm = new AddNewTraitWindow(User, TraitCategory);
+            if (frm.ShowDialog().GetValueOrDefault(false)) {
+                Trait t = new Trait();
+                t.TraitID = -1;
+                t.Value = "<New Trait Value>";
+                t.Category = TraitCategory.ToString();
+                t.IntraCatID = IntraCatID;
+                t.Name = frm.TraitName;
+
+                TraitViewModel viewModel = new TraitViewModel(t);
+                _model.Add(viewModel);
+                RegisterUniquePendingAction(new UpdateTraitDatabaseAction(t));
+                ReloadTraitPanel();
+            }
+        }
+
+        #region Properties
+
+        public User User { get; private set; }
+
+        public TraitCategoryType TraitCategory { get; private set; }
+
+        public int IntraCatID { get; private set; }
+
+        #endregion
     }
 
     public abstract class TraitDatabaseActionBase : DatabaseAction<SupportService> {
