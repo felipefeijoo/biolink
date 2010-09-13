@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using BioLink.Data;
 using BioLink.Data.Model;
 using System.Collections.ObjectModel;
+using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Extensibility {
     /// <summary>
@@ -82,6 +83,7 @@ namespace BioLink.Client.Extensibility {
 
         private void AddNewTrait() {
             var frm = new AddNewTraitWindow(User, TraitCategory);
+            frm.Owner = this.FindParentWindow();
             if (frm.ShowDialog().GetValueOrDefault(false)) {
                 Trait t = new Trait();
                 t.TraitID = -1;
@@ -108,99 +110,4 @@ namespace BioLink.Client.Extensibility {
         #endregion
     }
 
-    public abstract class TraitDatabaseActionBase : DatabaseAction<SupportService> {
-
-        public TraitDatabaseActionBase(Trait trait) {
-            this.Trait = trait;
-        }
-
-        public Trait Trait { get; set; }
-    }
-
-    public class UpdateTraitDatabaseAction : TraitDatabaseActionBase {
-
-        public UpdateTraitDatabaseAction(Trait trait)
-            : base(trait) {
-        }
-
-        protected override void ProcessImpl(SupportService service) {
-            Trait.TraitID = service.InsertOrUpdateTrait(Trait);
-        }
-
-        public override bool Equals(object obj) {
-            var other = obj as UpdateTraitDatabaseAction;
-            if (other != null) {
-                return Trait == other.Trait;
-            }
-            return false;
-        }
-
-        public override int GetHashCode() {
-            return base.GetHashCode();
-        }
-
-    }
-
-    public class DeleteTraitDatabaseAction : TraitDatabaseActionBase {
-
-        public DeleteTraitDatabaseAction(Trait trait)
-            : base(trait) {
-        }
-
-        protected override void ProcessImpl(SupportService service) {
-            service.DeleteTrait(Trait.TraitID);
-        }
-        
-    }
-
-    public class TraitViewModel : GenericViewModelBase<Trait> {
-
-        public TraitViewModel(Trait t)
-            : base(t) {            
-        }
-
-        public int TraitID {
-            get { return Model.TraitID; }
-            set { SetProperty(() => Model.TraitID, value); }
-        }
-
-        public string Name {
-            get { return Model.Name; }
-            set { SetProperty(() => Model.Name, value); }
-        }
-
-        public string DataType {
-            get { return Model.DataType; }
-            set { SetProperty(() => Model.DataType, value); }
-        }
-
-        public string Validation {
-            get { return Model.Validation; }
-            set { SetProperty(() => Model.Validation, value); }
-        }
-
-        public int IntraCatID {
-            get { return Model.IntraCatID; }
-            set { SetProperty(() => Model.IntraCatID, value); }
-        }
-
-        public string Value {
-            get { return Model.Value; }
-            set { SetProperty(() => Model.Value, value); }
-        }
-
-        public string Comment {
-            get { return Model.Comment; }
-            set { SetProperty(() => Model.Comment, value); }
-        }
-
-    }
-
-    public enum TraitCategoryType {
-        Material,
-        Taxon,
-        Site,
-        Trap,
-        SiteVisit,
-    }
 }

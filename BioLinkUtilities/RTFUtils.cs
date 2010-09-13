@@ -13,11 +13,15 @@ namespace BioLink.Client.Utilities {
 
         public static string StripMarkup(string rtf) {
 
-            if (!String.IsNullOrEmpty(rtf)) {
-                var l = new PlainTextListener();
-                RtfParser parser = new RtfParser(l);
-                parser.Parse(new RtfSource(rtf));
-                return l.PlainText;
+            if (!String.IsNullOrEmpty(rtf) && rtf.StartsWith("{")) {
+                try {
+                    var l = new PlainTextListener();
+                    RtfParser parser = new RtfParser(l);
+                    parser.Parse(new RtfSource(rtf));
+                    return l.PlainText;
+                } catch (Exception) {
+                    return rtf;
+                }
             } else {
                 return rtf;
             }

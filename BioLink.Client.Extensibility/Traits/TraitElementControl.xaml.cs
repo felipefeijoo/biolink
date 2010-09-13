@@ -30,7 +30,6 @@ namespace BioLink.Client.Extensibility {
         public TraitElementControl(User user, TraitViewModel model) {
             this.Model = model;
             DataContext = model;
-            model.Comment = RTFUtils.StripMarkup(model.Comment);
             InitializeComponent();
             txtValue.BindUser(user, PickListType.DistinctList, model.Name, TraitCategoryType.Taxon);
             if (!String.IsNullOrEmpty(model.Comment)) {
@@ -38,7 +37,7 @@ namespace BioLink.Client.Extensibility {
                 commentLink.Inlines.Add(new Run("Edit comment"));
             }
 
-            txtValue.ValueChanged +=new PickListControl.ValueChangedHandler((source, txt) => {
+            Model.DataChanged += new DataChangedHandler(() => {
                 FireTraitChanged();
             });
             
@@ -56,7 +55,17 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        private void commentLink_Click(object sender, RoutedEventArgs e) {            
+        private void commentLink_Click(object sender, RoutedEventArgs e) {
+            EditComment();
+        }
+
+        private void EditComment() {
+            string oldComment = RTFUtils.StripMarkup(Model.Comment);
+            InputBox.Show(this.FindParentWindow(), "Enter comment", "Enter a comment", oldComment, (newcomment) => {
+                if (oldComment != newcomment) {
+                    Model.Comment = newcomment;
+                }
+            });
         }
 
         public TraitViewModel Model { get; private set; }

@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="178" d:DesignWidth="477" SizeToContent="WidthAndHeight" xmlns:my="clr-namespace:BioLink.Client.Extensibility" Title="Trait name">
+             d:DesignHeight="170" d:DesignWidth="350" SizeToContent="WidthAndHeight" xmlns:my="clr-namespace:BioLink.Client.Extensibility" Title="Trait name" MinWidth="350" MinHeight="170" WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
