@@ -363,6 +363,25 @@ namespace BioLink.Data {
 
         #endregion
 
+
+        #region Multimedia
+
+        public List<MultimediaItem> GetMultimediaItems(string category, int intraCatID) {
+            var mapper = new GenericMapperBuilder<MultimediaItem>().build();
+            List<MultimediaItem> ret = StoredProcToList("spMultimediaList", mapper, _P("vchrCategory", category), _P("intIntraCatID", intraCatID));
+            return ret;
+        }
+
+        public byte[] GetMultimediaBytes(int mediaId) {
+            byte[] ret = null;
+            StoredProcReaderFirst("spMultimediaGetOne", (reader) => {
+                var x = reader.GetSqlBinary(0);
+                ret = x.Value;
+            }, _P("intMultimediaID", mediaId));
+            return ret;
+        }
+
+        #endregion
         /// <summary>
         /// Holds user credentials, and is the conduit to gaining a Connection object
         /// </summary>

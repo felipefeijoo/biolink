@@ -33,6 +33,12 @@ namespace BioLink.Client.Taxa {
 
             AddTabItem("General", new TaxonNameDetails(taxon.TaxaID, service));            
             AddTabItem("Traits", new TraitControl(service.User, TraitCategoryType.Taxon, taxon.TaxaID));
+            var mmc = new MultimediaControl(service.User, TraitCategoryType.Taxon, taxon.TaxaID);
+            AddTabItem("Multimedia", mmc, () => {
+                if (!mmc.IsPopulated) {
+                    mmc.PopulateControl();
+                }
+            });
             AddTabItem("Ownership", new OwnershipDetails(taxon.Taxon));
 
             this.Taxon = taxon;
@@ -62,11 +68,18 @@ namespace BioLink.Client.Taxa {
 
         }
 
-        private void AddTabItem(string title, UIElement content) {            
+        private TabItem AddTabItem(string title, UIElement content, Action bringIntoViewAction = null) {            
             TabItem tabItem = new TabItem();
             tabItem.Header = title;
             tabItem.Content = WireUpContent(content);
             tabControl.Items.Add(tabItem);
+            if (bringIntoViewAction != null) {
+                tabItem.RequestBringIntoView += new RequestBringIntoViewEventHandler((s, e) => {
+                    bringIntoViewAction();
+                });
+            }
+                 
+            return tabItem;
         }
 
         public UIElement WireUpContent(UIElement element) {
