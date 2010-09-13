@@ -90,6 +90,9 @@
       <DependentUpon>LatLongInput.xaml</DependentUpon>
     </Compile>
     <Compile Include="MenuItemBuilder.cs" />
+    <Compile Include="MultimediaControl.xaml.cs">
+      <DependentUpon>MultimediaControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="OwnershipDetails.xaml.cs">
       <DependentUpon>OwnershipDetails.xaml</DependentUpon>
     </Compile>
@@ -165,6 +168,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="LatLongInput.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MultimediaControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -17,6 +17,8 @@ namespace BioLink.Client.Taxa {
 
     public class TaxonViewModel : HierarchicalViewModelBase {
 
+        private const int _IconSize = 18;
+
         private static Dictionary<string, IconMetaData> _TaxaIconMetaData = new Dictionary<string, IconMetaData>();
         private static Dictionary<string, BitmapSource> _ElemTypeIconCache = new Dictionary<string, BitmapSource>();
 
@@ -261,7 +263,7 @@ namespace BioLink.Client.Taxa {
             }
 
             if (baseIcon == null) {
-                RenderTargetBitmap bmp = new RenderTargetBitmap(22, 22, 96, 96, PixelFormats.Pbgra32);
+                RenderTargetBitmap bmp = new RenderTargetBitmap(_IconSize, _IconSize, 96, 96, PixelFormats.Pbgra32);
                 DrawingVisual drawingVisual = new DrawingVisual();
                 DrawingContext dc = drawingVisual.RenderOpen();
 
@@ -278,7 +280,7 @@ namespace BioLink.Client.Taxa {
                 Brush fillBrush = new SolidColorBrush(Color.FromArgb(20, taxonColor.R, taxonColor.G, taxonColor.B));
                 Typeface typeface = new Typeface(new FontFamily("Palatino Linotype,Times New Roman"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
 
-                dc.DrawRoundedRectangle(fillBrush, pen, new Rect(1, 1, 20, 20), 4, 4);
+                dc.DrawRoundedRectangle(fillBrush, pen, new Rect(1, 1, _IconSize - 2, _IconSize - 2), 4, 4);
                 FormattedText t = new FormattedText(caption, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 10, textBrush);
                 double originX = (bmp.Width / 2) - (t.Width / 2);
                 double originY = (bmp.Height / 2) - (t.Height / 2);

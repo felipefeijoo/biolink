@@ -48,9 +48,14 @@ namespace BioLink.Client.Taxa {
             menu.Items.Add(_builder.New("TaxonExplorer.menu.ExpandAll").Handler(() => {
                 JobExecutor.QueueJob(() => {
                     Explorer.tvwAllTaxa.InvokeIfRequired(() => {
-                        Explorer.tvwAllTaxa.Cursor = Cursors.Wait;
-                        Explorer.ExpandChildren(Taxon);
-                        Explorer.tvwAllTaxa.Cursor = Cursors.Arrow;
+                        try {
+                            Explorer.tvwAllTaxa.Cursor = Cursors.Wait;
+                            Explorer.ExpandChildren(Taxon);
+                        } catch (Exception ex) {
+                            GlobalExceptionHandler.Handle(ex);
+                        } finally {
+                            Explorer.tvwAllTaxa.Cursor = Cursors.Arrow;
+                        }
                     });
                 });
             }).MenuItem);

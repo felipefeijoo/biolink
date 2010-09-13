@@ -857,9 +857,11 @@ namespace BioLink.Client.Taxa {
                 remaining = Service.GetExpandFullTree(taxon.TaxaID.Value);
             }
             if (!taxon.IsExpanded) {
+                // BringModelToView(tvwAllTaxa, taxon);
                 taxon.BulkAddChildren(remaining.FindAll((elem) => { return elem.TaxaParentID == taxon.TaxaID; }), GenerateTaxonDisplayLabel);
                 remaining.RemoveAll((elem) => { return elem.TaxaParentID == taxon.TaxaID; });
                 taxon.IsExpanded = true;
+                
             }
 
             foreach (HierarchicalViewModelBase child in taxon.Children) {
@@ -889,8 +891,7 @@ namespace BioLink.Client.Taxa {
 
             JobExecutor.QueueJob(() => {
                 // Collapse the currently expanded nodes...
-
-                CollapseChildren(_explorerModel[0]);
+                // CollapseChildren(_explorerModel[0]);
 
                 // make sure the explorer tree is visible...
                 string parentage = Service.GetTaxonParentage(taxonId.Value);
@@ -1192,7 +1193,9 @@ namespace BioLink.Client.Taxa {
 
     public class MyVirtualizingStackPanel : VirtualizingStackPanel {
         public void BringIntoView(int index) {
-            this.BringIndexIntoView(index);
+            if (index < this.VisualChildrenCount) {
+                this.BringIndexIntoView(index);
+            }
         }
     }
 
