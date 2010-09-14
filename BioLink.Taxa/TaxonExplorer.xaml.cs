@@ -89,20 +89,6 @@ namespace BioLink.Client.Taxa {
             gridContentsHeader.Background = new LinearGradientBrush(Colors.DarkOrange, Colors.Orange, 90.0);
         }
 
-        private void txtFind_TextChanged(object sender, TextChangedEventArgs e) {
-
-            _searchModel.Clear();
-
-            if (String.IsNullOrEmpty(txtFind.Text)) {
-                tvwAllTaxa.Visibility = System.Windows.Visibility.Visible;
-                lstResults.Visibility = Visibility.Hidden;
-            } else {
-                _searchModel.Clear();
-                tvwAllTaxa.Visibility = Visibility.Hidden;
-                lstResults.Visibility = Visibility.Visible;
-            }
-        }
-
         
 
         public string GenerateTaxonDisplayLabel(TaxonViewModel taxon) {
@@ -149,6 +135,17 @@ namespace BioLink.Client.Taxa {
 
         private void DoFind(string searchTerm) {
 
+            _searchModel.Clear();
+
+            if (String.IsNullOrEmpty(searchTerm)) {
+                tvwAllTaxa.Visibility = System.Windows.Visibility.Visible;
+                lstResults.Visibility = Visibility.Hidden;
+                return;
+            } 
+
+            tvwAllTaxa.Visibility = Visibility.Hidden;
+            lstResults.Visibility = Visibility.Visible;
+
             try {
                 lstResults.InvokeIfRequired(() => {
                     lstResults.Cursor = Cursors.Wait;
@@ -157,8 +154,7 @@ namespace BioLink.Client.Taxa {
                     return;
                 }
                 List<TaxonSearchResult> results = new TaxaService(Owner.User).FindTaxa(searchTerm);
-                lstResults.InvokeIfRequired(() => {
-                    _searchModel.Clear();
+                lstResults.InvokeIfRequired(() => {                    
                     foreach (Taxon t in results) {
                         _searchModel.Add(new TaxonViewModel(null, t, GenerateTaxonDisplayLabel));
                     }

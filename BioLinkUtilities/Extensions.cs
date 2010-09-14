@@ -19,6 +19,10 @@ namespace BioLink.Client.Utilities {
             }
         }
 
+        public static void BackgroundInvoke(this DispatcherObject control, Action action) {
+            control.Dispatcher.Invoke(DispatcherPriority.Background, action);
+        }
+
         public static void InvokeIfRequired(this DispatcherObject control, Action action) {
             if (control.Dispatcher.Thread != Thread.CurrentThread) {
                 control.Dispatcher.Invoke(action);

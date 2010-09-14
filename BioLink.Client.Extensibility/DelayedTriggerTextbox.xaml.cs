@@ -50,10 +50,11 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void textBox_TextChanged(object sender, TextChangedEventArgs e) {
-            try {
-                _timer.Change(Timeout.Infinite, Timeout.Infinite);
+            try {                
                 if (!String.IsNullOrEmpty(textBox.Text)) {
                     _timer.Change(Delay, Delay);
+                } else {
+                    Trigger();
                 }
 
                 if (TextChanged != null) {

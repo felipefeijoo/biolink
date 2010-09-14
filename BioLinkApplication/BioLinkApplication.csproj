@@ -93,6 +93,9 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\shared\lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="SplitButtonWpf">
+      <HintPath>..\shared\lib\SplitButtonWpf.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />

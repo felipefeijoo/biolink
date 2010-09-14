@@ -122,7 +122,7 @@ namespace BioLink.Client.Extensibility {
             return true;
         }
 
-        public void Dispose() {        
+        public virtual void Dispose() {        
         }
 
         public T Service { get; private set; }

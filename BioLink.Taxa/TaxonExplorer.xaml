@@ -38,7 +38,7 @@
             <TabItem Header="{StaticResource TaxonExplorer.Tab.AllTaxa}" Name="tabAllTaxa">
                 <Grid x:Name="allTaxaGrid">
                     <Label Content="{StaticResource TaxonExplorer.Find}" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" Width="56" HorizontalContentAlignment="Right" VerticalContentAlignment="Top" />
-                    <ext:DelayedTriggerTextbox Height="23" Margin="68,6,0,0" Name="txtFind" VerticalAlignment="Top" TextChanged="txtFind_TextChanged" TypingPaused="txtFind_TypingPaused" KeyUp="txtFind_KeyUp" />
+                    <ext:DelayedTriggerTextbox Height="23" Margin="68,6,0,0" Name="txtFind" VerticalAlignment="Top" TypingPaused="txtFind_TypingPaused" KeyUp="txtFind_KeyUp" />
                     <Border x:Name="taxaBorder" Margin="0,35,0,0" Background="White" BorderThickness="1" BorderBrush="#8C8E94">
                         <Grid>
                             <Grid.RowDefinitions>

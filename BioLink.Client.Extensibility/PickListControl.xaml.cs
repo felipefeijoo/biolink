@@ -32,11 +32,17 @@ namespace BioLink.Client.Extensibility {
             BindUser(user, type, phraseCategory, traitCategory);
         }
 
-        public void BindUser(User user, PickListType pickListType, String phraseCategory, TraitCategoryType traitCategory) {
+        public void BindUser(User user, PickListType pickListType, String categoryName, TraitCategoryType traitCategory) {
             this.User = user;
-            this.PhraseCategory = phraseCategory;
+            this.CategoryName = categoryName;
             this.TraitCategory = traitCategory;
             this.PickListType = pickListType;
+
+            if (pickListType == Extensibility.PickListType.MultimediaType) {
+                txt.IsReadOnly = true;
+            }
+
+            this.Service = new SupportService(user);
         }
 
         private void btn_Click(object sender, RoutedEventArgs e) {
@@ -44,7 +50,46 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void ShowPickList() {
-            PickListWindow frm = new PickListWindow(this.User, PickListType, PhraseCategory, TraitCategory);
+
+            Func<IEnumerable<string>> itemsFunc = null;
+            Func<string, bool> addItemFunc = null;
+            string caption = "Select a value";
+            switch (PickListType) {
+                case PickListType.Phrase:
+                    int phraseCategoryID = Service.GetPhraseCategoryId(CategoryName, true);
+                    caption = String.Format("Values for '{0}'", CategoryName);
+                    itemsFunc = () => Service.GetPhrases(phraseCategoryID).ConvertAll((phrase) => phrase.PhraseText);
+
+                    addItemFunc = (newphrase) => {
+                        Phrase phrase = new Phrase();
+                        phrase.PhraseID = -1;                        
+                        phrase.PhraseCatID = phraseCategoryID;
+                        phrase.PhraseText = newphrase;
+                        // Save the new phrase value...
+                        Service.AddPhrase(phrase);
+                        return true;
+                    };
+                    break;
+                case PickListType.DistinctList:
+                    caption = String.Format("Values for '{0}'", CategoryName);
+                    itemsFunc = ()=> Service.GetTraitDistinctValues(CategoryName, TraitCategory.ToString());
+                    break;
+                case PickListType.Trait:
+                    caption = String.Format("Existing trait names for {0}", TraitCategory.ToString());
+                    itemsFunc = ()=> Service.GetTraitNamesForCategory(TraitCategory.ToString());
+                    break;
+                case PickListType.MultimediaType:
+                    caption = "Select a multimedia type...";
+                    itemsFunc = () => {
+                        return Service.GetMultimediaTypes().ConvertAll((mmtype)=> mmtype.Name );
+                    };
+                    break;
+                default:
+                    throw new Exception("Unhandled pick list type: " + PickListType);
+            }
+
+            PickListWindow frm = new PickListWindow(User, caption, itemsFunc, addItemFunc);
+
             if (frm.ShowDialog().GetValueOrDefault(false)) {
                 txt.Text = frm.SelectedValue;
             };
@@ -71,7 +116,7 @@ namespace BioLink.Client.Extensibility {
 
         protected User User { get; private set; }
 
-        protected string PhraseCategory { get; private set; }
+        protected string CategoryName { get; private set; }
 
         protected TraitCategoryType TraitCategory { get; private set; }
 
@@ -92,12 +137,15 @@ namespace BioLink.Client.Extensibility {
 
         public delegate void ValueChangedHandler(object source, string value);
 
+        protected SupportService Service { get; private set; }
+
     }
 
     public enum PickListType {
         Phrase,
         Trait,
         Keyword,
-        DistinctList
+        DistinctList,
+        MultimediaType
     }
 }
