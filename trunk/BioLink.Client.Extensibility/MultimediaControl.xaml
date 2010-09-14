@@ -7,29 +7,61 @@
              xmlns:src="clr-namespace:BioLink.Client.Extensibility"
              xmlns:data="clr-namespace:BioLink.Data;assembly=BioLink.Data"                           
              xmlns:model="clr-namespace:BioLink.Data.Model;assembly=BioLink.Data"
+             xmlns:delay="clr-namespace:Delay;assembly=SplitButtonWpf"
              mc:Ignorable="d" 
              d:DesignHeight="404" d:DesignWidth="774">
-    <Grid>
+    <Grid UseLayoutRounding="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="120" />
+        </Grid.RowDefinitions>
 
-        <ListBox Name="thumbList" Margin="12,12,12,49" HorizontalContentAlignment="Center">
+        <ToolBar Grid.Row="0" Name="toolBar">
+            <Button x:Name="btnAdd">
+                <Button.Content>
+                    <Image Source="images/AddNew.png" Stretch="None" />
+                </Button.Content>
+            </Button>
+            
+            <Button x:Name="btnDelete" >
+                <Button.Content>
+                    <Image Source="images/Delete.png" Stretch="None" />
+                </Button.Content>
+            </Button>
+        </ToolBar>
+
+        <ListBox Grid.Row="1" x:Name="thumbList" HorizontalContentAlignment="Center" MouseRightButtonUp="thumbList_MouseRightButtonUp" MouseDoubleClick="thumbList_MouseDoubleClick">
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel IsItemsHost="True" Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ScrollContentPresenter}}}" />
                 </ItemsPanelTemplate>
-                <!--<ItemsPanelTemplate>
-                    <VirtualizingStackPanel Orientation="Horizontal" IsItemsHost="True" />
-                </ItemsPanelTemplate>-->
             </ListBox.ItemsPanel>
             <ListBox.Resources>
                 <DataTemplate DataType="{x:Type src:MultimediaItemViewModel}">
-                    <Border Margin="2" BorderBrush="AliceBlue" Background="LightGray" CornerRadius="3" Padding="5">
-                        <StackPanel Width="100" Orientation="Vertical">
-                            <Image Source="{Binding Thumbnail}" />
-                            <TextBlock TextAlignment="Center" Text="{Binding Name}" TextWrapping="Wrap" />
+                    <Border Margin="3" BorderThickness="1" BorderBrush="{x:Static SystemColors.ControlDarkBrush}" Background="{x:Static SystemColors.ControlBrush}" CornerRadius="3" Height="130" Padding="5">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120">
+                            <Image Source="{Binding Thumbnail}" Stretch="None" SnapsToDevicePixels="True" />
+                            <TextBlock MinHeight="20" TextAlignment="Center" Text="{Binding Name}" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" FontSize="10" Foreground="Black"/>
                         </StackPanel>
                     </Border>
                 </DataTemplate>
+                
+                <Style TargetType="ListBoxItem">
+                    <Style.Resources>                        
+                    </Style.Resources>
+                </Style>
+                
             </ListBox.Resources>
         </ListBox>
+        <Grid x:Name="detailGrid" Grid.Row="2">
+            <Label Content="Type:" Height="28" HorizontalAlignment="Left" Margin="6,8,0,0" Name="label1" VerticalAlignment="Top" Width="92" />
+            <Label Content="Name:" Height="28" HorizontalAlignment="Left" Margin="6,40,0,0" Name="label2" VerticalAlignment="Top" />
+            <Label Content="Caption" Height="28" HorizontalAlignment="Left" Margin="6,71,0,0" Name="label3" VerticalAlignment="Top" />
+            <src:PickListControl Height="23" Margin="72,10,6,0" x:Name="txtMultimediaType" VerticalAlignment="Top" Text="{Binding MultimediaType}"/>
+            <TextBox Height="23" Margin="72,42,6,0" Name="txtName" VerticalAlignment="Top" Text="{Binding Name}"/>
+            <RichTextBox Height="43" Margin="72,71,6,0" Name="txtCaption" VerticalAlignment="Top" />
+        </Grid>
+        
     </Grid>
 </src:DatabaseActionControl>

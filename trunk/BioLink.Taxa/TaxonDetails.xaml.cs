@@ -108,6 +108,16 @@ namespace BioLink.Client.Taxa {
             return element;
         }
 
+        public override void Dispose() {
+            foreach (TabItem item in tabControl.Items) {
+                if (item.Content is IDisposable) {
+                    (item.Content as IDisposable).Dispose();
+                }
+            }
+
+            base.Dispose();
+        }
+
         #region properties
 
         public TaxonViewModel Taxon { get; private set; }

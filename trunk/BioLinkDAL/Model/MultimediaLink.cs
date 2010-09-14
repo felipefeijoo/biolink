@@ -25,6 +25,12 @@ namespace BioLink.Data.Model {
 
         public int BlobChanges { get; set; }
 
+    }
 
+    public class MultimediaType {
+
+        public int ID { get; set; }
+
+        public string Name { get; set; }
     }
 }

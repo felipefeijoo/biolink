@@ -18,6 +18,7 @@ namespace BioLinkApplication {
         }
 
         void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e) {
+            e.Handled = true;
             GlobalExceptionHandler.Handle(e.Exception);
         }
 

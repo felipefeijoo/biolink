@@ -55,7 +55,11 @@ namespace BioLink.Client.Extensibility {
             traitsPanel.Children.Clear();
 
             _model.Sort(new Comparison<TraitViewModel>((a , b) => {
-                return a.Name.CompareTo(b.Name);
+                if (a.Name != null) {
+                    return a.Name.CompareTo(b.Name);
+                } else {
+                    return 0;
+                }
             }));
 
             foreach (TraitViewModel m in _model) {
@@ -82,21 +86,31 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void AddNewTrait() {
-            var frm = new AddNewTraitWindow(User, TraitCategory);
-            frm.Owner = this.FindParentWindow();
-            if (frm.ShowDialog().GetValueOrDefault(false)) {
+
+            List<String> traitTypes = Service.GetTraitNamesForCategory(TraitCategory.ToString());
+
+            var picklist = new PickListWindow(User, "Choose a trait type...", () => {
+                return traitTypes;
+            }, (text) => {
+                traitTypes.Add(text);
+                return true;
+            });
+            
+            picklist.Owner = this.FindParentWindow();
+            if (picklist.ShowDialog().ValueOrFalse()) {
                 Trait t = new Trait();
                 t.TraitID = -1;
                 t.Value = "<New Trait Value>";
                 t.Category = TraitCategory.ToString();
                 t.IntraCatID = IntraCatID;
-                t.Name = frm.TraitName;
+                t.Name = picklist.SelectedValue;
 
                 TraitViewModel viewModel = new TraitViewModel(t);
                 _model.Add(viewModel);
                 RegisterUniquePendingAction(new UpdateTraitDatabaseAction(t));
                 ReloadTraitPanel();
             }
+
         }
 
         #region Properties

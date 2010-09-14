@@ -42,6 +42,10 @@ namespace BioLink.Client.Extensibility {
                     btnApply.IsEnabled = false;
                 });
 
+                this.Closed +=new EventHandler((source, e) => {
+                    closable.Dispose();
+                });
+
             }
         }
 
