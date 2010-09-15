@@ -13,6 +13,8 @@ namespace BioLink.Data {
             : base(user) {
         }
 
+        #region Phrases
+
         public List<PhraseCategory> GetPhraseCategories() {
             var mapper = new GenericMapperBuilder<PhraseCategory>().build();
             return StoredProcToList<PhraseCategory>("spPhraseCategoryList", mapper);
@@ -47,6 +49,21 @@ namespace BioLink.Data {
         public void DeletePhraseCategory(int categoryId) {
             StoredProcUpdate("spPhraseCategoryDelete", _P("intCatID", categoryId));
         }
+
+        #endregion
+
+        #region References
+
+        public List<ReferenceSearchResult> FindReferences(string refCode, string author, string year, string other) {
+            var mapper = new GenericMapperBuilder<ReferenceSearchResult>().build();
+            return StoredProcToList("spReferenceFind", mapper,
+                _P("vchrRefCode", refCode),
+                _P("vchrAuthor", author),
+                _P("vchrYear", year),
+                _P("vchrOther", other));
+        }
+
+        #endregion
     }
 
 }

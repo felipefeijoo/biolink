@@ -5,6 +5,7 @@ using System.Text;
 using BioLink.Client.Extensibility;
 using System.Windows;
 using BioLink.Data;
+using BioLink.Data.Model;
 using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Tools {
@@ -12,6 +13,7 @@ namespace BioLink.Client.Tools {
     public class ToolsPlugin : BiolinkPluginBase {
 
         private ControlHostWindow _phraseManager;
+        private ControlHostWindow _refManager;
 
         public override string Name {
             get { return "Tools"; }
@@ -27,16 +29,16 @@ namespace BioLink.Client.Tools {
                 String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
                 String.Format("{{'Name':'Phrases', 'Header':'{0}'}}", _R("Tools.Menu.Phrases"))
             ));
+
+            contrib.Add(new MenuWorkspaceContribution(this, "ReferenceManager", (obj, e) => { ShowReferenceManager(); },
+                String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
+                String.Format("{{'Name':'ReferenceManager', 'Header':'{0}'}}", _R("Tools.Menu.ReferenceManager"))
+            ));
+
             return contrib;
         }
 
         public override bool RequestShutdown() {
-            if (_phraseManager != null) {
-                PhraseManager manager = _phraseManager.Control as PhraseManager;
-                if (manager.HasPendingChanges) {
-                    return manager.Question("You have unsaved changes in the Phrases window. Are you sure you wish to discard them?", "Discard Phrase changes?");
-                }
-            }
             return true;
         }
 
@@ -50,12 +52,8 @@ namespace BioLink.Client.Tools {
 
         private void ShowPhraseManager() {
             if (_phraseManager == null) {
-
-                _phraseManager = PluginManager.Instance.AddNonDockableContent(this, new PhraseManager(new SupportService(User)), "Phrases", SizeToContent.Manual, true, (window) => {
-
-                });
-
-                _phraseManager.Closed += new EventHandler((sender, e) => {
+                _phraseManager = PluginManager.Instance.AddNonDockableContent(this, new PhraseManager(User), "Phrases", SizeToContent.Manual);
+                _phraseManager.Closed += new EventHandler((sender, e) => {                    
                     _phraseManager = null;
                 });
             }
@@ -64,9 +62,35 @@ namespace BioLink.Client.Tools {
 
         }
 
+        private void ShowReferenceManager() {
+            if (_refManager == null) {
+                _refManager = PluginManager.Instance.AddNonDockableContent(this, new ReferenceManager(User), "Reference Manager", SizeToContent.Manual);
+            }
+
+            _refManager.Closed +=new EventHandler((sender, e) => {
+                _refManager = null;
+            });
+
+            _refManager.Show();
+            _refManager.Focus();
+        }
+
 
         public override List<Command> GetCommandsForObject(ViewModelBase obj) {
             return null;
+        }
+
+        public override bool CanSelect(Type t) {
+            return typeof(ReferenceSearchResult).IsAssignableFrom(t);
+        }
+
+        public override void Select(Type t, Action<SelectionResult> success) {
+            if (typeof(ReferenceSearchResult).IsAssignableFrom(t)) {
+                ShowReferenceManager();                
+            } else {
+                throw new Exception("Unhandled Selection Type: " + t.Name);
+            }
+
         }
     }
 }

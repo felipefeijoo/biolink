@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using BioLink.Data.Model;
 using BioLink.Client.Extensibility;
+using BioLink.Data;
 
 namespace BioLink.Client.Taxa {
 
@@ -15,11 +16,11 @@ namespace BioLink.Client.Taxa {
             _context = context;
         }
 
-        public List<TaxonDatabaseAction> ProcessUI() {
+        public List<DatabaseAction> ProcessUI() {
             return ProcessImpl();
         }
 
-        protected abstract List<TaxonDatabaseAction> ProcessImpl();
+        protected abstract List<DatabaseAction> ProcessImpl();
 
         public TaxonDropContext Context {
             get { return _context; }
@@ -44,8 +45,8 @@ namespace BioLink.Client.Taxa {
             Move(Source, Target);
         }
 
-        protected List<TaxonDatabaseAction> Actions(params TaxonDatabaseAction[] actions) {
-            return new List<TaxonDatabaseAction>(actions);
+        protected List<DatabaseAction> Actions(params TaxonDatabaseAction[] actions) {
+            return new List<DatabaseAction>(actions);
         }
 
     }
@@ -55,7 +56,7 @@ namespace BioLink.Client.Taxa {
             : base(context) {
         }
 
-        protected override List<TaxonDatabaseAction> ProcessImpl() {
+        protected override List<DatabaseAction> ProcessImpl() {
             MoveSourceToTarget();
             return Actions(new MoveTaxonDatabaseAction(Context.Source, Context.Target));            
         }
@@ -71,9 +72,9 @@ namespace BioLink.Client.Taxa {
 
         public TaxonRank ConvertRank { get; private set; }
 
-        protected override List<TaxonDatabaseAction> ProcessImpl() {
+        protected override List<DatabaseAction> ProcessImpl() {
 
-            List<TaxonDatabaseAction> dbActions = new List<TaxonDatabaseAction>();
+            var dbActions = new List<DatabaseAction>();
             // Validate the convert...
             ValidateConversion();
 
@@ -126,11 +127,11 @@ namespace BioLink.Client.Taxa {
                 _createNewIdRecord = createNewIdRecord;
         }
 
-        protected override List<TaxonDatabaseAction> ProcessImpl() {
+        protected override List<DatabaseAction> ProcessImpl() {
 
             // Source.Parent.Children.Remove(Source);
             Source.IsDeleted = true;
-            var actions = new List<TaxonDatabaseAction>();
+            var actions = new List<DatabaseAction>();
             List<TaxonViewModel> movelist = new List<TaxonViewModel>();
             // Need to get the children in a separate list to avoid concurrent collection modification errors
             foreach (HierarchicalViewModelBase m in Source.Children) {

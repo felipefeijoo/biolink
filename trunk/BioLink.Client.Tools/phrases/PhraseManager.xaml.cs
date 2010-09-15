@@ -22,7 +22,7 @@ namespace BioLink.Client.Tools {
     /// <summary>
     /// Interaction logic for PhraseManager.xaml
     /// </summary>
-    public partial class PhraseManager : DatabaseActionControl<SupportService>, IClosable {
+    public partial class PhraseManager : DatabaseActionControl {
 
         private ObservableCollection<PhraseCategoryViewModel> _model;
 
@@ -34,11 +34,11 @@ namespace BioLink.Client.Tools {
         }
         #endregion
 
-        public PhraseManager(SupportService service) : base(service, "PhraseManager") {
+        public PhraseManager(User user) : base(user, "PhraseManager") {
             InitializeComponent();            
             ReloadModel();
 
-            PendingChangesCommitted += new PendingChangesCommittedHandler((source) => {
+            ChangesCommitted += new PendingChangesCommittedHandler((source) => {
                 ReloadModel();                
             });
 
@@ -153,7 +153,7 @@ namespace BioLink.Client.Tools {
                 }
             }));
             
-            RegisterPendingAction(new AddPhraseAction(phrase));
+            RegisterPendingChange(new AddPhraseAction(phrase));
 
             viewModel.IsRenaming = true;
         }
@@ -164,7 +164,7 @@ namespace BioLink.Client.Tools {
             }
 
             if (this.Question(String.Format("Are you sure you want to delete the phrase \"{0}\"?", phrase.PhraseText), "Delete phrase?")) {
-                RegisterPendingAction(new DeletePhraseAction(phrase.Model));
+                RegisterPendingChange(new DeletePhraseAction(phrase.Model));
                 phrase.IsDeleted = true;                
             }
         }
@@ -188,7 +188,7 @@ namespace BioLink.Client.Tools {
 
         private void PhraseText_EditingComplete(object sender, string text) {
             PhraseViewModel vm = (sender as EditableTextBlock).ViewModel as PhraseViewModel;
-            RegisterPendingAction(new RenamePhraseAction(vm.Model, text));
+            RegisterPendingChange(new RenamePhraseAction(vm.Model, text));
         }
 
         private void PhraseText_EditingCancelled(object sender, string oldtext) {
@@ -254,7 +254,7 @@ namespace BioLink.Client.Tools {
             }
 
             if (this.Question(String.Format("Are you sure you want to delete the phrase category \"{0}\"?", category.Category), "Delete category?")) {
-                RegisterPendingAction(new DeletePhraseCategoryAction(category.Model));
+                RegisterPendingChange(new DeletePhraseCategoryAction(category.Model));
                 category.IsDeleted = true;
             }
 
@@ -287,9 +287,11 @@ namespace BioLink.Client.Tools {
             }
         }
 
-        public bool HasChanges {
-            get { return HasPendingChanges; }
-        }
+        //public bool HasChanges {
+        //    get { return HasPendingChanges; }
+        //}
+
+        protected SupportService Service { get { return new SupportService(User); } }
     }
 
 }

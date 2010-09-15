@@ -21,7 +21,7 @@ namespace BioLink.Client.Taxa {
     /// <summary>
     /// Interaction logic for TaxonExplorer.xaml
     /// </summary>
-    public partial class TaxonExplorer : DatabaseActionControl<TaxaService> {
+    public partial class TaxonExplorer : DatabaseActionControl {
         
         private ObservableCollection<HierarchicalViewModelBase> _explorerModel;
         private ObservableCollection<TaxonViewModel> _searchModel;
@@ -40,7 +40,7 @@ namespace BioLink.Client.Taxa {
         #endregion
 
         public TaxonExplorer(TaxaPlugin owner)
-            : base(new TaxaService(owner.User), "TaxonExplorer") {
+            : base(owner.User, "TaxonExplorer") {
 
             InitializeComponent();
 
@@ -409,9 +409,9 @@ namespace BioLink.Client.Taxa {
 
                 if (action != null) {
                     // process the action...
-                    List<TaxonDatabaseAction> dbActions = action.ProcessUI();
+                    List<DatabaseAction> dbActions = action.ProcessUI();
                     if (dbActions != null && dbActions.Count > 0) {
-                        RegisterPendingActions(dbActions);
+                        RegisterPendingChanges(dbActions);
                     }
                 }
             } catch (IllegalTaxonMoveException ex) {
@@ -604,7 +604,7 @@ namespace BioLink.Client.Taxa {
         }
 
         private bool InsertUniquePendingUpdate(TaxonViewModel taxon) {
-            return RegisterUniquePendingAction(new UpdateTaxonDatabaseAction(taxon.Taxon));
+            return RegisterUniquePendingChange(new UpdateTaxonDatabaseAction(taxon.Taxon));
         }
        
         private void ShiftTaxon(TaxonViewModel taxon, System.Func<int, int> action) {
@@ -646,7 +646,7 @@ namespace BioLink.Client.Taxa {
         internal void ShowTaxonDetails(int? taxonId) {
             Taxon fullDetails = Service.GetTaxon(taxonId.Value);
             TaxonViewModel model = new TaxonViewModel(null, fullDetails, null);
-            TaxonDetails control = new TaxonDetails(model, Service);
+            TaxonDetails control = new TaxonDetails(model, User);
             TaxonRank taxonRank = Service.GetTaxonRank(model.ElemType);
 
             String title = String.Format("Taxon Detail: {0} ({1}) [{2}]", model.TaxaFullName, taxonRank.GetElementTypeLongName(model.Taxon), model.TaxaID);
@@ -739,7 +739,7 @@ namespace BioLink.Client.Taxa {
                     RenameTaxon(viewModel);
                 }
 
-                RegisterPendingAction(new InsertTaxonDatabaseAction(viewModel));
+                RegisterPendingChange(new InsertTaxonDatabaseAction(viewModel));
 
             } catch (Exception ex) {
                 ErrorMessage.Show(ex.Message);
@@ -770,7 +770,7 @@ namespace BioLink.Client.Taxa {
                                 newUnplaced.Children.Add(child);
                                 child.TaxaParentID = newUnplaced.TaxaID;
                                 child.Parent = newUnplaced;
-                                RegisterPendingAction(new MoveTaxonDatabaseAction(child, newUnplaced));
+                                RegisterPendingChange(new MoveTaxonDatabaseAction(child, newUnplaced));
                             }
                         }
                         parent.Children.Clear();
@@ -844,7 +844,7 @@ namespace BioLink.Client.Taxa {
                 // First the UI bit...                
                 MarkItemAsDeleted(taxon);
                 // And schedule the database bit...                                
-                RegisterPendingAction(new DeleteTaxonDatabaseAction(taxon));
+                RegisterPendingChange(new DeleteTaxonDatabaseAction(taxon));
             }
         }
 
@@ -1094,12 +1094,8 @@ namespace BioLink.Client.Taxa {
             PluginManager.Instance.AddDockableContent(this.Owner, results, report.Name);            
         }
 
-        public User User {
-            get { return Owner.User; }
-        }
-
         internal void EditTaxonName(int? taxonId) {
-            TaxonNameDetails details = new TaxonNameDetails(taxonId, Owner.Service);
+            TaxonNameDetails details = new TaxonNameDetails(taxonId, User);
             PluginManager.Instance.AddNonDockableContent(this.Owner, details, "Taxon name details",SizeToContent.WidthAndHeight);
         }
 
@@ -1138,6 +1134,10 @@ namespace BioLink.Client.Taxa {
                     return;
                 }
             }
+        }
+
+        public TaxaService Service {
+            get { return new TaxaService(User); }
         }
 
         private T FindVisualChild<T>(Visual visual) where T : Visual {
@@ -1194,6 +1194,5 @@ namespace BioLink.Client.Taxa {
             }
         }
     }
-
 
 }

@@ -66,6 +66,7 @@
     <Compile Include="BioLinkService.cs" />
     <Compile Include="CodeValuePair.cs" />
     <Compile Include="ConfigurationStore.cs" />
+    <Compile Include="Model\AvailableName.cs" />
     <Compile Include="Model\BiolinkDataObject.cs" />
     <Compile Include="Model\ConnectionProfile.cs" />
     <Compile Include="DatabaseAction.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="Model\Kingdom.cs" />
     <Compile Include="Model\MultimediaLink.cs" />
     <Compile Include="Model\Phrase.cs" />
+    <Compile Include="Model\ReferenceSearchResult.cs" />
     <Compile Include="Model\Trait.cs" />
     <Compile Include="SupportService.cs" />
     <Compile Include="Model\Taxon.cs" />

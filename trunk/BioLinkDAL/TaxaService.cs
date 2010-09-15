@@ -32,8 +32,6 @@ namespace BioLink.Data {
                 taxa.Add(TaxonMapper.MapTaxon(reader));
             }, new SqlParameter("intParentId", taxonId));
 
-            taxa.Sort((x, y) => { return x.Epithet.CompareTo(y.Epithet); });
-
             return taxa;
         }
 
@@ -237,6 +235,25 @@ namespace BioLink.Data {
         public List<Kingdom> GetKingdomList() {
             var mapper = new GenericMapper<Kingdom>();
             return StoredProcToList("spBiotaDefKingdomList", mapper);
+        }
+
+        public AvailableName GetAvailableName(int taxonId) {
+            var mapper = new GenericMapperBuilder<AvailableName>().build();
+            AvailableName result = null;
+            StoredProcReaderFirst("spALNGet", (reader) => {
+                result = mapper.Map(reader);
+            }, _P("intBiotaID", taxonId));
+            return result;
+        }
+
+        public void InsertOrUpdateAvailableName(AvailableName name) {
+            StoredProcUpdate("spALNInsertUpdate",
+                _P("intBiotaID", name.BiotaID),
+                _P("intRefID", name.RefID),
+                _P("vchrRefPage", name.RefPage),
+                _P("vchrAvailableNameStatus", name.AvailableNameStatus),
+                _P("txtRefQual", name.RefQual)
+            );
         }
 
     }

@@ -10,7 +10,7 @@ namespace BioLink.Client.Taxa {
     /// <summary>
     /// Interaction logic for TaxonNameDetails.xaml
     /// </summary>
-    public partial class TaxonNameDetails : DatabaseActionControl<TaxaService>, IClosable {
+    public partial class TaxonNameDetails : DatabaseActionControl {
         
         private TaxonRank _rank;
         private TaxonNameViewModel _model;
@@ -22,7 +22,8 @@ namespace BioLink.Client.Taxa {
         }
         #endregion
 
-        public TaxonNameDetails(int? taxonId, TaxaService service)  : base(service, "TaxonNameDetails::" + taxonId.Value) {
+        public TaxonNameDetails(int? taxonId, User user)  : base(user, "TaxonNameDetails::" + taxonId.Value) {
+            var service = new TaxaService(user);
             Taxon taxon = service.GetTaxon(taxonId.Value);
             _rank = service.GetTaxonRank(taxon.ElemType);
             _kingdomList = service.GetKingdomList();
@@ -63,34 +64,9 @@ namespace BioLink.Client.Taxa {
         }
 
         void _model_DataChanged() {
-            RegisterUniquePendingAction(new UpdateTaxonDatabaseAction(_model.Taxon));
+            RegisterUniquePendingChange(new UpdateTaxonDatabaseAction(_model.Taxon));
         }
 
-        private void btnCancel_Click(object sender, RoutedEventArgs e) {
-            HideMe();
-        }
-
-        private void btnOk_Click(object sender, RoutedEventArgs e) {
-            ApplyChanges();
-            HideMe();
-        }
-
-        private void HideMe() {
-            this.FindParentWindow().Close();
-        }
-
-    }
-
-    class UpdateTaxonNameAction : TaxonDatabaseAction {
-
-        public UpdateTaxonNameAction(TaxonNameViewModel model) {
-            Model = model;
-        }
-
-        protected override void ProcessImpl(TaxaService service) {            
-        }
-
-        public TaxonNameViewModel Model { get; private set; }
     }
 
     class TaxonNameViewModel : TaxonViewModel {

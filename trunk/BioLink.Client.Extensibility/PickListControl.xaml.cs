@@ -49,50 +49,59 @@ namespace BioLink.Client.Extensibility {
             ShowPickList();
         }
 
-        private void ShowPickList() {
-
+        public static string ShowPickList(User user, PickListType type, string categoryName, TraitCategoryType traitCategory) {
             Func<IEnumerable<string>> itemsFunc = null;
             Func<string, bool> addItemFunc = null;
             string caption = "Select a value";
-            switch (PickListType) {
+            var service = new SupportService(user);
+            switch (type) {
                 case PickListType.Phrase:
-                    int phraseCategoryID = Service.GetPhraseCategoryId(CategoryName, true);
-                    caption = String.Format("Values for '{0}'", CategoryName);
-                    itemsFunc = () => Service.GetPhrases(phraseCategoryID).ConvertAll((phrase) => phrase.PhraseText);
+                    int phraseCategoryID = service.GetPhraseCategoryId(categoryName, true);
+                    caption = String.Format("Values for '{0}'", categoryName);
+                    itemsFunc = () => service.GetPhrases(phraseCategoryID).ConvertAll((phrase) => phrase.PhraseText);
 
                     addItemFunc = (newphrase) => {
                         Phrase phrase = new Phrase();
-                        phrase.PhraseID = -1;                        
+                        phrase.PhraseID = -1;
                         phrase.PhraseCatID = phraseCategoryID;
                         phrase.PhraseText = newphrase;
                         // Save the new phrase value...
-                        Service.AddPhrase(phrase);
+                        service.AddPhrase(phrase);
                         return true;
                     };
                     break;
                 case PickListType.DistinctList:
-                    caption = String.Format("Values for '{0}'", CategoryName);
-                    itemsFunc = ()=> Service.GetTraitDistinctValues(CategoryName, TraitCategory.ToString());
+                    caption = String.Format("Values for '{0}'", categoryName);
+                    itemsFunc = () => service.GetTraitDistinctValues(categoryName, traitCategory.ToString());
                     break;
                 case PickListType.Trait:
-                    caption = String.Format("Existing trait names for {0}", TraitCategory.ToString());
-                    itemsFunc = ()=> Service.GetTraitNamesForCategory(TraitCategory.ToString());
+                    caption = String.Format("Existing trait names for {0}", traitCategory.ToString());
+                    itemsFunc = () => service.GetTraitNamesForCategory(traitCategory.ToString());
                     break;
                 case PickListType.MultimediaType:
                     caption = "Select a multimedia type...";
                     itemsFunc = () => {
-                        return Service.GetMultimediaTypes().ConvertAll((mmtype)=> mmtype.Name );
+                        return service.GetMultimediaTypes().ConvertAll((mmtype) => mmtype.Name);
                     };
                     break;
                 default:
-                    throw new Exception("Unhandled pick list type: " + PickListType);
+                    throw new Exception("Unhandled pick list type: " + type);
             }
 
-            PickListWindow frm = new PickListWindow(User, caption, itemsFunc, addItemFunc);
+            PickListWindow frm = new PickListWindow(user, caption, itemsFunc, addItemFunc);
 
             if (frm.ShowDialog().GetValueOrDefault(false)) {
-                txt.Text = frm.SelectedValue;
+                return frm.SelectedValue;
             };
+
+            return null;
+        }
+
+        private void ShowPickList() {
+            String value = ShowPickList(User, PickListType, CategoryName, TraitCategory);
+            if (value != null) {
+                txt.Text = value;
+            }
         }
 
         public static readonly DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(PickListControl), new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnTextChanged)));

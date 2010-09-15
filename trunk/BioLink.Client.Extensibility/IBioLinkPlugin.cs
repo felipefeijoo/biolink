@@ -23,9 +23,19 @@ namespace BioLink.Client.Extensibility {
         ViewModelBase CreatePinnableViewModel(object state);
         List<Command> GetCommandsForObject(ViewModelBase obj);
         List<IWorkspaceContribution> GetContributions();
+
+        bool CanSelect(Type t);
+        void Select(Type t, Action<SelectionResult> success);
+
         User User { get; }
         PluginManager PluginManager { get; }
         Window ParentWindow { get; }
+    }
+
+    public class SelectionResult {
+        public object DataObject { get; set; }
+        public int? ObjectID { get; set; }
+        public string Description { get; set; }
     }
 
     /// <summary>

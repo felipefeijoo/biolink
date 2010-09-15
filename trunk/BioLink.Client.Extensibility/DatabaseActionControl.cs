@@ -9,19 +9,17 @@ using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Extensibility {
 
-    public class DatabaseActionControl<T> : UserControl, IClosable, IIdentifiableContent where T : BioLinkService {
-
-        private List<DatabaseAction<T>> _pendingChanges = new List<DatabaseAction<T>>();
+    public class DatabaseActionControl : UserControl, IIdentifiableContent, IChangeContainerObserver {
 
         #region Designer Constructor
         public DatabaseActionControl() : base() {
         }
         #endregion
 
-        public DatabaseActionControl(T service, string contentId)
+        public DatabaseActionControl(User user, string contentId)
             : base() {
 
-            this.Service = service;
+            this.User = user;
             this.ContentIdentifier = contentId;
         }
 
@@ -31,109 +29,54 @@ namespace BioLink.Client.Extensibility {
             return ContentIdentifier == other;
         }
 
-        public bool HasPendingChanges {
-            get { return _pendingChanges != null && _pendingChanges.Count > 0; }
+        public void RegisterPendingChange(DatabaseAction action) {
+            WithChangeContainer(window => {
+                window.RegisterPendingChange(action, this);
+            });
         }
 
-        protected void RegisterPendingAction<K>(K action) where K : DatabaseAction<T> {
-            _pendingChanges.Add((K) action);
-            if (PendingChangedRegistered != null) {
-                PendingChangedRegistered(this, action);
+        public bool RegisterUniquePendingChange(DatabaseAction action) {
+            bool ret = false;
+            WithChangeContainer(window => { ret = window.RegisterUniquePendingChange(action, this); });
+            return ret;
+        }
+
+        public void RegisterPendingChanges(List<DatabaseAction> actions) {
+            WithChangeContainer(window =>  window.RegisterPendingChanges(actions, this));
+        }
+
+        protected void CommitPendingChanges(Action successAction = null) {
+            WithChangeContainer(window => window.CommitPendingChanges(successAction));            
+        }
+
+        public void ClearPendingChanges() {
+            WithChangeContainer(window => window.ClearPendingChanges());
+        }
+
+        private void WithChangeContainer(Action<IChangeContainer> action) {
+            var window = this.FindParentWindow() as IChangeContainer;
+            if (window != null) {
+                action(window);
+            } else {
+                throw new Exception("Parent window could not be found, or it is not an IChangeContainer");
+            }
+
+        }
+
+        public void OnChangesCommitted() {
+            if (ChangesCommitted != null) {
+                ChangesCommitted(this);
             }
         }
 
-        protected bool RegisterUniquePendingAction<K>(K action) where K : DatabaseAction<T> {
-            foreach (DatabaseAction<T> existingaction in _pendingChanges) {
-                if (existingaction.Equals(action)) {
-                    return false;
-                }
-            }
-            RegisterPendingAction(action);
-            return true;
-        }
-
-        protected void RegisterPendingActions<K>(List<K> actions) where K : DatabaseAction<T> {
-            foreach (DatabaseAction<T> action in actions) {
-                RegisterPendingAction(action);
-            }
-        }
-
-        protected void ClearPendingChanges() {
-            _pendingChanges.Clear();
-        }
-
-        protected void CommitPendingChanges(Action successAction) {
-
-            if (Service == null) {
-                throw new Exception("Service has not been set onf Database Action Control");
-            }
-#if DEBUG
-            Logger.Debug("About to commit the following changes:");
-            foreach (DatabaseAction<T> action in _pendingChanges) {
-                Logger.Debug("{0}", action);
-            }
-#endif
-
-            // It may be that this control is aggregated as part of a larger control. This means that, come save time, there
-            // may already be a transaction pending. If so, don't create a new one, just piggy back on the existing
-            bool commitTrans = false;  // flag to let us know if we are responsible for the transaction...
-            if (!Service.InTransaction) {
-                Service.BeginTransaction();
-                commitTrans = true;
-            }
-            try {
-                foreach (DatabaseAction<T> action in _pendingChanges) {
-                    action.Process(Service);
-                }
-
-                if (commitTrans) {
-                    Service.CommitTransaction();
-                }
-
-                if (successAction != null) {
-                    successAction();
-                }
-
-                if (PendingChangesCommitted != null) {
-                    PendingChangesCommitted(this);
-                }
-
-                _pendingChanges.Clear();
-            } catch (Exception ex) {
-                if (commitTrans) {
-                    Service.RollbackTransaction();
-                }
-                GlobalExceptionHandler.Handle(ex);
-            }
-        }
-
-        public List<DatabaseAction<T>> PendingChanges {
-            get { return _pendingChanges; }
-        }
-
-        public bool RequestClose() {
-            if (HasPendingChanges) {
-                if (this.Question("You have unsaved changes. Are you sure you want to discard those changes?", "Discard changes?")) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-            return true;
-        }
 
         public virtual void Dispose() {        
         }
 
-        public T Service { get; private set; }
+        public User User { get; private set; }
 
-        public void ApplyChanges() {
-            CommitPendingChanges(null);
-        }
+        public event PendingChangesCommittedHandler ChangesCommitted;
 
-        public event PendingChangedRegisteredHandler PendingChangedRegistered;
-
-        public event PendingChangesCommittedHandler PendingChangesCommitted;
     }
 
     public interface IIdentifiableContent {

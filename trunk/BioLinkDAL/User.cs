@@ -10,29 +10,9 @@ namespace BioLink.Data {
 
     public class User {
 
-        private string _username;
-
-        public String Username {
-            get {
-                if (ConnectionProfile.IntegratedSecurity || String.IsNullOrEmpty(_username)) {
-                    return Environment.UserName;
-                } else {
-                    return _username;
-                }
-            }
-            private set {
-                _username = value;
-            }
-        }
-
         private String Password;
-        public ConnectionProfile ConnectionProfile { get; private set; }
-
-        public User(string username, string password, ConnectionProfile profile) {
-            this.Username = username;
-            this.Password = password;
-            this.ConnectionProfile = profile;
-        }
+        private SqlTransaction _transaction;
+        private string _username;
 
         public bool Authenticate(out String message) {
 
@@ -59,6 +39,74 @@ namespace BioLink.Data {
             return false;
         }
 
+        public void BeginTransaction() {
+            if (_transaction != null) {
+                throw new Exception("A pending transaction already exists!");
+            }
+
+            SqlConnection conn = GetConnection();
+            _transaction = conn.BeginTransaction();
+        }
+
+        public void RollbackTransaction() {
+            if (_transaction != null && _transaction.Connection != null) {
+                _transaction.Rollback();
+                _transaction.Dispose();
+                _transaction = null;
+            }
+        }
+
+        public void CommitTransaction() {
+            if (_transaction != null && _transaction.Connection != null) {
+                _transaction.Commit();
+                _transaction.Dispose();
+                _transaction = null;
+            }
+        }
+
+        public SqlConnection GetConnection() {
+            if (_transaction != null) {
+                Logger.Debug("Retrieving existing transaction connection to {0} (Database {1}) with username '{2}'...", ConnectionProfile.Server, ConnectionProfile.Database, Username);
+                return _transaction.Connection;
+            } 
+
+            Logger.Debug("Opening new connection to {0} (Database {1}) with username '{2}'...", ConnectionProfile.Server, ConnectionProfile.Database, Username);
+            SqlConnection connection = new SqlConnection(this.ConnectionString);
+            connection.Open();            
+            return connection;
+        }
+
+        #region Properties
+
+        public Boolean InTransaction {
+            get { return _transaction != null; }
+        }
+
+        public SqlTransaction CurrentTransaction {
+            get { return _transaction; }
+        }
+
+        public String Username {
+            get {
+                if (ConnectionProfile.IntegratedSecurity || String.IsNullOrEmpty(_username)) {
+                    return Environment.UserName;
+                } else {
+                    return _username;
+                }
+            }
+            private set {
+                _username = value;
+            }
+        }
+
+        public ConnectionProfile ConnectionProfile { get; private set; }
+
+        public User(string username, string password, ConnectionProfile profile) {
+            this.Username = username;
+            this.Password = password;
+            this.ConnectionProfile = profile;
+        }
+
         private string ConnectionString {
             get {
                 StringBuilder s = new StringBuilder();
@@ -74,12 +122,7 @@ namespace BioLink.Data {
 
         }
 
-        public SqlConnection GetConnection() {
-            Logger.Debug("Opening connection to {0} (Database {1}) with username '{2}'...", ConnectionProfile.Server, ConnectionProfile.Database, Username);
-            SqlConnection connection = new SqlConnection(this.ConnectionString);
-            connection.Open();            
-            return connection;
-        }
+        #endregion
 
     }
 

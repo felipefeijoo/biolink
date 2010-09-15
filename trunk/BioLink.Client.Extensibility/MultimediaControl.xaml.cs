@@ -23,7 +23,7 @@ namespace BioLink.Client.Extensibility {
     /// <summary>
     /// Interaction logic for MultimediaControl.xaml
     /// </summary>
-    public partial class MultimediaControl : DatabaseActionControl<SupportService> {
+    public partial class MultimediaControl : DatabaseActionControl {
 
         private ObservableCollection<MultimediaItemViewModel> _model;
 
@@ -36,9 +36,8 @@ namespace BioLink.Client.Extensibility {
         #endregion
 
         public MultimediaControl(User user, TraitCategoryType category, int? intraCatId)
-            : base(new SupportService(user), "Multimedia:" + category.ToString() + ":" + intraCatId.Value) {
+            : base(user, "Multimedia:" + category.ToString() + ":" + intraCatId.Value) {
 
-            this.User = user;
             this.CategoryType = category;
             this.IntraCategoryID = intraCatId.Value;
             InitializeComponent();
@@ -64,10 +63,7 @@ namespace BioLink.Client.Extensibility {
                 detailGrid.DataContext = item;
                 detailGrid.IsEnabled = true;
                 txtCaption.Document.Blocks.Clear();
-                if (!String.IsNullOrEmpty(item.Caption)) {
-                    txtCaption.SelectAll();
-                    txtCaption.Selection.Load(new MemoryStream(UTF8Encoding.Default.GetBytes(item.Caption)), DataFormats.Rtf);
-                }
+                txtCaption.SetRTF(item.Caption);
             }
         }
 
@@ -244,11 +240,13 @@ namespace BioLink.Client.Extensibility {
 
         #region Properties
 
-        public User User { get; private set; }
-
         public TraitCategoryType CategoryType { get; private set; }
 
         public int IntraCategoryID { get; private set; }
+
+        protected SupportService Service {
+            get { return new SupportService(User); }
+        }
 
         #endregion
 

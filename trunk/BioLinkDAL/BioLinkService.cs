@@ -13,8 +13,6 @@ namespace BioLink.Data {
     /// </summary>
     public abstract class BioLinkService {
 
-        private SqlTransaction _transaction = null;        
-
         /// <summary>
         /// Constructor
         /// </summary>
@@ -35,15 +33,8 @@ namespace BioLink.Data {
             }
 
             // Get a connection
-            bool cleanupConnection = false;
-            SqlConnection connection = null;
-            if (_transaction == null || _transaction.Connection == null) {
-                connection = User.GetConnection();
-                cleanupConnection = true;
-            } else {
-                connection = _transaction.Connection;
-            }
-
+            
+            SqlConnection connection = User.GetConnection();
             
             // and create a command instance
             try {
@@ -57,19 +48,11 @@ namespace BioLink.Data {
                     action(connection, command);
                 }
             } finally {
-                if (cleanupConnection) {
+                if (!User.InTransaction) {
                     connection.Dispose();
                 }
             }
             
-        }
-
-        private SqlConnection GetConnection() {
-            if (_transaction == null || _transaction.Connection == null) {
-                return User.GetConnection();
-            } else {
-                return _transaction.Connection;
-            }
         }
 
         /// <summary>
@@ -87,8 +70,8 @@ namespace BioLink.Data {
                 Command((con, cmd) => {
                     cmd.CommandText = proc;
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                    if (_transaction != null) {
-                        cmd.Transaction = _transaction;
+                    if (User.InTransaction && User.CurrentTransaction != null) {
+                        cmd.Transaction = User.CurrentTransaction;
                     }
                     foreach (SqlParameter param in @params) {
                         cmd.Parameters.Add(param);
@@ -116,8 +99,8 @@ namespace BioLink.Data {
                 Command((con, cmd) => {
                     cmd.CommandText = proc;
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                    if (_transaction != null) {
-                        cmd.Transaction = _transaction;
+                    if (User.InTransaction && User.CurrentTransaction != null) {
+                        cmd.Transaction = User.CurrentTransaction;
                     }
                     foreach (SqlParameter param in @params) {
                         cmd.Parameters.Add(param);
@@ -144,8 +127,8 @@ namespace BioLink.Data {
                 Command((con, cmd) => {
                     cmd.CommandText = proc;
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                    if (_transaction != null) {
-                        cmd.Transaction = _transaction;
+                    if (User.InTransaction && User.CurrentTransaction != null) {
+                        cmd.Transaction = User.CurrentTransaction;
                     }
                     foreach (SqlParameter param in @params) {
                         cmd.Parameters.Add(param);
@@ -229,8 +212,8 @@ namespace BioLink.Data {
                 Command((con, cmd) => {
                     cmd.CommandText = proc;
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                    if (_transaction != null) {
-                        cmd.Transaction = _transaction;
+                    if (User.InTransaction && User.CurrentTransaction != null) {
+                        cmd.Transaction = User.CurrentTransaction;
                     }
                     foreach (SqlParameter param in @params) {
                         cmd.Parameters.Add(param);
@@ -239,31 +222,6 @@ namespace BioLink.Data {
                 });
             }
             return rowsAffected;
-        }
-
-        public void BeginTransaction() {
-            if (_transaction != null) {
-                throw new Exception("A pending transaction already exists!");
-            }
-
-            SqlConnection conn = User.GetConnection();
-            _transaction = conn.BeginTransaction();
-        }
-
-        public void RollbackTransaction() {
-            if (_transaction != null && _transaction.Connection != null) {
-                _transaction.Rollback();
-                _transaction.Dispose();
-                _transaction = null;
-            }
-        }
-
-        public void CommitTransaction() {
-            if (_transaction != null && _transaction.Connection != null) {
-                _transaction.Commit();
-                _transaction.Dispose();
-                _transaction = null;
-            }
         }
 
         protected SqlParameter _P(string name, object value, object defIfNull = null) {
@@ -391,10 +349,6 @@ namespace BioLink.Data {
         /// Holds user credentials, and is the conduit to gaining a Connection object
         /// </summary>
         public User User { get; private set; }
-
-        public bool InTransaction {
-            get { return _transaction != null; }
-        }
 
         public event ServiceMessageDelegate ServiceMessage;
 
