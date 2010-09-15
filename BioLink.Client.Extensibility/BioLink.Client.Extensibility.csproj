@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="BioLinkCorePlugin.cs" />
     <Compile Include="BioLinkPluginBase.cs" />
+    <Compile Include="ChangeContainer.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="ControlHostWindow.xaml.cs">
       <DependentUpon>ControlHostWindow.xaml</DependentUpon>
@@ -89,9 +90,13 @@
     <Compile Include="IBioLinkPlugin.cs" />
     <Compile Include="IBioLinkReport.cs" />
     <Compile Include="Export\TabularDataExporter.cs" />
+    <Compile Include="IChangeContainer.cs" />
     <Compile Include="IClosable.cs" />
     <Compile Include="LatLongInput.xaml.cs">
       <DependentUpon>LatLongInput.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LookupControl.xaml.cs">
+      <DependentUpon>LookupControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="MenuItemBuilder.cs" />
     <Compile Include="MultimediaControl.xaml.cs">
@@ -119,6 +124,9 @@
       <DependentUpon>ReportResults.xaml</DependentUpon>
     </Compile>
     <Compile Include="ResourceTempFileManager.cs" />
+    <Compile Include="rtf\BindableRichTextBox.cs" />
+    <Compile Include="rtf\StringToRtfConverter.cs" />
+    <Compile Include="rtf\StringToXamlConverter.cs" />
     <Compile Include="TabularDataViewer.xaml.cs">
       <DependentUpon>TabularDataViewer.xaml</DependentUpon>
     </Compile>
@@ -172,6 +180,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="LatLongInput.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LookupControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -249,6 +261,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="images\Rename.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Find.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Ellipsis.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

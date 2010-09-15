@@ -20,7 +20,7 @@ namespace BioLink.Client.Extensibility {
     /// <summary>
     /// Interaction logic for TraitControl.xaml
     /// </summary>
-    public partial class TraitControl : DatabaseActionControl<SupportService> {
+    public partial class TraitControl : DatabaseActionControl {
 
         private List<TraitViewModel> _model;
 
@@ -30,17 +30,16 @@ namespace BioLink.Client.Extensibility {
         }
         #endregion
 
-        public TraitControl(User user, TraitCategoryType category, int? intraCatId) :base(new SupportService(user), "Traits:" + category.ToString() + ":" + intraCatId.Value) {
-
-            this.User = user;
+        public TraitControl(User user, TraitCategoryType category, int? intraCatId) :base(user, "Traits:" + category.ToString() + ":" + intraCatId.Value) {
+            
             this.TraitCategory = category;
             this.IntraCatID = intraCatId.Value;
 
             InitializeComponent();
 
             if (intraCatId.HasValue) {
-                SupportService s = new SupportService(user);
-                var list = s.GetTraits(category.ToString(), intraCatId.Value);
+                SupportService service = new SupportService(user);
+                var list = service.GetTraits(category.ToString(), intraCatId.Value);
                 var modellist = list.Select((t) => {
                     return new TraitViewModel(t);
                 });
@@ -70,13 +69,13 @@ namespace BioLink.Client.Extensibility {
         private void AddTraitEditor(TraitViewModel model) {
             var itemControl = new TraitElementControl(User, model);
             itemControl.TraitChanged += new TraitElementControl.TraitEventHandler((source, trait) => {
-                RegisterUniquePendingAction(new UpdateTraitDatabaseAction(trait.Model));
+                RegisterUniquePendingChange(new UpdateTraitDatabaseAction(trait.Model));
             });
 
             itemControl.TraitDeleted += new TraitElementControl.TraitEventHandler((source, trait) => {
                 _model.Remove(trait);
                 ReloadTraitPanel();
-                RegisterPendingAction(new DeleteTraitDatabaseAction(trait.Model));                
+                RegisterPendingChange(new DeleteTraitDatabaseAction(trait.Model));                
             });
             traitsPanel.Children.Add(itemControl);
         }
@@ -87,7 +86,9 @@ namespace BioLink.Client.Extensibility {
 
         private void AddNewTrait() {
 
-            List<String> traitTypes = Service.GetTraitNamesForCategory(TraitCategory.ToString());
+            var service = new TaxaService(User);
+
+            List<String> traitTypes = service.GetTraitNamesForCategory(TraitCategory.ToString());
 
             var picklist = new PickListWindow(User, "Choose a trait type...", () => {
                 return traitTypes;
@@ -107,15 +108,13 @@ namespace BioLink.Client.Extensibility {
 
                 TraitViewModel viewModel = new TraitViewModel(t);
                 _model.Add(viewModel);
-                RegisterUniquePendingAction(new UpdateTraitDatabaseAction(t));
+                RegisterUniquePendingChange(new UpdateTraitDatabaseAction(t));
                 ReloadTraitPanel();
             }
 
         }
 
         #region Properties
-
-        public User User { get; private set; }
 
         public TraitCategoryType TraitCategory { get; private set; }
 

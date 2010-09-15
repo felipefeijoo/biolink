@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows;
 using System.ComponentModel;
 using System.Windows.Input;
+using System.IO;
 
 namespace BioLink.Client.Utilities {
 
@@ -107,6 +108,15 @@ namespace BioLink.Client.Utilities {
                 toCheck = toCheck.BaseType;
             }
             return false;
+        }
+
+        public static void SetRTF(this RichTextBox control, string fragment) {
+            if (string.IsNullOrEmpty(fragment)) {
+                control.Document.Blocks.Clear();
+            } else {
+                control.SelectAll();                
+                control.Selection.Load(new MemoryStream(UTF8Encoding.Default.GetBytes(fragment)), DataFormats.Rtf);                                
+            }
         }
 
     }

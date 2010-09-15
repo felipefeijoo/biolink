@@ -18,7 +18,7 @@ namespace BioLink.Client.Extensibility {
     /// <summary>
     /// Interaction logic for ControlHostWindow.xaml
     /// </summary>
-    public partial class ControlHostWindow : Window {
+    public partial class ControlHostWindow : ChangeContainer {
 
         #region DesignerConstructor
         public ControlHostWindow() {
@@ -26,54 +26,43 @@ namespace BioLink.Client.Extensibility {
         }
         #endregion
 
-        public ControlHostWindow(UIElement element, SizeToContent sizeToContent) {
-            InitializeComponent();
+        public ControlHostWindow(User user, UIElement element, SizeToContent sizeToContent) : base(user) {           
+            InitializeComponent();            
             this.Control = element;
             this.SizeToContent = sizeToContent;
             ControlHost.Children.Add(element);
+            this.ChangeRegistered += new PendingChangedRegisteredHandler((source, a) => {
+                btnApply.IsEnabled = true;
+            });
 
-            IClosable closable = element as IClosable;
-            if (closable != null) {
-                closable.PendingChangedRegistered +=new PendingChangedRegisteredHandler((source, action) => {
-                    btnApply.IsEnabled = true;
-                });
-
-                closable.PendingChangesCommitted += new PendingChangesCommittedHandler((source) => {
-                    btnApply.IsEnabled = false;
-                });
-
-                this.Closed +=new EventHandler((source, e) => {
-                    closable.Dispose();
-                });
-
-            }
+            this.ChangesCommitted += new PendingChangesCommittedHandler((source) => {
+                btnApply.IsEnabled = false;
+            });
         }
 
-        public UIElement Control { get; private set; }
-
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-            if (Control != null && Control is IClosable) {
-                var closable = Control as IClosable;
-                if (!closable.RequestClose()) {
-                    e.Cancel = true;
-                }
+            if (!RequestClose()) {
+                e.Cancel = true;
             }
         }
 
         public bool RequestClose() {
-            if (Control != null && Control is IClosable) {
-                var closable = Control as IClosable;
-                return closable.RequestClose();
+            if (HasPendingChanges) {
+                if (this.Question("You have unsaved changes. Are you sure you want to discard those changes?", "Discard changes?")) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
             return true;
         }
 
         public void ApplyChanges() {
 
-            if (Control != null && Control is IClosable) {
-                var closable = Control as IClosable;
-                closable.ApplyChanges();
+            if (HasPendingChanges) {
+                CommitPendingChanges();
             }
+
         }
 
         public void Dispose() {
@@ -82,40 +71,24 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        public bool HasPendingChanges {
-            get {
-                if (Control is IClosable) {
-                    return (Control as IClosable).HasPendingChanges;
-                }
-                return false;
-            }
-        }
-
-
         private void btnCancel_Click(object sender, RoutedEventArgs e) {
-            //IClosable closable = Control as IClosable;
-            //if (closable != null) {
-            //    if (!closable.RequestClose()) {
-            //        return;
-            //    }
-            //}
             this.Close();
         }
 
         private void btnApply_Click(object sender, RoutedEventArgs e) {
-            IClosable closable = Control as IClosable;
-            if (closable != null && closable.HasPendingChanges) {
-                closable.ApplyChanges();
-            }
+            ApplyChanges();
         }
 
         private void btnOk_Click(object sender, RoutedEventArgs e) {
-            IClosable closable = Control as IClosable;
-            if (closable != null && closable.HasPendingChanges) {
-                closable.ApplyChanges();
-            }
+            ApplyChanges();
             this.Close();
         }
+
+        #region Properties
+
+        public UIElement Control { get; private set; }
+
+        #endregion
 
     }
 

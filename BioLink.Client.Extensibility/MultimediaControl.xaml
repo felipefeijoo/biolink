@@ -1,5 +1,4 @@
-﻿<src:DatabaseActionControl x:Class="BioLink.Client.Extensibility.MultimediaControl"
-                           x:TypeArguments="data:SupportService"
+﻿<src:DatabaseActionControl x:Class="BioLink.Client.Extensibility.MultimediaControl"                           
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 

@@ -7,28 +7,35 @@ using BioLink.Data.Model;
 
 namespace BioLink.Data {
 
-    public abstract class DatabaseAction<T> where T : BioLinkService {
+    public abstract class DatabaseAction {
 
-        public void Process(T service) {
-            ProcessImpl(service);
+        public void Process(User user) {
+            ProcessImpl(user);
         }
 
-        protected abstract void ProcessImpl(T service);
+        protected abstract void ProcessImpl(User user);
     }
 
-    public class GenericDatbaseAction<T> : DatabaseAction<T> where T : BioLinkService {
-
-        private Action<T> _action;
-
-        public GenericDatbaseAction(Action<T> action) {
-            _action = action;
+    public abstract class GenericDatabaseAction<T> : DatabaseAction {
+        
+        public GenericDatabaseAction(T model) {
+            Model = model;            
         }
 
-        protected override void ProcessImpl(T service) {
-            if (_action != null) {
-                _action(service);
+        public T Model { get; private set; }
+
+        public override bool Equals(object obj) {
+            GenericDatabaseAction<T> other = obj as GenericDatabaseAction<T>;
+            if (other != null) {
+                return other.Model.Equals(this.Model);
             }
+            return false;
         }
+
+        public override int GetHashCode() {
+            return base.GetHashCode() + Model.GetHashCode();
+        }
+
     }
 
 }

@@ -170,7 +170,7 @@ namespace BioLink.Client.Extensibility {
                 }
             }
 
-            ControlHostWindow form = new ControlHostWindow(content, sizeToContent);
+            ControlHostWindow form = new ControlHostWindow(User, content, sizeToContent);
             form.Owner = ParentWindow;
             form.Title = title;
             form.Name = "HostFor_" + content.GetType().Name;
@@ -257,6 +257,24 @@ namespace BioLink.Client.Extensibility {
         public void PinObject(PinnableObject pinnable) {
             BioLinkCorePlugin core = GetExtensionsOfType<BioLinkCorePlugin>()[0];
             core.PinObject(pinnable);
+        }
+
+        public bool StartSelect(Type datatype, Action<SelectionResult> successAction) {
+
+            var list = new List<IBioLinkPlugin>();
+
+            TraversePlugins((p) => {
+                if (p.CanSelect(datatype)) {
+                    list.Add(p);
+                }
+            });
+
+            if (list.Count == 1) {
+                list[0].Select(datatype, successAction);
+                return true;
+            }
+
+            return false;
         }
 
         static void DoEvents() {

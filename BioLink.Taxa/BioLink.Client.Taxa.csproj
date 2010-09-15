@@ -47,8 +47,20 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AvailableNameControl.xaml.cs">
+      <DependentUpon>AvailableNameControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonNamesControl.xaml.cs">
+      <DependentUpon>CommonNamesControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DefaultDragAdorner.cs" />
+    <Compile Include="GenusAvailableNameControl.xaml.cs">
+      <DependentUpon>GenusAvailableNameControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MaterialForTaxonReport.cs" />
+    <Compile Include="SpeciesAvailableNameControl.xaml.cs">
+      <DependentUpon>SpeciesAvailableNameControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="StatisticsReport.cs" />
     <Compile Include="TaxonMenuFactory.cs" />
     <Compile Include="DragDropOptions.xaml.cs">
@@ -88,6 +100,22 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="AvailableNameControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CommonNamesControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GenusAvailableNameControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SpeciesAvailableNameControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="TaxonNameDetails.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

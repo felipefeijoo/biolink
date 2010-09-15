@@ -8,7 +8,7 @@ using BioLink.Client.Extensibility;
 
 namespace BioLink.Client.Taxa {
 
-    public abstract class TaxonDatabaseAction : DatabaseAction<TaxaService> {
+    public abstract class TaxonDatabaseAction : DatabaseAction {
     }
 
     public class MoveTaxonDatabaseAction : TaxonDatabaseAction {
@@ -21,7 +21,8 @@ namespace BioLink.Client.Taxa {
         public TaxonViewModel Taxon { get; private set; }
         public TaxonViewModel NewParent { get; private set; }
 
-        protected override void ProcessImpl(TaxaService service) {
+        protected override void ProcessImpl(User user) {
+            var service = new TaxaService(user);
             service.MoveTaxon(Taxon.TaxaID.Value, NewParent.TaxaID.Value);
         }
 
@@ -38,7 +39,8 @@ namespace BioLink.Client.Taxa {
 
         public Taxon Taxon { get; private set; }
 
-        protected override void ProcessImpl(TaxaService service) {
+        protected override void ProcessImpl(User user) {
+            var service = new TaxaService(user);
             service.UpdateTaxon(Taxon);
         }
 
@@ -72,7 +74,8 @@ namespace BioLink.Client.Taxa {
         public TaxonViewModel Target { get; private set; }
         public bool CreateNewIDRecord { get; private set; }
 
-        protected override void ProcessImpl(TaxaService service) {
+        protected override void ProcessImpl(User user) {
+            var service = new TaxaService(user);
             service.MergeTaxon(Source.TaxaID.Value, Target.TaxaID.Value, CreateNewIDRecord);
             service.DeleteTaxon(Source.TaxaID.Value);
         }
@@ -92,7 +95,8 @@ namespace BioLink.Client.Taxa {
 
         public TaxonViewModel Taxon { get; private set; }
 
-        protected override void ProcessImpl(TaxaService service) {
+        protected override void ProcessImpl(User user) {
+            var service = new TaxaService(user);
             service.DeleteTaxon(Taxon.TaxaID.Value);
         }
 
@@ -110,7 +114,8 @@ namespace BioLink.Client.Taxa {
 
         public TaxonViewModel Taxon { get; private set; }
 
-        protected override void ProcessImpl(TaxaService service) {                           
+        protected override void ProcessImpl(User user) {
+            var service = new TaxaService(user);
             service.InsertTaxon(Taxon.Taxon);
             // The service will have updated the new taxon with its database identity.
             // If this taxon has any children we can update their identity too.

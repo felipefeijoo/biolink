@@ -7,7 +7,7 @@ using BioLink.Data;
 
 namespace BioLink.Client.Tools {
 
-    abstract class PhraseDatabaseAction : DatabaseAction<SupportService> {
+    abstract class PhraseDatabaseAction : DatabaseAction {
 
         protected PhraseDatabaseAction(Phrase phrase) {
             this.Phrase = phrase;
@@ -23,7 +23,8 @@ namespace BioLink.Client.Tools {
             this.NewValue = newvalue;
         }
 
-        protected override void ProcessImpl(SupportService service) {
+        protected override void ProcessImpl(User user) {
+            var service = new SupportService(user);
             service.RenamePhrase(Phrase.PhraseID, NewValue);
         }
 
@@ -36,7 +37,8 @@ namespace BioLink.Client.Tools {
             : base(phrase) {
         }
 
-        protected override void ProcessImpl(SupportService service) {
+        protected override void ProcessImpl(User user) {
+            var service = new SupportService(user);
             service.DeletePhrase(Phrase.PhraseID);
         }
     }
@@ -46,19 +48,21 @@ namespace BioLink.Client.Tools {
             : base(phrase) {
         }
 
-        protected override void ProcessImpl(SupportService service) {
+        protected override void ProcessImpl(User user) {
+            var service = new SupportService(user);
             service.AddPhrase(this.Phrase);
         }
 
     }
 
-    class DeletePhraseCategoryAction : DatabaseAction<SupportService> {
+    class DeletePhraseCategoryAction : DatabaseAction {
 
         public DeletePhraseCategoryAction(PhraseCategory category) {
             this.PhraseCategory = category;
         }
 
-        protected override void ProcessImpl(SupportService service) {
+        protected override void ProcessImpl(User user) {
+            var service = new SupportService(user);
             service.DeletePhraseCategory(PhraseCategory.CategoryID);
         }
 

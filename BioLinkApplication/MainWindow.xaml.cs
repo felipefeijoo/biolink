@@ -14,13 +14,13 @@ using System.Windows.Shapes;
 using BioLink.Client.Extensibility;
 using BioLink.Client.Utilities;
 using System.Net;
-
+using BioLink.Data;
 
 namespace BioLinkApplication {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window {
+    public partial class MainWindow : ChangeContainer {
 
         private static MainWindow _instance;
         private BiolinkHost _hostControl;
@@ -74,9 +74,9 @@ namespace BioLinkApplication {
             contentGrid.Children.Clear();
             _hostControl = new BiolinkHost();
             _hostControl.User = (e as LoginSuccessfulEventArgs).User;
+            this.User = _hostControl.User;
             contentGrid.Children.Add(_hostControl);
             _hostControl.StartUp();
-
         }
 
         public bool LogOut() {

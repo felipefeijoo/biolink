@@ -3,13 +3,13 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Extensibility {
 
-    public abstract class TraitDatabaseActionBase : DatabaseAction<SupportService> {
+    public abstract class TraitDatabaseActionBase : DatabaseAction {
 
         public TraitDatabaseActionBase(Trait trait) {
             this.Trait = trait;
         }
 
-        public Trait Trait { get; set; }
+        public Trait Trait { get; set; }        
     }
 
     public class UpdateTraitDatabaseAction : TraitDatabaseActionBase {
@@ -18,7 +18,8 @@ namespace BioLink.Client.Extensibility {
             : base(trait) {
         }
 
-        protected override void ProcessImpl(SupportService service) {
+        protected override void ProcessImpl(User user) {
+            SupportService service = new SupportService(user);
             Trait.TraitID = service.InsertOrUpdateTrait(Trait);
         }
 
@@ -42,7 +43,8 @@ namespace BioLink.Client.Extensibility {
             : base(trait) {
         }
 
-        protected override void ProcessImpl(SupportService service) {
+        protected override void ProcessImpl(User user) {
+            SupportService service = new SupportService(user);
             service.DeleteTrait(Trait.TraitID);
         }
 
