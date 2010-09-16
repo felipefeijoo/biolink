@@ -144,8 +144,6 @@ namespace BioLink.Client.Extensibility {
 
         public event ValueChangedHandler ValueChanged;
 
-        public delegate void ValueChangedHandler(object source, string value);
-
         protected SupportService Service { get; private set; }
 
     }
@@ -157,4 +155,6 @@ namespace BioLink.Client.Extensibility {
         DistinctList,
         MultimediaType
     }
+
+    public delegate void ValueChangedHandler(object source, string value);
 }

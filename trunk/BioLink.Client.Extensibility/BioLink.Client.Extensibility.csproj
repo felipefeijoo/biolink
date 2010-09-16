@@ -125,6 +125,7 @@
     </Compile>
     <Compile Include="ResourceTempFileManager.cs" />
     <Compile Include="rtf\BindableRichTextBox.cs" />
+    <Compile Include="rtf\RtfToPlainTextConverter.cs" />
     <Compile Include="rtf\StringToRtfConverter.cs" />
     <Compile Include="rtf\StringToXamlConverter.cs" />
     <Compile Include="TabularDataViewer.xaml.cs">

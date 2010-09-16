@@ -256,6 +256,15 @@ namespace BioLink.Data {
             );
         }
 
+        public GenusAvailableName GetGenusAvailableName(int taxonId) {
+            var mapper = new GenericMapperBuilder<GenusAvailableName>().build();
+            GenusAvailableName result = null;
+            StoredProcReaderFirst("spGANGet", (reader) => {
+                result = mapper.Map(reader);
+            }, _P("intBiotaID", taxonId));
+            return result;
+        }
+
     }
 
     public class DataValidationResult {

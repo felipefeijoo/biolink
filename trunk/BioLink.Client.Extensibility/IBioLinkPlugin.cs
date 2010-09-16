@@ -144,5 +144,11 @@ namespace BioLink.Client.Extensibility {
         public bool SeparatorAfter { get; set; }
     }
 
+    public interface ISelectionHostControl {
+
+        SelectionResult Select();
+
+    }
+
 
 }
