@@ -5,8 +5,40 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="381" d:DesignWidth="722">
     <Grid>
-        <TextBlock Text="Genus Available Names..." />        
+        <GroupBox Header="Type Species Designation" Height="84" Margin="12,12,12,0" Name="groupBox1" VerticalAlignment="Top">
+            <Grid>
+                <RadioButton Content="Designated (Type Species)" Height="16" HorizontalAlignment="Left" Margin="6,6,0,0" Name="radioButton1" VerticalAlignment="Top" Width="198" Grid.ColumnSpan="2" />
+                <RadioButton Content="None required" Height="16" HorizontalAlignment="Left" Margin="6,28,0,0" Name="radioButton2" VerticalAlignment="Top" Width="198" Grid.ColumnSpan="2" />
+                <RadioButton Content="Not Designated (With Included Species)" Height="16" HorizontalAlignment="Left" Margin="210,6,0,0" Name="radioButton3" VerticalAlignment="Top" Width="333" />
+                <RadioButton Content="Not Designated (Without Included Species)" Height="16" HorizontalAlignment="Left" Margin="210,28,0,0" Name="radioButton4" VerticalAlignment="Top" Width="333" />
+            </Grid>
+        </GroupBox>
+        <TabControl Margin="12,102,14,12" Name="tabControl1">
+            
+            <TabItem Header="_General" Name="tabGeneral">
+                <Grid>
+                    <Label Content="Reference:" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" Width="95" />
+                    <ext:LookupControl HorizontalAlignment="Left" Margin="108,12,0,0" Name="txtReference" VerticalAlignment="Top" Width="270" ObjectID="{Binding RefID}" Text="{Binding RefCode}" />
+                    <Label Content="Name Status:" Height="28" HorizontalAlignment="Left" Margin="6,40,0,0" Name="label2" VerticalAlignment="Top" Width="95" />
+                    <Label Content="Page:" Height="28" HorizontalAlignment="Left" Margin="7,74,0,0" Name="label3" VerticalAlignment="Top" Width="95" />
+                    <Button Content="Standard Phrases..." HorizontalAlignment="Right" Margin="0,206,6,0" Name="button1" Width="118" Height="23" VerticalAlignment="Top" />
+                    <ext:PickListControl Height="23" HorizontalAlignment="Left" Margin="108,45,0,0" Name="txtNameStatus" VerticalAlignment="Top" Width="270" Text="{Binding AvailableNameStatus}"/>
+                    <TextBox Height="23" HorizontalAlignment="Left" Margin="108,79,0,0" Name="txtPage" VerticalAlignment="Top" Width="270" Text="{Binding RefPage}"/>                    
+                    <Label Content="Qualification:" Height="28" HorizontalAlignment="Left" Margin="7,108,0,0" Name="label4" VerticalAlignment="Top" Width="94" />
+                    <ext:BindableRichTextBox Height="84" Margin="108,116,6,0" Name="txtQual" VerticalAlignment="Top" RTF="{Binding RefQual}" />
+                </Grid>
+            </TabItem>
+            
+            <TabItem Header="T_ype Species" Name="tabTypeSpecies">
+                <Grid />                
+            </TabItem>
+            
+            <TabItem Header="_Included Species" Name="tabIncludedSpecies">
+                <Grid />
+            </TabItem>
+            
+        </TabControl>
     </Grid>
 </ext:DatabaseActionControl>

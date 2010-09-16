@@ -50,9 +50,49 @@ namespace BioLink.Client.Extensibility {
                 PluginManager.Instance.StartSelect(t, (result) => {
                     txt.Text = result.Description;
                     this.ObjectID = result.ObjectID;
+                    this.InvokeIfRequired(() => {
+                        txt.Focus();
+                    });
                 });
             }
         }
+
+        #region Dependency Properties
+
+        public static readonly DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(LookupControl), new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnTextChanged)));
+
+        private static void OnTextChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            var control = (LookupControl)obj;
+            control.txt.Text = args.NewValue as String;
+            control.FireValueChanged(control.txt.Text);
+        }
+
+        protected void FireValueChanged(string text) {
+            if (this.ValueChanged != null) {
+                ValueChanged(this, text);
+            }
+        }
+
+        public String Text {
+            get { return (string)GetValue(TextProperty); }
+            set { SetValue(TextProperty, value); }
+        }
+
+        public static readonly DependencyProperty ObjectIDProperty = DependencyProperty.Register("ObjectID", typeof(int?), typeof(LookupControl), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnObjectIDChanged)));
+
+        private static void OnObjectIDChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            //var control = (LookupControl) obj;
+            //control.txt.Text = args.NewValue as String;
+            //control.FireValueChanged(control.txt.Text);
+        }
+
+        public int? ObjectID {
+            get { return (int?)GetValue(ObjectIDProperty); }
+            set { SetValue(ObjectIDProperty, value); }
+        }
+
+        #endregion
+
 
         #region Properties
 
@@ -60,9 +100,11 @@ namespace BioLink.Client.Extensibility {
 
         public LookupType LookupType { get; private set; }
 
-        public int? ObjectID { get; set; }
+        #endregion
 
-        public string Text { get; set; }
+        #region Events
+
+        public event ValueChangedHandler ValueChanged;
 
         #endregion
 

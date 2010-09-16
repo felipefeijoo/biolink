@@ -55,10 +55,13 @@ namespace BioLink.Client.Taxa {
 
         }
 
-        private void InsertPhrase() {
+        private void InsertPhrase() {            
             string phrase = PickListControl.ShowPickList(User, PickListType.Phrase, "ALN Standard Phrases", TraitCategoryType.Taxon);
             if (phrase != null) {
-                txtQual.AppendText(phrase);
+                var tr = new TextRange(txtQual.Selection.Start, txtQual.Selection.End);
+                tr.Text  = phrase;
+                txtQual.CaretPosition = txtQual.Selection.End;
+                txtQual.Focus();
             }
         }
 

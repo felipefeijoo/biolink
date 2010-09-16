@@ -20,17 +20,28 @@ namespace BioLink.Client.Extensibility {
     /// </summary>
     public partial class ControlHostWindow : ChangeContainer {
 
+        private Action<SelectionResult> _selectionCallback;
+
         #region DesignerConstructor
         public ControlHostWindow() {
             InitializeComponent();
         }
         #endregion
 
-        public ControlHostWindow(User user, UIElement element, SizeToContent sizeToContent) : base(user) {           
+        public ControlHostWindow(User user, Control element, SizeToContent sizeToContent) : base(user) {           
             InitializeComponent();            
-            this.Control = element;
-            this.SizeToContent = sizeToContent;
-            ControlHost.Children.Add(element);
+
+            if (element.MinWidth > 0) {
+                this.MinWidth = element.MinWidth + 15;                
+            }
+
+            if (element.MinHeight > 0) {
+                this.MinHeight = element.MinHeight + 15;
+            }
+
+            this.Control = element;            
+            this.SizeToContent = sizeToContent;                        
+            ControlHost.Children.Add(element);            
             this.ChangeRegistered += new PendingChangedRegisteredHandler((source, a) => {
                 btnApply.IsEnabled = true;
             });
@@ -38,6 +49,23 @@ namespace BioLink.Client.Extensibility {
             this.ChangesCommitted += new PendingChangesCommittedHandler((source) => {
                 btnApply.IsEnabled = false;
             });
+
+            btnSelect.Click += new RoutedEventHandler(btnSelect_Click);
+        }
+
+        void btnSelect_Click(object sender, RoutedEventArgs e) {
+            DoSelect();
+        }
+
+        private void DoSelect() {
+            if (_selectionCallback != null && Control is ISelectionHostControl) {
+                var ctl = Control as ISelectionHostControl;
+                var result = ctl.Select();
+                if (result != null) {
+                    _selectionCallback(result);
+                }                
+            }
+
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
@@ -84,9 +112,25 @@ namespace BioLink.Client.Extensibility {
             this.Close();
         }
 
+        public void BindSelectCallback(Action<SelectionResult> selectionFunc) {
+            if (selectionFunc != null) {
+                btnSelect.Visibility = Visibility.Visible;
+                btnSelect.IsEnabled = true;
+                _selectionCallback = selectionFunc;
+            } else {
+                ClearSelectCallback();
+            }
+
+        }
+
+        public void ClearSelectCallback() {
+            _selectionCallback = null;
+            btnSelect.Visibility = Visibility.Hidden;
+        }
+
         #region Properties
 
-        public UIElement Control { get; private set; }
+        public Control Control { get; private set; }
 
         #endregion
 

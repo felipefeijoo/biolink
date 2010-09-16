@@ -152,7 +152,7 @@ namespace BioLink.Client.Extensibility {
 
         }
 
-        public ControlHostWindow AddNonDockableContent(IBioLinkPlugin plugin, UIElement content, string title, SizeToContent sizeToContent, bool autoSavePosition = true, Action<Window> initFunc = null) {
+        public ControlHostWindow AddNonDockableContent(IBioLinkPlugin plugin, Control content, string title, SizeToContent sizeToContent, bool autoSavePosition = true, Action<ControlHostWindow> initFunc = null) {
 
             // First check to see if this content is already being shown...
             if (content is IIdentifiableContent) {
@@ -176,14 +176,16 @@ namespace BioLink.Client.Extensibility {
             form.Name = "HostFor_" + content.GetType().Name;
             form.SizeToContent = sizeToContent;
 
-            form.Initialized +=new EventHandler((source, e) => {
-                Config.RestoreWindowPosition(User, form);
-            });
+            if (autoSavePosition) {
 
-            form.Closing += new System.ComponentModel.CancelEventHandler((source, e) => {
-                Config.SaveWindowPosition(User, form);
-            });
-            
+                Config.RestoreWindowPosition(User, form);
+
+                form.Closing += new System.ComponentModel.CancelEventHandler((source, e) => {
+                    Config.SaveWindowPosition(User, form);
+                });
+
+            }
+           
             if (initFunc != null) {
                 initFunc(form);
             }

@@ -59,17 +59,18 @@ namespace BioLink.Client.Tools {
             }
 
             _phraseManager.Show();
-
+            _phraseManager.Focus();
         }
 
         private void ShowReferenceManager() {
             if (_refManager == null) {
-                _refManager = PluginManager.Instance.AddNonDockableContent(this, new ReferenceManager(User), "Reference Manager", SizeToContent.Manual);
+                _refManager = PluginManager.Instance.AddNonDockableContent(this, new ReferenceManager(User), "Reference Manager", SizeToContent.Manual,true,(window)=> {
+                    window.btnOk.IsDefault = false;
+                });
+                _refManager.Closed += new EventHandler((sender, e) => {
+                    _refManager = null;
+                });
             }
-
-            _refManager.Closed +=new EventHandler((sender, e) => {
-                _refManager = null;
-            });
 
             _refManager.Show();
             _refManager.Focus();
@@ -86,7 +87,8 @@ namespace BioLink.Client.Tools {
 
         public override void Select(Type t, Action<SelectionResult> success) {
             if (typeof(ReferenceSearchResult).IsAssignableFrom(t)) {
-                ShowReferenceManager();                
+                ShowReferenceManager();
+                _refManager.BindSelectCallback(success);
             } else {
                 throw new Exception("Unhandled Selection Type: " + t.Name);
             }

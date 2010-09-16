@@ -55,12 +55,12 @@ namespace BioLink.Data {
         #region References
 
         public List<ReferenceSearchResult> FindReferences(string refCode, string author, string year, string other) {
-            var mapper = new GenericMapperBuilder<ReferenceSearchResult>().build();
+            var mapper = new GenericMapperBuilder<ReferenceSearchResult>().Map("FullRTF","RefRTF").build();
             return StoredProcToList("spReferenceFind", mapper,
-                _P("vchrRefCode", refCode),
-                _P("vchrAuthor", author),
-                _P("vchrYear", year),
-                _P("vchrOther", other));
+                _P("vchrRefCode", refCode, DBNull.Value),
+                _P("vchrAuthor", author, DBNull.Value),
+                _P("vchrYear", year, DBNull.Value),
+                _P("vchrOther", other, DBNull.Value));
         }
 
         #endregion

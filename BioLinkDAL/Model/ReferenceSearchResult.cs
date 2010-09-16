@@ -4,7 +4,14 @@ using System.Linq;
 using System.Text;
 
 namespace BioLink.Data.Model {
-    public class ReferenceSearchResult {
+
+    /// <summary>
+    /// 
+    /// The reference search result actually doesn't have a GUID, but it needs to extend from because
+    /// downstream classes expect that all data objects have guids...
+    /// 
+    /// </summary>
+    public class ReferenceSearchResult : GUIDObject {
 
         public int RefID { get; set; }
         public string RefCode { get; set; }
