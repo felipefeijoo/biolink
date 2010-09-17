@@ -37,7 +37,7 @@ namespace BioLink.Client.Extensibility {
                 commentLink.Inlines.Add(new Run("Edit comment"));
             }
 
-            Model.DataChanged += new DataChangedHandler(() => {
+            Model.DataChanged += new DataChangedHandler((vm) => {
                 FireTraitChanged();
             });
             

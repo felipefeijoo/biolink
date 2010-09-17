@@ -9,9 +9,13 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="3"/>
-            <ColumnDefinition Width="25"/>
+            <ColumnDefinition Width="23"/>
         </Grid.ColumnDefinitions>
         <TextBox Grid.Column="0" x:Name="txt" TextChanged="txt_TextChanged" KeyDown="txt_KeyDown"></TextBox>
-        <Button Grid.Column="2" x:Name="btn" Content="..." VerticalContentAlignment="Top" Click="btn_Click" Focusable="False" />
+        <Button Grid.Column="2" x:Name="btn" VerticalContentAlignment="Top" Click="btn_Click" Focusable="False"  Width="23" Height="23" VerticalAlignment="Top">
+            <Button.Content>
+                <Image Source="images/Ellipsis.png" Stretch="None" SnapsToDevicePixels="True" />
+            </Button.Content>
+        </Button>
     </Grid>
 </UserControl>

@@ -47,18 +47,21 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AvailableNameControl.xaml.cs">
+    <Compile Include="namecontrols\AvailableNameControl.xaml.cs">
       <DependentUpon>AvailableNameControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="CommonNamesControl.xaml.cs">
+    <Compile Include="namecontrols\CommonNamesControl.xaml.cs">
       <DependentUpon>CommonNamesControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="DefaultDragAdorner.cs" />
-    <Compile Include="GenusAvailableNameControl.xaml.cs">
+    <Compile Include="namecontrols\GenusAvailableNameControl.xaml.cs">
       <DependentUpon>GenusAvailableNameControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="MaterialForTaxonReport.cs" />
-    <Compile Include="SpeciesAvailableNameControl.xaml.cs">
+    <Compile Include="namecontrols\GenusAvailableNameDatabaseAction.cs" />
+    <Compile Include="namecontrols\GenusAvailableNameViewModel.cs" />
+    <Compile Include="namecontrols\NameControlBase.cs" />
+    <Compile Include="namecontrols\SpeciesAvailableNameControl.xaml.cs">
       <DependentUpon>SpeciesAvailableNameControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="StatisticsReport.cs" />
@@ -100,19 +103,19 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="AvailableNameControl.xaml">
+    <Page Include="namecontrols\AvailableNameControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="CommonNamesControl.xaml">
+    <Page Include="namecontrols\CommonNamesControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="GenusAvailableNameControl.xaml">
+    <Page Include="namecontrols\GenusAvailableNameControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="SpeciesAvailableNameControl.xaml">
+    <Page Include="namecontrols\SpeciesAvailableNameControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

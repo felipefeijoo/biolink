@@ -71,7 +71,7 @@ namespace BioLink.Client.Taxa {
 
         public bool IsRootNode { get; private set; }
 
-        void TaxonViewModel_DataChanged() {
+        void TaxonViewModel_DataChanged(ChangeableModelBase model) {
             // Force the icon to be reconstructed, possibly now with a changed badge/overlay
             _image = null;
             RaisePropertyChanged("Icon");

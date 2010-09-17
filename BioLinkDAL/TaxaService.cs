@@ -265,6 +265,46 @@ namespace BioLink.Data {
             return result;
         }
 
+        public void InsertOrUpdateGenusAvailableName(GenusAvailableName name) {
+            StoredProcUpdate("spGANInsertUpdate",
+                _P("intBiotaID", name.BiotaID),
+                _P("intRefID", name.RefID),
+                _P("vchrRefPage", name.RefPage),
+                _P("vchrAvailableNameStatus", name.AvailableNameStatus),
+                _P("txtRefQual", name.RefQual),
+                _P("sintDesignation", name.Designation),
+                _P("vchrTypeSpecies", name.TypeSpecies),
+                _P("vchrTSFixationMethod", name.TSFixationMethod)
+            );
+        }
+
+        public List<GANIncludedSpecies> GetGenusAvailableNameIncludedSpecies(int taxonId) {
+            var mapper = new GenericMapperBuilder<GANIncludedSpecies>().build();
+            return StoredProcToList("spGANIncludedSpeciesGet", mapper, _P("intBiotaID", taxonId));
+        }
+
+        public void DeleteGANIncludedSpecies(int GANISID) {
+            StoredProcUpdate("spGANIncludedSpeciesDelete", _P("intGANISID", GANISID));
+        }
+
+        public void UpdateGANIncludedSpecies(GANIncludedSpecies model) {
+            StoredProcUpdate("spGANIncludedSpeciesUpdate", 
+                _P("intGANISID", model.GANISID),
+                _P("intBiotaID", model.BiotaID),
+                _P("vchrIncludedSpecies", model.IncludedSpecies)
+            );
+        }
+
+        public void InsertGANIncludedSpecies(GANIncludedSpecies model) {
+            var retval = ReturnParam("RetVal", System.Data.SqlDbType.Int);
+            StoredProcUpdate("spGANIncludedSpeciesInsert",
+                _P("intBiotaID", model.BiotaID),
+                _P("vchrIncludedSpecies", model.IncludedSpecies),
+                retval
+            );
+            model.GANISID = (int) retval.Value;
+
+        }
     }
 
     public class DataValidationResult {
