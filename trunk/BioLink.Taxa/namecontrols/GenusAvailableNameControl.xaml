@@ -52,20 +52,20 @@
             
             <TabItem Header="_Included Species" Name="tabIncludedSpecies">
                 <Grid>
-                    <ListBox Margin="0,0,0,29" Name="lstIncludedSpecies" ItemContainerStyle="{StaticResource StretchedContainerStyle}">
-                        <ListBox.Resources>
+                    <ItemsControl Margin="0,0,0,29" Name="lstIncludedSpecies">
+                        <ItemsControl.Resources>
                             <DataTemplate DataType="{x:Type tax:GANIncludedSpeciesViewModel}">
-                                <Grid Margin="0,0,0,0" Height="30">
+                                <Grid Margin="0,0,0,0" Height="35">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="100" />
                                     </Grid.ColumnDefinitions>                                    
-                                    <TextBox Height="23" Grid.Column="0" Margin="0,0,0,0"  x:Name="txtIncludedSpecies" Text="{Binding IncludedSpecies}" />
+                                    <TextBox Height="23" Grid.Column="0" Margin="6,0,6,0"  x:Name="txtIncludedSpecies" Text="{Binding IncludedSpecies}" />
                                     <Button Name="btnDeleteIncludedSpecies" Height="23" Grid.Column="1" Content="Delete" Width="80" Click="btnDeleteIncludedSpecies_Click" Tag="{Binding}"/>
                                 </Grid>
                             </DataTemplate>
-                        </ListBox.Resources>
-                    </ListBox>
+                        </ItemsControl.Resources>
+                    </ItemsControl>                                            
                     <Button Content="Add Included Species" Height="23" HorizontalAlignment="Left" Name="btnAddIncludedSpecies" VerticalAlignment="Bottom" Width="129" Margin="1,0,0,0" Click="btnAddIncludedSpecies_Click" />
                 </Grid>
             </TabItem>

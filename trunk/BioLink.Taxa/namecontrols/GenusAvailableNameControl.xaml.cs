@@ -81,7 +81,6 @@ namespace BioLink.Client.Taxa {
                 return vm;
             }));
             lstIncludedSpecies.ItemsSource = _includedSpecies;
-
         }
 
         private void EnableTabs() {

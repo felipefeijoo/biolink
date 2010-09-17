@@ -68,6 +68,7 @@
     <Compile Include="ConfigurationStore.cs" />
     <Compile Include="Model\AvailableName.cs" />
     <Compile Include="Model\BiolinkDataObject.cs" />
+    <Compile Include="Model\CommonName.cs" />
     <Compile Include="Model\ConnectionProfile.cs" />
     <Compile Include="DatabaseAction.cs" />
     <Compile Include="DataMatrix.cs" />

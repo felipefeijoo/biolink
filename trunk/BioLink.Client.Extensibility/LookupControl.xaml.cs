@@ -48,7 +48,7 @@ namespace BioLink.Client.Extensibility {
 
             if (t != null) {
                 PluginManager.Instance.StartSelect(t, (result) => {
-                    txt.Text = result.Description;
+                    this.Text = result.Description;
                     this.ObjectID = result.ObjectID;
                     this.InvokeIfRequired(() => {
                         txt.Focus();

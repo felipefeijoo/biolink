@@ -54,6 +54,7 @@
       <DependentUpon>CommonNamesControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="DefaultDragAdorner.cs" />
+    <Compile Include="namecontrols\CommonNameViewModel.cs" />
     <Compile Include="namecontrols\GenusAvailableNameControl.xaml.cs">
       <DependentUpon>GenusAvailableNameControl.xaml</DependentUpon>
     </Compile>
