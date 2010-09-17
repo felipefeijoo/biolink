@@ -120,6 +120,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         public virtual string DisplayLabel { get; set; }
+
         public virtual BitmapSource Icon { get; set; }
 
         public object Tag { get; set; }        

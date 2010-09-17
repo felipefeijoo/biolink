@@ -303,7 +303,38 @@ namespace BioLink.Data {
                 retval
             );
             model.GANISID = (int) retval.Value;
+        }
 
+        public List<CommonName> GetCommonNames(int taxonId) {
+            var mapper = new GenericMapperBuilder<CommonName>().Map("CommonName", "Name").build();
+            return StoredProcToList("spCommonNameGet", mapper, _P("intBiotaID", taxonId));
+        }
+
+        public void UpdateCommonName(CommonName commonName) {
+            StoredProcUpdate("spCommonNameUpdate",
+                _P("intCommonNameID", commonName.CommonNameID),
+                _P("intBiotaID", commonName.BiotaID),
+                _P("vchrCommonName", commonName.Name),
+                _P("intRefID", commonName.RefID, DBNull.Value),
+                _P("vchrRefPage", commonName.RefPage),
+                _P("txtNotes", commonName.Notes)
+            );
+        }
+
+        public void InsertCommonName(CommonName commonName) {
+
+            var retval = ReturnParam("RetVal", System.Data.SqlDbType.Int);
+
+            StoredProcUpdate("spCommonNameUpdate",                
+                _P("intBiotaID", commonName.BiotaID),
+                _P("vchrCommonName", commonName.Name),
+                _P("intRefID", commonName.RefID, DBNull.Value),
+                _P("vchrRefPage", commonName.RefPage),
+                _P("txtNotes", commonName.Notes),
+                retval
+            );
+
+            commonName.CommonNameID = (int)retval.Value;
         }
     }
 

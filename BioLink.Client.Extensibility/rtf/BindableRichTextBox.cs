@@ -42,9 +42,13 @@ namespace BioLink.Client.Extensibility {
             if (!control._selfSetting) {
                 var rtf = args.NewValue as string;
                 var doc = control.Document;
-                using (var stream = new MemoryStream((new ASCIIEncoding()).GetBytes(rtf))) {
-                    var text = new TextRange(doc.ContentStart, doc.ContentEnd);
-                    text.Load(stream, DataFormats.Rtf);
+                if (string.IsNullOrEmpty(rtf)) {
+                    doc.Blocks.Clear();
+                } else {                    
+                    using (var stream = new MemoryStream((new ASCIIEncoding()).GetBytes(rtf))) {
+                        var text = new TextRange(doc.ContentStart, doc.ContentEnd);
+                        text.Load(stream, DataFormats.Rtf);
+                    }
                 }
             }
         }
