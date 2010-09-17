@@ -32,7 +32,16 @@ namespace BioLinkApplication {
             if (!this.IsDesignTime()) {
                 SetupProfiles();
             }
+
             this.Loaded += new RoutedEventHandler(LoginControl_Loaded);
+
+            txtPassword.GotFocus += new RoutedEventHandler((s, e) => {
+                txtPassword.SelectAll();
+            });
+
+            txtUsername.GotFocus += new RoutedEventHandler((s, e) => {
+                txtUsername.SelectAll();
+            });
         }
 
         void LoginControl_Loaded(object sender, RoutedEventArgs e) {

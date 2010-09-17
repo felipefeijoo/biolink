@@ -74,7 +74,7 @@ namespace BioLink.Client.Extensibility {
             set {
                 SetProperty("IsChanged", ref _changed, value);
                 if (value && DataChanged != null) {
-                    DataChanged();
+                    DataChanged(this);
                 }
             }
         }
@@ -93,7 +93,7 @@ namespace BioLink.Client.Extensibility {
         public event DataChangedHandler DataChanged;
     }
 
-    public delegate void DataChangedHandler();
+    public delegate void DataChangedHandler(ChangeableModelBase viewmodel);
 
     public abstract class ViewModelBase : ChangeableModelBase {
 

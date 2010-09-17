@@ -21,7 +21,7 @@ namespace BioLink.Client.Taxa {
     /// <summary>
     /// Interaction logic for AvailableNameControl.xaml
     /// </summary>
-    public partial class AvailableNameControl : DatabaseActionControl {
+    public partial class AvailableNameControl : NameControlBase {
 
         private AvailableNameViewModel _model;
 
@@ -31,8 +31,7 @@ namespace BioLink.Client.Taxa {
         }
         #endregion
 
-        public AvailableNameControl(TaxonViewModel taxon, User user)
-            : base(user, "Taxon::AvailableNames::" + taxon.TaxaID) {
+        public AvailableNameControl(TaxonViewModel taxon, User user) : base(taxon, user, "AvailableNames") {
 
             InitializeComponent();
             txtReference.BindUser(user, LookupType.Reference);
@@ -49,24 +48,14 @@ namespace BioLink.Client.Taxa {
             _model = new AvailableNameViewModel(name);
             this.DataContext = _model;
 
-            _model.DataChanged += new DataChangedHandler(() => {
+            _model.DataChanged += new DataChangedHandler((vm) => {
                 RegisterUniquePendingChange(new UpdateAvailableNameAction(_model));
             });
 
         }
 
-        private void InsertPhrase() {            
-            string phrase = PickListControl.ShowPickList(User, PickListType.Phrase, "ALN Standard Phrases", TraitCategoryType.Taxon);
-            if (phrase != null) {
-                var tr = new TextRange(txtQual.Selection.Start, txtQual.Selection.End);
-                tr.Text  = phrase;
-                txtQual.CaretPosition = txtQual.Selection.End;
-                txtQual.Focus();
-            }
-        }
-
         private void btnPhrase_Click(object sender, RoutedEventArgs e) {
-            InsertPhrase();
+            InsertPhrase(txtQual, "ALN Standard Phrases");
         }
     }
 

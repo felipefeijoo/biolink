@@ -2,57 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using BioLink.Data;
 using BioLink.Client.Extensibility;
 using BioLink.Data.Model;
 
 namespace BioLink.Client.Taxa {
-    /// <summary>
-    /// Interaction logic for GenusAvailableNameControl.xaml
-    /// </summary>
-    public partial class GenusAvailableNameControl : DatabaseActionControl {
-
-        private GenusAvailableNameViewModel _model;
-
-        #region designer constructor
-        public GenusAvailableNameControl() {
-            InitializeComponent();
-        }
-        #endregion
-
-        public GenusAvailableNameControl(TaxonViewModel taxon, User user)
-            : base(user, "Taxon::GenusAvailableNames::" + taxon.TaxaID) {
-
-            InitializeComponent();
-
-            txtReference.BindUser(user, LookupType.Reference);
-            txtNameStatus.BindUser(user, PickListType.Phrase, "GAN Name Status", TraitCategoryType.Taxon);
-
-            var data = Service.GetGenusAvailableName(taxon.TaxaID.Value);
-            if (data == null) {
-                data = new GenusAvailableName();
-                data.BiotaID = taxon.TaxaID.Value;                
-            }
-            _model = new GenusAvailableNameViewModel(data);
-
-            this.DataContext = _model;
-
-        }
-
-        protected TaxaService Service { get { return new TaxaService(User); } }
-    }
-
 
     public class GenusAvailableNameViewModel : GenericViewModelBase<GenusAvailableName> {
+
         public GenusAvailableNameViewModel(GenusAvailableName model)
             : base(model) {
         }
@@ -64,7 +20,7 @@ namespace BioLink.Client.Taxa {
 
         public string RefCode {
             get { return Model.RefCode; }
-            set { SetProperty(() => Model.RefCode, value); } 
+            set { SetProperty(() => Model.RefCode, value); }
         }
 
         public string RefPage {
@@ -99,7 +55,7 @@ namespace BioLink.Client.Taxa {
 
         public string TypeSpecies {
             get { return Model.TypeSpecies; }
-            set { SetProperty(()=>Model.TypeSpecies, value); }
+            set { SetProperty(() => Model.TypeSpecies, value); }
         }
 
         public string AvailableNameStatus {
@@ -108,4 +64,27 @@ namespace BioLink.Client.Taxa {
         }
 
     }
+
+    public class GANIncludedSpeciesViewModel : GenericViewModelBase<GANIncludedSpecies> {
+        public GANIncludedSpeciesViewModel(GANIncludedSpecies model)
+            : base(model) {
+        }
+
+        public int GANISID {
+            get { return Model.GANISID; }
+            set { SetProperty(() => Model.GANISID, value); }
+        }
+
+        public int BiotaID {
+            get { return Model.BiotaID; }
+            set { SetProperty(() => Model.BiotaID, value); }
+        }
+
+        public string IncludedSpecies {
+            get { return Model.IncludedSpecies; }
+            set { SetProperty(() => Model.IncludedSpecies, value); }
+        }
+
+    }
+
 }

@@ -63,7 +63,7 @@ namespace BioLink.Client.Taxa {
             this.DataContext = _model;
         }
 
-        void _model_DataChanged() {
+        void _model_DataChanged(ChangeableModelBase model) {
             RegisterUniquePendingChange(new UpdateTaxonDatabaseAction(_model.Taxon));
         }
 
