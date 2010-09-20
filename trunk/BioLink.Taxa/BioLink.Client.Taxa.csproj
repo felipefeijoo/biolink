@@ -65,6 +65,8 @@
     <Compile Include="namecontrols\SpeciesAvailableNameControl.xaml.cs">
       <DependentUpon>SpeciesAvailableNameControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="namecontrols\SpeciesAvailableNameDatabaseAction.cs" />
+    <Compile Include="namecontrols\SpeciesAvailableNameViewModel.cs" />
     <Compile Include="StatisticsReport.cs" />
     <Compile Include="TaxonMenuFactory.cs" />
     <Compile Include="DragDropOptions.xaml.cs">

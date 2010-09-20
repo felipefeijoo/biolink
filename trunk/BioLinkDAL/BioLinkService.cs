@@ -226,8 +226,12 @@ namespace BioLink.Data {
 
         protected SqlParameter _P(string name, object value, object defIfNull = null) {
             if (value == null) {
-                value = defIfNull;
-            }
+                if (defIfNull == null) {
+                    value = DBNull.Value;
+                } else {
+                    value = defIfNull;
+                }
+            } 
             return new SqlParameter(name, value);
         }
 

@@ -13,7 +13,7 @@
         <Label Content="Page:" Height="28" HorizontalAlignment="Left" Margin="12,80,0,0" Name="label3" VerticalAlignment="Top" Width="93" />        
         <Label Content="Qualification:" Height="28" HorizontalAlignment="Left" Margin="12,114,0,0" Name="label4" VerticalAlignment="Top" Width="93" />
         <ext:LookupControl Margin="111,17,0,0" Name="txtReference" VerticalAlignment="Top" Height="23" Text="{Binding RefCode}" ObjectID="{Binding RefID}" HorizontalAlignment="Left" Width="283" />
-        <TextBox Height="23" HorizontalAlignment="Left" Margin="111,82,0,0" Name="txtPage" VerticalAlignment="Top" Width="150" Text="{Binding RefPage}" />
+        <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="111,82,0,0" Name="txtPage" VerticalAlignment="Top" Width="150" Text="{Binding RefPage}" />
         <ext:PickListControl Height="23" HorizontalAlignment="Left" Margin="111,48,0,0" Name="txtNameStatus" VerticalAlignment="Top" Width="283" Text="{Binding AvailableNameStatus}"/>
         <ext:BindableRichTextBox Height="81" Margin="111,116,12,0" Name="txtQual" VerticalAlignment="Top" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" RTF="{Binding RefQual}" />
         <Button Content="Standard phrases..." Height="23" HorizontalAlignment="Right" Margin="0,206,12,0" Name="btnPhrase" VerticalAlignment="Top" Width="118" Click="btnPhrase_Click" />                
