@@ -132,6 +132,7 @@
       <DependentUpon>TabularDataViewer.xaml</DependentUpon>
     </Compile>
     <Compile Include="tests\PreferencesTests.cs" />
+    <Compile Include="TextBox.cs" />
     <Compile Include="Traits\AddNewTraitWindow.xaml.cs">
       <DependentUpon>AddNewTraitWindow.xaml</DependentUpon>
     </Compile>

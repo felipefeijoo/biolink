@@ -58,7 +58,7 @@
             <Label Content="Name:" Height="28" HorizontalAlignment="Left" Margin="6,40,0,0" Name="label2" VerticalAlignment="Top" />
             <Label Content="Caption" Height="28" HorizontalAlignment="Left" Margin="6,71,0,0" Name="label3" VerticalAlignment="Top" />
             <src:PickListControl Height="23" Margin="72,10,6,0" x:Name="txtMultimediaType" VerticalAlignment="Top" Text="{Binding MultimediaType}"/>
-            <TextBox Height="23" Margin="72,42,6,0" Name="txtName" VerticalAlignment="Top" Text="{Binding Name}"/>
+            <src:TextBox Height="23" Margin="72,42,6,0" x:Name="txtName" VerticalAlignment="Top" Text="{Binding Name}"/>
             <RichTextBox Height="43" Margin="72,71,6,0" Name="txtCaption" VerticalAlignment="Top" />
         </Grid>
         

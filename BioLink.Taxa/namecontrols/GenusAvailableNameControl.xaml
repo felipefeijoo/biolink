@@ -34,7 +34,7 @@
                     <Label Content="Name Status:" Height="28" HorizontalAlignment="Left" Margin="6,40,0,0" Name="label2" VerticalAlignment="Top" Width="95" />
                     <Label Content="Page:" Height="28" HorizontalAlignment="Left" Margin="7,74,0,0" Name="label3" VerticalAlignment="Top" Width="95" />                    
                     <ext:PickListControl Height="23" HorizontalAlignment="Left" Margin="108,45,0,0" Name="txtNameStatus" VerticalAlignment="Top" Width="270" Text="{Binding AvailableNameStatus}"/>
-                    <TextBox Height="23" HorizontalAlignment="Left" Margin="108,79,0,0" Name="txtPage" VerticalAlignment="Top" Width="270" Text="{Binding RefPage}"/>                    
+                    <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="108,79,0,0" Name="txtPage" VerticalAlignment="Top" Width="270" Text="{Binding RefPage}"/>                    
                     <Label Content="Qualification:" Height="28" HorizontalAlignment="Left" Margin="7,108,0,0" Name="label4" VerticalAlignment="Top" Width="94" />
                     <ext:BindableRichTextBox Height="84" Margin="108,116,6,0" Name="txtQual" VerticalAlignment="Top" RTF="{Binding RefQual}" />
                     <Button Content="Standard Phrases..." HorizontalAlignment="Right" Margin="0,206,6,0" Name="btnInsertPhrase" Width="118" Height="23" VerticalAlignment="Top" Click="btnInsertPhrase_Click" />
@@ -52,20 +52,22 @@
             
             <TabItem Header="_Included Species" Name="tabIncludedSpecies">
                 <Grid>
-                    <ItemsControl Margin="0,0,0,29" Name="lstIncludedSpecies">
-                        <ItemsControl.Resources>
-                            <DataTemplate DataType="{x:Type tax:GANIncludedSpeciesViewModel}">
-                                <Grid Margin="0,0,0,0" Height="35">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="100" />
-                                    </Grid.ColumnDefinitions>                                    
-                                    <TextBox Height="23" Grid.Column="0" Margin="6,0,6,0"  x:Name="txtIncludedSpecies" Text="{Binding IncludedSpecies}" />
-                                    <Button Name="btnDeleteIncludedSpecies" Height="23" Grid.Column="1" Content="Delete" Width="80" Click="btnDeleteIncludedSpecies_Click" Tag="{Binding}"/>
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.Resources>
-                    </ItemsControl>                                            
+                    <ScrollViewer Margin="0,0,0,29" >
+                        <ItemsControl Name="lstIncludedSpecies">
+                            <ItemsControl.Resources>
+                                <DataTemplate DataType="{x:Type tax:GANIncludedSpeciesViewModel}">
+                                    <Grid Margin="0,0,0,0" Height="35">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="100" />
+                                        </Grid.ColumnDefinitions>                                    
+                                        <ext:TextBox Height="23" Grid.Column="0" Margin="6,0,6,0"  x:Name="txtIncludedSpecies" Text="{Binding IncludedSpecies}" />
+                                        <Button Name="btnDeleteIncludedSpecies" Height="23" Grid.Column="1" Content="Delete" Width="80" Click="btnDeleteIncludedSpecies_Click" Tag="{Binding}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.Resources>
+                        </ItemsControl>
+                    </ScrollViewer>
                     <Button Content="Add Included Species" Height="23" HorizontalAlignment="Left" Name="btnAddIncludedSpecies" VerticalAlignment="Bottom" Width="129" Margin="1,0,0,0" Click="btnAddIncludedSpecies_Click" />
                 </Grid>
             </TabItem>

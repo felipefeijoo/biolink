@@ -42,6 +42,10 @@ namespace BioLink.Client.Extensibility {
                 txt.IsReadOnly = true;
             }
 
+            txt.GotFocus += new RoutedEventHandler((source, e) => {
+                txt.SelectAll();
+            });
+
             this.Service = new SupportService(user);
         }
 

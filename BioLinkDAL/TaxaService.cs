@@ -256,6 +256,28 @@ namespace BioLink.Data {
             );
         }
 
+        public SpeciesAvailableName GetSpeciesAvailableName(int taxonId) {
+            var mapper = new GenericMapperBuilder<SpeciesAvailableName>().build();
+            SpeciesAvailableName result = null;
+            StoredProcReaderFirst("spSANGet", (reader)=> {
+                result = mapper.Map(reader);
+            }, _P("intBiotaID", taxonId));
+            return result;
+        }
+
+        public void InsertOrUpdateSpeciesAvailableName(SpeciesAvailableName name) {
+            StoredProcUpdate("spSANInsertUpdate",
+                _P("intBiotaID", name.BiotaID),
+                _P("intRefID", name.RefID),
+                _P("vchrRefPage", name.RefPage),
+                _P("vchrAvailableNameStatus", name.AvailableNameStatus),
+                _P("txtRefQual", name.RefQual),
+                _P("vchrPrimaryType", name.PrimaryType),
+                _P("vchrSecondaryType", name.SecondaryType),
+                _P("bitPrimaryTypeProbable", name.PrimaryTypeProbable),
+                _P("bitSecondaryTypeProbable", name.SecondaryTypeProbable));
+        }
+
         public GenusAvailableName GetGenusAvailableName(int taxonId) {
             var mapper = new GenericMapperBuilder<GenusAvailableName>().build();
             GenusAvailableName result = null;
@@ -276,6 +298,58 @@ namespace BioLink.Data {
                 _P("vchrTypeSpecies", name.TypeSpecies),
                 _P("vchrTSFixationMethod", name.TSFixationMethod)
             );
+        }
+
+        public List<SANTypeData> GetSANTypeData(int taxonId) {
+            var mapper = new GenericMapperBuilder<SANTypeData>().Map("vchrAccessionNum", "AccessionNumber").build();
+            return StoredProcToList("spSANTypeDataGet", mapper, _P("intBiotaID", taxonId));
+        }
+
+        public void DeleteSANTypeData(int sanTypeDataID) {
+            StoredProcUpdate("spSANTypeDataDelete", _P("intSANTypeDataID", sanTypeDataID));
+        }
+
+        public void InsertSANTypeData(SANTypeData data) {
+            var retval = ReturnParam("RetVal", System.Data.SqlDbType.Int);
+            StoredProcUpdate("spSANTypeDataInsert",
+                _P("intBiotaID", data.BiotaID),
+                _P("vchrType", data.Type),
+                _P("vchrMuseum", data.Museum),
+                _P("vchrAccessionNum", data.AccessionNumber),
+                _P("vchrMaterial", data.Material),
+                _P("vchrLocality", data.Locality),
+                _P("intMaterialID", data.MaterialID, DBNull.Value),
+                _P("bitIDConfirmed", data.IDConfirmed),
+                retval);
+
+            data.SANTypeDataID = (int) retval.Value;
+        }
+
+        public void UpdateSANTypeData(SANTypeData data) {
+            StoredProcUpdate("spSANTypeDataUpdate",
+                _P("intSANTypeDataID", data.SANTypeDataID),
+                _P("intBiotaID", data.BiotaID),
+                _P("vchrType", data.Type),
+                _P("vchrMuseum", data.Museum),
+                _P("vchrAccessionNum", data.AccessionNumber),
+                _P("vchrMaterial", data.Material),
+                _P("vchrLocality", data.Locality),
+                _P("intMaterialID", data.MaterialID, DBNull.Value),
+                _P("bitIDConfirmed", data.IDConfirmed));
+        }
+
+        public List<SANTypeDataType> GetSANTypeDataTypes(int taxonId) {
+            var list = new List<SANTypeDataType>();
+            StoredProcReaderForEach("spSANTypeDataTypesGet", (reader) => {
+                var t = new SANTypeDataType();
+                t.PrimaryType = reader[0] as string;
+                string st = reader[1] as string;
+                if (!string.IsNullOrEmpty(st)) {
+                    t.SecondaryTypes = st.Split(',');
+                }
+                list.Add(t);
+            }, _P("intBiotaID", taxonId));
+            return list;
         }
 
         public List<GANIncludedSpecies> GetGenusAvailableNameIncludedSpecies(int taxonId) {
@@ -336,6 +410,7 @@ namespace BioLink.Data {
 
             commonName.CommonNameID = (int)retval.Value;
         }
+
     }
 
     public class DataValidationResult {
