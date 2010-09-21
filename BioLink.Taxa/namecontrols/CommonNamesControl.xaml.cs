@@ -20,7 +20,7 @@ namespace BioLink.Client.Taxa {
     /// <summary>
     /// Interaction logic for CommonNamesControl.xaml
     /// </summary>
-    public partial class CommonNamesControl : DatabaseActionControl {
+    public partial class CommonNamesControl : NameControlBase {
 
         private ObservableCollection<CommonNameViewModel> _model;
 
@@ -31,7 +31,7 @@ namespace BioLink.Client.Taxa {
         #endregion
 
         public CommonNamesControl(TaxonViewModel taxon, User user) 
-            : base(user, "Taxon::CommonNames::" + taxon.TaxaID) {
+            : base(taxon, user, "CommonNames") {
 
             InitializeComponent();
 
@@ -42,7 +42,7 @@ namespace BioLink.Client.Taxa {
                 var vm = new CommonNameViewModel(name);
                 vm.DataChanged += new DataChangedHandler((x) => {
                     if (vm.CommonNameID >= 0) {
-                        RegisterPendingChange(new UpdateCommonNameAction(vm));
+                        RegisterPendingChange(new UpdateCommonNameAction(vm.Model));
                     }
                 });
                 return vm;
@@ -53,19 +53,35 @@ namespace BioLink.Client.Taxa {
             }
         }
 
+        private void btnAdd_Click(object sender, RoutedEventArgs e) {
+            AddNewName();
+        }
+
+        private void AddNewName() {
+            CommonName data = new CommonName();
+            data.BiotaID = Taxon.TaxaID.Value;
+            data.CommonNameID = -1;            
+            var viewModel = new CommonNameViewModel(data);
+            viewModel.Name = NextNewName("<Name name {0}>", _model, () => viewModel.Name);
+            _model.Add(viewModel);
+            lstNames.SelectedItem = viewModel;
+            lstNames.ScrollIntoView(viewModel);
+            RegisterPendingChange(new InsertCommonNameAction(data));
+        }
+
+        private void btnDelete_Click(object sender, RoutedEventArgs e) {
+            DeleteSelectedName();
+        }
+
+        private void DeleteSelectedName() {
+            var name = lstNames.SelectedItem as CommonNameViewModel;
+            if (name != null) {
+                RegisterPendingChange(new DeleteCommonNameAction(name.Model));
+                _model.Remove(name);
+            }
+        }
+
         protected TaxaService Service { get { return new TaxaService(User); } }
-    }
-
-    public class UpdateCommonNameAction : GenericDatabaseAction<CommonNameViewModel> {
-
-        public UpdateCommonNameAction(CommonNameViewModel model)
-            : base(model) {
-        }
-
-        protected override void ProcessImpl(User user) {
-            var service = new TaxaService(user);
-            service.UpdateCommonName(Model.Model);
-        }
 
     }
 

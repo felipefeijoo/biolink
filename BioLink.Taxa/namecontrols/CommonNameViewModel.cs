@@ -27,9 +27,9 @@ namespace BioLink.Client.Taxa {
 
         public string Name {
             get { return Model.Name; }
-            set {
+            set {                
+                SetProperty(() => Model.Name, value);
                 GenerateDisplayLabel();
-                SetProperty(() => Model.Name, value); 
             }
         }
 
@@ -45,9 +45,9 @@ namespace BioLink.Client.Taxa {
 
         public int? RefID {
             get { return Model.RefID; }
-            set {
+            set {                
+                SetProperty(() => Model.RefID, value);
                 GenerateDisplayLabel();
-                SetProperty(() => Model.RefID, value); 
             }
         }
 

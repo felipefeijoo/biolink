@@ -50,6 +50,7 @@
     <Compile Include="namecontrols\AvailableNameControl.xaml.cs">
       <DependentUpon>AvailableNameControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="namecontrols\CommonNameDatabaseAction.cs" />
     <Compile Include="namecontrols\CommonNamesControl.xaml.cs">
       <DependentUpon>CommonNamesControl.xaml</DependentUpon>
     </Compile>

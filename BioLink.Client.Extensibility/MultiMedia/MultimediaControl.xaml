@@ -19,13 +19,13 @@
         <ToolBar Grid.Row="0" Name="toolBar">
             <Button x:Name="btnAdd">
                 <Button.Content>
-                    <Image Source="images/AddNew.png" Stretch="None" />
+                    <Image Source="../images/AddNew.png" Stretch="None" />
                 </Button.Content>
             </Button>
             
             <Button x:Name="btnDelete" >
                 <Button.Content>
-                    <Image Source="images/Delete.png" Stretch="None" />
+                    <Image Source="../images/Delete.png" Stretch="None" />
                 </Button.Content>
             </Button>
         </ToolBar>

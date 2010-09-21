@@ -6,6 +6,9 @@ using System.Windows;
 using System.Windows.Controls;
 using BioLink.Data;
 using BioLink.Client.Utilities;
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace BioLink.Client.Extensibility {
 
@@ -69,6 +72,24 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
+        protected string NextNewName<T>(string format, IEnumerable<T> collection, Expression<Func<string>> nameProperty, string pattern = @"(\d+)") {
+            var destProp = (PropertyInfo)((MemberExpression)nameProperty.Body).Member;
+            Regex regex = new Regex("^" + string.Format(format, pattern) + "$");
+            int nextNum = 1;
+            foreach (T t in collection) {
+                string name = (string)destProp.GetValue(t, null);
+                var m = regex.Match(name);
+                if (m.Success) {
+                    int candidate;
+                    if (Int32.TryParse(m.Groups[1].Value, out candidate)) {
+                        if (candidate >= nextNum) {
+                            nextNum = candidate + 1;
+                        }
+                    }
+                }
+            }
+            return string.Format(format, nextNum);
+        }
 
         public virtual void Dispose() {        
         }
