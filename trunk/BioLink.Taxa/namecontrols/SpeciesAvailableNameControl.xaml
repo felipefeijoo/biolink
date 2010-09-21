@@ -38,7 +38,7 @@
                     <Label Content="Secondary Type:" Height="28" HorizontalAlignment="Left" Margin="261,6,0,0" Name="label6" VerticalAlignment="Top" Width="116" />
                     <ComboBox Height="23" HorizontalAlignment="Left" Margin="383,11,0,0" Name="cmbSecondaryType" VerticalAlignment="Top" Width="132" Text="{Binding SecondaryType}" />
                     <CheckBox Content="Probable" Height="16" HorizontalAlignment="Left" Margin="106,40,0,0" Name="chkPrimaryProbable" VerticalAlignment="Top" Width="132" IsChecked="{Binding PrimaryTypeProbable}" />
-                    <CheckBox Content="Probable" Height="16" HorizontalAlignment="Right" Margin="0,40,208,0" Name="chkSecondaryProbable" VerticalAlignment="Top" Width="132" IsChecked="{Binding SecondaryTypeProbable}" />
+                    <CheckBox Content="Probable" Height="16" HorizontalAlignment="Left" Margin="383,40,0,0" Name="chkSecondaryProbable" VerticalAlignment="Top" Width="132" IsChecked="{Binding SecondaryTypeProbable}" />
                     <Separator Height="9" Margin="6,62,6,0" Name="separator1" VerticalAlignment="Top" />
                     <Grid Margin="0,77,6,0">
                         <Grid.ColumnDefinitions>
