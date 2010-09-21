@@ -16,7 +16,7 @@
             <StackPanel x:Name="traitsPanel" />
         </ScrollViewer>
         <Grid Grid.Row="1">
-            <Button Content="_Add trait..." Height="23" HorizontalAlignment="Left" Margin="6,7,0,0" Name="btnAddTrait" VerticalAlignment="Top" Width="75" Click="btnAddTrait_Click" />
+            <Button Content="_Add trait" Height="23" HorizontalAlignment="Left" Margin="6,7,0,0" Name="btnAddTrait" VerticalAlignment="Top" Width="75" Click="btnAddTrait_Click" />
         </Grid>
     </Grid>
     

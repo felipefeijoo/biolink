@@ -50,6 +50,7 @@ namespace BioLink.Client.Taxa {
                 AddTabItem("Common Names", new CommonNamesControl(taxon, user));
             }
 
+            AddTabItem("References", new ReferencesControl(user, TraitCategoryType.Taxon, taxon.TaxaID));
 
             AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Taxon, taxon.TaxaID));
             var mmc = new MultimediaControl(User, TraitCategoryType.Taxon, taxon.TaxaID);

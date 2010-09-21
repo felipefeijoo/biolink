@@ -104,7 +104,7 @@ namespace BioLink.Client.Extensibility {
 
         #region Events
 
-        public event ValueChangedHandler ValueChanged;
+        public event TextChangedHandler ValueChanged;
 
         #endregion
 

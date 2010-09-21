@@ -37,7 +37,7 @@
                     <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="108,79,0,0" Name="txtPage" VerticalAlignment="Top" Width="270" Text="{Binding RefPage}"/>                    
                     <Label Content="Qualification:" Height="28" HorizontalAlignment="Left" Margin="7,108,0,0" Name="label4" VerticalAlignment="Top" Width="94" />
                     <ext:BindableRichTextBox Height="84" Margin="108,116,6,0" Name="txtQual" VerticalAlignment="Top" RTF="{Binding RefQual}" />
-                    <Button Content="Standard Phrases..." HorizontalAlignment="Right" Margin="0,206,6,0" Name="btnInsertPhrase" Width="118" Height="23" VerticalAlignment="Top" Click="btnInsertPhrase_Click" />
+                    <Button Content="Standard Phrases" HorizontalAlignment="Right" Margin="0,206,6,0" Name="btnInsertPhrase" Width="118" Height="23" VerticalAlignment="Top" Click="btnInsertPhrase_Click" />
                 </Grid>
             </TabItem>
             

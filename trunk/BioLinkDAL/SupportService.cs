@@ -63,7 +63,63 @@ namespace BioLink.Data {
                 _P("vchrOther", other, DBNull.Value));
         }
 
+        public List<RefLink> GetReferenceLinks(string categoryName, int intraCatID) {
+            var mapper = new GenericMapperBuilder<RefLink>().Map("intCatID", "CategoryID").Map("RefLink", "RefLinkType").build();
+            return StoredProcToList("spRefLinkList", mapper,
+                _P("vchrCategory", categoryName),
+                _P("intIntraCatID", intraCatID));
+        }
+
+        public void UpdateRefLink(RefLink link, string categoryName) {
+            StoredProcUpdate("spRefLinkUpdate",
+                _P("intRefLinkID", link.RefLinkID),
+                _P("vchrRefLink", link.RefLinkType),
+                _P("vchrCategory", categoryName),
+                _P("intRefID", link.RefID),
+                _P("vchrRefPage", link.RefPage),
+                _P("txtRefQual", link.RefQual),
+                _P("intOrder", link.Order),
+                _P("bitUseInReport", link.UseInReport));
+        }
+
+        public void InsertRefLink(RefLink link, string categoryName, int intraCatID) {
+            var retval = ReturnParam("RetVal", System.Data.SqlDbType.Int);
+            StoredProcUpdate("spRefLinkInsert",
+                _P("vchrCategory", categoryName),
+                _P("intIntraCatID", intraCatID),                
+                _P("vchrRefLink", link.RefLinkType),                
+                _P("intRefID", link.RefID),
+                _P("vchrRefPage", link.RefPage),
+                _P("txtRefQual", link.RefQual),
+                _P("intOrder", link.Order),
+                _P("bitUseInReport", link.UseInReport),
+                retval);
+            link.RefLinkID = (int)retval.Value;
+        }
+
+        public void DeleteRefLink(int refLinkID) {
+            StoredProcUpdate("spRefLinkDelete", _P("intRefLinkID", refLinkID));
+        }
+
         #endregion
+
+        public IEnumerable<string> GetRefLinkTypes() {
+            var list = new List<String>();
+            StoredProcReaderForEach("spRefLinkTypeList", (reader) => {
+                list.Add(reader["RefLink"] as string);
+            });
+            return list;
+        }
+
+        public int InsertRefLinkType(string linkType, string categoryName) {
+            var retval = ReturnParam("intRefLinkTypeID", System.Data.SqlDbType.Int);
+            StoredProcUpdate("spRefLinkTypeGetSet",
+                _P("vchrRefLinkType", linkType),
+                _P("vchrCategory", categoryName),
+                _P("intRefLinkTypeID", -1),
+                retval);
+            return (int) retval.Value;            
+        }
     }
 
 }
