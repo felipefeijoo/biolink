@@ -154,9 +154,42 @@ namespace BioLink.Client.Extensibility {
                 _icon = value;
             }
         }
+
+        public Guid? GUID {
+            get { return Model.GUID; }
+            set { SetProperty(() => Model.GUID, value); }
+        }
         
 
         public T Model { get; private set; }
+    }
+
+    public abstract class GenericOwnedViewModel<T> : GenericViewModelBase<T> where T : BiolinkDataObject {
+
+        public GenericOwnedViewModel(T model)
+            : base(model) {
+        }
+
+        public DateTime DateCreated {
+            get { return Model.DateCreated; }
+            set { SetProperty(() => Model.DateCreated, value); }
+        }
+
+        public string WhoCreated {
+            get { return Model.WhoCreated; }
+            set { SetProperty(() => Model.WhoCreated, value); }
+        }
+
+        public DateTime DateLastUpdated {
+            get { return Model.DateLastUpdated; }
+            set { SetProperty(() => Model.DateLastUpdated, value); }
+        }
+
+        public string WhoLastUpdated {
+            get { return Model.WhoLastUpdated; }
+            set { SetProperty(() => Model.WhoLastUpdated, value); }
+        }
+
     }
 
 }
