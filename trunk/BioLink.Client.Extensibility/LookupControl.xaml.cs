@@ -24,6 +24,10 @@ namespace BioLink.Client.Extensibility {
         #region Designer Constructor
         public LookupControl() {
             InitializeComponent();
+
+            this.GotFocus += new RoutedEventHandler((source, e) => {
+                txt.Focus();
+            });
         }
         #endregion
 

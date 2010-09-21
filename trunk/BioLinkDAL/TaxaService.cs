@@ -411,6 +411,10 @@ namespace BioLink.Data {
             commonName.CommonNameID = (int)retval.Value;
         }
 
+        public void DeleteCommonName(int commonNameID) {
+            StoredProcUpdate("spCommonNameDelete", _P("intCommonNameID", commonNameID));
+        }
+
     }
 
     public class DataValidationResult {

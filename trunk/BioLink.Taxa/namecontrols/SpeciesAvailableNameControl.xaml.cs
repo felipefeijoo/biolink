@@ -111,8 +111,8 @@ namespace BioLink.Client.Taxa {
             var td = new SANTypeData();
             td.SANTypeDataID = -1;
             td.BiotaID = Taxon.TaxaID.Value;
-            td.Museum = "<New>";
             var viewModel = new SANTypeDataViewModel(td);
+            viewModel.Museum = NextNewName("<New {0}>", _typeData, () => viewModel.Museum);            
             _typeData.Add(viewModel);
             lstTypeData.SelectedItem = viewModel;
             RegisterPendingChange(new InsertSANTypeDataAction(td));

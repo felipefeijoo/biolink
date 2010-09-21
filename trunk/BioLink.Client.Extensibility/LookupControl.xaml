@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ext="clr-namespace:BioLink.Client.Extensibility"
              mc:Ignorable="d" 
              d:DesignHeight="23" d:DesignWidth="431">
     <Grid>
@@ -13,7 +14,7 @@
             <ColumnDefinition Width="3"/>
             <ColumnDefinition Width="23"/>
         </Grid.ColumnDefinitions>
-        <TextBox Grid.Column="0" x:Name="txt"></TextBox>
+        <ext:TextBox Grid.Column="0" x:Name="txt" />
         <Button Grid.Column="2" x:Name="btnLookup" VerticalContentAlignment="Bottom" Focusable="False" Click="btnLookup_Click" Width="23" Height="23" VerticalAlignment="Top">
             <Button.Content>
                 <Image Source="images/Ellipsis.png" Stretch="None" SnapsToDevicePixels="True" />

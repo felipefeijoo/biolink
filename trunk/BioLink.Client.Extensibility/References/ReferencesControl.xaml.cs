@@ -38,13 +38,9 @@ namespace BioLink.Client.Extensibility {
             this.IntraCategoryID = intraCategoryID.Value;
 
             txtRefType.Click += new RoutedEventHandler((source, e) => {
-                var frm = new PickListWindow(user, "Ref Link types", () => { return Service.GetRefLinkTypes();}, (newval) => { 
-                    Service.InsertRefLinkType(newval, category.ToString());
-                    return true;
-                });
-
-                if (frm.ShowDialog().ValueOrFalse()) {
-                    txtRefType.Text = frm.SelectedValue;
+                var reftype = SelectRefType();
+                if (!string.IsNullOrEmpty(reftype)) {
+                    txtRefType.Text = reftype;
                 }
 
             });
@@ -71,6 +67,19 @@ namespace BioLink.Client.Extensibility {
             });
         }
 
+        private string SelectRefType() {
+            var frm = new PickListWindow(User, "Ref Link types", () => { return Service.GetRefLinkTypes(); }, (newval) => {
+                Service.InsertRefLinkType(newval, Category.ToString());
+                return true;
+            });
+
+            if (frm.ShowDialog().ValueOrFalse()) {
+                return frm.SelectedValue;
+            }
+
+            return null;
+        }
+
         private void btnDelete_Click(object sender, RoutedEventArgs e) {
             DeleteSelectedRefLink();
         }
@@ -88,15 +97,21 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void AddNewRefLink() {
-            var data = new RefLink();
-            data.RefLinkID = -1;
-            RegisterPendingChange(new InsertRefLinkAction(data, Category.ToString(), IntraCategoryID));
 
-            var viewModel = new RefLinkViewModel(data);
-            _model.Add(viewModel);
+            var refLinkType = SelectRefType();
+            if (!string.IsNullOrEmpty(refLinkType)) {
+                var data = new RefLink();
+                data.RefLinkID = -1;
+                data.RefLinkType = refLinkType;                
+                RegisterPendingChange(new InsertRefLinkAction(data, Category.ToString(), IntraCategoryID));
 
-            lstReferences.SelectedItem = viewModel;
-            txtRefType.Focus();
+                var viewModel = new RefLinkViewModel(data);
+                viewModel.RefCode = NextNewName("<New {0}>", _model, () => viewModel.RefCode);
+                _model.Add(viewModel);
+
+                lstReferences.SelectedItem = viewModel;
+                lstReferences.ScrollIntoView(viewModel);
+            }
         }
 
         #region Properties
