@@ -37,7 +37,7 @@
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
             <ListBox.Resources>
-                <DataTemplate DataType="{x:Type src:MultimediaItemViewModel}">
+                <DataTemplate DataType="{x:Type src:MultimediaLinkViewModel}">
                     <Border Margin="3" BorderThickness="1" BorderBrush="{x:Static SystemColors.ControlDarkBrush}" Background="{x:Static SystemColors.ControlBrush}" CornerRadius="3" Height="130" Padding="5">
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120">
                             <Image Source="{Binding Thumbnail}" Stretch="None" SnapsToDevicePixels="True" />

@@ -328,9 +328,9 @@ namespace BioLink.Data {
 
         #region Multimedia
 
-        public List<MultimediaItem> GetMultimediaItems(string category, int intraCatID) {
-            var mapper = new GenericMapperBuilder<MultimediaItem>().Map("FileExtension", "Extension").build();
-            List<MultimediaItem> ret = StoredProcToList("spMultimediaList", mapper, _P("vchrCategory", category), _P("intIntraCatID", intraCatID));
+        public List<MultimediaLink> GetMultimediaItems(string category, int intraCatID) {
+            var mapper = new GenericMapperBuilder<MultimediaLink>().Map("FileExtension", "Extension").build();
+            List<MultimediaLink> ret = StoredProcToList("spMultimediaList", mapper, _P("vchrCategory", category), _P("intIntraCatID", intraCatID));
             return ret;
         }
 
@@ -346,6 +346,15 @@ namespace BioLink.Data {
         public List<MultimediaType> GetMultimediaTypes() {
             var mapper = new GenericMapperBuilder<MultimediaType>().Map("MultimediaType", "Name").build();
             return StoredProcToList("spMultimediaTypeList", mapper);
+        }
+
+        public Multimedia GetMultimedia(int mediaID) {
+            var mapper = new GenericMapperBuilder<Multimedia>().build();
+            Multimedia ret = null;
+            StoredProcReaderFirst("spMultimediaGet", (reader) => {
+                ret = mapper.Map(reader);
+            });
+            return ret;
         }
 
         #endregion

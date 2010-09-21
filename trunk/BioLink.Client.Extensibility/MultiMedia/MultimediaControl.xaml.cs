@@ -25,7 +25,7 @@ namespace BioLink.Client.Extensibility {
     /// </summary>
     public partial class MultimediaControl : DatabaseActionControl {
 
-        private ObservableCollection<MultimediaItemViewModel> _model;
+        private ObservableCollection<MultimediaLinkViewModel> _model;
 
         private TempFileManager<int?> _tempFileManager;
 
@@ -58,7 +58,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         void thumbList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            var item = thumbList.SelectedItem as MultimediaItemViewModel;
+            var item = thumbList.SelectedItem as MultimediaLinkViewModel;
             if (item != null) {
                 detailGrid.DataContext = item;
                 detailGrid.IsEnabled = true;
@@ -68,14 +68,14 @@ namespace BioLink.Client.Extensibility {
         }
 
         public void PopulateControl() {
-            List<MultimediaItem> data = Service.GetMultimediaItems(TraitCategoryType.Taxon.ToString(), IntraCategoryID);
+            List<MultimediaLink> data = Service.GetMultimediaItems(TraitCategoryType.Taxon.ToString(), IntraCategoryID);
             JobExecutor.QueueJob(() => {
-                _model = new ObservableCollection<MultimediaItemViewModel>(data.ConvertAll((item) => new MultimediaItemViewModel(item)));
+                _model = new ObservableCollection<MultimediaLinkViewModel>(data.ConvertAll((item) => new MultimediaLinkViewModel(item)));
                 this.InvokeIfRequired(() => {
                     this.thumbList.ItemsSource = _model;
                 });
 
-                foreach (MultimediaItemViewModel item in _model) {
+                foreach (MultimediaLinkViewModel item in _model) {
                     this.BackgroundInvoke(() => {
                         GenerateThumbnail(item, 100);
                     });
@@ -99,7 +99,7 @@ namespace BioLink.Client.Extensibility {
             return targetFrame;
         }
 
-        private void GenerateThumbnail(MultimediaItemViewModel item, int maxDimension) {
+        private void GenerateThumbnail(MultimediaLinkViewModel item, int maxDimension) {
 
             string filename = _tempFileManager.GetContentFileName(item.MultimediaID, item.Extension);
 
@@ -179,7 +179,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         public void OpenSelected() {
-            var item = thumbList.SelectedItem as MultimediaItemViewModel;
+            var item = thumbList.SelectedItem as MultimediaLinkViewModel;
             if (item != null) {
                 string filename = _tempFileManager.GetContentFileName(item.MultimediaID, item.Extension);
                 try {
@@ -192,7 +192,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         public void ShowContextMenu() {
-            var item = thumbList.SelectedItem as MultimediaItemViewModel;
+            var item = thumbList.SelectedItem as MultimediaLinkViewModel;
             if (item != null) {
                 ContextMenu menu = new ContextMenu();
                 MenuItemBuilder builder = new MenuItemBuilder();                
@@ -252,64 +252,5 @@ namespace BioLink.Client.Extensibility {
 
     }
 
-    public class MultimediaItemViewModel : GenericViewModelBase<MultimediaItem> {
-
-        private BitmapSource _thumb;
-
-        public MultimediaItemViewModel(MultimediaItem model)
-            : base(model) {
-        }
-
-        public int MultimediaID {
-            get { return Model.MultimediaID; }
-            set { SetProperty(() => Model.MultimediaID, value); }
-        }
-
-        public int MultimediaLinkID {
-            get { return Model.MultimediaLinkID; }
-            set { SetProperty(() => Model.MultimediaLinkID, value); }
-        }
-
-        public string MultimediaType {
-            get { return Model.MultimediaType; }
-            set { SetProperty(() => Model.MultimediaType, value); }
-        }
-
-        public string Name {
-            get { return Model.Name; }
-            set { SetProperty(() => Model.Name, value); }
-        }
-
-        public string Caption {
-            get { return Model.Caption; }
-            set { SetProperty(() => Model.Caption, value); }
-        }
-
-        public string Extension {
-            get { return Model.Extension; }
-            set { SetProperty(() => Model.Extension, value); }
-        }
-
-        public int SizeInBytes {
-            get { return Model.SizeInBytes; }
-            set { SetProperty(() => Model.SizeInBytes, value); }
-        }
-
-        public int Changes {
-            get { return Model.Changes; }
-            set { SetProperty(() => Model.Changes, value); }
-        }
-
-        public int BlobChanges {
-            get { return Model.BlobChanges; }
-            set { SetProperty(() => Model.BlobChanges, value); }
-        }
-
-        public BitmapSource Thumbnail {
-            get { return _thumb; }
-            set { SetProperty("ThumbNail", ref _thumb, value); }
-        }
-
-    }
 
 }

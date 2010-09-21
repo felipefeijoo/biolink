@@ -102,9 +102,11 @@
       <DependentUpon>LookupControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="MenuItemBuilder.cs" />
-    <Compile Include="MultimediaControl.xaml.cs">
+    <Compile Include="MultiMedia\MultimediaControl.xaml.cs">
       <DependentUpon>MultimediaControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MultiMedia\MultimediaLinkViewModel.cs" />
+    <Compile Include="MultiMedia\MultimediaViewModel.cs" />
     <Compile Include="OwnershipDetails.xaml.cs">
       <DependentUpon>OwnershipDetails.xaml</DependentUpon>
     </Compile>
@@ -201,7 +203,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MultimediaControl.xaml">
+    <Page Include="MultiMedia\MultimediaControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
