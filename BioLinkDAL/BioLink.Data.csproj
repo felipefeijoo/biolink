@@ -80,6 +80,7 @@
     <Compile Include="Model\MultimediaLink.cs" />
     <Compile Include="Model\Phrase.cs" />
     <Compile Include="Model\ReferenceSearchResult.cs" />
+    <Compile Include="Model\RefLink.cs" />
     <Compile Include="Model\SANTypeData.cs" />
     <Compile Include="Model\SANTypeDataType.cs" />
     <Compile Include="Model\SpeciesAvailableName.cs" />

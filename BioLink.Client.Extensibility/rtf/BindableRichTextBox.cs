@@ -44,10 +44,12 @@ namespace BioLink.Client.Extensibility {
                 var doc = control.Document;
                 if (string.IsNullOrEmpty(rtf)) {
                     doc.Blocks.Clear();
-                } else {                    
-                    using (var stream = new MemoryStream((new ASCIIEncoding()).GetBytes(rtf))) {
-                        var text = new TextRange(doc.ContentStart, doc.ContentEnd);
-                        text.Load(stream, DataFormats.Rtf);
+                } else {
+                    using (var t = new CodeTimer("Loading RTF")) {
+                        using (var stream = new MemoryStream((new ASCIIEncoding()).GetBytes(rtf))) {
+                            var text = new TextRange(doc.ContentStart, doc.ContentEnd);
+                            text.Load(stream, DataFormats.Rtf);
+                        }
                     }
                 }
             }
