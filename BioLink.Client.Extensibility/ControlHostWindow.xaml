@@ -13,7 +13,7 @@
             <RowDefinition Height="40" />
         </Grid.RowDefinitions>        
         <Grid Grid.Row="0" x:Name="ControlHost"></Grid>
-        <Grid Grid.Row="1" Background="{x:Static SystemColors.ControlBrush}">
+        <Grid Grid.Row="1" Background="{x:Static SystemColors.ControlBrush}" x:Name="buttonBar">
             <Button Content="Cancel" Margin="0,0,6,8" Name="btnCancel" Height="23" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" IsCancel="True" Click="btnCancel_Click" />
             <Button Content="_Apply" Height="23" Margin="0,0,88,8" Name="btnApply" VerticalAlignment="Bottom" IsEnabled="False" Click="btnApply_Click" Width="75" HorizontalAlignment="Right" />
             <Button x:FieldModifier="public" Content="OK" Height="23" HorizontalAlignment="Right" Margin="0,0,169,8" Name="btnOk" VerticalAlignment="Bottom" Width="75" IsDefault="True" Click="btnOk_Click" />
