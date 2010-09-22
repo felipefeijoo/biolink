@@ -5,8 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:src="clr-namespace:BioLink.Client.Extensibility"
              xmlns:data="clr-namespace:BioLink.Data;assembly=BioLink.Data"                           
-             xmlns:model="clr-namespace:BioLink.Data.Model;assembly=BioLink.Data"
-             xmlns:delay="clr-namespace:Delay;assembly=SplitButtonWpf"
+             xmlns:model="clr-namespace:BioLink.Data.Model;assembly=BioLink.Data"             
              mc:Ignorable="d" 
              d:DesignHeight="404" d:DesignWidth="774">
     <Grid UseLayoutRounding="True">

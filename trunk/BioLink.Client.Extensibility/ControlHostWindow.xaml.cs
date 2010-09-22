@@ -28,7 +28,7 @@ namespace BioLink.Client.Extensibility {
         }
         #endregion
 
-        public ControlHostWindow(User user, Control element, SizeToContent sizeToContent) : base(user) {           
+        public ControlHostWindow(User user, Control element, SizeToContent sizeToContent, Boolean hideButtonBar = false) : base(user) {
             InitializeComponent();            
 
             if (element.MinWidth > 0) {
@@ -41,7 +41,12 @@ namespace BioLink.Client.Extensibility {
 
             this.Control = element;            
             this.SizeToContent = sizeToContent;                        
-            ControlHost.Children.Add(element);            
+            ControlHost.Children.Add(element);
+            if (hideButtonBar) {
+                buttonBar.Visibility = System.Windows.Visibility.Collapsed;
+                grid.RowDefinitions[1].Height = new GridLength(0);
+            }
+
             this.ChangeRegistered += new PendingChangedRegisteredHandler((source, a) => {
                 btnApply.IsEnabled = true;
             });
