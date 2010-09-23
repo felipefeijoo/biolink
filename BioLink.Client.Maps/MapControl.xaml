@@ -19,6 +19,7 @@
             <Separator />
             <Button Name="btnZoomToExtent" Content="Zoom To Exents" Click="btnZoomToExtent_Click" />
             <Separator />
+            <RadioButton Name="btnArrow" Content="Arrow" Checked="btnArrow_Checked" />
             <RadioButton Name="btnZoomToWindow" Content="ZoomWindow" Checked="btnZoomToWindow_Checked" />
             <RadioButton Name="btnPan" Content="Pan" Checked="btnPan_Checked" />
         </ToolBar>
@@ -27,8 +28,9 @@
         </wfi:WindowsFormsHost>
         <StatusBar Grid.Row="2">
             <StatusBarItem DockPanel.Dock="Right">
-                <StackPanel Orientation="Horizontal">                    
-                    <TextBlock x:Name="txtPosition" Width="200" />
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock x:Name="txtDistance" Width="250" />                    
+                    <TextBlock x:Name="txtPosition" Width="180" TextAlignment="Right"/>
                 </StackPanel>
             </StatusBarItem>
             <StatusBarItem>
