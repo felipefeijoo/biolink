@@ -131,7 +131,9 @@ namespace BioLinkApplication {
                 (errorMsg) => {
                     this.InvokeIfRequired(() => {                        
                         btnCancel.Visibility = Visibility.Visible;
-                        btnLogin.Visibility = Visibility.Visible;                        
+                        btnLogin.Visibility = Visibility.Visible;
+                        txtPassword.Focus();
+                        txtPassword.SelectAll();
                         ErrorMessage("LoginControl.Status.LoginFailed", errorMsg);
                     });                
                 }

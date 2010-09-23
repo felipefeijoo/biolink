@@ -126,7 +126,7 @@ namespace BioLink.Client.Extensibility {
         public object Tag { get; set; }        
     }
 
-    public abstract class GenericViewModelBase<T> : ViewModelBase where T : GUIDObject {
+    public abstract class GenericViewModelBase<T> : ViewModelBase {
 
         private BitmapSource _icon;
 
@@ -154,13 +154,7 @@ namespace BioLink.Client.Extensibility {
                 _icon = value;
             }
         }
-
-        public Guid? GUID {
-            get { return Model.GUID; }
-            set { SetProperty(() => Model.GUID, value); }
-        }
         
-
         public T Model { get; private set; }
     }
 

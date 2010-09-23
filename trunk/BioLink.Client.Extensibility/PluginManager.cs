@@ -193,6 +193,7 @@ namespace BioLink.Client.Extensibility {
 
             form.Closed += new EventHandler((source, e) => {
                 _hostWindows.Remove(form);
+                form.Dispose();
             });
 
             _hostWindows.Add(form);

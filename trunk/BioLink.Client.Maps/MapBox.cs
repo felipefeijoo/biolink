@@ -198,9 +198,12 @@ namespace BioLink.Client.Maps {
                         m_Image = null;
                     } else {
                         Cursor c = Cursor;
-                        Cursor = Cursors.WaitCursor;
-                        m_Image = _Map.GetMap();
-                        Cursor = c;
+                        try {
+                            Cursor = Cursors.WaitCursor;
+                            m_Image = _Map.GetMap();
+                        } finally {
+                            Cursor = c;
+                        }
                     }
 
                     base.Refresh();
@@ -656,7 +659,7 @@ namespace BioLink.Client.Maps {
         /// MouseEventtype fired from the MapImage control
         /// </summary>
         /// <param name="WorldPos"></param>
-        /// <param name="ImagePos"></param>
+        /// <param name="evt"></param>
         public delegate void MouseEventHandler(ICoordinate WorldPos, System.Windows.Forms.MouseEventArgs ImagePos);
         /// <summary>
         /// Fires when mouse moves over the map
