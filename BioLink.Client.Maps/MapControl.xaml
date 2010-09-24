@@ -23,9 +23,23 @@
             <RadioButton Name="btnZoomToWindow" Content="ZoomWindow" Checked="btnZoomToWindow_Checked" />
             <RadioButton Name="btnPan" Content="Pan" Checked="btnPan_Checked" />
         </ToolBar>
-        <wfi:WindowsFormsHost Grid.Row="1" Background="Azure">
-            <maps:MapBox x:Name="map" Click="map_Click" />
-        </wfi:WindowsFormsHost>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="200" />
+            </Grid.ColumnDefinitions>
+            <wfi:WindowsFormsHost  Background="Azure" Margin="0,0,8,0">
+                <maps:MapBox x:Name="map" Click="map_Click" />
+            </wfi:WindowsFormsHost>
+            <GridSplitter ResizeDirection="Columns" Grid.Column="0" Width="8" />
+            <ListBox x:Name="lstLayers" Grid.Column="1" MouseRightButtonUp="lstLayers_MouseRightButtonUp">
+                <ListBox.Resources>
+                    <DataTemplate DataType="{x:Type maps:LayerViewModel}" >
+                        <TextBlock Text="{Binding LayerName}" />
+                    </DataTemplate>
+                </ListBox.Resources>
+            </ListBox>
+        </Grid>
         <StatusBar Grid.Row="2">
             <StatusBarItem DockPanel.Dock="Right">
                 <StackPanel Orientation="Horizontal">

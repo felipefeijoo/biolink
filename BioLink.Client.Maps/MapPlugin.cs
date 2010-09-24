@@ -9,11 +9,11 @@ using System.Windows;
 
 namespace BioLink.Client.Maps {
 
-    public class MaterialPlugin : BiolinkPluginBase {
+    public class MapPlugin : BiolinkPluginBase {
 
         private ControlHostWindow _map;
 
-        public MaterialPlugin() {            
+        public MapPlugin() {            
         }
 
         public override string Name {
@@ -26,7 +26,7 @@ namespace BioLink.Client.Maps {
 
             contrib.Add(new MenuWorkspaceContribution(this, "ShowMap", (obj, e) => { ShowMap(); },
                 "{'Name':'View', 'Header':'View','InsertAfter':'File'}",
-                "{'Name':'ShowMaterialExplorer', 'Header':'Show _Map'}"
+                "{'Name':'ShowMap', 'Header':'Show _Map'}"
             ));
 
             return contrib;
