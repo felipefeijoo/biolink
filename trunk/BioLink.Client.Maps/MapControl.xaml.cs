@@ -21,6 +21,7 @@ using SharpMap.Converters.Geometries;
 using BioLink.Client.Extensibility;
 using System.Collections.ObjectModel;
 using System.Data;
+using Microsoft.Win32;
 
 namespace BioLink.Client.Maps {
     /// <summary>
@@ -48,6 +49,8 @@ namespace BioLink.Client.Maps {
             }));
 
             _layers = new ObservableCollection<LayerViewModel>();
+
+            lstLayers.ItemsSource = _layers;
 
             map.PreviewMode = MapBox.PreviewModes.Fast;
 
@@ -138,7 +141,7 @@ namespace BioLink.Client.Maps {
                         RemoveLayerByName("_regionSelectLayer");
 
                         var geometries = new Collection<IGeometry>();
-                        foreach (FeatureDataRow row in _selectedFeatures) {
+                        foreach (FeatureDataRow row in _selectedFeatures) {                            
                             geometries.Add(row.Geometry);
                         }
                                                
@@ -167,8 +170,10 @@ namespace BioLink.Client.Maps {
                     var shapeFile = vl.DataSource as ShapeFile;
                     if (shapeFile != null) {
                         var candidate = FindGeoNearPoint(point, vl);
-                        if (candidate.Table.Columns.Contains("BLREGHIER")) {
-                            return candidate;
+                        if (candidate != null) {
+                            if (candidate.Table.Columns.Contains("BLREGHIER")) {
+                                return candidate;
+                            }
                         }
                     }
                 }
@@ -214,10 +219,16 @@ namespace BioLink.Client.Maps {
             _layerFactoryCatalog[".shp"] = new ShapeFileLayerFactory();
         }
 
-        private void RemoveLayerByName(string name) {
+        private void RemoveLayerByName(string name) {            
             // First find the layer...
             ILayer layer = map.Map.GetLayerByName(name);
+
             if (layer != null) {
+                // Then find the view model for the layer...
+                LayerViewModel viewModel = _layers.First((vm) => { return vm.Model == layer; });
+                if (viewModel != null) {
+                    _layers.Remove(viewModel);
+                }
                 map.Map.Layers.Remove(layer);
             }
 
@@ -269,7 +280,12 @@ namespace BioLink.Client.Maps {
             _layers.Add(new LayerViewModel(layer, filename));
         }
 
-        private void btnAddLayer_Click(object sender, RoutedEventArgs e) {         
+        private void btnAddLayer_Click(object sender, RoutedEventArgs e) {
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Filter = "Shape Files (*.shp)|*.shp|All files (*.*)|*.*";
+            if (dlg.ShowDialog().ValueOrFalse()) {
+                AddLayer(dlg.FileName);
+            }
         }
 
         private void UserControl_SizeChanged(object sender, SizeChangedEventArgs e) {
@@ -309,6 +325,24 @@ namespace BioLink.Client.Maps {
             Config.SetUser(user, "MapTool.Layers", filename);
             var env = new SerializedEnvelope(map.Map.Envelope);
             Config.SetUser(user, "MapTool.LastExtent", env);
+        }
+
+        private void lstLayers_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            ContextMenu menu = new ContextMenu();
+            var builder = new MenuItemBuilder();
+
+            menu.Items.Add(builder.New("Remove").Handler(() => { RemoveSelectedLayer(); }).MenuItem);
+
+            lstLayers.ContextMenu = menu;
+        }
+
+        private void RemoveSelectedLayer() {
+            var vm = lstLayers.SelectedItem as LayerViewModel;
+            if (vm != null) {
+                map.Map.Layers.Remove(vm.Model);
+                _layers.Remove(vm);
+            } 
+            map.Refresh();
         }
 
 
