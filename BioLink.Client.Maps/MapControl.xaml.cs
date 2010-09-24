@@ -331,16 +331,55 @@ namespace BioLink.Client.Maps {
             ContextMenu menu = new ContextMenu();
             var builder = new MenuItemBuilder();
 
-            menu.Items.Add(builder.New("Remove").Handler(() => { RemoveSelectedLayer(); }).MenuItem);
+            var layer = lstLayers.SelectedItem as LayerViewModel;
+
+            if (layer != null) {
+                int index = map.Map.Layers.IndexOf(layer.Model);
+
+                menu.Items.Add(builder.New("Move up").Handler(() => { MoveUp(layer); }).Enabled(index < map.Map.Layers.Count - 1).MenuItem);
+                menu.Items.Add(builder.New("Move down").Handler(() => { MoveDown(layer); }).Enabled(index > 0).MenuItem);
+
+                if (index > 0) {
+
+                }
+
+                menu.Items.Add(builder.New("Remove").Handler(() => { RemoveLayer(layer); }).MenuItem);
+            }
 
             lstLayers.ContextMenu = menu;
         }
 
-        private void RemoveSelectedLayer() {
-            var vm = lstLayers.SelectedItem as LayerViewModel;
-            if (vm != null) {
-                map.Map.Layers.Remove(vm.Model);
-                _layers.Remove(vm);
+        private void MoveUp(LayerViewModel layer) {
+            int index = map.Map.Layers.IndexOf(layer.Model);
+            bool bAdd = index >= map.Map.Layers.Count;
+            map.Map.Layers.Remove(layer.Model);
+            if (bAdd) {
+                map.Map.Layers.Add(layer.Model);
+            } else {
+                map.Map.Layers.Insert(index + 1, layer.Model);
+            }
+            
+            _layers.Remove(layer);
+            _layers.Insert(index+1, layer);
+
+            map.Refresh();
+        }
+
+        private void MoveDown(LayerViewModel layer) {
+            int index = map.Map.Layers.IndexOf(layer.Model);
+            map.Map.Layers.Remove(layer.Model);
+            map.Map.Layers.Insert(index - 1, layer.Model);
+
+            _layers.Remove(layer);
+            _layers.Insert(index - 1, layer);
+
+            map.Refresh();
+        }
+
+        private void RemoveLayer(LayerViewModel layer) {            
+            if (layer != null) {
+                map.Map.Layers.Remove(layer.Model);
+                _layers.Remove(layer);
             } 
             map.Refresh();
         }
