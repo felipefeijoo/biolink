@@ -70,14 +70,15 @@ Section -Main SEC0000
     SetOutPath $INSTDIR
     SetOverwrite on
     
+	
     File /x *.vshost.exe ..\BioLinkApplication\bin\Debug\*.exe
     File ..\BioLinkApplication\bin\Debug\*.dll
     File /x *.vshost.exe.config ..\BioLinkApplication\bin\Debug\*.config
     
     SetOutPath $INSTDIR\Plugins
     
+	File ..\shared\lib\*.dll
     File ..\BioLinkApplication\bin\Debug\Plugins\*.dll
-	File ..\BioLink.Client.Maps\lib\*.dll
        
     WriteRegStr HKLM "${REGKEY}\Components" Main 1
 	
