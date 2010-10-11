@@ -77,6 +77,7 @@ Section -Main SEC0000
     SetOutPath $INSTDIR\Plugins
     
     File ..\BioLinkApplication\bin\Debug\Plugins\*.dll
+	File ..\BioLink.Client.Maps\lib\*.dll
        
     WriteRegStr HKLM "${REGKEY}\Components" Main 1
 	
