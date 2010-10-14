@@ -912,7 +912,7 @@ namespace BioLink.Client.Taxa {
                     child = col.FirstOrDefault((item) => {
                         return (item as TaxonViewModel).TaxaID == intTaxonId;
                     }) as TaxonViewModel;
-                    if (child != null) {
+                    if (child != null) {                        
                         child.IsExpanded = true;
                         col = child.Children;
                     }
@@ -920,9 +920,7 @@ namespace BioLink.Client.Taxa {
             }
 
             if (child != null) {
-
                 BringModelToView(tvwAllTaxa, child);
-
                 tvwAllTaxa.Focus();
                 child.IsSelected = true;
             }
@@ -983,6 +981,12 @@ namespace BioLink.Client.Taxa {
                     continue;
                 }
 
+                // Ignore available and literature names
+                if (child.AvailableName.ValueOrFalse() || child.LiteratureName.ValueOrFalse()) {
+                    continue;
+                }
+
+                // Also special consideration for species inquirenda and incertae sedis
                 if (child.ElemType == TaxaService.SPECIES_INQUIRENDA || child.ElemType == TaxaService.INCERTAE_SEDIS) {
                     continue;
                 }
@@ -1108,6 +1112,10 @@ namespace BioLink.Client.Taxa {
             // Descend through the levels until the desired TreeViewItem is found.
             while (stack.Count > 0) {
                 HierarchicalViewModelBase model = stack.Pop();
+
+                if (!model.IsExpanded) {
+                    model.IsExpanded = true;
+                }
 
                 bool foundContainer = false;
                 int index = (model.Parent == null ? 0 : model.Parent.Children.IndexOf(model));
