@@ -164,12 +164,12 @@ namespace BioLink.Client.Extensibility {
 
         // Invoked when we enter edit mode.
         void TextBox_Loaded(object sender, RoutedEventArgs e) {
-            TextBox txt = sender as TextBox;
-
-            // Give the TextBox input focus
-            txt.Focus();
-
-            txt.SelectAll();
+            var txt = sender as System.Windows.Controls.Primitives.TextBoxBase;
+            if (txt != null) {
+                // Give the TextBox input focus
+                txt.Focus();
+                txt.SelectAll();
+            }
         }
 
         // Invoked when we exit edit mode.
