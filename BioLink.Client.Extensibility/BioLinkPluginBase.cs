@@ -97,5 +97,9 @@ namespace BioLink.Client.Extensibility {
         public virtual void Select(Type t, Action<SelectionResult> success) {
             throw new NotImplementedException();
         }
+
+        public virtual void Dispatch(string command, Action<object> callback, params object[] args) {
+        }
+
     }
 }

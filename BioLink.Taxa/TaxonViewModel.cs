@@ -172,6 +172,15 @@ namespace BioLink.Client.Taxa {
             set { SetProperty(() => Taxon.NumChildren, Taxon, value); }
         }
 
+        public string Parentage {
+            get { return Taxon.Parentage; }            
+        }
+
+        public string DistQual {
+            get { return Taxon.DistQual; }
+            set { SetProperty(() => Taxon.DistQual, Taxon, value); }
+        }
+
         public DateTime DateCreated {
             get { return Taxon.DateCreated; }
             set { SetProperty(() => Taxon.DateCreated, Taxon, value); }

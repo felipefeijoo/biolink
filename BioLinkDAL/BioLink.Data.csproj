@@ -85,6 +85,7 @@
     <Compile Include="Model\SANTypeData.cs" />
     <Compile Include="Model\SANTypeDataType.cs" />
     <Compile Include="Model\SpeciesAvailableName.cs" />
+    <Compile Include="Model\TaxonDistribution.cs" />
     <Compile Include="Model\Trait.cs" />
     <Compile Include="SupportService.cs" />
     <Compile Include="Model\Taxon.cs" />

@@ -41,6 +41,10 @@ namespace BioLink.Data.Model {
 
         public System.Nullable<int> NumChildren { get; set; }
 
+        public string Parentage { get; set; }
+
+        public string DistQual { get; set; }
+
     }
 
     public class TaxonSearchResult : Taxon {
