@@ -24,6 +24,12 @@ using System.Data;
 using Microsoft.Win32;
 
 namespace BioLink.Client.Maps {
+
+    public enum MapMode {
+        Normal,
+        RegionSelect
+    }
+
     /// <summary>
     /// Interaction logic for MapControl.xaml
     /// </summary>
@@ -37,9 +43,19 @@ namespace BioLink.Client.Maps {
         private ICoordinate _lastMousePos;
         private ObservableCollection<LayerViewModel> _layers;
         private IDegreeDistanceConverter _distanceConverter = new DegreesToKilometresConverter();
+        private Action<object> _callback;
+        private List<FeatureDataRow> _selectedFeatures;
 
+        #region Designer constructor
         public MapControl() {
             InitializeComponent();
+        }
+        #endregion
+
+        public MapControl(MapMode mode, Action<object> callback = null) {
+            InitializeComponent();
+            this.Mode = mode;
+            this._callback = callback;                
             RegisterLayerFactories();
             _resizeTimer = new Timer(new TimerCallback((o)=> {
                 this.InvokeIfRequired(() => {
@@ -71,22 +87,26 @@ namespace BioLink.Client.Maps {
 
             var user = PluginManager.Instance.User;
 
-            List<string> filenames = Config.GetUser(user, "MapTool.Layers", new List<string>());
+            List<string> filenames = Config.GetUser(user, "MapTool." + mode.ToString() + ".Layers", new List<string>());
             foreach (string filename in filenames) {
                 AddLayer(filename);
             }
 
-            SerializedEnvelope env = Config.GetUser<SerializedEnvelope>(user, "MapTool.LastExtent", null);
+            SerializedEnvelope env = Config.GetUser<SerializedEnvelope>(user, "MapTool." + mode.ToString() + ".LastExtent", null);
 
             this.Loaded += new RoutedEventHandler((source, e) => {
                 if (env != null) {
                     map.Map.ZoomToBox(env.CreateEnvelope());
                 } else {
-                    map.Map.ZoomToExtents();
+                    if (map.Map.Layers.Count > 0) {
+                        map.Map.ZoomToExtents();
+                    }
                 }
             });
 
         }
+
+        public MapMode Mode { get; private set; }
 
         private void BuildMenuItem(System.Windows.Forms.ContextMenu menu, string caption, Action action) {
             var menuItem = menu.MenuItems.Add(caption);
@@ -94,8 +114,6 @@ namespace BioLink.Client.Maps {
                 action();
             });            
         }
-
-        private List<FeatureDataRow> _selectedFeatures;
 
         void map_MouseUp(ICoordinate WorldPos, System.Windows.Forms.MouseEventArgs evt) {
             if (evt.Button == System.Windows.Forms.MouseButtons.Right) {
@@ -118,48 +136,98 @@ namespace BioLink.Client.Maps {
 
                 if (map.ActiveTool == MapBox.Tools.None) {
                     var pointClick = GeometryFactory.CreatePoint(WorldPos);
-                    var selectedFeature = FindRegionFeature(pointClick);
-                    if (selectedFeature != null) {
-                        //create the selected layer
-                        if (_selectedFeatures == null) {
-                            _selectedFeatures = new List<FeatureDataRow>();
-                        }
 
-                        string regionPath = selectedFeature["BLREGHIER"] as string;
-
-                        var existing = _selectedFeatures.Find((f) => {
-                            string otherPath = f["BLREGHIER"] as string;                            
-                            return regionPath.Equals(otherPath);
-                        });
-
-                        if (existing != null) {
-                            _selectedFeatures.Remove(existing);
-                        } else {
-                            _selectedFeatures.Add(selectedFeature);
-                        }
-                        // Now remove any exsiting overlay layer...
-                        RemoveLayerByName("_regionSelectLayer");
-
-                        var geometries = new Collection<IGeometry>();
-                        foreach (FeatureDataRow row in _selectedFeatures) {                            
-                            geometries.Add(row.Geometry);
-                        }
-                                               
-                        var selectLayer = new SharpMap.Layers.VectorLayer("_regionSelectLayer");
-                        var provider = new SharpMap.Data.Providers.GeometryProvider(geometries);
-                        selectLayer.DataSource = provider;
-                        selectLayer.Style.Fill = new System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(100, 0, 0, 0));
-
-                        selectLayer.Style.Outline = new System.Drawing.Pen(System.Drawing.SystemColors.Highlight, 1);
-                        selectLayer.Style.EnableOutline = true;
-
-                        addLayer(selectLayer, null, false);
-
-                        map.Refresh();
+                    if (Mode == MapMode.RegionSelect) {
+                        SelectRegion(pointClick);
                     }
                 }
             }
 
+        }
+
+        internal void SelectRegions(List<string> selectedRegions) {
+            if (_selectedFeatures != null) {
+                _selectedFeatures.Clear();
+            } else {
+                _selectedFeatures = new List<FeatureDataRow>();
+            }
+
+            foreach (ILayer layer in map.Map.Layers) {
+                if (layer.LayerName.StartsWith("_")) {
+                    continue;
+                }
+                var vl = layer as VectorLayer;
+                if (vl == null) {
+                    continue;
+                }
+
+                using (var ds = vl.DataSource) {
+                    ds.Open();
+                    for (uint i = 0; i < ds.GetFeatureCount(); ++i) {
+                        var row = ds.GetFeature(i);
+                        if (row.Table.Columns.Contains("BLREGHIER")) {
+                            string regionPath = row["BLREGHIER"] as string;
+
+                            foreach (string selectedPath in selectedRegions) {
+                                if (regionPath.StartsWith(selectedPath)) {
+                                    _selectedFeatures.Add(row);
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+
+            DrawSelectionLayer();
+        }
+
+        private void SelectRegion(IPoint pointClick) {
+            var selectedFeature = FindRegionFeature(pointClick);
+            if (selectedFeature != null) {
+
+                //create the selected layer
+                if (_selectedFeatures == null) {
+                    _selectedFeatures = new List<FeatureDataRow>();
+                }
+
+                string regionPath = selectedFeature["BLREGHIER"] as string;
+
+                var existing = _selectedFeatures.Find((f) => {
+                    string otherPath = f["BLREGHIER"] as string;
+                    return regionPath.Equals(otherPath);
+                });
+
+                if (existing != null) {
+                    _selectedFeatures.Remove(existing);
+                } else {
+                    _selectedFeatures.Add(selectedFeature);
+                }
+
+                DrawSelectionLayer();
+            }
+        }
+
+        private void DrawSelectionLayer() {
+            // Now remove any exsiting overlay layer...
+            RemoveLayerByName("_regionSelectLayer");
+
+            var geometries = new Collection<IGeometry>();
+            foreach (FeatureDataRow row in _selectedFeatures) {
+                geometries.Add(row.Geometry);
+            }
+
+            var selectLayer = new SharpMap.Layers.VectorLayer("_regionSelectLayer");
+            var provider = new SharpMap.Data.Providers.GeometryProvider(geometries);
+            selectLayer.DataSource = provider;
+            selectLayer.Style.Fill = new System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(100, 0, 0, 0));
+
+            selectLayer.Style.Outline = new System.Drawing.Pen(System.Drawing.SystemColors.Highlight, 1);
+            selectLayer.Style.EnableOutline = true;
+
+            addLayer(selectLayer, null, false);
+
+            map.Refresh();
         }
 
         public FeatureDataRow FindRegionFeature(IPoint point) {
@@ -322,9 +390,9 @@ namespace BioLink.Client.Maps {
 
             var user = PluginManager.Instance.User;
 
-            Config.SetUser(user, "MapTool.Layers", filename);
+            Config.SetUser(user, "MapTool." + Mode.ToString() + ".Layers", filename);
             var env = new SerializedEnvelope(map.Map.Envelope);
-            Config.SetUser(user, "MapTool.LastExtent", env);
+            Config.SetUser(user, "MapTool." + Mode.ToString() + ".LastExtent", env);
         }
 
         private void lstLayers_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
@@ -383,7 +451,6 @@ namespace BioLink.Client.Maps {
             } 
             map.Refresh();
         }
-
 
     }
 

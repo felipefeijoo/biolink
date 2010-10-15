@@ -12,6 +12,7 @@ namespace BioLink.Client.Maps {
     public class MapPlugin : BiolinkPluginBase {
 
         private ControlHostWindow _map;
+        private ControlHostWindow _regionMap;
 
         public MapPlugin() {            
         }
@@ -34,7 +35,7 @@ namespace BioLink.Client.Maps {
 
         private void ShowMap() {
             if (_map == null) {
-                _map = PluginManager.Instance.AddNonDockableContent(this, new MapControl(), "Map Tool", SizeToContent.Manual);
+                _map = PluginManager.Instance.AddNonDockableContent(this, new MapControl(MapMode.Normal), "Map Tool", SizeToContent.Manual);
                 _map.Closed += new EventHandler((sender, e) => {
                     _map = null;
                 });
@@ -42,6 +43,22 @@ namespace BioLink.Client.Maps {
             _map.Show();
             _map.Focus();
         }
+
+        private void ShowRegionMap(Action<object> callback, List<string> selectedRegions) {
+            if (_regionMap == null) {
+                var map = new MapControl(MapMode.RegionSelect, callback);
+                _regionMap = PluginManager.Instance.AddNonDockableContent(this, map, "Region Selection Tool", SizeToContent.Manual);
+                _regionMap.Closed += new EventHandler((sender, e) => {
+                    _regionMap = null;
+                });                
+            }
+            (_regionMap.Control as MapControl).SelectRegions(selectedRegions);
+            
+
+            _regionMap.Show();
+            _regionMap.Focus();
+        }
+
 
         public override bool RequestShutdown() {
             return true;
@@ -51,5 +68,19 @@ namespace BioLink.Client.Maps {
         public override List<Command> GetCommandsForObject(ViewModelBase obj) {
             return null;
         }
+
+        public override void Dispatch(string command, Action<object> callback, params object[] args) {
+            switch (command.ToLower()) {
+                case "showregionmap":
+                    ShowRegionMap(callback, args[0] as List<string>);
+                    break;
+                case "showmap":
+                    ShowMap();
+                    break;
+                default:
+                    break;
+            }
+        }
     }
+
 }

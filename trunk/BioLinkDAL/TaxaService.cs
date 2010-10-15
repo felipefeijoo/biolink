@@ -246,6 +246,8 @@ namespace BioLink.Data {
             return result;
         }
 
+        #region Names
+
         public void InsertOrUpdateAvailableName(AvailableName name) {
             StoredProcUpdate("spALNInsertUpdate",
                 _P("intBiotaID", name.BiotaID),
@@ -413,6 +415,13 @@ namespace BioLink.Data {
 
         public void DeleteCommonName(int commonNameID) {
             StoredProcUpdate("spCommonNameDelete", _P("intCommonNameID", commonNameID));
+        }
+
+        #endregion
+
+        public List<TaxonDistribution> GetDistribution(int? TaxonID) {
+            var mapper = new GenericMapperBuilder<TaxonDistribution>().build();
+            return StoredProcToList("spBiotaDistGet", mapper, _P("intBiotaID", TaxonID.Value));
         }
 
     }

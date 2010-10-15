@@ -15,6 +15,7 @@ using BioLink.Data.Model;
 using System.Reflection;
 using BioLink.Data;
 using BioLink.Client.Extensibility;
+using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Taxa {
     /// <summary>
@@ -51,6 +52,11 @@ namespace BioLink.Client.Taxa {
             }
 
             AddTabItem("References", new ReferencesControl(user, TraitCategoryType.Taxon, taxon.TaxaID));
+
+            if ((!taxon.AvailableName.ValueOrFalse() && !taxon.LiteratureName.ValueOrFalse())) {
+                AddTabItem("Distribution", new DistributionControl(user, taxon));
+            }
+
 
             AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Taxon, taxon.TaxaID));
             var mmc = new MultimediaControl(User, TraitCategoryType.Taxon, taxon.TaxaID);

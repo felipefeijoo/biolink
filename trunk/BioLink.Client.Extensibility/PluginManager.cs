@@ -281,6 +281,17 @@ namespace BioLink.Client.Extensibility {
             return false;
         }
 
+        public void ShowRegionMap(List<string> regions, Action<object> updateAction) {
+            // TODO: Potentially other providers of Region selection?
+
+            IBioLinkPlugin p = GetPluginByName("Map");
+            if (p != null) {
+                p.Dispatch("ShowRegionMap", updateAction, regions);
+            } else {
+                throw new Exception("Failed to launch to region map. Map plugin not found.");
+            }
+        }
+
         static void DoEvents() {
             DispatcherFrame frame = new DispatcherFrame(true);
             Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, (SendOrPostCallback)delegate(object arg) {
@@ -341,6 +352,16 @@ namespace BioLink.Client.Extensibility {
             return _extensions.FindAll((ext) => { return ext is T; }).ConvertAll((ext) => { return (T) ext; });
         }
 
+        public IBioLinkPlugin GetPluginByName(string name) {
+            foreach (IBioLinkPlugin plugin in PlugIns) {
+                if (plugin.Name == name) {
+                    return plugin;
+                }
+            }
+
+            return null;
+        }
+
         public bool RequestShutdown() {
 
             foreach (ControlHostWindow window in _hostWindows) {
@@ -379,8 +400,6 @@ namespace BioLink.Client.Extensibility {
         public delegate void AddDockableContentDelegate(IBioLinkPlugin plugin, FrameworkElement content, string title);
 
         public delegate void CloseDockableContentDelegate(FrameworkElement content);
-
-        
 
     }
 
