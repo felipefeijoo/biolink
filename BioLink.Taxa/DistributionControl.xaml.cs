@@ -113,7 +113,7 @@ namespace BioLink.Client.Taxa {
                 });
             }
 
-            PluginManager.Instance.ShowRegionMap(regions, (callbackarg) => {
+            PluginManager.Instance.ShowRegionSelector(regions, (callbackarg) => {
                 // rebuild the model from the new list of regions...
             });
         }

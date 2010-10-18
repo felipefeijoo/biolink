@@ -9,7 +9,7 @@ using System.Windows;
 
 namespace BioLink.Client.Maps {
 
-    public class MapPlugin : BiolinkPluginBase {
+    public class MapPlugin : BiolinkPluginBase, IRegionSelector {
 
         private ControlHostWindow _map;
         private ControlHostWindow _regionMap;
@@ -44,22 +44,6 @@ namespace BioLink.Client.Maps {
             _map.Focus();
         }
 
-        private void ShowRegionMap(Action<object> callback, List<string> selectedRegions) {
-            if (_regionMap == null) {
-                var map = new MapControl(MapMode.RegionSelect, callback);
-                _regionMap = PluginManager.Instance.AddNonDockableContent(this, map, "Region Selection Tool", SizeToContent.Manual);
-                _regionMap.Closed += new EventHandler((sender, e) => {
-                    _regionMap = null;
-                });                
-            }
-            (_regionMap.Control as MapControl).SelectRegions(selectedRegions);
-            
-
-            _regionMap.Show();
-            _regionMap.Focus();
-        }
-
-
         public override bool RequestShutdown() {
             return true;
         }
@@ -69,17 +53,17 @@ namespace BioLink.Client.Maps {
             return null;
         }
 
-        public override void Dispatch(string command, Action<object> callback, params object[] args) {
-            switch (command.ToLower()) {
-                case "showregionmap":
-                    ShowRegionMap(callback, args[0] as List<string>);
-                    break;
-                case "showmap":
-                    ShowMap();
-                    break;
-                default:
-                    break;
+        public void SelectRegions(List<string> preselectedRegions, Action<List<string>> updatefunc) {
+            if (_regionMap == null) {
+                var map = new MapControl(MapMode.RegionSelect, updatefunc);
+                _regionMap = PluginManager.Instance.AddNonDockableContent(this, map, "Region Selection Tool", SizeToContent.Manual);
+                _regionMap.Closed += new EventHandler((sender, e) => {
+                    _regionMap = null;
+                });
             }
+            (_regionMap.Control as MapControl).SelectRegions(preselectedRegions);
+            _regionMap.Show();
+            _regionMap.Focus();
         }
     }
 

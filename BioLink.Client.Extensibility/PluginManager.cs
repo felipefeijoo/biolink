@@ -281,12 +281,10 @@ namespace BioLink.Client.Extensibility {
             return false;
         }
 
-        public void ShowRegionMap(List<string> regions, Action<object> updateAction) {
-            // TODO: Potentially other providers of Region selection?
-
-            IBioLinkPlugin p = GetPluginByName("Map");
-            if (p != null) {
-                p.Dispatch("ShowRegionMap", updateAction, regions);
+        public void ShowRegionSelector(List<string> regions, Action<List<string>> updateAction) {
+            var selectors = GetExtensionsOfType<IRegionSelector>();
+            if (selectors != null && selectors.Count > 0) {
+                selectors[0].SelectRegions(regions, updateAction);
             } else {
                 throw new Exception("Failed to launch to region map. Map plugin not found.");
             }
@@ -303,31 +301,51 @@ namespace BioLink.Client.Extensibility {
 
         public void Dispose(Boolean disposing) {
             if (disposing) {
-                Logger.Debug("Disposing the Plugin Manager");
+                
+                var frm = new ShutdownProgess();
+                try {
+                    frm.Show();
+                    Logger.Debug("Disposing the Plugin Manager");
+                    List<ControlHostWindow> temp = new List<ControlHostWindow>(_hostWindows);
 
-                List<ControlHostWindow> temp = new List<ControlHostWindow>(_hostWindows);
-                foreach (ControlHostWindow window in temp) {
-                    Logger.Debug("Disposing control host window '{0}'...", window.Title);
-                    try {
-                        window.Close();
-                        window.Dispose();
-                    } catch (Exception ex) {
-                        Logger.Warn("Exception occured whilst disposing host window '{0}' : {1}", window.Title, ex);
+                    var itemCount = temp.Count + _extensions.Count;
+                    frm.progressBar.Maximum = itemCount;
+                    frm.progressBar.Value = 0;
+                    foreach (ControlHostWindow window in temp) {
+                        Logger.Debug("Disposing control host window '{0}'...", window.Title);
+                        frm.StatusMessage("Closing window " + window.Title);
+                        DoEvents();
+                        try {
+                            window.Close();
+                            window.Dispose();
+                        } catch (Exception ex) {
+                            Logger.Warn("Exception occured whilst disposing host window '{0}' : {1}", window.Title, ex);
+                        }
+                        
+                        frm.progressBar.Value += 1;
+                        DoEvents();
                     }
+
+                    _extensions.ForEach((ext) => {
+                        Logger.Debug("Disposing extension '{0}'", ext);
+                        frm.StatusMessage("Unloading extension " + ext.Name);
+                        DoEvents();
+                        try {
+                            ext.Dispose();
+                        } catch (Exception ex) {
+                            Logger.Warn("Exception occured whilst disposing plugin '{0}' : {1}", ext, ex);
+                        }
+                        frm.progressBar.Value += 1;
+                        DoEvents();
+                    });
+                    _extensions.Clear();
+                    frm.StatusMessage("Cleaning up temporary files...");
+                    DoEvents();
+                    Logger.Debug("Cleaning up temp files...");
+                    _resourceTempFiles.CleanUp();
+                } finally {
+                    frm.Close();    
                 }
-
-                _extensions.ForEach((ext) => {
-                    Logger.Debug("Disposing extension '{0}'", ext);
-                    try {
-                        ext.Dispose();
-                    } catch (Exception ex) {
-                        Logger.Warn("Exception occured whilst disposing plugin '{0}' : {1}", ext, ex);
-                    }
-                });
-                _extensions.Clear();
-
-                Logger.Debug("Cleaning up temp files...");
-                _resourceTempFiles.CleanUp();
             }
         }
 
