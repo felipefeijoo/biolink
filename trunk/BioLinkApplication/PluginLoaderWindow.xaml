@@ -1,9 +1,9 @@
 ﻿<Window x:Class="BioLinkApplication.PluginLoaderWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="PluginLoaderWindow" Height="196" Width="517" WindowStyle="ToolWindow" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+        Title="Loading..." Height="130" Width="517" WindowStyle="ToolWindow" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
     <Grid>
-        <ProgressBar Height="39" Margin="81,35,76,0" Name="progressBar" VerticalAlignment="Top" />
-        <Label Content="" Height="28" Margin="12,90,12,0" Name="lblProgress" VerticalAlignment="Top" HorizontalContentAlignment="Center" />
+        <ProgressBar Height="23" Margin="81,12,76,0" Name="progressBar" VerticalAlignment="Top" />
+        <Label Content="" Height="28" Margin="12,41,12,0" Name="lblProgress" VerticalAlignment="Top" HorizontalContentAlignment="Center" />
     </Grid>
 </Window>

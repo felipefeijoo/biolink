@@ -12,7 +12,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition Height="*" />
-            <RowDefinition Height="25" />
+            <RowDefinition Height="35" x:Name="buttonRow" />
+            <RowDefinition Height="25" x:Name="statusRow" />
         </Grid.RowDefinitions>
         <ToolBar>
             <Button x:Name="btnAddLayer" Click="btnAddLayer_Click" Content="Add Layer" />
@@ -40,7 +41,10 @@
                 </ListBox.Resources>
             </ListBox>
         </Grid>
-        <StatusBar Grid.Row="2">
+        <Grid Grid.Row="2">
+            <Button Content="_Update" HorizontalAlignment="Right" Margin="0,6,6,0" Name="btnUpdate" Width="75" Height="23" VerticalAlignment="Top" Click="btnUpdate_Click" />
+        </Grid>
+        <StatusBar Grid.Row="3">
             <StatusBarItem DockPanel.Dock="Right">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock x:Name="txtDistance" Width="250" />                    

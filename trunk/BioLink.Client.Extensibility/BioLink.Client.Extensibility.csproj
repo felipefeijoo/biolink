@@ -95,6 +95,7 @@
     <Compile Include="Export\TabularDataExporter.cs" />
     <Compile Include="IChangeContainer.cs" />
     <Compile Include="IClosable.cs" />
+    <Compile Include="IRegionSelector.cs" />
     <Compile Include="LatLongInput.xaml.cs">
       <DependentUpon>LatLongInput.xaml</DependentUpon>
     </Compile>
@@ -138,6 +139,9 @@
     <Compile Include="rtf\RtfToPlainTextConverter.cs" />
     <Compile Include="rtf\StringToRtfConverter.cs" />
     <Compile Include="rtf\StringToXamlConverter.cs" />
+    <Compile Include="ShutdownProgess.xaml.cs">
+      <DependentUpon>ShutdownProgess.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TabularDataViewer.xaml.cs">
       <DependentUpon>TabularDataViewer.xaml</DependentUpon>
     </Compile>
@@ -232,6 +236,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ReportResults.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ShutdownProgess.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

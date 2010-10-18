@@ -43,8 +43,9 @@ namespace BioLink.Client.Maps {
         private ICoordinate _lastMousePos;
         private ObservableCollection<LayerViewModel> _layers;
         private IDegreeDistanceConverter _distanceConverter = new DegreesToKilometresConverter();
-        private Action<object> _callback;
-        private List<FeatureDataRow> _selectedFeatures;
+        private Action<List<string>> _callback;
+        private RegionTreeNode _regionModel;
+        private VectorLayer _regionLayer;
 
         #region Designer constructor
         public MapControl() {
@@ -52,7 +53,7 @@ namespace BioLink.Client.Maps {
         }
         #endregion
 
-        public MapControl(MapMode mode, Action<object> callback = null) {
+        public MapControl(MapMode mode, Action<List<string>> callback = null) {
             InitializeComponent();
             this.Mode = mode;
             this._callback = callback;                
@@ -63,6 +64,10 @@ namespace BioLink.Client.Maps {
                     _resizeTimer.Change(Timeout.Infinite, Timeout.Infinite);
                 });
             }));
+
+            if (mode == MapMode.Normal) {
+                buttonRow.Height = new GridLength(0);
+            }
 
             _layers = new ObservableCollection<LayerViewModel>();
 
@@ -120,15 +125,39 @@ namespace BioLink.Client.Maps {
                 map.Focus();
                 var menu = new System.Windows.Forms.ContextMenu();
 
-                if (_distanceAnchor == null) {
-                    BuildMenuItem(menu, "Drop distance anchor", () => {
-                        DropDistanceAnchor();
-                    });
+                if (Mode == MapMode.Normal) {
+                    if (_distanceAnchor == null) {
+                        BuildMenuItem(menu, "Drop distance anchor", () => {
+                            DropDistanceAnchor();
+                        });
+                    } else {
+                        BuildMenuItem(menu, "Hide distance anchor", () => {
+                            HideDistanceAnchor();
+                            map.Refresh();
+                        });
+                    }
                 } else {
-                    BuildMenuItem(menu, "Hide distance anchor", () => {
-                        HideDistanceAnchor();
-                        map.Refresh();
+                    var pointClick = GeometryFactory.CreatePoint(WorldPos);
+                    var feature = FindRegionFeature(pointClick);
+                    if (feature != null) {
+                        string regionPath = feature["BLREGHIER"] as string;
+                        if (regionPath != null) {
+                            var bits = regionPath.Split('\\');
+                            var sb = new StringBuilder();
+                            foreach (string bit in bits) {
+                                sb.Append("\\").Append(bit);
+                                string path = sb.ToString().Substring(1); // trim off leading backslash
+                                BuildMenuItem(menu, bit, () => {
+                                    SelectRegionByPath(path);
+                                });
+                            }
+                            menu.MenuItems.Add("-");
+                        }
+                    }
+                    BuildMenuItem(menu, "Deselect all", () => {
+                        DeselectAllRegions();
                     });
+
                 }
 
                 menu.Show(map, evt.Location);
@@ -142,38 +171,52 @@ namespace BioLink.Client.Maps {
                     }
                 }
             }
+        }
 
+        private void DeselectAllRegions() {
+        }
+        
+        public void SelectRegionByPath(string regionPath) {
+            var layer = FindFirstRegionLayer();            
+            if (layer != null) {
+                using (var ds = layer.DataSource) {
+                    ds.Open();
+                    for (uint i = 0; i < ds.GetFeatureCount(); ++i) {
+                        var row = ds.GetFeature(i);
+                        if (row.Table.Columns.Contains("BLREGHIER")) {
+                            string candidatePath = row["BLREGHIER"] as string;
+                            if (candidatePath.StartsWith(regionPath)) {
+                                var candidateNode = _regionModel.FindByPath(candidatePath);
+                                candidateNode.IsSelected = true;
+                            }                            
+                        }
+                    }                    
+                }
+                DrawSelectionLayer();
+            }
         }
 
         internal void SelectRegions(List<string> selectedRegions) {
-            if (_selectedFeatures != null) {
-                _selectedFeatures.Clear();
-            } else {
-                _selectedFeatures = new List<FeatureDataRow>();
-            }
-
-            foreach (ILayer layer in map.Map.Layers) {
-                if (layer.LayerName.StartsWith("_")) {
-                    continue;
-                }
-                var vl = layer as VectorLayer;
-                if (vl == null) {
-                    continue;
+            var layer = FindFirstRegionLayer();
+            if (layer != null) {
+                if (_regionModel != null) {
+                    _regionModel.DeselectAll();
+                } else {
+                    _regionModel = BuildRegionModel(layer);
                 }
 
-                using (var ds = vl.DataSource) {
+                using (var ds = layer.DataSource) {
                     ds.Open();
                     for (uint i = 0; i < ds.GetFeatureCount(); ++i) {
                         var row = ds.GetFeature(i);
                         if (row.Table.Columns.Contains("BLREGHIER")) {
                             string regionPath = row["BLREGHIER"] as string;
-
+                            var node = _regionModel.FindByPath(regionPath);
                             foreach (string selectedPath in selectedRegions) {
                                 if (regionPath.StartsWith(selectedPath)) {
-                                    _selectedFeatures.Add(row);
+                                    node.IsSelected = true;
                                 }
                             }
-
                         }
                     }
                 }
@@ -185,25 +228,10 @@ namespace BioLink.Client.Maps {
         private void SelectRegion(IPoint pointClick) {
             var selectedFeature = FindRegionFeature(pointClick);
             if (selectedFeature != null) {
-
-                //create the selected layer
-                if (_selectedFeatures == null) {
-                    _selectedFeatures = new List<FeatureDataRow>();
-                }
-
                 string regionPath = selectedFeature["BLREGHIER"] as string;
-
-                var existing = _selectedFeatures.Find((f) => {
-                    string otherPath = f["BLREGHIER"] as string;
-                    return regionPath.Equals(otherPath);
-                });
-
-                if (existing != null) {
-                    _selectedFeatures.Remove(existing);
-                } else {
-                    _selectedFeatures.Add(selectedFeature);
-                }
-
+                var node = _regionModel.FindByPath(regionPath);
+                Debug.Assert(node != null, "could not find region node for path: " + regionPath);
+                node.IsSelected = !node.IsSelected;
                 DrawSelectionLayer();
             }
         }
@@ -213,8 +241,9 @@ namespace BioLink.Client.Maps {
             RemoveLayerByName("_regionSelectLayer");
 
             var geometries = new Collection<IGeometry>();
-            foreach (FeatureDataRow row in _selectedFeatures) {
-                geometries.Add(row.Geometry);
+            var selectedFeatures = _regionModel.FindSelectedRegions();
+            foreach (RegionTreeNode node in selectedFeatures) {
+                geometries.Add(node.FeatureRow.Geometry);
             }
 
             var selectLayer = new SharpMap.Layers.VectorLayer("_regionSelectLayer");
@@ -230,19 +259,34 @@ namespace BioLink.Client.Maps {
             map.Refresh();
         }
 
-        public FeatureDataRow FindRegionFeature(IPoint point) {
-
+        private VectorLayer FindFirstRegionLayer() {
             foreach (ILayer layer in map.Map.Layers) {
                 if (layer is VectorLayer) {
                     var vl = layer as VectorLayer;
-                    var shapeFile = vl.DataSource as ShapeFile;
-                    if (shapeFile != null) {
-                        var candidate = FindGeoNearPoint(point, vl);
-                        if (candidate != null) {
-                            if (candidate.Table.Columns.Contains("BLREGHIER")) {
-                                return candidate;
+                    var shapefile = vl.DataSource as ShapeFile;                    
+                    if (shapefile != null) {
+                        using (shapefile) {
+                            shapefile.Open();
+                            var row = shapefile.GetFeature(0);
+                            if (row.Table.Columns.Contains("BLREGHIER")) {
+                                return vl;
                             }
                         }
+                    }
+                }
+            }
+            return null;
+        }
+
+        public FeatureDataRow FindRegionFeature(IPoint point) {
+
+            var layer = FindFirstRegionLayer();
+            if (layer != null) {
+                var shapeFile = layer.DataSource as ShapeFile;
+                if (shapeFile != null) {
+                    var candidate = FindGeoNearPoint(point, layer);
+                    if (candidate != null) {
+                        return candidate;
                     }
                 }
             }
@@ -346,6 +390,12 @@ namespace BioLink.Client.Maps {
 
             map.Refresh();
             _layers.Add(new LayerViewModel(layer, filename));
+
+            var topRegionLayer = FindFirstRegionLayer();
+            if (Mode == MapMode.RegionSelect && _regionLayer != topRegionLayer) {
+                _regionLayer = topRegionLayer;
+                _regionModel = BuildRegionModel(topRegionLayer);
+            }
         }
 
         private void btnAddLayer_Click(object sender, RoutedEventArgs e) {
@@ -452,6 +502,209 @@ namespace BioLink.Client.Maps {
             map.Refresh();
         }
 
+        private void btnUpdate_Click(object sender, RoutedEventArgs e) {
+            UpdateSelectedRegions();
+        }
+
+        private void UpdateSelectedRegions() {
+            var regions = OptimizeSelectedRegions();
+            if (_callback != null) {
+                _callback(regions);
+            }
+        }
+
+        private RegionTreeNode BuildRegionModel(VectorLayer layer) {
+            if (layer == null) {
+                return null;
+            }
+
+            var root = new RegionTreeNode(null, "");
+            using (var ds = layer.DataSource as ShapeFile) {
+                ds.Open();
+                for (uint i = 0; i < ds.GetFeatureCount(); ++i) {
+                    var row = ds.GetFeature(i);                    
+                    var node = AddNodeFromPath(root, row);
+                }
+            }
+            return root;
+        }
+
+        private RegionTreeNode AddNodeFromPath(RegionTreeNode root, FeatureDataRow feature) {
+            var path = feature["BLREGHIER"] as string;
+            string[] bits = path.Split('\\');
+            var parent = root;
+            for (int i = 0; i < bits.Length; ++i) {
+                string bit = bits[i];            
+                var pNode = parent.FindChildByName(bit);
+                if (pNode == null) {
+                    // intermediate tree nodes do not have a feature row attached to them...
+                    parent = parent.AddChild(bit);
+                } else {
+                    parent = pNode;
+                }
+            }
+            // leaf nodes represent the actual feature.
+            parent.FeatureRow = feature;
+
+            return parent;
+        }
+
+        private List<string> OptimizeSelectedRegions() {
+
+            var layer = FindFirstRegionLayer();
+            if (layer == null) {
+                return null;
+            }
+
+            // First get a list of all the selected region paths...
+            var list = _regionModel.FindSelectedRegions();
+
+            // For each selected element we basically want to workout if it (and all of its siblings) can be replaced by its parent
+            // This can only happen if all of its siblings are selected as well...
+            List<String> finalList = new List<string>();
+            while (list.Count > 0) {
+                // process the first one in the list, until there are no more...
+                var node = list[0];
+                if (node.Parent != null) {
+                    // Work out if there is an ancestor node whose children are all selected. If not the current node is returned (no common ancestor)
+                    node = DetermineCommonSelectedAncestor(node);
+                    // add this node to the final 'optimized' list of regions...
+                    finalList.Add(node.Path);
+                    // and remove all descendent regions from the source list...
+                    node.Traverse((n) => {
+                        list.Remove(n);
+                    });
+
+                } else {
+                    // add this region path to the optimized list (no optimization possible)
+                    finalList.Add(node.Path);
+                    // and remove it from the source list...
+                    list.Remove(node);
+                }
+            }
+
+            return finalList;
+        }
+
+        /// <summary>
+        /// Attempts to find the highest (oldest?) ancestor for which each of its descedants are selected...
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        private RegionTreeNode DetermineCommonSelectedAncestor(RegionTreeNode node) {
+
+            if (node.Parent == null) {
+                return node;
+            }
+            
+            var ancestor = node;
+            while (ancestor.Parent != null && AllSiblingsSelected(ancestor)) {
+                ancestor = ancestor.Parent;
+            }
+            return ancestor;
+        }
+
+        /// <summary>
+        /// Takes a node, and checks all of its siblings to see if their paths exist in the selectedPaths list
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="selectedPaths"></param>
+        /// <returns></returns>
+        private bool AllSiblingsSelected(RegionTreeNode node) {
+
+            var siblings = node.Parent == null ? null : node.Parent.Children;
+            if (siblings != null) {
+                foreach (RegionTreeNode sibling in siblings) {                    
+                    if (!sibling.IsSelected) {
+                        return false;
+                    }
+                }                
+            }
+            return true;
+        }
+
+    }
+
+    class RegionTreeNode {
+
+        public RegionTreeNode(RegionTreeNode parent, string name) {
+            this.Parent = parent;
+            this.Name = name;            
+            this.Children = new List<RegionTreeNode>();
+            Path = CalculatePath();
+        }
+
+        public RegionTreeNode Parent { get; set; }
+        public string Name { get; set; }
+        public List<RegionTreeNode> Children { get; private set; }
+        public string Path { get; private set; }
+        public bool IsSelected { get; set; }
+        internal FeatureDataRow FeatureRow { get; set; }
+
+        internal string CalculatePath() {
+            if (Parent == null) {
+                return Name;
+            } else {
+                var parentPath = Parent.CalculatePath();
+                if (parentPath.Length > 0) {
+                    return parentPath + "\\" + Name;
+                } else {
+                    return Name;
+                }
+            }
+        }
+
+        public RegionTreeNode FindChildByName(string regionName) {
+            var match = Children.Find((n) => { return n.Name.Equals(regionName); });
+            return match;
+        }
+
+        internal RegionTreeNode AddChild(string regionName) {
+            var newNode = new RegionTreeNode(this, regionName);
+            Children.Add(newNode);
+            return newNode;
+        }
+
+        public override string ToString() {
+            return Name;
+        }
+
+        public RegionTreeNode FindByPath(string path) {
+            string[] bits = path.Split('\\');
+            var parent = this;
+            foreach (string bit in bits) {
+                parent = parent.FindChildByName(bit);
+                if (parent == null) {
+                    break;
+                }
+            }
+            return parent;
+        }
+
+        public void Traverse(Action<RegionTreeNode> action) {
+            if (action != null) {
+                action(this);
+            }
+            foreach (RegionTreeNode child in Children) {
+                child.Traverse(action);
+            }
+        }
+
+        public List<RegionTreeNode> FindSelectedRegions() {
+            var result = new List<RegionTreeNode>();
+            Traverse((node) => {
+                if (node.IsSelected) {
+                    result.Add(node);
+                }
+            });
+            return result;
+        }
+
+        public void DeselectAll() {
+            this.Traverse((node) => {
+                node.IsSelected = false;
+            });
+        }
     }
 
     public class SerializedEnvelope {
