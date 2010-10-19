@@ -43,9 +43,10 @@ namespace BioLink.Client.Maps {
         private ICoordinate _lastMousePos;
         private ObservableCollection<LayerViewModel> _layers;
         private IDegreeDistanceConverter _distanceConverter = new DegreesToKilometresConverter();
-        private Action<List<string>> _callback;
+        private Action<List<RegionDescriptor>> _callback;
         private RegionTreeNode _regionModel;
         private VectorLayer _regionLayer;
+        private List<RegionDescriptor> _unmatchedRegions;
 
         #region Designer constructor
         public MapControl() {
@@ -53,7 +54,7 @@ namespace BioLink.Client.Maps {
         }
         #endregion
 
-        public MapControl(MapMode mode, Action<List<string>> callback = null) {
+        public MapControl(MapMode mode, Action<List<RegionDescriptor>> callback = null) {
             InitializeComponent();
             this.Mode = mode;
             this._callback = callback;                
@@ -177,26 +178,15 @@ namespace BioLink.Client.Maps {
         }
         
         public void SelectRegionByPath(string regionPath) {
-            var layer = FindFirstRegionLayer();            
-            if (layer != null) {
-                using (var ds = layer.DataSource) {
-                    ds.Open();
-                    for (uint i = 0; i < ds.GetFeatureCount(); ++i) {
-                        var row = ds.GetFeature(i);
-                        if (row.Table.Columns.Contains("BLREGHIER")) {
-                            string candidatePath = row["BLREGHIER"] as string;
-                            if (candidatePath.StartsWith(regionPath)) {
-                                var candidateNode = _regionModel.FindByPath(candidatePath);
-                                candidateNode.IsSelected = true;
-                            }                            
-                        }
-                    }                    
-                }
+            var node = _regionModel.FindByPath(regionPath);
+            
+            if (node != null) {
+                node.IsSelected = true;
                 DrawSelectionLayer();
             }
         }
 
-        internal void SelectRegions(List<string> selectedRegions) {
+        public void SelectRegions(List<RegionDescriptor> selectedRegions) {
             var layer = FindFirstRegionLayer();
             if (layer != null) {
                 if (_regionModel != null) {
@@ -205,6 +195,20 @@ namespace BioLink.Client.Maps {
                     _regionModel = BuildRegionModel(layer);
                 }
 
+                _unmatchedRegions = new List<RegionDescriptor>();
+
+
+                foreach (RegionDescriptor selectedRegion in selectedRegions) {
+                    var node = _regionModel.FindByPath(selectedRegion.Path);
+                    if (node == null) {
+                        // The selected region cannot be displayed/selected by the selected layer.
+                        // we need to remember that we were handed this, however, so that we can pass it
+                        // back during the update...
+                        _unmatchedRegions.Add(selectedRegion);
+                    }
+                }
+
+
                 using (var ds = layer.DataSource) {
                     ds.Open();
                     for (uint i = 0; i < ds.GetFeatureCount(); ++i) {
@@ -212,14 +216,15 @@ namespace BioLink.Client.Maps {
                         if (row.Table.Columns.Contains("BLREGHIER")) {
                             string regionPath = row["BLREGHIER"] as string;
                             var node = _regionModel.FindByPath(regionPath);
-                            foreach (string selectedPath in selectedRegions) {
-                                if (regionPath.StartsWith(selectedPath)) {
+                            foreach (RegionDescriptor selectedRegion in selectedRegions) {
+                                if (regionPath.StartsWith(selectedRegion.Path)) {
                                     node.IsSelected = true;
                                 }
                             }
                         }
                     }
                 }
+
             }
 
             DrawSelectionLayer();
@@ -232,6 +237,7 @@ namespace BioLink.Client.Maps {
                 var node = _regionModel.FindByPath(regionPath);
                 Debug.Assert(node != null, "could not find region node for path: " + regionPath);
                 node.IsSelected = !node.IsSelected;
+
                 DrawSelectionLayer();
             }
         }
@@ -243,7 +249,9 @@ namespace BioLink.Client.Maps {
             var geometries = new Collection<IGeometry>();
             var selectedFeatures = _regionModel.FindSelectedRegions();
             foreach (RegionTreeNode node in selectedFeatures) {
-                geometries.Add(node.FeatureRow.Geometry);
+                if (node.FeatureRow != null) {
+                    geometries.Add(node.FeatureRow.Geometry);
+                }
             }
 
             var selectLayer = new SharpMap.Layers.VectorLayer("_regionSelectLayer");
@@ -508,11 +516,29 @@ namespace BioLink.Client.Maps {
 
         private void UpdateSelectedRegions() {
             var regions = OptimizeSelectedRegions();
+            // Now we add back the regions that the map could not display (i.e. whose paths could not be resolved in the region layer)...
+            regions.AddRange(_unmatchedRegions);
+            // and notify the caller
+
+            regions.Sort((a, b) => {
+                return a.Path.CompareTo(b.Path);
+            });
+
             if (_callback != null) {
                 _callback(regions);
             }
         }
 
+        /// <summary>
+        /// Builds up a tree structure based from each feature in the specified layer
+        /// . It is assumed that the datasource for the layer contains a column called "BLREGHEIR", which
+        /// contains a '\' delimited region path. This path is used to construct intermediate nodes (that have
+        /// no geometry feature attached to them) and a leaf node, which represents the smallest selectable region
+        /// for the map.
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <returns></returns>
+ 
         private RegionTreeNode BuildRegionModel(VectorLayer layer) {
             if (layer == null) {
                 return null;
@@ -549,78 +575,86 @@ namespace BioLink.Client.Maps {
             return parent;
         }
 
-        private List<string> OptimizeSelectedRegions() {
+        /// <summary>
+        /// Attempts to reduce the collection of selected regions to the minimum number required
+        /// to describe the selection. It does this by first checking, depth first, if each child
+        /// collection is all selected. if so, the selection value can be raised to the parent
+        /// 
+        /// Once all the selection properties have been normalized, the top most selected items are 
+        /// going to be the minimum set of nodes required, and are converted into region descriptors
+        /// for return
+        /// </summary>
+        /// <returns></returns>
+        private List<RegionDescriptor> OptimizeSelectedRegions() {
+            NormalizeSelection(_regionModel);
+            var list = new List<RegionDescriptor>();
+            FindTopMostSelectedRegions(_regionModel, list);
+            return list;
+        }
 
-            var layer = FindFirstRegionLayer();
-            if (layer == null) {
-                return null;
+        /// <summary>
+        /// Recursively traverses the region model looking for selected nodes. If a specified node is encountered
+        /// it is added to the list, and the recursion goes no further down that path (hence, top most selected nodes are collected).
+        /// If the specified node is not selected, each of its children are tested in the same way.
+        /// </summary>
+        /// <param name="root"></param>
+        /// <param name="list"></param>
+        private void FindTopMostSelectedRegions(RegionTreeNode root, List<RegionDescriptor> list) {
+
+            if (root.IsSelected) {
+                // Create a new region descriptor for this top-most selected item...
+                list.Add(new RegionDescriptor(root.Path, root.IsThroughoutRegion));
+                return;
             }
 
-            // First get a list of all the selected region paths...
-            var list = _regionModel.FindSelectedRegions();
+            // Not selected? Check the children
+            foreach (RegionTreeNode child in root.Children) {
+                FindTopMostSelectedRegions(child, list);
+            }
+        }
 
-            // For each selected element we basically want to workout if it (and all of its siblings) can be replaced by its parent
-            // This can only happen if all of its siblings are selected as well...
-            List<String> finalList = new List<string>();
-            while (list.Count > 0) {
-                // process the first one in the list, until there are no more...
-                var node = list[0];
-                if (node.Parent != null) {
-                    // Work out if there is an ancestor node whose children are all selected. If not the current node is returned (no common ancestor)
-                    node = DetermineCommonSelectedAncestor(node);
-                    // add this node to the final 'optimized' list of regions...
-                    finalList.Add(node.Path);
-                    // and remove all descendent regions from the source list...
-                    node.Traverse((n) => {
-                        list.Remove(n);
-                    });
-
-                } else {
-                    // add this region path to the optimized list (no optimization possible)
-                    finalList.Add(node.Path);
-                    // and remove it from the source list...
-                    list.Remove(node);
+        /// <summary>
+        /// Returns true if each child of the specified node is selected
+        /// </summary>
+        /// <param name="treeNode"></param>
+        /// <returns></returns>
+        private bool AllChildrenSelected(RegionTreeNode treeNode) {
+            foreach (RegionTreeNode node in treeNode.Children) {
+                if (!node.IsSelected) {
+                    return false;
                 }
             }
-
-            return finalList;
-        }
-
-        /// <summary>
-        /// Attempts to find the highest (oldest?) ancestor for which each of its descedants are selected...
-        /// </summary>
-        /// <param name="node"></param>
-        /// <returns></returns>
-        private RegionTreeNode DetermineCommonSelectedAncestor(RegionTreeNode node) {
-
-            if (node.Parent == null) {
-                return node;
-            }
-            
-            var ancestor = node;
-            while (ancestor.Parent != null && AllSiblingsSelected(ancestor)) {
-                ancestor = ancestor.Parent;
-            }
-            return ancestor;
-        }
-
-        /// <summary>
-        /// Takes a node, and checks all of its siblings to see if their paths exist in the selectedPaths list
-        /// </summary>
-        /// <param name="node"></param>
-        /// <param name="selectedPaths"></param>
-        /// <returns></returns>
-        private bool AllSiblingsSelected(RegionTreeNode node) {
-
-            var siblings = node.Parent == null ? null : node.Parent.Children;
-            if (siblings != null) {
-                foreach (RegionTreeNode sibling in siblings) {                    
-                    if (!sibling.IsSelected) {
-                        return false;
-                    }
-                }                
-            }
             return true;
+        }
+
+        /// <summary>
+        /// Depth first traversal of every tree node is performed (recursive)
+        /// 
+        /// If every child of the supplied node is selected, the node itself becomes selected
+        /// (and the ThroughoutRegion property is also set).
+        /// 
+        /// </summary>
+        /// <param name="root"></param>
+        private void NormalizeSelection(RegionTreeNode root) {
+
+            // No children, we've hit the bottom, so start returning back up
+            if (root.Children.Count == 0) {
+                return;
+            }
+
+            // For each child, make sure their selection model is normalized before checking if the current children
+            // are all selected
+            foreach (RegionTreeNode child in root.Children) {
+                NormalizeSelection(child);
+            }
+
+            // By now, all my childrens selected properties should be normalized, so its quite
+            // simple to determine if the current node's selecton property can replace the composite values of my children
+            if (AllChildrenSelected(root)) {
+                root.IsSelected = true;
+                root.IsThroughoutRegion = true;
+            }
+
         }
 
     }
@@ -633,13 +667,6 @@ namespace BioLink.Client.Maps {
             this.Children = new List<RegionTreeNode>();
             Path = CalculatePath();
         }
-
-        public RegionTreeNode Parent { get; set; }
-        public string Name { get; set; }
-        public List<RegionTreeNode> Children { get; private set; }
-        public string Path { get; private set; }
-        public bool IsSelected { get; set; }
-        internal FeatureDataRow FeatureRow { get; set; }
 
         internal string CalculatePath() {
             if (Parent == null) {
@@ -705,6 +732,44 @@ namespace BioLink.Client.Maps {
                 node.IsSelected = false;
             });
         }
+
+        public bool IsAncestorSelected() {
+            var p = this;
+            while (p != null) {
+                if (p.IsSelected) {
+                    return true;
+                }
+                p = p.Parent;
+            }
+            return false;
+        }
+
+        public RegionTreeNode Parent { get; set; }
+        public string Name { get; set; }
+        public List<RegionTreeNode> Children { get; private set; }
+        public string Path { get; private set; }        
+        internal FeatureDataRow FeatureRow { get; set; }
+        public bool IsThroughoutRegion { get; set; }
+
+        private bool _selected;
+        public bool IsSelected {
+            get {
+                return _selected;                
+            }
+            set {
+                _selected = value;
+                if (_selected) {
+                    foreach (RegionTreeNode child in Children) {
+                        child.IsSelected = true;
+                    }
+                } else {
+                    if (!value && Parent != null) {
+                        Parent.IsSelected = false;
+                    }
+                }
+            }
+        }
+
     }
 
     public class SerializedEnvelope {

@@ -281,7 +281,7 @@ namespace BioLink.Client.Extensibility {
             return false;
         }
 
-        public void ShowRegionSelector(List<string> regions, Action<List<string>> updateAction) {
+        public void ShowRegionSelector(List<RegionDescriptor> regions, Action<List<RegionDescriptor>> updateAction) {
             var selectors = GetExtensionsOfType<IRegionSelector>();
             if (selectors != null && selectors.Count > 0) {
                 selectors[0].SelectRegions(regions, updateAction);

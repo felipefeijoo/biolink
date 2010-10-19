@@ -57,29 +57,8 @@ namespace BioLink.Client.Taxa {
         private ObservableCollection<HierarchicalViewModelBase> CreateModelFromList(List<TaxonDistribution> list) {
 
             var viewmodel = new ObservableCollection<HierarchicalViewModelBase>();
-
             foreach (TaxonDistribution model in list) {
-                String[] bits = model.DistRegionFullPath.Split('\\');
-                var pCol = viewmodel;
-                for (int i = 0; i < bits.Length; ++i) {
-                    string bit = bits[i];
-                    
-                    var parent = pCol.FirstOrDefault((candidate) => { return candidate.DisplayLabel == bit; });
-                    if (parent == null) {
-                        if (i == bits.Length - 1) {
-                            parent = new DistributionViewModel(model, bit);
-                        } else {
-                            parent = new DistributionPlaceholder(bit);
-                        }
-                        pCol.Add(parent);
-                    } else {
-                        if (i == bits.Length - 1) {
-                            // This region exists already, but will be overridden by this one...
-                            (parent as DistributionViewModel).Model = model;
-                        }
-                    }
-                    pCol = parent.Children;
-                }
+                AddViewModelByPath(viewmodel, model);
             }
 
             return viewmodel;
@@ -98,24 +77,85 @@ namespace BioLink.Client.Taxa {
         }
 
         private void ShowRegionMap() {
-            var regions = new List<string>();
+            var regions = new List<RegionDescriptor>();
 
             foreach (HierarchicalViewModelBase vm in _model) {
-
-                if (vm is DistributionViewModel) {
-                    regions.Add((vm as DistributionViewModel).DistRegionFullPath);
-                }
-
                 vm.Traverse((item) => {
                     if (item is DistributionViewModel) {
-                        regions.Add((item as DistributionViewModel).DistRegionFullPath);
+                        var model = item as DistributionViewModel;
+                        regions.Add(new RegionDescriptor(model.DistRegionFullPath, model.ThroughoutRegion));
                     }
                 });
             }
 
-            PluginManager.Instance.ShowRegionSelector(regions, (callbackarg) => {
+            PluginManager.Instance.ShowRegionSelector(regions, (selectedRegions) => {
+
+                var newModel = new ObservableCollection<HierarchicalViewModelBase>();
+
                 // rebuild the model from the new list of regions...
+                foreach (RegionDescriptor region in selectedRegions) {
+                    var existing = FindDistributionByPath(region.Path);
+                    TaxonDistribution model = null;
+                    if (existing != null) {
+                        model = existing.Model;
+                    } else {
+                        model = new TaxonDistribution();
+                        model.DistRegionFullPath = region.Path;
+                        model.BiotaDistID = -1;                        
+                        model.ThroughoutRegion = region.IsThroughoutRegion;
+                    }
+                    AddViewModelByPath(newModel, model);
+                }
+
+                _model = newModel;
+                ExpandAll(_model);
+                tvwDist.ItemsSource = newModel;
+
+
             });
+        }
+
+        private HierarchicalViewModelBase AddViewModelByPath(ObservableCollection<HierarchicalViewModelBase> collection, TaxonDistribution model) {            
+            String[] bits = model.DistRegionFullPath.Split('\\');
+            var pCol = collection;
+            HierarchicalViewModelBase result = null;
+            for (int i = 0; i < bits.Length; ++i) {
+                string bit = bits[i];
+
+                var parent = pCol.FirstOrDefault((candidate) => { return candidate.DisplayLabel == bit; });
+                if (parent == null) {
+                    if (i == bits.Length - 1) {
+                        parent = new DistributionViewModel(model, bit);
+                    } else {
+                        parent = new DistributionPlaceholder(bit);
+                        result = parent;
+                    }
+                    pCol.Add(parent);
+                } else {
+                    if (i == bits.Length - 1) {
+                        // This region exists already, but will be overridden by this one...
+                        (parent as DistributionViewModel).Model = model;
+                    }
+                }
+                pCol = parent.Children;
+            }
+            return result;
+        }
+
+        private DistributionViewModel FindDistributionByPath(string path) {
+            foreach (HierarchicalViewModelBase model in _model) {
+                var found = model.FindFirst<HierarchicalViewModelBase>((hvm) => {
+                    if (hvm is DistributionViewModel) {
+                        return (hvm as DistributionViewModel).DistRegionFullPath == path;
+                    }
+                    return false;
+                    
+                });
+                if (found != null) {
+                    return found as DistributionViewModel;
+                }
+            }
+            return null;
         }
 
         #region Properties

@@ -84,6 +84,21 @@ namespace BioLink.Client.Extensibility {
             
         }
 
+        public T FindFirst<T>(Predicate<T> predicate) where T : HierarchicalViewModelBase {
+
+            if (predicate((T)this)) {
+                return (T) this;
+            }
+
+            foreach (HierarchicalViewModelBase child in Children) {
+                if (predicate((T) child)) {
+                    return (T) child;
+                }
+            }
+
+            return default(T);
+        }
+
         public Stack<HierarchicalViewModelBase> GetParentStack() {
             var p = this;
             var stack = new Stack<HierarchicalViewModelBase>();
