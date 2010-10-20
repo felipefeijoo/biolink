@@ -419,10 +419,39 @@ namespace BioLink.Data {
 
         #endregion
 
+        #region Distribution
+
         public List<TaxonDistribution> GetDistribution(int? TaxonID) {
             var mapper = new GenericMapperBuilder<TaxonDistribution>().build();
             return StoredProcToList("spBiotaDistGet", mapper, _P("intBiotaID", TaxonID.Value));
         }
+
+        public void UpdateDistributionQualification(int? TaxonID, string distQual) {
+            StoredProcUpdate("spBiotaUpdateDistQual", _P("intBiotaID", TaxonID.Value), _P("txtDistQual", distQual));
+        }
+
+        public void DeleteAllBiotaDistribution(int? TaxonID) {
+            StoredProcUpdate("spBiotaDistDeleteAll", _P("intBiotaID", TaxonID.Value));
+        }
+
+        public int InsertBiotaDist(int? TaxonID, TaxonDistribution dist) {
+            var retval = ReturnParam("identity", System.Data.SqlDbType.Int);
+
+            StoredProcUpdate("spBiotaDistInsert",
+                _P("intBiotaID", TaxonID.Value),
+                _P("txtRegionFullPath", dist.DistRegionFullPath),
+                _P("bitIntroduced", dist.Introduced),
+                _P("bitUncertain", dist.Uncertain),
+                _P("bitThroughoutRegion", dist.ThroughoutRegion),
+                _P("txtQual", dist.Qual),
+                retval
+            );
+
+            return (int)retval.Value;
+
+        }
+
+        #endregion
 
     }
 
