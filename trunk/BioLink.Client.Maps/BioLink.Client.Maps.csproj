@@ -84,6 +84,9 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IDegreeDistanceConverter.cs" />
+    <Compile Include="ILayerFactor.cs" />
+    <Compile Include="LayerViewModel.cs" />
     <Compile Include="MapBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -104,6 +107,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="RegionTreeNode.cs" />
+    <Compile Include="SerializedEnvelope.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

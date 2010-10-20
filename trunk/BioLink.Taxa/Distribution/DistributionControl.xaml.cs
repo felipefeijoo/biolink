@@ -21,7 +21,7 @@ namespace BioLink.Client.Taxa {
     /// <summary>
     /// Interaction logic for DistributionControl.xaml
     /// </summary>
-    public partial class DistributionControl : UserControl {
+    public partial class DistributionControl : DatabaseActionControl {
 
         private ObservableCollection<HierarchicalViewModelBase> _model;
 
@@ -33,17 +33,25 @@ namespace BioLink.Client.Taxa {
 
         #endregion
 
-        public DistributionControl(Data.User user, TaxonViewModel taxon) {
-            InitializeComponent();    
-            this.User = user;
+        public DistributionControl(Data.User user, TaxonViewModel taxon)
+            : base(user, String.Format("Taxon::DistributionControl::{0}", taxon.TaxaID.Value)) {
+            InitializeComponent();                
             this.Taxon = taxon;
             txtDistribution.DataContext = taxon;
 
             var list = Service.GetDistribution(taxon.TaxaID);
+            list.Sort((a, b) => {
+                return a.DistRegionFullPath.CompareTo(b.DistRegionFullPath);
+            });
+
             _model = CreateModelFromList(list);
             tvwDist.ItemsSource = _model;
             ExpandAll(_model);
             grpDist.IsEnabled = false;
+
+            taxon.DataChanged += new DataChangedHandler((t) => {
+                RegisterUniquePendingChange(new UpdateDistQualDatabaseAction(taxon));
+            });
             
         }
 
@@ -107,11 +115,12 @@ namespace BioLink.Client.Taxa {
                     AddViewModelByPath(newModel, model);
                 }
 
-                _model = newModel;
+                _model.Clear();
+                foreach (HierarchicalViewModelBase item in newModel) {
+                    _model.Add(item);
+                }
+                RegisterUniquePendingChange(new SaveDistributionRegionsAction(Taxon, _model));
                 ExpandAll(_model);
-                tvwDist.ItemsSource = newModel;
-
-
             });
         }
 
@@ -126,6 +135,9 @@ namespace BioLink.Client.Taxa {
                 if (parent == null) {
                     if (i == bits.Length - 1) {
                         parent = new DistributionViewModel(model, bit);
+                        parent.DataChanged += new DataChangedHandler((d) => {
+                            RegisterUniquePendingChange(new SaveDistributionRegionsAction(Taxon, _model));
+                        });
                     } else {
                         parent = new DistributionPlaceholder(bit);
                         result = parent;
@@ -143,13 +155,14 @@ namespace BioLink.Client.Taxa {
         }
 
         private DistributionViewModel FindDistributionByPath(string path) {
+
             foreach (HierarchicalViewModelBase model in _model) {
-                var found = model.FindFirst<HierarchicalViewModelBase>((hvm) => {
-                    if (hvm is DistributionViewModel) {
-                        return (hvm as DistributionViewModel).DistRegionFullPath == path;
-                    }
-                    return false;
-                    
+                DistributionViewModel found = null;
+                model.Traverse((item) => {
+                    var dvm = item as DistributionViewModel;
+                    if (dvm != null && dvm.DistRegionFullPath == path) {
+                        found = dvm;
+                    }                    
                 });
                 if (found != null) {
                     return found as DistributionViewModel;
@@ -158,9 +171,7 @@ namespace BioLink.Client.Taxa {
             return null;
         }
 
-        #region Properties
-
-        protected User User { get; private set; }
+        #region Properties        
 
         protected TaxonViewModel Taxon { get; private set; }
 
