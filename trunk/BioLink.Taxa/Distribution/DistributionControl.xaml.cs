@@ -124,34 +124,36 @@ namespace BioLink.Client.Taxa {
             });
         }
 
-        private HierarchicalViewModelBase AddViewModelByPath(ObservableCollection<HierarchicalViewModelBase> collection, TaxonDistribution model) {            
+        private void AddViewModelByPath(ObservableCollection<HierarchicalViewModelBase> collection, TaxonDistribution model) {            
             String[] bits = model.DistRegionFullPath.Split('\\');
             var pCol = collection;
-            HierarchicalViewModelBase result = null;
+            HierarchicalViewModelBase parent = null;
             for (int i = 0; i < bits.Length; ++i) {
-                string bit = bits[i];
-
-                var parent = pCol.FirstOrDefault((candidate) => { return candidate.DisplayLabel == bit; });
-                if (parent == null) {
+                string bit = bits[i];                
+                var current = pCol.FirstOrDefault((candidate) => { return candidate.DisplayLabel == bit; });
+                if (current == null) {
                     if (i == bits.Length - 1) {
-                        parent = new DistributionViewModel(model, bit);
-                        parent.DataChanged += new DataChangedHandler((d) => {
+                        current = new DistributionViewModel(model, bit);                        
+                        current.Parent = parent;                        
+                        current.DataChanged += new DataChangedHandler((d) => {
                             RegisterUniquePendingChange(new SaveDistributionRegionsAction(Taxon, _model));
                         });
                     } else {
-                        parent = new DistributionPlaceholder(bit);
-                        result = parent;
+                        current = new DistributionPlaceholder(bit);
+                        current.Parent = parent;
+                        parent = current;                        
                     }
-                    pCol.Add(parent);
+                    pCol.Add(current);
                 } else {
+                    parent = current;
                     if (i == bits.Length - 1) {
                         // This region exists already, but will be overridden by this one...
-                        (parent as DistributionViewModel).Model = model;
+                        (current as DistributionViewModel).Model = model;
                     }
                 }
-                pCol = parent.Children;
+                pCol = current.Children;
             }
-            return result;
+            // return result;
         }
 
         private DistributionViewModel FindDistributionByPath(string path) {
@@ -176,6 +178,16 @@ namespace BioLink.Client.Taxa {
         protected TaxonViewModel Taxon { get; private set; }
 
         #endregion
+
+        private void btnRemove_Click(object sender, RoutedEventArgs e) {
+            DeleteCurrentRegion();
+        }
+
+        private void DeleteCurrentRegion() {
+            var item = tvwDist.SelectedItem as DistributionViewModel;
+            item.Parent.Children.Remove(item);
+            RegisterUniquePendingChange(new SaveDistributionRegionsAction(Taxon, _model));
+        }
 
     }
 }

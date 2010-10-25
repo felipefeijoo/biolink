@@ -1,0 +1,58 @@
+﻿<Window x:Class="BioLink.Client.Maps.LayersWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:src="clr-namespace:BioLink.Client.Maps"
+             xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+             mc:Ignorable="d" 
+             d:DesignHeight="325" d:DesignWidth="568" SizeToContent="WidthAndHeight">    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition />
+            <RowDefinition Height="37" />
+        </Grid.RowDefinitions> 
+        <ToolBar Grid.Row="0" x:Name="toolbar">
+            
+        </ToolBar>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="250" />
+            </Grid.ColumnDefinitions>    
+            <ListBox Grid.Column="0" Name="lstLayers" Margin="5" SelectionChanged="lstLayers_SelectionChanged">
+                <ListBox.Resources>
+                    <DataTemplate DataType="{x:Type src:VectorLayerViewModel}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Name}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.Resources>
+            </ListBox>
+            <GroupBox Grid.Column="1" Header="Layer Properties" Height="120" Margin="5,5,5,5" VerticalAlignment="top" x:Name="grpLayer">
+                <Grid>
+                    <Label Content="Colour:" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" Width="59" />
+                    <ext:CustomColorPicker Margin="71,6,0,0"  VerticalAlignment="Top" HorizontalAlignment="Left" Width="36" />
+                    <Label Content="Style:" Height="28" HorizontalAlignment="Left" Margin="6,40,0,0" Name="label2" VerticalAlignment="Top" Width="59" />
+                    <ComboBox Height="23" HorizontalAlignment="Left" Margin="71,40,0,0" Name="cmbStyle" VerticalAlignment="Top" Width="50" SelectedItem="{Binding HatchStyle}">
+                        <ComboBox.Resources>
+                            <DataTemplate DataType="{x:Type src:StyleViewModel}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="{Binding Icon}" Margin="2" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.Resources>
+                    </ComboBox>
+                </Grid>
+            </GroupBox>
+            <Label Content="Map background:" Grid.Column="1" Height="28" HorizontalAlignment="Right" Margin="0,131,69,0" VerticalAlignment="Top" Width="124" />
+            <ComboBox Height="23" HorizontalAlignment="Left" Margin="187,131,0,0" Name="comboBox1" VerticalAlignment="Top" Width="57" Grid.Column="1" />
+        </Grid>
+        <Grid Grid.Row="2" x:Name="buttonGrid" Background="{x:Static SystemColors.ControlBrush}">
+            <Button Content="Cancel" Height="23" HorizontalAlignment="Right" Margin="0,8,6,0" Name="btnCancel" VerticalAlignment="Top" Width="85" IsCancel="True" />
+            <Button Content="_Apply" Height="23" HorizontalAlignment="Right" Margin="0,8,97,0" Name="btnApply" VerticalAlignment="Top" Width="85" />
+            <Button Content="OK" Height="23" HorizontalAlignment="Right" Margin="0,8,188,0" Name="btnOK" VerticalAlignment="Top" Width="85" IsDefault="True" />
+        </Grid>
+    </Grid>
+</Window>

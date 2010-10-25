@@ -16,7 +16,7 @@
                 <CheckBox Content="Throughout Region" Height="16" HorizontalAlignment="Left" Margin="6,50,0,0" Name="chkThroughoutRegion" VerticalAlignment="Top" Width="206" IsChecked="{Binding ThroughoutRegion}"/>
                 <ext:BindableRichTextBox Margin="6,99,6,35" Name="txtQualification" RTF="{Binding Qual}"/>
                 <Label Content="Qualification" Height="28" HorizontalAlignment="Left" Margin="6,72,0,0" Name="label1" VerticalAlignment="Top" Width="206" />
-                <Button Content="Remove region" Height="23" HorizontalAlignment="Right" Margin="0,0,6,6" Name="btnRemove" VerticalAlignment="Bottom" Width="97" />
+                <Button Content="Remove region" Height="23" HorizontalAlignment="Right" Margin="0,0,6,6" Name="btnRemove" VerticalAlignment="Bottom" Width="97" Click="btnRemove_Click" />
             </Grid>
         </GroupBox>
         <TreeView Margin="12,90,256,44" x:Name="tvwDist" SelectedItemChanged="tvwDist_SelectedItemChanged">
