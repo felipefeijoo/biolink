@@ -25,7 +25,7 @@ namespace BioLink.Client.Taxa {
         /// <summary>
         /// Return the elemType of the first child that is not "unplaced", including available names, species inquirenda and incertae sedis
         /// </summary>
-        /// <param name="parent"></param>
+        /// <param name="current"></param>
         /// <returns></returns>
         public TaxonRank GetChildElementType(TaxonViewModel parent) {
 

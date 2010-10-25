@@ -22,6 +22,7 @@ using BioLink.Client.Extensibility;
 using System.Collections.ObjectModel;
 using System.Data;
 using Microsoft.Win32;
+using System.Drawing.Imaging;
 
 namespace BioLink.Client.Maps {
 
@@ -34,6 +35,10 @@ namespace BioLink.Client.Maps {
     /// Interaction logic for MapControl.xaml
     /// </summary>
     public partial class MapControl : UserControl, IDisposable {
+
+        //[System.Runtime.InteropServices.DllImport("gdi32.dll")]
+        //private static extern bool DeleteObject(IntPtr hObject);
+
 
         private const int RESIZE_TIMEOUT = 0;
 
@@ -397,13 +402,14 @@ namespace BioLink.Client.Maps {
             }
 
             map.Refresh();
-            _layers.Add(new LayerViewModel(layer, filename));
+            _layers.Add(new LayerViewModel(layer));
 
             var topRegionLayer = FindFirstRegionLayer();
             if (Mode == MapMode.RegionSelect && _regionLayer != topRegionLayer) {
                 _regionLayer = topRegionLayer;
                 _regionModel = BuildRegionModel(topRegionLayer);
             }
+
         }
 
         private void btnAddLayer_Click(object sender, RoutedEventArgs e) {
@@ -439,16 +445,20 @@ namespace BioLink.Client.Maps {
         }
 
         public void Dispose() {
-            var filename = new List<string>();
+            var filenames = new List<string>();
             foreach (LayerViewModel layer in _layers) {
-                if (layer.Filename != null) {
-                    filename.Add(layer.Filename);
+                if (layer.Model is VectorLayer) {
+                    var vl = layer.Model as VectorLayer;
+                    if (vl.DataSource is ShapeFile) {
+                        var filename = (vl.DataSource as ShapeFile).Filename;
+                        filenames.Add(filename);
+                    }
                 }
             }
 
             var user = PluginManager.Instance.User;
 
-            Config.SetUser(user, "MapTool." + Mode.ToString() + ".Layers", filename);
+            Config.SetUser(user, "MapTool." + Mode.ToString() + ".Layers", filenames);
             var env = new SerializedEnvelope(map.Map.Envelope);
             Config.SetUser(user, "MapTool." + Mode.ToString() + ".LastExtent", env);
         }
@@ -538,7 +548,6 @@ namespace BioLink.Client.Maps {
         /// </summary>
         /// <param name="layer"></param>
         /// <returns></returns>
- 
         private RegionTreeNode BuildRegionModel(VectorLayer layer) {
             if (layer == null) {
                 return null;
@@ -657,6 +666,71 @@ namespace BioLink.Client.Maps {
                 root.IsSelected = true;                
             }
 
+        }
+
+        private void btnSaveImage_Click(object sender, RoutedEventArgs e) {
+            SaveAsImage();
+        }
+
+        private void SaveAsImage() {
+
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Filter = "Portable Network Graphics (*.PNG)|*.PNG|JPEG (*.JPG)|*.JPG|Windows bitmap file (*.BMP)|*.BMP|GIF (*.GIF)|*.GIF|TIFF (*.TIF)|*.TIF";
+
+            if (dlg.ShowDialog().ValueOrFalse()) {
+                try {
+
+                    FileInfo f = new FileInfo(dlg.FileName);
+                    ImageFormat format = null;
+                    switch (f.Extension.ToLower()) {
+                        case ".png":
+                            format = ImageFormat.Png;
+                            break;
+                        case ".jpg":
+                            format = ImageFormat.Jpeg;
+                            break;
+                        case ".bmp":
+                            format = ImageFormat.Bmp;
+                            break;
+                        case ".gif":
+                            format = ImageFormat.Gif;
+                            break;
+                        case ".tif":
+                        case ".tiff":
+                            format = ImageFormat.Tiff;
+                            break;
+                    }
+                    if (format == null) {
+                        map.Image.Save(dlg.FileName);
+                    } else {
+                        map.Image.Save(dlg.FileName, format);
+                    }
+
+                } catch (Exception ex) {
+                    ErrorMessage.Show("Failed to save map image to file {0}. {1}", dlg.FileName, ex.Message);
+                }
+            }
+        }
+
+        private void CopyToClipboard() {
+            BitmapSource bmp = GraphicsUtils.SystemDrawingImageToBitmapSource(map.Image);
+            Clipboard.SetImage(bmp);
+        }
+
+        private void btnCopyImage_Click(object sender, RoutedEventArgs e) {
+            CopyToClipboard();
+        }
+
+        private void btnLayers_Click(object sender, RoutedEventArgs e) {
+            ShowLayersControl();
+        }
+
+        private void ShowLayersControl() {
+            var frm = new LayersWindow(map.Map);
+            frm.Owner = this.FindParentWindow();
+            if (frm.ShowDialog().ValueOrFalse()) {
+
+            }
         }
 
     }

@@ -99,6 +99,7 @@
     <Compile Include="FileSystemScanner.cs" />
     <Compile Include="GeoUtils.cs" />
     <Compile Include="GlobalExceptionHandler.cs" />
+    <Compile Include="GraphicsUtils.cs" />
     <Compile Include="IChangeable.cs" />
     <Compile Include="ImageCache.cs" />
     <Compile Include="InputBox.xaml.cs">

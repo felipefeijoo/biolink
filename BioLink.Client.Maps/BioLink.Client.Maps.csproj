@@ -86,6 +86,9 @@
   <ItemGroup>
     <Compile Include="IDegreeDistanceConverter.cs" />
     <Compile Include="ILayerFactor.cs" />
+    <Compile Include="LayersWindow.xaml.cs">
+      <DependentUpon>LayersWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="LayerViewModel.cs" />
     <Compile Include="MapBox.cs">
       <SubType>Component</SubType>
@@ -134,10 +137,35 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="LayersWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MapControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Arrow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\ZoomIn.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Pan.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\ZoomToExtents.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Save.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Copy.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Layers.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

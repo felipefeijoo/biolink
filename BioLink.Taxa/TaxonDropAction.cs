@@ -138,7 +138,7 @@ namespace BioLink.Client.Taxa {
                 movelist.Add(m as TaxonViewModel);
             }
 
-            // Now we move each child over to the new parent...
+            // Now we move each child over to the new current...
             foreach (TaxonViewModel child in movelist) {
                 Move(child, Target);
                 actions.Add(new MoveTaxonDatabaseAction(child, Target));

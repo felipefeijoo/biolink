@@ -16,13 +16,44 @@
             <RowDefinition Height="25" x:Name="statusRow" />
         </Grid.RowDefinitions>
         <ToolBar>
-            <Button x:Name="btnAddLayer" Click="btnAddLayer_Click" Content="Add Layer" />
+            <Button x:Name="btnSaveImage" ToolTip="Save as image" Click="btnSaveImage_Click">
+                <Button.Content>
+                    <Image Source="images/Save.png" Stretch="None" UseLayoutRounding="True" />
+                </Button.Content>
+            </Button>
+            <Button x:Name="btnCopyImage" ToolTip="Copy image to clipboard" Click="btnCopyImage_Click">
+                <Button.Content>
+                    <Image Source="images/Copy.png" Stretch="None" UseLayoutRounding="True" />
+                </Button.Content>
+            </Button>
             <Separator />
-            <Button Name="btnZoomToExtent" Content="Zoom To Exents" Click="btnZoomToExtent_Click" />
+            <Button x:Name="btnLayers" Click="btnLayers_Click" >
+                <Button.Content>
+                    <Image Source="images/Layers.png" Stretch="None" UseLayoutRounding="True" />
+                </Button.Content>
+            </Button>
             <Separator />
-            <RadioButton Name="btnArrow" Content="Arrow" Checked="btnArrow_Checked" />
-            <RadioButton Name="btnZoomToWindow" Content="ZoomWindow" Checked="btnZoomToWindow_Checked" />
-            <RadioButton Name="btnPan" Content="Pan" Checked="btnPan_Checked" />
+            <Button Name="btnZoomToExtent" ToolTip="Zoom To Exents" Click="btnZoomToExtent_Click" >
+                <Button.Content>
+                    <Image Source="images/ZoomToExtents.png" Stretch="None" UseLayoutRounding="True" />
+                </Button.Content>
+            </Button>
+            <Separator />
+            <RadioButton Name="btnArrow" Checked="btnArrow_Checked" ToolTip="Select">
+                <RadioButton.Content>
+                    <Image Source="images/Arrow.png" Stretch="None" UseLayoutRounding="True" />
+                </RadioButton.Content>
+            </RadioButton>
+            <RadioButton Name="btnZoomToWindow" Checked="btnZoomToWindow_Checked" ToolTip="Zoom to region">
+                <RadioButton.Content>
+                    <Image Source="images/ZoomIn.png" Stretch="None" UseLayoutRounding="True" />
+                </RadioButton.Content>                    
+            </RadioButton>
+            <RadioButton Name="btnPan" Checked="btnPan_Checked" ToolTip="Pan">
+                <RadioButton.Content>
+                    <Image Source="images/Pan.png" Stretch="None" UseLayoutRounding="True" />
+                </RadioButton.Content>
+            </RadioButton>
         </ToolBar>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>

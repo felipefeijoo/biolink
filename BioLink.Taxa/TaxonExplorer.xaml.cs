@@ -755,7 +755,7 @@ namespace BioLink.Client.Taxa {
                 if (!String.IsNullOrEmpty(parentChildElemType) && taxon.ElemType != parentChildElemType) {
                     TaxonRank parentChildRank = Service.GetTaxonRank(parentChildElemType);
                     if (!Service.IsValidChild(parentChildRank, rank)) {
-                        throw new Exception("Cannot insert an " + rank.LongName + " entry because this entry cannot be a valid parent for the current children.");
+                        throw new Exception("Cannot insert an " + rank.LongName + " entry because this entry cannot be a valid current for the current children.");
                     } else {
                         // Create a new unplaced to hold the existing children
                         TaxonViewModel newUnplaced = AddNewTaxon(parent, rank.Code, (t) => {
@@ -828,7 +828,7 @@ namespace BioLink.Client.Taxa {
         private void MarkItemAsDeleted(HierarchicalViewModelBase taxon) {
             taxon.IsDeleted = true;
 
-            // the alternate way, don't strikethrough - just remove it, and mark the parent as changed
+            // the alternate way, don't strikethrough - just remove it, and mark the current as changed
             // taxon.Parent.IsChanged = true;
             // taxon.Parent.Children.Remove(taxon);
 
@@ -968,7 +968,7 @@ namespace BioLink.Client.Taxa {
         /// <summary>
         /// Return the elemType of the first child that is not "unplaced", including available names, species inquirenda and incertae sedis
         /// </summary>
-        /// <param name="parent"></param>
+        /// <param name="current"></param>
         /// <returns></returns>
         private string GetChildElementType(TaxonViewModel parent) {
             if (!parent.IsExpanded) {
