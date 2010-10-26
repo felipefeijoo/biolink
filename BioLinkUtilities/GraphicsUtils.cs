@@ -22,5 +22,33 @@ namespace BioLink.Client.Utilities {
                 return bitmapSource;
             }
         }
+
+        public static System.Drawing.Drawing2D.HatchStyle? GetHatchStyleFromBrush(System.Drawing.Brush brush) {
+            if (brush is System.Drawing.Drawing2D.HatchBrush) {
+                return (brush as System.Drawing.Drawing2D.HatchBrush).HatchStyle;
+            }
+            return null;
+        }
+
+        public static System.Drawing.Color GetColorFromBrush(System.Drawing.Brush brush) {
+
+            if (brush is System.Drawing.SolidBrush) {
+                return (brush as System.Drawing.SolidBrush).Color;
+            }
+
+            if (brush is System.Drawing.Drawing2D.HatchBrush) {
+                return (brush as System.Drawing.Drawing2D.HatchBrush).ForegroundColor;
+            }
+
+            throw new Exception("Unhandled brush type! Could not extract brush color");
+        }
+
+        public static System.Drawing.Brush CreateBrush(System.Drawing.Color color, System.Drawing.Drawing2D.HatchStyle? hatchStyle) {
+            if (hatchStyle != null && hatchStyle.HasValue) {
+                return new System.Drawing.Drawing2D.HatchBrush(hatchStyle.Value, color, System.Drawing.Color.FromArgb(0,0,0,0));
+            } else {
+                return new System.Drawing.SolidBrush(color);
+            }
+        }
     }
 }

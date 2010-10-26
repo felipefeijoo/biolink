@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SharpMap.Converters.Geometries;
+using SharpMap.Geometries;
 using GeoAPI.Geometries;
 
 namespace BioLink.Client.Maps {
@@ -12,15 +12,15 @@ namespace BioLink.Client.Maps {
         public SerializedEnvelope() {
         }
 
-        public SerializedEnvelope(IEnvelope envelope) {
-            MinX = envelope.MinX;
-            MinY = envelope.MinY;
-            MaxX = envelope.MaxX;
-            MaxY = envelope.MaxY;
+        public SerializedEnvelope(BoundingBox envelope) {
+            MinX = envelope.Left;
+            MinY = envelope.Bottom;
+            MaxX = envelope.Right;
+            MaxY = envelope.Top;
         }
 
-        public IEnvelope CreateEnvelope() {
-            return GeometryFactory.CreateEnvelope(MinX, MaxX, MinY, MaxY);
+        public BoundingBox CreateBoundingBox() {
+            return new BoundingBox(MinX, MinY, MaxX, MaxY);            
         }
 
         public double MaxX { get; set; }

@@ -12,10 +12,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace BioLink.Client.Extensibility {
-    /// <summary>
-    /// Interaction logic for CustomColorPicker.xaml
-    /// </summary>
+
     public partial class CustomColorPicker : UserControl {
+
         public event Action<Color> SelectedColorChanged;
 
         String _hexValue = string.Empty;
@@ -25,13 +24,19 @@ namespace BioLink.Client.Extensibility {
             set { _hexValue = value; }
         }
 
-        private Color selectedColor = Colors.Transparent;
+        public static readonly DependencyProperty SelectedColorProperty = DependencyProperty.Register("SelectedColor", typeof(Color), typeof(CustomColorPicker), new FrameworkPropertyMetadata(Colors.Transparent, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnSelectedColorChanged)));
+
         public Color SelectedColor {
-            get { return selectedColor; }
-            set {
-                if (selectedColor != value) {
-                    selectedColor = value;
-                }
+            get { return (Color) GetValue(SelectedColorProperty); }
+            set { SetValue(SelectedColorProperty, value); }
+        }
+
+        private static void OnSelectedColorChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            var control = (CustomColorPicker) obj;
+            control.recContent.Fill = new SolidColorBrush(control.SelectedColor);
+            if (control.SelectedColorChanged != null) {
+                control.SelectedColorChanged(control.SelectedColor);
+                control.HexValue = string.Format("#{0}", control.SelectedColor.ToString().Substring(1));
             }
         }
 
@@ -49,12 +54,7 @@ namespace BioLink.Client.Extensibility {
 
         void ContextMenu_Closed(object sender, RoutedEventArgs e) {
             if (!b.ContextMenu.IsOpen) {
-                if (SelectedColorChanged != null) {
-                    SelectedColorChanged(cp.CustomColor);
-                }
-                recContent.Fill = new SolidColorBrush(cp.CustomColor);
-                HexValue = string.Format("#{0}", cp.CustomColor.ToString().Substring(1));
-
+                SelectedColor = cp.CustomColor;                
             }
             _isContexMenuOpened = false;
         }
