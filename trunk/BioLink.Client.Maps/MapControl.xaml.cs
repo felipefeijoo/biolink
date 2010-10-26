@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -16,8 +15,7 @@ using System.IO;
 using System.Threading;
 using BioLink.Client.Utilities;
 using SharpMap.Data;
-using GeoAPI.Geometries;
-using SharpMap.Converters.Geometries;
+using SharpMap.Geometries;
 using BioLink.Client.Extensibility;
 using System.Collections.ObjectModel;
 using System.Data;
@@ -41,12 +39,11 @@ namespace BioLink.Client.Maps {
 
 
         private const int RESIZE_TIMEOUT = 0;
-
-        private Dictionary<string, ILayerFactory> _layerFactoryCatalog = new Dictionary<string, ILayerFactory>();
+       
         private Timer _resizeTimer;
-        private ICoordinate _distanceAnchor;
-        private ICoordinate _lastMousePos;
-        private ObservableCollection<LayerViewModel> _layers;
+        private Point _distanceAnchor;
+        private Point _lastMousePos;
+        // private ObservableCollection<LayerViewModel> _layers;
         private IDegreeDistanceConverter _distanceConverter = new DegreesToKilometresConverter();
         private Action<List<RegionDescriptor>> _callback;
         private RegionTreeNode _regionModel;
@@ -62,26 +59,20 @@ namespace BioLink.Client.Maps {
         public MapControl(MapMode mode, Action<List<RegionDescriptor>> callback = null) {
             InitializeComponent();
             this.Mode = mode;
-            this._callback = callback;                
-            RegisterLayerFactories();
+            this._callback = callback;                            
             _resizeTimer = new Timer(new TimerCallback((o)=> {
                 this.InvokeIfRequired(() => {
-                    map.Refresh();
+                    mapBox.Refresh();
                     _resizeTimer.Change(Timeout.Infinite, Timeout.Infinite);
                 });
             }));
 
             if (mode == MapMode.Normal) {
-                buttonRow.Height = new GridLength(0);
+                buttonRow.Height = new System.Windows.GridLength(0);
             }
 
-            _layers = new ObservableCollection<LayerViewModel>();
-
-            lstLayers.ItemsSource = _layers;
-
-            map.PreviewMode = MapBox.PreviewModes.Fast;
-
-            map.MouseMove += new MapBox.MouseEventHandler((p, e) => {
+            mapBox.PreviewMode = MapBox.PreviewModes.Fast;
+            mapBox.MouseMove += new MapBox.MouseEventHandler((p, e) => {
                 _lastMousePos = p;
                 string lat = GeoUtils.DecDegToDMS(p.X, CoordinateType.Longitude);
                 string lng = GeoUtils.DecDegToDMS(p.Y, CoordinateType.Latitude);
@@ -94,27 +85,58 @@ namespace BioLink.Client.Maps {
 
             });
 
-            map.MouseUp += new MapBox.MouseEventHandler(map_MouseUp);
+            mapBox.MouseUp += new MapBox.MouseEventHandler(map_MouseUp);
 
             var user = PluginManager.Instance.User;
 
-            List<string> filenames = Config.GetUser(user, "MapTool." + mode.ToString() + ".Layers", new List<string>());
-            foreach (string filename in filenames) {
-                AddLayer(filename);
+            List<LayerDescriptor> filenames = Config.GetUser(user, "MapTool." + mode.ToString() + ".Layers", new List<LayerDescriptor>());
+            foreach (LayerDescriptor desc in filenames) {
+                AddLayer(desc);
             }
+
+            System.Drawing.Color backcolor = Config.GetUser(user, "MapTool." + mode.ToString() + ".MapBackColor", System.Drawing.Color.White);
+            mapBox.BackColor = backcolor;
 
             SerializedEnvelope env = Config.GetUser<SerializedEnvelope>(user, "MapTool." + mode.ToString() + ".LastExtent", null);
 
-            this.Loaded += new RoutedEventHandler((source, e) => {
+            this.Loaded += new System.Windows.RoutedEventHandler((source, e) => {
                 if (env != null) {
-                    map.Map.ZoomToBox(env.CreateEnvelope());
+                    mapBox.Map.ZoomToBox(env.CreateBoundingBox());
                 } else {
-                    if (map.Map.Layers.Count > 0) {
-                        map.Map.ZoomToExtents();
+                    if (mapBox.Map.Layers.Count > 0) {
+                        mapBox.Map.ZoomToExtents();
                     }
                 }
             });
 
+            Unloaded += new System.Windows.RoutedEventHandler(MapControl_Unloaded);
+
+        }
+
+        void MapControl_Unloaded(object sender, System.Windows.RoutedEventArgs e) {
+            var layers = new List<LayerDescriptor>();
+            foreach (ILayer layer in mapBox.Map.Layers) {
+                if (layer is VectorLayer) {
+                    var vl = layer as VectorLayer;
+                    if (vl.DataSource is ShapeFile) {
+                        var filename = (vl.DataSource as ShapeFile).Filename;
+                        var desc = new LayerDescriptor();
+                        desc.Filename = filename;
+                        desc.HatchStyle = GraphicsUtils.GetHatchStyleFromBrush(vl.Style.Fill);
+                        desc.FillColor = GraphicsUtils.GetColorFromBrush(vl.Style.Fill);
+                        desc.DrawOutline = vl.Style.EnableOutline;
+
+                        layers.Add(desc);
+                    }
+                }
+            }
+
+            var user = PluginManager.Instance.User;
+
+            Config.SetUser(user, "MapTool." + Mode.ToString() + ".Layers", layers);           
+            var env = new SerializedEnvelope(mapBox.Map.Envelope);
+            Config.SetUser(user, "MapTool." + Mode.ToString() + ".LastExtent", env);
+            Config.SetUser(user, "MapTool." + Mode.ToString() + ".MapBackColor", mapBox.BackColor);
         }
 
         public MapMode Mode { get; private set; }
@@ -126,9 +148,9 @@ namespace BioLink.Client.Maps {
             });            
         }
 
-        void map_MouseUp(ICoordinate WorldPos, System.Windows.Forms.MouseEventArgs evt) {
+        void map_MouseUp(Point WorldPos, System.Windows.Forms.MouseEventArgs evt) {
             if (evt.Button == System.Windows.Forms.MouseButtons.Right) {
-                map.Focus();
+                mapBox.Focus();
                 var menu = new System.Windows.Forms.ContextMenu();
 
                 if (Mode == MapMode.Normal) {
@@ -139,11 +161,11 @@ namespace BioLink.Client.Maps {
                     } else {
                         BuildMenuItem(menu, "Hide distance anchor", () => {
                             HideDistanceAnchor();
-                            map.Refresh();
+                            mapBox.Refresh();
                         });
                     }
                 } else {
-                    var pointClick = GeometryFactory.CreatePoint(WorldPos);
+                    var pointClick = new SharpMap.Geometries.Point(WorldPos.X, WorldPos.Y);
                     var feature = FindRegionFeature(pointClick);
                     if (feature != null) {
                         string regionPath = feature["BLREGHIER"] as string;
@@ -166,11 +188,11 @@ namespace BioLink.Client.Maps {
 
                 }
 
-                menu.Show(map, evt.Location);
+                menu.Show(mapBox, evt.Location);
             } else {
 
-                if (map.ActiveTool == MapBox.Tools.None) {
-                    var pointClick = GeometryFactory.CreatePoint(WorldPos);
+                if (mapBox.ActiveTool == MapBox.Tools.None) {
+                    var pointClick = new SharpMap.Geometries.Point(WorldPos.X, WorldPos.Y);
 
                     if (Mode == MapMode.RegionSelect) {
                         SelectRegion(pointClick);
@@ -230,12 +252,19 @@ namespace BioLink.Client.Maps {
                     }
                 }
 
+            } else {
+                _unmatchedRegions = new List<RegionDescriptor>(selectedRegions);
             }
 
             DrawSelectionLayer();
         }
 
-        private void SelectRegion(IPoint pointClick) {
+        private void SelectRegion(SharpMap.Geometries.Point pointClick) {
+
+            if (_regionModel == null) {
+                return;
+            }
+
             var selectedFeature = FindRegionFeature(pointClick);
             if (selectedFeature != null) {
                 string regionPath = selectedFeature["BLREGHIER"] as string;
@@ -251,7 +280,11 @@ namespace BioLink.Client.Maps {
             // Now remove any exsiting overlay layer...
             RemoveLayerByName("_regionSelectLayer");
 
-            var geometries = new Collection<IGeometry>();
+            if (_regionModel == null) {
+                return;
+            }
+
+            var geometries = new Collection<SharpMap.Geometries.Geometry>();
             var selectedFeatures = _regionModel.FindSelectedRegions();
             foreach (RegionTreeNode node in selectedFeatures) {
                 if (node.FeatureRow != null) {
@@ -269,11 +302,11 @@ namespace BioLink.Client.Maps {
 
             addLayer(selectLayer, null, false);
 
-            map.Refresh();
+            mapBox.Refresh();
         }
 
         private VectorLayer FindFirstRegionLayer() {
-            foreach (ILayer layer in map.Map.Layers) {
+            foreach (ILayer layer in mapBox.Map.Layers) {
                 if (layer is VectorLayer) {
                     var vl = layer as VectorLayer;
                     var shapefile = vl.DataSource as ShapeFile;                    
@@ -291,7 +324,7 @@ namespace BioLink.Client.Maps {
             return null;
         }
 
-        public FeatureDataRow FindRegionFeature(IPoint point) {
+        public FeatureDataRow FindRegionFeature(SharpMap.Geometries.Point point) {
 
             var layer = FindFirstRegionLayer();
             if (layer != null) {
@@ -307,8 +340,8 @@ namespace BioLink.Client.Maps {
             return null;
         }
 
-        public SharpMap.Data.FeatureDataRow FindGeoNearPoint(IPoint pos, SharpMap.Layers.VectorLayer layer) {
-            IEnvelope bbox = pos.EnvelopeInternal;
+        public SharpMap.Data.FeatureDataRow FindGeoNearPoint(SharpMap.Geometries.Point pos, SharpMap.Layers.VectorLayer layer) {
+            BoundingBox bbox = pos.GetBoundingBox();
             if (bbox != null) {
                 SharpMap.Data.FeatureDataSet ds = new SharpMap.Data.FeatureDataSet();
                 layer.DataSource.Open();
@@ -339,24 +372,11 @@ namespace BioLink.Client.Maps {
             return null;
         }
 
-        private void RegisterLayerFactories() {
-            //			ConfigurationManager.GetSection("LayerFactories");
-            _layerFactoryCatalog[".shp"] = new ShapeFileLayerFactory();
-        }
-
-        private void RemoveLayerByName(string name) {            
-            // First find the layer...
-            ILayer layer = map.Map.GetLayerByName(name);
-
+        private void RemoveLayerByName(string name) {                        
+            ILayer layer = mapBox.Map.GetLayerByName(name);
             if (layer != null) {
-                // Then find the view model for the layer...
-                LayerViewModel viewModel = _layers.First((vm) => { return vm.Model == layer; });
-                if (viewModel != null) {
-                    _layers.Remove(viewModel);
-                }
-                map.Map.Layers.Remove(layer);
+                mapBox.Map.Layers.Remove(layer);
             }
-
         }
 
         private void HideDistanceAnchor() {
@@ -367,7 +387,7 @@ namespace BioLink.Client.Maps {
 
         private void DropDistanceAnchor() {
             if (_lastMousePos != null) {
-                IPoint p = GeometryFactory.CreatePoint(_lastMousePos.X, _lastMousePos.Y);
+                Point p = new Point(_lastMousePos.X, _lastMousePos.Y);
 
                 HideDistanceAnchor();
 
@@ -376,157 +396,85 @@ namespace BioLink.Client.Maps {
                 shapeFileLayer.Style.Outline = new System.Drawing.Pen(new System.Drawing.SolidBrush(System.Drawing.Color.Black), 1);
                 shapeFileLayer.Style.Enabled = true;
                 shapeFileLayer.Style.EnableOutline = true;
-                _distanceAnchor = p.Coordinate;
+                _distanceAnchor = p;
                 addLayer(shapeFileLayer, null, false);
             }
         }
 
-        private void AddLayer(string filename) {
-            string extension = System.IO.Path.GetExtension(filename);
-            ILayerFactory layerFactory = null;
-
-            if (!_layerFactoryCatalog.TryGetValue(extension, out layerFactory)) {
-                return;
+        private void AddLayer(LayerDescriptor desc) {
+            var layer = AddLayer(desc.Filename);
+            if (layer != null) {
+                var vl = layer as VectorLayer;
+                if (vl != null) {
+                    vl.Style.Fill = GraphicsUtils.CreateBrush(desc.FillColor, desc.HatchStyle);
+                    vl.Style.EnableOutline = desc.DrawOutline;
+                }
             }
+        }
 
-            ILayer layer = layerFactory.Create(System.IO.Path.GetFileNameWithoutExtension(filename), filename);
-
-            addLayer(layer, filename);
+        private ILayer AddLayer(string filename) {
+            ILayer layer = LayerFileLoader.LoadLayer(filename);
+            if (layer != null) {
+                addLayer(layer, filename);
+            } else {
+                throw new Exception("Could not load layer file '" + filename + "'");
+            }
+            return layer;
         }
 
         private void addLayer(ILayer layer, String filename, bool zoomToExtent = true) {
-            map.Map.Layers.Add(layer);
+            mapBox.Map.Layers.Add(layer);
 
             if (zoomToExtent) {
-                map.Map.ZoomToExtents();
+                mapBox.Map.ZoomToExtents();
             }
 
-            map.Refresh();
-            _layers.Add(new LayerViewModel(layer));
+            mapBox.Refresh();
 
-            var topRegionLayer = FindFirstRegionLayer();
-            if (Mode == MapMode.RegionSelect && _regionLayer != topRegionLayer) {
-                _regionLayer = topRegionLayer;
-                _regionModel = BuildRegionModel(topRegionLayer);
+            if (Mode == MapMode.RegionSelect) {
+                var topRegionLayer = FindFirstRegionLayer();
+                if (_regionLayer != topRegionLayer) {
+                    _regionLayer = topRegionLayer;
+                    _regionModel = BuildRegionModel(topRegionLayer);
+                }
             }
 
         }
 
-        private void btnAddLayer_Click(object sender, RoutedEventArgs e) {
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.Filter = "Shape Files (*.shp)|*.shp|All files (*.*)|*.*";
-            if (dlg.ShowDialog().ValueOrFalse()) {
-                AddLayer(dlg.FileName);
-            }
-        }
-
-        private void UserControl_SizeChanged(object sender, SizeChangedEventArgs e) {
+        private void UserControl_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e) {
             _resizeTimer.Change(RESIZE_TIMEOUT, Timeout.Infinite);
         }
 
         private void map_Click(object sender, EventArgs ea) {            
         }
 
-        private void btnZoomToWindow_Checked(object sender, RoutedEventArgs e) {
-            map.ActiveTool = MapBox.Tools.ZoomWindow;
+        private void btnZoomToWindow_Checked(object sender, System.Windows.RoutedEventArgs e) {
+            mapBox.ActiveTool = MapBox.Tools.ZoomWindow;
         }
 
-        private void btnPan_Checked(object sender, RoutedEventArgs e) {
-            map.ActiveTool = MapBox.Tools.Pan;
+        private void btnPan_Checked(object sender, System.Windows.RoutedEventArgs e) {
+            mapBox.ActiveTool = MapBox.Tools.Pan;
         }
 
-        private void btnZoomToExtent_Click(object sender, RoutedEventArgs e) {
-            map.Map.ZoomToExtents();
-            map.Refresh();
+        private void btnZoomToExtent_Click(object sender, System.Windows.RoutedEventArgs e) {
+            mapBox.Map.ZoomToExtents();
+            mapBox.Refresh();
         }
 
-        private void btnArrow_Checked(object sender, RoutedEventArgs e) {
-            map.ActiveTool = MapBox.Tools.None;
+        private void btnArrow_Checked(object sender, System.Windows.RoutedEventArgs e) {
+            mapBox.ActiveTool = MapBox.Tools.None;
         }
 
         public void Dispose() {
-            var filenames = new List<string>();
-            foreach (LayerViewModel layer in _layers) {
-                if (layer.Model is VectorLayer) {
-                    var vl = layer.Model as VectorLayer;
-                    if (vl.DataSource is ShapeFile) {
-                        var filename = (vl.DataSource as ShapeFile).Filename;
-                        filenames.Add(filename);
-                    }
-                }
-            }
-
-            var user = PluginManager.Instance.User;
-
-            Config.SetUser(user, "MapTool." + Mode.ToString() + ".Layers", filenames);
-            var env = new SerializedEnvelope(map.Map.Envelope);
-            Config.SetUser(user, "MapTool." + Mode.ToString() + ".LastExtent", env);
         }
 
-        private void lstLayers_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
-            ContextMenu menu = new ContextMenu();
-            var builder = new MenuItemBuilder();
-
-            var layer = lstLayers.SelectedItem as LayerViewModel;
-
-            if (layer != null) {
-                int index = map.Map.Layers.IndexOf(layer.Model);
-
-                menu.Items.Add(builder.New("Move up").Handler(() => { MoveUp(layer); }).Enabled(index < map.Map.Layers.Count - 1).MenuItem);
-                menu.Items.Add(builder.New("Move down").Handler(() => { MoveDown(layer); }).Enabled(index > 0).MenuItem);
-
-                if (index > 0) {
-
-                }
-
-                menu.Items.Add(builder.New("Remove").Handler(() => { RemoveLayer(layer); }).MenuItem);
-            }
-
-            lstLayers.ContextMenu = menu;
-        }
-
-        private void MoveUp(LayerViewModel layer) {
-            int index = map.Map.Layers.IndexOf(layer.Model);
-            bool bAdd = index >= map.Map.Layers.Count;
-            map.Map.Layers.Remove(layer.Model);
-            if (bAdd) {
-                map.Map.Layers.Add(layer.Model);
-            } else {
-                map.Map.Layers.Insert(index + 1, layer.Model);
-            }
-            
-            _layers.Remove(layer);
-            _layers.Insert(index+1, layer);
-
-            map.Refresh();
-        }
-
-        private void MoveDown(LayerViewModel layer) {
-            int index = map.Map.Layers.IndexOf(layer.Model);
-            map.Map.Layers.Remove(layer.Model);
-            map.Map.Layers.Insert(index - 1, layer.Model);
-
-            _layers.Remove(layer);
-            _layers.Insert(index - 1, layer);
-
-            map.Refresh();
-        }
-
-        private void RemoveLayer(LayerViewModel layer) {            
-            if (layer != null) {
-                map.Map.Layers.Remove(layer.Model);
-                _layers.Remove(layer);
-            } 
-            map.Refresh();
-        }
-
-        private void btnUpdate_Click(object sender, RoutedEventArgs e) {
+        private void btnUpdate_Click(object sender, System.Windows.RoutedEventArgs e) {
             UpdateSelectedRegions();
         }
 
         private void UpdateSelectedRegions() {
             var regions = OptimizeSelectedRegions();
-            // Now we add back the regions that the map could not display (i.e. whose paths could not be resolved in the region layer)...
+            // Now we add back the regions that the mapControl could not display (i.e. whose paths could not be resolved in the region layer)...
             regions.AddRange(_unmatchedRegions);
             // and notify the caller
 
@@ -544,7 +492,7 @@ namespace BioLink.Client.Maps {
         /// . It is assumed that the datasource for the layer contains a column called "BLREGHEIR", which
         /// contains a '\' delimited region path. This path is used to construct intermediate nodes (that have
         /// no geometry feature attached to them) and a leaf node, which represents the smallest selectable region
-        /// for the map.
+        /// for the mapControl.
         /// </summary>
         /// <param name="layer"></param>
         /// <returns></returns>
@@ -668,7 +616,7 @@ namespace BioLink.Client.Maps {
 
         }
 
-        private void btnSaveImage_Click(object sender, RoutedEventArgs e) {
+        private void btnSaveImage_Click(object sender, System.Windows.RoutedEventArgs e) {
             SaveAsImage();
         }
 
@@ -701,45 +649,60 @@ namespace BioLink.Client.Maps {
                             break;
                     }
                     if (format == null) {
-                        map.Image.Save(dlg.FileName);
+                        mapBox.Image.Save(dlg.FileName);
                     } else {
-                        map.Image.Save(dlg.FileName, format);
+                        mapBox.Image.Save(dlg.FileName, format);
                     }
 
                 } catch (Exception ex) {
-                    ErrorMessage.Show("Failed to save map image to file {0}. {1}", dlg.FileName, ex.Message);
+                    ErrorMessage.Show("Failed to save mapControl image to file {0}. {1}", dlg.FileName, ex.Message);
                 }
             }
         }
 
         private void CopyToClipboard() {
-            BitmapSource bmp = GraphicsUtils.SystemDrawingImageToBitmapSource(map.Image);
-            Clipboard.SetImage(bmp);
+            BitmapSource bmp = GraphicsUtils.SystemDrawingImageToBitmapSource(mapBox.Image);
+            System.Windows.Clipboard.SetImage(bmp);
         }
 
-        private void btnCopyImage_Click(object sender, RoutedEventArgs e) {
+        private void btnCopyImage_Click(object sender, System.Windows.RoutedEventArgs e) {
             CopyToClipboard();
         }
 
-        private void btnLayers_Click(object sender, RoutedEventArgs e) {
+        private void btnLayers_Click(object sender, System.Windows.RoutedEventArgs e) {
             ShowLayersControl();
         }
 
         private void ShowLayersControl() {
-            var frm = new LayersWindow(map.Map);
+            var frm = new LayersWindow(this);
             frm.Owner = this.FindParentWindow();
             if (frm.ShowDialog().ValueOrFalse()) {
-
+                if (Mode == MapMode.RegionSelect) {
+                    var topRegionLayer = FindFirstRegionLayer();
+                    if (_regionLayer != topRegionLayer) {
+                        _regionLayer = topRegionLayer;
+                        _regionModel = BuildRegionModel(topRegionLayer);
+                    }
+                }
             }
         }
 
     }
 
-    public static class EnvelopeExtensions {
+    //public static class EnvelopeExtensions {
 
-        public static IEnvelope Grow(this IEnvelope envelope, double growAmount) {
-            return GeometryFactory.CreateEnvelope(envelope.MinX - growAmount, envelope.MaxX + growAmount, envelope.MinY - growAmount, envelope.MaxY + growAmount);
-        }
+    //    public static IEnvelope Grow(this IEnvelope envelope, double growAmount) {
+    //        return GeometryFactory.CreateEnvelope(envelope.MinX - growAmount, envelope.MaxX + growAmount, envelope.MinY - growAmount, envelope.MaxY + growAmount);
+    //    }
+    //}
+
+    public class LayerDescriptor {
+
+        public string Filename { get; set; }
+        public System.Drawing.Drawing2D.HatchStyle? HatchStyle { get; set; }
+        public System.Drawing.Color FillColor { get; set; }
+        public bool DrawOutline { get; set; }
+
     }
 
 }

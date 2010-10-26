@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
     xmlns:mun="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero" 
     xmlns:d ="clr-namespace:BioLink.Client.Extensibility"
-    xmlns:s="clr-namespace:System;assembly=mscorlib" >
+    xmlns:s="clr-namespace:System;assembly=mscorlib" UseLayoutRounding="True" SnapsToDevicePixels="True" >
     <UserControl.Resources>
         <Style TargetType="{x:Type ContextMenu}" x:Key="ColorPickerContextMenu">
             <Setter Property="ItemContainerStyle">
@@ -88,7 +88,7 @@
                                 <mun:ButtonChrome BorderBrush="{TemplateBinding Border.BorderBrush}" RenderMouseOver="{TemplateBinding UIElement.IsMouseOver}" RenderPressed="{TemplateBinding ButtonBase.IsPressed}" Name="Chrome" SnapsToDevicePixels="True" RenderDefaulted="{TemplateBinding Button.IsDefaulted}">
                                     <Grid>
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="20" />
+                                            <RowDefinition Height="19" />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition/>
@@ -96,9 +96,7 @@
                                             <ColumnDefinition Width="10" />
                                         </Grid.ColumnDefinitions>
 
-
-
-                                        <Path  Grid.Row="0" Grid.Column="2" Name="DropDownButton" Data="M0,0L3,3 6,0z" Margin="1,2,1,0" Stroke="{TemplateBinding Foreground}" Fill="{TemplateBinding Foreground}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        <Path  Grid.Row="0" Grid.Column="2" Name="DropDownButton" Data="M0,0L2,2 4,0z" Margin="0,1,0,0" Stroke="{TemplateBinding Foreground}" Fill="{TemplateBinding Foreground}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                         <ContentPresenter Grid.Column="0" Margin="{TemplateBinding Control.Padding}" HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}" RecognizesAccessKey="True" Content="{TemplateBinding ContentControl.Content}" />
                                     </Grid>
                                 </mun:ButtonChrome>

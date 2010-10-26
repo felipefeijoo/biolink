@@ -6,8 +6,7 @@ using System.Data;
 using System.Text;
 using System.Windows.Forms;
 using SharpMap.Forms;
-using GeoAPI.Geometries;
-using SharpMap.Converters.Geometries;
+using SharpMap.Geometries;
 using SharpMap.Layers;
 using SharpMap;
 using BioLink.Client.Utilities;
@@ -55,7 +54,7 @@ namespace BioLink.Client.Maps {
         private PreviewModes m_PreviewMode;
 
         /// <summary>
-        /// Initializes a new map
+        /// Initializes a new mapControl
         /// </summary>
         public MapBox() {
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw | ControlStyles.UserPaint, true);
@@ -77,7 +76,7 @@ namespace BioLink.Client.Maps {
             }
         }
 
-        [Description("The map image currently visualized.")]
+        [Description("The mapControl image currently visualized.")]
         [Category("Appearance")]
         public Image Image {
             get { return m_Image; }
@@ -149,7 +148,7 @@ namespace BioLink.Client.Maps {
         }
 
         /// <summary>
-        /// Sets the active map tool
+        /// Sets the active mapControl tool
         /// </summary>
         public Tools ActiveTool {
             get { return m_ActiveTool; }
@@ -187,7 +186,7 @@ namespace BioLink.Client.Maps {
         }
 
         /// <summary>
-        /// Refreshes the map
+        /// Refreshes the mapControl
         /// </summary>
         public override void Refresh() {
 
@@ -240,13 +239,10 @@ namespace BioLink.Client.Maps {
             base.OnMouseHover(e);
         }
 
-        private RectangleF EnvelopeToRect(IEnvelope env) {
+        private RectangleF EnvelopeToRect(BoundingBox env) {
 
-            ICoordinate topleft = GeometryFactory.CreateCoordinate(env.MinX, env.MaxY);
-            ICoordinate bottomRight = GeometryFactory.CreateCoordinate(env.MaxX, env.MinY);
-
-            var p1 = _Map.WorldToImage(topleft);
-            var p2 = _Map.WorldToImage(bottomRight);
+            var p1 = _Map.WorldToImage(env.TopLeft);
+            var p2 = _Map.WorldToImage(env.BottomRight);
 
             float width = (float) (p2.X > p1.X ? p2.X - p1.X : p1.X - p2.X);
             float height = (float)(p2.Y > p1.Y ? p2.Y - p1.Y : p1.Y - p2.Y);
@@ -254,12 +250,12 @@ namespace BioLink.Client.Maps {
             return new RectangleF(p1.X, p1.Y, width, height);
         }
 
-        private IEnvelope RectToEnvelope(RectangleF rect) {
+        private BoundingBox RectToEnvelope(RectangleF rect) {
             var p1 = new PointF(rect.Left, rect.Top);
             var p2 = new PointF(rect.Right, rect.Bottom);
             var topleft = _Map.ImageToWorld(p1);
             var bottomright = _Map.ImageToWorld(p2);
-            return GeometryFactory.CreateEnvelope(topleft.X, bottomright.X, bottomright.Y, topleft.Y);
+            return new BoundingBox(topleft.X, bottomright.Y, bottomright.X, topleft.Y);
         }
 
 
@@ -271,7 +267,7 @@ namespace BioLink.Client.Maps {
                 
                 var rect = EnvelopeToRect(_Map.Envelope);
 
-                Point focus = new System.Drawing.Point(e.X, e.Y);
+                System.Drawing.Point focus = new System.Drawing.Point(e.X, e.Y);
 
                 double scale = (e.Delta < 0 ? 1.2 : 0.8);
                
@@ -296,7 +292,7 @@ namespace BioLink.Client.Maps {
                 double dy = rect.Y + deltay;
 
                 RectangleF newrect = new RectangleF((float) dx, (float) dy, (float) newWidth, (float) newHeight);
-                IEnvelope newEnv = RectToEnvelope(newrect);                
+                BoundingBox newEnv = RectToEnvelope(newrect);                
                 _Map.ZoomToBox(newEnv);
 
                 Refresh();
@@ -325,7 +321,7 @@ namespace BioLink.Client.Maps {
 
             if (_Map != null) {
 
-                ICoordinate p = _Map.ImageToWorld(new System.Drawing.Point(e.X, e.Y));
+                SharpMap.Geometries.Point p = _Map.ImageToWorld(new System.Drawing.Point(e.X, e.Y));
 
                 if (MouseMove != null) {
                     MouseMove(p, e);
@@ -395,7 +391,7 @@ namespace BioLink.Client.Maps {
                     Cursor c = Cursor;
                     Cursor = Cursors.WaitCursor;
 
-                    ICoordinate realCenter = _Map.Center;
+                    SharpMap.Geometries.Point realCenter = _Map.Center;
                     Bitmap bmp = new Bitmap(_Map.Size.Width * 3, _Map.Size.Height * 3);
                     Graphics g = Graphics.FromImage(bmp);
 
@@ -421,7 +417,7 @@ namespace BioLink.Client.Maps {
             }
         }
 
-        private Bitmap GeneratePartialBitmap(ICoordinate center, XPosition xPos, YPosition yPos) {
+        private Bitmap GeneratePartialBitmap(SharpMap.Geometries.Point center, XPosition xPos, YPosition yPos) {
             double x = center.X, y = center.Y;
 
             switch (xPos) {
@@ -442,17 +438,17 @@ namespace BioLink.Client.Maps {
                     break;
             }
 
-            _Map.Center = GeometryFactory.CreateCoordinate(x, y);    // new SharpMap.Geometries.Point(x, y);
+            _Map.Center = new SharpMap.Geometries.Point(x, y);    // new SharpMap.Geometries.Point(x, y);
             return _Map.GetMap() as Bitmap;
         }
 
-        private Point ClipPoint(Point p) {
+        private System.Drawing.Point ClipPoint(System.Drawing.Point p) {
             int x = p.X < 0 ? 0 : (p.X > ClientSize.Width ? ClientSize.Width : p.X);
             int y = p.Y < 0 ? 0 : (p.Y > ClientSize.Height ? ClientSize.Height : p.Y);
-            return new Point(x, y);
+            return new System.Drawing.Point(x, y);
         }
 
-        private Rectangle GenerateRectangle(Point p1, Point p2) {
+        private Rectangle GenerateRectangle(System.Drawing.Point p1, System.Drawing.Point p2) {
             int x = Math.Min(p1.X, p2.X);
             int y = Math.Min(p1.Y, p2.Y);
             int width = Math.Abs(p2.X - p1.X);
@@ -479,9 +475,9 @@ namespace BioLink.Client.Maps {
                         return;
                     } else if (m_ActiveTool == Tools.Pan) {
                         if (m_PreviewMode == PreviewModes.Best) {
-                            pe.Graphics.DrawImageUnscaled(m_DragImage, new Point(-_Map.Size.Width + m_DragEndPoint.X - m_DragStartPoint.X, -_Map.Size.Height + m_DragEndPoint.Y - m_DragStartPoint.Y));
+                            pe.Graphics.DrawImageUnscaled(m_DragImage, new System.Drawing.Point(-_Map.Size.Width + m_DragEndPoint.X - m_DragStartPoint.X, -_Map.Size.Height + m_DragEndPoint.Y - m_DragStartPoint.Y));
                         } else {
-                            pe.Graphics.DrawImageUnscaled(m_DragImage, new Point(m_DragEndPoint.X - m_DragStartPoint.X, m_DragEndPoint.Y - m_DragStartPoint.Y));
+                            pe.Graphics.DrawImageUnscaled(m_DragImage, new System.Drawing.Point(m_DragEndPoint.X - m_DragStartPoint.X, m_DragEndPoint.Y - m_DragStartPoint.Y));
                         }
                         return;
                     } else if (m_ActiveTool == Tools.ZoomIn || m_ActiveTool == Tools.ZoomOut) {
@@ -521,7 +517,7 @@ namespace BioLink.Client.Maps {
             base.OnMouseUp(e);
             if (_Map != null) {
                 if (MouseUp != null) {
-                    MouseUp(_Map.ImageToWorld(new Point(e.X, e.Y)), e);
+                    MouseUp(_Map.ImageToWorld(new System.Drawing.Point(e.X, e.Y)), e);
                 }
 
                 if (e.Button == MouseButtons.Left) {
@@ -590,17 +586,18 @@ namespace BioLink.Client.Maps {
 
                                 SharpMap.Layers.VectorLayer layer = _Map.Layers[m_QueryLayerIndex] as SharpMap.Layers.VectorLayer;
 
-                                IEnvelope bounding;
+                                BoundingBox bounding;
 
                                 if (m_Dragging) {
-                                    ICoordinate lowerLeft;
-                                    ICoordinate upperRight;
+                                    SharpMap.Geometries.Point lowerLeft;
+                                    SharpMap.Geometries.Point upperRight;
                                     GetBounds(_Map.ImageToWorld(m_DragStartPoint), _Map.ImageToWorld(m_DragEndPoint), out lowerLeft, out upperRight);
 
-                                    bounding = GeometryFactory.CreateEnvelope(lowerLeft.X, upperRight.X, lowerLeft.Y, upperRight.Y); // new SharpMap.Geometries.BoundingBox(lowerLeft, upperRight);
+                                    bounding = new BoundingBox(lowerLeft.X, lowerLeft.Y, upperRight.X, upperRight.Y); // new SharpMap.Geometries.BoundingBox(lowerLeft, upperRight);
                                 } else {
-                                    bounding = GeometryFactory.CreatePoint(this._Map.ImageToWorld(new System.Drawing.Point(e.X, e.Y))).EnvelopeInternal;
-                                    bounding.ExpandBy(_Map.PixelSize * 5);
+                                    SharpMap.Geometries.Point worldPoint = this._Map.ImageToWorld(new PointF(e.X, e.Y));
+                                    bounding = new SharpMap.Geometries.Point(worldPoint.X,worldPoint.Y).GetBoundingBox();
+                                    bounding.Grow(_Map.PixelSize * 5);
                                 }
 
                                 SharpMap.Data.FeatureDataSet ds = new SharpMap.Data.FeatureDataSet();
@@ -617,10 +614,10 @@ namespace BioLink.Client.Maps {
                         }
                     } else if (m_ActiveTool == Tools.ZoomWindow) {
                         if (m_Rectangle.Width > 0 && m_Rectangle.Height > 0) {
-                            ICoordinate lowerLeft;
-                            ICoordinate upperRight;
+                            SharpMap.Geometries.Point lowerLeft;
+                            SharpMap.Geometries.Point upperRight;
                             GetBounds(_Map.ImageToWorld(m_DragStartPoint), _Map.ImageToWorld(m_DragEndPoint), out lowerLeft, out upperRight);
-                            IEnvelope bbox = GeometryFactory.CreateEnvelope(lowerLeft.X, upperRight.X, lowerLeft.Y, upperRight.Y);
+                            BoundingBox bbox = new BoundingBox(lowerLeft.X, lowerLeft.Y, upperRight.X, upperRight.Y);
                             _Map.ZoomToBox(bbox);
                         }
                     }
@@ -649,9 +646,9 @@ namespace BioLink.Client.Maps {
             }
         }
 
-        private void GetBounds(ICoordinate p1, ICoordinate p2, out ICoordinate lowerLeft, out ICoordinate upperRight) {
-            lowerLeft = GeometryFactory.CreateCoordinate(Math.Min(p1.X, p2.X), Math.Min(p1.Y, p2.Y)); // new SharpMap.Geometries.Point(Math.Min(p1.X, p2.X), Math.Min(p1.Y, p2.Y));
-            upperRight = GeometryFactory.CreateCoordinate(Math.Max(p1.X, p2.X), Math.Max(p1.Y, p2.Y));// new SharpMap.Geometries.Point(Math.Max(p1.X, p2.X), Math.Max(p1.Y, p2.Y));
+        private void GetBounds(SharpMap.Geometries.Point p1, SharpMap.Geometries.Point p2, out SharpMap.Geometries.Point lowerLeft, out SharpMap.Geometries.Point upperRight) {
+            lowerLeft = new SharpMap.Geometries.Point(Math.Min(p1.X, p2.X), Math.Min(p1.Y, p2.Y)); 
+            upperRight = new SharpMap.Geometries.Point(Math.Max(p1.X, p2.X), Math.Max(p1.Y, p2.Y));
         }
 
         #region Events
@@ -660,13 +657,13 @@ namespace BioLink.Client.Maps {
         /// </summary>
         /// <param name="WorldPos"></param>
         /// <param name="evt"></param>
-        public delegate void MouseEventHandler(ICoordinate WorldPos, System.Windows.Forms.MouseEventArgs ImagePos);
+        public delegate void MouseEventHandler(SharpMap.Geometries.Point WorldPos, System.Windows.Forms.MouseEventArgs ImagePos);
         /// <summary>
-        /// Fires when mouse moves over the map
+        /// Fires when mouse moves over the mapControl
         /// </summary>
         public new event MouseEventHandler MouseMove;
         /// <summary>
-        /// Fires when map received a mouseclick
+        /// Fires when mapControl received a mouseclick
         /// </summary>
         public new event MouseEventHandler MouseDown;
         /// <summary>
@@ -679,7 +676,7 @@ namespace BioLink.Client.Maps {
         public event MouseEventHandler MouseDrag;
 
         /// <summary>
-        /// Fired when the map has been refreshed
+        /// Fired when the mapControl has been refreshed
         /// </summary>
         public event System.EventHandler MapRefreshed;
 
@@ -693,17 +690,17 @@ namespace BioLink.Client.Maps {
         /// </summary>
         public event MapZoomHandler MapZoomChanged;
         /// <summary>
-        /// Fired when the map is being zoomed
+        /// Fired when the mapControl is being zoomed
         /// </summary>
         public event MapZoomHandler MapZooming;
 
         /// <summary>
-        /// Eventtype fired when the map is queried
+        /// Eventtype fired when the mapControl is queried
         /// </summary>
         /// <param name="data"></param>
         public delegate void MapQueryHandler(SharpMap.Data.FeatureDataTable data);
         /// <summary>
-        /// Fired when the map is queried
+        /// Fired when the mapControl is queried
         /// </summary>
         public event MapQueryHandler MapQueried;
 
@@ -712,19 +709,19 @@ namespace BioLink.Client.Maps {
         /// Eventtype fired when the center has changed
         /// </summary>
         /// <param name="center"></param>
-        public delegate void MapCenterChangedHandler(ICoordinate center);
+        public delegate void MapCenterChangedHandler(SharpMap.Geometries.Point center);
         /// <summary>
-        /// Fired when the center of the map has changed
+        /// Fired when the center of the mapControl has changed
         /// </summary>
         public event MapCenterChangedHandler MapCenterChanged;
 
         /// <summary>
-        /// Eventtype fired when the map tool is changed
+        /// Eventtype fired when the mapControl tool is changed
         /// </summary>
         /// <param name="tool"></param>
         public delegate void ActiveToolChangedHandler(Tools tool);
         /// <summary>
-        /// Fired when the active map tool has changed
+        /// Fired when the active mapControl tool has changed
         /// </summary>
         public event ActiveToolChangedHandler ActiveToolChanged;
         #endregion

@@ -85,7 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IDegreeDistanceConverter.cs" />
-    <Compile Include="ILayerFactor.cs" />
+    <Compile Include="ILayerFactory.cs" />
     <Compile Include="LayersWindow.xaml.cs">
       <DependentUpon>LayersWindow.xaml</DependentUpon>
     </Compile>
@@ -166,6 +166,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="images\Layers.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\AddLayer.png" />
+    <Resource Include="images\LayerDown.png" />
+    <Resource Include="images\LayerUp.png" />
+    <Resource Include="images\RemoveLayer.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

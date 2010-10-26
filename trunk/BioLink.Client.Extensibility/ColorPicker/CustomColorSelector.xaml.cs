@@ -458,7 +458,25 @@ namespace BioLink.Client.Extensibility {
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
-            throw new NotImplementedException();
+            var c = (System.Drawing.Color)value;
+            return Color.FromArgb(c.A, c.R, c.G, c.B);
         }
     }
+
+    [ValueConversion(typeof(System.Drawing.Color), typeof(Color))]
+    public class SystemDrawingColorToColorConverter : IValueConverter {
+
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+            var c = (System.Drawing.Color)value;
+            return Color.FromArgb(c.A, c.R, c.G, c.B);
+
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+            var c = (Color)value;
+            return System.Drawing.Color.FromArgb(c.A, c.R, c.G, c.B);
+        }
+    }
+
+
 }

@@ -58,19 +58,10 @@
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="200" />
             </Grid.ColumnDefinitions>
-            <wfi:WindowsFormsHost  Background="Azure" Margin="0,0,8,0">
-                <maps:MapBox x:Name="map" Click="map_Click" />
+            <wfi:WindowsFormsHost  Background="Azure" Margin="0,0,0,0">
+                <maps:MapBox x:Name="mapBox" Click="map_Click" />
             </wfi:WindowsFormsHost>
-            <GridSplitter ResizeDirection="Columns" Grid.Column="0" Width="8" />
-            <ListBox x:Name="lstLayers" Grid.Column="1" MouseRightButtonUp="lstLayers_MouseRightButtonUp">
-                <ListBox.Resources>
-                    <DataTemplate DataType="{x:Type maps:LayerViewModel}" >
-                        <TextBlock Text="{Binding LayerName}" />
-                    </DataTemplate>
-                </ListBox.Resources>
-            </ListBox>
         </Grid>
         <Grid Grid.Row="2">
             <Button Content="_Update" HorizontalAlignment="Right" Margin="0,6,6,0" Name="btnUpdate" Width="75" Height="23" VerticalAlignment="Top" Click="btnUpdate_Click" />
