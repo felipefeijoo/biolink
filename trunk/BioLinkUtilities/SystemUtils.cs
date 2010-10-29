@@ -27,6 +27,9 @@ namespace BioLink.Client.Utilities {
         [DllImport("user32.dll", EntryPoint = "DestroyIcon", SetLastError = true)]
         private static extern int DestroyIcon(IntPtr hIcon);
 
+        [DllImport("gdi32.dll")]
+        public static extern bool DeleteObject(IntPtr hObject);
+
         public static Icon GetIconFromExtension(string extension) {
 
             RegistryKey rkRoot = Registry.ClassesRoot;
@@ -169,8 +172,52 @@ namespace BioLink.Client.Utilities {
             return embeddedIcon;
         }
 
-        [DllImport("gdi32.dll")]
-        public static extern bool DeleteObject(IntPtr hObject);
+        public static byte[] GetBytesFromFile(string filename) {
+
+            Logger.Debug("Reading the bytes from file {0}", filename);
+
+            var fileInfo = new System.IO.FileInfo(filename);
+            var stream = fileInfo.OpenRead();
+            int byteCount = (int) stream.Length;
+
+            if (byteCount > 0) {
+                byte[] fileData = new byte[byteCount];
+                stream.Read(fileData, 0, byteCount);
+                stream.Close();
+                Logger.Debug("Read {0} the bytes from {1}", byteCount, filename);
+                return fileData;
+            } else {
+                Logger.Debug("No bytes read from {0}!", filename);
+                return new byte[] {};
+            }
+        }
+
+        public const int KBYTES = 1024;
+        public const int MBYTES = KBYTES * 1024;
+        public const int GBYTES = MBYTES * 1024;
+
+        public static String ByteCountToSizeString(long bytes) {
+
+            string format = "{0:##.##} {1}";
+            long divisor = 1;
+            string units = null;
+
+            if (bytes < KBYTES) {
+                units = "B";
+                format = "{0} {1}"; // No partial bytes!
+            } else if (bytes < MBYTES) {
+                units = "KB";
+                divisor = KBYTES;
+            } else if (bytes < GBYTES) {
+                units = "MB";
+                divisor = MBYTES;
+            } else {
+                units = "GB";
+                divisor = GBYTES;
+            }
+
+            return String.Format(format, bytes / divisor, units);
+        }
 
     }
 }

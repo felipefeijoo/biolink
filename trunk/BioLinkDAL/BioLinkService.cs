@@ -55,6 +55,36 @@ namespace BioLink.Data {
             
         }
 
+        protected void SQLReaderForEach(string SQL, ServiceReaderAction action, params SqlParameter[] @params) {
+            Message("Executing query...");
+            using (new CodeTimer(String.Format("SQLReaderForEach '{0}'", SQL))) {
+                Logger.Debug("Calling stored procedure (reader): {0}", SQL);
+                Command((con, cmd) => {
+                    cmd.CommandText = SQL;
+                    cmd.CommandType = System.Data.CommandType.Text;
+                    if (User.InTransaction && User.CurrentTransaction != null) {
+                        cmd.Transaction = User.CurrentTransaction;
+                    }
+                    foreach (SqlParameter param in @params) {
+                        cmd.Parameters.Add(param);
+                    }
+
+                    using (SqlDataReader reader = cmd.ExecuteReader()) {
+                        Message("Fetching records...");
+                        int count = 0;
+                        while (reader.Read()) {
+                            if (action != null) {
+                                action(reader);
+                            }
+                            if (++count % 1000 == 0) {
+                                Message("{0} records retrieved", count);
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
         /// <summary>
         /// Convenience method for calling a stored procedure and iterating over each row retrieved. The supplied
         /// ServiceReaderAction is invoked for each row, and is expected to NOT advance the reader itself, but rather
@@ -349,12 +379,115 @@ namespace BioLink.Data {
         }
 
         public Multimedia GetMultimedia(int mediaID) {
-            var mapper = new GenericMapperBuilder<Multimedia>().build();
+            var mapper = new GenericMapperBuilder<Multimedia>().Map("vchrname", "Name").build();
             Multimedia ret = null;
             StoredProcReaderFirst("spMultimediaGet", (reader) => {
                 ret = mapper.Map(reader);
-            });
+                ret.MultimediaID = mediaID;
+            }, _P("intMMID", mediaID));
             return ret;
+        }
+
+        public void DeleteMultimediaLink(int? multimediaLinkId) {
+            StoredProcUpdate("spMultimediaLinkDelete", _P("intMultimediaLinkID", multimediaLinkId.Value));
+        }
+
+        public int InsertMultimedia(string name, string extension, byte[] bytes) {
+            var retval = ReturnParam("NewMultimediaID", SqlDbType.Int);
+            StoredProcUpdate("spMultimediaInsert", _P("vchrName", name), _P("vchrFileExtension", extension), _P("intSizeInBytes", bytes.Length), retval);
+            // Now insert the actual bytes...
+            UpdateMultimediaBytes((int) retval.Value, bytes);
+
+            return (int) retval.Value;
+        }
+
+        public int InsertMultimediaLink(string category, int intraCatID, string multimediaType, int multimediaID, string caption) {
+            var retval = ReturnParam("[NewMultimediaLinkID]", SqlDbType.Int);
+
+            if (multimediaType == null) {
+                multimediaType = "";
+            }
+
+            StoredProcUpdate("spMultimediaLinkInsert",
+                _P("vchrCategory", category.ToString()),
+                _P("intIntraCatID", intraCatID),
+                _P("vchrMultimediaType", multimediaType),
+                _P("intMultimediaID", multimediaID),
+                _P("vchrCaption", caption),
+                retval);
+
+            return (int) retval.Value;
+        }
+
+        public void UpdateMultimediaBytes(int? multimediaId, byte[] bytes) {
+            // Multimedia is the only place where we don't have a stored procedure for the insert/update. This is probably due to a 
+            // limitation of ADO.NET or SQL Server back in the 90's or something like that. Either way, we need to insert the actual blob
+            // "manually"...
+            Command((conn, cmd) => {
+
+                if (User.InTransaction && User.CurrentTransaction != null) {
+                    cmd.Transaction = User.CurrentTransaction;
+                }
+
+                cmd.CommandText = "UPDATE [tblMultimedia] SET imgMultimedia = @blob, intSizeInBytes=@size WHERE intMultimediaID = @multimediaId";
+                cmd.Parameters.Add(_P("blob", bytes));
+                cmd.Parameters.Add(_P("size", bytes.Length));
+                cmd.Parameters.Add(_P("multimediaId", (int)multimediaId));
+                cmd.ExecuteNonQuery();
+            });
+
+        }
+
+        public Multimedia FindDuplicateMultimedia(System.IO.FileInfo file, out int sizeInBytes) {
+            var name = file.Name;
+            if (file.Name.Contains(".")) {
+                name = file.Name.Substring(0, file.Name.LastIndexOf("."));
+            }
+            sizeInBytes = 0;
+            var extension = file.Extension.Substring(1);
+            // Not that the following service all returns partial results (incomplete stored proc), so a two stage approach is required.
+            // First we find candidates based on name.
+            var candidates = FindMultimediaByName(name);
+            if (candidates.Count > 0) {                
+                // Look for matching names and extensions...
+                foreach (Multimedia candidate in candidates) {
+                    if (candidate.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase) && candidate.FileExtension.Equals(extension, StringComparison.CurrentCultureIgnoreCase)) {
+                        // Now we do a deeper analysis of each matching candidate, checking the filelength. Theoretically, if we kept a hash on the content in the database
+                        // we should compare that, but for now we'll use name and size.
+                        sizeInBytes = GetMultimediaSizeInBytes(candidate.MultimediaID);
+                        if (sizeInBytes > -1) {
+                            if (sizeInBytes == file.Length) {
+                                return GetMultimedia(candidate.MultimediaID);
+                            }
+                        } else {
+                            throw new Exception("Failed to get size of multimedia " + candidate.MultimediaID);
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// TODO: should probably be made into a stored proc!
+        /// </summary>
+        /// <param name="multimediaId"></param>
+        /// <returns></returns>
+        public int GetMultimediaSizeInBytes(int multimediaId) {
+            int result = -1;
+            SQLReaderForEach("SELECT DATALENGTH(imgMultimedia) FROM [tblMultimedia] where intMultimediaID = @mmid", (reader) => {
+                result = (int) reader[0];
+            }, _P("mmid", multimediaId));
+
+            return result;
+        }
+
+        public List<Multimedia> FindMultimediaByName(string name) {
+            string searchTerm = name.Replace("*", "%") + "%";
+            var mapper = new GenericMapperBuilder<Multimedia>().Map("Extension", "FileExtension").build();
+            List<Multimedia> results = StoredProcToList("spMultimediaFindByName", mapper, _P("txtSearchTerm", searchTerm));
+            return results;
         }
 
         #endregion

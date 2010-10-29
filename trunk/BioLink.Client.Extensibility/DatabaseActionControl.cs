@@ -56,6 +56,12 @@ namespace BioLink.Client.Extensibility {
             WithChangeContainer(window => window.ClearPendingChanges());
         }
 
+        public void ClearMatchingPendingChanges(Predicate<DatabaseAction> predicate) {
+            WithChangeContainer(container => {
+                container.ClearMatchingPendingChanges(predicate);
+            });
+        }
+
         private void WithChangeContainer(Action<IChangeContainer> action) {
             var window = this.FindParentWindow() as IChangeContainer;
             if (window != null) {

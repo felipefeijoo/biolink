@@ -18,6 +18,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Drawing;
 using System.Diagnostics;
+using Microsoft.Win32;
 
 namespace BioLink.Client.Extensibility {
     /// <summary>
@@ -28,6 +29,7 @@ namespace BioLink.Client.Extensibility {
         private ObservableCollection<MultimediaLinkViewModel> _model;
 
         private TempFileManager<int?> _tempFileManager;
+        private const int THUMB_SIZE= 100;
 
         #region designer constructor
         public MultimediaControl() {
@@ -62,8 +64,6 @@ namespace BioLink.Client.Extensibility {
             if (item != null) {
                 detailGrid.DataContext = item;
                 detailGrid.IsEnabled = true;
-                txtCaption.Document.Blocks.Clear();
-                txtCaption.SetRTF(item.Caption);
             }
         }
 
@@ -77,7 +77,7 @@ namespace BioLink.Client.Extensibility {
 
                 foreach (MultimediaLinkViewModel item in _model) {
                     this.BackgroundInvoke(() => {
-                        GenerateThumbnail(item, 100);
+                        GenerateThumbnail(item, THUMB_SIZE);
                     });
                 }
             });
@@ -100,9 +100,11 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void GenerateThumbnail(MultimediaLinkViewModel item, int maxDimension) {
-
             string filename = _tempFileManager.GetContentFileName(item.MultimediaID, item.Extension);
+            item.Thumbnail = GenerateThumbnail(filename, maxDimension);
+        }
 
+        private BitmapSource GenerateThumbnail(string filename, int maxDimension) {
             if (!String.IsNullOrEmpty(filename)) {
                 try {
                     using (var fs = new FileStream(filename, FileMode.Open)) {
@@ -118,19 +120,23 @@ namespace BioLink.Client.Extensibility {
                             height = (int)(image.Height * ((double)maxDimension / image.Width));
                         }
 
-                        item.Thumbnail = Resize(image, width, height, BitmapScalingMode.HighQuality);
+                        return Resize(image, width, height, BitmapScalingMode.HighQuality);
                     }
                 } catch (Exception) {
-                    item.Thumbnail = ExtractIconForExtension(item.Extension);
+                    FileInfo finfo = new FileInfo(filename);
+                    return ExtractIconForExtension(finfo.Extension.Substring(1));
                 }
             }
 
+            return null;
         }
 
         public BitmapSource ExtractIconForExtension(string ext) {
-            Icon icon = SystemUtils.GetIconFromExtension(ext);
-            if (icon != null) {
-                return FormatImage(icon);
+            if (ext != null) {
+                Icon icon = SystemUtils.GetIconFromExtension(ext);
+                if (icon != null) {
+                    return FormatImage(icon);
+                }
             }
             return null;
         }
@@ -235,8 +241,132 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
+        private void btnAdd_Click(object sender, RoutedEventArgs e) {
+            AddMultimedia();
+        }
 
-        public bool IsPopulated { get; private set; }
+        private void btnDelete_Click(object sender, RoutedEventArgs e) {
+            DeleteSelectedMultimedia();
+        }
+
+        private void AddMultimedia() {
+            var dlg = new OpenFileDialog();
+            dlg.Filter = "All files (*.*)|*.*";
+            if (dlg.ShowDialog().ValueOrFalse()) {
+                string filename = dlg.FileName;
+                FileInfo finfo = new FileInfo(filename);
+                if (finfo.Exists) {
+                    MultimediaLink model = null;
+                    MultimediaLinkViewModel viewModel = null;
+                    Multimedia duplicate = null;
+                    var action = CheckDuplicate(finfo, out duplicate);
+                    switch (action) {
+                        case MultimediaDuplicateAction.Cancel:
+                            // Do nothing
+                            break;
+                        case MultimediaDuplicateAction.NoDuplicate:
+                        case MultimediaDuplicateAction.InsertDuplicate:
+                            // Insert new multimedia and new link
+                            model = new MultimediaLink();
+                            model.MultimediaID = NextNewId();
+                            model.MultimediaLinkID = model.MultimediaID;
+                            if (finfo.Name.Contains(".")) {
+                                model.Name = finfo.Name.Substring(0, finfo.Name.LastIndexOf("."));
+                                model.Extension = finfo.Extension.Substring(1);
+                            } else {
+                                model.Name = finfo.Name;
+                            }
+                            viewModel = new MultimediaLinkViewModel(model);
+                            viewModel.Thumbnail = GenerateThumbnail(filename, THUMB_SIZE);
+                            _tempFileManager.CopyToTempFile(viewModel.MultimediaID, filename);
+                            _model.Add(viewModel);
+                            RegisterPendingChange(new InsertMultimediaAction(model, _tempFileManager.GetContentFileName(viewModel.MultimediaID, finfo.Extension.Substring(1))));
+                            RegisterPendingChange(new InsertMultimediaLinkAction(model, CategoryType, IntraCategoryID));
+                            break;
+                        case MultimediaDuplicateAction.UseExisting:
+                            // Link to existing multimedia
+                            model = new MultimediaLink();
+                            model.MultimediaID = duplicate.MultimediaID;
+                            model.MultimediaLinkID = -1;
+                            model.Name = duplicate.Name;
+                            model.Extension = duplicate.FileExtension;
+                            viewModel = new MultimediaLinkViewModel(model);
+                            GenerateThumbnail(viewModel, THUMB_SIZE);
+                            _model.Add(viewModel);
+                            RegisterPendingChange(new InsertMultimediaLinkAction(model, CategoryType, IntraCategoryID));
+                            break;
+                        case MultimediaDuplicateAction.ReplaceExisting:
+                            // register an update for the multimedia,
+                            // and insert a new link
+                            // Link to existing multimedia
+                            model = new MultimediaLink();
+                            model.MultimediaID = duplicate.MultimediaID;
+                            model.MultimediaLinkID = -1;
+                            model.Name = duplicate.Name;
+                            model.Extension = duplicate.FileExtension;
+                            viewModel = new MultimediaLinkViewModel(model);
+                            GenerateThumbnail(viewModel, THUMB_SIZE);
+                            _model.Add(viewModel);
+                            _tempFileManager.CopyToTempFile(viewModel.MultimediaID, filename);
+                            RegisterPendingChange(new UpdateMultimediaBytesAction(model, filename));
+                            RegisterPendingChange(new InsertMultimediaLinkAction(model, CategoryType, IntraCategoryID));
+                            break;
+                    }
+
+                    if (viewModel != null) {
+                        viewModel.IsSelected = true;
+                        thumbList.SelectedItem = viewModel;
+                    }
+                }
+            }
+            
+        }
+
+        public MultimediaDuplicateAction CheckDuplicate(FileInfo file, out Multimedia duplicate) {
+            int sizeInBytes = 0;
+            duplicate = Service.FindDuplicateMultimedia(file, out sizeInBytes);
+            if (duplicate != null) {
+                var frm = new DuplicateItemOptions(duplicate, sizeInBytes);
+                frm.Owner = this.FindParentWindow();
+                if (frm.ShowDialog().ValueOrFalse()) {
+                    return frm.SelectedAction;
+                } else {
+                    return MultimediaDuplicateAction.Cancel;
+                }
+            }
+            return MultimediaDuplicateAction.NoDuplicate;
+        }
+
+        private int NextNewId() {
+            int newId = -1;
+            foreach (MultimediaLinkViewModel model in _model) {
+                if (model.MultimediaID <= newId) {
+                    newId = model.MultimediaID - 1;
+                }
+            }
+            return newId;
+        }
+
+        private void DeleteSelectedMultimedia() {
+            var selected = this.thumbList.SelectedItem as MultimediaLinkViewModel;
+            if (selected != null) {
+                if (selected.MultimediaLinkID >= 0) {
+                    RegisterPendingChange(new DeleteMultimediaLinkAction(selected.Model));
+                } else {
+                    ClearMatchingPendingChanges((action) => {
+                        if (action is InsertMultimediaAction) {
+                            var candidate = action as InsertMultimediaAction;
+                            if (candidate.Model.MultimediaLinkID == selected.MultimediaLinkID) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    });
+                }
+                _model.Remove(selected);
+            }
+        }
+
 
         #region Properties
 
@@ -248,8 +378,85 @@ namespace BioLink.Client.Extensibility {
             get { return new SupportService(User); }
         }
 
+        public bool IsPopulated { get; private set; }
+
         #endregion
 
+    }
+
+    public enum MultimediaDuplicateAction {
+        NoDuplicate,
+        Cancel,
+        UseExisting,
+        ReplaceExisting,
+        InsertDuplicate
+    }
+
+    public class DeleteMultimediaLinkAction : GenericDatabaseAction<MultimediaLink> {
+
+        public DeleteMultimediaLinkAction(MultimediaLink model)
+            : base(model) {
+        }
+
+        protected override void ProcessImpl(User user) {
+            var service = new SupportService(user);
+            service.DeleteMultimediaLink(Model.MultimediaLinkID);
+        }
+
+    }
+
+    public class InsertMultimediaAction : GenericDatabaseAction<MultimediaLink> {
+
+        public InsertMultimediaAction(MultimediaLink model, string filename)
+            : base(model) {
+            this.Filename = filename;
+        }
+
+        protected override void ProcessImpl(User user) {
+            var service = new SupportService(user);
+            var bytes = SystemUtils.GetBytesFromFile(Filename);
+            int newId = service.InsertMultimedia(Model.Name, Model.Extension, bytes);
+            Model.MultimediaID = newId;
+        }
+
+        public string Filename { get; private set; }
+
+    }
+
+    public class InsertMultimediaLinkAction : GenericDatabaseAction<MultimediaLink> {
+
+        public InsertMultimediaLinkAction(MultimediaLink model, TraitCategoryType category, int intraCatId)
+            : base(model) {
+            this.Category = category;
+            this.IntraCategoryID = intraCatId;
+        }
+
+        protected override void ProcessImpl(User user) {
+            var service = new SupportService(user);
+            BioLink.Client.Utilities.Debug.Assert(Model.MultimediaID >= 0, "Not a valid multimedia ID!");
+
+            var newId = service.InsertMultimediaLink(Category.ToString(), IntraCategoryID,Model.MultimediaType, Model.MultimediaID, Model.Caption);
+            Model.MultimediaLinkID = newId;
+        }
+
+        public TraitCategoryType Category { get; private set; }
+
+        public int IntraCategoryID { get; private set; }
+    }
+
+    public class UpdateMultimediaBytesAction : GenericDatabaseAction<MultimediaLink> {
+
+        public UpdateMultimediaBytesAction(MultimediaLink model, string filename) : base(model) {
+            this.Filename = filename;
+        }
+
+        protected override void ProcessImpl(User user) {
+            var service = new SupportService(user);
+            var bytes = SystemUtils.GetBytesFromFile(Filename);
+            service.UpdateMultimediaBytes(Model.MultimediaID, bytes);            
+        }
+
+        public string Filename { get; private set; }
     }
 
 

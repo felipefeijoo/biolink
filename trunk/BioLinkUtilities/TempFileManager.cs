@@ -16,6 +16,16 @@ namespace BioLink.Client.Utilities {
             _contentGenerator = contentGenerator;
         }
 
+        public void CopyToTempFile(T key, string filename) {
+            if (File.Exists(filename)) {
+                FileInfo finfo = new FileInfo(filename);                
+                var extension = finfo.Extension.Substring(1);
+                var tempfile = NewFilename(extension);
+                finfo.CopyTo(tempfile);
+                _tempFileMap[key] = tempfile;                
+            }
+        }
+
         public string GetContentFileName(T key, string extension) {
             if (_tempFileMap.ContainsKey(key)) {
                 return _tempFileMap[key];
@@ -23,6 +33,10 @@ namespace BioLink.Client.Utilities {
 
             if (_contentGenerator == null) {
                 return null;
+            }
+
+            if (extension == null) {
+                extension = "";
             }
 
             String tempFile = NewFilename(extension);

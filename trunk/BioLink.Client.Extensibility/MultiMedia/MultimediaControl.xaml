@@ -16,13 +16,13 @@
         </Grid.RowDefinitions>
 
         <ToolBar Grid.Row="0" Name="toolBar">
-            <Button x:Name="btnAdd">
+            <Button x:Name="btnAdd" Click="btnAdd_Click">
                 <Button.Content>
                     <Image Source="../images/AddNew.png" Stretch="None" />
                 </Button.Content>
             </Button>
             
-            <Button x:Name="btnDelete" >
+            <Button x:Name="btnDelete" Click="btnDelete_Click">
                 <Button.Content>
                     <Image Source="../images/Delete.png" Stretch="None" />
                 </Button.Content>
@@ -58,7 +58,7 @@
             <Label Content="Caption" Height="28" HorizontalAlignment="Left" Margin="6,71,0,0" Name="label3" VerticalAlignment="Top" />
             <src:PickListControl Height="23" Margin="72,10,6,0" x:Name="txtMultimediaType" VerticalAlignment="Top" Text="{Binding MultimediaType}"/>
             <src:TextBox Height="23" Margin="72,42,6,0" x:Name="txtName" VerticalAlignment="Top" Text="{Binding Name}"/>
-            <RichTextBox Height="43" Margin="72,71,6,0" Name="txtCaption" VerticalAlignment="Top" />
+            <src:BindableRichTextBox Height="43" Margin="72,71,6,0" x:Name="txtCaption" VerticalAlignment="Top" RTF="{Binding Caption}" />            
         </Grid>
         
     </Grid>
