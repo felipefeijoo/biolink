@@ -5,7 +5,6 @@ using System.Drawing;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
-using SharpMap.Forms;
 using SharpMap.Geometries;
 using SharpMap.Layers;
 using SharpMap;
