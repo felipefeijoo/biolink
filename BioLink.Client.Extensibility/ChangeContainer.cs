@@ -58,6 +58,22 @@ namespace BioLink.Client.Extensibility {
             _pendingChanges.Clear();
         }
 
+        public void ClearMatchingPendingChanges(Predicate<DatabaseAction> predicate) {
+            var purgeList = new List<DatabaseAction>();
+            // Build a list of the database actions that need to be removed...
+            _pendingChanges.ForEach(action => {
+                if (predicate(action)) {
+                    purgeList.Add(action);
+                }
+            });
+
+            // and remove them
+            purgeList.ForEach(action => {
+                _pendingChanges.Remove(action);
+            });
+        }
+
+
         public void CommitPendingChanges(Action successAction = null) {
 
             if (User == null) {

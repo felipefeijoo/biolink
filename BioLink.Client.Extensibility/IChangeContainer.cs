@@ -19,6 +19,8 @@ namespace BioLink.Client.Extensibility {
 
         void ClearPendingChanges();
 
+        void ClearMatchingPendingChanges(Predicate<DatabaseAction> predicate);
+
         bool HasPendingChanges { get; }
 
         List<DatabaseAction> PendingChanges { get; }

@@ -111,6 +111,9 @@
       <DependentUpon>LookupControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="MenuItemBuilder.cs" />
+    <Compile Include="MultiMedia\DuplicateItemOptions.xaml.cs">
+      <DependentUpon>DuplicateItemOptions.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MultiMedia\MultimediaControl.xaml.cs">
       <DependentUpon>MultimediaControl.xaml</DependentUpon>
     </Compile>
@@ -225,6 +228,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="LookupControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MultiMedia\DuplicateItemOptions.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

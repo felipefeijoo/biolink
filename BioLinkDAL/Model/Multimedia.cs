@@ -7,6 +7,7 @@ namespace BioLink.Data.Model {
 
     public class Multimedia : BiolinkDataObject {
 
+        public int MultimediaID { get; set; }
         public string Name { get; set; }
         public string Number { get; set; }
         public string Artist { get; set; }
