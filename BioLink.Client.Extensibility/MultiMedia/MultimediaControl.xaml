@@ -16,17 +16,26 @@
         </Grid.RowDefinitions>
 
         <ToolBar Grid.Row="0" Name="toolBar">
-            <Button x:Name="btnAdd" Click="btnAdd_Click">
+            <Button x:Name="btnAdd" Click="btnAdd_Click" ToolTip="Add a piece of multimedia">
                 <Button.Content>
                     <Image Source="../images/AddNew.png" Stretch="None" />
                 </Button.Content>
             </Button>
             
-            <Button x:Name="btnDelete" Click="btnDelete_Click">
+            <Button x:Name="btnDelete" Click="btnDelete_Click" ToolTip="Delete the selected piece of multimedia">
                 <Button.Content>
                     <Image Source="../images/Delete.png" Stretch="None" />
                 </Button.Content>
             </Button>
+            
+            <Separator />
+
+            <Button x:Name="btnProperties" Click="btnProperties_Click" ToolTip="Edit multimedia details">
+                <Button.Content>
+                    <Image Source="../images/Properties.png" Stretch="None" />
+                </Button.Content>
+            </Button>
+
         </ToolBar>
 
         <ListBox Grid.Row="1" x:Name="thumbList" HorizontalContentAlignment="Center" MouseRightButtonUp="thumbList_MouseRightButtonUp" MouseDoubleClick="thumbList_MouseDoubleClick">

@@ -12,6 +12,11 @@ namespace BioLink.Client.Extensibility {
             : base(model) {
         }
 
+        public int MultimediaID {
+            get { return Model.MultimediaID; }
+            set { SetProperty(() => Model.MultimediaID, value); }
+        }
+
         public string Name {
             get { return Model.Name; }
             set { SetProperty(() => Model.Name, value); }
