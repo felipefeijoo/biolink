@@ -31,7 +31,7 @@ namespace BioLink.Client.Extensibility {
             this.Model = model;
             DataContext = model;
             InitializeComponent();
-            txtValue.BindUser(user, PickListType.DistinctList, model.Name, TraitCategoryType.Taxon);
+            txtValue.BindUser(user, PickListType.DistinctTraitList, model.Name, TraitCategoryType.Taxon);
             if (!String.IsNullOrEmpty(model.Comment)) {
                 commentLink.Inlines.Clear();
                 commentLink.Inlines.Add(new Run("Edit comment"));

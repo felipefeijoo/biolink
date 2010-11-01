@@ -318,6 +318,16 @@ namespace BioLink.Data {
             return results;
         }
 
+        public List<String> GetDistinctValues(string table, string field) {
+            var results = new List<string>();
+            StoredProcReaderForEach("spSelectDistinct", (reader) => {
+                results.Add(reader[0] as string);
+            }, _P("vchrTableName", table), _P("vchrFieldName", field));
+
+            return results;
+        }
+
+
         public void DeleteTrait(int traitId) {
             StoredProcUpdate("spTraitDelete", _P("intTraitID", traitId));
         }
@@ -417,6 +427,20 @@ namespace BioLink.Data {
                 retval);
 
             return (int) retval.Value;
+        }
+
+        public void UpdateMultimedia(int multimediaId, string name, string number, string artist, string dateRecorded, string owner, string copyright) {
+
+            StoredProcUpdate("spMultimediaUpdateLong",
+                _P("intMultimediaID", multimediaId),
+                _P("vchrName", name),
+                _P("vchrNumber", number),
+                _P("vchrArtist", artist),
+                _P("vchrDateRecorded", dateRecorded),
+                _P("vchrOwner", owner),
+                _P("txtCopyright", copyright)
+            );
+
         }
 
         public void UpdateMultimediaBytes(int? multimediaId, byte[] bytes) {

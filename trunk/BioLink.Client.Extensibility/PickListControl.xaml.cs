@@ -32,6 +32,12 @@ namespace BioLink.Client.Extensibility {
             BindUser(user, type, phraseCategory, traitCategory);
         }
 
+        public PickListControl(User user, string tableName, string fieldName) {
+            InitializeComponent();
+            BindUser(user, tableName, fieldName);
+        }
+
+
         public void BindUser(User user, PickListType pickListType, String categoryName, TraitCategoryType traitCategory) {
             this.User = user;
             this.CategoryName = categoryName;
@@ -49,8 +55,36 @@ namespace BioLink.Client.Extensibility {
             this.Service = new SupportService(user);
         }
 
+        public void BindUser(User user, string tableName, string fieldName) {
+            this.User = user;
+            this.PickListType = Extensibility.PickListType.DistinctList;
+            this.TableName = tableName;
+            this.FieldName = fieldName;
+            txt.GotFocus += new RoutedEventHandler((source, e) => {
+                txt.SelectAll();
+            });
+
+            this.Service = new SupportService(user);
+        }
+
+
         private void btn_Click(object sender, RoutedEventArgs e) {
             ShowPickList();
+        }
+
+        public static string ShowDistinctList(User user, string table, string field) {
+            var service = new SupportService(user);
+            Func<IEnumerable<string>> itemsFunc = () => {
+                return service.GetDistinctValues(table, field);
+            };
+
+            PickListWindow frm = new PickListWindow(user, String.Format("Distinct values for {0}_{1}",table, field), itemsFunc, null);
+
+            if (frm.ShowDialog().GetValueOrDefault(false)) {
+                return frm.SelectedValue;
+            };
+
+            return null;
         }
 
         public static string ShowPickList(User user, PickListType type, string categoryName, TraitCategoryType traitCategory) {
@@ -74,9 +108,12 @@ namespace BioLink.Client.Extensibility {
                         return true;
                     };
                     break;
-                case PickListType.DistinctList:
+                case PickListType.DistinctTraitList:
                     caption = String.Format("Values for '{0}'", categoryName);
                     itemsFunc = () => service.GetTraitDistinctValues(categoryName, traitCategory.ToString());
+                    break;
+                case PickListType.DistinctList:
+                    
                     break;
                 case PickListType.Trait:
                     caption = String.Format("Existing trait names for {0}", traitCategory.ToString());
@@ -102,7 +139,13 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void ShowPickList() {
-            String value = ShowPickList(User, PickListType, CategoryName, TraitCategory);
+            string value = null;
+            if (PickListType == Extensibility.PickListType.DistinctList) {
+                value = ShowDistinctList(User, TableName, FieldName);
+            } else {
+                value = ShowPickList(User, PickListType, CategoryName, TraitCategory);
+            }
+
             if (value != null) {
                 txt.Text = value;
             }
@@ -150,6 +193,10 @@ namespace BioLink.Client.Extensibility {
 
         protected SupportService Service { get; private set; }
 
+        protected String TableName { get; set; }
+
+        protected String FieldName { get; set; }
+
     }
 
     public enum PickListType {
@@ -157,6 +204,7 @@ namespace BioLink.Client.Extensibility {
         Trait,
         Keyword,
         DistinctList,
+        DistinctTraitList,        
         MultimediaType
     }
 

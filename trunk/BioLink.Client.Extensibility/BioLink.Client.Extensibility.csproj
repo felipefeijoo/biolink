@@ -117,6 +117,9 @@
     <Compile Include="MultiMedia\MultimediaControl.xaml.cs">
       <DependentUpon>MultimediaControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MultiMedia\MultimediaDetails.xaml.cs">
+      <DependentUpon>MultimediaDetails.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MultiMedia\MultimediaLinkViewModel.cs" />
     <Compile Include="MultiMedia\MultimediaViewModel.cs" />
     <Compile Include="OwnershipDetails.xaml.cs">
@@ -239,6 +242,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="MultiMedia\MultimediaDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="OwnershipDetails.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -325,6 +332,7 @@
     <Resource Include="images\Ellipsis.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="images\Properties.png" />
     <Content Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>

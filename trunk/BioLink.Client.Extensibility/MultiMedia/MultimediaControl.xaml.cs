@@ -382,6 +382,22 @@ namespace BioLink.Client.Extensibility {
 
         #endregion
 
+        private void btnProperties_Click(object sender, RoutedEventArgs e) {
+
+            var selected = this.thumbList.SelectedItem as MultimediaLinkViewModel;
+            if (selected == null) {
+                return;
+            }
+            if (selected.MultimediaID < 0) {
+                ErrorMessage.Show("You must first apply the changes before editing the details of this item!");
+                return;
+            }
+            var model = Service.GetMultimedia(selected.MultimediaID);
+            var detailsControl = new MultimediaDetails(model, User);
+            IBioLinkPlugin plugin = PluginManager.Instance.GetPluginByName("Tools");
+            PluginManager.Instance.AddNonDockableContent(plugin, detailsControl, "Multimedia details", SizeToContent.Manual);
+        }
+
     }
 
     public enum MultimediaDuplicateAction {
