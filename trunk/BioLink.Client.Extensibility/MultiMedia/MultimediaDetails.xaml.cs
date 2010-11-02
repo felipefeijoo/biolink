@@ -33,7 +33,15 @@ namespace BioLink.Client.Extensibility {
             AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Multimedia, multimedia.MultimediaID));
             AddTabItem("Ownership", new OwnershipDetails(multimedia));
             txtArtist.BindUser(user, "tblMultimedia", "vchrArtist");
+            txtOwner.BindUser(user, "tblMultimedia", "vchrOwner");
+
             this.DataContext = this.Multimedia;
+
+            Multimedia.DataChanged += new DataChangedHandler(Multimedia_DataChanged);
+        }
+
+        void Multimedia_DataChanged(ChangeableModelBase viewmodel) {
+            RegisterUniquePendingChange(new UpdateMultimediaAction(Multimedia));
         }
 
         private TabItem AddTabItem(string title, UIElement content, Action bringIntoViewAction = null) {
