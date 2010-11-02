@@ -120,6 +120,58 @@ namespace BioLink.Data {
                 retval);
             return (int) retval.Value;            
         }
+
+        public List<AutoNumber> GetAutoNumbersForCategory(string category) {
+            var mapper = new GenericMapperBuilder<AutoNumber>().build();
+            return StoredProcToList("spAutoNumberCatList", mapper, _P("vchrCategory", category));
+        }
+
+        public NewAutoNumber GetNextAutoNumber(int autoNumberCatID, int seed) {
+            NewAutoNumber result = null;
+            var mapper = new GenericMapperBuilder<NewAutoNumber>().build();
+            StoredProcReaderFirst("spAutoNumberGetNext", (reader) => {
+                result = mapper.Map(reader);
+                result.AutoNumberCatID = autoNumberCatID;
+            },
+            _P("intAutoNumberCatID", autoNumberCatID),
+            _P("intSeed", seed));
+
+            return result;
+        }
+
+        public int InsertAutoNumber(string category, string name, string prefix, string postfix, int numLeadingZeros, bool ensureUnique) {
+            var retval = ReturnParam("identity", System.Data.SqlDbType.Int);
+            StoredProcUpdate("spAutoNumberInsert",
+                _P("vchrCategory", category),
+                _P("vchrName", name),
+                _P("vchrPrefix", prefix),
+                _P("vchrPostfix", postfix),
+                _P("intNumLeadingZeros", numLeadingZeros),
+                _P("bitEnsureUnique", ensureUnique),
+                retval);
+
+            return (int) retval.Value;
+        }
+
+        public bool CheckAutoNumberUnique(string number, string table, string field) {
+            int retval = StoredProcReturnVal<int>("spAutoNumberEnsureUnique", 
+                _P("vchrNumber", number),
+                _P("vchrFromTable", table),
+                _P("vchrFieldName", field)
+            );
+            return retval != 0;
+        }
+
+        public void UpdateAutoNumber(int autoNumberCatID, string name, string prefix, string postfix, int numLeadingZeros, bool ensureUnique) {
+            StoredProcUpdate("spAutoNumberUpdate",
+                _P("intAutoNumberCatID", autoNumberCatID),
+                _P("vchrName", name),
+                _P("vchrPrefix", prefix),
+                _P("vchrPostfix", postfix),
+                _P("intNumLeadingZeros", numLeadingZeros),
+                _P("bitEnsureUnique", ensureUnique)
+            );
+        }
     }
 
 }

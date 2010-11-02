@@ -65,6 +65,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoNumberBox.cs" />
+    <Compile Include="AutoNumberOptions.xaml.cs">
+      <DependentUpon>AutoNumberOptions.xaml</DependentUpon>
+    </Compile>
     <Compile Include="BioLinkCorePlugin.cs" />
     <Compile Include="BioLinkPluginBase.cs" />
     <Compile Include="ChangeContainer.cs" />
@@ -122,6 +126,10 @@
     </Compile>
     <Compile Include="MultiMedia\MultimediaLinkViewModel.cs" />
     <Compile Include="MultiMedia\MultimediaViewModel.cs" />
+    <Compile Include="MultiMedia\UpdateMultimediaAction.cs" />
+    <Compile Include="NumberUpDown.xaml.cs">
+      <DependentUpon>NumberUpDown.xaml</DependentUpon>
+    </Compile>
     <Compile Include="OwnershipDetails.xaml.cs">
       <DependentUpon>OwnershipDetails.xaml</DependentUpon>
     </Compile>
@@ -194,6 +202,10 @@
     <Folder Include="lib\" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="AutoNumberOptions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ColorPicker\CustomColorPicker.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -243,6 +255,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MultiMedia\MultimediaDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="NumberUpDown.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

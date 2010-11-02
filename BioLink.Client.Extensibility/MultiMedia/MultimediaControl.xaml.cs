@@ -21,6 +21,7 @@ using System.Diagnostics;
 using Microsoft.Win32;
 
 namespace BioLink.Client.Extensibility {
+
     /// <summary>
     /// Interaction logic for MultimediaControl.xaml
     /// </summary>
@@ -237,7 +238,11 @@ namespace BioLink.Client.Extensibility {
                 }
 
                 menu.Items.Add(new Separator());
-                menu.Items.Add(builder.New("Delete").MenuItem);
+                menu.Items.Add(builder.New("Add multimedia").Handler(() => { AddMultimedia(); }).MenuItem);
+                menu.Items.Add(new Separator());
+                menu.Items.Add(builder.New("Delete").Handler(() => { DeleteSelectedMultimedia(); }).MenuItem);
+                menu.Items.Add(new Separator());
+                menu.Items.Add(builder.New("Details...").Handler(() => { ShowProperties(); }).MenuItem);
             }
         }
 
@@ -350,23 +355,43 @@ namespace BioLink.Client.Extensibility {
         private void DeleteSelectedMultimedia() {
             var selected = this.thumbList.SelectedItem as MultimediaLinkViewModel;
             if (selected != null) {
-                if (selected.MultimediaLinkID >= 0) {
-                    RegisterPendingChange(new DeleteMultimediaLinkAction(selected.Model));
-                } else {
-                    ClearMatchingPendingChanges((action) => {
-                        if (action is InsertMultimediaAction) {
-                            var candidate = action as InsertMultimediaAction;
-                            if (candidate.Model.MultimediaLinkID == selected.MultimediaLinkID) {
-                                return true;
+                if (this.Question("Are you sure you wish to delete item '" + selected.Name + "'", "Delete item?")) {
+                    if (selected.MultimediaLinkID >= 0) {
+                        RegisterPendingChange(new DeleteMultimediaLinkAction(selected.Model));
+                    } else {
+                        ClearMatchingPendingChanges((action) => {
+                            if (action is InsertMultimediaAction) {
+                                var candidate = action as InsertMultimediaAction;
+                                if (candidate.Model.MultimediaLinkID == selected.MultimediaLinkID) {
+                                    return true;
+                                }
                             }
-                        }
-                        return false;
-                    });
+                            return false;
+                        });
+                    }
+                    _model.Remove(selected);
                 }
-                _model.Remove(selected);
             }
         }
 
+        private void btnProperties_Click(object sender, RoutedEventArgs e) {
+            ShowProperties();
+        }
+
+        private void ShowProperties() {
+            var selected = this.thumbList.SelectedItem as MultimediaLinkViewModel;
+            if (selected == null) {
+                return;
+            }
+            if (selected.MultimediaID < 0) {
+                ErrorMessage.Show("You must first apply the changes before editing the details of this item!");
+                return;
+            }
+            var model = Service.GetMultimedia(selected.MultimediaID);
+            var detailsControl = new MultimediaDetails(model, User);
+            IBioLinkPlugin plugin = PluginManager.Instance.GetPluginByName("Tools");
+            PluginManager.Instance.AddNonDockableContent(plugin, detailsControl, "Multimedia details", SizeToContent.Manual);
+        }
 
         #region Properties
 
@@ -382,22 +407,6 @@ namespace BioLink.Client.Extensibility {
 
         #endregion
 
-        private void btnProperties_Click(object sender, RoutedEventArgs e) {
-
-            var selected = this.thumbList.SelectedItem as MultimediaLinkViewModel;
-            if (selected == null) {
-                return;
-            }
-            if (selected.MultimediaID < 0) {
-                ErrorMessage.Show("You must first apply the changes before editing the details of this item!");
-                return;
-            }
-            var model = Service.GetMultimedia(selected.MultimediaID);
-            var detailsControl = new MultimediaDetails(model, User);
-            IBioLinkPlugin plugin = PluginManager.Instance.GetPluginByName("Tools");
-            PluginManager.Instance.AddNonDockableContent(plugin, detailsControl, "Multimedia details", SizeToContent.Manual);
-        }
-
     }
 
     public enum MultimediaDuplicateAction {
@@ -407,73 +416,5 @@ namespace BioLink.Client.Extensibility {
         ReplaceExisting,
         InsertDuplicate
     }
-
-    public class DeleteMultimediaLinkAction : GenericDatabaseAction<MultimediaLink> {
-
-        public DeleteMultimediaLinkAction(MultimediaLink model)
-            : base(model) {
-        }
-
-        protected override void ProcessImpl(User user) {
-            var service = new SupportService(user);
-            service.DeleteMultimediaLink(Model.MultimediaLinkID);
-        }
-
-    }
-
-    public class InsertMultimediaAction : GenericDatabaseAction<MultimediaLink> {
-
-        public InsertMultimediaAction(MultimediaLink model, string filename)
-            : base(model) {
-            this.Filename = filename;
-        }
-
-        protected override void ProcessImpl(User user) {
-            var service = new SupportService(user);
-            var bytes = SystemUtils.GetBytesFromFile(Filename);
-            int newId = service.InsertMultimedia(Model.Name, Model.Extension, bytes);
-            Model.MultimediaID = newId;
-        }
-
-        public string Filename { get; private set; }
-
-    }
-
-    public class InsertMultimediaLinkAction : GenericDatabaseAction<MultimediaLink> {
-
-        public InsertMultimediaLinkAction(MultimediaLink model, TraitCategoryType category, int intraCatId)
-            : base(model) {
-            this.Category = category;
-            this.IntraCategoryID = intraCatId;
-        }
-
-        protected override void ProcessImpl(User user) {
-            var service = new SupportService(user);
-            BioLink.Client.Utilities.Debug.Assert(Model.MultimediaID >= 0, "Not a valid multimedia ID!");
-
-            var newId = service.InsertMultimediaLink(Category.ToString(), IntraCategoryID,Model.MultimediaType, Model.MultimediaID, Model.Caption);
-            Model.MultimediaLinkID = newId;
-        }
-
-        public TraitCategoryType Category { get; private set; }
-
-        public int IntraCategoryID { get; private set; }
-    }
-
-    public class UpdateMultimediaBytesAction : GenericDatabaseAction<MultimediaLink> {
-
-        public UpdateMultimediaBytesAction(MultimediaLink model, string filename) : base(model) {
-            this.Filename = filename;
-        }
-
-        protected override void ProcessImpl(User user) {
-            var service = new SupportService(user);
-            var bytes = SystemUtils.GetBytesFromFile(Filename);
-            service.UpdateMultimediaBytes(Model.MultimediaID, bytes);            
-        }
-
-        public string Filename { get; private set; }
-    }
-
 
 }

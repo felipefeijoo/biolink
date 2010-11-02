@@ -319,10 +319,27 @@ namespace BioLink.Data {
         }
 
         public List<String> GetDistinctValues(string table, string field) {
+
             var results = new List<string>();
-            StoredProcReaderForEach("spSelectDistinct", (reader) => {
-                results.Add(reader[0] as string);
-            }, _P("vchrTableName", table), _P("vchrFieldName", field));
+
+            // First we check to see if there is a Phrase Category that matches the concatenation of the table and the field. This is as 
+            // per the legacy BioLink application - perhaps to allow installations to restrict otherwise distinct list queries to a constrained vocabulary
+            var phraseCat = string.Format("{0}_{1}", table, field);
+
+            var supportService = new SupportService(User);
+            int phraseCatId = supportService.GetPhraseCategoryId(phraseCat, false);
+            if (phraseCatId >= 0) {
+                Logger.Debug("Using phrase category {0} (id={1}) for Distinct List lookup", phraseCat, phraseCatId);
+                var phrases = supportService.GetPhrases(phraseCatId);
+                results = phrases.ConvertAll((phrase) => {
+                    return phrase.PhraseText;
+                });
+            } else {
+                Logger.Debug("Selecting distinct values for field {0} from table {1}", field, table);
+                StoredProcReaderForEach("spSelectDistinct", (reader) => {
+                    results.Add(reader[0] as string);
+                }, _P("vchrTableName", table), _P("vchrFieldName", field));
+            }
 
             return results;
         }
