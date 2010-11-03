@@ -21,6 +21,7 @@ namespace BioLink.Client.Extensibility {
         public NumberUpDown() {
             InitializeComponent();
             Delta = 1;
+            AllowNegative = false;
             txt.TextChanged += new TextChangedEventHandler(txt_TextChanged);
         }
 
@@ -51,14 +52,35 @@ namespace BioLink.Client.Extensibility {
             control.txt.Text = "" + control.Number;
         }
 
-        private void NumberUp() {
+        private void NumberUp() {           
             Number += Delta;
         }
 
         private void NumberDown() {
-            Number -= Delta;
+            var temp = Number - Delta;
+            if (temp < 0 && !AllowNegative) {
+                temp = 0;
+            }
+            Number = temp;
         }
 
         public int Delta { get; set; }
+
+        public bool AllowNegative { get; set; }
+
+        public bool HasValue {
+            get {
+                if (string.IsNullOrEmpty(txt.Text)) {
+                    return false;
+                }
+
+                int val;
+                if (!Int32.TryParse(txt.Text, out val)) {
+                    return false;
+                }
+
+                return true;
+            }
+        }
     }
 }

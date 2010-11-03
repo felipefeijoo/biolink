@@ -8,6 +8,7 @@ using System.Windows.Media.Imaging;
 using System.Reflection;
 using BioLink.Client.Utilities;
 using BioLink.Data.Model;
+using System.Windows;
 
 namespace BioLink.Client.Extensibility {
 
@@ -15,7 +16,7 @@ namespace BioLink.Client.Extensibility {
     /// Abstract base class for view model objects that can change. It basically supports the INotifyPropertyChanged interface
     /// as well as support for tracking if the instance has been "changed" (i.e. had any of its members modified).
     /// </summary>
-    public abstract class ChangeableModelBase : IChangeable, INotifyPropertyChanged {
+    public abstract class ChangeableModelBase : System.Windows.DependencyObject, IChangeable, INotifyPropertyChanged {
 
         private bool _changed;  // Dirty flag
 
@@ -119,11 +120,25 @@ namespace BioLink.Client.Extensibility {
             set { SetProperty("IsRenaming", ref _renaming, value); }
         }
 
-        public virtual string DisplayLabel { get; set; }
-
         public virtual BitmapSource Icon { get; set; }
 
-        public object Tag { get; set; }        
+        public object Tag { get; set; }
+
+        public virtual string DisplayLabel {
+            get {
+                return (string)GetValue(DisplayLabelProperty);
+            }
+            set {
+                SetValue(DisplayLabelProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty DisplayLabelProperty = DependencyProperty.Register("DisplayLabel", typeof(string), typeof(AutoNumberViewModel), new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnDisplayLabelChanged));
+
+        private static void OnDisplayLabelChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            var model = obj as AutoNumberViewModel;
+        }
+
     }
 
     public abstract class GenericViewModelBase<T> : ViewModelBase {

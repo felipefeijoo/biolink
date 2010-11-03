@@ -65,8 +65,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AutoNumberBox.cs" />
-    <Compile Include="AutoNumberOptions.xaml.cs">
+    <Compile Include="AutoNumber\AutoNumberBox.cs" />
+    <Compile Include="AutoNumber\AutoNumberCategoryManager.xaml.cs">
+      <DependentUpon>AutoNumberCategoryManager.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AutoNumber\AutoNumberOptions.xaml.cs">
       <DependentUpon>AutoNumberOptions.xaml</DependentUpon>
     </Compile>
     <Compile Include="BioLinkCorePlugin.cs" />
@@ -202,7 +205,11 @@
     <Folder Include="lib\" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="AutoNumberOptions.xaml">
+    <Page Include="AutoNumber\AutoNumberCategoryManager.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AutoNumber\AutoNumberOptions.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

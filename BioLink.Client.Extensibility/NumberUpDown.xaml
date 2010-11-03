@@ -17,12 +17,12 @@
         <TextBox Grid.RowSpan="2"  x:Name="txt" />
         <Button Grid.Column="1" Grid.Row="0" x:Name="btnUp" Click="btnUp_Click">
             <Button.Content>
-                <Path Grid.Row="0" Grid.Column="2" Data="M0,2L2,0 4,2z" HorizontalAlignment="Center" VerticalAlignment="Center" Stroke="Black" StrokeThickness="2" />
+                <Path Grid.Row="0" Grid.Column="2" Data="M1,3L3,1 5,3z" HorizontalAlignment="Center" VerticalAlignment="Center" Stroke="Black" StrokeThickness="2" />
             </Button.Content>
         </Button>
         <Button Grid.Column="1" Grid.Row="1" x:Name="btnDown" Click="btnDown_Click">
             <Button.Content>
-                <Path Grid.Row="0" Grid.Column="2" Data="M0,0L2,2 4,0z" HorizontalAlignment="Center" VerticalAlignment="Center" Stroke="Black" StrokeThickness="2" />
+                <Path Grid.Row="0" Grid.Column="2" Data="M1,1L3,3 5,1z" HorizontalAlignment="Center" VerticalAlignment="Center" Stroke="Black" StrokeThickness="2" />
             </Button.Content>
         </Button>
     </Grid>

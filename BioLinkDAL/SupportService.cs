@@ -101,8 +101,6 @@ namespace BioLink.Data {
             StoredProcUpdate("spRefLinkDelete", _P("intRefLinkID", refLinkID));
         }
 
-        #endregion
-
         public IEnumerable<string> GetRefLinkTypes() {
             var list = new List<String>();
             StoredProcReaderForEach("spRefLinkTypeList", (reader) => {
@@ -118,8 +116,12 @@ namespace BioLink.Data {
                 _P("vchrCategory", categoryName),
                 _P("intRefLinkTypeID", -1),
                 retval);
-            return (int) retval.Value;            
+            return (int)retval.Value;
         }
+
+        #endregion
+
+        #region AutoNumbers
 
         public List<AutoNumber> GetAutoNumbersForCategory(string category) {
             var mapper = new GenericMapperBuilder<AutoNumber>().build();
@@ -172,6 +174,12 @@ namespace BioLink.Data {
                 _P("bitEnsureUnique", ensureUnique)
             );
         }
+
+        public void DeleteAutoNumberCategory(int autoNumberCatID) {
+            StoredProcUpdate("spAutoNumberDelete", _P("intAutoNumberCatID", autoNumberCatID));
+        }
+
+        #endregion
     }
 
 }
