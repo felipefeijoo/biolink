@@ -17,7 +17,7 @@
             <TabItem Header="Details">
                 <Grid>
                     <Label Content="ID Number:" Height="28" HorizontalAlignment="Left" Margin="7,6,0,0" Name="label2" VerticalAlignment="Top" Width="93" />                    
-                    <src:AutoNumberBox Height="23" Margin="98,8,7,0" x:Name="txtIDNumber" VerticalAlignment="Top" Text="{Binding Number}" Width="430" />
+                    <src:AutoNumberBox Height="23" Margin="98,8,7,0" x:Name="txtIDNumber" VerticalAlignment="Top" Text="{Binding Number}" />
                     <Label Content="Artist/Creator:" Height="28" HorizontalAlignment="Left" Margin="7,40,0,0" Name="label3" VerticalAlignment="Top" Width="93" />
                     <src:PickListControl Height="23" Margin="98,40,7,0" x:Name="txtArtist" VerticalAlignment="Top" Text="{Binding Artist}"/>
                     <Label Content="Owner:" Height="28" HorizontalAlignment="Left" Margin="7,74,0,0" Name="label4" VerticalAlignment="Top" Width="93" />

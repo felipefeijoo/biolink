@@ -20,6 +20,20 @@ namespace BioLink.Data.Model {
 
     public class NewAutoNumber : AutoNumber {
         public int NewNumber { get; set; }
+
+        public string FormattedNumber {
+
+            get {
+                string format = null;
+                if (NumLeadingZeros > 0) {
+                    format = string.Format("{{0}}{{1:{0}}}{{2}}", new string('0', NumLeadingZeros));
+                } else {
+                    format = "{0}{1}{2}";
+                }
+                return string.Format(format, Prefix, NewNumber, Postfix);
+            }
+
+        }
     }
     
 }

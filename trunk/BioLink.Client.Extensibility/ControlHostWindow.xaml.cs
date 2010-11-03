@@ -114,6 +114,13 @@ namespace BioLink.Client.Extensibility {
 
         private void btnOk_Click(object sender, RoutedEventArgs e) {
             ApplyChanges();
+            try {
+                this.DialogResult = true;
+            } catch (InvalidOperationException) {
+                // this is kind of crap, but you can only set DialogResult if ShowDialog was used to show the Window. 
+                // I don't know how to tell if the ShowDialog method was used (no obvious property), so for now
+                // I'll catch the exception and ignore it
+            }
             this.Close();
         }
 
