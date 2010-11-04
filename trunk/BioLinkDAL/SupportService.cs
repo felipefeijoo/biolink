@@ -180,6 +180,28 @@ namespace BioLink.Data {
         }
 
         #endregion
+
+        #region Favorites
+
+        public List<T> GetTopFavorites<T>(FavoriteType type, bool global, GenericMapper<T> mapper) where T : Favorite, new() {
+                                    
+            var results = new List<T>();            
+            StoredProcReaderForEach("spFavoriteListTop", (reader) => {
+                var model = mapper.Map(reader);
+                results.Add(model);
+            },
+            _P("vchrType", type.ToString()),
+            _P("bitListGlobal", global));
+
+            return results;
+        }
+
+        public List<TaxaFavorite> GetTopTaxaFavorites(bool global) {
+            var mapper = new GenericMapperBuilder<TaxaFavorite>().build();
+            return GetTopFavorites<TaxaFavorite>(FavoriteType.Taxa, global, mapper);
+        }
+
+        #endregion
     }
 
 }

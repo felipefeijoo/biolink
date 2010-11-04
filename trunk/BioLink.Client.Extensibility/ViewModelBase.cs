@@ -173,7 +173,7 @@ namespace BioLink.Client.Extensibility {
         public T Model { get; private set; }
     }
 
-    public abstract class GenericOwnedViewModel<T> : GenericViewModelBase<T> where T : BiolinkDataObject {
+    public abstract class GenericOwnedViewModel<T> : GenericViewModelBase<T> where T : OwnedDataObject {
 
         public GenericOwnedViewModel(T model)
             : base(model) {

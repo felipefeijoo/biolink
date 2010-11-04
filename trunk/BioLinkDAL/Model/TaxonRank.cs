@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BioLink.Data.Model {
 
-    public class TaxonRank : BiolinkDataObject {
+    public class TaxonRank : OwnedDataObject {
 
         public const string INCERTAE_SEDIS = "IS";
         public const string SPECIES_INQUIRENDA = "SI";

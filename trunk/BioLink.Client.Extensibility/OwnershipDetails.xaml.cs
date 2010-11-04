@@ -24,12 +24,12 @@ namespace BioLink.Client.Extensibility {
         }
         #endregion
 
-        public OwnershipDetails(BiolinkDataObject dataObject) {
+        public OwnershipDetails(OwnedDataObject dataObject) {
             InitializeComponent();
             DataObject = dataObject;
             this.DataContext = dataObject;
         }
 
-        public BiolinkDataObject DataObject { get; private set; }
+        public OwnedDataObject DataObject { get; private set; }
     }
 }

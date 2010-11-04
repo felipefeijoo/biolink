@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BioLink.Data.Model {
 
-    public class Taxon : BiolinkDataObject {
+    public class Taxon : OwnedDataObject {
 
         public System.Nullable<int> TaxaID { get; set; }
 
