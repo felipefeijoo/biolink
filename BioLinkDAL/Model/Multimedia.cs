@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BioLink.Data.Model {
 
-    public class Multimedia : BiolinkDataObject {
+    public class Multimedia : OwnedDataObject {
 
         public int MultimediaID { get; set; }
         public string Name { get; set; }

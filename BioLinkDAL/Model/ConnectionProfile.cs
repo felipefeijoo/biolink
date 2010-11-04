@@ -7,7 +7,7 @@ using System.ComponentModel;
 
 namespace BioLink.Data.Model {
 
-    public class ConnectionProfile : BiolinkDataObject {
+    public class ConnectionProfile : OwnedDataObject {
 
         public String Name { get; set; }
         public String Server { get; set; }

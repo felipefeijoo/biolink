@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BioLink.Data.Model {
 
-    public class PhraseCategory : BiolinkDataObject {
+    public class PhraseCategory : OwnedDataObject {
 
         public int CategoryID { get; set; }
 
@@ -15,7 +15,7 @@ namespace BioLink.Data.Model {
 
     }
 
-    public class Phrase : BiolinkDataObject {
+    public class Phrase : OwnedDataObject {
 
         public int PhraseID { get; set; }
 

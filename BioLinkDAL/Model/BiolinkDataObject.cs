@@ -5,12 +5,17 @@ using System.Text;
 
 namespace BioLink.Data.Model {
 
-    public abstract class GUIDObject {
+    // Place holder class representing all Biolink Transfer Objects (TO)
+    public abstract class BioLinkDataObject {
+    }
+
+    // Biolink data objects that have a GUID column
+    public abstract class GUIDObject : BioLinkDataObject {
         public Nullable<Guid> GUID { get; set; }
     }
 
-    public abstract class BiolinkDataObject : GUIDObject {
-
+    // Biolink data objects that have ownership columns
+    public abstract class OwnedDataObject : GUIDObject {
         public DateTime DateCreated { get; set; }
         public string WhoCreated { get; set; }
         public DateTime DateLastUpdated { get; set; }
