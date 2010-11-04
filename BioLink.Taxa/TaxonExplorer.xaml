@@ -8,7 +8,7 @@
              xmlns:model="clr-namespace:BioLink.Data.Model;assembly=BioLink.Data"
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"                
              mc:Ignorable="d" 
-             d:DesignHeight="376" d:DesignWidth="225" SnapsToDevicePixels="True" UseLayoutRounding="True">
+             d:DesignHeight="400" d:DesignWidth="442" SnapsToDevicePixels="True" UseLayoutRounding="True">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -36,9 +36,7 @@
         <TabControl Name="tabControl1" SelectionChanged="tabControl1_SelectionChanged">
             <TabItem Header="{StaticResource TaxonExplorer.Tab.AllTaxa}" Name="tabAllTaxa">
                 <Grid x:Name="allTaxaGrid">
-                    <Label Content="{StaticResource TaxonExplorer.Find}" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" Width="56" HorizontalContentAlignment="Right" VerticalContentAlignment="Top" />
-                    <ext:DelayedTriggerTextbox Height="23" Margin="68,6,0,0" Name="txtFind" VerticalAlignment="Top" TypingPaused="txtFind_TypingPaused" KeyUp="txtFind_KeyUp" />
-                    <Border x:Name="taxaBorder" Margin="0,35,0,0" Background="White" BorderThickness="1" BorderBrush="#8C8E94">
+                    <Border x:Name="taxaBorder" Background="White" BorderThickness="1" BorderBrush="#8C8E94">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="30"></RowDefinition>
@@ -63,7 +61,7 @@
                                                 </Trigger>
                                             </Style.Triggers>
                                         </Style>
-                                    </ToggleButton.Style>                                    
+                                    </ToggleButton.Style>
                                 </ToggleButton>
                                 <Label x:Name="lblHeader" Margin="36,0,60,0" VerticalAlignment="Top" VerticalContentAlignment="Center" Visibility="Hidden">
                                     <Label.Content>
@@ -145,7 +143,13 @@
                             </Grid>
                         </Grid>
                     </Border>
-                    <ListBox Name="lstResults" Visibility="Hidden" MouseRightButtonUp="lstResults_MouseRightButtonUp">                     
+                </Grid>
+            </TabItem>
+            <TabItem Header="{StaticResource TaxonExplorer.Tab.Find}" Name="tabFind">
+                <Grid>
+                    <Label Content="Find:" Height="23" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" Width="56" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" />
+                    <ext:DelayedTriggerTextbox Height="23" Margin="68,6,6,0" Name="txtFind" VerticalAlignment="Top" TypingPaused="txtFind_TypingPaused" KeyUp="txtFind_KeyUp" />
+                    <ListBox Name="lstResults" MouseRightButtonUp="lstResults_MouseRightButtonUp" Margin="0,40,0,0">
                         <ListBox.Resources>
                             <DataTemplate DataType="{x:Type src:TaxonViewModel}">
                                 <StackPanel Orientation="Horizontal">
@@ -155,7 +159,7 @@
                             </DataTemplate>
                         </ListBox.Resources>
                     </ListBox>
-                </Grid>
+                </Grid>                    
             </TabItem>
             <TabItem Header="{StaticResource TaxonExplorer.Tab.Favorites}" Name="tabFavorites">
                 <Grid>

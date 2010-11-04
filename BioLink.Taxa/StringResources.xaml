@@ -13,6 +13,7 @@
     <system:String x:Key="TaxonExplorer.Tab.AllTaxa">All Taxa</system:String>    
     <system:String x:Key="TaxonExplorer.Find">Find:</system:String>
     <system:String x:Key="TaxonExplorer.Tab.Favorites">Favorites</system:String>
+    <system:String x:Key="TaxonExplorer.Tab.Find">Find</system:String>
     <system:String x:Key="TaxonExplorer.explorer.root">All Taxa</system:String>
     <system:String x:Key="TaxonExplorer.explorer.loading">Loading children of {0}</system:String>
 
