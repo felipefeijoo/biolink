@@ -46,8 +46,6 @@ namespace BioLink.Client.Taxa {
 
             Owner = owner;
 
-            lstResults.Margin = taxaBorder.Margin;
-            lstResults.Visibility = Visibility.Hidden;
             _searchModel = new ObservableCollection<TaxonViewModel>();
             lstResults.ItemsSource = _searchModel;
 
@@ -135,16 +133,9 @@ namespace BioLink.Client.Taxa {
 
         private void DoFind(string searchTerm) {
 
-            _searchModel.Clear();
-
             if (String.IsNullOrEmpty(searchTerm)) {
-                tvwAllTaxa.Visibility = System.Windows.Visibility.Visible;
-                lstResults.Visibility = Visibility.Hidden;
                 return;
             } 
-
-            tvwAllTaxa.Visibility = Visibility.Hidden;
-            lstResults.Visibility = Visibility.Visible;
 
             try {
                 lstResults.InvokeIfRequired(() => {
@@ -154,6 +145,7 @@ namespace BioLink.Client.Taxa {
                     return;
                 }
                 List<TaxonSearchResult> results = new TaxaService(Owner.User).FindTaxa(searchTerm);
+                _searchModel.Clear();
                 lstResults.InvokeIfRequired(() => {                    
                     foreach (Taxon t in results) {
                         _searchModel.Add(new TaxonViewModel(null, t, GenerateTaxonDisplayLabel));
@@ -881,8 +873,6 @@ namespace BioLink.Client.Taxa {
             }
 
             tabAllTaxa.IsSelected = true;
-            tvwAllTaxa.Visibility = Visibility.Visible;
-            lstResults.Visibility = Visibility.Hidden;
             txtFind.Text = "";
 
             JobExecutor.QueueJob(() => {
