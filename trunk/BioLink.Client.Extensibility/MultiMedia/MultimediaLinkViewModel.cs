@@ -4,12 +4,11 @@ using System.Linq;
 using System.Text;
 using BioLink.Data.Model;
 using System.Windows.Media.Imaging;
+using System.Windows;
 
 namespace BioLink.Client.Extensibility {
 
     public class MultimediaLinkViewModel : GenericViewModelBase<MultimediaLink> {
-
-        private BitmapSource _thumb;
 
         public MultimediaLinkViewModel(MultimediaLink model)
             : base(model) {
@@ -60,9 +59,12 @@ namespace BioLink.Client.Extensibility {
             set { SetProperty(() => Model.BlobChanges, value); }
         }
 
+        public static readonly DependencyProperty ThumbnailProperty = DependencyProperty.Register("Thumbnail", typeof(BitmapSource), typeof(MultimediaLinkViewModel), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+        // Not a change registering property
         public BitmapSource Thumbnail {
-            get { return _thumb; }
-            set { SetProperty("ThumbNail", ref _thumb, value); }
+            get { return (BitmapSource) GetValue(ThumbnailProperty); }
+            set { SetValue(ThumbnailProperty, value); }
         }
 
     }

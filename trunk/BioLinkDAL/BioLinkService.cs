@@ -457,7 +457,15 @@ namespace BioLink.Data {
                 _P("vchrOwner", owner),
                 _P("txtCopyright", copyright)
             );
+        }
 
+        public void UpdateMultimediaLink(int multimediaLinkID, string category, string multimediaType, string caption) {
+            StoredProcUpdate("spMultimediaLinkUpdate",
+                _P("intMultimediaLinkID", multimediaLinkID),
+                _P("vchrCategory", category),
+                _P("vchrMultimediaType", multimediaType),
+                _P("vchrCaption", caption)
+            );
         }
 
         public void UpdateMultimediaBytes(int? multimediaId, byte[] bytes) {

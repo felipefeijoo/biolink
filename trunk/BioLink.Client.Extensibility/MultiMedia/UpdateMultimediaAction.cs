@@ -68,6 +68,20 @@ namespace BioLink.Client.Extensibility {
         public int IntraCategoryID { get; private set; }
     }
 
+    public class UpdateMultimediaLinkAction : GenericDatabaseAction<MultimediaLink> {
+
+        public UpdateMultimediaLinkAction(MultimediaLink model, TraitCategoryType category)
+            : base(model) {
+        }
+
+        protected override void ProcessImpl(User user) {
+            var service = new SupportService(user);
+            service.UpdateMultimediaLink(Model.MultimediaLinkID, TraitCategory.ToString() , Model.MultimediaType, Model.Caption);
+        }
+
+        public TraitCategoryType TraitCategory { get; private set; }
+    }
+
     public class UpdateMultimediaBytesAction : GenericDatabaseAction<MultimediaLink> {
 
         public UpdateMultimediaBytesAction(MultimediaLink model, string filename)
