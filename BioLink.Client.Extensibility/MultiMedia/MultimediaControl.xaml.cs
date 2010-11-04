@@ -70,8 +70,17 @@ namespace BioLink.Client.Extensibility {
 
         public void PopulateControl() {
             List<MultimediaLink> data = Service.GetMultimediaItems(TraitCategoryType.Taxon.ToString(), IntraCategoryID);
-            JobExecutor.QueueJob(() => {
-                _model = new ObservableCollection<MultimediaLinkViewModel>(data.ConvertAll((item) => new MultimediaLinkViewModel(item)));
+            JobExecutor.QueueJob(() => {                
+                _model = new ObservableCollection<MultimediaLinkViewModel>(data.ConvertAll((item) => {
+                    MultimediaLinkViewModel viewmodel = null;
+                    this.InvokeIfRequired(() => {
+                        viewmodel = new MultimediaLinkViewModel(item);
+                        viewmodel.DataChanged += new DataChangedHandler((m) => {
+                            RegisterUniquePendingChange(new UpdateMultimediaLinkAction(viewmodel.Model, CategoryType));
+                        });
+                    });
+                    return viewmodel;
+                }));
                 this.InvokeIfRequired(() => {
                     this.thumbList.ItemsSource = _model;
                 });
@@ -102,7 +111,9 @@ namespace BioLink.Client.Extensibility {
 
         private void GenerateThumbnail(MultimediaLinkViewModel item, int maxDimension) {
             string filename = _tempFileManager.GetContentFileName(item.MultimediaID, item.Extension);
-            item.Thumbnail = GenerateThumbnail(filename, maxDimension);
+            this.InvokeIfRequired(() => {
+                item.Thumbnail = GenerateThumbnail(filename, maxDimension);
+            });
         }
 
         private BitmapSource GenerateThumbnail(string filename, int maxDimension) {
