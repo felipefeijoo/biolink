@@ -242,19 +242,24 @@ namespace BioLink.Client.Taxa {
         }
 
         private BitmapSource ConstructIcon() {
-
             // The top level container nodes don't get icons...
             if (IsRootNode) {
                 return null;
             }
 
+            return ConstructIcon(IsAvailableOrLiteratureName, ElemType, IsChanged);
+        }
+
+        public static BitmapSource ConstructIcon(bool isAvailableOrLiteratureName, string elemType, bool isChanged) {
+
+
             // This is used to construct image uri's, if required...
-            string assemblyName = this.GetType().Assembly.GetName().Name;
+            string assemblyName = typeof(TaxonViewModel).Assembly.GetName().Name;
 
             // Available and Literature names don't have icons either
-            if (AvailableName.GetValueOrDefault(false) || LiteratureName.GetValueOrDefault(false)) {
+            if (isAvailableOrLiteratureName) {
                 // Unless they've been changed, in which they get the 
-                if (IsChanged) {
+                if (isChanged) {
                     return ImageCache.GetImage(String.Format("pack://application:,,,/{0};component/images/ChangedOverlay.png", assemblyName));
                 } else {                    
                     return null;
@@ -263,11 +268,15 @@ namespace BioLink.Client.Taxa {
 
             BitmapSource baseIcon = null;
 
-            if (_ElemTypeIconCache.ContainsKey(ElemType)) {
-                baseIcon = _ElemTypeIconCache[ElemType];
+            if (elemType == null) {
+                return null;
             }
 
-            if (baseIcon != null && !IsChanged) {
+            if (_ElemTypeIconCache.ContainsKey(elemType)) {
+                baseIcon = _ElemTypeIconCache[elemType];
+            }
+
+            if (baseIcon != null && !isChanged) {
                 return baseIcon;
             }
 
@@ -277,8 +286,8 @@ namespace BioLink.Client.Taxa {
                 DrawingContext dc = drawingVisual.RenderOpen();
 
                 IconMetaData md = null;
-                if (_TaxaIconMetaData.ContainsKey(ElemType)) {
-                    md = _TaxaIconMetaData[ElemType];
+                if (_TaxaIconMetaData.ContainsKey(elemType)) {
+                    md = _TaxaIconMetaData[elemType];
                 }
 
                 Color taxonColor = (md == null ? Colors.Red : md.Color);
@@ -297,15 +306,15 @@ namespace BioLink.Client.Taxa {
                 dc.Close();
                 bmp.Render(drawingVisual);
 
-                if (ElemType != null && !_ElemTypeIconCache.ContainsKey(ElemType)) {
-                    _ElemTypeIconCache.Add(ElemType, bmp);
+                if (elemType != null && !_ElemTypeIconCache.ContainsKey(elemType)) {
+                    _ElemTypeIconCache.Add(elemType, bmp);
                 }
 
                 baseIcon = bmp;
             }
 
             
-            if (IsChanged) {                
+            if (isChanged) {                
                 return ImageCache.ApplyOverlay(baseIcon, String.Format("pack://application:,,,/{0};component/images/ChangedOverlay.png", assemblyName));
             }
 

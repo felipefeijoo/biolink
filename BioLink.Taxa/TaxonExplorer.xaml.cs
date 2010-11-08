@@ -161,11 +161,11 @@ namespace BioLink.Client.Taxa {
 
         private void tabControl1_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             if (tabControl1.SelectedItem == tabFavorites) {
-                LoadFavorites();
+                if (favorites.User == null) {
+                    favorites.BindUser(User);
+                    favorites.LoadFavorites();
+                }
             }
-        }
-
-        private void LoadFavorites() {
         }
 
         public void InitialiseTaxonExplorer() {

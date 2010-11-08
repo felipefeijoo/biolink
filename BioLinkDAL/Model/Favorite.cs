@@ -12,9 +12,10 @@ namespace BioLink.Data.Model {
         public bool IsGroup { get; set; }
         public string GroupName { get; set; }
         public int NumChildren { get; set; }
+        public bool IsGlobal { get; set; }
     }
 
-    public class TaxaFavorite : Favorite {
+    public class TaxonFavorite : Favorite {
         public int TaxaID { get; set; }
         public int TaxaParentID { get; set; }
         public string Epithet { get; set; }

@@ -162,21 +162,7 @@
                 </Grid>                    
             </TabItem>
             <TabItem Header="{StaticResource TaxonExplorer.Tab.Favorites}" Name="tabFavorites">
-                <Grid>
-                    <TreeView Name="tvwFavorites" Margin="0">
-                        <TreeView.Resources>
-                            <HierarchicalDataTemplate DataType="{x:Type src:TaxonViewModel}" ItemsSource="{Binding Path=Children}">
-                                <StackPanel Orientation="Horizontal">
-                                    <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,1" />
-                                    <TextBlock Text="{Binding Path=Epithet}" VerticalAlignment="Center" />
-                                </StackPanel>
-                            </HierarchicalDataTemplate>
-                        </TreeView.Resources>
-                        <TreeViewItem>
-                            <TreeViewItem.Header>Loading...</TreeViewItem.Header>
-                        </TreeViewItem>
-                    </TreeView>
-                </Grid>
+                <src:TaxonFavorites x:Name="favorites" />
             </TabItem>
         </TabControl>
     </Grid>

@@ -74,6 +74,10 @@
     <Compile Include="NameControls\SpeciesAvailableNameDatabaseAction.cs" />
     <Compile Include="NameControls\SpeciesAvailableNameViewModel.cs" />
     <Compile Include="StatisticsReport.cs" />
+    <Compile Include="TaxonFavorites.xaml.cs">
+      <DependentUpon>TaxonFavorites.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TaxonFavoriteViewModel.cs" />
     <Compile Include="TaxonMenuFactory.cs" />
     <Compile Include="DragDropOptions.xaml.cs">
       <DependentUpon>DragDropOptions.xaml</DependentUpon>
@@ -129,6 +133,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="NameControls\SpeciesAvailableNameControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TaxonFavorites.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -208,6 +216,9 @@
     <Resource Include="images\DownArrow.png" />
     <Resource Include="images\RightArrow.png" />
     <Resource Include="images\UpArrow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\FavFolder.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
