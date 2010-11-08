@@ -104,6 +104,7 @@
       <DependentUpon>ExportData.xaml</DependentUpon>
     </Compile>
     <Compile Include="Export\SQLiteExporter.cs" />
+    <Compile Include="FavoriteViewModel.cs" />
     <Compile Include="HierarchicalViewModelBase.cs" />
     <Compile Include="IBioLinkPlugin.cs" />
     <Compile Include="IBioLinkReport.cs" />

@@ -184,7 +184,6 @@ namespace BioLink.Data {
         #region Favorites
 
         public List<T> GetTopFavorites<T>(FavoriteType type, bool global, GenericMapper<T> mapper) where T : Favorite, new() {
-                                    
             var results = new List<T>();            
             StoredProcReaderForEach("spFavoriteListTop", (reader) => {
                 var model = mapper.Map(reader);
@@ -192,13 +191,70 @@ namespace BioLink.Data {
             },
             _P("vchrType", type.ToString()),
             _P("bitListGlobal", global));
-
             return results;
         }
 
-        public List<TaxaFavorite> GetTopTaxaFavorites(bool global) {
-            var mapper = new GenericMapperBuilder<TaxaFavorite>().build();
-            return GetTopFavorites<TaxaFavorite>(FavoriteType.Taxa, global, mapper);
+        public List<T> GetFavorites<T>(FavoriteType type, bool global, int parentFavoriteId, GenericMapper<T> mapper) where T : Favorite, new() {
+            var results = new List<T>();
+            StoredProcReaderForEach("spFavoriteList", (reader) => {
+                var model = mapper.Map(reader);
+                results.Add(model);
+            },
+            _P("vchrType", type.ToString()),
+            _P("intParentID", parentFavoriteId),
+            _P("bitListGlobal", global));
+            return results;
+        }
+
+        internal GenericMapper<T> ConfigureFavoriteMapper<T>(GenericMapperBuilder<T> builder, bool isGlobal) where T : Favorite, new() {
+
+            builder.Map("ElementIsGroup", "IsGroup");
+
+            // ElementIsGroup comes back as a byte value, and needs to be coerced to a boolean...
+            var cm = new ConvertingMapper("ElementIsGroup", new Converter<object, object>((o) => {
+                if (o is byte) {
+                    var b = (byte)o;
+                    return b != 0;
+                }
+                return null;
+            }));
+
+            builder.PostMapAction((f) => {
+                f.IsGlobal = isGlobal;
+            });
+
+            builder.Override(cm);
+            return builder.build();
+        }
+
+        public List<TaxonFavorite> GetTopTaxaFavorites(bool global) {
+            var mapper = ConfigureFavoriteMapper(new GenericMapperBuilder<TaxonFavorite>(), global);
+            return GetTopFavorites<TaxonFavorite>(FavoriteType.Taxa, global, mapper);
+        }
+
+        public List<TaxonFavorite> GetTaxaFavorites(int parentFavoriteId, bool global) {
+            var mapper = ConfigureFavoriteMapper(new GenericMapperBuilder<TaxonFavorite>(), global);
+            return GetFavorites<TaxonFavorite>(FavoriteType.Taxa, global, parentFavoriteId, mapper);
+        }
+
+        public List<SiteFavorite> GetTopSiteFavorites(bool global) {
+            var mapper = ConfigureFavoriteMapper(new GenericMapperBuilder<SiteFavorite>(), global);
+            return GetTopFavorites<SiteFavorite>(FavoriteType.Site, global, mapper);
+        }
+
+        public List<ReferenceFavorite> GetTopReferenceFavorites(bool global) {
+            var mapper = ConfigureFavoriteMapper(new GenericMapperBuilder<ReferenceFavorite>(), global);
+            return GetTopFavorites<ReferenceFavorite>(FavoriteType.Reference, global, mapper);
+        }
+
+        public List<DistRegionFavorite> GetTopDistRegionFavorites(bool global) {
+            var mapper = ConfigureFavoriteMapper(new GenericMapperBuilder<DistRegionFavorite>(), global);
+            return GetTopFavorites<DistRegionFavorite>(FavoriteType.DistRegion, global, mapper);
+        }
+
+        public List<BiotaStorageFavorite> GetTopBiotaStorageFavorites(bool global) {
+            var mapper = ConfigureFavoriteMapper(new GenericMapperBuilder<BiotaStorageFavorite>(), global);
+            return GetTopFavorites<BiotaStorageFavorite>(FavoriteType.BiotaStorage, global, mapper);
         }
 
         #endregion
