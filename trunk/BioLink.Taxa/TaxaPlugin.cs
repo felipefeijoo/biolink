@@ -91,7 +91,7 @@ namespace BioLink.Client.Taxa {
                         TaxonViewModel m = new TaxonViewModel(null, t, _explorer.ContentControl.GenerateTaxonDisplayLabel);
                         return m;                        
                     default:
-                        throw new Exception("Unhandled taxa pinnable type: " + str);
+                        throw new Exception("Unhandled favorites pinnable type: " + str);
                 }
             }
 

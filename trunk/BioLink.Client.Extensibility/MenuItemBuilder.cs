@@ -8,6 +8,7 @@ using System.Windows.Input;
 using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Extensibility {
+
     public class MenuItemBuilder {
 
         private MenuItem _menuItem;
@@ -26,6 +27,11 @@ namespace BioLink.Client.Extensibility {
         }
 
         public MenuItemBuilder New(string caption, params object[] args) {
+
+            if (_menuItem != null) {
+                End();
+            }
+
             _menuItem = new MenuItem();
             _menuItem.Header = Format(caption, args);
             return this;
@@ -74,6 +80,57 @@ namespace BioLink.Client.Extensibility {
 
         public MenuItem MenuItem {
             get { return _menuItem; }
+        }
+
+        public void End() {
+            if (EndAction != null && _menuItem != null) {
+                EndAction(MenuItem);
+            }
+            _menuItem = null;
+        }
+
+        public Action<MenuItem> EndAction { get; set; }
+
+    }
+
+    public class ContextMenuBuilder {
+
+        private ContextMenu _menu;
+        private MessageFormatterFunc _formatter;
+        private MenuItemBuilder _itemBuilder;
+
+        public ContextMenuBuilder(MessageFormatterFunc messageFormatter) {
+            _formatter = messageFormatter;
+            _menu = new ContextMenu();
+            _itemBuilder = new MenuItemBuilder(_formatter);
+            _itemBuilder.EndAction = (menuItem) => {
+                _menu.Items.Add(menuItem);
+            };
+
+        }
+
+        public MenuItemBuilder New(string caption, params object[] args) {
+            _itemBuilder.New(caption, args);
+            return _itemBuilder;
+        }
+
+        public void Separator() {
+            _itemBuilder.End();
+            if (_menu.HasItems) {
+                _menu.Items.Add(new Separator());
+            }
+        }
+
+        public ContextMenu ContextMenu { 
+            get { return _menu; } 
+        }
+
+        public bool HasItems {
+            get { return _menu.HasItems; }
+        }
+
+        public void AddMenuItem(MenuItem menuItem) {
+            _menu.Items.Add(menuItem);
         }
 
     }

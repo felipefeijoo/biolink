@@ -257,6 +257,10 @@ namespace BioLink.Data {
             return GetTopFavorites<BiotaStorageFavorite>(FavoriteType.BiotaStorage, global, mapper);
         }
 
+        public void DeleteFavorite(int favoriteID) {
+            StoredProcUpdate("spFavoriteDelete", _P("intFavoriteID", favoriteID));
+        }
+
         #endregion
     }
 
