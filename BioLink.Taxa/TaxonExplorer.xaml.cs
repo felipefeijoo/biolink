@@ -65,6 +65,8 @@ namespace BioLink.Client.Taxa {
             btnLock.Checked += new RoutedEventHandler(btnLock_Checked);
 
             btnLock.Unchecked += new RoutedEventHandler(btnLock_Unchecked);
+
+            favorites.BindUser(User, this);
         }
 
         void btnLock_Unchecked(object sender, RoutedEventArgs e) {
@@ -161,8 +163,7 @@ namespace BioLink.Client.Taxa {
 
         private void tabControl1_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             if (tabControl1.SelectedItem == tabFavorites) {
-                if (favorites.User == null) {
-                    favorites.BindUser(User);
+                if (favorites.User == null) {                    
                     favorites.LoadFavorites();
                 }
             }
@@ -234,7 +235,7 @@ namespace BioLink.Client.Taxa {
 
             if (item is TaxonViewModel) {
                 TaxonViewModel tvm = item as TaxonViewModel;
-                Debug.Assert(tvm.TaxaID.HasValue, "TaxonViewModel has no taxa id!");
+                Debug.Assert(tvm.TaxaID.HasValue, "TaxonViewModel has no favorites id!");
                 List<Taxon> taxa = Service.GetTaxaForParent(tvm.TaxaID.Value);
                 foreach (Taxon taxon in taxa) {
                     TaxonViewModel child = new TaxonViewModel(tvm, taxon, GenerateTaxonDisplayLabel);
@@ -606,7 +607,7 @@ namespace BioLink.Client.Taxa {
                 int oldIndex = view.IndexOf(taxon);
                 int newIndex = action(oldIndex);
                 
-                // It's possible/probable that this set of taxa has never been ordered before, so we 
+                // It's possible/probable that this set of favorites has never been ordered before, so we 
                 // assign an order based on the current view.
                 foreach (TaxonViewModel child in taxon.Parent.Children) {                    
                     child.Order = view.IndexOf(child);
@@ -949,9 +950,14 @@ namespace BioLink.Client.Taxa {
             }
             ClearPendingChanges();
             tvwAllTaxa.ItemsSource = _explorerModel;
+            // Favorites
+            if (favorites.IsFavoritesLoaded) {
+                favorites.ReloadFavorites();
+            }
+
         }
 
-        private string _R(string key, params object[] args) {
+        public string _R(string key, params object[] args) {
             return Owner.GetCaption(key, args);
         }
 
@@ -1159,6 +1165,19 @@ namespace BioLink.Client.Taxa {
 
         public TaxaPlugin Owner { get; private set; }
 
+        internal void RemoveFromFavorites(int favoriteId) {
+            favorites.DeleteFavorite(favoriteId);
+        }
+
+        internal void AddToFavorites(TaxonViewModel Taxon, bool global) {
+            tabFavorites.IsSelected = true;
+            favorites.AddToFavorites(Taxon, global);
+            favorites.Focus();
+        }
+
+        internal void AddFavoriteGroup(int? parentFavoriteId) {
+            favorites.AddFavoriteGroup(parentFavoriteId);
+        }
     }
 
     [StyleTypedProperty(Property = "ItemContainerStyle", StyleTargetType = typeof(MyTreeViewItem))]

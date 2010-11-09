@@ -100,7 +100,7 @@ namespace BioLink.Client.Extensibility {
         public virtual void Dispose() {        
         }
 
-        public User User { get; private set; }
+        public User User { get; protected set; }
 
         public event PendingChangesCommittedHandler ChangesCommitted;
 

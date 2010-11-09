@@ -23,29 +23,29 @@ namespace BioLink.Client.Taxa {
         }
 
         public ContextMenu BuildExplorerMenu() {
-            ContextMenu menu = new ContextMenu();
+
+            ContextMenuBuilder builder = new ContextMenuBuilder(FormatterFunc);
+            
 
             if (Explorer.IsUnlocked) {
-                if (!Taxon.IsRootNode) {                    
-                    menu.Items.Add(_builder.New("TaxonExplorer.menu.Delete", Taxon.DisplayLabel).Handler(() => { Explorer.DeleteTaxon(Taxon); }).MenuItem);
-                    menu.Items.Add(_builder.New("TaxonExplorer.menu.Rename", Taxon.DisplayLabel).Handler(() => { Explorer.RenameTaxon(Taxon); }).MenuItem);
+                if (!Taxon.IsRootNode) {
+                    builder.New("TaxonExplorer.menu.Delete", Taxon.DisplayLabel).Handler(() => { Explorer.DeleteTaxon(Taxon); });
+                    builder.New("TaxonExplorer.menu.Rename", Taxon.DisplayLabel).Handler(() => { Explorer.RenameTaxon(Taxon); });
                 }
 
                 MenuItem addMenu = BuildAddMenuItems();
                 if (addMenu != null && addMenu.Items.Count > 0) {
-                    menu.Items.Add(new Separator());
-                    menu.Items.Add(addMenu);
+                    builder.Separator();
+                    builder.AddMenuItem(addMenu);
                 }
 
             } else {
-                menu.Items.Add(_builder.New("TaxonExplorer.menu.Unlock").Handler(() => { Explorer.btnLock.IsChecked = true; }).MenuItem);
+                builder.New("TaxonExplorer.menu.Unlock").Handler(() => { Explorer.btnLock.IsChecked = true; });
             }
 
-            if (menu.HasItems) {
-                menu.Items.Add(new Separator());
-            }
+            builder.Separator();
 
-            menu.Items.Add(_builder.New("TaxonExplorer.menu.ExpandAll").Handler(() => {
+            builder.New("TaxonExplorer.menu.ExpandAll").Handler(() => {
                 JobExecutor.QueueJob(() => {
                     Explorer.tvwAllTaxa.InvokeIfRequired(() => {
                         try {
@@ -58,40 +58,45 @@ namespace BioLink.Client.Taxa {
                         }
                     });
                 });
-            }).MenuItem);
-            
+            });
 
             MenuItem sortMenu = BuildSortMenuItems();
             if (sortMenu != null && sortMenu.HasItems) {
-                menu.Items.Add(new Separator());
-                menu.Items.Add(sortMenu);
+                builder.Separator();
+                builder.AddMenuItem(sortMenu);
             }
 
+            builder.Separator();
+            builder.AddMenuItem(CreateFavoriteMenuItems());
+
             if (!Explorer.IsUnlocked) {
-                menu.Items.Add(new Separator());
-                menu.Items.Add(_builder.New("TaxonExplorer.menu.Refresh").Handler(() => Explorer.Refresh()).MenuItem);
+                builder.Separator();                
+                builder.New("TaxonExplorer.menu.Refresh").Handler(() => Explorer.Refresh());
             }
 
             if (!Taxon.IsRootNode) {
                 MenuItem reports = CreateReportMenuItems();
                 if (reports != null && reports.HasItems) {
-                    if (menu.HasItems) {
-                        menu.Items.Add(new Separator());
-                    }
-                    menu.Items.Add(reports);
+                    builder.Separator();
+                    builder.AddMenuItem(reports);
                 }
 
-                if (menu.HasItems) {
-                    menu.Items.Add(new Separator());
-                }
-                menu.Items.Add(_builder.New("_Pin to pin board").Handler(() => { PluginManager.Instance.PinObject(new PinnableObject(TaxaPlugin.TAXA_PLUGIN_NAME, "Taxon:" + Taxon.TaxaID.Value)); }).MenuItem);
-                menu.Items.Add(new Separator());
-                menu.Items.Add(_builder.New("_Edit Name...").Handler(() => { Explorer.EditTaxonName(Taxon.TaxaID); }).MenuItem);
-                menu.Items.Add(_builder.New("_Edit Details...").Handler(() => { Explorer.ShowTaxonDetails(Taxon.TaxaID); }).MenuItem);
+                builder.Separator();
+
+                builder.New("_Pin to pin board").Handler(() => { PluginManager.Instance.PinObject(new PinnableObject(TaxaPlugin.TAXA_PLUGIN_NAME, "Taxon:" + Taxon.TaxaID.Value)); });
+                builder.Separator();                
+                builder.New("_Edit Name...").Handler(() => { Explorer.EditTaxonName(Taxon.TaxaID); });
+                builder.New("_Edit Details...").Handler(() => { Explorer.ShowTaxonDetails(Taxon.TaxaID); }).End();
             }
 
-            return menu;
-        
+            return builder.ContextMenu;        
+        }
+
+        private MenuItem CreateFavoriteMenuItems() {
+            MenuItem add = _builder.New("Add to favorites").MenuItem;
+            add.Items.Add(_builder.New("User specific").Handler(() => { Explorer.AddToFavorites(Taxon, false); }).MenuItem);
+            add.Items.Add(_builder.New("Global").Handler(() => { Explorer.AddToFavorites(Taxon, true); }).MenuItem);
+            return add;
         }
 
         private MenuItem CreateReportMenuItems() {
@@ -201,6 +206,36 @@ namespace BioLink.Client.Taxa {
             menu.Items.Add(_builder.New("_Edit Details...").Handler(() => { Explorer.ShowTaxonDetails(Taxon.TaxaID); }).MenuItem);
 
             return menu;
+        }
+
+        internal ContextMenu BuildFavoritesMenu(int? favoriteId) {
+
+            ContextMenuBuilder builder = new ContextMenuBuilder(FormatterFunc);
+            builder.New("TaxonExplorer.menu.ShowInContents").Handler(() => { Explorer.ShowInExplorer(Taxon.TaxaID); });
+
+            MenuItem reports = CreateReportMenuItems();
+            if (reports != null && reports.HasItems) {
+                builder.Separator();
+                builder.AddMenuItem(reports);
+            }
+
+            builder.Separator();
+
+            if (favoriteId != null && favoriteId.HasValue) {
+                builder.New("Add favorite group").Handler(() => { Explorer.AddFavoriteGroup(favoriteId); }).End();
+                builder.New("Remove from favorites").Handler(() => { Explorer.RemoveFromFavorites(favoriteId.Value); });
+            }
+
+
+
+
+            builder.Separator();
+            builder.New("_Pin to pin board").Handler(() => { PluginManager.Instance.PinObject(new PinnableObject(TaxaPlugin.TAXA_PLUGIN_NAME, "Taxon:" + Taxon.TaxaID.Value)); });
+            builder.Separator();
+            builder.New("_Edit Name...").Handler(() => { Explorer.EditTaxonName(Taxon.TaxaID); });
+            builder.New("_Edit Details...").Handler(() => { Explorer.ShowTaxonDetails(Taxon.TaxaID); }).End();
+
+            return builder.ContextMenu;
         }
 
         #region properties
