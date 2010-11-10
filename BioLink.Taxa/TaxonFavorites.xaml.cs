@@ -23,8 +23,9 @@ namespace BioLink.Client.Taxa {
     /// </summary>
     public partial class TaxonFavorites : DatabaseActionControl {
 
-        private ObservableCollection<TaxonFavoriteViewModel> _userFavoritesModel;
-        private ObservableCollection<TaxonFavoriteViewModel> _globalFavoritesModel;
+        private ObservableCollection<HierarchicalViewModelBase> _model;
+        private HierarchicalViewModelBase _userRoot;
+        private HierarchicalViewModelBase _globalRoot;
 
         public TaxonFavorites() {
             InitializeComponent();
@@ -36,15 +37,19 @@ namespace BioLink.Client.Taxa {
         }
 
         public void LoadFavorites() {
-            if (_userFavoritesModel == null) {
-                _userFavoritesModel = BuildFavoritesModel(false);
-                _globalFavoritesModel = BuildFavoritesModel(true);
 
-                tvwUserFavorites.ItemsSource = _userFavoritesModel;
-                tvwGlobalFavorites.ItemsSource = _globalFavoritesModel;
+            if (_model == null) {
+                _model = new ObservableCollection<HierarchicalViewModelBase>();
+                _userRoot = new ViewModelPlaceholder("User Favorites");
+                _globalRoot = new ViewModelPlaceholder("Global Favorites");
 
-                _userFavoritesModel.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(ModelChanged);
-                _globalFavoritesModel.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(ModelChanged);
+                BuildFavoritesModel(_userRoot, false);
+                BuildFavoritesModel(_globalRoot, true);
+
+                _model.Add(_userRoot);
+                _model.Add(_globalRoot);
+
+                tvwFavorites.ItemsSource = _model;
 
                 btnCancel.IsEnabled = false;
                 btnApply.IsEnabled = false;
@@ -52,30 +57,30 @@ namespace BioLink.Client.Taxa {
         }
 
         private void ModelChanged(object source, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
-            btnApply.IsEnabled = true;
-            btnCancel.IsEnabled = true;
+            EnableButtons();
         }
 
-        private ObservableCollection<TaxonFavoriteViewModel> BuildFavoritesModel(bool global) {
+        private void BuildFavoritesModel(HierarchicalViewModelBase root, bool global) {
             var service = new SupportService(User);
             var list = service.GetTopTaxaFavorites(global);
-            var model = new ObservableCollection<TaxonFavoriteViewModel>(list.ConvertAll((item) => {
+
+            foreach (TaxonFavorite item in list) {
                 var viewModel = new TaxonFavoriteViewModel(item);
                 if (item.NumChildren > 0) {
                     viewModel.LazyLoadChildren += new HierarchicalViewModelAction(viewModel_LazyLoadChildren);
                     viewModel.Children.Add(new ViewModelPlaceholder("Loading..."));
                     viewModel.DataChanged += new DataChangedHandler((m) => {
-                        btnApply.IsEnabled = true;
-                        btnCancel.IsEnabled = true;
+                        EnableButtons();
                     });
                 }
-                return viewModel;
-            }));
-            return model;
+                root.Children.Add(viewModel);
+                root.IsExpanded = true;
+                root.Tag = global;
+            }
         }
 
         public void ReloadFavorites() {
-            _userFavoritesModel = null;
+            _model = null;
             LoadFavorites();
         }
 
@@ -93,8 +98,7 @@ namespace BioLink.Client.Taxa {
                             viewModel.LazyLoadChildren += new HierarchicalViewModelAction(viewModel_LazyLoadChildren);
                             viewModel.Children.Add(new ViewModelPlaceholder("Loading..."));
                             viewModel.DataChanged += new DataChangedHandler((m) => {
-                                btnApply.IsEnabled = true;
-                                btnCancel.IsEnabled = true;
+                                EnableButtons();
                             });
                         }
                         vm.Children.Add(viewModel);
@@ -111,11 +115,11 @@ namespace BioLink.Client.Taxa {
         }
 
         public bool IsFavoritesLoaded {
-            get { return _userFavoritesModel != null; }
+            get { return _model != null; }
         }
 
         private void BuildTaxaChildrenViewModel(HierarchicalViewModelBase item, int taxaID) {
-            // The selected node is a Taxon favorites, so we can get the 'real' taxon children for it...
+            // The model node is a Taxon favorites, so we can get the 'real' taxon children for it...
             item.Children.Clear();
 
             var taxaService = new TaxaService(User);
@@ -133,45 +137,73 @@ namespace BioLink.Client.Taxa {
 
         private void TreeViewItem_MouseRightButtonDown(object sender, MouseEventArgs e) {
             TreeViewItem item = sender as TreeViewItem;
-            if (item != null) {
-                item.Focus();
-                e.Handled = true;
+
+            if (item == null) {
+                return;
             }
 
-            var selected = tvwFavorites.SelectedItem;
+            item.Focus();
+            e.Handled = true;
+
+            var model = tvwFavorites.SelectedItem as HierarchicalViewModelBase;
+
+            Debug.Assert(model != null);
+
             int? favoriteId = null;
 
             TaxonViewModel tvm = null;
 
-            if (selected is TaxonFavoriteViewModel) {
-                var fav = selected as TaxonFavoriteViewModel;
+
+            bool isGroup = false;
+
+            if (model is TaxonFavoriteViewModel) {
+                var fav = model as TaxonFavoriteViewModel;
                 favoriteId = fav.FavoriteID;
                 if (!fav.IsGroup) {
                     var taxon = new TaxaService(User).GetTaxon(fav.TaxaID);
                     tvm = new TaxonViewModel(null, taxon, TaxonExplorer.GenerateTaxonDisplayLabel);
+                } else {
+                    isGroup = true;
                 }
-            }
 
-            if (selected is TaxonViewModel) {
-                tvm = selected as TaxonViewModel;
+            } else if (model is TaxonViewModel) {
+                tvm = model as TaxonViewModel;
             }
 
             if (tvm != null) {
                 TaxonMenuFactory f = new TaxonMenuFactory(tvm, TaxonExplorer, TaxonExplorer._R);
-                tvwFavorites.ContextMenu = f.BuildFavoritesMenu(favoriteId);
+                tvwFavorites.ContextMenu = f.BuildFavoritesMenu(model);
+            } else {
+                var builder = new ContextMenuBuilder(null);
+
+                builder.New("Add favorite group").Handler(() => { AddFavoriteGroup(model); }).End();
+                if (isGroup) {
+                    builder.New("Rename group").Handler(() => { RenameFavoriteGroup(model as TaxonFavoriteViewModel); }).End();
+                    builder.New("Remove favorite group").Handler(() => { DeleteFavoriteGroup(model); }).End();
+                }
+
+                tvwFavorites.ContextMenu = builder.ContextMenu;
             }
             
         }
 
-        public TaxonFavoriteViewModel FindFavorite(int favoriteId) {
-            var result =  SearchModel(_userFavoritesModel, favoriteId);
+        private void DeleteFavoriteGroup(HierarchicalViewModelBase model) {
 
-            if (result == null) {
-                result = _globalFavoritesModel.FirstOrDefault((m) => {
-                    return m.FavoriteID == favoriteId;
-                });
+            var favorite = model as TaxonFavoriteViewModel;
+            if (favorite == null) {
+                return;
             }
 
+            if (favorite.IsDeleted) {
+                return;
+            }
+
+            model.IsDeleted = true;
+            RegisterUniquePendingChange(new DeleteFavoriteAction(favorite.FavoriteID));
+        }
+
+        public TaxonFavoriteViewModel FindFavorite(int favoriteId) {
+            var result =  SearchModel(_model, favoriteId);
             return result;
         }
 
@@ -196,9 +228,24 @@ namespace BioLink.Client.Taxa {
         internal TaxonExplorer TaxonExplorer { get; private set; }
 
         private void TaxonName_EditingComplete(object sender, string text) {
+            if (sender is EditableTextBlock) {
+                var viewModel = (sender as EditableTextBlock).ViewModel;
+                if (viewModel is TaxonFavoriteViewModel) {
+                    ProcessRename(viewModel as TaxonFavoriteViewModel, text);            
+                }
+            }            
+        }
+
+        private void ProcessRename(TaxonFavoriteViewModel viewModel, string name) {
+            viewModel.GroupName = name;
+            RegisterUniquePendingChange(new RenameFavoriteGroupAction(viewModel.Model));
         }
 
         private void TaxonName_EditingCancelled(object sender, string oldtext) {
+            var tvm = (sender as EditableTextBlock).ViewModel as HierarchicalViewModelBase;
+            if (tvm != null) {
+                tvm.DisplayLabel = null;
+            }
         }
 
         internal void DeleteFavorite(int favoriteId) {
@@ -255,32 +302,61 @@ namespace BioLink.Client.Taxa {
 
             TaxonFavoriteViewModel viewModel = new TaxonFavoriteViewModel(model);
             if (global) {
-                tvwGlobalFavorites.IsExpanded = true;
-                _globalFavoritesModel.Add(viewModel);                
+                _globalRoot.IsExpanded = true;
+                _globalRoot.Children.Add(viewModel);                
             } else {
-                tvwUserFavorites.IsExpanded = true;
-                _userFavoritesModel.Add(viewModel);
+                _userRoot.IsExpanded = true;
+                _userRoot.Children.Add(viewModel);
             }
 
             viewModel.IsSelected = true;
         }
 
-        internal void AddFavoriteGroup(int? parentFavoriteId) {
-            if (parentFavoriteId == null || !parentFavoriteId.HasValue) {
+        internal void AddFavoriteGroup(HierarchicalViewModelBase parent) {
+
+            int parentGroupID = 0;
+            if (parent == null) {
                 return;
             }
 
-            var parent = FindFavorite(parentFavoriteId.Value);
+            bool isGlobal = false;
+
+            if (parent is ViewModelPlaceholder) {
+                isGlobal = (bool) (parent as ViewModelPlaceholder).Tag;
+            } else if (parent is TaxonFavoriteViewModel) {
+                var parentViewModel = parent as TaxonFavoriteViewModel;
+                isGlobal = parentViewModel.IsGlobal;
+                parentGroupID = parentViewModel.FavoriteID;
+            }
 
             TaxonFavorite model = new TaxonFavorite();
             model.IsGroup = true;
-            model.GroupName = "<new group>";
-            model.IsGlobal = parent.IsGlobal;
+            model.GroupName = "<New Folder>";
+            model.IsGlobal = isGlobal;
+            model.FavoriteParentID = parentGroupID;
 
             TaxonFavoriteViewModel viewModel = new TaxonFavoriteViewModel(model);
-            // ...
 
-             
+            parent.Children.Add(viewModel);
+
+            RegisterUniquePendingChange(new InsertFavoriteGroupAction(model, FavoriteType.Taxa));
+
+            viewModel.IsRenaming = true;
+
+            EnableButtons();            
+        }
+
+        private void EnableButtons() {
+            btnApply.IsEnabled = true;
+            btnCancel.IsEnabled = true;
+        }
+
+        internal void RenameFavoriteGroup(TaxonFavoriteViewModel taxonFavoriteViewModel) {
+            if (taxonFavoriteViewModel == null) {
+                return;
+            }
+
+            taxonFavoriteViewModel.IsRenaming = true;
         }
     }
 

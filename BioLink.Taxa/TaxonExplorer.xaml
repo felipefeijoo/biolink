@@ -101,7 +101,7 @@
                                                 </DataTrigger>
                                             </HierarchicalDataTemplate.Triggers>
                                         </HierarchicalDataTemplate>
-                            
+
                                         <Style TargetType="{x:Type src:MyTreeViewItem}">
                                             <Setter Property="ItemsPanel">
                                                 <Setter.Value>
@@ -124,9 +124,8 @@
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding IsRenaming}" Value="True">
                                                     <Setter Property="TextBox.Visibility" Value="Visible" />                                                    
-                                                </DataTrigger>
+                                                </DataTrigger>                                                
                                             </Style.Triggers>
-
                                         </Style>
                                     </TreeView.Resources>
                                     <TreeView.ItemsPanel>

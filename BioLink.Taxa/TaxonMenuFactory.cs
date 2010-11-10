@@ -208,7 +208,15 @@ namespace BioLink.Client.Taxa {
             return menu;
         }
 
-        internal ContextMenu BuildFavoritesMenu(int? favoriteId) {
+        internal ContextMenu BuildFavoritesMenu(HierarchicalViewModelBase node) {
+
+            int? favoriteId = null;
+            bool isFavoriteGroup = false;
+            if (node is TaxonFavoriteViewModel) {
+                var fav = node as TaxonFavoriteViewModel;
+                favoriteId = fav.FavoriteID;
+                isFavoriteGroup = fav.IsGroup; 
+            }
 
             ContextMenuBuilder builder = new ContextMenuBuilder(FormatterFunc);
             builder.New("TaxonExplorer.menu.ShowInContents").Handler(() => { Explorer.ShowInExplorer(Taxon.TaxaID); });
@@ -222,12 +230,11 @@ namespace BioLink.Client.Taxa {
             builder.Separator();
 
             if (favoriteId != null && favoriteId.HasValue) {
-                builder.New("Add favorite group").Handler(() => { Explorer.AddFavoriteGroup(favoriteId); }).End();
+                builder.New("Rename group").Handler(() => { Explorer.RenameFavoriteGroup(node as TaxonFavoriteViewModel); });
+
+                builder.New("Add favorite group").Handler(() => { Explorer.AddFavoriteGroup(node); }).End();
                 builder.New("Remove from favorites").Handler(() => { Explorer.RemoveFromFavorites(favoriteId.Value); });
             }
-
-
-
 
             builder.Separator();
             builder.New("_Pin to pin board").Handler(() => { PluginManager.Instance.PinObject(new PinnableObject(TaxaPlugin.TAXA_PLUGIN_NAME, "Taxon:" + Taxon.TaxaID.Value)); });

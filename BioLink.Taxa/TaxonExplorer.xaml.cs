@@ -163,9 +163,7 @@ namespace BioLink.Client.Taxa {
 
         private void tabControl1_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             if (tabControl1.SelectedItem == tabFavorites) {
-                if (favorites.User == null) {                    
-                    favorites.LoadFavorites();
-                }
+                favorites.LoadFavorites();
             }
         }
 
@@ -1006,6 +1004,10 @@ namespace BioLink.Client.Taxa {
                 }
             }
 
+            if (!changed) {
+                changed = favorites.HasPendingChanges;
+            }
+
             return changed;
         }
 
@@ -1175,8 +1177,12 @@ namespace BioLink.Client.Taxa {
             favorites.Focus();
         }
 
-        internal void AddFavoriteGroup(int? parentFavoriteId) {
-            favorites.AddFavoriteGroup(parentFavoriteId);
+        internal void AddFavoriteGroup(HierarchicalViewModelBase parentNode) {
+            favorites.AddFavoriteGroup(parentNode);
+        }
+
+        internal void RenameFavoriteGroup(TaxonFavoriteViewModel taxonFavoriteViewModel) {
+            favorites.RenameFavoriteGroup(taxonFavoriteViewModel);
         }
     }
 

@@ -69,7 +69,16 @@ namespace BioLink.Client.Extensibility {
             } else {
                 throw new Exception("Parent window could not be found, or it is not an IChangeContainer");
             }
+        }
 
+        public bool HasPendingChanges {
+            get {
+                bool result = false;
+                WithChangeContainer((container) => {
+                    result = container.HasPendingChanges;
+                });
+                return result;
+            }
         }
 
         public void OnChangesCommitted() {
