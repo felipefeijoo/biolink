@@ -261,6 +261,29 @@ namespace BioLink.Data {
             StoredProcUpdate("spFavoriteDelete", _P("intFavoriteID", favoriteID));
         }
 
+        public int InsertFavoriteGroup(FavoriteType favType, int parentID, string name, bool global) {
+            var retval = ReturnParam("intNewFavoriteID", System.Data.SqlDbType.Int);
+            StoredProcUpdate("spFavoriteInsert",
+                _P("vchrType", favType.ToString()),
+                _P("intParentID", parentID),
+                _P("tintGroup", 1),
+                _P("vchrGroupName", name),
+                _P("intID1", 0),
+                _P("vchrID2", ""),
+                _P("bitGlobal", global),
+                retval
+            );
+
+            return (int) retval.Value;
+        }
+
+        public void RenameFavoriteGroup(int favoriteID, string newName) {
+            StoredProcUpdate("spFavoriteRename",
+                _P("intFavoriteID", favoriteID),
+                _P("vchrName", newName)
+            );
+        }
+
         #endregion
     }
 

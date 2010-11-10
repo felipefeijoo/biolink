@@ -24,7 +24,7 @@
                 <HierarchicalDataTemplate DataType="{x:Type src:TaxonFavoriteViewModel}" ItemsSource="{Binding Path=Children, Converter={StaticResource TaxonFavoriteSortingConverter}}">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,1" />
-                        <TextBlock x:Name="FavoriteName" Text="{Binding Path=DisplayLabel}" VerticalAlignment="Center" />
+                        <ext:EditableTextBlock FontSize="11" x:Name="FavoriteName" Text="{Binding Path=DisplayLabel,Mode=TwoWay}" VerticalAlignment="Center" IsInEditMode="{Binding Path=IsRenaming, Mode=TwoWay}" EditingComplete="TaxonName_EditingComplete" EditingCancelled="TaxonName_EditingCancelled" ViewModel="{Binding}"/>
                     </StackPanel>
                     <HierarchicalDataTemplate.Triggers>
                         <DataTrigger Binding="{Binding IsDeleted}" Value="True">
@@ -35,14 +35,14 @@
                 
                 <HierarchicalDataTemplate DataType="{x:Type ext:ViewModelPlaceholder}" ItemsSource="{Binding Path=Children}">
                     <StackPanel Orientation="Horizontal">                        
-                        <TextBlock Text="{Binding Path=DisplayLabel}" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding Path=DisplayLabel}" VerticalAlignment="Center" FontWeight="Bold" />
                     </StackPanel>
                 </HierarchicalDataTemplate>
 
                 <HierarchicalDataTemplate x:Name="AllTaxaDataTemplate" DataType="{x:Type src:TaxonViewModel}" ItemsSource="{Binding Path=Children, Converter={StaticResource SortedTaxonConverter}}">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,0" />
-                        <ext:EditableTextBlock FontSize="11" x:Name="TaxonName" Text="{Binding Path=DisplayLabel,Mode=TwoWay}" VerticalAlignment="Center" IsInEditMode="{Binding Path=IsRenaming, Mode=TwoWay}" EditingComplete="TaxonName_EditingComplete" EditingCancelled="TaxonName_EditingCancelled" ViewModel="{Binding}"/>
+                        <TextBlock FontSize="11" x:Name="TaxonName" Text="{Binding Path=DisplayLabel,Mode=TwoWay}" VerticalAlignment="Center" />
                     </StackPanel>
                     <HierarchicalDataTemplate.Triggers>
                         <DataTrigger Binding="{Binding IsDeleted}" Value="True">
@@ -72,18 +72,6 @@
                 </Style>
 
             </TreeView.Resources>
-
-            <TreeViewItem x:Name="tvwUserFavorites">
-                <TreeViewItem.Header>
-                    <TextBlock FontWeight="Bold" Text="User Favorites" />
-                </TreeViewItem.Header>
-            </TreeViewItem>
-
-            <TreeViewItem x:Name="tvwGlobalFavorites">
-                <TreeViewItem.Header>
-                    <TextBlock FontWeight="Bold" Text="Global Favorites" />
-                </TreeViewItem.Header>
-            </TreeViewItem>
 
         </TreeView>
         <Grid Grid.Row="1" Background="{x:Static SystemColors.ControlBrush}">
