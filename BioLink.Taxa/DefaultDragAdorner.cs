@@ -15,7 +15,7 @@ namespace BioLink.Client.Taxa {
 
         public DragAdorner(UIElement owner) : base(owner) { }
 
-        public DragAdorner(UIElement owner, TreeViewItem adornElement, bool useVisualBrush, double opacity, Point offset)
+        public DragAdorner(UIElement owner, FrameworkElement adornElement, bool useVisualBrush, double opacity, Point offset)
             : base(owner) {
             System.Diagnostics.Debug.Assert(owner != null);
             System.Diagnostics.Debug.Assert(adornElement != null);

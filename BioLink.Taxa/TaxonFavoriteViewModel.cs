@@ -22,6 +22,11 @@ namespace BioLink.Client.Taxa {
             } else {
                 this.DisplayLabel = model.TaxaFullName;
             }
+            
+        }
+
+        public override string ToString() {
+            return "TaxonFavorite: " + DisplayLabel;
         }
 
         private BitmapSource _image;

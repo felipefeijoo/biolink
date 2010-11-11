@@ -13,6 +13,9 @@ namespace BioLink.Data.Model {
         public string GroupName { get; set; }
         public int NumChildren { get; set; }
         public bool IsGlobal { get; set; }
+        public FavoriteType FavoriteType { get; set; }
+        public int ID1 { get; set; }
+        public string ID2 { get; set; }
     }
 
     public class TaxonFavorite : Favorite {

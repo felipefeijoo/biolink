@@ -76,7 +76,7 @@
         </TreeView>
         <Grid Grid.Row="1" Background="{x:Static SystemColors.ControlBrush}">
             <Button Content="_Cancel" Height="23" HorizontalAlignment="Right" Margin="0,6,6,0" Name="btnCancel" VerticalAlignment="Top" Width="75" IsEnabled="False" Click="btnCancel_Click" />
-            <Button Content="_Apply" Height="23" HorizontalAlignment="Right" Margin="0,6,87,0" Name="btnApply" VerticalAlignment="Top" Width="75" IsEnabled="False" Click="btnApply_Click" />
+            <Button Content="_Apply" Height="23" HorizontalAlignment="Right" Margin="0,6,87,0" Name="btnApply" VerticalAlignment="Top" Width="75" IsEnabled="False" Click="btnApply_Click" />            
         </Grid>
     </Grid>
     

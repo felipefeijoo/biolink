@@ -35,6 +35,31 @@ namespace BioLink.Client.Extensibility {
             this.DataContext = _model;
             lvw.ItemsSource = _model;
             lvw.MouseRightButtonUp +=new MouseButtonEventHandler((s,e) => { ShowPopupMenu(); } );
+            this.AllowDrop = true;
+
+            // this.GiveFeedback += new GiveFeedbackEventHandler(PinBoard_GiveFeedback);
+            this.PreviewDragOver += new DragEventHandler(PinBoard_PreviewDragEnter);
+            this.PreviewDragEnter += new DragEventHandler(PinBoard_PreviewDragEnter);
+
+            this.Drop += new DragEventHandler(PinBoard_Drop);
+        }
+
+        void PinBoard_Drop(object sender, DragEventArgs e) {
+            var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;
+            if (pinnable != null) {
+                Pin(pinnable);
+            }            
+        }
+
+        void PinBoard_PreviewDragEnter(object sender, DragEventArgs e) {
+
+            var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;
+            if (pinnable != null) {
+                e.Effects = DragDropEffects.Link;
+            } else {
+                e.Effects = DragDropEffects.None;
+            }
+            e.Handled = true;
         }
 
         private void ShowPopupMenu() {
@@ -107,6 +132,8 @@ namespace BioLink.Client.Extensibility {
     }
 
     public class PinnableObject {
+
+        public const string DRAG_FORMAT_NAME = "BioLinkPinnable";
 
         public PinnableObject(string pluginId, object state) {
             this.PluginID = pluginId;

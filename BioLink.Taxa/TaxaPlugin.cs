@@ -147,6 +147,10 @@ namespace BioLink.Client.Taxa {
 
             return list;
         }
+
+        public PinnableObject CreatePinnableTaxon(int taxonID) {
+            return new PinnableObject(TAXA_PLUGIN_NAME, "Taxon:" + taxonID);
+        }
     }
 
     public delegate void TaxonViewModelAction(TaxonViewModel taxon);
