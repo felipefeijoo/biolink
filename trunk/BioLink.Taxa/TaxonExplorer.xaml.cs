@@ -27,10 +27,10 @@ namespace BioLink.Client.Taxa {
         private ObservableCollection<TaxonViewModel> _searchModel;
         private Point _startPoint;
         private bool _IsDragging = false;
-        private UIElement _dragScope;
+        private UIElement _dropScope;
         private DragAdorner _adorner;
         private AdornerLayer _layer;
-        private bool _dragHasLeftScope = false;
+        // private bool _dragHasLeftScope = false;
         private int _nextNewTaxonID = -100;
 
         #region Designer Constructor
@@ -66,7 +66,31 @@ namespace BioLink.Client.Taxa {
 
             btnLock.Unchecked += new RoutedEventHandler(btnLock_Unchecked);
 
+            lstResults.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(lstResults_PreviewMouseLeftButtonDown);
+            lstResults.PreviewMouseMove += new MouseEventHandler(lstResults_PreviewMouseMove);
+
             favorites.BindUser(User, this);
+        }
+
+        void lstResults_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+            _startPoint = e.GetPosition(tvwAllTaxa);
+        }
+
+        void lstResults_PreviewMouseMove(object sender, MouseEventArgs e) {
+
+            if (e.LeftButton == MouseButtonState.Pressed && !_IsDragging) {
+                Point position = e.GetPosition(lstResults);
+                if (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance) {
+                    if (lstResults.SelectedItem != null) {
+                        var selected = lstResults.SelectedItem as TaxonViewModel;
+                        ListBoxItem item = lstResults.ItemContainerGenerator.ContainerFromItem(selected) as ListBoxItem;                                                
+                        if (item != null) {
+                            StartDrag(e, selected, item, lstResults);
+                        }
+                    }
+                }
+            }
+            
         }
 
         void btnLock_Unchecked(object sender, RoutedEventArgs e) {
@@ -250,23 +274,15 @@ namespace BioLink.Client.Taxa {
         #region Drag and Drop stuff
 
         void tvwAllTaxa_PreviewMouseMove(object sender, MouseEventArgs e) {
-            CommonPreviewMouseView(e, tvwAllTaxa);
-        }
-
-        private void CommonPreviewMouseView(MouseEventArgs e, TreeView treeView) {
 
             if (e.LeftButton == MouseButtonState.Pressed && !_IsDragging) {
                 Point position = e.GetPosition(tvwAllTaxa);
                 if (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance) {
-                    if (treeView.SelectedItem != null) {
-                        if (IsUnlocked) {
-                            IInputElement hitelement = treeView.InputHitTest(_startPoint);
-                            TreeViewItem item = GetTreeViewItemClicked((FrameworkElement)hitelement, treeView);
-                            if (item != null) {
-                                StartDrag(e, treeView, item);
-                            }
-                        } else {
-                            lblHeader.Visibility = Visibility.Visible;
+                    if (tvwAllTaxa.SelectedItem != null) {
+                        IInputElement hitelement = tvwAllTaxa.InputHitTest(_startPoint);
+                        TreeViewItem item = GetTreeViewItemClicked((FrameworkElement)hitelement, tvwAllTaxa);
+                        if (item != null) {
+                            StartDrag(e, tvwAllTaxa.SelectedItem as TaxonViewModel, item, tvwAllTaxa);
                         }
                     }
                 }
@@ -286,56 +302,44 @@ namespace BioLink.Client.Taxa {
             _startPoint = e.GetPosition(tvwAllTaxa);
         }
 
-        private TreeViewItem GetHoveredTreeViewItem(DragEventArgs e) {
-            TreeView tvw = _dragScope as TreeView;
-            DependencyObject elem = tvw.InputHitTest(e.GetPosition(tvw)) as DependencyObject;
+        private DependencyObject GetCurrentHoverItem(DragEventArgs e) {
+            FrameworkElement scope = _dropScope as FrameworkElement;
+            DependencyObject elem = scope.InputHitTest(e.GetPosition(scope)) as DependencyObject;
             while (elem != null && !(elem is TreeViewItem)) {
                 elem = VisualTreeHelper.GetParent(elem);
             }
-            return elem as TreeViewItem;
-        }
-
-        private void DragSource_GiveFeedback(object source, GiveFeedbackEventArgs e) {
-            e.UseDefaultCursors = true;
-            e.Handled = true;
+            return elem;
         }
 
         private void DropSink_DragOver(object source, DragEventArgs e) {
-            TaxonViewModel t = e.Data.GetData("Taxon") as TaxonViewModel;
-            TreeView tvw = _dragScope as TreeView;
+            TaxonViewModel t = e.Data.GetData("Taxon") as TaxonViewModel;            
 
-            if (t != null && tvw != null) {
+            if (t != null) {
+                DependencyObject destItem = GetCurrentHoverItem(e);
 
-                TreeViewItem destItem = GetHoveredTreeViewItem(e);
-                if (destItem != null) {
-                    TaxonViewModel destTaxon = destItem.Header as TaxonViewModel;
-                    if (destTaxon != null) {
-                        destItem.IsSelected = true;
-                    }
+                if (destItem is TreeViewItem) {
+                    var tvwItem = destItem as TreeViewItem;                    
+                    tvwItem.IsSelected = true;
+                } else if (destItem is ListBoxItem) {
+                    var lstItem = destItem as ListBoxItem;
+                    lstItem.IsSelected = true;
                 }
 
             }
             if (_adorner != null) {
-                _adorner.LeftOffset = e.GetPosition(_dragScope).X;
-                _adorner.TopOffset = e.GetPosition(_dragScope).Y;
+                _adorner.LeftOffset = e.GetPosition(_dropScope).X;
+                _adorner.TopOffset = e.GetPosition(_dropScope).Y;
             }
 
         }
 
         private void DragScope_DragLeave(object source, DragEventArgs e) {
 
-            TreeViewItem destItem = GetHoveredTreeViewItem(e);
-            if (destItem != null) {
-                TaxonViewModel destTaxon = destItem.Header as TaxonViewModel;
-                if (destTaxon != null) {
-                }
-            }
-
-            if (e.OriginalSource == _dragScope) {
-                Point p = e.GetPosition(_dragScope);
-                Rect r = VisualTreeHelper.GetContentBounds(_dragScope);
+            if (e.OriginalSource == _dropScope) {
+                Point p = e.GetPosition(_dropScope);
+                Rect r = VisualTreeHelper.GetContentBounds(_dropScope);
                 if (!r.Contains(p)) {
-                    this._dragHasLeftScope = true;
+                    // this._dragHasLeftScope = true;
                     e.Handled = true;
                 }
             }
@@ -345,17 +349,23 @@ namespace BioLink.Client.Taxa {
             if (e.EscapePressed) {
                 e.Action = DragAction.Cancel;
             }
-            if (this._dragHasLeftScope) {
-                e.Action = DragAction.Cancel;
-                e.Handled = true;
-            }
+            //if (this._dragHasLeftScope) {
+            //    mouseEvent.Action = DragAction.Cancel;
+            //    mouseEvent.Handled = true;
+            //}
         }
 
         void _dragScope_Drop(object sender, DragEventArgs e) {
             TaxonViewModel src = e.Data.GetData("Taxon") as TaxonViewModel;
-            TreeViewItem destItem = GetHoveredTreeViewItem(e);
+            DependencyObject destItem = GetCurrentHoverItem(e);
             if (destItem != null) {
-                TaxonViewModel dest = destItem.Header as TaxonViewModel;
+                TaxonViewModel dest = null;
+                if (destItem is TreeViewItem) {
+                    dest = (destItem as TreeViewItem).Header as TaxonViewModel;
+                } else if (destItem is ListBoxItem) {
+                    dest = (destItem as ListBoxItem).Content as TaxonViewModel;
+                }
+
                 if (src != null && dest != null) {
 
                     if (src == dest) {
@@ -381,6 +391,11 @@ namespace BioLink.Client.Taxa {
                 // 2) The drop is a valid move, no conversion or merging required (simplest case)
                 // 3) The drop is to that of a sibling rank, and so a decision is made to either merge or move as child (if possible)
                 // 4) The drop is valid, but requires the source to be converted into a valid child of the target
+
+                if (!IsUnlocked) {
+                    return;
+                }
+                
                 TaxonDropContext context = new TaxonDropContext(source, target, Owner);
 
                 //Basic sanity checks first....
@@ -412,48 +427,63 @@ namespace BioLink.Client.Taxa {
             source.IsSelected = true;
         }
 
-        private void StartDrag(MouseEventArgs e, TreeView treeView, TreeViewItem item) {
-            _dragScope = treeView;
-            bool previousDrop = _dragScope.AllowDrop;
-            _dragScope.AllowDrop = true;
-
-            GiveFeedbackEventHandler feedbackhandler = new GiveFeedbackEventHandler(DragSource_GiveFeedback);
-            item.GiveFeedback += feedbackhandler;
+        private void StartDrag(MouseEventArgs mouseEvent, TaxonViewModel taxon, FrameworkElement item, FrameworkElement dropScope) {
+            _dropScope = dropScope;
+            bool previousDrop = _dropScope.AllowDrop;
+            _dropScope.AllowDrop = true;
 
 
             DragEventHandler drophandler = new DragEventHandler(_dragScope_Drop);
-            _dragScope.Drop += drophandler;
+            _dropScope.Drop += drophandler;
 
             DragEventHandler draghandler = new DragEventHandler(DropSink_DragOver);
-            _dragScope.PreviewDragOver += draghandler;
+            _dropScope.PreviewDragOver += draghandler;
 
             DragEventHandler dragleavehandler = new DragEventHandler(DragScope_DragLeave);
-            _dragScope.DragLeave += dragleavehandler;
+            _dropScope.DragLeave += dragleavehandler;
 
             QueryContinueDragEventHandler queryhandler = new QueryContinueDragEventHandler(DragScope_QueryContinueDrag);
-            _dragScope.QueryContinueDrag += queryhandler;
+            _dropScope.QueryContinueDrag += queryhandler;
 
-            _adorner = new DragAdorner(_dragScope, item, true, 0.5, e.GetPosition(item));
-            _layer = AdornerLayer.GetAdornerLayer(_dragScope as Visual);
+            var previewHandler = new DragEventHandler((s, evt) => {
+                if (!IsUnlocked) {
+                    evt.Effects = DragDropEffects.None;
+                } else {
+                    evt.Effects = DragDropEffects.Move;
+                }
+                evt.Handled = true;
+            });
+
+            _dropScope.PreviewDragEnter += previewHandler;
+            _dropScope.PreviewDragOver += previewHandler;
+
+            _adorner = new DragAdorner(_dropScope, item, true, 0.5, mouseEvent.GetPosition(item));
+            _layer = AdornerLayer.GetAdornerLayer(_dropScope as Visual);
             _layer.Add(_adorner);
-
             _IsDragging = true;
-            _dragHasLeftScope = false;
-            TaxonViewModel taxon = treeView.SelectedItem as TaxonViewModel;
+            
             if (taxon != null) {
                 DataObject data = new DataObject("Taxon", taxon);
-                DragDropEffects de = DragDrop.DoDragDrop(item, data, DragDropEffects.Move);
+                data.SetData(PinnableObject.DRAG_FORMAT_NAME, Owner.CreatePinnableTaxon(taxon.TaxaID.Value));
+
+                if (!IsUnlocked) {
+                    lblHeader.Visibility = Visibility.Visible;
+                }
+
+                // Actually kick off the drag drop here!
+                DragDropEffects de = DragDrop.DoDragDrop(item, data, DragDropEffects.Move | DragDropEffects.Copy | DragDropEffects.Link );
             }
 
-            _dragScope.AllowDrop = previousDrop;
-            AdornerLayer.GetAdornerLayer(_dragScope).Remove(_adorner);
+            _dropScope.AllowDrop = previousDrop;
+            AdornerLayer.GetAdornerLayer(_dropScope).Remove(_adorner);
             _adorner = null;
-
-            item.GiveFeedback -= feedbackhandler;
-            _dragScope.DragLeave -= dragleavehandler;
-            _dragScope.QueryContinueDrag -= queryhandler;
-            _dragScope.PreviewDragOver -= draghandler;
-            _dragScope.Drop -= drophandler;
+            
+            _dropScope.DragLeave -= dragleavehandler;
+            _dropScope.QueryContinueDrag -= queryhandler;
+            _dropScope.PreviewDragOver -= draghandler;
+            _dropScope.Drop -= drophandler;
+            _dropScope.PreviewDragEnter -= previewHandler;
+            _dropScope.PreviewDragOver -= previewHandler;
 
             _IsDragging = false;
 
@@ -485,7 +515,7 @@ namespace BioLink.Client.Taxa {
             } else if (context.Source.AvailableName.GetValueOrDefault(false) || context.Source.LiteratureName.GetValueOrDefault(false)) {
                 // if the source is an Available or Literature Name 
                 if (context.Source.ElemType != context.Target.ElemType) {
-                    // If the target is not of the same type as the source, confirm the conversion of available name type (e.g. species available name to Genus available name)
+                    // If the target is not of the same type as the source, confirm the conversion of available name type (mouseEventArgs.g. species available name to Genus available name)
                     return PromptChangeAvailableName(context);
                 } else {
                     return new MoveDropAction(context);

@@ -37,7 +37,7 @@ namespace BioLink.Client.Taxa {
             AddIconBindings("Series", "SR", Color.FromRgb(86, 135, 135), "SRS");
             AddIconBindings("SpeciesGroup", "SG", Color.FromRgb(255, 254, 193), "SGP");
             AddIconBindings("SuperTribe", "ST", Color.FromRgb(0, 0, 128), "ST");
-            AddIconBindings("Form", "f", Color.FromRgb(135, 135, 192), "FM");
+            AddIconBindings("Form", "favorite", Color.FromRgb(135, 135, 192), "FM");
             AddIconBindings("SubForm", "sf", Color.FromRgb(177, 196, 255), "SFM");
             AddIconBindings("Variety", "V", Color.FromRgb(153, 153, 153), "V");
             AddIconBindings("SubVariety", "sv", Color.FromRgb(76, 76, 76), "SV");

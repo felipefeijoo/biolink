@@ -36,16 +36,20 @@ namespace BioLink.Client.Extensibility {
             WithChangeContainer(window => {
                 window.RegisterPendingChange(action, this);
             });
+            RaiseChangeRegistered(action);
         }
 
         public bool RegisterUniquePendingChange(DatabaseAction action) {
             bool ret = false;
             WithChangeContainer(window => { ret = window.RegisterUniquePendingChange(action, this); });
+            RaiseChangeRegistered(action);
             return ret;
         }
 
         public void RegisterPendingChanges(List<DatabaseAction> actions) {
             WithChangeContainer(window =>  window.RegisterPendingChanges(actions, this));
+            RaiseChangeRegistered(actions);
+
         }
 
         protected void CommitPendingChanges(Action successAction = null) {
@@ -106,10 +110,24 @@ namespace BioLink.Client.Extensibility {
             return string.Format(format, nextNum);
         }
 
+        private void RaiseChangeRegistered(DatabaseAction change) {
+            var list = new List<DatabaseAction>();
+            list.Add(change);
+            RaiseChangeRegistered(list);
+        }
+
+        private void RaiseChangeRegistered(List<DatabaseAction> list) {
+            if (ChangeRegistered != null) {
+                ChangeRegistered(list);
+            }
+        }
+
         public virtual void Dispose() {        
         }
 
         public User User { get; protected set; }
+
+        public event Action<IList<DatabaseAction>> ChangeRegistered;
 
         public event PendingChangesCommittedHandler ChangesCommitted;
 

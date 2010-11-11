@@ -26,9 +26,169 @@ namespace BioLink.Client.Taxa {
         private ObservableCollection<HierarchicalViewModelBase> _model;
         private HierarchicalViewModelBase _userRoot;
         private HierarchicalViewModelBase _globalRoot;
+        private bool _IsDragging;
+        private Point _startPoint;
 
         public TaxonFavorites() {
             InitializeComponent();
+            tvwFavorites.PreviewMouseLeftButtonDown +=new MouseButtonEventHandler(tvwFavorites_PreviewMouseLeftButtonDown);
+            tvwFavorites.PreviewMouseMove += new MouseEventHandler(tvwFavorites_PreviewMouseMove);
+            this.ChangeRegistered += new Action<IList<DatabaseAction>>((changes) => {
+                EnableButtons();
+            });
+        }
+
+        void tvwFavorites_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+            _startPoint = e.GetPosition(tvwFavorites);
+        }
+
+        void tvwFavorites_PreviewMouseMove(object sender, MouseEventArgs e) {
+            CommonPreviewMouseMove(e, tvwFavorites);
+        }
+
+        private void CommonPreviewMouseMove(MouseEventArgs e, TreeView treeView) {
+
+            if (_startPoint == null) {
+                return;
+            }
+
+            if (e.LeftButton == MouseButtonState.Pressed && !_IsDragging) {
+                Point position = e.GetPosition(treeView);
+                if (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance) {
+                    if (treeView.SelectedItem != null) {
+                        IInputElement hitelement = treeView.InputHitTest(_startPoint);
+                        TreeViewItem item = GetTreeViewItemClicked((FrameworkElement)hitelement, treeView);
+                        if (item != null) {
+                            StartDrag(e, treeView, item);
+                        }
+                    }
+                }
+            }
+        }
+
+        private UIElement _dropScope;
+
+        private void StartDrag(MouseEventArgs mouseEventArgs, TreeView treeView, TreeViewItem item) {
+
+            // Can only drag actual favorites (or favorite groups)...
+            var selected = treeView.SelectedItem as TaxonFavoriteViewModel;
+            if (selected != null) {
+                
+                string desc = "";
+                var data = new DataObject("TaxonFavorite", selected);
+
+                if (selected.IsGroup) {
+                    desc = String.Format("Favorite Folder: Name={0} [FavoriteID={1}]", selected.TaxaFullName, selected.FavoriteID);
+                } else {
+                    desc = String.Format("Taxon Favorite: Name={0} [TaxonID={1}, FavoriteID={2}]", selected.TaxaFullName, selected.TaxaID, selected.FavoriteID);
+                    data.SetData(PinnableObject.DRAG_FORMAT_NAME, TaxonExplorer.Owner.CreatePinnableTaxon(selected.TaxaID));                        
+                }
+
+                
+                data.SetData(DataFormats.Text, desc);
+                
+
+                _dropScope = treeView;
+                _dropScope.AllowDrop = true;
+
+                GiveFeedbackEventHandler feedbackhandler = new GiveFeedbackEventHandler(DropScope_GiveFeedback);
+                item.GiveFeedback += feedbackhandler;
+
+                var handler = new DragEventHandler((s, e) => {
+                    TreeViewItem destItem = GetHoveredTreeViewItem(e);
+                    e.Effects = DragDropEffects.None;                    
+                    if (destItem != null) {
+                        destItem.IsSelected = true;                                                
+                        var destModel = destItem.Header as TaxonFavoriteViewModel;
+                        if (destModel != null) {
+                            if (destModel.IsGroup) {
+                                e.Effects = DragDropEffects.Move;
+                            }
+                        } else {
+                            if (destItem.Header is ViewModelPlaceholder) {
+                                e.Effects = DragDropEffects.Move;
+                            }
+                        }
+                    }
+                    e.Handled = true;
+                });
+
+                treeView.PreviewDragEnter += handler;
+                treeView.PreviewDragOver += handler;
+
+                var dropHandler = new DragEventHandler(treeView_Drop);
+                treeView.Drop += dropHandler;
+
+                
+                try {
+                    _IsDragging = true;
+                    DragDrop.DoDragDrop(item, data, DragDropEffects.Copy | DragDropEffects.Move | DragDropEffects.Link);
+                } finally {
+                    _IsDragging = false;
+                    treeView.PreviewDragEnter -= handler;
+                    treeView.PreviewDragOver -= handler;
+                    treeView.Drop -= dropHandler;
+                }                
+            }
+
+            InvalidateVisual();
+        }
+
+        void treeView_Drop(object sender, DragEventArgs e) {
+            var source = e.Data.GetData("TaxonFavorite") as TaxonFavoriteViewModel;
+
+            if (source != null) {
+                var target = tvwFavorites.SelectedItem as TaxonFavoriteViewModel;
+                if (target != null && target.IsGroup) {
+                    target.IsExpanded = true;
+                    if (source.Parent != null) {
+                        source.Parent.Children.Remove(source);
+                    }
+                    target.Children.Add(source);
+                    source.FavoriteParentID = target.FavoriteID;
+                    source.IsGroup = target.IsGlobal;       // May have changed root
+                    source.Parent = target;
+                    RegisterPendingChange(new MoveFavoriteAction(source.Model, target.Model));
+                } else {
+                    if (tvwFavorites.SelectedItem is ViewModelPlaceholder) {
+                        var root = tvwFavorites.SelectedItem as ViewModelPlaceholder;
+                        root.IsExpanded = true;
+                        if (source.Parent != null) {
+                            source.Parent.Children.Remove(source);
+                        }
+                        root.Children.Add(source);
+                        source.FavoriteParentID = 0;
+                        source.IsGroup = (bool) root.Tag;
+                        source.Parent = root;
+                        RegisterPendingChange(new MoveFavoriteAction(source.Model, null));
+
+                    }
+                }
+            }
+        }
+
+        void DropScope_GiveFeedback(object sender, GiveFeedbackEventArgs mouseEventArgs) {
+            mouseEventArgs.UseDefaultCursors = true;
+            mouseEventArgs.Handled = true;
+        }
+
+        private TreeViewItem GetHoveredTreeViewItem(DragEventArgs e) {
+            TreeView tvw = _dropScope as TreeView;
+            DependencyObject elem = tvw.InputHitTest(e.GetPosition(tvw)) as DependencyObject;
+            while (elem != null && !(elem is TreeViewItem)) {
+                elem = VisualTreeHelper.GetParent(elem);
+            }
+            return elem as TreeViewItem;
+        }
+
+
+        private TreeViewItem GetTreeViewItemClicked(FrameworkElement sender, TreeView treeView) {
+            Point p = sender.TranslatePoint(new Point(1, 1), treeView);
+            DependencyObject obj = treeView.InputHitTest(p) as DependencyObject;
+            while (obj != null && !(obj is TreeViewItem)) {
+                obj = VisualTreeHelper.GetParent(obj);
+            }
+            return obj as TreeViewItem;
         }
 
         public void BindUser(User user, TaxonExplorer explorer) {
@@ -56,22 +216,16 @@ namespace BioLink.Client.Taxa {
             }
         }
 
-        private void ModelChanged(object source, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
-            EnableButtons();
-        }
-
         private void BuildFavoritesModel(HierarchicalViewModelBase root, bool global) {
             var service = new SupportService(User);
             var list = service.GetTopTaxaFavorites(global);
 
             foreach (TaxonFavorite item in list) {
                 var viewModel = new TaxonFavoriteViewModel(item);
+                viewModel.Parent = root;
                 if (item.NumChildren > 0) {
                     viewModel.LazyLoadChildren += new HierarchicalViewModelAction(viewModel_LazyLoadChildren);
                     viewModel.Children.Add(new ViewModelPlaceholder("Loading..."));
-                    viewModel.DataChanged += new DataChangedHandler((m) => {
-                        EnableButtons();
-                    });
                 }
                 root.Children.Add(viewModel);
                 root.IsExpanded = true;
@@ -94,12 +248,10 @@ namespace BioLink.Client.Taxa {
                     vm.Children.Clear();
                     list.ForEach((tf) => {
                         var viewModel = new TaxonFavoriteViewModel(tf);
+                        viewModel.Parent = item;
                         if (tf.NumChildren > 0) {
                             viewModel.LazyLoadChildren += new HierarchicalViewModelAction(viewModel_LazyLoadChildren);
                             viewModel.Children.Add(new ViewModelPlaceholder("Loading..."));
-                            viewModel.DataChanged += new DataChangedHandler((m) => {
-                                EnableButtons();
-                            });
                         }
                         vm.Children.Add(viewModel);
                     });
@@ -303,13 +455,17 @@ namespace BioLink.Client.Taxa {
             TaxonFavoriteViewModel viewModel = new TaxonFavoriteViewModel(model);
             if (global) {
                 _globalRoot.IsExpanded = true;
-                _globalRoot.Children.Add(viewModel);                
+                _globalRoot.Children.Add(viewModel);
+                viewModel.Parent = _globalRoot;
             } else {
                 _userRoot.IsExpanded = true;
                 _userRoot.Children.Add(viewModel);
+                viewModel.Parent = _userRoot;
             }
 
             viewModel.IsSelected = true;
+
+            RegisterPendingChange(new InsertTaxonFavoriteAction(viewModel.Model));
         }
 
         internal void AddFavoriteGroup(HierarchicalViewModelBase parent) {
@@ -336,14 +492,12 @@ namespace BioLink.Client.Taxa {
             model.FavoriteParentID = parentGroupID;
 
             TaxonFavoriteViewModel viewModel = new TaxonFavoriteViewModel(model);
+            viewModel.Parent = parent;
 
             parent.Children.Add(viewModel);
 
             RegisterUniquePendingChange(new InsertFavoriteGroupAction(model, FavoriteType.Taxa));
-
             viewModel.IsRenaming = true;
-
-            EnableButtons();            
         }
 
         private void EnableButtons() {
@@ -358,6 +512,7 @@ namespace BioLink.Client.Taxa {
 
             taxonFavoriteViewModel.IsRenaming = true;
         }
+
     }
 
 }
