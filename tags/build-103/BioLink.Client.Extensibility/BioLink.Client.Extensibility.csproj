@@ -1,0 +1,376 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{044BD5B6-6213-4B50-9CE9-110FC3A43479}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BioLink.Client.Extensibility</RootNamespace>
+    <AssemblyName>BioLink.Client.Extensibility</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;SkipPostSharp</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;SkipPostSharp</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=3.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\shared\lib\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="PresentationFramework.Aero" />
+    <Reference Include="PresentationFramework.Luna" />
+    <Reference Include="PresentationFramework.Royale" />
+    <Reference Include="SplitButtonWpf">
+      <HintPath>..\shared\lib\SplitButtonWpf.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite, Version=1.0.66.1, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\shared\lib\System.Data.SQLite.DLL</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="xunit, Version=1.6.1.1521, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\shared\lib\xunit.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AutoNumber\AutoNumberBox.cs" />
+    <Compile Include="AutoNumber\AutoNumberCategoryManager.xaml.cs">
+      <DependentUpon>AutoNumberCategoryManager.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AutoNumber\AutoNumberOptions.xaml.cs">
+      <DependentUpon>AutoNumberOptions.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="BioLinkCorePlugin.cs" />
+    <Compile Include="BioLinkPluginBase.cs" />
+    <Compile Include="ChangeContainer.cs" />
+    <Compile Include="ColorPicker\CustomColorPicker.xaml.cs">
+      <DependentUpon>CustomColorPicker.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ColorPicker\CustomColorSelector.xaml.cs">
+      <DependentUpon>CustomColorSelector.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Command.cs" />
+    <Compile Include="ControlHostWindow.xaml.cs">
+      <DependentUpon>ControlHostWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DatabaseActionControl.cs" />
+    <Compile Include="EllipsisTextBox.xaml.cs">
+      <DependentUpon>EllipsisTextBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Export\CSVExporter.cs" />
+    <Compile Include="DelayedTriggerTextbox.xaml.cs">
+      <DependentUpon>DelayedTriggerTextbox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="EditableTextBlock.xaml.cs">
+      <DependentUpon>EditableTextBlock.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Export\CSVExporterOptionsWindow.xaml.cs">
+      <DependentUpon>CSVExporterOptionsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Export\Excel2003Exporter.cs" />
+    <Compile Include="Export\ExportData.xaml.cs">
+      <DependentUpon>ExportData.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Export\SQLiteExporter.cs" />
+    <Compile Include="FavoriteViewModel.cs" />
+    <Compile Include="HierarchicalViewModelBase.cs" />
+    <Compile Include="IBioLinkPlugin.cs" />
+    <Compile Include="IBioLinkReport.cs" />
+    <Compile Include="Export\TabularDataExporter.cs" />
+    <Compile Include="IChangeContainer.cs" />
+    <Compile Include="IClosable.cs" />
+    <Compile Include="IRegionSelector.cs" />
+    <Compile Include="LatLongInput.xaml.cs">
+      <DependentUpon>LatLongInput.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LookupControl.xaml.cs">
+      <DependentUpon>LookupControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MenuItemBuilder.cs" />
+    <Compile Include="MultiMedia\DuplicateItemOptions.xaml.cs">
+      <DependentUpon>DuplicateItemOptions.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MultiMedia\MultimediaControl.xaml.cs">
+      <DependentUpon>MultimediaControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MultiMedia\MultimediaDetails.xaml.cs">
+      <DependentUpon>MultimediaDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MultiMedia\MultimediaLinkViewModel.cs" />
+    <Compile Include="MultiMedia\MultimediaViewModel.cs" />
+    <Compile Include="MultiMedia\UpdateMultimediaAction.cs" />
+    <Compile Include="NumberUpDown.xaml.cs">
+      <DependentUpon>NumberUpDown.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="OwnershipDetails.xaml.cs">
+      <DependentUpon>OwnershipDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PickListControl.xaml.cs">
+      <DependentUpon>PickListControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PickListWindow.xaml.cs">
+      <DependentUpon>PickListWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PinBoard.xaml.cs">
+      <DependentUpon>PinBoard.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PluginManager.cs" />
+    <Compile Include="Config.cs" />
+    <Compile Include="ProgressWindow.xaml.cs">
+      <DependentUpon>ProgressWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="References\ReferencesControl.xaml.cs">
+      <DependentUpon>ReferencesControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="References\RefLinkDatabaseAction.cs" />
+    <Compile Include="References\RefLinkViewModel.cs" />
+    <Compile Include="ReportResults.xaml.cs">
+      <DependentUpon>ReportResults.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ResourceTempFileManager.cs" />
+    <Compile Include="rtf\BindableRichTextBox.cs" />
+    <Compile Include="rtf\RtfToPlainTextConverter.cs" />
+    <Compile Include="rtf\StringToRtfConverter.cs" />
+    <Compile Include="rtf\StringToXamlConverter.cs" />
+    <Compile Include="ShutdownProgess.xaml.cs">
+      <DependentUpon>ShutdownProgess.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TabularDataViewer.xaml.cs">
+      <DependentUpon>TabularDataViewer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="tests\PreferencesTests.cs" />
+    <Compile Include="TextBox.cs" />
+    <Compile Include="Traits\AddNewTraitWindow.xaml.cs">
+      <DependentUpon>AddNewTraitWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Traits\TraitCategoryType.cs" />
+    <Compile Include="Traits\TraitControl.xaml.cs">
+      <DependentUpon>TraitControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Traits\TraitDatabaseAction.cs" />
+    <Compile Include="Traits\TraitElementControl.xaml.cs">
+      <DependentUpon>TraitElementControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Traits\TraitViewModel.cs" />
+    <Compile Include="ViewModelBase.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BioLinkDAL\BioLink.Data.csproj">
+      <Project>{E74AFE93-4A44-43F6-8F94-03E457321ABC}</Project>
+      <Name>BioLink.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BioLinkUtilities\BioLink.Client.Utilities.csproj">
+      <Project>{85A21739-BE1C-4A09-9BF6-145A6162929E}</Project>
+      <Name>BioLink.Client.Utilities</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="lib\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="AutoNumber\AutoNumberCategoryManager.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AutoNumber\AutoNumberOptions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ColorPicker\CustomColorPicker.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ColorPicker\CustomColorSelector.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ControlHostWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DelayedTriggerTextbox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="EditableTextBlock.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="EllipsisTextBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Export\CSVExporterOptionsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Export\ExportData.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LatLongInput.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LookupControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MultiMedia\DuplicateItemOptions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MultiMedia\MultimediaControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MultiMedia\MultimediaDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="NumberUpDown.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="OwnershipDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PickListControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PickListWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PinBoard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ProgressWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="References\ReferencesControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ReportResults.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ShutdownProgess.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TabularDataViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Traits\AddNewTraitWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Traits\TraitControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Traits\TraitElementControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Resource Include="images\AddNew.png" />
+    <Resource Include="StringResources.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\export.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\loading-big.gif" />
+    <Resource Include="images\loading-small.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\csv_exporter.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\excel2007_exporter.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\excel2003_exporter.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\sqlite_exporter.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Delete.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Rename.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Find.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Ellipsis.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Properties.png" />
+    <Content Include="Resources\image.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
