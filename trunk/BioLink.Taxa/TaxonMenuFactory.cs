@@ -226,13 +226,15 @@ namespace BioLink.Client.Taxa {
                 builder.Separator();
                 builder.AddMenuItem(reports);
             }
-
-            builder.Separator();
+            
 
             if (favoriteId != null && favoriteId.HasValue) {
-                builder.New("Rename group").Handler(() => { Explorer.RenameFavoriteGroup(node as TaxonFavoriteViewModel); });
-
-                builder.New("Add favorite group").Handler(() => { Explorer.AddFavoriteGroup(node); }).End();
+                builder.Separator();
+                if (isFavoriteGroup) {
+                    builder.New("Rename group").Handler(() => { Explorer.RenameFavoriteGroup(node as TaxonFavoriteViewModel); });
+                    builder.New("Add favorite group").Handler(() => { Explorer.AddFavoriteGroup(node); }).End();
+                }
+                
                 builder.New("Remove from favorites").Handler(() => { Explorer.RemoveFromFavorites(favoriteId.Value); });
             }
 
