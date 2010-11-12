@@ -74,7 +74,11 @@ namespace BioLink.Data {
                 // first delete the existing favorite...
                 service.DeleteFavorite(Model.FavoriteID);
                 // then insert it again with a revised parent id...
-                service.InsertFavorite(Model.FavoriteType, 0, Model.ID1, Model.ID2, Model.IsGlobal);
+                if (Model.IsGroup) {
+                    service.InsertFavoriteGroup(Model.FavoriteType, Model.FavoriteParentID, Model.GroupName, Model.IsGlobal);
+                } else {
+                    service.InsertFavorite(Model.FavoriteType, 0, Model.ID1, Model.ID2, Model.IsGlobal);
+                }
             }
         }
 

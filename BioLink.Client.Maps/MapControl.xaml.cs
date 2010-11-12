@@ -202,6 +202,12 @@ namespace BioLink.Client.Maps {
         }
 
         private void DeselectAllRegions() {
+            // Deselect every node in the tree...Simply walk the tree...
+            _regionModel.Traverse((node) => {
+                node.IsSelected = false;
+            });
+
+            DrawSelectionLayer();
         }
         
         public void SelectRegionByPath(string regionPath) {
@@ -234,7 +240,6 @@ namespace BioLink.Client.Maps {
                         _unmatchedRegions.Add(selectedRegion);
                     }
                 }
-
 
                 using (var ds = layer.DataSource) {
                     ds.Open();

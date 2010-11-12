@@ -6,6 +6,11 @@ using System.Text;
 namespace BioLink.Data.Model {
 
     public class Favorite : BioLinkDataObject {
+
+        public Favorite() {
+            FavoriteID = -1;
+        }
+
         public string Username { get; set; }
         public int FavoriteID { get; set; }
         public int FavoriteParentID { get; set; }

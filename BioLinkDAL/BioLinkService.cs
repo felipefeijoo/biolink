@@ -540,6 +540,18 @@ namespace BioLink.Data {
         }
 
         #endregion
+
+        #region Notes
+
+        public List<Note> GetNotes(string category, int intraCatID) {
+            var mapper = new GenericMapperBuilder<Note>().PostMapAction((n)=> { 
+                n.NoteCategory = category;
+            }).build();
+
+            return StoredProcToList("spNoteList", mapper, _P("vchrCategory", category), _P("intIntraCatID", intraCatID));
+        }
+
+        #endregion
         /// <summary>
         /// Holds user credentials, and is the conduit to gaining a Connection object
         /// </summary>
