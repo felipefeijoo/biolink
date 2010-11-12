@@ -131,6 +131,9 @@
     <Compile Include="MultiMedia\MultimediaLinkViewModel.cs" />
     <Compile Include="MultiMedia\MultimediaViewModel.cs" />
     <Compile Include="MultiMedia\UpdateMultimediaAction.cs" />
+    <Compile Include="Notes\NotesControl.xaml.cs">
+      <DependentUpon>NotesControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="NumberUpDown.xaml.cs">
       <DependentUpon>NumberUpDown.xaml</DependentUpon>
     </Compile>
@@ -263,6 +266,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MultiMedia\MultimediaDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Notes\NotesControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

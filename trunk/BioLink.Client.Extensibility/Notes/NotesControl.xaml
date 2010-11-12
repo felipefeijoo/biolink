@@ -1,0 +1,34 @@
+﻿<ext:DatabaseActionControl x:Class="BioLink.Client.Extensibility.NotesControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ext="clr-namespace:BioLink.Client.Extensibility"
+             mc:Ignorable="d" 
+             d:DesignHeight="286" d:DesignWidth="316">
+    <Grid>        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+        <ListBox x:Name="lstNotes">
+            <ListBox.ItemTemplate>                
+                <DataTemplate DataType="{x:Type ext:NoteViewModel}">
+                    <Grid Loaded="Grid_Loaded">
+                        <Expander Header="{Binding NoteType}" HorizontalContentAlignment="Stretch">
+                            <ext:BindableRichTextBox RTF="{Binding NoteRTF}" Margin="0,0,10,0"/>
+                        </Expander>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>            
+                        
+        </ListBox>
+        
+        
+        
+        <Grid Grid.Row="1">
+            <Button Content="Click" Click="Button_Click" />
+        </Grid>
+
+    </Grid>
+</ext:DatabaseActionControl>

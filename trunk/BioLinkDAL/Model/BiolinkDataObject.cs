@@ -5,6 +5,16 @@ using System.Text;
 
 namespace BioLink.Data.Model {
 
+    [AttributeUsage(AttributeTargets.Property)]
+    public class MappingInfo : System.Attribute {
+
+        public MappingInfo(string column) {
+            Column = column;
+        }
+
+        public string Column { get; set; }
+    }
+
     // Place holder class representing all Biolink Transfer Objects (TO)
     public abstract class BioLinkDataObject {
     }

@@ -148,7 +148,9 @@ namespace BioLink.Client.Taxa {
                     source.FavoriteParentID = target.FavoriteID;
                     source.IsGroup = target.IsGlobal;       // May have changed root
                     source.Parent = target;
-                    RegisterPendingChange(new MoveFavoriteAction(source.Model, target.Model));
+                    if (source.FavoriteID >= 0) {
+                        RegisterPendingChange(new MoveFavoriteAction(source.Model, target.Model));
+                    }
                 } else {
                     if (tvwFavorites.SelectedItem is ViewModelPlaceholder) {
                         var root = tvwFavorites.SelectedItem as ViewModelPlaceholder;
@@ -160,7 +162,10 @@ namespace BioLink.Client.Taxa {
                         source.FavoriteParentID = 0;
                         source.IsGroup = (bool) root.Tag;
                         source.Parent = root;
-                        RegisterPendingChange(new MoveFavoriteAction(source.Model, null));
+                        // If it is a new favorite no need to move, because the insert will occur with the latest (correct) linkages.
+                        if (source.FavoriteID >= 0) {
+                            RegisterPendingChange(new MoveFavoriteAction(source.Model, null));
+                        }
 
                     }
                 }
@@ -486,6 +491,7 @@ namespace BioLink.Client.Taxa {
             }
 
             TaxonFavorite model = new TaxonFavorite();
+
             model.IsGroup = true;
             model.GroupName = "<New Folder>";
             model.IsGlobal = isGlobal;

@@ -33,6 +33,15 @@ namespace BioLink.Data {
             }
 
             foreach (PropertyInfo propInfo in props) {
+
+
+                var x = Attribute.GetCustomAttribute(propInfo, typeof(MappingInfo));
+                    //propInfo.GetCustomAttributes(typeof(ColumnMapping), false);
+                if (x != null) {
+                    var mapping = x as MappingInfo;
+                    propMap.Add(mapping.Column, propInfo);
+                }
+
                 if (propInfo.CanWrite) {
                     propMap.Add(propInfo.Name, propInfo);
                 }

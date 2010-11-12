@@ -66,6 +66,14 @@ namespace BioLink.Client.Taxa {
                     mmc.PopulateControl();
                 }
             });
+
+            var notes = new NotesControl(User, TraitCategoryType.Taxon, taxon.TaxaID);
+            AddTabItem("Notes", notes, () => {
+                if (!notes.IsPopulated) {
+                    notes.PopulateControl();
+                }
+            });
+
             AddTabItem("Ownership", new OwnershipDetails(taxon.Taxon));
 
             this.Taxon = taxon;
