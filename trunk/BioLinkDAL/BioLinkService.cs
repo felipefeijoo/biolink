@@ -546,9 +546,18 @@ namespace BioLink.Data {
         public List<Note> GetNotes(string category, int intraCatID) {
             var mapper = new GenericMapperBuilder<Note>().PostMapAction((n)=> { 
                 n.NoteCategory = category;
+                n.IntraCatID = intraCatID;
             }).build();
 
             return StoredProcToList("spNoteList", mapper, _P("vchrCategory", category), _P("intIntraCatID", intraCatID));
+        }
+
+        public List<string> GetNoteTypesForCategory(string categoryName) {
+            var results = new List<string>();
+            StoredProcReaderForEach("spNoteTypeListForCategory", (reader) => {
+                results.Add(reader["Note"] as string);
+            }, _P("vchrCategory", categoryName));
+            return results;
         }
 
         #endregion

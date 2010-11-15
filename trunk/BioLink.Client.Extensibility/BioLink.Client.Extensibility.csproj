@@ -131,6 +131,9 @@
     <Compile Include="MultiMedia\MultimediaLinkViewModel.cs" />
     <Compile Include="MultiMedia\MultimediaViewModel.cs" />
     <Compile Include="MultiMedia\UpdateMultimediaAction.cs" />
+    <Compile Include="Notes\NoteControl.xaml.cs">
+      <DependentUpon>NoteControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Notes\NotesControl.xaml.cs">
       <DependentUpon>NotesControl.xaml</DependentUpon>
     </Compile>
@@ -269,6 +272,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Notes\NoteControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Notes\NotesControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -364,6 +371,21 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="images\Properties.png" />
+    <Resource Include="images\Cut.png" />
+    <Resource Include="images\Copy.png" />
+    <Resource Include="images\Paste.png" />
+    <Resource Include="images\Redo.png" />
+    <Resource Include="images\Undo.png" />
+    <Resource Include="images\TextGrow.png" />
+    <Resource Include="images\TextShrink.png" />
+    <Resource Include="images\BulletList.png" />
+    <Resource Include="images\NumberedList.png" />
+    <Resource Include="images\paragraphcenterjustify.png" />
+    <Resource Include="images\paragraphdecreaseindentation.png" />
+    <Resource Include="images\paragraphfulljustify.png" />
+    <Resource Include="images\paragraphincreaseindentation.png" />
+    <Resource Include="images\paragraphleftjustify.png" />
+    <Resource Include="images\paragraphrightjustify.png" />
     <Content Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>

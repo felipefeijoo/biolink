@@ -44,7 +44,15 @@ namespace BioLink.Client.Extensibility {
                 return viewModel;
             }));
 
-            lstNotes.ItemsSource = _model;
+            LoadNotesPanel();
+        }
+
+        private void LoadNotesPanel() {
+            notesPanel.Children.Clear();
+            foreach (NoteViewModel m in _model) {
+                var control = new NoteControl(m);
+                notesPanel.Children.Add(control);
+            }
         }
 
         public void PopulateControl() {
@@ -62,19 +70,36 @@ namespace BioLink.Client.Extensibility {
 
         public int IntraCatID { get; private set; }
 
-        private void Expander_Expanded(object sender, RoutedEventArgs e) {
-            MessageBox.Show("jher");
+        private void btnAddNew_Click(object sender, RoutedEventArgs e) {
+            AddNewNote();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e) {
-            lstNotes.ItemsSource = _model;
-        }
+        private void AddNewNote() {
+            var service = new TaxaService(User);
 
-        private void Grid_Loaded(object sender, RoutedEventArgs e) {
-            Grid g = (Grid)sender;
-            Binding b = new Binding("ActualWidth");
-            b.Source = lstNotes;            
-            g.SetBinding(Grid.WidthProperty, b);
+            List<String> noteTypes = service.GetNoteTypesForCategory(TraitCategory.ToString());
+
+            var picklist = new PickListWindow(User, "Choose a trait type...", () => {
+                return noteTypes;
+            }, (text) => {
+                noteTypes.Add(text);
+                return true;
+            });
+
+            picklist.Owner = this.FindParentWindow();
+            if (picklist.ShowDialog().ValueOrFalse()) {
+                Note t = new Note();
+                t.NoteID = -1;
+                t.NoteType = picklist.SelectedValue;
+                t.NoteCategory = TraitCategory.ToString();
+                t.IntraCatID = IntraCatID;
+                t.NoteRTF = "New Note";
+
+                NoteViewModel viewModel = new NoteViewModel(t);
+                _model.Add(viewModel);
+//                RegisterUniquePendingChange(new UpdateTraitDatabaseAction(t));
+                LoadNotesPanel();
+            }
         }
 
     }

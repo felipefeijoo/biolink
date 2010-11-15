@@ -9,6 +9,8 @@ namespace BioLink.Data.Model {
 
         public string NoteCategory { get; set; }
 
+        public int IntraCatID { get; set; }
+
         public int NoteID { get; set; }
 
         public string NoteType { get; set; }
