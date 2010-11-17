@@ -242,7 +242,7 @@ namespace BioLink.Client.Taxa {
         }
 
         private BitmapSource ConstructIcon() {
-            // The top level container nodes don't get icons...
+            // The top level container nodes don'note get icons...
             if (IsRootNode) {
                 return null;
             }
@@ -256,7 +256,7 @@ namespace BioLink.Client.Taxa {
             // This is used to construct image uri's, if required...
             string assemblyName = typeof(TaxonViewModel).Assembly.GetName().Name;
 
-            // Available and Literature names don't have icons either
+            // Available and Literature names don'note have icons either
             if (isAvailableOrLiteratureName) {
                 // Unless they've been changed, in which they get the 
                 if (isChanged) {

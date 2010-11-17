@@ -33,6 +33,16 @@
             
             <Separator />
             
+            <Button x:Name="btnExpandALL" Style="{StaticResource formatImageStyle}" ToolTip="Expand all" Click="btnExpandALL_Click">
+                <Image Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" Source="..\images\ExpandAll.png"></Image>
+            </Button>
+            
+            <Button x:Name="btnCollapseAll" Style="{StaticResource formatImageStyle}" ToolTip="Collapse all" Click="btnCollapseAll_Click">
+                <Image Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" Source="..\images\CollapseAll.png"></Image>
+            </Button>
+
+            <Separator />
+
             <Button Style="{StaticResource formatImageStyle}" Command="ApplicationCommands.Cut" ToolTip="Cut">
                 <Image Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" Source="..\images\Cut.png"></Image>
             </Button>
@@ -91,8 +101,15 @@
                 <Image Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" Source="..\images\ParagraphIncreaseIndentation.png"></Image>
             </Button>
             <Button Style="{StaticResource formatImageStyle}" Command="EditingCommands.DecreaseIndentation" ToolTip="Decrease Indent">
-                <Image Stretch="None" Source="..\images\ParagraphDecreaseIndentation.png"></Image>
+                <Image Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" Source="..\images\ParagraphDecreaseIndentation.png"></Image>
             </Button>
+            <Separator />
+            
+            <Button x:Name="btnFont" Style="{StaticResource formatImageStyle}" ToolTip="Change font" Click="btnFont_Click">
+                <Image Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" Source="..\images\Font.png" ></Image>
+            </Button>
+
+            <ext:CustomColorPicker VerticalAlignment="Center" x:Name="btnColor"/>
 
         </ToolBar>
 

@@ -105,6 +105,14 @@
     </Compile>
     <Compile Include="Export\SQLiteExporter.cs" />
     <Compile Include="FavoriteViewModel.cs" />
+    <Compile Include="FontChooser\FontChooser.xaml.cs">
+      <DependentUpon>FontChooser.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FontChooser\FontFamilyListItem.cs" />
+    <Compile Include="FontChooser\FontSizeListItem.cs" />
+    <Compile Include="FontChooser\NameDictionaryHelper.cs" />
+    <Compile Include="FontChooser\TypefaceListItem.cs" />
+    <Compile Include="FontChooser\TypographicFeatureListItem.cs" />
     <Compile Include="HierarchicalViewModelBase.cs" />
     <Compile Include="IBioLinkPlugin.cs" />
     <Compile Include="IBioLinkReport.cs" />
@@ -131,8 +139,12 @@
     <Compile Include="MultiMedia\MultimediaLinkViewModel.cs" />
     <Compile Include="MultiMedia\MultimediaViewModel.cs" />
     <Compile Include="MultiMedia\UpdateMultimediaAction.cs" />
+    <Compile Include="Notes\NoteActions.cs" />
     <Compile Include="Notes\NoteControl.xaml.cs">
       <DependentUpon>NoteControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Notes\NoteProperties.xaml.cs">
+      <DependentUpon>NoteProperties.xaml</DependentUpon>
     </Compile>
     <Compile Include="Notes\NotesControl.xaml.cs">
       <DependentUpon>NotesControl.xaml</DependentUpon>
@@ -252,6 +264,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="FontChooser\FontChooser.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="LatLongInput.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -273,6 +289,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Notes\NoteControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Notes\NoteProperties.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -386,6 +406,9 @@
     <Resource Include="images\paragraphincreaseindentation.png" />
     <Resource Include="images\paragraphleftjustify.png" />
     <Resource Include="images\paragraphrightjustify.png" />
+    <Resource Include="images\CollapseAll.png" />
+    <Resource Include="images\ExpandAll.png" />
+    <Resource Include="images\Font.png" />
     <Content Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>

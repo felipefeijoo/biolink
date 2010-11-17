@@ -75,7 +75,7 @@ namespace BioLinkApplication {
 
                 // Save the new list
                 Config.SetGlobal("connection.profiles", _profiles);
-                // and we don't need to do this again!
+                // and we don'note need to do this again!
                 Config.SetGlobal("connection.skiplegacyimport", true);
             }
 

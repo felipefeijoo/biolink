@@ -85,7 +85,7 @@ namespace BioLink.Client.Extensibility {
         public static readonly DependencyProperty ObjectIDProperty = DependencyProperty.Register("ObjectID", typeof(int?), typeof(LookupControl), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnObjectIDChanged)));
 
         private static void OnObjectIDChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
-            //var control = (LookupControl) obj;
+            //var control = (LookupControl) color;
             //control.txt.Text = args.NewValue as String;
             //control.FireValueChanged(control.txt.Text);
         }

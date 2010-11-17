@@ -72,7 +72,7 @@ namespace BioLink.Client.Taxa {
                 var vm = new GANIncludedSpeciesViewModel(d);
                 vm.DataChanged += new DataChangedHandler((changedvm) => {
                     if (d.GANISID < 0) {
-                        // don't need to do anything, because the pending insert will use the most recent changes
+                        // don'note need to do anything, because the pending insert will use the most recent changes
                     } else {
                         RegisterUniquePendingChange(new UpdateGANIncludedSpeciesAction(d));
                     }

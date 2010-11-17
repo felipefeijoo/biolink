@@ -381,8 +381,7 @@ namespace BioLink.Data {
         }
 
         #endregion
-
-
+        
         #region Multimedia
 
         public List<MultimediaLink> GetMultimediaItems(string category, int intraCatID) {
@@ -558,6 +557,41 @@ namespace BioLink.Data {
                 results.Add(reader["Note"] as string);
             }, _P("vchrCategory", categoryName));
             return results;
+        }
+
+        public void DeleteNote(int noteID) {
+            StoredProcUpdate("spNoteDelete", _P("intNoteID", noteID));
+        }
+
+        public int InsertNote(string category, int intraCatID, string noteType, string note, string author, string comments, bool useInReports, int refID, string refPages) {
+            var retval = ReturnParam("NewNoteID", SqlDbType.Int);
+            StoredProcUpdate("spNoteInsert",
+                _P("vchrCategory", category),
+                _P("intIntraCatID", intraCatID),
+                _P("vchrNoteType", noteType),
+                _P("txtNote", note),
+                _P("vchrAuthor", author),
+                _P("txtComments", comments),
+                _P("bitUseInReports", useInReports),
+                _P("intRefID", refID),
+                _P("vchrRefPages", refPages),
+                retval);
+
+            return (int) retval.Value;
+        }
+
+        public void UpdateNote(int noteID, string category, string noteType, string note, string author, string comments, bool useInReports, int refID, string refPages) {
+            StoredProcUpdate("spNoteUpdate",
+                _P("intNoteID", noteID),
+                _P("vchrCategory", category),
+                _P("vchrNoteType", noteType),
+                _P("txtNote", note),
+                _P("vchrAuthor", author),
+                _P("txtComments", comments),
+                _P("bitUseInReports", useInReports),
+                _P("intRefID", refID),
+                _P("vchrRefPages", refPages)
+            );
         }
 
         #endregion
