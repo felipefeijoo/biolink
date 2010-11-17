@@ -11,6 +11,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using BioLink.Data;
+using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Extensibility {
     /// <summary>
@@ -24,12 +26,70 @@ namespace BioLink.Client.Extensibility {
         }
         #endregion
 
-        public NoteControl(NoteViewModel model) {
+        public NoteControl(User user, NoteViewModel model) {
             InitializeComponent();
+            this.User = user;
             Model = model;
             this.DataContext = model;
+            txtNote.SelectionChanged += new RoutedEventHandler(txtNote_SelectionChanged);
         }
 
+        void txtNote_SelectionChanged(object sender, RoutedEventArgs e) {
+            if (TextSelectionChanged != null) {
+                TextSelectionChanged(this, Model);
+            }
+        }
+
+        private void btnDelete_Click(object sender, RoutedEventArgs e) {
+            RaiseNoteDeleted();
+        }
+
+        private void btnProperties_Click(object sender, RoutedEventArgs e) {
+            ShowNoteProperties();
+        }
+
+        private void ShowNoteProperties() {            
+            var form = new NoteProperties(User, Model);
+            form.Owner = this.FindParentWindow();
+            form.ShowDialog();
+        }
+
+        private void RaiseNoteChanged() {
+            if (NoteChanged != null) {
+                NoteChanged(this, Model);
+            }
+        }
+
+        private void RaiseNoteDeleted() {
+            if (NoteDeleted != null) {
+                NoteDeleted(this, Model);
+            }
+        }
+
+        #region Properties
+
         public NoteViewModel Model { get; private set; }
+
+        public bool IsExpanded {
+            get { return expander.IsExpanded; }
+            set { expander.IsExpanded = value; }
+        }
+
+        public User User { get; private set; }
+
+        #endregion
+
+        #region Events
+
+        public event NoteEventHandler NoteDeleted;
+
+        public event NoteEventHandler NoteChanged;
+
+        public event NoteEventHandler TextSelectionChanged;
+
+        public delegate void NoteEventHandler(object source, NoteViewModel note);
+
+        #endregion
+
     }
 }

@@ -14,7 +14,7 @@ namespace BioLink.Client.Extensibility.Export {
             InitializeComponent();
             List<DelimiterItem> model = new List<DelimiterItem>();
             model.Add( new DelimiterItem(",", ","));
-            model.Add( new DelimiterItem("Tab", "\t"));
+            model.Add( new DelimiterItem("Tab", "\note"));
             model.Add(new DelimiterItem("|", "|"));
             model.Add(new DelimiterItem(";", ";"));
 

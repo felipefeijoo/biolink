@@ -43,25 +43,67 @@ namespace BioLink.Client.Extensibility {
                 viewModel.DataChanged += new DataChangedHandler(viewModel_DataChanged);
                 return viewModel;
             }));
-
+            btnColor.ColorSelected += new Action<Color>(btnColor_SelectedColorChanged);
             LoadNotesPanel();
         }
 
-        private void LoadNotesPanel() {
+        void btnColor_SelectedColorChanged(Color color) {
+            if (_currentNoteControl != null) {
+                _currentNoteControl.txtNote.Selection.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(color));
+            }
+        }
+
+        private void LoadNotesPanel(NoteViewModel selected = null) {
             notesPanel.Children.Clear();
             foreach (NoteViewModel m in _model) {
-                var control = new NoteControl(m);
+                var control = new NoteControl(User, m);
+                control.NoteDeleted += new NoteControl.NoteEventHandler(control_NoteDeleted);
+                control.TextSelectionChanged +=new NoteControl.NoteEventHandler(control_TextSelectionChanged);
+
+                if (selected != null && selected == m) {
+                    control.IsExpanded = true;
+                }
                 notesPanel.Children.Add(control);
             }
+        }
+
+        private NoteControl _currentNoteControl;        
+
+        private void control_TextSelectionChanged(object source, NoteViewModel note) {
+            _currentNoteControl = source as NoteControl;
+            if (_currentNoteControl != null) {
+                var selectionBrush = _currentNoteControl.txtNote.Selection.GetPropertyValue(TextElement.ForegroundProperty) as SolidColorBrush;
+                if (selectionBrush != null) {
+                    btnColor.SelectedColor = selectionBrush.Color;
+                } else {
+                    btnColor.SelectedColor = Color.FromArgb(0, 0, 0, 0);
+                }                
+            }
+        }
+
+        private void control_NoteDeleted(object source, NoteViewModel note) {
+
+            _model.Remove(note);
+            if (note.NoteID >= 0) {
+                RegisterPendingChange(new DeleteNoteAction(note.Model));
+            }
+            LoadNotesPanel();
         }
 
         public void PopulateControl() {
             this.InvokeIfRequired(() => {
             });            
+
+            
         }
 
         void viewModel_DataChanged(ChangeableModelBase viewmodel) {
-            // to do, create an update action
+            var note = viewmodel as NoteViewModel;
+            if (note != null) {
+                if (note.NoteID >= 0) {
+                    RegisterUniquePendingChange(new UpdateNoteAction(note.Model));
+                }
+            }
         }
 
         public bool IsPopulated { get; private set; }
@@ -88,18 +130,67 @@ namespace BioLink.Client.Extensibility {
 
             picklist.Owner = this.FindParentWindow();
             if (picklist.ShowDialog().ValueOrFalse()) {
-                Note t = new Note();
-                t.NoteID = -1;
-                t.NoteType = picklist.SelectedValue;
-                t.NoteCategory = TraitCategory.ToString();
-                t.IntraCatID = IntraCatID;
-                t.NoteRTF = "New Note";
+                Note note = new Note();
+                note.NoteID = -1;
+                note.NoteType = picklist.SelectedValue;
+                note.NoteCategory = TraitCategory.ToString();
+                note.IntraCatID = IntraCatID;
+                note.NoteRTF = "New Note";
 
-                NoteViewModel viewModel = new NoteViewModel(t);
+                NoteViewModel viewModel = new NoteViewModel(note);
                 _model.Add(viewModel);
-//                RegisterUniquePendingChange(new UpdateTraitDatabaseAction(t));
-                LoadNotesPanel();
+                RegisterUniquePendingChange(new InsertNoteAction(note));
+                LoadNotesPanel(viewModel);
             }
+        }
+
+        private void ForEachNoteControl(Action<NoteControl> action) {
+            if (action == null) {
+                return;
+            }
+            foreach (NoteControl control in notesPanel.Children) {
+                action(control);
+            }
+        }
+
+        private void ExpandAll() {
+            ForEachNoteControl((control) => {
+                control.IsExpanded = true;
+            });
+        }
+
+        private void CollapseAll() {
+            ForEachNoteControl((control) => {
+                control.IsExpanded = false;
+            });
+        }
+
+        private void btnExpandALL_Click(object sender, RoutedEventArgs e) {
+            ExpandAll();
+        }
+
+        private void btnCollapseAll_Click(object sender, RoutedEventArgs e) {
+            CollapseAll();
+        }
+
+        private void btnFont_Click(object sender, RoutedEventArgs e) {
+            if (_currentNoteControl != null) {
+
+                var form = new FontChooser();
+                form.Owner = this.FindParentWindow();
+                form.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                if (form.ShowDialog().ValueOrFalse()) {
+                    form.ApplyPropertiesToTextSelection(_currentNoteControl.txtNote.Selection);
+                    //var selection = _currentNoteControl.txtNote.Selection;
+                    //selection.ApplyPropertyValue(TextElement.FontFamilyProperty, form.SelectedFontFamily);
+                    //selection.ApplyPropertyValue(TextElement.FontSizeProperty, form.SelectedFontSize);
+                    //selection.ApplyPropertyValue(TextElement.FontStretchProperty, form.SelectedFontStretch);
+                    //selection.ApplyPropertyValue(TextElement.FontStyleProperty, form.SelectedFontStyle);
+                    //selection.ApplyPropertyValue(TextElement.FontWeightProperty, form.SelectedFontWeight);                    
+                }
+            }
+
+
         }
 
     }

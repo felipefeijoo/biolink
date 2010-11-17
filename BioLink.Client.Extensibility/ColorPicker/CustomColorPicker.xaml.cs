@@ -17,6 +17,8 @@ namespace BioLink.Client.Extensibility {
 
         public event Action<Color> SelectedColorChanged;
 
+        public event Action<Color> ColorSelected;
+
         String _hexValue = string.Empty;
 
         public String HexValue {
@@ -54,7 +56,10 @@ namespace BioLink.Client.Extensibility {
 
         void ContextMenu_Closed(object sender, RoutedEventArgs e) {
             if (!b.ContextMenu.IsOpen) {
-                SelectedColor = cp.CustomColor;                
+                SelectedColor = cp.CustomColor;
+                if (ColorSelected != null) {
+                    ColorSelected(cp.CustomColor);
+                }
             }
             _isContexMenuOpened = false;
         }

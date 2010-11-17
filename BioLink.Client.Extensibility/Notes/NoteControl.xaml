@@ -20,13 +20,17 @@
         </Style>
     </UserControl.Resources>
 
-    <Grid>
-        <Expander Background="{x:Static SystemColors.ControlBrush}">
+    <Grid>        
+        <Expander Background="{x:Static SystemColors.ControlBrush}" x:Name="expander">            
             <Expander.Header>
                 <DockPanel Height="30" Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Expander}}, Path=ActualWidth}">
                     <TextBlock DockPanel.Dock="Left" Text="{Binding NoteType}" FontWeight="Bold" TextAlignment="Left" VerticalAlignment="Center" />
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Height="23" Width="23" Margin="0,0,30,0" Focusable="False">
+                        <Button x:Name="btnProperties" Height="23" Width="23" Margin="0,0,5,0" Focusable="False" Click="btnProperties_Click">
+                            <Image Source="..\images\Properties.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" />
+                        </Button>
+
+                        <Button x:Name="btnDelete" Height="23" Width="23" Margin="0,0,30,0" Focusable="False" Click="btnDelete_Click">
                             <Image Source="..\images\Delete.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" />
                         </Button>
                     </StackPanel>
@@ -37,8 +41,8 @@
                 <Grid.RowDefinitions>                    
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <ext:BindableRichTextBox Margin="24,0,0,0" RTF="{Binding NoteRTF}" />
+                <ext:BindableRichTextBox Margin="24,0,3,3" RTF="{Binding NoteRTF}" AcceptsTab="True" x:Name="txtNote" x:FieldModifier="public"/>
             </Grid>
-        </Expander>
+        </Expander>        
     </Grid>
 </UserControl>

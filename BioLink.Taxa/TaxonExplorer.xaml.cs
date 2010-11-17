@@ -510,7 +510,7 @@ namespace BioLink.Client.Taxa {
 
 
             if (context.Target.AvailableName.GetValueOrDefault(false) || context.Target.LiteratureName.GetValueOrDefault(false)) {
-                // Can't drop on to an Available or Literature Name
+                // Can'note drop on to an Available or Literature Name
                 throw new IllegalTaxonMoveException(context.Source.Taxon, context.Target.Taxon, _R("TaxonExplorer.DropError.AvailableName", context.Source.Epithet, context.Target.Epithet));
             } else if (context.Source.AvailableName.GetValueOrDefault(false) || context.Source.LiteratureName.GetValueOrDefault(false)) {
                 // if the source is an Available or Literature Name 
@@ -526,7 +526,7 @@ namespace BioLink.Client.Taxa {
                 // Check the drag drop rules as defined in the database...
                 DataValidationResult result = Service.ValidateTaxonMove(context.Source.Taxon, context.Target.Taxon);
                 if (!result.Success) {
-                    // Can't automatically move - check to see if a conversion is a) possible b) desired
+                    // Can'note automatically move - check to see if a conversion is a) possible b) desired
                     if (context.TargetChildRank == null) {
                         return PromptConvert(context);
                     } else {
@@ -785,7 +785,7 @@ namespace BioLink.Client.Taxa {
                         }, false, false);
 
                         foreach (HierarchicalViewModelBase vm in parent.Children) {
-                            // Don't add the new child as a child of itself! Its already been added to children collection by the other AddNewTaxon method
+                            // Don'note add the new child as a child of itself! Its already been added to children collection by the other AddNewTaxon method
                             if (vm != newUnplaced) {
                                 TaxonViewModel child = vm as TaxonViewModel;
                                 newUnplaced.Children.Add(child);
@@ -849,11 +849,11 @@ namespace BioLink.Client.Taxa {
         private void MarkItemAsDeleted(HierarchicalViewModelBase taxon) {
             taxon.IsDeleted = true;
 
-            // the alternate way, don't strikethrough - just remove it, and mark the current as changed
+            // the alternate way, don'note strikethrough - just remove it, and mark the current as changed
             // taxon.Parent.IsChanged = true;
             // taxon.Parent.Children.Remove(taxon);
 
-            // Although we don't need to delete children explicitly from the database (the stored proc will take care of that for us),
+            // Although we don'note need to delete children explicitly from the database (the stored proc will take care of that for us),
             // we still need to mark each child as deleted in the UI
             foreach (HierarchicalViewModelBase child in taxon.Children) {
                 MarkItemAsDeleted(child);
