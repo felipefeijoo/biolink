@@ -86,7 +86,7 @@ namespace BioLink.Client.Extensibility {
 
         private void AddNewTrait() {
 
-            var service = new TaxaService(User);
+            var service = new SupportService(User);
 
             List<String> traitTypes = service.GetTraitNamesForCategory(TraitCategory.ToString());
 

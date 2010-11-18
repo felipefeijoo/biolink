@@ -88,7 +88,7 @@
                                 
                             </Grid>
                             <Grid Grid.Row="1">
-                                <src:MyTreeView x:Name="tvwAllTaxa" Margin="0,0,0,0" BorderThickness="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" PreviewMouseMove="tvwAllTaxa_PreviewMouseMove" PreviewMouseLeftButtonDown="tvwAllTaxa_PreviewMouseLeftButtonDown" MouseRightButtonUp="tvwAllTaxa_MouseRightButtonUp">
+                                <ext:VTreeView x:Name="tvwAllTaxa" Margin="0,0,0,0" BorderThickness="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" PreviewMouseMove="tvwAllTaxa_PreviewMouseMove" PreviewMouseLeftButtonDown="tvwAllTaxa_PreviewMouseLeftButtonDown" MouseRightButtonUp="tvwAllTaxa_MouseRightButtonUp">
                                     <TreeView.Resources>
                                         <HierarchicalDataTemplate x:Name="AllTaxaDataTemplate" DataType="{x:Type src:TaxonViewModel}" ItemsSource="{Binding Path=Children, Converter={StaticResource SortedTaxonConverter}}">
                                             <StackPanel Orientation="Horizontal">
@@ -102,12 +102,12 @@
                                             </HierarchicalDataTemplate.Triggers>
                                         </HierarchicalDataTemplate>
 
-                                        <Style TargetType="{x:Type src:MyTreeViewItem}">
+                                        <Style TargetType="{x:Type ext:VTreeViewItem}">
                                             <Setter Property="ItemsPanel">
                                                 <Setter.Value>
                                                     <ItemsPanelTemplate>
                                                         <!-- This custom VSP exposes BringIntoView -->
-                                                        <src:MyVirtualizingStackPanel />
+                                                        <ext:BLVirtualizingStackPanel />
                                                     </ItemsPanelTemplate>
                                                 </Setter.Value>
                                             </Setter>
@@ -131,14 +131,14 @@
                                     <TreeView.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <!-- This custom VSP exposes BringIntoView -->
-                                            <src:MyVirtualizingStackPanel />
+                                            <ext:BLVirtualizingStackPanel />
                                         </ItemsPanelTemplate>
                                     </TreeView.ItemsPanel>
 
                                     <TreeViewItem>
                                         <TreeViewItem.Header>Loading...</TreeViewItem.Header>
                                     </TreeViewItem>
-                                </src:MyTreeView>
+                                </ext:VTreeView>
                             </Grid>
                         </Grid>
                     </Border>

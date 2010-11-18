@@ -1149,7 +1149,7 @@ namespace BioLink.Client.Taxa {
                 int index = (model.Parent == null ? 0 : model.Parent.Children.IndexOf(model));
                 
                 // Access the custom VSP that exposes BringIntoView
-                MyVirtualizingStackPanel itemsHost = FindVisualChild<MyVirtualizingStackPanel>(itemsControl);
+                BLVirtualizingStackPanel itemsHost = FindVisualChild<BLVirtualizingStackPanel>(itemsControl);
                 if (itemsHost != null) {
                     // Due to virtualization, BringIntoView may not predict the offset correctly the first time.
                     ItemsControl nextItemsControl = null;
@@ -1213,38 +1213,6 @@ namespace BioLink.Client.Taxa {
 
         internal void RenameFavoriteGroup(TaxonFavoriteViewModel taxonFavoriteViewModel) {
             favorites.RenameFavoriteGroup(taxonFavoriteViewModel);
-        }
-    }
-
-    [StyleTypedProperty(Property = "ItemContainerStyle", StyleTargetType = typeof(MyTreeViewItem))]
-    public class MyTreeView : TreeView {
-        protected override DependencyObject GetContainerForItemOverride() {
-            return new MyTreeViewItem();
-        }
-
-        protected override void PrepareContainerForItemOverride(DependencyObject element, object item) {
-            base.PrepareContainerForItemOverride(element, item);
-            ((TreeViewItem)element).IsExpanded = true;
-        }
-    }
-
-    [StyleTypedProperty(Property = "ItemContainerStyle", StyleTargetType = typeof(MyTreeViewItem))]
-    public class MyTreeViewItem : TreeViewItem {
-        protected override DependencyObject GetContainerForItemOverride() {
-            return new MyTreeViewItem();
-        }
-
-        protected override void PrepareContainerForItemOverride(DependencyObject element, object item) {
-            base.PrepareContainerForItemOverride(element, item);
-            // ((TreeViewItem)element).IsExpanded = true;
-        }
-    }
-
-    public class MyVirtualizingStackPanel : VirtualizingStackPanel {
-        public void BringIntoView(int index) {
-            if (index < this.VisualChildrenCount) {
-                this.BringIndexIntoView(index);
-            }
         }
     }
 
