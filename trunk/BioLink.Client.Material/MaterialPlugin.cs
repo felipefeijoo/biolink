@@ -28,9 +28,9 @@ namespace BioLink.Client.Material {
                 String.Format("{{'Name':'ShowMaterialExplorer', 'Header':'{0}'}}", _R("Material.Menu.ShowExplorer"))
             ));
 
-
-            _explorer = new MaterialExplorer();
+            _explorer = new MaterialExplorer(this);
             contrib.Add(new ExplorerWorkspaceContribution<MaterialExplorer>(this, "MaterialExplorer", _explorer, _R("MaterialExplorer.Title"), (explorer) => {
+                explorer.InitializeMaterialExplorer();
                 // initializer
             }));
 

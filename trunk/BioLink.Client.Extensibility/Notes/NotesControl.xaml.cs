@@ -117,7 +117,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void AddNewNote() {
-            var service = new TaxaService(User);
+            var service = new SupportService(User);
 
             List<String> noteTypes = service.GetNoteTypesForCategory(TraitCategory.ToString());
 

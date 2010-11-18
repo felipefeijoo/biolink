@@ -209,6 +209,7 @@
     </Compile>
     <Compile Include="Traits\TraitViewModel.cs" />
     <Compile Include="ViewModelBase.cs" />
+    <Compile Include="VirtualizingStackPanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BioLinkDAL\BioLink.Data.csproj">
