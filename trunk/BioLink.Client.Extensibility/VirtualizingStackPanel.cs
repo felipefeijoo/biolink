@@ -23,7 +23,6 @@ namespace BioLink.Client.Extensibility {
 
         protected override void PrepareContainerForItemOverride(DependencyObject element, object item) {
             base.PrepareContainerForItemOverride(element, item);
-            // ((TreeViewItem)element).IsExpanded = true;
         }
     }
 

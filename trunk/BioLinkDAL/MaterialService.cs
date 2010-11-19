@@ -12,14 +12,17 @@ namespace BioLink.Data {
             : base(user) {
         }
 
-        public List<RegionTreeNode> GetTopLevelRegions() {
-            var mapper = new GenericMapperBuilder<RegionTreeNode>().build();
-            return StoredProcToList<RegionTreeNode>("spRegionListTop", mapper);
+        public List<SiteExplorerNode> GetTopLevelExplorerItems() {
+            return GetExplorerElementsForParent(0, "Region");
         }
 
-        public List<RegionTreeNode> GetRegionsForParent(int parentID) {
-            var mapper = new GenericMapperBuilder<RegionTreeNode>().build();
-            return StoredProcToList<RegionTreeNode>("spRegionList", mapper, _P("intParentID", parentID));
+        public List<SiteExplorerNode> GetExplorerElementsForParent(int parentID, string parentElemType) {
+            var mapper = new GenericMapperBuilder<SiteExplorerNode>().build();
+            return StoredProcToList<SiteExplorerNode>("spSiteExplorerList", 
+                mapper, 
+                _P("intParentID", parentID), 
+                _P("vchrParentType", parentElemType)
+            );
         }
 
     }

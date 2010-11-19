@@ -9,7 +9,7 @@ namespace BioLink.Client.Maps {
     /// <summary>
     /// This class represents a node in a hierarchy of regions. A node with a null parent means its a top level (or root) node.
     /// Each node can have 0 or more children, each being RegionTreeNodes
-    /// Leaf Region nodes have attached to them a Shape File geometry, but intermediate 'branch' nodes do not.
+    /// Leaf Name nodes have attached to them a Shape File geometry, but intermediate 'branch' nodes do not.
     /// </summary>
     public class RegionTreeNode {
 
