@@ -36,17 +36,25 @@ namespace BioLink.Client.Material {
 
         public void InitializeMaterialExplorer() {
             this.InvokeIfRequired(() => {
-                var service = new MaterialService(User);                
-                var regionsModel = BuildRegionsModel(service.GetTopLevelRegions());
+                var service = new MaterialService(User);
+                var list = service.GetTopLevelExplorerItems();
+                list.Sort((item1, item2) => {
+                    int compare = item1.ElemType.CompareTo(item2.ElemType);
+                    if (compare == 0) {
+                        return item1.Name.CompareTo(item2.Name);
+                    } 
+                    return compare;
+                });
+                var regionsModel = BuildRegionsModel(list);
                 regionsNode.ItemsSource = regionsModel;
                 regionsNode.IsExpanded = true;
             });
 
         }
 
-        private ObservableCollection<HierarchicalViewModelBase> BuildRegionsModel(List<RegionTreeNode> list) {
+        private ObservableCollection<HierarchicalViewModelBase> BuildRegionsModel(List<SiteExplorerNode> list) {
             var regionsModel = new ObservableCollection<HierarchicalViewModelBase>(list.ConvertAll((model) => {
-                var viewModel = new RegionTreeNodeViewModel(model);
+                var viewModel = new SiteExplorerNodeViewModel(model);
 
                 if (model.NumChildren > 0) {
                     viewModel.Children.Add(new ViewModelPlaceholder("Loading..."));
@@ -59,14 +67,14 @@ namespace BioLink.Client.Material {
 
         void viewModel_LazyLoadChildren(HierarchicalViewModelBase item) {
 
-            var region = item as RegionTreeNodeViewModel;
-            if (region != null) {
-                region.Children.Clear();
+            var elem = item as SiteExplorerNodeViewModel;
+            if (elem != null) {
+                elem.Children.Clear();
                 var service = new MaterialService(User);
-                var list = service.GetRegionsForParent(region.RegionID);
+                var list = service.GetExplorerElementsForParent(elem.ElemID, elem.ElemType);
                 var viewModel = BuildRegionsModel(list);
                 foreach (HierarchicalViewModelBase childViewModel in viewModel) {
-                    region.Children.Add(childViewModel);
+                    elem.Children.Add(childViewModel);
                 }                
             }
         }
@@ -81,26 +89,57 @@ namespace BioLink.Client.Material {
         }
     }
 
-    public class RegionTreeNodeViewModel : GenericHierarchicalViewModelBase<RegionTreeNode> {
+    public class SiteExplorerNodeViewModel : GenericHierarchicalViewModelBase<SiteExplorerNode> {
 
-        public RegionTreeNodeViewModel(RegionTreeNode model)
+        public SiteExplorerNodeViewModel(SiteExplorerNode model)
             : base(model) {
-            this.DisplayLabel = model.Region;
+            this.DisplayLabel = model.Name;            
         }
 
-        public int RegionID {
-            get { return Model.RegionID; }
-            set { SetProperty(() => Model.RegionID, value); }
+        protected override string RelativeImagePath {
+            get {
+                var image = "Region";
+                switch (Model.ElemType.ToLower()) {
+                    case "region":
+                        image = "Region";
+                        break;
+                    case "site":
+                        image = "Site";
+                        break;
+                    case "sitevisit":
+                        image = "SiteVisit";
+                        break;
+                    case "material":
+                        image = "Material";
+                        break;
+                }
+                return String.Format(@"images\{0}.png", image); 
+            }
         }
 
-        public string Region {
-            get { return Model.Region; }
-            set { SetProperty(() => Model.Region, value); }
+        public int ElemID {
+            get { return Model.ElemID; }
+            set { SetProperty(() => Model.ElemID, value); }
+        }
+
+        public string ElemType {
+            get { return Model.ElemType; }
+            set { SetProperty(() => Model.ElemType, value); }
+        }
+
+        public string Name {
+            get { return Model.Name; }
+            set { SetProperty(() => Model.Name, value); }
         }
 
         public int ParentID {
             get { return Model.ParentID; }
             set { SetProperty(() => Model.ParentID, value); }
+        }
+
+        public int RegionID {
+            get { return Model.RegionID; }
+            set { SetProperty(() => Model.RegionID, value); }
         }
 
         public int NumChildren {

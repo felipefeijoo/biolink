@@ -101,6 +101,7 @@ namespace BioLink.Client.Extensibility {
         private bool _selected;
         private bool _deleted;
         private bool _renaming;
+        private BitmapSource _icon;
 
         public ViewModelBase() {
         }
@@ -120,7 +121,22 @@ namespace BioLink.Client.Extensibility {
             set { SetProperty("IsRenaming", ref _renaming, value); }
         }
 
-        public virtual BitmapSource Icon { get; set; }
+        public virtual BitmapSource Icon {
+            get {
+                if (_icon == null && RelativeImagePath != null) {
+                    string assemblyName = this.GetType().Assembly.GetName().Name;
+                    _icon = ImageCache.GetImage(String.Format("pack://application:,,,/{0};component/{1}", assemblyName, RelativeImagePath));
+                }
+                return _icon;
+            }
+            set {
+                _icon = value;
+            }
+        }
+
+        protected virtual string RelativeImagePath {
+            get { return null; }
+        }
 
         public object Tag { get; set; }
 
@@ -143,31 +159,12 @@ namespace BioLink.Client.Extensibility {
 
     public abstract class GenericViewModelBase<T> : ViewModelBase {
 
-        private BitmapSource _icon;
-
         protected GenericViewModelBase(T model) {
             this.Model = model;
         }
 
         protected void SetProperty<K>(Expression<Func<K>> wrappedPropertyExpr, K value, Action doIfChanged = null, bool changeAgnostic = false) {
             SetProperty(wrappedPropertyExpr, Model, value, doIfChanged, changeAgnostic);
-        }
-
-        protected virtual string RelativeImagePath {
-            get { return null; }
-        }
-
-        public override BitmapSource Icon {
-            get {
-                if (_icon == null && RelativeImagePath != null) {
-                    string assemblyName = this.GetType().Assembly.GetName().Name;
-                    _icon = ImageCache.GetImage(String.Format("pack://application:,,,/{0};component/{1}", assemblyName, RelativeImagePath));
-                }
-                return _icon;
-            }
-            set {
-                _icon = value;
-            }
         }
         
         public T Model { get; private set; }

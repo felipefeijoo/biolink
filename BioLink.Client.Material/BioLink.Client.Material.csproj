@@ -53,6 +53,7 @@
     <Compile Include="MaterialExplorer.xaml.cs">
       <DependentUpon>MaterialExplorer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SortingExplorerNodeConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BioLink.Client.Extensibility\BioLink.Client.Extensibility.csproj">
@@ -79,6 +80,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Region.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Material.png" />
+    <Resource Include="images\Site.png" />
+    <Resource Include="images\SiteVisit.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

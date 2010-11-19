@@ -10,7 +10,7 @@ namespace BioLink.Client.Taxa {
             : base(user, taxon) {
             RegisterViewer(new TabularDataViewerSource());
             DefineColumn("BiotaFullName", "Taxa");
-            DefineColumn("FullRegion", "Region");
+            DefineColumn("FullRegion", "Name");
             DefineColumn("Local", "Locality");
             DefineColumn("FormattedLatLong", "Lat/Long");
             DefineColumn("Collectors");

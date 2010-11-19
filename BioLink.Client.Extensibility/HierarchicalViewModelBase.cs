@@ -17,7 +17,6 @@ namespace BioLink.Client.Extensibility {
 
         public HierarchicalViewModelBase() {
             this.Children = new ObservableCollection<HierarchicalViewModelBase>();
-            // this.Children.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(Children_CollectionChanged);
         }
 
         void Children_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
