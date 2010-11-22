@@ -88,9 +88,11 @@
     <Compile Include="Model\Phrase.cs" />
     <Compile Include="Model\ReferenceSearchResult.cs" />
     <Compile Include="Model\RefLink.cs" />
+    <Compile Include="Model\Region.cs" />
     <Compile Include="Model\SiteExplorerNode.cs" />
     <Compile Include="Model\SANTypeData.cs" />
     <Compile Include="Model\SANTypeDataType.cs" />
+    <Compile Include="Model\SiteExplorerNodeType.cs" />
     <Compile Include="Model\SpeciesAvailableName.cs" />
     <Compile Include="Model\TaxonDistribution.cs" />
     <Compile Include="Model\Trait.cs" />

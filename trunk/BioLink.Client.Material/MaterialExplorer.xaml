@@ -13,10 +13,14 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid>        
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
         <TabControl>
             <TabItem Header="Contents">
-                <ext:VTreeView x:Name="tvwMaterial" BorderThickness="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard">
+                <ext:VTreeView x:Name="tvwMaterial" BorderThickness="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" MouseRightButtonUp="tvwMaterial_MouseRightButtonUp" MouseRightButtonDown="tvwMaterial_MouseRightButtonDown">
                     
                     <TreeView.Resources>
                         <HierarchicalDataTemplate DataType="{x:Type src:SiteExplorerNodeViewModel}" ItemsSource="{Binding Path=Children, Converter={StaticResource SortingExplorerNodeConverter}}">
@@ -42,10 +46,9 @@
                             </Setter>
 
                             <Setter Property="IsExpanded" Value="{Binding Path=IsExpanded, Mode=TwoWay}" />
-
                             <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
-
-                            <EventSetter Event="TreeViewItem.MouseRightButtonDown" Handler="TreeViewItem_MouseRightButtonDown"/>
+                            <EventSetter Event="TreeViewItem.MouseRightButtonDown" Handler="tvwMaterial_MouseRightButtonDown"/>
+                            
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Unverified}" Value="True">
                                     <Setter Property="Foreground" Value="Red" />
@@ -57,6 +60,7 @@
                                     <Setter Property="TextBox.Visibility" Value="Visible" />
                                 </DataTrigger>
                             </Style.Triggers>
+                            
                         </Style>
                     </TreeView.Resources>
 
@@ -106,5 +110,9 @@
             <TabItem Header="Favorites">                
             </TabItem>
         </TabControl>
+        <Grid Grid.Row="2" Background="{x:Static SystemColors.ControlBrush}">
+            <Button Content="Cancel" Height="23" HorizontalAlignment="Right" Margin="0,8,6,0" Name="btnCancel" VerticalAlignment="Top" Width="75" IsEnabled="False" Click="btnCancel_Click" />
+            <Button Content="Apply" Height="23" HorizontalAlignment="Right" Margin="0,8,87,0" Name="btnApply" VerticalAlignment="Top" Width="75" IsEnabled="False" Click="btnApply_Click" />
+        </Grid>
     </Grid>
 </ext:DatabaseActionControl>
