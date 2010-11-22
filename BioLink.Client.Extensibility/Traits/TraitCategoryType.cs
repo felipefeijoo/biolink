@@ -6,11 +6,12 @@ using System.Text;
 namespace BioLink.Client.Extensibility {
 
     public enum TraitCategoryType {
-        Material,
         Taxon,
-        Site,
-        Trap,
+        Region,
+        Site,        
         SiteVisit,
+        Trap,
+        Material,                
         Multimedia
     }
 

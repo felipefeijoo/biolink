@@ -31,7 +31,20 @@ namespace BioLink.Client.Material {
 
         public MaterialExplorer(MaterialPlugin owner)
             : base(owner.User, "MaterialExplorer") {
-                InitializeComponent();
+
+            InitializeComponent();
+
+            this.ChangeRegistered += new Action<IList<DatabaseAction>>((list) => {
+                btnApply.IsEnabled = true;
+                btnCancel.IsEnabled = true;
+            });
+
+            this.ChangesCommitted += new PendingChangesCommittedHandler((list) => {
+                InitializeMaterialExplorer();
+                btnApply.IsEnabled = false;
+                btnCancel.IsEnabled = false;
+            });
+
         }
 
         public void InitializeMaterialExplorer() {
@@ -49,13 +62,11 @@ namespace BioLink.Client.Material {
                 regionsNode.ItemsSource = regionsModel;
                 regionsNode.IsExpanded = true;
             });
-
         }
 
         private ObservableCollection<HierarchicalViewModelBase> BuildRegionsModel(List<SiteExplorerNode> list) {
             var regionsModel = new ObservableCollection<HierarchicalViewModelBase>(list.ConvertAll((model) => {
                 var viewModel = new SiteExplorerNodeViewModel(model);
-
                 if (model.NumChildren > 0) {
                     viewModel.Children.Add(new ViewModelPlaceholder("Loading..."));
                     viewModel.LazyLoadChildren += new HierarchicalViewModelAction(viewModel_LazyLoadChildren);
@@ -83,10 +94,96 @@ namespace BioLink.Client.Material {
         }
 
         private void EditableTextBlock_EditingComplete(object sender, string text) {
+            var selected = tvwMaterial.SelectedItem as SiteExplorerNodeViewModel;
+            if (selected != null) {
+                selected.Name = text;
+                switch (selected.NodeType) {
+                    case SiteExplorerNodeType.Region:
+                        RegisterPendingChange(new RenameRegionAction(selected));
+                        break;
+                    case SiteExplorerNodeType.Site:
+                        RegisterPendingChange(new RenameSiteAction(selected));
+                        break;
+                    default:
+                        throw new NotImplementedException(selected.NodeType.ToString());
+                }                
+            }
         }
 
         private void EditableTextBlock_EditingCancelled(object sender, string oldtext) {
         }
+
+        private void tvwMaterial_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            ShowContextMenu();
+        }
+
+        private void ShowContextMenu() {
+            var selected = tvwMaterial.SelectedItem as SiteExplorerNodeViewModel;
+            if (selected != null) {
+                var menu  = SiteExplorerMenuBuilder.Build(selected, this);
+                if (menu != null) {
+                    tvwMaterial.ContextMenu = menu;
+                }
+            }
+        }
+
+        internal void AddRegion(SiteExplorerNodeViewModel parent) {
+
+            parent.IsExpanded = true;
+
+            var model = new SiteExplorerNode();
+            model.Name = "<New Region>";
+            model.ParentID = parent.ElemID;
+            model.ElemType = SiteExplorerNodeType.Region.ToString();
+            model.ElemID = -1;
+
+            var viewModel = new SiteExplorerNodeViewModel(model);
+            parent.Children.Add(viewModel);
+            viewModel.IsSelected = true;
+            viewModel.IsRenaming = true;
+
+            RegisterPendingChange(new InsertRegionAction(viewModel));
+                 
+        }
+
+        internal void EditRegion(int regionID) {
+            if (regionID < 0) {
+                ErrorMessage.Show("You must first apply the changes before editing the details of this item!");
+                return;
+            } else {
+                var regionDetails = new RegionDetails(User, regionID);
+                var caption = string.Format("Region Detail {0} ({1}) [{2}]", regionDetails.ViewModel.Name, regionDetails.ViewModel.Rank, regionDetails.ViewModel.PoliticalRegionID);
+                PluginManager.Instance.AddNonDockableContent(Owner, regionDetails, caption, SizeToContent.Manual);
+            }
+        }
+
+        internal void DeleteRegion(SiteExplorerNodeViewModel region) {
+            region.IsDeleted = true;            
+            RegisterPendingChange(new DeleteRegionAction(region.ElemID));
+        }
+
+        private void tvwMaterial_MouseRightButtonDown(object sender, MouseButtonEventArgs e) {
+            TreeViewItem item = sender as TreeViewItem;
+            if (item != null) {
+                item.Focus();
+                e.Handled = true;
+            }
+        }
+
+        private void btnCancel_Click(object sender, RoutedEventArgs e) {
+            InitializeMaterialExplorer();
+        }
+
+        private void btnApply_Click(object sender, RoutedEventArgs e) {
+            ApplyChanges();
+        }
+
+        private void ApplyChanges() {
+            CommitPendingChanges();
+        }
+
+        public MaterialPlugin Owner { get; private set; }
+
     }
 
     public class SiteExplorerNodeViewModel : GenericHierarchicalViewModelBase<SiteExplorerNode> {
@@ -98,22 +195,32 @@ namespace BioLink.Client.Material {
 
         protected override string RelativeImagePath {
             get {
-                var image = "Region";
-                switch (Model.ElemType.ToLower()) {
-                    case "region":
+                var image = "Region";               
+                switch (NodeType) {
+                    case SiteExplorerNodeType.Region:
                         image = "Region";
                         break;
-                    case "site":
+                    case SiteExplorerNodeType.Site:
                         image = "Site";
                         break;
-                    case "sitevisit":
+                    case SiteExplorerNodeType.SiteVisit:
                         image = "SiteVisit";
                         break;
-                    case "material":
+                    case SiteExplorerNodeType.Material:
                         image = "Material";
                         break;
+                    case SiteExplorerNodeType.SiteGroup:
+                        image = "SiteGroup";
+                        break;
+
                 }
                 return String.Format(@"images\{0}.png", image); 
+            }
+        }
+
+        public SiteExplorerNodeType NodeType {
+            get {
+                return (SiteExplorerNodeType)Enum.Parse(typeof(SiteExplorerNodeType), Model.ElemType);
             }
         }
 

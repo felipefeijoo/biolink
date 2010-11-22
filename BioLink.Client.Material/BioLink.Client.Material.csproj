@@ -53,6 +53,12 @@
     <Compile Include="MaterialExplorer.xaml.cs">
       <DependentUpon>MaterialExplorer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="RegionDatabaseAction.cs" />
+    <Compile Include="RegionDetails.xaml.cs">
+      <DependentUpon>RegionDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SiteDatabaseAction.cs" />
+    <Compile Include="SiteExplorerMenuBuilder.cs" />
     <Compile Include="SortingExplorerNodeConverter.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -80,6 +86,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="RegionDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="images\Region.png" />
@@ -88,6 +98,12 @@
     <Resource Include="images\Material.png" />
     <Resource Include="images\Site.png" />
     <Resource Include="images\SiteVisit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\SiteGroup.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Trap.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
