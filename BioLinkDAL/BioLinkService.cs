@@ -265,7 +265,7 @@ namespace BioLink.Data {
             return new SqlParameter(name, value);
         }
 
-        protected SqlParameter ReturnParam(string name, SqlDbType type) {
+        protected SqlParameter ReturnParam(string name, SqlDbType type = SqlDbType.Int) {
             SqlParameter param = new SqlParameter(name, type);
             param.Direction = ParameterDirection.ReturnValue;
             return param;

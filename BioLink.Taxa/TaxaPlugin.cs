@@ -99,12 +99,11 @@ namespace BioLink.Client.Taxa {
         }
 
         private void ProcessList(ObservableCollection<HierarchicalViewModelBase> model, List<string> list) {
-            foreach (TaxonViewModel m in model) {
-                if (m.IsExpanded && m is TaxonViewModel) {
-                    TaxonViewModel tvm = m as TaxonViewModel;
+            foreach (TaxonViewModel tvm in model) {
+                if (tvm.IsExpanded) {                    
                     list.Add(tvm.GetParentage());
-                    if (m.Children != null && m.Children.Count > 0) {
-                        ProcessList(m.Children, list);
+                    if (tvm.Children != null && tvm.Children.Count > 0) {
+                        ProcessList(tvm.Children, list);
                     }
                 }
             }

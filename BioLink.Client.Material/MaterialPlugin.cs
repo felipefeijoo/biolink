@@ -41,6 +41,19 @@ namespace BioLink.Client.Material {
             return true;
         }
 
+        public override void Dispose() {
+            base.Dispose();
+            if (_explorer != null && _explorer.Content != null) {
+
+                if (Config.GetGlobal<bool>("Material.RememberExpandedNodes", true)) {
+                    List<string> expandedElements = _explorer.GetExpandedParentages(_explorer.RegionsModel);
+                    if (expandedElements != null) {
+                        Config.SetProfile(User, "Material.Explorer.ExpandedNodes.Region", expandedElements);
+                    }
+                }
+
+            }
+        }
 
         public override List<Command> GetCommandsForObject(ViewModelBase obj) {
             return null;

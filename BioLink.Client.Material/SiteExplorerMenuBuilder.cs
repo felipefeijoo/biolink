@@ -36,6 +36,8 @@ namespace BioLink.Client.Material {
                 switch (type) {
                     case SiteExplorerNodeType.Region: explorer.DeleteRegion(node);
                         break;
+                    case SiteExplorerNodeType.SiteGroup: explorer.DeleteSiteGroup(node);
+                        break;
                     default:
                         throw new Exception("[Delete] Unhandled site explorer element type: " + node.ElemType);
                 }
@@ -45,7 +47,9 @@ namespace BioLink.Client.Material {
 
             builder.New("Details...").Handler(() => {
                 switch (type) {
-                    case SiteExplorerNodeType.Region: explorer.EditRegion(node.ElemID);
+                    case SiteExplorerNodeType.Region: explorer.EditRegion(node);
+                        break;
+                    case SiteExplorerNodeType.Site: explorer.EditSite(node);
                         break;
                     default:
                         throw new Exception("[Details] Unhandled site explorer element type: " + node.ElemType);
@@ -64,6 +68,10 @@ namespace BioLink.Client.Material {
             switch (NodeType(viewModel)) {
                 case SiteExplorerNodeType.Region:
                     addMenu.Items.Add(builder.New("New Region").Handler(() => { explorer.AddRegion(viewModel); }).MenuItem);
+                    addMenu.Items.Add(builder.New("New Site Group").Handler(() => { explorer.AddSiteGroup(viewModel); }).MenuItem);
+                    break;
+                case SiteExplorerNodeType.SiteGroup:
+                    addMenu.Items.Add(builder.New("New Site Group").Handler(() => { explorer.AddSiteGroup(viewModel); }).MenuItem);
                     break;
                 default:
                     break;

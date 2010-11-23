@@ -24,9 +24,11 @@ namespace BioLink.Client.Material {
     public partial class MaterialExplorer : DatabaseActionControl {
 
         #region Designer constructor
+
         public MaterialExplorer() {
             InitializeComponent();
         }
+
         #endregion
 
         public MaterialExplorer(MaterialPlugin owner)
@@ -40,33 +42,63 @@ namespace BioLink.Client.Material {
             });
 
             this.ChangesCommitted += new PendingChangesCommittedHandler((list) => {
-                InitializeMaterialExplorer();
+                ReloadModel();
                 btnApply.IsEnabled = false;
                 btnCancel.IsEnabled = false;
             });
 
+            this.Owner = owner;
+
+            this.RememberExpanded = Config.GetGlobal<bool>("Material.RememberExpandedNodes", true);
         }
 
         public void InitializeMaterialExplorer() {
             this.InvokeIfRequired(() => {
-                var service = new MaterialService(User);
-                var list = service.GetTopLevelExplorerItems();
-                list.Sort((item1, item2) => {
-                    int compare = item1.ElemType.CompareTo(item2.ElemType);
-                    if (compare == 0) {
-                        return item1.Name.CompareTo(item2.Name);
-                    } 
-                    return compare;
-                });
-                var regionsModel = BuildRegionsModel(list);
-                regionsNode.ItemsSource = regionsModel;
-                regionsNode.IsExpanded = true;
+                LoadExplorerModel();
+                if (RegionsModel != null && RememberExpanded) {
+                    // Now see if we can auto-expand from the last session...                    
+                    var expanded = Config.GetProfile<List<String>>(Owner.User, "Material.Explorer.ExpandedNodes.Region", null);
+                    ExpandParentages(RegionsModel, expanded);                    
+                }
+                
             });
+        }
+
+        private void LoadExplorerModel() {
+            var service = new MaterialService(User);
+            var list = service.GetTopLevelExplorerItems();
+            list.Sort((item1, item2) => {
+                int compare = item1.ElemType.CompareTo(item2.ElemType);
+                if (compare == 0) {
+                    return item1.Name.CompareTo(item2.Name);
+                }
+                return compare;
+            });
+            RegionsModel = BuildRegionsModel(list);
+            regionsNode.ItemsSource = RegionsModel;
+            regionsNode.IsExpanded = true;
+        }
+
+        private void ReloadModel() {
+
+            List<String> expanded = null;
+            if (RememberExpanded) {
+                expanded = GetExpandedParentages(RegionsModel);
+            }
+
+            LoadExplorerModel();
+
+            if (expanded != null && expanded.Count > 0) {
+                ExpandParentages(RegionsModel, expanded);
+            }
+
+            ClearPendingChanges();
         }
 
         private ObservableCollection<HierarchicalViewModelBase> BuildRegionsModel(List<SiteExplorerNode> list) {
             var regionsModel = new ObservableCollection<HierarchicalViewModelBase>(list.ConvertAll((model) => {
                 var viewModel = new SiteExplorerNodeViewModel(model);
+
                 if (model.NumChildren > 0) {
                     viewModel.Children.Add(new ViewModelPlaceholder("Loading..."));
                     viewModel.LazyLoadChildren += new HierarchicalViewModelAction(viewModel_LazyLoadChildren);
@@ -77,15 +109,15 @@ namespace BioLink.Client.Material {
         }
 
         void viewModel_LazyLoadChildren(HierarchicalViewModelBase item) {
-
-            var elem = item as SiteExplorerNodeViewModel;
-            if (elem != null) {
-                elem.Children.Clear();
+            var parent = item as SiteExplorerNodeViewModel;
+            if (parent != null) {
+                parent.Children.Clear();
                 var service = new MaterialService(User);
-                var list = service.GetExplorerElementsForParent(elem.ElemID, elem.ElemType);
+                var list = service.GetExplorerElementsForParent(parent.ElemID, parent.ElemType);
                 var viewModel = BuildRegionsModel(list);
                 foreach (HierarchicalViewModelBase childViewModel in viewModel) {
-                    elem.Children.Add(childViewModel);
+                    childViewModel.Parent = parent;
+                    parent.Children.Add(childViewModel);
                 }                
             }
         }
@@ -101,8 +133,20 @@ namespace BioLink.Client.Material {
                     case SiteExplorerNodeType.Region:
                         RegisterPendingChange(new RenameRegionAction(selected));
                         break;
+                    case SiteExplorerNodeType.SiteGroup:
+                        RegisterPendingChange(new RenameSiteGroupAction(selected));
+                        break;
                     case SiteExplorerNodeType.Site:
                         RegisterPendingChange(new RenameSiteAction(selected));
+                        break;
+                    case SiteExplorerNodeType.SiteVisit:
+                        RegisterPendingChange(new RenameSiteVisitAction(selected));
+                        break;                
+                    case SiteExplorerNodeType.Trap:
+                        RegisterPendingChange(new RenameTrapAction(selected));
+                        break;
+                    case SiteExplorerNodeType.Material:
+                        RegisterPendingChange(new RenameMaterialAction(selected));
                         break;
                     default:
                         throw new NotImplementedException(selected.NodeType.ToString());
@@ -127,39 +171,112 @@ namespace BioLink.Client.Material {
             }
         }
 
-        internal void AddRegion(SiteExplorerNodeViewModel parent) {
+        public List<string> GetExpandedParentages(ObservableCollection<HierarchicalViewModelBase> model) {
+            List<string> list = new List<string>();
+            CollectExpandedParentages(model, list);
+            return list;
+        }
+
+        private void CollectExpandedParentages(ObservableCollection<HierarchicalViewModelBase> model, List<string> list) {
+            foreach (SiteExplorerNodeViewModel tvm in model) {
+                if (tvm.IsExpanded) {
+                    list.Add(tvm.GetParentage());
+                    if (tvm.Children != null && tvm.Children.Count > 0) {
+                        CollectExpandedParentages(tvm.Children, list);
+                    }
+                }
+            }
+        }
+
+        public void ExpandParentages(ObservableCollection<HierarchicalViewModelBase> model, List<string> expanded) {
+            if (expanded != null && expanded.Count > 0) {
+                var todo = new Stack<HierarchicalViewModelBase>(model);
+                while (todo.Count > 0) {
+                    var vm = todo.Pop();
+                    if (vm is SiteExplorerNodeViewModel) {
+                        var tvm = vm as SiteExplorerNodeViewModel;
+                        string parentage = tvm.GetParentage();
+                        if (expanded.Contains(parentage)) {
+                            tvm.IsExpanded = true;
+                            expanded.Remove(parentage);
+                            tvm.Children.ForEach(child => todo.Push(child));
+                        }
+                    }
+                }
+            }
+        }
+
+        internal SiteExplorerNodeViewModel AddNewNode(SiteExplorerNodeViewModel parent, SiteExplorerNodeType nodeType, Func<SiteExplorerNodeViewModel, DatabaseAction> actionFactory) {
 
             parent.IsExpanded = true;
 
             var model = new SiteExplorerNode();
-            model.Name = "<New Region>";
+            model.Name = string.Format("<New {0}>", nodeType.ToString());
             model.ParentID = parent.ElemID;
-            model.ElemType = SiteExplorerNodeType.Region.ToString();
+            model.ElemType = nodeType.ToString();
             model.ElemID = -1;
+            model.RegionID = -1;
 
             var viewModel = new SiteExplorerNodeViewModel(model);
+            viewModel.Parent = parent;
             parent.Children.Add(viewModel);
             viewModel.IsSelected = true;
             viewModel.IsRenaming = true;
 
-            RegisterPendingChange(new InsertRegionAction(viewModel));
-                 
+            if (actionFactory != null) {
+                RegisterPendingChange(actionFactory(viewModel));
+            }
+
+            return viewModel;
         }
 
-        internal void EditRegion(int regionID) {
-            if (regionID < 0) {
+        internal void AddRegion(SiteExplorerNodeViewModel parent) {
+            AddNewNode(parent, SiteExplorerNodeType.Region, (viewModel) => { return new InsertRegionAction(viewModel); });
+        }
+
+        internal void AddSiteGroup(SiteExplorerNodeViewModel parent) {
+            AddNewNode(parent, SiteExplorerNodeType.SiteGroup, (viewModel) => { return new InsertSiteGroupAction(viewModel, parent); });
+        }
+
+        private void EditNode(SiteExplorerNodeViewModel node, Func<DatabaseActionControl> editorFactory) {
+            if (node.ElemID < 0) {
                 ErrorMessage.Show("You must first apply the changes before editing the details of this item!");
                 return;
             } else {
-                var regionDetails = new RegionDetails(User, regionID);
-                var caption = string.Format("Region Detail {0} ({1}) [{2}]", regionDetails.ViewModel.Name, regionDetails.ViewModel.Rank, regionDetails.ViewModel.PoliticalRegionID);
-                PluginManager.Instance.AddNonDockableContent(Owner, regionDetails, caption, SizeToContent.Manual);
+                var editor = editorFactory();                
+                var caption = string.Format("{0} Detail {1} [{2}]", node.NodeType.ToString(), node.Name, node.ElemID);
+                PluginManager.Instance.AddNonDockableContent(Owner, editor, caption, SizeToContent.Manual);
+            }
+
+        }
+
+        internal void EditRegion(SiteExplorerNodeViewModel region) {
+            EditNode(region, () => { return new RegionDetails(User, region.ElemID ); });
+        }
+
+        internal void EditSite(SiteExplorerNodeViewModel site) {
+            EditNode(site, () => { return new SiteDetails(User, site.ElemID); });
+        }
+
+        internal void DeleteNode(SiteExplorerNodeViewModel node, Func<DatabaseAction> actionFactory) {
+
+            if (!node.IsDeleted) {
+                node.Traverse((child) => {
+                    child.IsDeleted = true;
+                });
+
+                if (actionFactory != null) {
+                    RegisterPendingChange(actionFactory());
+                }
             }
         }
 
         internal void DeleteRegion(SiteExplorerNodeViewModel region) {
-            region.IsDeleted = true;            
-            RegisterPendingChange(new DeleteRegionAction(region.ElemID));
+            DeleteNode(region, () => { return new DeleteRegionAction(region.ElemID); });
+        }
+
+        internal void DeleteSiteGroup(SiteExplorerNodeViewModel group) {
+            DeleteNode(group, () => { return new DeleteSiteGroupAction(group.ElemID); });
         }
 
         private void tvwMaterial_MouseRightButtonDown(object sender, MouseButtonEventArgs e) {
@@ -171,7 +288,7 @@ namespace BioLink.Client.Material {
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e) {
-            InitializeMaterialExplorer();
+            ReloadModel();            
         }
 
         private void btnApply_Click(object sender, RoutedEventArgs e) {
@@ -182,77 +299,16 @@ namespace BioLink.Client.Material {
             CommitPendingChanges();
         }
 
+        #region Properties
+
         public MaterialPlugin Owner { get; private set; }
 
-    }
+        public ObservableCollection<HierarchicalViewModelBase> RegionsModel { get; private set; }
 
-    public class SiteExplorerNodeViewModel : GenericHierarchicalViewModelBase<SiteExplorerNode> {
+        internal bool RememberExpanded { get; private set; }
 
-        public SiteExplorerNodeViewModel(SiteExplorerNode model)
-            : base(model) {
-            this.DisplayLabel = model.Name;            
-        }
-
-        protected override string RelativeImagePath {
-            get {
-                var image = "Region";               
-                switch (NodeType) {
-                    case SiteExplorerNodeType.Region:
-                        image = "Region";
-                        break;
-                    case SiteExplorerNodeType.Site:
-                        image = "Site";
-                        break;
-                    case SiteExplorerNodeType.SiteVisit:
-                        image = "SiteVisit";
-                        break;
-                    case SiteExplorerNodeType.Material:
-                        image = "Material";
-                        break;
-                    case SiteExplorerNodeType.SiteGroup:
-                        image = "SiteGroup";
-                        break;
-
-                }
-                return String.Format(@"images\{0}.png", image); 
-            }
-        }
-
-        public SiteExplorerNodeType NodeType {
-            get {
-                return (SiteExplorerNodeType)Enum.Parse(typeof(SiteExplorerNodeType), Model.ElemType);
-            }
-        }
-
-        public int ElemID {
-            get { return Model.ElemID; }
-            set { SetProperty(() => Model.ElemID, value); }
-        }
-
-        public string ElemType {
-            get { return Model.ElemType; }
-            set { SetProperty(() => Model.ElemType, value); }
-        }
-
-        public string Name {
-            get { return Model.Name; }
-            set { SetProperty(() => Model.Name, value); }
-        }
-
-        public int ParentID {
-            get { return Model.ParentID; }
-            set { SetProperty(() => Model.ParentID, value); }
-        }
-
-        public int RegionID {
-            get { return Model.RegionID; }
-            set { SetProperty(() => Model.RegionID, value); }
-        }
-
-        public int NumChildren {
-            get { return Model.NumChildren; }
-            set { SetProperty(()=>Model.NumChildren, value); }
-        }
+        #endregion
 
     }
+
 }
