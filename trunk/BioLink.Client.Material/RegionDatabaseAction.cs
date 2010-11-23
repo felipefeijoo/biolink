@@ -28,6 +28,10 @@ namespace BioLink.Client.Material {
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
             Model.ElemID = service.InsertRegion(Model.Name, Model.ParentID);
+            Model.RegionID = Model.ElemID;
+            foreach (SiteExplorerNodeViewModel child in Model.Children) {
+                child.ParentID = Model.ElemID;
+            }
         }
 
     }

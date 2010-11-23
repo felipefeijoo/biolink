@@ -49,7 +49,7 @@ namespace BioLink.Data {
         }
 
         public void RollbackTransaction() {
-            if (_transaction != null && _transaction.Connection != null) {
+            if (_transaction != null) {
                 _transaction.Rollback();
                 _transaction.Dispose();
                 _transaction = null;
@@ -57,7 +57,7 @@ namespace BioLink.Data {
         }
 
         public void CommitTransaction() {
-            if (_transaction != null && _transaction.Connection != null) {
+            if (_transaction != null) {
                 _transaction.Commit();
                 _transaction.Dispose();
                 _transaction = null;

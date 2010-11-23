@@ -12,6 +12,8 @@ namespace BioLink.Data {
             : base(user) {
         }
 
+        #region Site Explorer
+
         public List<SiteExplorerNode> GetTopLevelExplorerItems() {
             return GetExplorerElementsForParent(0, SiteExplorerNodeType.Region);
         }
@@ -28,6 +30,8 @@ namespace BioLink.Data {
                 _P("vchrParentType", parentElemType)
             );
         }
+
+        #endregion
 
         #region Region
 
@@ -71,13 +75,106 @@ namespace BioLink.Data {
 
         #endregion
 
+        #region Site Group
+
+        public void RenameSiteGroup(int siteGroupID, string name) {
+            StoredProcUpdate("spSiteGroupRename", _P("intSiteGroupID",siteGroupID), _P("vchrSiteGroupName", name));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name">The name of the new Site Group</param>
+        /// <param name="parentType">The "type" of the parent: 1 = Region, 2 = Site Group</param>
+        /// <param name="parentID">The parent ID</param>
+        /// <param name="regionID">The region id underwhich this group is placed. Note that even if this is a child of another site group it still needs a region id</param>
+        /// <returns></returns>
+        public int InsertSiteGroup(string name, int parentType, int parentID, int regionID) {
+            var retval = ReturnParam("NewRegionID");
+
+            StoredProcUpdate("spSiteGroupInsert",
+                _P("vchrName", name),
+                _P("sintParentType", parentType),
+                _P("intParentID", parentID),
+                _P("intPoliticalRegionID", regionID),
+                retval
+            );
+
+            return (int)retval.Value;
+        }
+
+        public void DeleteSiteGroup(int siteGroupID) {
+            StoredProcUpdate("spSiteGroupDelete", _P("intSiteGroupID", siteGroupID));
+        }
+
+        public void MergeSiteGroups(int sourceID, int targetID) {
+            StoredProcUpdate("spSiteGroupMerge",
+                _P("intOldSiteGroupID", sourceID),
+                _P("intNewSiteGroupID", targetID)
+            );
+        }
+
+        public void MoveSiteGroup(int siteGroupID, int newParentType, int newParentID, int newRegionID) {
+            StoredProcUpdate("spSiteGroupMove",
+                _P("intSiteGroupID", siteGroupID),
+                _P("sintParentType", newParentType),
+                _P("intParentID", newParentID),
+                _P("intPoliticalRegionID", newRegionID)
+            );
+        }
+
+        public List<int> GetSiteGroupSiteIDList(int siteGroupID) {            
+            var results = new List<int>();
+            StoredProcReaderForEach("spSiteGroupGetSiteIDList",
+                (reader) => { results.Add(reader.GetInt32(0)); },
+                _P("intSiteGroupID", siteGroupID)
+            );
+
+            return results;
+        }
+
+        #endregion
+
         #region Site
+
+        public Site GetSite(int siteID) {
+            Site result = null;
+            var mapper = new GenericMapperBuilder<Site>().build();
+            StoredProcReaderFirst("spSiteGet", (reader) => {
+                result = mapper.Map(reader);
+            }, _P("intSiteID", siteID));
+            return result;
+        }
 
         public void RenameSite(int siteID, string name) {
             StoredProcUpdate("spSiteUpdateName",
                 _P("intSiteID", siteID),
                 _P("vchrSiteName", name)
             );
+        }
+
+        #endregion
+
+        #region Site Visit
+
+        public void RenameSiteVisit(int siteVisitID, string name) {
+            StoredProcUpdate("spSiteVisitUpdateName", _P("intSiteVisitID", siteVisitID), _P("vchrName", name));
+        }
+
+        #endregion
+
+        #region Trap
+
+        public void RenameTrap(int trapID, string name) {
+            StoredProcUpdate("spTrapUpdateName", _P("intTrapID", trapID), _P("vchrTrapName", name));
+        }
+
+        #endregion
+
+        #region Material
+
+        public void RenameMaterial(int materialID, string name) {
+            StoredProcUpdate("spMaterialUpdateName", _P("intMaterialID", materialID), _P("vchrName", name));
         }
 
         #endregion
