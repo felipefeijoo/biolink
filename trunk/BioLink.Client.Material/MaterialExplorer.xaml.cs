@@ -247,7 +247,6 @@ namespace BioLink.Client.Material {
                 var caption = string.Format("{0} Detail {1} [{2}]", node.NodeType.ToString(), node.Name, node.ElemID);
                 PluginManager.Instance.AddNonDockableContent(Owner, editor, caption, SizeToContent.Manual);
             }
-
         }
 
         internal void EditRegion(SiteExplorerNodeViewModel region) {
@@ -297,6 +296,43 @@ namespace BioLink.Client.Material {
 
         private void ApplyChanges() {
             CommitPendingChanges();
+        }
+
+        private Action<SelectionResult> _selectionCallback;
+
+        public void BindSelectCallback(Action<SelectionResult> selectionFunc) {
+            if (selectionFunc != null) {
+                btnSelect.Visibility = Visibility.Visible;
+                btnSelect.IsEnabled = true;
+                _selectionCallback = selectionFunc;
+            } else {
+                ClearSelectCallback();
+            }
+
+        }
+
+        public void ClearSelectCallback() {
+        }
+
+        private void btnSelect_Click(object sender, RoutedEventArgs e) {
+            var selected = tvwMaterial.SelectedItem as SiteExplorerNodeViewModel;
+            if (selected != null && _selectionCallback != null) {
+                var result = new SelectionResult();
+                result.ObjectID = selected.ElemID;
+                result.Description = selected.Name;
+                _selectionCallback(result);
+            }
+        }
+
+
+        internal void Refresh() {
+            if (HasPendingChanges) {            
+                if (this.Question("You have unsaved changes. Refreshing will cause those changes to be discarded. Are you sure you want to discard unsaved changes?", "Discard unsaved changes?")) {
+                    ReloadModel();
+                }
+            } else {
+                ReloadModel();
+            }            
         }
 
         #region Properties

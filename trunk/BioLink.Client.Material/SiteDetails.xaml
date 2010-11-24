@@ -5,8 +5,46 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="420" d:DesignWidth="723">
     <Grid>
-            
+        <Label Content="Site Name:" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" Name="label1" VerticalAlignment="Top" Width="80" />
+        <ext:TextBox Height="23" Margin="98,12,12,0" Name="txtName" VerticalAlignment="Top" Text="{Binding SiteName}" />
+        <TabControl Margin="12,46,12,12" Name="tabSite">
+            <TabItem Header="General" Name="tabGeneral">
+                <Grid>
+                    <ext:LookupControl Margin="129,11,6,0" Name="txtPoliticalRegion" VerticalAlignment="Top" ObjectID="{Binding PoliticalRegionID}" Text="{Binding PoliticalRegion}" />
+                    <Label Content="Political region:" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label2" VerticalAlignment="Top" Width="117" />
+                    <GroupBox Header="Locality" Height="119" Margin="6,40,6,0" Name="groupBox1" VerticalAlignment="Top">
+                        <Grid>
+                            <RadioButton Content="_Nearest Place" Height="16" HorizontalAlignment="Left" Margin="15,11,0,0" Name="optNearestPlace" VerticalAlignment="Top" />
+                            <RadioButton Content="_Locality" Height="16" HorizontalAlignment="Left" Margin="15,67,0,0" Name="radioButton1" VerticalAlignment="Top" />
+                            <Label Content="or" Height="28" HorizontalAlignment="Left" Margin="42,33,0,0" Name="label3" VerticalAlignment="Top" />
+                            <Label Content="Distance:" Height="28" HorizontalAlignment="Left" Margin="117,6,0,0" Name="lblDistance" VerticalAlignment="Top" Width="63" />
+                            <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="186,8,0,0" Name="textBox1" VerticalAlignment="Top" Width="58" />
+                            <Label Content="Direction:" Height="28" HorizontalAlignment="Left" Margin="250,6,0,0" Name="lblDirection" VerticalAlignment="Top" Width="63" />
+                            <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="319,8,0,0" Name="textBox2" VerticalAlignment="Top" Width="58" />
+                            <Label Content="From:" Height="28" HorizontalAlignment="Left" Margin="383,6,0,0" Name="lblFrom" VerticalAlignment="Top" Width="47" />
+                            <ext:TextBox Height="23" Margin="436,8,6,0" Name="textBox3" VerticalAlignment="Top" />
+                            <ext:TextBox Height="23" Margin="117,64,6,0" Name="textBox4" VerticalAlignment="Top" />
+                        </Grid>
+                    </GroupBox>
+                    <Label Content="Informal Locality:" Height="28" HorizontalAlignment="Left" Margin="6,165,0,0" Name="label4" VerticalAlignment="Top" Width="117" />
+                    <ext:BindableRichTextBox Margin="119,165,12,108" Name="bindableRichTextBox1" />
+                    <Image Margin="12,0,0,6" Name="imgMap" Stretch="None" VerticalAlignment="Bottom" Height="96" Source="images\World.png" HorizontalAlignment="Center" Width="200" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="Position" Name="tabPosition">
+                <Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Elevation" Name="tabElevation">
+                <Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Geology" Name="tabGeology">
+                <Grid>
+                </Grid>
+            </TabItem>
+        </TabControl>
     </Grid>
 </ext:DatabaseActionControl>

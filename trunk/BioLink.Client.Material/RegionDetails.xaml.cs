@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using BioLink.Client.Extensibility;
 using BioLink.Data;
 using BioLink.Data.Model;
+using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Material {
     /// <summary>
@@ -41,29 +42,14 @@ namespace BioLink.Client.Material {
 
             txtRegionType.BindUser(User, PickListType.Phrase, "Region Rank", TraitCategoryType.Region);
 
-            AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Region, ViewModel.PoliticalRegionID));
-            AddTabItem("Onwership", new OwnershipDetails(_viewModel.Model));
+            tabRegion.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Region, ViewModel.PoliticalRegionID));
+            tabRegion.AddTabItem("Onwership", new OwnershipDetails(_viewModel.Model));
 
         }
 
         void model_DataChanged(ChangeableModelBase viewmodel) {
             RegisterUniquePendingChange(new UpdateRegionAction(_viewModel.Model));
         }
-
-        private TabItem AddTabItem(string title, UIElement content, Action bringIntoViewAction = null) {
-            TabItem tabItem = new TabItem();
-            tabItem.Header = title;
-            tabItem.Content = content;
-            tabRegion.Items.Add(tabItem);
-            if (bringIntoViewAction != null) {
-                tabItem.RequestBringIntoView += new RequestBringIntoViewEventHandler((s, e) => {
-                    bringIntoViewAction();
-                });
-            }
-
-            return tabItem;
-        }
-
 
         #region Properties
 

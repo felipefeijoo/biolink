@@ -18,6 +18,7 @@ namespace BioLink.Client.Material {
             var service = new MaterialService(user);
             service.RenameSiteVisit(Model.ElemID, Model.Name);
         }
+
     }
 
 }

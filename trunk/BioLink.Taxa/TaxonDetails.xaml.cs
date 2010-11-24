@@ -32,66 +32,52 @@ namespace BioLink.Client.Taxa {
         public TaxonDetails(TaxonViewModel taxon, User user) : base(user, "TaxonDetails::" + taxon.TaxaID.Value) {
             InitializeComponent();           
 
-            AddTabItem("General", new TaxonNameDetails(taxon.TaxaID, User));
+            tabControl.AddTabItem("General", new TaxonNameDetails(taxon.TaxaID, User));
 
             if (taxon.IsAvailableOrLiteratureName) {
                 TaxonRank rank = Service.GetTaxonRank(taxon.ElemType);
                 switch (rank.Category.ToLower()) {
                     case "g":
-                        AddTabItem("Available Name", new GenusAvailableNameControl(taxon, user));
+                        tabControl.AddTabItem("Available Name", new GenusAvailableNameControl(taxon, user));
                         break;
                     case "s":
-                        AddTabItem("Available Name", new SpeciesAvailableNameControl(taxon, user));
+                        tabControl.AddTabItem("Available Name", new SpeciesAvailableNameControl(taxon, user));
                         break;
                     default:
-                        AddTabItem("Available Name", new AvailableNameControl(taxon, user));
+                        tabControl.AddTabItem("Available Name", new AvailableNameControl(taxon, user));
                         break;
                 }
             } else {
-                AddTabItem("Common Names", new CommonNamesControl(taxon, user));
+                tabControl.AddTabItem("Common Names", new CommonNamesControl(taxon, user));
             }
 
-            AddTabItem("References", new ReferencesControl(user, TraitCategoryType.Taxon, taxon.TaxaID));
+            tabControl.AddTabItem("References", new ReferencesControl(user, TraitCategoryType.Taxon, taxon.TaxaID));
 
             if ((!taxon.AvailableName.ValueOrFalse() && !taxon.LiteratureName.ValueOrFalse())) {
-                AddTabItem("Distribution", new DistributionControl(user, taxon));
+                tabControl.AddTabItem("Distribution", new DistributionControl(user, taxon));
             }
 
 
-            AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Taxon, taxon.TaxaID));
+            tabControl.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Taxon, taxon.TaxaID));
             var mmc = new MultimediaControl(User, TraitCategoryType.Taxon, taxon.TaxaID);
 
-            AddTabItem("Multimedia", mmc, () => {
+            tabControl.AddTabItem("Multimedia", mmc, () => {
                 if (!mmc.IsPopulated) {
                     mmc.PopulateControl();
                 }
             });
 
             var notes = new NotesControl(User, TraitCategoryType.Taxon, taxon.TaxaID);
-            AddTabItem("Notes", notes, () => {
+            tabControl.AddTabItem("Notes", notes, () => {
                 if (!notes.IsPopulated) {
                     notes.PopulateControl();
                 }
             });
 
-            AddTabItem("Ownership", new OwnershipDetails(taxon.Taxon));
+            tabControl.AddTabItem("Ownership", new OwnershipDetails(taxon.Taxon));
 
             this.Taxon = taxon;
 
-        }
-
-        private TabItem AddTabItem(string title, UIElement content, Action bringIntoViewAction = null) {            
-            TabItem tabItem = new TabItem();
-            tabItem.Header = title;
-            tabItem.Content = content;            
-            tabControl.Items.Add(tabItem);
-            if (bringIntoViewAction != null) {
-                tabItem.RequestBringIntoView += new RequestBringIntoViewEventHandler((s, e) => {
-                    bringIntoViewAction();
-                });
-            }
-                 
-            return tabItem;
         }
 
         public override void Dispose() {

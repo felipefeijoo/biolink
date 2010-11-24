@@ -11,7 +11,7 @@ namespace BioLink.Data {
 
     public abstract class MapperBase {
 
-        private static Regex PREFIX_REGEX = new Regex("^([a-z]+)[A-Za-z]+$");
+        private static Regex PREFIX_REGEX = new Regex(@"^([a-z]+)[A-Za-z\d]+$");
 
         private static string KNOWN_TYPE_PREFIXES = "chr,vchr,bit,int,txt,flt,tint,dt,sint";
 

@@ -119,6 +119,21 @@ namespace BioLink.Client.Utilities {
             }
         }
 
+        public static TabItem AddTabItem(this TabControl tab, string title, UIElement content, Action bringIntoViewAction = null) {
+            TabItem tabItem = new TabItem();
+            tabItem.Header = title;
+            tabItem.Content = content;
+            tab.Items.Add(tabItem);
+            if (bringIntoViewAction != null) {
+                tabItem.RequestBringIntoView += new RequestBringIntoViewEventHandler((s, e) => {
+                    bringIntoViewAction();
+                });
+            }
+
+            return tabItem;
+        }
+
+
     }
 
     public delegate string MessageFormatterFunc(string format, params object[] args);
