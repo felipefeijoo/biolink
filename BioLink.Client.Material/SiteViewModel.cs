@@ -7,7 +7,7 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Material {
 
-    class SiteViewModel : GenericOwnedViewModel<Site> {
+    public class SiteViewModel : GenericOwnedViewModel<Site> {
 
         public SiteViewModel(Site model)
             : base(model) {
@@ -68,22 +68,22 @@ namespace BioLink.Client.Material {
             set { SetProperty(() => Model.PosAreaType, value); }
         }
 
-        public float PosY1 {
+        public double PosY1 {
             get { return Model.PosY1; }
             set { SetProperty(() => Model.PosY1, value); }
         }
 
-        public float PosX1 {
+        public double PosX1 {
             get { return Model.PosX1; }
             set { SetProperty(() => Model.PosX1, value); }
         }
 
-        public float PosY2 {
+        public double PosY2 {
             get { return Model.PosY2; }
             set { SetProperty(() => Model.PosY2, value); }
         }
 
-        public float PosX2 {
+        public double PosX2 {
             get { return Model.PosX2; }
             set { SetProperty(() => Model.PosX2, value); }
         }
@@ -143,17 +143,17 @@ namespace BioLink.Client.Material {
             set { SetProperty(() => Model.ElevType, value); }
         }
 
-        public float ElevUpper {
+        public double ElevUpper {
             get { return Model.ElevUpper; }
             set { SetProperty(() => Model.ElevUpper, value); }
         }
 
-        public float ElevLower {
+        public double ElevLower {
             get { return Model.ElevLower; }
             set { SetProperty(() => Model.ElevLower, value); }
         }
 
-        public float ElevDepth {
+        public double ElevDepth {
             get { return Model.ElevDepth; }
             set { SetProperty(()=>Model.ElevDepth, value); }
         }
@@ -211,6 +211,11 @@ namespace BioLink.Client.Material {
         public string GeoAgeBottom {
             get { return Model.GeoAgeBottom; }
             set { SetProperty(() => Model.GeoAgeBottom, value); }
+        }
+
+        public string GeoAgeTop {
+            get { return Model.GeoAgeTop; }
+            set { SetProperty(() => Model.GeoAgeTop, value); }
         }
 
         public string GeoNotes {

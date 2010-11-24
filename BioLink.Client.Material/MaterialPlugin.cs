@@ -5,6 +5,7 @@ using System.Text;
 using BioLink.Client.Extensibility;
 using BioLink.Client.Utilities;
 using BioLink.Data;
+using BioLink.Data.Model;
 
 namespace BioLink.Client.Material {
 
@@ -53,6 +54,20 @@ namespace BioLink.Client.Material {
                 }
 
             }
+        }
+
+        public override bool CanSelect(Type t) {
+            return typeof(Region).IsAssignableFrom(t);
+        }
+
+        public override void Select(Type t, Action<SelectionResult> success) {
+            if (typeof(Region).IsAssignableFrom(t)) {
+                _explorer.BringIntoView();                
+                _explorer.BindSelectCallback(success);
+            } else {
+                throw new Exception("Unhandled Selection Type: " + t.Name);
+            }
+
         }
 
         public override List<Command> GetCommandsForObject(ViewModelBase obj) {

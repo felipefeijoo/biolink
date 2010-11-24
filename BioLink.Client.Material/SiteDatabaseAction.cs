@@ -19,4 +19,18 @@ namespace BioLink.Client.Material {
             service.RenameSite(Model.ElemID, Model.Name);
         }
     }
+
+    public class UpdateSiteAction : GenericDatabaseAction<SiteViewModel> {
+
+        public UpdateSiteAction(SiteViewModel model)
+            : base(model) {
+        }
+
+        protected override void ProcessImpl(User user) {
+            var service = new MaterialService(user);
+            service.UpdateSite(Model.Model);
+        }
+
+    }
+
 }

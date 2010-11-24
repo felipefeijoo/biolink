@@ -20,10 +20,10 @@ namespace BioLink.Data.Model {
         public string InformalLocal { get; set; }
         public int PosCoordinates { get; set; }
         public int PosAreaType { get; set; }
-        public float PosY1 { get; set; }
-        public float PosX1 { get; set; }
-        public float PosY2 { get; set; }
-        public float PosX2 { get; set; }
+        public double PosY1 { get; set; }
+        public double PosX1 { get; set; }
+        public double PosY2 { get; set; }
+        public double PosX2 { get; set; }
         public int PosXYDisplayFormat { get; set; }
         public string PosSource { get; set; }
         public string PosError { get; set; }
@@ -35,9 +35,9 @@ namespace BioLink.Data.Model {
         public string PosUTMMapName { get; set; }
         public string PosUTMMapVer { get; set; }
         public int ElevType { get; set; }
-        public float ElevUpper { get; set; }
-        public float ElevLower { get; set; }
-        public float ElevDepth { get; set; }
+        public double ElevUpper { get; set; }
+        public double ElevLower { get; set; }
+        public double ElevDepth { get; set; }
         public string ElevUnits { get; set; }
         public string ElevSource { get; set; }
         public string ElevError { get; set; }
@@ -49,6 +49,7 @@ namespace BioLink.Data.Model {
         public string GeoBed { get; set; }
         public string GeoName { get; set; }
         public string GeoAgeBottom { get; set; }
+        public string GeoAgeTop { get; set; }
         public string GeoNotes { get; set; }
         public int Order { get; set; }
         [MappingInfo("tinTemplate")]

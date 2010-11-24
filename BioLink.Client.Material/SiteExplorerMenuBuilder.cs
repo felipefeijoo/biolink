@@ -23,6 +23,10 @@ namespace BioLink.Client.Material {
 
             ContextMenuBuilder builder = new ContextMenuBuilder(null);
 
+            builder.New("Refresh").Handler(() => { explorer.Refresh(); }).End();
+
+            builder.Separator();
+
             builder.New("Rename").Handler(() => { node.IsRenaming = true; }).End();
 
             var addMenu = CreateAddMenu(node, explorer);

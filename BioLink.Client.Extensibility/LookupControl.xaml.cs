@@ -46,6 +46,9 @@ namespace BioLink.Client.Extensibility {
                 case LookupType.Reference:
                     t = typeof(ReferenceSearchResult);
                     break;
+                case LookupType.Region:
+                    t = typeof(Region);
+                    break;
                 default:
                     throw new Exception("Unhandled Lookup type: " + LookupType.ToString());
             }
@@ -116,6 +119,7 @@ namespace BioLink.Client.Extensibility {
 
     public enum LookupType {
         Taxon,
+        Region,
         Material,
         Site,
         SiteVisit,

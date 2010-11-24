@@ -113,6 +113,7 @@
         <Grid Grid.Row="2" Background="{x:Static SystemColors.ControlBrush}">
             <Button Content="Cancel" Height="23" HorizontalAlignment="Right" Margin="0,8,6,0" Name="btnCancel" VerticalAlignment="Top" Width="75" IsEnabled="False" Click="btnCancel_Click" />
             <Button Content="Apply" Height="23" HorizontalAlignment="Right" Margin="0,8,87,0" Name="btnApply" VerticalAlignment="Top" Width="75" IsEnabled="False" Click="btnApply_Click" />
+            <Button Content="_Select" Height="23" HorizontalAlignment="Right" Margin="0,8,168,0" Name="btnSelect" VerticalAlignment="Top" Width="75" Visibility="Hidden" Click="btnSelect_Click" />
         </Grid>
     </Grid>
 </ext:DatabaseActionControl>

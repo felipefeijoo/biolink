@@ -118,6 +118,9 @@
   <ItemGroup>
     <Resource Include="images\Trap.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\World.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir "$(SolutionDir)\BiolinkApplication\bin\Debug\Plugins"
