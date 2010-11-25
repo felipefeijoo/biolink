@@ -20,7 +20,7 @@
         </Grid.RowDefinitions>
         <TabControl>
             <TabItem Header="Contents">
-                <ext:VTreeView x:Name="tvwMaterial" BorderThickness="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" MouseRightButtonUp="tvwMaterial_MouseRightButtonUp" MouseRightButtonDown="tvwMaterial_MouseRightButtonDown">
+                <ext:VTreeView x:Name="tvwMaterial" BorderThickness="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" MouseRightButtonUp="tvwMaterial_MouseRightButtonUp" MouseRightButtonDown="tvwMaterial_MouseRightButtonDown" AutoExpandTopLevel="True">
                     
                     <TreeView.Resources>
                         <HierarchicalDataTemplate DataType="{x:Type src:SiteExplorerNodeViewModel}" ItemsSource="{Binding Path=Children, Converter={StaticResource SortingExplorerNodeConverter}}">

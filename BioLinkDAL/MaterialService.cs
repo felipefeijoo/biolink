@@ -73,6 +73,12 @@ namespace BioLink.Data {
             return (int) retval.Value;
         }
 
+        public List<RegionSearchResult> FindRegions(string searchTerm) {
+            searchTerm = searchTerm.Replace('*', '%') + '%';
+            var mapper = new GenericMapperBuilder<RegionSearchResult>().build();
+            return StoredProcToList("spRegionFind", mapper, _P("vchrRegionToFind", searchTerm));
+        }
+
         #endregion
 
         #region Site Group

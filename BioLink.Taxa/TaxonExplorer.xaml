@@ -88,7 +88,7 @@
                                 
                             </Grid>
                             <Grid Grid.Row="1">
-                                <ext:VTreeView x:Name="tvwAllTaxa" Margin="0,0,0,0" BorderThickness="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" PreviewMouseMove="tvwAllTaxa_PreviewMouseMove" PreviewMouseLeftButtonDown="tvwAllTaxa_PreviewMouseLeftButtonDown" MouseRightButtonUp="tvwAllTaxa_MouseRightButtonUp">
+                                <ext:VTreeView x:Name="tvwAllTaxa" Margin="0,0,0,0" BorderThickness="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" PreviewMouseMove="tvwAllTaxa_PreviewMouseMove" PreviewMouseLeftButtonDown="tvwAllTaxa_PreviewMouseLeftButtonDown" MouseRightButtonUp="tvwAllTaxa_MouseRightButtonUp" AutoExpandTopLevel="True">
                                     <TreeView.Resources>
                                         <HierarchicalDataTemplate x:Name="AllTaxaDataTemplate" DataType="{x:Type src:TaxonViewModel}" ItemsSource="{Binding Path=Children, Converter={StaticResource SortedTaxonConverter}}">
                                             <StackPanel Orientation="Horizontal">
@@ -138,7 +138,7 @@
                                     <TreeViewItem>
                                         <TreeViewItem.Header>Loading...</TreeViewItem.Header>
                                     </TreeViewItem>
-                                </ext:VTreeView>
+                                </ext:VTreeView>                                
                             </Grid>
                         </Grid>
                     </Border>

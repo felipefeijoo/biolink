@@ -11,8 +11,12 @@ namespace BioLink.Client.Extensibility {
 
         protected override void PrepareContainerForItemOverride(DependencyObject element, object item) {
             base.PrepareContainerForItemOverride(element, item);
-            ((TreeViewItem)element).IsExpanded = true;
+            if (AutoExpandTopLevel) {
+                ((TreeViewItem)element).IsExpanded = true;
+            }
         }
+
+        public bool AutoExpandTopLevel { get; set; }
     }
 
     [StyleTypedProperty(Property = "ItemContainerStyle", StyleTargetType = typeof(VTreeViewItem))]
