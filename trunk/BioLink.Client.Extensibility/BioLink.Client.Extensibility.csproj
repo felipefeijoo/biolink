@@ -113,6 +113,9 @@
     <Compile Include="FontChooser\NameDictionaryHelper.cs" />
     <Compile Include="FontChooser\TypefaceListItem.cs" />
     <Compile Include="FontChooser\TypographicFeatureListItem.cs" />
+    <Compile Include="HierarchicalSelector.xaml.cs">
+      <DependentUpon>HierarchicalSelector.xaml</DependentUpon>
+    </Compile>
     <Compile Include="HierarchicalViewModelBase.cs" />
     <Compile Include="IBioLinkPlugin.cs" />
     <Compile Include="IBioLinkReport.cs" />
@@ -268,6 +271,10 @@
     <Page Include="FontChooser\FontChooser.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="HierarchicalSelector.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="LatLongInput.xaml">
       <SubType>Designer</SubType>
