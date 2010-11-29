@@ -34,6 +34,21 @@ namespace BioLink.Client.Material {
             InitializeComponent();
             this.SiteID = siteID;
 
+            // Radio button checked event handlers
+            optNearestPlace.Checked += new RoutedEventHandler((s, e) => {
+                txtLocality.IsEnabled = false;
+                txtDirectionFrom.IsEnabled = true;
+                txtDistanceFrom.IsEnabled = true;
+                txtFrom.IsEnabled = true;
+            });
+
+            optLocality.Checked += new RoutedEventHandler((s, e) => {
+                txtLocality.IsEnabled = true;
+                txtDirectionFrom.IsEnabled = false;
+                txtDistanceFrom.IsEnabled = false;
+                txtFrom.IsEnabled = false;
+            });
+
             var service = new MaterialService(user);
             var model = service.GetSite(siteID);
             _viewModel = new SiteViewModel(model);
@@ -44,6 +59,22 @@ namespace BioLink.Client.Material {
             tabSite.AddTabItem("Multimedia", new MultimediaControl(user, TraitCategoryType.Site, siteID));
             tabSite.AddTabItem("Ownership", new OwnershipDetails(_viewModel.Model));
 
+            txtPosSource.BindUser(User, PickListType.Phrase, "Source", TraitCategoryType.Site);
+            txtPosWho.BindUser(User, "tblSite", "vchrPosWho");
+            txtPosOriginal.BindUser(User, PickListType.Phrase, "OriginalDetermination", TraitCategoryType.Site);
+
+            txtElevUnits.BindUser(User, PickListType.Phrase, "Units", TraitCategoryType.Site);
+            txtElevSource.BindUser(User, PickListType.Phrase, "Source", TraitCategoryType.Site);
+
+            txtGeoEra.BindUser(User, PickListType.Phrase, "Geological Era", TraitCategoryType.Site);
+            txtGeoPlate.BindUser(User, PickListType.Phrase, "Geological Plate", TraitCategoryType.Site);
+            txtGeoStage.BindUser(User, PickListType.Phrase, "Geological State", TraitCategoryType.Site);
+
+            txtGeoFormation.BindUser(User, PickListType.Phrase, "Geological Formation", TraitCategoryType.Site);
+            txtGeoMember.BindUser(User, PickListType.Phrase, "Geological Member", TraitCategoryType.Site);
+            txtGeoBed.BindUser(User, PickListType.Phrase, "Geological Bed", TraitCategoryType.Site);
+
+
             _viewModel.DataChanged += new DataChangedHandler(_viewModel_DataChanged);
 
             txtPoliticalRegion.BindUser(user, LookupType.Region);
@@ -52,6 +83,10 @@ namespace BioLink.Client.Material {
         }
 
         private void UpdateMiniMap(double latitude, double longitude) {
+
+            if (imgMap.Width == 0 || imgMap.Height == 0) {
+                return;
+            }
 
             double meridian = imgMap.Width / 2.0;
             double equator = imgMap.Height / 2.0;
@@ -88,4 +123,5 @@ namespace BioLink.Client.Material {
         #endregion
     
     }
+
 }

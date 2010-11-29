@@ -8,7 +8,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="446" d:DesignWidth="724">
     <UserControl.Resources>
-        <tax:GANDesignationTypeConverter x:Key="designationConveter" />
+        <tax:GANDesignationTypeConverter x:Key="designationConverter" />
         <Style x:Key="StretchedContainerStyle" TargetType="{x:Type ListBoxItem}">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         </Style>
@@ -17,13 +17,13 @@
         <GroupBox Header="Type Species Designation" Height="84" Margin="12,12,12,0" Name="groupBox1" VerticalAlignment="Top">
             <Grid>
                 <RadioButton Content="Designated (Type Species)" Height="16" HorizontalAlignment="Left" Margin="6,6,0,0" Name="radioButton1" VerticalAlignment="Top" Width="198" Grid.ColumnSpan="2" 
-                             IsChecked="{Binding Path=Designation, Converter={StaticResource designationConveter}, ConverterParameter=0}" />
+                             IsChecked="{Binding Path=Designation, Converter={StaticResource designationConverter}, ConverterParameter=0}" />
                 <RadioButton Content="None required" Height="16" HorizontalAlignment="Left" Margin="6,28,0,0" Name="radioButton2" VerticalAlignment="Top" Width="198" Grid.ColumnSpan="2" 
-                             IsChecked="{Binding Path=Designation, Converter={StaticResource designationConveter}, ConverterParameter=1}" />
+                             IsChecked="{Binding Path=Designation, Converter={StaticResource designationConverter}, ConverterParameter=1}" />
                 <RadioButton Content="Not Designated (With Included Species)" Height="16" HorizontalAlignment="Left" Margin="210,6,0,0" Name="radioButton3" VerticalAlignment="Top" Width="333" 
-                             IsChecked="{Binding Path=Designation, Converter={StaticResource designationConveter}, ConverterParameter=2}" />
+                             IsChecked="{Binding Path=Designation, Converter={StaticResource designationConverter}, ConverterParameter=2}" />
                 <RadioButton Content="Not Designated (Without Included Species)" Height="16" HorizontalAlignment="Left" Margin="210,28,0,0" Name="radioButton4" VerticalAlignment="Top" Width="333" 
-                             IsChecked="{Binding Path=Designation, Converter={StaticResource designationConveter}, ConverterParameter=3}" />
+                             IsChecked="{Binding Path=Designation, Converter={StaticResource designationConverter}, ConverterParameter=3}" />
             </Grid>
         </GroupBox>
         <TabControl Margin="12,102,14,12" Name="tabControl">
