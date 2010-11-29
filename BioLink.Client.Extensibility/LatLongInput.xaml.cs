@@ -19,20 +19,20 @@ namespace BioLink.Client.Extensibility {
     /// </summary>
     public partial class LatLongInput : UserControl {
 
-        private LatLongAxis _axis;
+        private CoordinateType _coordType;
         private LatLongMode _mode;
 
         public LatLongInput() {
-            Axis = LatLongAxis.Latitude;
+            Axis = CoordinateType.Latitude;
             Mode = LatLongMode.DegreesMinutesSeconds;
             InitializeComponent();
             lblAxis.Content = this.Resources["LatLong.lblAxis." + Axis.ToString()];
         }
 
-        public LatLongAxis Axis {
-            get { return _axis; }
+        public CoordinateType Axis {
+            get { return _coordType; }
             set {
-                _axis = value;
+                _coordType = value;
                 if (lblAxis != null) {
                     lblAxis.Content = this.Resources["LatLong.lblAxis." + value.ToString()];
                 }
@@ -45,6 +45,44 @@ namespace BioLink.Client.Extensibility {
                 _mode = value;
                 if (txtDegrees != null) {
                     LayoutControl();
+                }
+            }
+        }
+
+        public double Value {
+            get {
+                switch (Mode) {
+                    case LatLongMode.DecimalDegrees:
+                        return Double.Parse(txtDegrees.Text);
+                    case LatLongMode.DegreesDecimalMinutes:
+                        var deg = Int32.Parse(txtDegrees.Text);
+                        var minutes = Double.Parse(txtMinutes.Text);
+                        return GeoUtils.DDecMToDecDeg(deg, minutes);
+                    case LatLongMode.DegreesDecimalMinutesDirection:
+                        deg = Int32.Parse(txtDegrees.Text);
+                        minutes = Double.Parse(txtMinutes.Text);
+                        return GeoUtils.DDecMDirToDecDeg(deg, minutes, cmbDirection.Text);
+                    case LatLongMode.DegreesMinutesSeconds:
+                        deg = Int32.Parse(txtDegrees.Text);
+                        int min = Int32.Parse(txtMinutes.Text);
+                        int seconds = Int32.Parse(txtSeconds.Text);
+                        return GeoUtils.DMSToDecDeg(deg, min, seconds, cmbDirection.Text);
+                    default:
+                        throw new Exception("Mode not handled: " + Mode.ToString());
+                }
+            }
+            set {
+                switch (Mode) {
+                    case LatLongMode.DegreesMinutesSeconds:
+                        string direction;
+                        int degrees, minutes, seconds;
+                        GeoUtils.DecDegToDMS(value, _coordType, out degrees, out minutes, out seconds, out direction);
+                        txtDegrees.Text = degrees + "";
+                        txtMinutes.Text = minutes + "";
+                        txtSeconds.Text = seconds + "";
+                        cmbDirection.Text = direction;
+                        break;
+
                 }
             }
         }

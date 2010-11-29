@@ -178,6 +178,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="RadioButtonIntValueConverter.cs" />
     <Compile Include="References\ReferencesControl.xaml.cs">
       <DependentUpon>ReferencesControl.xaml</DependentUpon>
     </Compile>

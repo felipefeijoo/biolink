@@ -54,7 +54,7 @@ namespace BioLink.Data {
 
             var supportService = new SupportService(User);
             int phraseCatId = supportService.GetPhraseCategoryId(phraseCat, false);
-            if (phraseCatId >= 0) {
+            if (phraseCatId > 0) {
                 Logger.Debug("Using phrase category {0} (id={1}) for Distinct List lookup", phraseCat, phraseCatId);
                 var phrases = supportService.GetPhrases(phraseCatId);
                 results = phrases.ConvertAll((phrase) => {
