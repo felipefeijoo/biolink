@@ -117,6 +117,12 @@ namespace BioLink.Client.Utilities {
             minutes = (int) (leftover * 60);
             leftover = leftover - ((double) minutes / 60.0);
             seconds = (int) Math.Round(leftover * 3600,MidpointRounding.AwayFromZero);
+
+            if (seconds >= 60) {
+                minutes++;
+                seconds -= 60;
+            }
+
             switch (coordType) {
                 case CoordinateType.Latitude:
                     direction = decdeg < 0 ? "S" : "N";
@@ -130,7 +136,12 @@ namespace BioLink.Client.Utilities {
         }
 
         public static double DMSToDecDeg(int degrees, int minutes, int seconds, string direction) {
-            return (double) degrees + ((double) minutes / 60.0) + ((double) seconds / 3600.0) * ("sw".Contains(direction.ToLower()) ? -1 : 1);
+            if (direction == null) {
+                direction = "N";
+            }
+            var decdeg = (double)degrees + ((double)minutes / 60.0) + ((double)seconds / 3600.0);
+            var sign = (double) ("sw".Contains(direction.ToLower()) ? -1 : 1); 
+            return decdeg * sign;
         }
 
 

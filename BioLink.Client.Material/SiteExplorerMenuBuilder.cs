@@ -47,6 +47,12 @@ namespace BioLink.Client.Material {
                 }
             });
 
+            var pinnable = explorer.CreatePinnable(node);
+            if (pinnable != null) {
+                builder.Separator();
+                builder.New("_Pin to pin board").Handler(() => { PluginManager.Instance.PinObject(pinnable); });
+            }
+
             builder.Separator();
 
             builder.New("Details...").Handler(() => {

@@ -249,6 +249,41 @@ namespace BioLink.Client.Material {
             }
         }
 
+        public void EditNode(SiteExplorerNodeViewModel node) {
+            switch (node.NodeType) {
+                case SiteExplorerNodeType.Site:
+                    EditSite(node);
+                    break;
+                case SiteExplorerNodeType.Region:
+                    EditRegion(node);
+                    break;
+                case SiteExplorerNodeType.SiteGroup:
+                    break;
+                case SiteExplorerNodeType.SiteVisit:
+                    EditSiteVisit(node);
+                    break;
+                case SiteExplorerNodeType.Material:
+                    EditMaterial(node);
+                    break;
+                case SiteExplorerNodeType.Trap:
+                    EditTrap(node);
+                    break;
+            }
+        }
+
+        internal void EditSiteVisit(SiteExplorerNodeViewModel region) {
+            throw new NotImplementedException();
+        }
+
+        internal void EditMaterial(SiteExplorerNodeViewModel region) {
+            throw new NotImplementedException();
+        }
+
+        internal void EditTrap(SiteExplorerNodeViewModel region) {
+            throw new NotImplementedException();
+        }
+
+
         internal void EditRegion(SiteExplorerNodeViewModel region) {
             EditNode(region, () => { return new RegionDetails(User, region.ElemID ); });
         }
@@ -345,6 +380,9 @@ namespace BioLink.Client.Material {
 
         #endregion
 
+        internal PinnableObject CreatePinnable(SiteExplorerNodeViewModel node) {
+            return new PinnableObject(MaterialPlugin.MATERIAL_PLUGIN_NAME, string.Format("{0}:{1}", node.NodeType.ToString(), node.ElemID));            
+        }
     }
 
 }

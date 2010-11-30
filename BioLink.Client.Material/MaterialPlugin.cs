@@ -6,18 +6,21 @@ using BioLink.Client.Extensibility;
 using BioLink.Client.Utilities;
 using BioLink.Data;
 using BioLink.Data.Model;
+using System.Text.RegularExpressions;
 
 namespace BioLink.Client.Material {
 
     public class MaterialPlugin : BiolinkPluginBase {
 
+        public const string MATERIAL_PLUGIN_NAME = "Material";
+
         private MaterialExplorer _explorer;
 
-        public MaterialPlugin() {            
+        public MaterialPlugin() {
         }
 
         public override string Name {
-            get { return "MATERIAL"; }
+            get { return MATERIAL_PLUGIN_NAME; }
         }
 
         public override List<IWorkspaceContribution> GetContributions() {
@@ -70,11 +73,51 @@ namespace BioLink.Client.Material {
             } else {
                 throw new Exception("Unhandled Selection Type: " + t.Name);
             }
-
         }
 
-        public override List<Command> GetCommandsForObject(ViewModelBase obj) {
+        private static Regex PINNABLE_STATE_EXPR = new Regex(@"^(\w+)[:](\d+)$");
+
+        public override ViewModelBase CreatePinnableViewModel(object state) {
+            string str = state as string;
+            if (str != null) {
+                var matcher = PINNABLE_STATE_EXPR.Match(str);
+                if (matcher.Success) {
+                    var nodeType = matcher.Groups[1].Value;
+                    var elemId = Int32.Parse(matcher.Groups[2].Value);
+                    var service = new MaterialService(User);
+                    switch (nodeType.ToLower()) {
+                        case "site":
+                            var site = service.GetSite(elemId);
+                            SiteExplorerNode model = new SiteExplorerNode();
+                            model.ElemID = site.SiteID;
+                            model.ElemType = "Site";
+                            model.Name = site.SiteName;
+                            model.RegionID = site.PoliticalRegionID;
+                            var viewModel = new SiteExplorerNodeViewModel(model);
+                            return viewModel;
+                        default:
+                            throw new Exception("Unhandled pinnable type: " + str);
+                    }
+                }
+            }
+
             return null;
+        }
+
+
+        public override List<Command> GetCommandsForObject(ViewModelBase obj) {
+
+            var list = new List<Command>();
+
+            if (obj is SiteExplorerNodeViewModel) {
+                var node = obj as SiteExplorerNodeViewModel;
+
+                //                list.Add(new Command("Show in explorer", (dataobj) => { _explorer.ShowInExplorer(node.ElemID); }));
+                list.Add(new CommandSeparator());
+                list.Add(new Command("Edit Details...", (dataobj) => { _explorer.EditNode(node); }));
+            }
+
+            return list;
         }
     }
 
