@@ -54,11 +54,11 @@
                             <RadioButton Content="Line" Height="16" HorizontalAlignment="Left" Margin="6,50,0,0" Name="optLine" VerticalAlignment="Top" Width="196" IsChecked="{Binding PosAreaType, Converter={StaticResource radioButtonConverter}, ConverterParameter=3}" />
                         </Grid>
                     </GroupBox>
-                    <Image Height="96" HorizontalAlignment="Left" Margin="14,241,0,0" Name="imgMiniMap2" Source="images\World.png" Stretch="None" VerticalAlignment="Top" Width="200" />
+                    <Image Height="96" HorizontalAlignment="Left" Margin="14,256,0,0" Name="imgMiniMap2" Source="images\World.png" Stretch="None" VerticalAlignment="Top" Width="200" />
                     <GroupBox Header="Coordinates" Height="216" HorizontalAlignment="Left" Margin="234,6,0,0" Name="grpCoordinates" VerticalAlignment="Top" Width="544">
                         <Grid>
-                            <ext:LatLongInput HorizontalAlignment="Left" Margin="124,6,0,0" Name="ctlY1" Width="180" Height="40" VerticalAlignment="Top" />
-                            <ext:LatLongInput Height="40" HorizontalAlignment="Left" Margin="319,6,0,0" Name="ctlX1" VerticalAlignment="Top" Width="180" Axis="Longitude" />
+                            <ext:LatLongInput HorizontalAlignment="Left" Margin="124,6,0,0" Name="ctlY1" Width="180" Height="40" VerticalAlignment="Top" Value="{Binding PosY1}" />
+                            <ext:LatLongInput Height="40" HorizontalAlignment="Left" Margin="319,6,0,0" Name="ctlX1" VerticalAlignment="Top" Width="180" Axis="Longitude" Value="{Binding PosX1}" />
                             <Label Content="Coordinates:" Height="28" HorizontalAlignment="Left" Margin="6,18,0,0" Name="label5" VerticalAlignment="Top" Width="80" />
                             <ext:LatLongInput Height="40" HorizontalAlignment="Left" Margin="124,50,0,0" Name="ctlY2" VerticalAlignment="Top" Width="180" />
                             <ext:LatLongInput Axis="Longitude" Height="40" HorizontalAlignment="Left" Margin="319,49,0,0" Name="ctlX2" VerticalAlignment="Top" Width="180" />

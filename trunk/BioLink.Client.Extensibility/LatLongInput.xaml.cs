@@ -21,12 +21,17 @@ namespace BioLink.Client.Extensibility {
 
         private CoordinateType _coordType;
         private LatLongMode _mode;
+        private bool _selfChanged = false;
 
         public LatLongInput() {
+            InitializeComponent();
             Axis = CoordinateType.Latitude;
             Mode = LatLongMode.DegreesMinutesSeconds;
-            InitializeComponent();
             lblAxis.Content = this.Resources["LatLong.lblAxis." + Axis.ToString()];
+            txtDegrees.TextChanged += new TextChangedEventHandler((s, e) => { RecalculateValue(); });
+            txtMinutes.TextChanged += new TextChangedEventHandler((s, e) => { RecalculateValue(); });
+            txtSeconds.TextChanged += new TextChangedEventHandler((s, e) => { RecalculateValue(); });
+            cmbDirection.SelectionChanged += new SelectionChangedEventHandler((s, e) => { RecalculateValue(); });
         }
 
         public CoordinateType Axis {
@@ -35,6 +40,13 @@ namespace BioLink.Client.Extensibility {
                 _coordType = value;
                 if (lblAxis != null) {
                     lblAxis.Content = this.Resources["LatLong.lblAxis." + value.ToString()];
+                }
+                if (cmbDirection != null) {
+                    var list = new String[] { "E", "W" };
+                    if (_coordType == CoordinateType.Latitude) {
+                        list = new String[] { "N", "S" };
+                    }
+                    cmbDirection.ItemsSource = list;
                 }
             }
         }
@@ -49,41 +61,83 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        public double Value {
-            get {
-                switch (Mode) {
-                    case LatLongMode.DecimalDegrees:
-                        return Double.Parse(txtDegrees.Text);
-                    case LatLongMode.DegreesDecimalMinutes:
-                        var deg = Int32.Parse(txtDegrees.Text);
-                        var minutes = Double.Parse(txtMinutes.Text);
-                        return GeoUtils.DDecMToDecDeg(deg, minutes);
-                    case LatLongMode.DegreesDecimalMinutesDirection:
-                        deg = Int32.Parse(txtDegrees.Text);
-                        minutes = Double.Parse(txtMinutes.Text);
-                        return GeoUtils.DDecMDirToDecDeg(deg, minutes, cmbDirection.Text);
-                    case LatLongMode.DegreesMinutesSeconds:
-                        deg = Int32.Parse(txtDegrees.Text);
-                        int min = Int32.Parse(txtMinutes.Text);
-                        int seconds = Int32.Parse(txtSeconds.Text);
-                        return GeoUtils.DMSToDecDeg(deg, min, seconds, cmbDirection.Text);
-                    default:
-                        throw new Exception("Mode not handled: " + Mode.ToString());
+        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register(
+            "Value", 
+            typeof(double), 
+            typeof(LatLongInput), 
+            new FrameworkPropertyMetadata((double) 0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnValueChanged)
+        );
+
+        private static void OnValueChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            
+            var control = obj as LatLongInput;
+            if (control != null) {
+                double newValue = (double)args.NewValue;
+                if (!control._selfChanged) {
+                    
+                    switch (control.Mode) {
+                        case LatLongMode.DegreesMinutesSeconds:
+                            string direction;
+                            int degrees, minutes, seconds;
+                            GeoUtils.DecDegToDMS(newValue, control._coordType, out degrees, out minutes, out seconds, out direction);
+                            control.txtDegrees.Text = degrees + "";
+                            control.txtMinutes.Text = minutes + "";
+                            control.txtSeconds.Text = seconds + "";
+                            control.cmbDirection.SelectedItem = direction;
+                            break;
+                    }
+                }
+
+                if (control.CoordinateValueChanged != null) {
+                    control.CoordinateValueChanged(control, newValue);
                 }
             }
-            set {
-                switch (Mode) {
-                    case LatLongMode.DegreesMinutesSeconds:
-                        string direction;
-                        int degrees, minutes, seconds;
-                        GeoUtils.DecDegToDMS(value, _coordType, out degrees, out minutes, out seconds, out direction);
-                        txtDegrees.Text = degrees + "";
-                        txtMinutes.Text = minutes + "";
-                        txtSeconds.Text = seconds + "";
-                        cmbDirection.Text = direction;
-                        break;
 
-                }
+        }
+
+        public double Value {
+            get { return (double) GetValue(ValueProperty); }
+            set { SetValue(ValueProperty, value); }
+        }
+
+        private void RecalculateValue() {
+
+            double newValue = 0;
+            
+            switch (Mode) {
+                case LatLongMode.DecimalDegrees:
+                    newValue = Double.Parse(txtDegrees.Text);
+                    break;
+                case LatLongMode.DegreesDecimalMinutes:
+                    var deg = SafeParse(txtDegrees.Text);
+                    var minutes = Double.Parse(txtMinutes.Text);
+                    newValue = GeoUtils.DDecMToDecDeg(deg, minutes);
+                    break;
+                case LatLongMode.DegreesDecimalMinutesDirection:
+                    deg = SafeParse(txtDegrees.Text);
+                    minutes = Double.Parse(txtMinutes.Text);
+                    newValue = GeoUtils.DDecMDirToDecDeg(deg, minutes, cmbDirection.Text);
+                    break;
+                case LatLongMode.DegreesMinutesSeconds:
+                    deg = SafeParse(txtDegrees.Text);
+                    int min = SafeParse(txtMinutes.Text);
+                    int seconds = SafeParse(txtSeconds.Text);
+                    newValue = GeoUtils.DMSToDecDeg(deg, min, seconds, cmbDirection.SelectedItem as string);
+                    break;
+                default:
+                    throw new Exception("Recalculate: Mode not handled: " + Mode.ToString());
+            }
+            _selfChanged = true;                 
+            this.Value = newValue;
+            _selfChanged = false;
+        }
+
+        private int SafeParse(string text) {
+            int result ;
+            if (Int32.TryParse(text, out result)) {
+                return result;
+            } else {
+                return 0;
             }
         }
 
@@ -117,6 +171,8 @@ namespace BioLink.Client.Extensibility {
 
         }
 
+        public event CoordinateValueChangedHandler CoordinateValueChanged;
+
         public enum LatLongAxis {
             Latitude,
             Longitude
@@ -128,5 +184,8 @@ namespace BioLink.Client.Extensibility {
             DegreesDecimalMinutes,
             DegreesDecimalMinutesDirection
         }
+
     }
+
+    public delegate void CoordinateValueChangedHandler(object source, double value);
 }

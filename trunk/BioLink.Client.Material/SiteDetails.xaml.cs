@@ -74,6 +74,9 @@ namespace BioLink.Client.Material {
             txtGeoMember.BindUser(User, PickListType.Phrase, "Geological Member", TraitCategoryType.Site);
             txtGeoBed.BindUser(User, PickListType.Phrase, "Geological Bed", TraitCategoryType.Site);
 
+            this.ctlX1.CoordinateValueChanged += new CoordinateValueChangedHandler((s, v) => { UpdateMiniMap(ctlY1.Value, ctlX1.Value); });
+            this.ctlY1.CoordinateValueChanged += new CoordinateValueChangedHandler((s, v) => { UpdateMiniMap(ctlY1.Value, ctlX1.Value); });
+
 
             _viewModel.DataChanged += new DataChangedHandler(_viewModel_DataChanged);
 
@@ -83,13 +86,18 @@ namespace BioLink.Client.Material {
         }
 
         private void UpdateMiniMap(double latitude, double longitude) {
+            UpdateMiniMap(latitude, longitude, imgMap);
+            UpdateMiniMap(latitude, longitude, imgMiniMap2);
+        }
 
-            if (imgMap.Width == 0 || imgMap.Height == 0) {
+        private void UpdateMiniMap(double latitude, double longitude, Image imgControl) {
+
+            if (imgControl.Width == 0 || imgControl.Height == 0) {
                 return;
             }
 
-            double meridian = imgMap.Width / 2.0;
-            double equator = imgMap.Height / 2.0;
+            double meridian = imgControl.Width / 2.0;
+            double equator = imgControl.Height / 2.0;
             double x = meridian + ((longitude / 180) * meridian);
             double y = equator - ((latitude / 90) * equator);
 
@@ -100,7 +108,7 @@ namespace BioLink.Client.Material {
             DrawingVisual drawingVisual = new DrawingVisual();
             DrawingContext dc = drawingVisual.RenderOpen();
 
-            dc.DrawImage(img, new Rect(0, 0, (int)imgMap.Width, (int) imgMap.Height));
+            dc.DrawImage(img, new Rect(0, 0, (int)imgControl.Width, (int)imgControl.Height));
             var brush = new SolidColorBrush(Colors.Red);
             var pen = new Pen(brush, 1);
 
@@ -109,7 +117,7 @@ namespace BioLink.Client.Material {
             dc.Close();
             bmp.Render(drawingVisual);
 
-            imgMap.Source = bmp;
+            imgControl.Source = bmp;
         }
 
         void _viewModel_DataChanged(ChangeableModelBase viewmodel) {
