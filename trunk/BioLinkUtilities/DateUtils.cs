@@ -49,6 +49,15 @@ namespace BioLink.Client.Utilities {
             return datestr;
 
         }
+
+        public static string GetMonthName(int month, bool abbrev) {
+            DateTime date = new DateTime(1900, month, 1);
+            if (abbrev) {
+                return date.ToString("MMM");
+            } else {
+                return date.ToString("MMMM");
+            }
+        }
     
     }
 }

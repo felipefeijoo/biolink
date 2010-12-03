@@ -82,6 +82,12 @@ namespace BioLink.Client.Material {
 
             txtPoliticalRegion.BindUser(user, LookupType.Region);
 
+            string llmode = Config.GetUser(User, "SiteDetails.LatLongFormat", LatLongInput.LatLongMode.DegreesMinutesSeconds.ToString());
+            if (!String.IsNullOrEmpty(llmode)) {
+                LatLongInput.LatLongMode mode = (LatLongInput.LatLongMode)Enum.Parse(typeof(LatLongInput.LatLongMode), llmode);
+                SwitchLatLongFormat(mode);
+            }
+
             UpdateMiniMap(model.PosY1, model.PosX1);
         }
 
@@ -124,11 +130,61 @@ namespace BioLink.Client.Material {
             RegisterUniquePendingChange(new UpdateSiteAction(_viewModel));
         }
 
+        private void mnuDecimalDegrees_Click(object sender, RoutedEventArgs e) {
+            SwitchLatLongFormat(sender);
+        }
+
+        private void mnuDMS_Click(object sender, RoutedEventArgs e) {
+            SwitchLatLongFormat(sender);
+        }
+
+        private void mnuDDM_Click(object sender, RoutedEventArgs e) {
+            SwitchLatLongFormat(sender);
+        }
+
+        private void SwitchLatLongFormat(object sender) {
+            var mnu = sender as MenuItem;
+            if (mnu != null) {
+                var lltype = mnu.Tag as string;
+                if (lltype != null) {
+                    LatLongInput.LatLongMode mode = (LatLongInput.LatLongMode)Enum.Parse(typeof(LatLongInput.LatLongMode), lltype);
+                    SwitchLatLongFormat(mode);
+                }
+            }
+        }
+
+        private void SwitchLatLongFormat(LatLongInput.LatLongMode latLongMode) {
+            ctlX1.Mode = latLongMode;
+            ctlX2.Mode = latLongMode;
+            ctlY1.Mode = latLongMode;
+            ctlY2.Mode = latLongMode;
+
+            mnuDecimalDegrees.IsChecked = false;
+            mnuDDM.IsChecked = false;
+            mnuDMS.IsChecked = false;
+
+            switch (latLongMode) {
+                case LatLongInput.LatLongMode.DecimalDegrees:
+                    mnuDecimalDegrees.IsChecked = true;
+                    break;
+                case LatLongInput.LatLongMode.DegreesDecimalMinutes:
+                    mnuDDM.IsChecked = true;
+                    break;
+                case LatLongInput.LatLongMode.DegreesMinutesSeconds:
+                    mnuDMS.IsChecked = true;
+                    break;
+            }
+
+            Config.SetUser(User, "SiteDetails.LatLongFormat", latLongMode.ToString());
+        }
+
+
         #region Properties
 
         public int SiteID { get; private set; }
 
         #endregion
+
     
     }
 

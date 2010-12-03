@@ -53,18 +53,21 @@ namespace BioLink.Client.Material {
                 builder.New("_Pin to pin board").Handler(() => { PluginManager.Instance.PinObject(pinnable); });
             }
 
-            builder.Separator();
 
-            builder.New("Details...").Handler(() => {
-                switch (type) {
-                    case SiteExplorerNodeType.Region: explorer.EditRegion(node);
-                        break;
-                    case SiteExplorerNodeType.Site: explorer.EditSite(node);
-                        break;
-                    default:
-                        throw new Exception("[Details] Unhandled site explorer element type: " + node.ElemType);
-                }
-            }).End();
+
+            if (type != SiteExplorerNodeType.SiteGroup) {
+                builder.Separator();
+                builder.New("Details...").Handler(() => {
+                    switch (type) {
+                        case SiteExplorerNodeType.Region: explorer.EditRegion(node);
+                            break;
+                        case SiteExplorerNodeType.Site: explorer.EditSite(node);
+                            break;
+                        default:
+                            throw new Exception("[Details] Unhandled site explorer element type: " + node.ElemType);
+                    }
+                }).End();
+            }
 
             return builder.ContextMenu;
         }

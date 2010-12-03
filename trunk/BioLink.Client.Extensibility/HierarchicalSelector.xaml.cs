@@ -21,9 +21,11 @@ namespace BioLink.Client.Extensibility {
     /// <summary>
     /// Interaction logic for HierarchicalSelector.xaml
     /// </summary>
-    public partial class HierarchicalSelector : Window {
+    public partial class HierarchicalSelector : ChangeContainer {
 
         private IHierarchicalSelectorContentProvider _content;
+
+        private ObservableCollection<HierarchicalViewModelBase> _model;
 
         #region Designer Constructor
 
@@ -46,10 +48,75 @@ namespace BioLink.Client.Extensibility {
                 txtFind.Focus();
             });
 
+            this.ChangeRegistered += new PendingChangedRegisteredHandler(HierarchicalSelector_ChangeRegistered);
+            this.ChangesCommitted += new PendingChangesCommittedHandler(HierarchicalSelector_ChangesCommitted);
+
+            if (_content.CanRenameItem || _content.CanDeleteItem || _content.CanAddNewItem) {
+                btnApply.Visibility = System.Windows.Visibility.Visible;
+                btnApply.IsEnabled = false;
+            } else {
+                btnApply.Visibility = System.Windows.Visibility.Collapsed;
+            }
+
+        }
+
+        public List<string> GetExpandedParentages(ObservableCollection<HierarchicalViewModelBase> model) {
+            List<string> list = new List<string>();
+            ProcessList(model, list);
+            return list;
+        }
+
+        private string GetParentage(HierarchicalViewModelBase item) {            
+            if (item != null) {
+                return GetParentage(item.Parent) + "/" + _content.GetElementIDForViewModel(item);
+            }
+            return "";
+        }
+
+        private void ProcessList(ObservableCollection<HierarchicalViewModelBase> model, List<string> list) {
+            foreach (HierarchicalViewModelBase vm in model) {
+                if (vm.IsExpanded) {                    
+                    list.Add(GetParentage(vm));
+                    if (vm.Children != null && vm.Children.Count > 0) {
+                        ProcessList(vm.Children, list);
+                    }
+                }
+            }
+        }
+
+        public void ExpandParentages(ObservableCollection<HierarchicalViewModelBase> model, List<string> expanded) {
+            if (expanded != null && expanded.Count > 0) {
+                var todo = new Stack<HierarchicalViewModelBase>(model);
+                while (todo.Count > 0) {
+                    var vm = todo.Pop();
+                    string parentage = GetParentage(vm);
+                    if (expanded.Contains(parentage)) {
+                        vm.IsExpanded = true;
+                        expanded.Remove(parentage);
+                        vm.Children.ForEach(child => todo.Push(child));
+                    }
+                }
+            }
+        }
+
+
+        void HierarchicalSelector_ChangesCommitted(object sender) {
+            btnApply.IsEnabled = false;
+            // Save the current expanded hierarchy....
+            var expanded = GetExpandedParentages(_model);
+            // reload the model...
+            LoadTopLevel();
+            // expand out the saved expanded hierarchy
+            ExpandParentages(_model, expanded);
+        }
+
+        void HierarchicalSelector_ChangeRegistered(object sender, object action) {
+            btnApply.IsEnabled = true;
         }
 
         private void LoadTopLevel() {
-            tvw.ItemsSource = LoadModel(null);
+            _model = LoadModel(null);
+            tvw.ItemsSource = _model;
         }
 
         private ObservableCollection<HierarchicalViewModelBase> LoadModel(HierarchicalViewModelBase parent) {
@@ -79,16 +146,20 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        private void TreeViewItem_MouseRightButtonDown(object sender, MouseEventArgs e) {
-        }
-
         private void EditableTextBlock_EditingComplete(object sender, string text) {
+            if (_content.CanRenameItem) {
+                var action = _content.RenameItem(tvw.SelectedItem as HierarchicalViewModelBase, text);
+                if (action != null) {
+                    RegisterUniquePendingChange(action, this);
+                }
+            }
         }
 
         private void EditableTextBlock_EditingCancelled(object sender, string oldtext) {
         }
 
         private void txtFind_TypingPaused(string text) {
+
             if (_content == null) {
                 return;
             }
@@ -152,13 +223,73 @@ namespace BioLink.Client.Extensibility {
             return false;
         }
 
-        #region Properties
+        private void tvw_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            var item = tvw.SelectedItem as HierarchicalViewModelBase;
+            if (item != null) {
+                ShowContextMenu(item);
+            }
+        }
 
-        internal User User { get; private set; }
+        private void ShowContextMenu(HierarchicalViewModelBase selected) {
+            ContextMenuBuilder builder = new ContextMenuBuilder(null);
+            if (_content.CanAddNewItem) {
+                builder.New("Add new").Handler(() => { AddNewItem(selected); }).End();
+            }
+
+            if (_content.CanRenameItem) {
+                builder.Separator();
+                builder.New("Rename").Handler(() => { RenameItem(selected); }).End();
+            }
+
+            if (_content.CanDeleteItem) {
+                builder.Separator();
+                builder.New("Delete").Handler(() => { DeleteItem(selected); }).End();
+            }
+
+            if (builder.HasItems) {
+                tvw.ContextMenu = builder.ContextMenu;
+            }
+        }
+
+        private void AddNewItem(HierarchicalViewModelBase parent) {
+            var action = _content.AddNewItem(parent);
+            if (action != null) {
+                RegisterPendingChange(action, this);
+            }
+        }
+
+        private void RenameItem(HierarchicalViewModelBase item) {
+            if (item != null) {
+                // This starts the rename, and the change is registered when the edit is complete. See EditableTextBlock_EditingComplete
+                item.IsRenaming = true;                
+            }
+        }
+
+        private void DeleteItem(HierarchicalViewModelBase item) {
+            var action = _content.DeleteItem(item);
+            if (action != null) {                
+                RegisterPendingChange(action, this);
+                item.IsDeleted = true;
+            }
+        }
+
+        #region Properties
 
         internal Action<SelectionResult> SelectedAction { get; private set; }
 
         #endregion
+
+        private void btnApply_Click(object sender, RoutedEventArgs e) {
+            CommitPendingChanges();
+        }
+
+        private void ChangeContainer_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+            if (HasPendingChanges) {
+                if (!this.Question("You have unsaved changes. Are you sure you want to discard those changes?", "Discard changes?")) {
+                    e.Cancel = true;
+                }
+            }
+        }
 
     }
 
@@ -166,11 +297,25 @@ namespace BioLink.Client.Extensibility {
 
         string Caption { get; }
 
+        bool CanAddNewItem { get; }
+
+        bool CanDeleteItem { get; }
+
+        bool CanRenameItem { get; }
+
         List<HierarchicalViewModelBase> LoadModel(HierarchicalViewModelBase parent);
 
         List<HierarchicalViewModelBase> Search(string searchTerm);
 
         SelectionResult CreateSelectionResult(HierarchicalViewModelBase selectedItem);
+
+        DatabaseAction AddNewItem(HierarchicalViewModelBase selectedItem);
+
+        DatabaseAction RenameItem(HierarchicalViewModelBase selectedItem, string newName);
+
+        DatabaseAction DeleteItem(HierarchicalViewModelBase selectedItem);
+
+        int? GetElementIDForViewModel(HierarchicalViewModelBase item);
 
     }
 }

@@ -147,15 +147,33 @@ namespace BioLink.Client.Extensibility {
             object[] widths = null;
             switch (Mode) {
                 case LatLongMode.DecimalDegrees:
+                    txtDegrees.Text = "" + Value;
                     widths = new object[] { STAR, 15, 0, 0, 0, 0, 0 };
                     break;
                 case LatLongMode.DegreesDecimalMinutes:
+                    int degrees;
+                    double minutes;
+                    GeoUtils.DecDegToDDecM(Value, out degrees, out minutes);
+                    txtDegrees.Text = degrees + "";
+                    txtMinutes.Text = minutes + "";
                     widths = new object[] { STAR, 15, STAR, 15, 0, 0, 0 };
                     break;
                 case LatLongMode.DegreesDecimalMinutesDirection:
+                    string direction;
+                    GeoUtils.DecDegToDDecMDir(Value, out degrees, out minutes, out direction, this._coordType);
+                    txtDegrees.Text = degrees + "";
+                    txtMinutes.Text = minutes + "";
+                    cmbDirection.SelectedItem = direction;
                     widths = new object[] { STAR, 15, STAR, 15, 0, 0, 35 };
                     break;
                 default: // DMS
+                    int iMinutes;
+                    int seconds;
+                    GeoUtils.DecDegToDMS(Value, _coordType, out degrees, out iMinutes, out seconds, out direction);
+                    txtDegrees.Text = degrees + "";
+                    txtMinutes.Text = iMinutes + "";
+                    txtSeconds.Text = seconds + "";
+                    cmbDirection.SelectedItem = direction;
                     widths = new object[] { STAR, 15, STAR, 15, STAR, 15, 35 };
                     break;
             }

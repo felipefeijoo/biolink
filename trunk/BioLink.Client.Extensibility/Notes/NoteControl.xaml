@@ -26,11 +26,11 @@
                 <DockPanel Height="30" Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Expander}}, Path=ActualWidth}">
                     <TextBlock DockPanel.Dock="Left" Text="{Binding NoteType}" FontWeight="Bold" TextAlignment="Left" VerticalAlignment="Center" />
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button x:Name="btnProperties" Height="23" Width="23" Margin="0,0,5,0" Focusable="False" Click="btnProperties_Click">
+                        <Button x:Name="btnProperties" Height="23" Width="23" Margin="0,0,5,0" Focusable="False" Click="btnProperties_Click" ToolTip="Notes properties...">
                             <Image Source="..\images\Properties.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" />
                         </Button>
 
-                        <Button x:Name="btnDelete" Height="23" Width="23" Margin="0,0,30,0" Focusable="False" Click="btnDelete_Click">
+                        <Button x:Name="btnDelete" Height="23" Width="23" Margin="0,0,30,0" Focusable="False" Click="btnDelete_Click" ToolTip="Delete Note">
                             <Image Source="..\images\Delete.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" />
                         </Button>
                     </StackPanel>
