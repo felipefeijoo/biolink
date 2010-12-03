@@ -1,0 +1,23 @@
+﻿<src:DatabaseActionControl x:Class="BioLink.Client.Extensibility.TraitControl"                           
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:src="clr-namespace:BioLink.Client.Extensibility"
+            xmlns:data="clr-namespace:BioLink.Data;assembly=BioLink.Data"
+             mc:Ignorable="d" 
+             d:DesignHeight="249" d:DesignWidth="463">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <StackPanel x:Name="traitsPanel" />
+        </ScrollViewer>
+        <Grid Grid.Row="1">
+            <Button Content="_Add trait" Height="23" HorizontalAlignment="Left" Margin="6,7,0,0" Name="btnAddTrait" VerticalAlignment="Top" Width="75" Click="btnAddTrait_Click" />
+        </Grid>
+    </Grid>
+    
+</src:DatabaseActionControl>
