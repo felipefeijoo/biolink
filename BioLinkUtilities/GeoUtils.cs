@@ -135,6 +135,24 @@ namespace BioLink.Client.Utilities {
             }
         }
 
+        public static void DecDegToDDecM(double decdeg, out int degrees, out double minutes) {
+            degrees = (int)Math.Abs(decdeg);
+            double leftover = (Math.Abs(decdeg) - degrees);
+            minutes = Math.Round(leftover * 60, 4);
+            if (decdeg < 0) {
+                degrees *= -1;
+            }
+        }
+
+        public static void DecDegToDDecMDir(double decdeg, out int degrees, out double minutes, out string direction, CoordinateType coordType) {
+            DecDegToDDecM(decdeg, out degrees, out minutes);
+            if (coordType == CoordinateType.Latitude) {
+                direction = (decdeg < 0) ? "S" : "N";
+            } else {
+                direction = (decdeg < 0) ? "W" : "E";
+            }
+        }
+
         public static double DMSToDecDeg(int degrees, int minutes, int seconds, string direction) {
             if (direction == null) {
                 direction = "N";

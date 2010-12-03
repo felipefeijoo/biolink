@@ -196,7 +196,66 @@ namespace BioLink.Client.Material {
 
         public User User { get; private set; }
 
+        public bool CanAddNewItem {
+            get { return true; }
+        }
+
+        public bool CanDeleteItem {
+            get { return true; }
+        }
+
+        public bool CanRenameItem {
+            get { return true; }
+        }
+
         #endregion
 
+        public DatabaseAction AddNewItem(HierarchicalViewModelBase selectedItem) {
+            var parent = selectedItem as SiteExplorerNodeViewModel;
+
+            Debug.Assert(parent != null);
+            
+            var model = new SiteExplorerNode();
+            model.ElemID = -1;
+            model.ElemType = "Region";
+            model.Name = "<New Region>";
+            model.ParentID = parent.ElemID;
+            model.RegionID = parent.RegionID;
+
+            var viewModel = new SiteExplorerNodeViewModel(model);
+
+            parent.Children.Add(viewModel);
+
+            viewModel.IsSelected = true;
+            viewModel.IsRenaming = true;
+
+            return new InsertRegionAction(viewModel);
+        }
+
+        public DatabaseAction RenameItem(HierarchicalViewModelBase selectedItem, string newName) {
+            var item = selectedItem as SiteExplorerNodeViewModel;
+            if (item != null) {
+                item.Name = newName;
+                return new RenameRegionAction(item);
+            }
+            return null;
+        }
+
+        public DatabaseAction DeleteItem(HierarchicalViewModelBase selectedItem) {
+            var item = selectedItem as SiteExplorerNodeViewModel;
+            if (item != null) {                
+                return new DeleteRegionAction(item.ElemID);
+            }
+            return null;
+        }
+
+
+        public int? GetElementIDForViewModel(HierarchicalViewModelBase item) {
+            var viewmodel = item as SiteExplorerNodeViewModel;
+            if (viewmodel != null) {
+                return viewmodel.ElemID;
+            }
+            return null;
+        }
     }
 }

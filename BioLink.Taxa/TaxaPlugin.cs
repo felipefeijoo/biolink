@@ -81,6 +81,17 @@ namespace BioLink.Client.Taxa {
             return list;
         }
 
+        private void ProcessList(ObservableCollection<HierarchicalViewModelBase> model, List<string> list) {
+            foreach (TaxonViewModel tvm in model) {
+                if (tvm.IsExpanded) {
+                    list.Add(tvm.GetParentage());
+                    if (tvm.Children != null && tvm.Children.Count > 0) {
+                        ProcessList(tvm.Children, list);
+                    }
+                }
+            }
+        }
+
         public override ViewModelBase CreatePinnableViewModel(object state) {
             string str = state as string;
             if (str != null) {
@@ -97,18 +108,6 @@ namespace BioLink.Client.Taxa {
 
             return null;            
         }
-
-        private void ProcessList(ObservableCollection<HierarchicalViewModelBase> model, List<string> list) {
-            foreach (TaxonViewModel tvm in model) {
-                if (tvm.IsExpanded) {                    
-                    list.Add(tvm.GetParentage());
-                    if (tvm.Children != null && tvm.Children.Count > 0) {
-                        ProcessList(tvm.Children, list);
-                    }
-                }
-            }
-        }
-
 
         public override List<Command> GetCommandsForObject(ViewModelBase obj) {
             var list = new List<Command>();

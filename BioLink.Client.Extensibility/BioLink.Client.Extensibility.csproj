@@ -86,6 +86,12 @@
       <DependentUpon>ControlHostWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="DatabaseActionControl.cs" />
+    <Compile Include="DateChooserWindow.xaml.cs">
+      <DependentUpon>DateChooserWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DateControl.xaml.cs">
+      <DependentUpon>DateControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="EllipsisTextBox.xaml.cs">
       <DependentUpon>EllipsisTextBox.xaml</DependentUpon>
     </Compile>
@@ -246,6 +252,14 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="ControlHostWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DateChooserWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DateControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -418,6 +432,7 @@
     <Resource Include="images\CollapseAll.png" />
     <Resource Include="images\ExpandAll.png" />
     <Resource Include="images\Font.png" />
+    <Resource Include="images\Calendar.png" />
     <Content Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>
