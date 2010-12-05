@@ -20,9 +20,20 @@
                 <Image Source="images/Calendar.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None" />
             </Button.Content>
         </Button>
-        <Popup x:Name="popup" PreviewKeyDown="popup_PreviewKeyDown">
-            <Grid>
-                <Calendar x:Name="cal" />
+        <Popup x:Name="popup">            
+            <Grid Background="{x:Static SystemColors.ControlBrush}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="28" />
+                </Grid.RowDefinitions>
+                <Calendar Grid.Row="0" x:Name="cal" />
+                <Grid Grid.Row="1">
+                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                        <Button x:Name="btnAccept" Content="_Select" Click="btnAccept_Click" Width="80" Height="23" Margin="5,0,5,0" />                        
+                        <Button x:Name="btnCanel" Content="_Cancel" Click="btnCanel_Click" Width="80" Height="23" Margin="5,0,5,0" />
+                    </StackPanel>
+                </Grid>
+                
             </Grid>
         </Popup>
     </Grid>

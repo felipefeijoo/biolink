@@ -112,8 +112,8 @@ namespace BioLink.Client.Material {
             if (obj is SiteExplorerNodeViewModel) {
                 var node = obj as SiteExplorerNodeViewModel;
 
-                //                list.Add(new Command("Show in explorer", (dataobj) => { _explorer.ShowInExplorer(node.ElemID); }));
-                list.Add(new CommandSeparator());
+                // list.Add(new Command("Show in explorer", (dataobj) => { _explorer.ShowInExplorer(node.ElemID); }));
+                // list.Add(new CommandSeparator());
                 list.Add(new Command("Edit Details...", (dataobj) => { _explorer.EditNode(node); }));
             }
 

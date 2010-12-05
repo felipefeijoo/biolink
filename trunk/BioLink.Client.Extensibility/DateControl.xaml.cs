@@ -27,10 +27,35 @@ namespace BioLink.Client.Extensibility {
             txt.LostFocus += new RoutedEventHandler(txt_LostFocus);
             cal.SelectionMode = CalendarSelectionMode.SingleDate;
             cal.SelectedDatesChanged += new EventHandler<SelectionChangedEventArgs>(cal_SelectedDatesChanged);
+            cal.MouseDoubleClick += new MouseButtonEventHandler(cal_MouseDoubleClick);
+        }
+
+        void cal_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
+
+            var point = e.GetPosition(cal);
+            if (point.Y >= 58) {
+                SelectDate();
+            } else {
+                this.CaptureMouse();
+                this.ReleaseMouseCapture();
+            }
+        }
+
+        void window_PreviewKeyDown(object sender, KeyEventArgs e) {
+            if (popup.IsOpen) {
+                if (e.Key == Key.Escape) {
+                    popup.IsOpen = false;
+                    e.Handled = true;
+                } else if (e.Key == Key.Return) {
+                    SelectDate();
+                    e.Handled = true;
+                }
+            }
         }
 
         void cal_SelectedDatesChanged(object sender, SelectionChangedEventArgs e) {
-            SelectDate();
+            this.CaptureMouse();
+            this.ReleaseMouseCapture();
         }
 
         void txt_LostFocus(object sender, RoutedEventArgs e) {
@@ -130,10 +155,23 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
+        private KeyEventHandler _keyHandler;
+
         private void ToggleCalendar() {
             popup.IsOpen = !popup.IsOpen;
+            var window = this.FindParentWindow();
             if (popup.IsOpen) {
+                if (window != null && _keyHandler == null) {
+                    _keyHandler = new KeyEventHandler(window_PreviewKeyDown);
+                    window.PreviewKeyDown += _keyHandler;
+                    window.PreviewKeyUp += _keyHandler;
+                }
                 popup.Focus();
+            } else {                
+                if (window != null && _keyHandler != null) {
+                    window.PreviewKeyDown -= _keyHandler;
+                    window.PreviewKeyUp -= _keyHandler;
+                }
             }
         }
 
@@ -149,14 +187,12 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        private void popup_PreviewKeyDown(object sender, KeyEventArgs e) {
-            if (e.Key == Key.Escape) {
-                popup.IsOpen = false;
-                e.Handled = true;
-            } else if (e.Key == Key.Return) {
-                SelectDate();
-                e.Handled = true;
-            }
+        private void btnAccept_Click(object sender, RoutedEventArgs e) {
+            SelectDate();
+        }
+
+        private void btnCanel_Click(object sender, RoutedEventArgs e) {
+            popup.IsOpen = false;
         }
 
     }
