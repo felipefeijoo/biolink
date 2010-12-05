@@ -98,7 +98,7 @@
                             <Label Content="Date:" Height="28" HorizontalAlignment="Left" Margin="263,40,0,0" Name="label15" VerticalAlignment="Top" Width="66" />
                             <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="78,69,0,0" Name="txtPosError" VerticalAlignment="Top" Width="179" Text="{Binding PosError}"/>
                             <Label Content="(Metres)" Height="28" HorizontalAlignment="Left" Margin="263,67,0,0" Name="label16" VerticalAlignment="Top" Width="66" />
-                            <ext:DateControl HorizontalAlignment="Left" Margin="314,40,0,0" Name="dateControl1" VerticalAlignment="Top" Width="206" Height="23" />
+                            <ext:DateControl HorizontalAlignment="Left" Margin="314,40,0,0" Name="dateControl1" VerticalAlignment="Top" Width="206" Height="23" Date="{Binding PosDate}" />
                         </Grid>
                     </GroupBox>
                 </Grid>
