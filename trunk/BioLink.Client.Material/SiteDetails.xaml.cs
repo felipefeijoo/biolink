@@ -15,6 +15,7 @@ using BioLink.Client.Extensibility;
 using BioLink.Data;
 using BioLink.Data.Model;
 using BioLink.Client.Utilities;
+using System.Collections.ObjectModel;
 
 namespace BioLink.Client.Material {
     /// <summary>
@@ -32,6 +33,11 @@ namespace BioLink.Client.Material {
 
         public SiteDetails(User user, int siteID) : base(user, "Site:" + siteID) {
             InitializeComponent();
+
+
+            var list = new List<Ellipsoid>(GeoUtils.ELLIPSOIDS);
+            cmbDatum.ItemsSource = new ObservableCollection<string>(list.ConvertAll((ellipsoid) => { return ellipsoid.Name; }));
+
             this.SiteID = siteID;
 
             // Radio button checked event handlers
@@ -77,6 +83,8 @@ namespace BioLink.Client.Material {
             this.ctlX1.CoordinateValueChanged += new CoordinateValueChangedHandler((s, v) => { UpdateMiniMap(ctlY1.Value, ctlX1.Value); });
             this.ctlY1.CoordinateValueChanged += new CoordinateValueChangedHandler((s, v) => { UpdateMiniMap(ctlY1.Value, ctlX1.Value); });
 
+            this.ctlX2.Visibility = System.Windows.Visibility.Hidden;
+            this.ctlY2.Visibility = System.Windows.Visibility.Hidden;
 
             _viewModel.DataChanged += new DataChangedHandler(_viewModel_DataChanged);
 
@@ -88,7 +96,76 @@ namespace BioLink.Client.Material {
                 SwitchLatLongFormat(mode);
             }
 
-            UpdateMiniMap(model.PosY1, model.PosX1);
+            optPoint.Checked += new RoutedEventHandler((s, e) => { UpdateGeomType(); });
+            optLine.Checked += new RoutedEventHandler((s, e) => { UpdateGeomType(); });
+            optBoundingBox.Checked += new RoutedEventHandler((s, e) => { UpdateGeomType(); });
+
+            optCoordsNotSpecified.Checked +=new RoutedEventHandler((s,e) => { UpdateGeomType();});
+            optEastingsNorthings.Checked += new RoutedEventHandler((s,e) => { UpdateGeomType(); });
+            optLatLong.Checked += new RoutedEventHandler((s, e) => { UpdateGeomType(); });
+
+            optElevDepth.Checked += new RoutedEventHandler(UpdateElevation);
+            optElevElevation.Checked += new RoutedEventHandler(UpdateElevation);
+            optElevNotSpecified.Checked += new RoutedEventHandler(UpdateElevation);
+
+            UpdateMiniMap(model.PosY1, model.PosX1);            
+        }
+
+        void UpdateElevation(object sender, RoutedEventArgs e) {
+            lblDepth.IsEnabled = false;
+            txtElevDepth.IsEnabled = false;
+            if (optElevNotSpecified.IsChecked.ValueOrFalse()) {
+                txtElevUpper.Text = null;
+                txtElevLower.Text = null;
+                txtElevDepth.Text = null;
+                txtElevError.Text = null;
+            }
+
+            if (optElevDepth.IsChecked.ValueOrFalse()) {
+                lblDepth.IsEnabled = true;
+                txtElevDepth.IsEnabled = true;
+            }
+
+        }
+
+        private void UpdateGeomType() {
+            if (_viewModel.PosAreaType == 1) {
+                lblStart.Content = "Coordinates";
+                lblEnd.Visibility = System.Windows.Visibility.Hidden;                    
+                ctlX2.Visibility = System.Windows.Visibility.Hidden;
+                ctlY2.Visibility = System.Windows.Visibility.Hidden;
+                if (_viewModel.PosCoordinates == 2) {
+                    ctlX1.Visibility = System.Windows.Visibility.Collapsed;
+                    ctlY1.Visibility = System.Windows.Visibility.Collapsed;
+                    ctlEastingsNorthings1.Visibility = System.Windows.Visibility.Visible;
+                } else {
+                    ctlX1.Visibility = System.Windows.Visibility.Visible;
+                    ctlY1.Visibility = System.Windows.Visibility.Visible;
+                    ctlEastingsNorthings1.Visibility = System.Windows.Visibility.Collapsed;
+                }
+            } else {
+                lblStart.Content = "Start";
+                lblEnd.Visibility = System.Windows.Visibility.Visible;
+                if (_viewModel.PosCoordinates == 2) {
+                    ctlX1.Visibility = System.Windows.Visibility.Collapsed;
+                    ctlY1.Visibility = System.Windows.Visibility.Collapsed;
+                    ctlX2.Visibility = System.Windows.Visibility.Collapsed;
+                    ctlY2.Visibility = System.Windows.Visibility.Collapsed;
+                    ctlEastingsNorthings1.Visibility = System.Windows.Visibility.Visible;
+                    ctlEastingsNorthings2.Visibility = System.Windows.Visibility.Visible;
+                } else {
+                    ctlX1.Visibility = System.Windows.Visibility.Visible;
+                    ctlY1.Visibility = System.Windows.Visibility.Visible;
+                    ctlX2.Visibility = System.Windows.Visibility.Visible;
+                    ctlY2.Visibility = System.Windows.Visibility.Visible;
+                    ctlEastingsNorthings1.Visibility = System.Windows.Visibility.Collapsed;
+                    ctlEastingsNorthings2.Visibility = System.Windows.Visibility.Collapsed;
+                }
+
+            }
+
+
+            
         }
 
         private void UpdateMiniMap(double latitude, double longitude) {

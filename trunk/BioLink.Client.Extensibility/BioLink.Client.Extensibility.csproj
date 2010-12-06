@@ -92,6 +92,9 @@
     <Compile Include="DateControl.xaml.cs">
       <DependentUpon>DateControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EastingsNorthingsControl.xaml.cs">
+      <DependentUpon>EastingsNorthingsControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="EllipsisTextBox.xaml.cs">
       <DependentUpon>EllipsisTextBox.xaml</DependentUpon>
     </Compile>
@@ -264,6 +267,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="DelayedTriggerTextbox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="EastingsNorthingsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

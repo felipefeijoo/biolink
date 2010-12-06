@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using BioLink.Client.Extensibility;
 using BioLink.Data.Model;
+using System.Windows;
 
 namespace BioLink.Client.Material {
 
@@ -143,17 +144,17 @@ namespace BioLink.Client.Material {
             set { SetProperty(() => Model.ElevType, value); }
         }
 
-        public double ElevUpper {
+        public double? ElevUpper {
             get { return Model.ElevUpper; }
             set { SetProperty(() => Model.ElevUpper, value); }
         }
 
-        public double ElevLower {
+        public double? ElevLower {
             get { return Model.ElevLower; }
             set { SetProperty(() => Model.ElevLower, value); }
         }
 
-        public double ElevDepth {
+        public double? ElevDepth {
             get { return Model.ElevDepth; }
             set { SetProperty(()=>Model.ElevDepth, value); }
         }
