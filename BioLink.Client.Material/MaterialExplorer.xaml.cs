@@ -50,6 +50,22 @@ namespace BioLink.Client.Material {
             this.Owner = owner;
 
             this.RememberExpanded = Config.GetGlobal<bool>("Material.RememberExpandedNodes", true);
+
+            var findScopes = new List<MaterialFindScope>();
+            findScopes.Add(new MaterialFindScope("Find in all", ""));
+            findScopes.Add(new MaterialFindScope("Site name", "site"));
+            findScopes.Add(new MaterialFindScope("Trap name", "trap"));
+            findScopes.Add(new MaterialFindScope("Visit name", "visit"));
+            findScopes.Add(new MaterialFindScope("Material name", "material"));
+            findScopes.Add(new MaterialFindScope("Accession No.", "accessionno"));
+            findScopes.Add(new MaterialFindScope("Registraton No.", "regno"));            
+            findScopes.Add(new MaterialFindScope("Region name", "region"));
+            findScopes.Add(new MaterialFindScope("Site group name", "group"));
+            findScopes.Add(new MaterialFindScope("Collector #", "collector"));
+
+            cmbFindScope.ItemsSource = findScopes;
+            cmbFindScope.DisplayMemberPath = "Label";
+
         }
 
         public void InitializeMaterialExplorer() {
@@ -66,17 +82,17 @@ namespace BioLink.Client.Material {
 
         private void LoadExplorerModel() {
             var service = new MaterialService(User);
+
+            // Region explorer...
             var list = service.GetTopLevelExplorerItems();
-            list.Sort((item1, item2) => {
-                int compare = item1.ElemType.CompareTo(item2.ElemType);
-                if (compare == 0) {
-                    return item1.Name.CompareTo(item2.Name);
-                }
-                return compare;
-            });
-            RegionsModel = BuildRegionsModel(list);
+            RegionsModel = BuildExplorerModel(list);
             regionsNode.ItemsSource = RegionsModel;
             regionsNode.IsExpanded = true;
+
+            // Unplaced sites (Sites with no region)...
+            list = service.GetTopLevelExplorerItems(SiteExplorerNodeType.Unplaced);
+            UnplacedModel = BuildExplorerModel(list);
+            unplacedNode.ItemsSource = UnplacedModel;            
         }
 
         private void ReloadModel() {
@@ -95,7 +111,17 @@ namespace BioLink.Client.Material {
             ClearPendingChanges();
         }
 
-        private ObservableCollection<HierarchicalViewModelBase> BuildRegionsModel(List<SiteExplorerNode> list) {
+        private ObservableCollection<HierarchicalViewModelBase> BuildExplorerModel(List<SiteExplorerNode> list) {
+
+            list.Sort((item1, item2) => {
+                int compare = item1.ElemType.CompareTo(item2.ElemType);
+                if (compare == 0) {
+                    return item1.Name.CompareTo(item2.Name);
+                }
+                return compare;
+            });
+
+
             var regionsModel = new ObservableCollection<HierarchicalViewModelBase>(list.ConvertAll((model) => {
                 var viewModel = new SiteExplorerNodeViewModel(model);
 
@@ -114,7 +140,7 @@ namespace BioLink.Client.Material {
                 parent.Children.Clear();
                 var service = new MaterialService(User);
                 var list = service.GetExplorerElementsForParent(parent.ElemID, parent.ElemType);
-                var viewModel = BuildRegionsModel(list);
+                var viewModel = BuildExplorerModel(list);
                 foreach (HierarchicalViewModelBase childViewModel in viewModel) {
                     childViewModel.Parent = parent;
                     parent.Children.Add(childViewModel);
@@ -392,6 +418,8 @@ namespace BioLink.Client.Material {
 
         public ObservableCollection<HierarchicalViewModelBase> RegionsModel { get; private set; }
 
+        public ObservableCollection<HierarchicalViewModelBase> UnplacedModel { get; private set; }
+
         internal bool RememberExpanded { get; private set; }
 
         #endregion
@@ -399,6 +427,33 @@ namespace BioLink.Client.Material {
         internal PinnableObject CreatePinnable(SiteExplorerNodeViewModel node) {
             return new PinnableObject(MaterialPlugin.MATERIAL_PLUGIN_NAME, string.Format("{0}:{1}", node.NodeType.ToString(), node.ElemID));            
         }
+
+        private void btnFind_Click(object sender, RoutedEventArgs e) {
+            DoFind();
+        }
+
+        private void DoFind() {
+            var service = new MaterialService(User);
+            var scope = cmbFindScope.SelectedItem as MaterialFindScope;
+            string limitations = "";
+            if (scope != null) {
+                limitations = scope.Value;
+            }
+            var list = service.FindNodesByName(txtFind.Text, limitations);
+            var findModel = BuildExplorerModel(list);
+            tvwFind.ItemsSource = findModel;
+        }
+    }
+
+    internal class MaterialFindScope {
+
+        public MaterialFindScope(string label, string value) {
+            this.Label = label;
+            this.Value = value;
+        }
+
+        public String Label { get; private set; }
+        public String Value { get; private set; }
     }
 
 }

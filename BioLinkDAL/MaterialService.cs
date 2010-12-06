@@ -14,8 +14,12 @@ namespace BioLink.Data {
 
         #region Site Explorer
 
-        public List<SiteExplorerNode> GetTopLevelExplorerItems() {
-            return GetExplorerElementsForParent(0, SiteExplorerNodeType.Region);
+        public List<SiteExplorerNode> GetTopLevelExplorerItems(SiteExplorerNodeType parentType = SiteExplorerNodeType.Region) {
+            int parentId = 0;
+            if (parentType == SiteExplorerNodeType.Unplaced) {
+                parentId = -1;
+            }
+            return GetExplorerElementsForParent(parentId, parentType);
         }
 
         public List<SiteExplorerNode> GetExplorerElementsForParent(int parentID, SiteExplorerNodeType parentElemType) {
@@ -28,6 +32,15 @@ namespace BioLink.Data {
                 mapper, 
                 _P("intParentID", parentID), 
                 _P("vchrParentType", parentElemType)
+            );
+        }
+
+        public List<SiteExplorerNode> FindNodesByName(string searchTerm, string limitations) {
+            var mapper = new GenericMapperBuilder<SiteExplorerNode>().build();
+            return StoredProcToList<SiteExplorerNode>("spSiteFindByName",
+                mapper,
+                _P("vchrLimitations", limitations),
+                _P("vchrSiteToFind", searchTerm + "%")
             );
         }
 
