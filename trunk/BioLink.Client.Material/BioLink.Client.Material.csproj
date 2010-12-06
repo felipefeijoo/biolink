@@ -73,6 +73,10 @@
     <Compile Include="SiteVisitViewModel.cs" />
     <Compile Include="SortingExplorerNodeConverter.cs" />
     <Compile Include="TrapDatabaseAction.cs" />
+    <Compile Include="TrapDetails.xaml.cs">
+      <DependentUpon>TrapDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TrapViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BioLink.Client.Extensibility\BioLink.Client.Extensibility.csproj">
@@ -108,6 +112,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="SiteVisitDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TrapDetails.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

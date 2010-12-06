@@ -103,6 +103,14 @@ namespace BioLink.Client.Material {
                             model.Name = sitevisit.SiteName;
                             viewModel = new SiteExplorerNodeViewModel(model);
                             return viewModel;
+                        case "trap":
+                            var trap = service.GetTrap(elemId);
+                            model = new SiteExplorerNode();
+                            model.ElemID = trap.TrapID;
+                            model.ElemType = "Trap";
+                            model.Name = trap.TrapName;
+                            viewModel = new SiteExplorerNodeViewModel(model);
+                            return viewModel;
                         default:
                             throw new Exception("Unhandled pinnable type: " + str);
                     }

@@ -40,6 +40,9 @@ namespace BioLink.Client.Material {
                     case SiteExplorerNodeType.SiteGroup:
                         image = "SiteGroup";
                         break;
+                    case SiteExplorerNodeType.Trap:
+                        image = "Trap";
+                        break;
                 }
                 return String.Format(@"images\{0}.png", image);
             }

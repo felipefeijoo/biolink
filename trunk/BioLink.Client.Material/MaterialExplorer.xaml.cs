@@ -183,16 +183,16 @@ namespace BioLink.Client.Material {
         private void EditableTextBlock_EditingCancelled(object sender, string oldtext) {
         }
 
-        private void tvwMaterial_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
-            ShowContextMenu();
+        private void treeview_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            ShowContextMenu(sender as TreeView);
         }
 
-        private void ShowContextMenu() {
-            var selected = tvwMaterial.SelectedItem as SiteExplorerNodeViewModel;
+        private void ShowContextMenu(TreeView tvw) {
+            var selected = tvw.SelectedItem as SiteExplorerNodeViewModel;
             if (selected != null) {
                 var menu  = SiteExplorerMenuBuilder.Build(selected, this);
                 if (menu != null) {
-                    tvwMaterial.ContextMenu = menu;
+                    tvw.ContextMenu = menu;
                 }
             }
         }
@@ -272,6 +272,10 @@ namespace BioLink.Client.Material {
             AddNewNode(parent, SiteExplorerNodeType.SiteVisit, (viewModel) => { return new InsertSiteVisitAction(viewModel); });
         }
 
+        internal void AddTrap(SiteExplorerNodeViewModel parent) {
+            AddNewNode(parent, SiteExplorerNodeType.Trap, (viewModel) => { return new InsertTrapAction(viewModel); });
+        }
+
         private void EditNode(SiteExplorerNodeViewModel node, Func<DatabaseActionControl> editorFactory) {
             if (node.ElemID < 0) {
                 ErrorMessage.Show("You must first apply the changes before editing the details of this item!");
@@ -279,7 +283,7 @@ namespace BioLink.Client.Material {
             } else {
                 var editor = editorFactory();                
                 var caption = string.Format("{0} Detail {1} [{2}]", node.NodeType.ToString(), node.Name, node.ElemID);
-                PluginManager.Instance.AddNonDockableContent(Owner, editor, caption, SizeToContent.Manual);
+                PluginManager.Instance.AddNonDockableContent(Owner, editor, caption, SizeToContent.WidthAndHeight);
             }
         }
 
@@ -314,9 +318,8 @@ namespace BioLink.Client.Material {
         }
 
         internal void EditTrap(SiteExplorerNodeViewModel trap) {
-            throw new NotImplementedException();
+            EditNode(trap, () => { return new TrapDetails(User, trap.ElemID); });
         }
-
 
         internal void EditRegion(SiteExplorerNodeViewModel region) {
             EditNode(region, () => { return new RegionDetails(User, region.ElemID ); });
@@ -353,6 +356,10 @@ namespace BioLink.Client.Material {
 
         internal void DeleteSiteVisit(SiteExplorerNodeViewModel group) {
             DeleteNode(group, () => { return new DeleteSiteVisitAction(group.ElemID); });
+        }
+
+        internal void DeleteTrap(SiteExplorerNodeViewModel trap) {
+            DeleteNode(trap, () => { return new DeleteTrapAction(trap.ElemID); });
         }
 
         private void tvwMaterial_MouseRightButtonDown(object sender, MouseButtonEventArgs e) {

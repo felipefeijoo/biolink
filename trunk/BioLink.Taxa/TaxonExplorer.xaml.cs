@@ -905,9 +905,6 @@ namespace BioLink.Client.Taxa {
             txtFind.Text = "";
 
             JobExecutor.QueueJob(() => {
-                // Collapse the currently expanded nodes...
-                // CollapseChildren(_explorerModel[0]);
-
                 // make sure the explorer tree is visible...
                 string parentage = Service.GetTaxonParentage(taxonId.Value);
                 if (!String.IsNullOrEmpty(parentage)) {

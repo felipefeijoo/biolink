@@ -11,7 +11,7 @@
         <Label Content="Region Type:" Height="28" HorizontalAlignment="Left" Margin="12,46,0,0" Name="label2" VerticalAlignment="Top" Width="94" />
         <TextBox Height="23" Margin="112,14,12,0" Name="txtRegion" VerticalAlignment="Top" Text="{Binding Name}"/>
         <ext:PickListControl Height="23" Margin="112,51,12,0" Name="txtRegionType" VerticalAlignment="Top" Text="{Binding Rank}" />
-        <TabControl Margin="12,92,12,12" Name="tabRegion">
+        <TabControl Margin="12,92,12,12" Name="tabRegion" MinWidth="200" MinHeight="200">
         </TabControl>
     </Grid>
 </ext:DatabaseActionControl>

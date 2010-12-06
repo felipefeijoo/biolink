@@ -295,6 +295,38 @@ namespace BioLink.Data {
             StoredProcUpdate("spTrapUpdateName", _P("intTrapID", trapID), _P("vchrTrapName", name));
         }
 
+        public void DeleteTrap(int trapID) {
+            StoredProcUpdate("spTrapDelete", _P("intTrapID", trapID));
+        }
+
+        public Trap GetTrap(int trapID) {
+            Trap trap = null;
+            var mapper = new GenericMapperBuilder<Trap>().build();
+            StoredProcReaderFirst("spTrapGet", (reader) => {
+                trap = mapper.Map(reader);
+            }, _P("intTrapID", trapID));
+
+            return trap;
+        }
+
+        public int InsertTrap(int siteID, string trapName) {
+            var retval = ReturnParam("NewTrapID", System.Data.SqlDbType.Int);
+            StoredProcUpdate("spTrapInsert",
+                _P("intSiteID", siteID),
+                _P("vchrTrapName", trapName),
+                retval);
+            return (int)retval.Value;
+        }
+
+        public void UpdateTrap(Trap trap) {
+            StoredProcUpdate("spTrapUpdate",
+                _P("intTrapID", trap.TrapID),
+                _P("vchrTrapName", trap.TrapName),
+                _P("vchrTrapType", trap.TrapType),
+                _P("vchrDescription", trap.Description)
+            );
+        }
+
         #endregion
 
         #region Material
