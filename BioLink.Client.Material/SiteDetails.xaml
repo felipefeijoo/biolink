@@ -6,7 +6,7 @@
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
              xmlns:src="clr-namespace:BioLink.Client.Material"                           
              mc:Ignorable="d" 
-             d:DesignHeight="468" d:DesignWidth="819">
+             d:DesignHeight="491" d:DesignWidth="821">
     <UserControl.Resources>
         <ext:RadioButtonIntValueConverter x:Key="radioButtonConverter" />
     </UserControl.Resources>
@@ -63,8 +63,8 @@
                     <GroupBox Header="Geometry" Height="113" HorizontalAlignment="Left" Margin="6,109,0,0" Name="grpGeometry" VerticalAlignment="Top" Width="220">
                         <Grid>
                             <RadioButton Content="P_oint" Height="16" HorizontalAlignment="Left" Margin="6,6,0,0" Name="optPoint" VerticalAlignment="Top" Width="196" IsChecked="{Binding PosAreaType, Converter={StaticResource radioButtonConverter}, ConverterParameter=1}" />
-                            <RadioButton Content="_Bounding box" Height="16" HorizontalAlignment="Left" Margin="6,28,0,0" Name="optBoundingBox" VerticalAlignment="Top" Width="196" IsChecked="{Binding PosAreaType, Converter={StaticResource radioButtonConverter}, ConverterParameter=2}" />
-                            <RadioButton Content="Line" Height="16" HorizontalAlignment="Left" Margin="6,50,0,0" Name="optLine" VerticalAlignment="Top" Width="196" IsChecked="{Binding PosAreaType, Converter={StaticResource radioButtonConverter}, ConverterParameter=3}" />
+                            <RadioButton Content="_Bounding box" Height="16" HorizontalAlignment="Left" Margin="6,28,0,0" Name="optBoundingBox" VerticalAlignment="Top" Width="196" IsChecked="{Binding PosAreaType, Converter={StaticResource radioButtonConverter}, ConverterParameter=3}" />
+                            <RadioButton Content="Line" Height="16" HorizontalAlignment="Left" Margin="6,50,0,0" Name="optLine" VerticalAlignment="Top" Width="196" IsChecked="{Binding PosAreaType, Converter={StaticResource radioButtonConverter}, ConverterParameter=2}" />
                         </Grid>
                     </GroupBox>
                     <Image Height="96" HorizontalAlignment="Left" Margin="14,256,0,0" Name="imgMiniMap2" Source="images\World.png" Stretch="None" VerticalAlignment="Top" Width="200" />
@@ -72,25 +72,27 @@
                         <Grid>
                             <ext:LatLongInput HorizontalAlignment="Left" Margin="124,6,0,0" Name="ctlY1" Width="180" Height="40" VerticalAlignment="Top" Value="{Binding PosY1}" />
                             <ext:LatLongInput Height="40" HorizontalAlignment="Left" Margin="319,6,0,0" Name="ctlX1" VerticalAlignment="Top" Width="180" Axis="Longitude" Value="{Binding PosX1}" />
-                            <Label Content="Coordinates:" Height="28" HorizontalAlignment="Left" Margin="6,18,0,0" Name="label5" VerticalAlignment="Top" Width="80" />
-                            <ext:LatLongInput Height="40" HorizontalAlignment="Left" Margin="124,50,0,0" Name="ctlY2" VerticalAlignment="Top" Width="180" />
-                            <ext:LatLongInput Axis="Longitude" Height="40" HorizontalAlignment="Left" Margin="319,49,0,0" Name="ctlX2" VerticalAlignment="Top" Width="180" />
-                            <Label Content="End:" Height="28" HorizontalAlignment="Left" Margin="6,59,0,0" Name="label6" VerticalAlignment="Top" Width="80" />
+                            <ext:EastingsNorthingsControl Height="40" HorizontalAlignment="Left" Margin="123,6,0,0" Name="ctlEastingsNorthings1" VerticalAlignment="Top" Width="376" X="{Binding PosX1}" Y="{Binding PosY1}" Datum="{Binding PosUTMSource}" Visibility="Collapsed"/>
+                            <Label Content="Coordinates:" Height="28" HorizontalAlignment="Left" Margin="6,18,0,0" Name="lblStart" VerticalAlignment="Top" Width="80" />
+                            <ext:LatLongInput Height="40" HorizontalAlignment="Left" Margin="124,50,0,0" Name="ctlY2" VerticalAlignment="Top" Width="180" Value="{Binding PosY2}" />
+                            <ext:LatLongInput Axis="Longitude" Height="40" HorizontalAlignment="Left" Margin="319,49,0,0" Name="ctlX2" VerticalAlignment="Top" Width="180" Value="{Binding PosX2}" />
+                            <Label Content="End:" Height="28" HorizontalAlignment="Left" Margin="6,59,0,0" Name="lblEnd" VerticalAlignment="Top" Width="80" />
                             <Label Content="Datum:" Height="28" HorizontalAlignment="Left" Margin="6,97,0,0" Name="label7" VerticalAlignment="Top" Width="80" />
-                            <ComboBox Height="23" HorizontalAlignment="Left" Margin="124,97,0,0" Name="comboBox1" VerticalAlignment="Top" Width="375" />
+                            <ComboBox Height="23" HorizontalAlignment="Left" Margin="124,97,0,0" Name="cmbDatum" VerticalAlignment="Top" Width="375" SelectedItem="{Binding PosUTMSource}" />
                             <Label Content="Map projection:" Height="28" HorizontalAlignment="Left" Margin="6,126,0,0" Name="label8" VerticalAlignment="Top" Width="101" />
                             <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="124,128,0,0" Name="txtMapProj" VerticalAlignment="Top" Width="375" Text="{Binding PosUTMMapProj}"/>
                             <Label Content="Map Name:" Height="28" HorizontalAlignment="Left" Margin="6,157,0,0" Name="label9" VerticalAlignment="Top" Width="101" />
                             <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="124,159,0,0" Name="txtPosMapName" VerticalAlignment="Top" Width="163" Text="{Binding PosUTMMapName}"/>
                             <Label Content="Version:" Height="28" HorizontalAlignment="Left" Margin="293,157,0,0" Name="label10" VerticalAlignment="Top" Width="62" />
-                            <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="366,159,0,0" Name="txtPosMapVersion" VerticalAlignment="Top" Width="133" Text="{Binding PosUTMMapVer}"/>
+                            <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="361,159,0,0" Name="txtPosMapVersion" VerticalAlignment="Top" Width="138" Text="{Binding PosUTMMapVer}"/>
+                            <ext:EastingsNorthingsControl Height="40" HorizontalAlignment="Left" Margin="123,50,0,0" Name="ctlEastingsNorthings2" VerticalAlignment="Top" Width="376" X="{Binding PosX2}" Y="{Binding PosY2}" Datum="{Binding PosUTMSource}" Visibility="Collapsed"/>
                         </Grid>
                     </GroupBox>
                     <GroupBox Header="Determination" Height="133" HorizontalAlignment="Left" Margin="234,228,0,0" Name="grpDetermination" VerticalAlignment="Top" Width="544">
                         <Grid>
                             <Label Content="Source:" Height="28" HorizontalAlignment="Left" Margin="6,11,0,0" Name="label11" VerticalAlignment="Top" Width="66" />
                             <Label Content="Original:" Height="28" HorizontalAlignment="Left" Margin="6,40,0,0" Name="label12" VerticalAlignment="Top" Width="66" />
-                            <ext:PickListControl Margin="78,11,0,0" Height="23" VerticalAlignment="Top" HorizontalAlignment="Left" Width="179" Name="txtPosSource" Text="{Binding PosUTMSource}"/>
+                            <ext:PickListControl Margin="78,11,0,0" Height="23" VerticalAlignment="Top" HorizontalAlignment="Left" Width="179" Name="txtPosSource" Text="{Binding PosSource}"/>
                             <Label Content="Who:" Height="28" HorizontalAlignment="Left" Margin="263,11,0,0" Name="label13" VerticalAlignment="Top" Width="45" />
                             <ext:PickListControl Height="23" HorizontalAlignment="Left" Margin="314,11,0,0" VerticalAlignment="Top" Width="206" Name="txtPosWho" Text="{Binding PosWho}"/>
                             <Label Content="Error:" Height="28" HorizontalAlignment="Left" Margin="6,67,0,0" Name="label14" VerticalAlignment="Top" Width="66" />
@@ -116,7 +118,7 @@
                         <Grid>
                             <Label Content="Upper:" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label17" VerticalAlignment="Top" Width="63" />
                             <Label Content="Lower:" Height="28" HorizontalAlignment="Left" Margin="6,38,0,0" Name="label18" VerticalAlignment="Top" Width="63" />
-                            <Label Content="Depth:" Height="28" HorizontalAlignment="Left" Margin="6,69,0,0" Name="label19" VerticalAlignment="Top" Width="63" />
+                            <Label Content="Depth:" Height="28" HorizontalAlignment="Left" Margin="6,69,0,0" Name="lblDepth" VerticalAlignment="Top" Width="63" />
                             <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="75,8,0,0" Name="txtElevUpper" VerticalAlignment="Top" Width="120" Text="{Binding ElevUpper}" />
                             <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="75,40,0,0" Name="txtElevLower" VerticalAlignment="Top" Width="120" Text="{Binding ElevLower}" />
                             <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="75,71,0,0" Name="txtElevDepth" VerticalAlignment="Top" Width="120" Text="{Binding ElevDepth}" />

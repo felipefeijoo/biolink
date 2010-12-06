@@ -35,9 +35,9 @@ namespace BioLink.Data.Model {
         public string PosUTMMapName { get; set; }
         public string PosUTMMapVer { get; set; }
         public int ElevType { get; set; }
-        public double ElevUpper { get; set; }
-        public double ElevLower { get; set; }
-        public double ElevDepth { get; set; }
+        public double? ElevUpper { get; set; }
+        public double? ElevLower { get; set; }
+        public double? ElevDepth { get; set; }
         public string ElevUnits { get; set; }
         public string ElevSource { get; set; }
         public string ElevError { get; set; }

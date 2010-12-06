@@ -30,10 +30,16 @@ namespace BioLink.Client.Extensibility {
             cal.MouseDoubleClick += new MouseButtonEventHandler(cal_MouseDoubleClick);
         }
 
+        void DateControl_LostFocus(object sender, RoutedEventArgs e) {
+            if (popup.IsOpen) {
+                popup.IsOpen = false;
+            }
+        }
+
         void cal_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
 
             var point = e.GetPosition(cal);
-            if (point.Y >= 58) {
+            if (point.Y >= 58) { // Ignore the double click if it occurs in the title bar (month selector part) of the date control
                 SelectDate();
             } else {
                 this.CaptureMouse();
