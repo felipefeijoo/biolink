@@ -14,56 +14,55 @@
     </UserControl.Resources>
 
     <Grid>
+        <Grid.Resources>
+            <HierarchicalDataTemplate DataType="{x:Type src:SiteExplorerNodeViewModel}" ItemsSource="{Binding Path=Children, Converter={StaticResource SortingExplorerNodeConverter}}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,0" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
+                    <ext:EditableTextBlock FontSize="11" x:Name="elemName" Text="{Binding Path=DisplayLabel,Mode=TwoWay}" VerticalAlignment="Center" IsInEditMode="{Binding Path=IsRenaming, Mode=TwoWay}" EditingComplete="EditableTextBlock_EditingComplete" EditingCancelled="EditableTextBlock_EditingCancelled" ViewModel="{Binding}"/>
+                </StackPanel>
+                <HierarchicalDataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding IsDeleted}" Value="True">
+                        <Setter TargetName="elemName" Property="TextDecorations" Value="Strikethrough" />
+                    </DataTrigger>
+                </HierarchicalDataTemplate.Triggers>
+            </HierarchicalDataTemplate>
+
+            <Style TargetType="{x:Type ext:VTreeViewItem}">
+
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <ext:BLVirtualizingStackPanel />
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+
+                <Setter Property="IsExpanded" Value="{Binding Path=IsExpanded, Mode=TwoWay}" />
+                <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
+                <EventSetter Event="TreeViewItem.MouseRightButtonDown" Handler="tvwMaterial_MouseRightButtonDown"/>
+
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Unverified}" Value="True">
+                        <Setter Property="Foreground" Value="Red" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding AvailableName}" Value="True">
+                        <Setter Property="FontStyle" Value="Italic" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding IsRenaming}" Value="True">
+                        <Setter Property="TextBox.Visibility" Value="Visible" />
+                    </DataTrigger>
+                </Style.Triggers>
+
+            </Style>
+        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="40" />
         </Grid.RowDefinitions>
         <TabControl>
             <TabItem Header="Contents">
-                <ext:VTreeView x:Name="tvwMaterial" BorderThickness="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" MouseRightButtonUp="tvwMaterial_MouseRightButtonUp" MouseRightButtonDown="tvwMaterial_MouseRightButtonDown" AutoExpandTopLevel="True">
+                <ext:VTreeView x:Name="tvwMaterial" BorderThickness="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" MouseRightButtonUp="treeview_MouseRightButtonUp" MouseRightButtonDown="tvwMaterial_MouseRightButtonDown" AutoExpandTopLevel="True">
                     
-                    <TreeView.Resources>
-                        <HierarchicalDataTemplate DataType="{x:Type src:SiteExplorerNodeViewModel}" ItemsSource="{Binding Path=Children, Converter={StaticResource SortingExplorerNodeConverter}}">
-                            <StackPanel Orientation="Horizontal">
-                                <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,0" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
-                                <ext:EditableTextBlock FontSize="11" x:Name="elemName" Text="{Binding Path=DisplayLabel,Mode=TwoWay}" VerticalAlignment="Center" IsInEditMode="{Binding Path=IsRenaming, Mode=TwoWay}" EditingComplete="EditableTextBlock_EditingComplete" EditingCancelled="EditableTextBlock_EditingCancelled" ViewModel="{Binding}"/>
-                            </StackPanel>
-                            <HierarchicalDataTemplate.Triggers>
-                                <DataTrigger Binding="{Binding IsDeleted}" Value="True">
-                                    <Setter TargetName="elemName" Property="TextDecorations" Value="Strikethrough" />
-                                </DataTrigger>
-                            </HierarchicalDataTemplate.Triggers>
-                        </HierarchicalDataTemplate>                    
-
-                        <Style TargetType="{x:Type ext:VTreeViewItem}">
-
-                            <Setter Property="ItemsPanel">
-                                <Setter.Value>
-                                    <ItemsPanelTemplate>
-                                        <ext:BLVirtualizingStackPanel />
-                                    </ItemsPanelTemplate>
-                                </Setter.Value>
-                            </Setter>
-
-                            <Setter Property="IsExpanded" Value="{Binding Path=IsExpanded, Mode=TwoWay}" />
-                            <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
-                            <EventSetter Event="TreeViewItem.MouseRightButtonDown" Handler="tvwMaterial_MouseRightButtonDown"/>
-                            
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Unverified}" Value="True">
-                                    <Setter Property="Foreground" Value="Red" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding AvailableName}" Value="True">
-                                    <Setter Property="FontStyle" Value="Italic" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding IsRenaming}" Value="True">
-                                    <Setter Property="TextBox.Visibility" Value="Visible" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                            
-                        </Style>
-                    </TreeView.Resources>
-
                     <TreeView.ItemsPanel>
                         <ItemsPanelTemplate>                            
                             <ext:BLVirtualizingStackPanel />
@@ -111,49 +110,8 @@
                     <ComboBox Height="23" HorizontalAlignment="Right" Margin="0,6,87,0" Name="cmbFindScope" VerticalAlignment="Top" Width="120" />
                     <Label Content="in" Height="28" HorizontalAlignment="Right" Margin="0,5,218,0" Name="label1" VerticalAlignment="Top" />
                     <TextBox Height="23" Margin="6,7,244,0" Name="txtFind" VerticalAlignment="Top" />
-                    <ext:VTreeView Margin="6,39,6,6" Name="tvwFind" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard">
-                        <TreeView.Resources>
-                            <HierarchicalDataTemplate DataType="{x:Type src:SiteExplorerNodeViewModel}" ItemsSource="{Binding Path=Children, Converter={StaticResource SortingExplorerNodeConverter}}">
-                                <StackPanel Orientation="Horizontal">
-                                    <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,0" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
-                                    <ext:EditableTextBlock FontSize="11" x:Name="elemName" Text="{Binding Path=DisplayLabel,Mode=TwoWay}" VerticalAlignment="Center" IsInEditMode="{Binding Path=IsRenaming, Mode=TwoWay}" EditingComplete="EditableTextBlock_EditingComplete" EditingCancelled="EditableTextBlock_EditingCancelled" ViewModel="{Binding}"/>
-                                </StackPanel>
-                                <HierarchicalDataTemplate.Triggers>
-                                    <DataTrigger Binding="{Binding IsDeleted}" Value="True">
-                                        <Setter TargetName="elemName" Property="TextDecorations" Value="Strikethrough" />
-                                    </DataTrigger>
-                                </HierarchicalDataTemplate.Triggers>
-                            </HierarchicalDataTemplate>
-
-                            <Style TargetType="{x:Type ext:VTreeViewItem}">
-
-                                <Setter Property="ItemsPanel">
-                                    <Setter.Value>
-                                        <ItemsPanelTemplate>
-                                            <ext:BLVirtualizingStackPanel />
-                                        </ItemsPanelTemplate>
-                                    </Setter.Value>
-                                </Setter>
-
-                                <Setter Property="IsExpanded" Value="{Binding Path=IsExpanded, Mode=TwoWay}" />
-                                <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
-                                <EventSetter Event="TreeViewItem.MouseRightButtonDown" Handler="tvwMaterial_MouseRightButtonDown"/>
-
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Unverified}" Value="True">
-                                        <Setter Property="Foreground" Value="Red" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding AvailableName}" Value="True">
-                                        <Setter Property="FontStyle" Value="Italic" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsRenaming}" Value="True">
-                                        <Setter Property="TextBox.Visibility" Value="Visible" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-
-                            </Style>
-                        </TreeView.Resources>
-
+                    <ext:VTreeView Margin="6,39,6,6" Name="tvwFind" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" MouseRightButtonUp="treeview_MouseRightButtonUp">
+                        
                         <TreeView.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <ext:BLVirtualizingStackPanel />

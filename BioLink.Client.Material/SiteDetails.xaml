@@ -47,7 +47,7 @@
                         </Grid>
                     </GroupBox>
                     <Label Content="Informal Locality:" Height="28" HorizontalAlignment="Left" Margin="6,165,0,0" Name="label4" VerticalAlignment="Top" Width="117" />
-                    <ext:BindableRichTextBox Margin="129,165,12,108" Name="txtInformalLocality" RTF="{Binding InformalLocal}" Width="643" />
+                    <ext:BindableRichTextBox Margin="129,165,12,108" Name="txtInformalLocality" RTF="{Binding InformalLocal}" />
                     <Image Margin="0,0,12,6" Name="imgMap" Stretch="None" VerticalAlignment="Bottom" Height="96" Source="images\World.png" HorizontalAlignment="Right" Width="200" />
                 </Grid>
             </TabItem>

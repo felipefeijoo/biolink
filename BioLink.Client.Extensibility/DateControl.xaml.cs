@@ -206,8 +206,11 @@ namespace BioLink.Client.Extensibility {
     public class BLDateIntStrConverter : IValueConverter {
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
-            int date = (int)value;
-            return string.Format("{0}", date);
+            int? date = (int?)value;
+            if (date.HasValue) {
+                return string.Format("{0}", date);
+            }
+            return null;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
