@@ -58,8 +58,8 @@ namespace BioLink.Client.Extensibility {
                         
             _model = new ObservableCollection<String>();
             foreach (string item in list) {                
-                if (!String.IsNullOrEmpty(item.Trim())) {
-                    _model.Add(item);
+                if (!String.IsNullOrWhiteSpace(item)) {
+                    _model.Add(item.Trim());
                 }
             }
             lst.ItemsSource = _model;

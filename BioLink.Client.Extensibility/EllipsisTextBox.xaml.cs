@@ -18,7 +18,7 @@ namespace BioLink.Client.Extensibility {
     /// </summary>
     public partial class EllipsisTextBox : UserControl {
         public EllipsisTextBox() {
-            InitializeComponent();
+            InitializeComponent();            
         }
 
         private void btn_Click(object sender, RoutedEventArgs e) {
@@ -37,15 +37,27 @@ namespace BioLink.Client.Extensibility {
             control.FireValueChanged(control.txt.Text);            
         }
 
+        public String Text {
+            get { return (string)GetValue(TextProperty); }
+            set { SetValue(TextProperty, value); }
+        }
+
         protected void FireValueChanged(string text) {
             if (this.TextChanged != null) {
                 TextChanged(this, text);
             }
         }
 
-        public String Text {
-            get { return (string)GetValue(TextProperty); }
-            set { SetValue(TextProperty, value); }
+        public static readonly DependencyProperty SelectedTextProperty = DependencyProperty.Register("SelectedText", typeof(string), typeof(EllipsisTextBox), new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnSelectedTextChanged)));
+
+        private static void OnSelectedTextChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            var control = (EllipsisTextBox)obj;
+            control.txt.SelectedText = args.NewValue as String;            
+        }
+
+        public String SelectedText {
+            get { return (string)GetValue(SelectedTextProperty); }
+            set { SetValue(SelectedTextProperty, value); }
         }
 
         public event RoutedEventHandler Click;

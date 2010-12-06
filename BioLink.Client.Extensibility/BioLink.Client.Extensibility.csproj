@@ -209,6 +209,9 @@
     </Compile>
     <Compile Include="tests\PreferencesTests.cs" />
     <Compile Include="TextBox.cs" />
+    <Compile Include="TimeControl.xaml.cs">
+      <DependentUpon>TimeControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Traits\AddNewTraitWindow.xaml.cs">
       <DependentUpon>AddNewTraitWindow.xaml</DependentUpon>
     </Compile>
@@ -367,6 +370,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="TabularDataViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TimeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -33,4 +33,31 @@ namespace BioLink.Client.Material {
 
     }
 
+    public class InsertSiteAction : AbstractSiteExplorerAction {
+
+        public InsertSiteAction(SiteExplorerNodeViewModel model)
+            : base(model) {
+        }
+
+        protected override void ProcessImpl(User user) {
+            var service = new MaterialService(user);
+            Model.ElemID = service.InsertSite(base.FindRegionID(Model), base.FindIDOfParentType(Model,SiteExplorerNodeType.SiteGroup, 0));
+            base.UpdateChildrenParentID();
+        }
+    }
+
+    public class DeleteSiteAction : DatabaseAction {
+        public DeleteSiteAction(int siteID) {
+            this.SiteID = siteID;
+        }
+
+        protected override void ProcessImpl(User user) {
+            var service = new MaterialService(user);
+            service.DeleteSite(SiteID);
+        }
+
+
+        public int SiteID { get; private set; }
+    }
+
 }

@@ -235,7 +235,15 @@ namespace BioLink.Client.Material {
         }
 
         internal void AddSiteGroup(SiteExplorerNodeViewModel parent) {
-            AddNewNode(parent, SiteExplorerNodeType.SiteGroup, (viewModel) => { return new InsertSiteGroupAction(viewModel, parent); });
+            AddNewNode(parent, SiteExplorerNodeType.SiteGroup, (viewModel) => { return new InsertSiteGroupAction(viewModel); });
+        }
+
+        internal void AddSite(SiteExplorerNodeViewModel parent) {
+            AddNewNode(parent, SiteExplorerNodeType.Site, (viewModel) => { return new InsertSiteAction(viewModel); });
+        }
+
+        internal void AddSiteVisit(SiteExplorerNodeViewModel parent) {
+            AddNewNode(parent, SiteExplorerNodeType.SiteVisit, (viewModel) => { return new InsertSiteVisitAction(viewModel); });
         }
 
         private void EditNode(SiteExplorerNodeViewModel node, Func<DatabaseActionControl> editorFactory) {
@@ -271,15 +279,15 @@ namespace BioLink.Client.Material {
             }
         }
 
-        internal void EditSiteVisit(SiteExplorerNodeViewModel region) {
+        internal void EditSiteVisit(SiteExplorerNodeViewModel sitevisit) {
+            EditNode(sitevisit, () => { return new SiteVisitDetails(User, sitevisit.ElemID); });
+        }
+
+        internal void EditMaterial(SiteExplorerNodeViewModel material) {
             throw new NotImplementedException();
         }
 
-        internal void EditMaterial(SiteExplorerNodeViewModel region) {
-            throw new NotImplementedException();
-        }
-
-        internal void EditTrap(SiteExplorerNodeViewModel region) {
+        internal void EditTrap(SiteExplorerNodeViewModel trap) {
             throw new NotImplementedException();
         }
 
@@ -311,6 +319,14 @@ namespace BioLink.Client.Material {
 
         internal void DeleteSiteGroup(SiteExplorerNodeViewModel group) {
             DeleteNode(group, () => { return new DeleteSiteGroupAction(group.ElemID); });
+        }
+
+        internal void DeleteSite(SiteExplorerNodeViewModel group) {
+            DeleteNode(group, () => { return new DeleteSiteAction(group.ElemID); });
+        }
+
+        internal void DeleteSiteVisit(SiteExplorerNodeViewModel group) {
+            DeleteNode(group, () => { return new DeleteSiteVisitAction(group.ElemID); });
         }
 
         private void tvwMaterial_MouseRightButtonDown(object sender, MouseButtonEventArgs e) {

@@ -67,6 +67,10 @@
     <Compile Include="SiteGroupDatabaseAction.cs" />
     <Compile Include="SiteViewModel.cs" />
     <Compile Include="SiteVisitDatabaseAction.cs" />
+    <Compile Include="SiteVisitDetails.xaml.cs">
+      <DependentUpon>SiteVisitDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SiteVisitViewModel.cs" />
     <Compile Include="SortingExplorerNodeConverter.cs" />
     <Compile Include="TrapDatabaseAction.cs" />
   </ItemGroup>
@@ -100,6 +104,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="SiteDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SiteVisitDetails.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
