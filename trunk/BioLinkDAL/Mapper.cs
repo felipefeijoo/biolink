@@ -222,4 +222,13 @@ namespace BioLink.Data {
         public string PropertyName { get; set; }
     }
 
+    public class TintToBoolConvertingMapper : ConvertingMapper {
+
+        public TintToBoolConvertingMapper(string columnName)
+            : base(columnName, (tintval) => {
+                return (byte) tintval != 0;
+            }) {
+        }
+    }
+
 }

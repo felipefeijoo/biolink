@@ -145,7 +145,7 @@ namespace BioLink.Data {
 
         public Site GetSite(int siteID) {
             Site result = null;
-            var mapper = new GenericMapperBuilder<Site>().build();
+            var mapper = new GenericMapperBuilder<Site>().Override(new TintToBoolConvertingMapper("tintTemplate")).build();
             StoredProcReaderFirst("spSiteGet", (reader) => {
                 result = mapper.Map(reader);
             }, _P("intSiteID", siteID));
@@ -157,6 +157,20 @@ namespace BioLink.Data {
                 _P("intSiteID", siteID),
                 _P("vchrSiteName", name)
             );
+        }
+
+        public void DeleteSite(int siteID) {
+            StoredProcUpdate("spSiteDelete", _P("intSiteID", siteID));
+        }
+
+        public int InsertSite(int politicalRegion, int siteGroupId, int basedOnSiteId = -1) {
+            var retval = ReturnParam("NewSiteID", System.Data.SqlDbType.Int);
+            StoredProcUpdate("spSiteInsert",
+                _P("intPoliticalRegionID", politicalRegion),
+                _P("intSiteGroupID", siteGroupId),
+                _P("intBasedOnSiteID", basedOnSiteId),
+                retval);
+            return (int)retval.Value;
         }
 
         public void UpdateSite(Site site) {
@@ -212,6 +226,52 @@ namespace BioLink.Data {
 
         public void RenameSiteVisit(int siteVisitID, string name) {
             StoredProcUpdate("spSiteVisitUpdateName", _P("intSiteVisitID", siteVisitID), _P("vchrName", name));
+        }
+
+        public void DeleteSiteVisit(int siteVisitID) {
+            StoredProcUpdate("spSiteVisitDelete", _P("intSiteVisitID", siteVisitID));
+        }
+
+        public int InsertSiteVisit(int parentID, int basedOnSiteVisitID = -1) {
+            var retval = ReturnParam("NewSiteID", System.Data.SqlDbType.Int);
+            StoredProcUpdate("spSiteVisitInsert",
+                _P("intParentID", parentID),
+                _P("intBasedOnSiteVisitID", basedOnSiteVisitID),
+                retval);
+
+            return (int)retval.Value;
+        }
+
+        public void UpdateSiteVisit(SiteVisit siteVisit) {
+            StoredProcUpdate("spSiteVisitUpdate",
+                _P("intSiteVisitID", siteVisit.SiteVisitID),
+                _P("vchrSiteVisitName", siteVisit.SiteVisitName),
+                _P("vchrFieldNumber", siteVisit.FieldNumber),
+                _P("vchrCollector", siteVisit.Collector),
+                _P("tintDateType", siteVisit.DateType),
+                _P("intDateStart", siteVisit.DateStart),
+                _P("intDateEnd", siteVisit.DateEnd),
+                _P("intTimeStart", siteVisit.TimeStart),
+                _P("intTimeEnd", siteVisit.TimeEnd),
+                _P("vchrCasualTime", siteVisit.CasualTime));
+        }
+
+        public SiteVisit GetSiteVisit(int siteVisitID) {
+            var mapper = new GenericMapperBuilder<SiteVisit>().Override(new TintToBoolConvertingMapper("tintTemplate")).build();
+            SiteVisit result = null;
+            StoredProcReaderFirst("spSiteVisitGet", (reader) => {
+                result = mapper.Map(reader);
+            }, _P("intSiteVisitID", siteVisitID));
+
+            return result;
+        }
+
+        public List<string> GetDistinctCollectors() {
+            var list = new List<string>();
+            StoredProcReaderForEach("spCollectorListDistinct", (reader) => {
+                list.Add(reader[1] as string);
+            });
+            return list;
         }
 
         #endregion

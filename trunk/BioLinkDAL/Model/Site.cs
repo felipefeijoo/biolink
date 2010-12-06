@@ -52,7 +52,7 @@ namespace BioLink.Data.Model {
         public string GeoAgeTop { get; set; }
         public string GeoNotes { get; set; }
         public int Order { get; set; }
-        [MappingInfo("tinTemplate")]
+        [MappingInfo("tintTemplate")]
         public bool IsTemplate { get; set; }
         public string PoliticalRegion { get; set; }
     }

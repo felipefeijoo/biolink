@@ -21,11 +21,45 @@ namespace BioLink.Client.Material {
 
     }
 
-    public class InsertSiteGroupAction : GenericDatabaseAction<SiteExplorerNodeViewModel> {
+    public abstract class AbstractSiteExplorerAction : GenericDatabaseAction<SiteExplorerNodeViewModel> {
 
-        public InsertSiteGroupAction(SiteExplorerNodeViewModel model, SiteExplorerNodeViewModel parent)
+        public AbstractSiteExplorerAction(SiteExplorerNodeViewModel model)
             : base(model) {
-            this.Parent = parent;
+            this.Parent = model.Parent as SiteExplorerNodeViewModel;
+        }
+
+        protected int FindRegionID(SiteExplorerNodeViewModel node) {
+            return FindIDOfParentType(node, SiteExplorerNodeType.Region);
+        }
+
+        protected int FindIDOfParentType(SiteExplorerNodeViewModel node, SiteExplorerNodeType nodeType, int defaultId = -1) {
+            HierarchicalViewModelBase p = node;
+
+            while (p != null && (p as SiteExplorerNodeViewModel).NodeType != nodeType) {
+                p = p.Parent;
+            }
+            if (p != null) {
+                return (p as SiteExplorerNodeViewModel).ElemID;
+            }
+
+            return defaultId;
+        }
+
+        protected void UpdateChildrenParentID() {
+            foreach (SiteExplorerNodeViewModel child in Model.Children) {
+                child.ParentID = Model.ElemID;
+            }
+
+        }
+
+        internal SiteExplorerNodeViewModel Parent { get; private set; }
+
+    }
+
+    public class InsertSiteGroupAction : AbstractSiteExplorerAction {
+
+        public InsertSiteGroupAction(SiteExplorerNodeViewModel model)
+            : base(model) {            
         }
 
         protected override void ProcessImpl(User user) {
@@ -39,25 +73,8 @@ namespace BioLink.Client.Material {
             }
             var regionID = FindRegionID(Model);
             Model.ElemID = service.InsertSiteGroup(Model.Name, parentType, parentID, regionID);
-            foreach (SiteExplorerNodeViewModel child in Model.Children) {
-                child.ParentID = Model.ElemID;
-            }
+            base.UpdateChildrenParentID();
         }
-
-        private int FindRegionID(SiteExplorerNodeViewModel node) {
-            HierarchicalViewModelBase p = node;
-
-            while (p != null && (p as SiteExplorerNodeViewModel).NodeType != SiteExplorerNodeType.Region) {
-                p = p.Parent;
-            }
-            if (p != null) {
-                return (p as SiteExplorerNodeViewModel).ElemID;
-            }
-
-            return -1;
-        }
-
-        internal SiteExplorerNodeViewModel Parent { get; private set; }
 
     }
 

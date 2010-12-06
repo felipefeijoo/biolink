@@ -42,6 +42,10 @@ namespace BioLink.Client.Material {
                         break;
                     case SiteExplorerNodeType.SiteGroup: explorer.DeleteSiteGroup(node);
                         break;
+                    case SiteExplorerNodeType.Site: explorer.DeleteSite(node);
+                        break;
+                    case SiteExplorerNodeType.SiteVisit: explorer.DeleteSiteVisit(node);
+                        break;
                     default:
                         throw new Exception("[Delete] Unhandled site explorer element type: " + node.ElemType);
                 }
@@ -63,6 +67,12 @@ namespace BioLink.Client.Material {
                             break;
                         case SiteExplorerNodeType.Site: explorer.EditSite(node);
                             break;
+                        case SiteExplorerNodeType.SiteVisit: explorer.EditSiteVisit(node);
+                            break;
+                        case SiteExplorerNodeType.Trap: explorer.EditTrap(node);
+                            break;
+                        case SiteExplorerNodeType.Material: explorer.EditMaterial(node);
+                            break;
                         default:
                             throw new Exception("[Details] Unhandled site explorer element type: " + node.ElemType);
                     }
@@ -82,9 +92,14 @@ namespace BioLink.Client.Material {
                 case SiteExplorerNodeType.Region:
                     addMenu.Items.Add(builder.New("New Region").Handler(() => { explorer.AddRegion(viewModel); }).MenuItem);
                     addMenu.Items.Add(builder.New("New Site Group").Handler(() => { explorer.AddSiteGroup(viewModel); }).MenuItem);
+                    addMenu.Items.Add(builder.New("New Site").Handler(() => { explorer.AddSite(viewModel); }).MenuItem);
                     break;
                 case SiteExplorerNodeType.SiteGroup:
                     addMenu.Items.Add(builder.New("New Site Group").Handler(() => { explorer.AddSiteGroup(viewModel); }).MenuItem);
+                    addMenu.Items.Add(builder.New("New Site").Handler(() => { explorer.AddSite(viewModel); }).MenuItem);
+                    break;
+                case SiteExplorerNodeType.Site:
+                    addMenu.Items.Add(builder.New("New Site Visit").Handler(() => { explorer.AddSiteVisit(viewModel); }).MenuItem);
                     break;
                 default:
                     break;
