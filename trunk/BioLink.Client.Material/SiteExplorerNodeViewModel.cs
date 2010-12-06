@@ -81,5 +81,9 @@ namespace BioLink.Client.Material {
             set { SetProperty(() => Model.NumChildren, value); }
         }
 
+        public override string ToString() {
+            return String.Format("{0}: {1} [{2}]", NodeType, Name, ElemID);
+        }
+
     }
 }

@@ -95,6 +95,14 @@ namespace BioLink.Client.Material {
                             model.RegionID = site.PoliticalRegionID;
                             var viewModel = new SiteExplorerNodeViewModel(model);
                             return viewModel;
+                        case "sitevisit":
+                            var sitevisit = service.GetSiteVisit(elemId);
+                            model = new SiteExplorerNode();
+                            model.ElemID = sitevisit.SiteVisitID;
+                            model.ElemType = "SiteVisit";
+                            model.Name = sitevisit.SiteName;
+                            viewModel = new SiteExplorerNodeViewModel(model);
+                            return viewModel;
                         default:
                             throw new Exception("Unhandled pinnable type: " + str);
                     }
