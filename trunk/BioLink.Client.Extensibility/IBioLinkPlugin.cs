@@ -26,6 +26,9 @@ namespace BioLink.Client.Extensibility {
         bool CanSelect(Type t);
         void Select(Type t, Action<SelectionResult> success);
 
+        bool CanEditObjectType(LookupType type);
+        void EditObject(LookupType type, int objectID);
+
         User User { get; }
         PluginManager PluginManager { get; }
         Window ParentWindow { get; }

@@ -437,15 +437,25 @@ namespace BioLink.Data {
             return StoredProcToList("spAutoNumberCatList", mapper, _P("vchrCategory", category));
         }
 
-        public NewAutoNumber GetNextAutoNumber(int autoNumberCatID, int seed) {
+        public NewAutoNumber GetNextAutoNumber(int autoNumberCatID, int seed, bool ensureUnique, string table, string field) {
             NewAutoNumber result = null;
             var mapper = new GenericMapperBuilder<NewAutoNumber>().build();
-            StoredProcReaderFirst("spAutoNumberGetNext", (reader) => {
-                result = mapper.Map(reader);
-                result.AutoNumberCatID = autoNumberCatID;
-            },
-            _P("intAutoNumberCatID", autoNumberCatID),
-            _P("intSeed", seed));
+            bool finished = false;
+            do {
+                StoredProcReaderFirst("spAutoNumberGetNext", (reader) => {
+                    result = mapper.Map(reader);
+                    result.AutoNumberCatID = autoNumberCatID;
+                },
+                _P("intAutoNumberCatID", autoNumberCatID),
+                _P("intSeed", seed));
+
+                if (ensureUnique) {
+                    finished = CheckAutoNumberUnique(result.FormattedNumber, table, field);
+                    if (!finished) {
+                        seed = -1;
+                    }
+                } 
+            } while (!finished && ensureUnique);
 
             return result;
         }
@@ -470,7 +480,7 @@ namespace BioLink.Data {
                 _P("vchrFromTable", table),
                 _P("vchrFieldName", field)
             );
-            return retval != 0;
+            return retval == 1;
         }
 
         public void UpdateAutoNumber(int autoNumberCatID, string name, string prefix, string postfix, int numLeadingZeros, bool ensureUnique) {

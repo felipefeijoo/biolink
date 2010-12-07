@@ -335,6 +335,65 @@ namespace BioLink.Data {
             StoredProcUpdate("spMaterialUpdateName", _P("intMaterialID", materialID), _P("vchrName", name));
         }
 
+        public int InsertMaterial(int siteVisitID, int basedOnMaterialID = -1) {
+            var retval = ReturnParam("NewMaterialID", System.Data.SqlDbType.Int);
+
+            StoredProcUpdate("spMaterialInsert",
+                _P("intSiteVisitID", siteVisitID),
+                _P("intBasedOnMaterialID", basedOnMaterialID),
+                retval
+            );
+
+            return (int)retval.Value;
+
+        }
+
+        public void DeleteMaterial(int materialID) {
+            StoredProcUpdate("spMaterialDelete", _P("intMaterialID", materialID));
+        }
+
+        public Material GetMaterial(int materialID) {
+            var mapper = new GenericMapperBuilder<Material>().Override(new TintToBoolConvertingMapper("tintTemplate")).build();
+            Material result = null;
+            StoredProcReaderFirst("spMaterialGet", (reader) => {
+                result = mapper.Map(reader);
+            }, _P("intMaterialID", materialID));
+
+            return result;            
+        }
+
+        public void UpdateMaterial(Material material) {
+            StoredProcUpdate("spMaterialUpdate",
+                _P("intMaterialID", material.MaterialID),
+                _P("vchrMaterialName", material.MaterialName),
+                _P("intSiteVisitID", material.SiteVisitID),
+                _P("vchrAccessionNo", material.AccessionNumber),
+                _P("vchrRegNo", material.RegistrationNumber),
+                _P("vchrCollectorNo", material.CollectorNumber),
+                _P("intBiotaID", material.BiotaID),
+                _P("vchrIDBy", material.IdentifiedBy),
+                _P("vchrIDDate", material.IdentificationDate),
+                _P("intIDRefID", material.IdentificationReferenceID),
+                _P("vchrIDRefPage", material.IdentificationRefPage),
+                _P("vchrIDMethod", material.IdentificationMethod),
+                _P("vchrIDAccuracy", material.IdentificationAccuracy),
+                _P("vchrIDNameQual", material.IdentificationNameQualification),
+                _P("vchrIDNotes", material.IdentificationNotes),
+                _P("vchrInstitution", material.Institution),
+                _P("vchrCollectionMethod", material.CollectionMethod),
+                _P("vchrAbundance", material.Abundance),
+                _P("vchrMacroHabitat", material.MacroHabitat),
+                _P("vchrMicroHabitat", material.MicroHabitat),
+                _P("vchrSource", material.Source),
+                _P("intAssociateOf", material.AssociateOf),
+                _P("intTrapID", material.TrapID),
+                _P("vchrSpecialLabel", material.SpecialLabel),
+                _P("vchrOriginalLabel", material.OriginalLabel)
+            );
+
+
+        }
+
         #endregion
 
     }

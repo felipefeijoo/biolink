@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:my="clr-namespace:BioLink.Client.Extensibility" 
              mc:Ignorable="d" 
-             Height="204" Width="482" WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+             Height="204" Width="482" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" Title="Automatic Number Generation">
     <Grid>
         <Label Content="Choose category:" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" Name="label1" VerticalAlignment="Top" Width="107" />
         <ComboBox Height="23" Margin="12,46,0,0" Name="cmbCategories" VerticalAlignment="Top" HorizontalAlignment="Left" Width="298" DisplayMemberPath="DisplayLabel">

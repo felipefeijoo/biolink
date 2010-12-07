@@ -149,6 +149,27 @@ namespace BioLink.Client.Taxa {
         public PinnableObject CreatePinnableTaxon(int taxonID) {
             return new PinnableObject(TAXA_PLUGIN_NAME, "Taxon:" + taxonID);
         }
+
+        public override bool CanSelect(Type t) {
+            return typeof(Taxon).IsAssignableFrom(t);
+        }
+
+        public override void Select(Type t, Action<SelectionResult> success) {
+            IHierarchicalSelectorContentProvider selectionContent = null;
+            if (typeof(Taxon).IsAssignableFrom(t)) {
+                selectionContent = new TaxonSelectorContentProvider(User);
+            } else {
+                throw new Exception("Unhandled Selection Type: " + t.Name);
+            }
+
+            if (selectionContent != null) {
+                var frm = new HierarchicalSelector(User, selectionContent, success);
+                frm.Owner = ParentWindow;
+                frm.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
+                frm.ShowDialog();
+            }
+
+        }
     }
 
     public delegate void TaxonViewModelAction(TaxonViewModel taxon);

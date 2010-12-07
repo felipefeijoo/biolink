@@ -58,6 +58,37 @@ namespace BioLink.Client.Extensibility {
                 btnApply.Visibility = System.Windows.Visibility.Collapsed;
             }
 
+            tvw.SelectedItemChanged += new RoutedPropertyChangedEventHandler<object>(tvw_SelectedItemChanged);
+            lstSearchResults.SelectionChanged += new SelectionChangedEventHandler(lstSearchResults_SelectionChanged);
+
+            btnSelect.IsEnabled = false;
+        }
+
+        void lstSearchResults_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            ValidateSelection();
+        }
+
+        void tvw_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e) {
+            ValidateSelection();                        
+        }
+
+        private void ValidateSelection() {
+            HierarchicalViewModelBase selected = null;
+            if (tvw.IsVisible) {
+                if (tvw.SelectedItem != null) {
+                    selected = tvw.SelectedItem as HierarchicalViewModelBase;
+                }
+            } else if (lstSearchResults.IsVisible) {
+                if (lstSearchResults.SelectedItem != null) {
+                    selected = lstSearchResults.SelectedItem as HierarchicalViewModelBase;
+                }
+            }
+
+            btnSelect.IsEnabled = false;
+            if (selected != null) {
+                btnSelect.IsEnabled = _content.CanSelectItem(selected);
+            }
+
         }
 
         public List<string> GetExpandedParentages(ObservableCollection<HierarchicalViewModelBase> model) {
@@ -307,6 +338,8 @@ namespace BioLink.Client.Extensibility {
 
         List<HierarchicalViewModelBase> Search(string searchTerm);
 
+        bool CanSelectItem(HierarchicalViewModelBase candidate);
+
         SelectionResult CreateSelectionResult(HierarchicalViewModelBase selectedItem);
 
         DatabaseAction AddNewItem(HierarchicalViewModelBase selectedItem);
@@ -314,6 +347,7 @@ namespace BioLink.Client.Extensibility {
         DatabaseAction RenameItem(HierarchicalViewModelBase selectedItem, string newName);
 
         DatabaseAction DeleteItem(HierarchicalViewModelBase selectedItem);
+        
 
         int? GetElementIDForViewModel(HierarchicalViewModelBase item);
 

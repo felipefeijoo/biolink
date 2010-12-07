@@ -101,5 +101,14 @@ namespace BioLink.Client.Extensibility {
         public virtual void Dispatch(string command, Action<object> callback, params object[] args) {
         }
 
+
+
+        public virtual bool CanEditObjectType(LookupType type) {
+            return false;
+        }
+
+        public virtual void EditObject(LookupType type, int objectID) {
+        }
+
     }
 }

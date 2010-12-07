@@ -20,7 +20,7 @@
                 <Image Source="images/Ellipsis.png" Stretch="None" SnapsToDevicePixels="True" />
             </Button.Content>
         </Button>
-        <Button Grid.Column="4" x:Name="btnEdit" Focusable="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="23" Height="23" VerticalAlignment="Top">
+        <Button Grid.Column="4" x:Name="btnEdit" Focusable="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="23" Height="23" VerticalAlignment="Top" Click="btnEdit_Click">
             <Button.Content>
                 <Image Source="images/Find.png" Height="16" Width="16" Stretch="None" SnapsToDevicePixels="True" />
             </Button.Content>

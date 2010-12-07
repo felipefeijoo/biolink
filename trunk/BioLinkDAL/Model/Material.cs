@@ -66,7 +66,7 @@ namespace BioLink.Data.Model {
 
         public string OriginalLabel { get; set; }
 
-        int TrapID { get; set; }
+        public int TrapID { get; set; }
 
         [MappingInfo("IDRefPage")]
         public string IdentificationRefPage { get; set; }
