@@ -281,6 +281,25 @@ namespace BioLink.Client.Extensibility {
             return false;
         }
 
+        public bool EditLookupObject(LookupType objectType, int objectID) {
+
+            var list = new List<IBioLinkPlugin>();
+
+            TraversePlugins((p) => {
+                if (p.CanEditObjectType(objectType)) {
+                    list.Add(p);
+                }
+            });
+
+            if (list.Count == 1) {
+                list[0].EditObject(objectType, objectID);
+                return true;
+            }
+
+            return false;
+
+        }
+
         public void ShowRegionSelector(List<RegionDescriptor> regions, Action<List<RegionDescriptor>> updateAction) {
             var selectors = GetExtensionsOfType<IRegionSelector>();
             if (selectors != null && selectors.Count > 0) {

@@ -99,6 +99,7 @@
     </Compile>
     <Compile Include="TaxonNameParser.cs" />
     <Compile Include="TaxonReportBase.cs" />
+    <Compile Include="TaxonSelectorContentProvider.cs" />
     <Compile Include="TaxonViewModel.cs" />
   </ItemGroup>
   <ItemGroup>

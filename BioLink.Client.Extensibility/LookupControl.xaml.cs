@@ -21,15 +21,15 @@ namespace BioLink.Client.Extensibility {
     /// </summary>
     public partial class LookupControl : UserControl {
 
-        #region Designer Constructor
         public LookupControl() {
             InitializeComponent();
 
             this.GotFocus += new RoutedEventHandler((source, e) => {
                 txt.Focus();
             });
+
+            txt.IsReadOnly = true;
         }
-        #endregion
 
         public void BindUser(User user, LookupType lookupType) {
             User = user;
@@ -49,6 +49,21 @@ namespace BioLink.Client.Extensibility {
                 case LookupType.Region:
                     t = typeof(Region);
                     break;
+                case LookupType.Trap:
+                    t = typeof(Trap);
+                    break;
+                case LookupType.Material:
+                    t = typeof(Material);
+                    break;
+                case LookupType.Site:
+                    t = typeof(Site);
+                    break;
+                case LookupType.SiteVisit:
+                    t = typeof(SiteVisit);
+                    break;
+                case LookupType.Taxon:
+                    t = typeof(Taxon);
+                    break;
                 default:
                     throw new Exception("Unhandled Lookup type: " + LookupType.ToString());
             }
@@ -61,6 +76,16 @@ namespace BioLink.Client.Extensibility {
                         txt.Focus();
                     });
                 });
+            }
+        }
+
+        private void btnEdit_Click(object sender, RoutedEventArgs e) {
+            EditObject();
+        }
+
+        private void EditObject() {
+            if (ObjectID.GetValueOrDefault(-1) >= 0) {
+                PluginManager.Instance.EditLookupObject(LookupType, ObjectID.Value);
             }
         }
 
@@ -88,9 +113,6 @@ namespace BioLink.Client.Extensibility {
         public static readonly DependencyProperty ObjectIDProperty = DependencyProperty.Register("ObjectID", typeof(int?), typeof(LookupControl), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnObjectIDChanged)));
 
         private static void OnObjectIDChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
-            //var control = (LookupControl) color;
-            //control.txt.Text = args.NewValue as String;
-            //control.FireValueChanged(control.txt.Text);
         }
 
         public int? ObjectID {
@@ -99,7 +121,6 @@ namespace BioLink.Client.Extensibility {
         }
 
         #endregion
-
 
         #region Properties
 
@@ -114,6 +135,7 @@ namespace BioLink.Client.Extensibility {
         public event TextChangedHandler ValueChanged;
 
         #endregion
+
 
     }
 

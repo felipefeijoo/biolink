@@ -34,7 +34,7 @@ namespace BioLink.Client.Extensibility {
             AddTabItem("Ownership", new OwnershipDetails(multimedia));
             txtArtist.BindUser(user, "tblMultimedia", "vchrArtist");
             txtOwner.BindUser(user, "tblMultimedia", "vchrOwner");
-            txtIDNumber.BindUser(user, "MultimediaID");
+            txtIDNumber.BindUser(user, "MultimediaID", "tblMultimedia", "vchrNumber");
             this.DataContext = this.Multimedia;
 
             Multimedia.DataChanged += new DataChangedHandler(Multimedia_DataChanged);

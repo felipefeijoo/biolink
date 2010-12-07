@@ -15,9 +15,12 @@ namespace BioLink.Client.Extensibility {
             Click += new System.Windows.RoutedEventHandler(AutoNumberBox_Click);
         }
 
-        public void BindUser(User user, string autoNumberCategory) {
+        public void BindUser(User user, string autoNumberCategory, string table, string field) {
             this.AutoNumberCategory = autoNumberCategory;
+            this.AutoNumberTable = table;
+            this.AutoNumberField = field;
             this.User = user;
+
         }
 
         void AutoNumberBox_Click(object sender, System.Windows.RoutedEventArgs e) {
@@ -28,7 +31,7 @@ namespace BioLink.Client.Extensibility {
 
             Debug.Assert(User != null, "User has not been set!");
 
-            var frm = new AutoNumberOptions(User, AutoNumberCategory);
+            var frm = new AutoNumberOptions(User, AutoNumberCategory, AutoNumberTable, AutoNumberField);
             frm.Owner = this.FindParentWindow();
             if (frm.ShowDialog().ValueOrFalse()) {
                 txt.Text = frm.AutoNumber;                     
@@ -36,6 +39,10 @@ namespace BioLink.Client.Extensibility {
         }
 
         public string AutoNumberCategory { get; set; }
+
+        public string AutoNumberTable { get; set; }
+
+        public string AutoNumberField { get; set; }
 
         public User User { get; private set; }
 

@@ -66,6 +66,18 @@ namespace BioLink.Client.Material {
             cmbFindScope.ItemsSource = findScopes;
             cmbFindScope.DisplayMemberPath = "Label";
 
+            int lastSelectedIndex = Config.GetUser(User, "Material.Find.LastFilter", -1);
+            if (lastSelectedIndex < 0 || lastSelectedIndex >= findScopes.Count) {
+                cmbFindScope.SelectedIndex = 0;
+            } else {
+                cmbFindScope.SelectedIndex = lastSelectedIndex;
+            }
+
+
+        }
+
+        private void cmbFindScope_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            Config.SetUser(User, "Material.Find.LastFilter", cmbFindScope.SelectedIndex);
         }
 
         public void InitializeMaterialExplorer() {
@@ -276,6 +288,10 @@ namespace BioLink.Client.Material {
             AddNewNode(parent, SiteExplorerNodeType.Trap, (viewModel) => { return new InsertTrapAction(viewModel); });
         }
 
+        internal void AddMaterial(SiteExplorerNodeViewModel parent) {
+            AddNewNode(parent, SiteExplorerNodeType.Material, (viewModel) => { return new InsertMaterialAction(viewModel); });
+        }
+
         private void EditNode(SiteExplorerNodeViewModel node, Func<DatabaseActionControl> editorFactory) {
             if (node.ElemID < 0) {
                 ErrorMessage.Show("You must first apply the changes before editing the details of this item!");
@@ -314,7 +330,7 @@ namespace BioLink.Client.Material {
         }
 
         internal void EditMaterial(SiteExplorerNodeViewModel material) {
-            throw new NotImplementedException();
+            EditNode(material, () => { return new MaterialDetails(User, material.ElemID); });
         }
 
         internal void EditTrap(SiteExplorerNodeViewModel trap) {
@@ -360,6 +376,10 @@ namespace BioLink.Client.Material {
 
         internal void DeleteTrap(SiteExplorerNodeViewModel trap) {
             DeleteNode(trap, () => { return new DeleteTrapAction(trap.ElemID); });
+        }
+
+        internal void DeleteMaterial(SiteExplorerNodeViewModel material) {
+            DeleteNode(material, () => { return new DeleteMaterialAction(material.ElemID); });
         }
 
         private void tvwMaterial_MouseRightButtonDown(object sender, MouseButtonEventArgs e) {
@@ -450,6 +470,14 @@ namespace BioLink.Client.Material {
             var findModel = BuildExplorerModel(list);
             tvwFind.ItemsSource = findModel;
         }
+
+        private void txtFind_KeyDown(object sender, KeyEventArgs e) {
+            if (e.Key == Key.Return) {
+                DoFind();
+                e.Handled = true;
+            }
+        }
+
     }
 
     internal class MaterialFindScope {

@@ -49,7 +49,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MaterialDatabaseAction.cs" />
+    <Compile Include="MaterialDetails.xaml.cs">
+      <DependentUpon>MaterialDetails.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MaterialPlugin.cs" />
+    <Compile Include="MaterialViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MaterialExplorer.xaml.cs">
       <DependentUpon>MaterialExplorer.xaml</DependentUpon>
@@ -99,6 +103,10 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="MaterialDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MaterialExplorer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

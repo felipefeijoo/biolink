@@ -60,18 +60,24 @@ namespace BioLink.Client.Material {
         }
 
         public override bool CanSelect(Type t) {
-            return typeof(Region).IsAssignableFrom(t);
+            return typeof(Region).IsAssignableFrom(t) || typeof(Trap).IsAssignableFrom(t);
         }
 
         public override void Select(Type t, Action<SelectionResult> success) {
+            RegionSelectorContentProvider selectionContent = null;
             if (typeof(Region).IsAssignableFrom(t)) {
-                var selectionContent = new RegionSelectorContentProvider(User);
+                selectionContent = new RegionSelectorContentProvider(User, SiteExplorerNodeType.Region, (n) => { return n.ElemType != "Region"; }, "Region");
+            } else if (typeof(Trap).IsAssignableFrom(t)) {
+                selectionContent = new RegionSelectorContentProvider(User, SiteExplorerNodeType.Trap, (n) => { return n.ElemType == "Material" || n.ElemType == "SiteVisit"; }, "Trap");
+            } else {
+                throw new Exception("Unhandled Selection Type: " + t.Name);
+            }
+
+            if (selectionContent != null) {
                 var frm = new HierarchicalSelector(User, selectionContent, success);
                 frm.Owner = ParentWindow;
                 frm.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
                 frm.ShowDialog();
-            } else {
-                throw new Exception("Unhandled Selection Type: " + t.Name);
             }
         }
 
@@ -82,44 +88,52 @@ namespace BioLink.Client.Material {
             if (str != null) {
                 var matcher = PINNABLE_STATE_EXPR.Match(str);
                 if (matcher.Success) {
-                    var nodeType = matcher.Groups[1].Value;
+                    var nodeTypeStr = matcher.Groups[1].Value;
                     var elemId = Int32.Parse(matcher.Groups[2].Value);
-                    var service = new MaterialService(User);
-                    switch (nodeType.ToLower()) {
-                        case "site":
-                            var site = service.GetSite(elemId);
-                            SiteExplorerNode model = new SiteExplorerNode();
-                            model.ElemID = site.SiteID;
-                            model.ElemType = "Site";
-                            model.Name = site.SiteName;
-                            model.RegionID = site.PoliticalRegionID;
-                            var viewModel = new SiteExplorerNodeViewModel(model);
-                            return viewModel;
-                        case "sitevisit":
-                            var sitevisit = service.GetSiteVisit(elemId);
-                            model = new SiteExplorerNode();
-                            model.ElemID = sitevisit.SiteVisitID;
-                            model.ElemType = "SiteVisit";
-                            model.Name = sitevisit.SiteName;
-                            viewModel = new SiteExplorerNodeViewModel(model);
-                            return viewModel;
-                        case "trap":
-                            var trap = service.GetTrap(elemId);
-                            model = new SiteExplorerNode();
-                            model.ElemID = trap.TrapID;
-                            model.ElemType = "Trap";
-                            model.Name = trap.TrapName;
-                            viewModel = new SiteExplorerNodeViewModel(model);
-                            return viewModel;
-                        default:
-                            throw new Exception("Unhandled pinnable type: " + str);
-                    }
+                    var nodeType = (SiteExplorerNodeType)Enum.Parse(typeof(SiteExplorerNodeType), nodeTypeStr);
+                    return ViewModelFromObjectID(nodeType, elemId);
                 }
             }
 
             return null;
         }
 
+        private SiteExplorerNodeViewModel ViewModelFromObjectID(SiteExplorerNodeType nodeType, int objectID) {
+            var service = new MaterialService(User);
+            SiteExplorerNode model = new SiteExplorerNode();
+            model.ElemType = nodeType.ToString();
+            switch (nodeType) {
+                case SiteExplorerNodeType.Region:
+                    var region = service.GetRegion(objectID);
+                    model.ElemID = region.PoliticalRegionID;                            
+                    model.Name = region.Name;
+                    model.RegionID = region.PoliticalRegionID;
+                    return new SiteExplorerNodeViewModel(model);
+                case SiteExplorerNodeType.Site:
+                    var site = service.GetSite(objectID);                            
+                    model.ElemID = site.SiteID;
+                    model.Name = site.SiteName;
+                    model.RegionID = site.PoliticalRegionID;
+                    return new SiteExplorerNodeViewModel(model);
+                case SiteExplorerNodeType.SiteVisit:
+                    var sitevisit = service.GetSiteVisit(objectID);
+                    model.ElemID = sitevisit.SiteVisitID;                    
+                    model.Name = sitevisit.SiteName;
+                    return new SiteExplorerNodeViewModel(model);                            
+                case SiteExplorerNodeType.Trap:
+                    var trap = service.GetTrap(objectID);
+                    model.ElemID = trap.TrapID;
+                    model.Name = trap.TrapName;
+                    return new SiteExplorerNodeViewModel(model);
+                case SiteExplorerNodeType.Material:
+                    var material = service.GetMaterial(objectID);
+                    model.ElemID = material.MaterialID;
+                    model.Name = material.MaterialName;
+                    return new SiteExplorerNodeViewModel(model);                            
+                default:
+                    throw new Exception("Unhandled node type: " + nodeType);
+            }
+        }
 
         public override List<Command> GetCommandsForObject(ViewModelBase obj) {
 
@@ -135,12 +149,52 @@ namespace BioLink.Client.Material {
 
             return list;
         }
+
+        public override bool CanEditObjectType(LookupType type) {
+            switch (type) {
+                case LookupType.Material:
+                case LookupType.Region:
+                case LookupType.Site:
+                case LookupType.SiteVisit:
+                case LookupType.Trap:
+                    return true;
+            }
+            return false;
+        }
+
+        public override void EditObject(LookupType type, int objectID) {
+            SiteExplorerNodeViewModel viewModel = null;
+            switch (type) {
+                case LookupType.Material:
+                    viewModel = ViewModelFromObjectID(SiteExplorerNodeType.Material, objectID);
+                    break;
+                case LookupType.Region:
+                    viewModel = ViewModelFromObjectID(SiteExplorerNodeType.Region, objectID);
+                    break;
+                case LookupType.Site:
+                    viewModel = ViewModelFromObjectID(SiteExplorerNodeType.Site, objectID);
+                    break;
+                case LookupType.SiteVisit:
+                    viewModel = ViewModelFromObjectID(SiteExplorerNodeType.SiteVisit, objectID);
+                    break;
+                case LookupType.Trap:
+                    viewModel = ViewModelFromObjectID(SiteExplorerNodeType.Trap, objectID);
+                    break;
+            }
+
+            if (viewModel != null) {
+                _explorer.EditNode(viewModel);
+            }
+        }
     }
 
     internal class RegionSelectorContentProvider : IHierarchicalSelectorContentProvider {
 
-        public RegionSelectorContentProvider(User user) {
+        public RegionSelectorContentProvider(User user, SiteExplorerNodeType targetType, Predicate<SiteExplorerNode> filter, string searchLimit) {
             this.User = user;
+            this.TargetType = targetType;
+            this.Filter = filter;
+            this.SearchLimitation = searchLimit;
         }
 
         public string Caption {
@@ -157,9 +211,9 @@ namespace BioLink.Client.Material {
                 list.AddRange(service.GetExplorerElementsForParent(parentElem.ElemID, parentElem.NodeType));
             }
 
-            list.RemoveAll((item) => {
-                return item.ElemType != "Region";
-            });
+            if (Filter != null) {
+                list.RemoveAll(Filter);
+            }
 
             list.Sort((item1, item2) => {
                 int compare = item1.ElemType.CompareTo(item2.ElemType);
@@ -177,22 +231,24 @@ namespace BioLink.Client.Material {
         }
 
         public List<HierarchicalViewModelBase> Search(string searchTerm) {
-            var results = new MaterialService(User).FindRegions(searchTerm);
-            var converted = results.ConvertAll((sr) => {
-                var model = new SiteExplorerNode();
-                model.ElemType = "Region";
-                model.ElemID = sr.RegionID;
-                model.ParentID = sr.ParentID;
-                model.Name = sr.Region;
-                model.NumChildren = sr.NumChildren;
-                return new SiteExplorerNodeViewModel(model);
+            var service = new MaterialService(User);
+            var results = service.FindNodesByName(searchTerm, SearchLimitation);            
+            var converted = results.ConvertAll((node) => {
+                return new SiteExplorerNodeViewModel(node);
             });
             return new List<HierarchicalViewModelBase>(converted);            
         }
 
-        public void OnSelected(SelectionResult result) {
-            throw new NotImplementedException();
+        public bool CanSelectItem(HierarchicalViewModelBase candidate) {
+            var item = candidate as SiteExplorerNodeViewModel;
+            if (item == null) {
+                return false;
+            }
+
+            return item.NodeType == TargetType;
+
         }
+
 
         public SelectionResult CreateSelectionResult(HierarchicalViewModelBase selectedItem) {
             var item = selectedItem as SiteExplorerNodeViewModel;
@@ -222,7 +278,13 @@ namespace BioLink.Client.Material {
 
         public bool CanRenameItem {
             get { return true; }
-        }
+        }        
+
+        public SiteExplorerNodeType TargetType { get; private set; }
+
+        public Predicate<SiteExplorerNode> Filter { get; private set; }
+
+        public string SearchLimitation { get; private set; }
 
         #endregion
 
@@ -273,5 +335,6 @@ namespace BioLink.Client.Material {
             }
             return null;
         }
+
     }
 }

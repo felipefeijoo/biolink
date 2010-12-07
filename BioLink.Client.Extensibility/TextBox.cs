@@ -9,6 +9,7 @@ namespace BioLink.Client.Extensibility {
     public class TextBox : System.Windows.Controls.TextBox {
 
         public TextBox() : base() {
+
             this.GotFocus +=new System.Windows.RoutedEventHandler((source, e) => {
                 SelectAll();
             });

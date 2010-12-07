@@ -48,6 +48,8 @@ namespace BioLink.Client.Material {
                         break;
                     case SiteExplorerNodeType.Trap: explorer.DeleteTrap(node);
                         break;
+                    case SiteExplorerNodeType.Material: explorer.DeleteMaterial(node);
+                        break;
                     default:
                         throw new Exception("[Delete] Unhandled site explorer element type: " + node.ElemType);
                 }
@@ -103,6 +105,9 @@ namespace BioLink.Client.Material {
                 case SiteExplorerNodeType.Site:
                     addMenu.Items.Add(builder.New("New Site Visit").Handler(() => { explorer.AddSiteVisit(viewModel); }).MenuItem);
                     addMenu.Items.Add(builder.New("New Trap").Handler(() => { explorer.AddTrap(viewModel); }).MenuItem);
+                    break;
+                case SiteExplorerNodeType.SiteVisit:
+                    addMenu.Items.Add(builder.New("New Material").Handler(() => { explorer.AddMaterial(viewModel); }).MenuItem);
                     break;
                 default:
                     break;

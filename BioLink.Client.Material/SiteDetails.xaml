@@ -6,7 +6,7 @@
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
              xmlns:src="clr-namespace:BioLink.Client.Material"                           
              mc:Ignorable="d" 
-             d:DesignHeight="491" d:DesignWidth="821">
+             Height="491" Width="821" MinWidth="400">
     <UserControl.Resources>
         <ext:RadioButtonIntValueConverter x:Key="radioButtonConverter" />
     </UserControl.Resources>
@@ -27,7 +27,7 @@
         </Menu>
         <Label Grid.Row="1"  Content="Site Name:" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" Name="label1" VerticalAlignment="Top" Width="80" />
         <ext:TextBox Grid.Row="1" Height="23" Margin="98,12,12,0" Name="txtName" VerticalAlignment="Top" Text="{Binding SiteName}" />
-        <TabControl Grid.Row="1" Margin="12,46,12,12" Name="tabSite">
+        <TabControl Grid.Row="1" Margin="12,46,12,12" Name="tabSite" MinWidth="300">
             <TabItem Header="General" Name="tabGeneral">
                 <Grid>
                     <ext:LookupControl Margin="129,11,6,0" Name="txtPoliticalRegion" VerticalAlignment="Top" ObjectID="{Binding PoliticalRegionID}" Text="{Binding PoliticalRegion}" />
@@ -98,9 +98,9 @@
                             <Label Content="Error:" Height="28" HorizontalAlignment="Left" Margin="6,67,0,0" Name="label14" VerticalAlignment="Top" Width="66" />
                             <ext:PickListControl Height="23" HorizontalAlignment="Left" Margin="78,40,0,0" VerticalAlignment="Top" Width="179" Name="txtPosOriginal" Text="{Binding PosOriginal}"/>
                             <Label Content="Date:" Height="28" HorizontalAlignment="Left" Margin="263,40,0,0" Name="label15" VerticalAlignment="Top" Width="66" />
-                            <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="78,69,0,0" Name="txtPosError" VerticalAlignment="Top" Width="179" Text="{Binding PosError}"/>
-                            <Label Content="(Metres)" Height="28" HorizontalAlignment="Left" Margin="263,67,0,0" Name="label16" VerticalAlignment="Top" Width="66" />
                             <ext:DateControl HorizontalAlignment="Left" Margin="314,40,0,0" Name="dateControl1" VerticalAlignment="Top" Width="206" Height="23" Date="{Binding PosDate}" />
+                            <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="78,69,0,0" Name="txtPosError" VerticalAlignment="Top" Width="179" Text="{Binding PosError}"/>
+                            <Label Content="(Metres)" Height="28" HorizontalAlignment="Left" Margin="263,67,0,0" Name="label16" VerticalAlignment="Top" Width="66" />                            
                         </Grid>
                     </GroupBox>
                 </Grid>

@@ -27,7 +27,7 @@ namespace BioLink.Client.Extensibility {
         }
         #endregion
 
-        public AutoNumberOptions(User user, string autoNumberCategory) {
+        public AutoNumberOptions(User user, string autoNumberCategory, string table, string field) {
             InitializeComponent();
             this.User = user;
             this.AutoNumberCategory = autoNumberCategory;
@@ -42,6 +42,7 @@ namespace BioLink.Client.Extensibility {
             var control = new AutoNumberCategoryManager(User, AutoNumberCategory);
             var form = new ControlHostWindow(User, control, SizeToContent.WidthAndHeight);
             form.Owner = this.FindParentWindow();
+            form.Title = "Auto Number Generation Categories";
             form.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
             if (form.ShowDialog().ValueOrFalse()) {
                 LoadModel();
@@ -74,7 +75,7 @@ namespace BioLink.Client.Extensibility {
             if (autoNum != null) {
                 var service = new SupportService(User);
                 int seed = txtNumber.HasValue ? txtNumber.Number : -1;
-                var newAutoNumber = service.GetNextAutoNumber(autoNum.AutoNumberCatID, seed);
+                var newAutoNumber = service.GetNextAutoNumber(autoNum.AutoNumberCatID, seed, autoNum.EnsureUnique, AutoNumberTable, AutoNumberField);
                 if (newAutoNumber != null) {
                     this.AutoNumber = newAutoNumber.FormattedNumber;
                     return true;
@@ -89,6 +90,10 @@ namespace BioLink.Client.Extensibility {
         public string AutoNumber { get; private set; }
 
         public string AutoNumberCategory { get; private set; }
+
+        public string AutoNumberTable { get; private set; }
+
+        public string AutoNumberField { get; private set; }
 
         public User User { get; private set; }
 

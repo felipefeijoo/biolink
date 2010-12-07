@@ -94,5 +94,26 @@ namespace BioLink.Client.Tools {
             }
 
         }
+
+        public override bool CanEditObjectType(LookupType type) {
+            switch (type) {
+                case LookupType.Reference:
+                    return true;
+            }
+            return false;
+        }
+
+        public void EditReference(int refID) {
+            var service = new SupportService(User);
+            MessageBox.Show("TODO: Reference detail for ref id " + refID);
+        }
+
+        public override void EditObject(LookupType type, int objectID) {
+            switch (type) {
+                case LookupType.Reference:
+                    EditReference(objectID);
+                    break;
+            }
+        }
     }
 }
