@@ -20,7 +20,7 @@ namespace BioLink.Client.Material {
     /// <summary>
     /// Interaction logic for MaterialPartsControl.xaml
     /// </summary>
-    public partial class MaterialPartsControl : UserControl {
+    public partial class MaterialPartsControl : DatabaseActionControl {
 
         public MaterialPartsControl() {
             InitializeComponent();
