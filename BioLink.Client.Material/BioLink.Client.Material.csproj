@@ -55,6 +55,11 @@
     <Compile Include="MaterialDetails.xaml.cs">
       <DependentUpon>MaterialDetails.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MaterialPartAction.cs" />
+    <Compile Include="MaterialPartsControl.xaml.cs">
+      <DependentUpon>MaterialPartsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MaterialPartViewModel.cs" />
     <Compile Include="MaterialPlugin.cs" />
     <Compile Include="MaterialViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -115,6 +120,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MaterialExplorer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MaterialPartsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -445,5 +445,60 @@ namespace BioLink.Data {
 
 
         #endregion
+
+        #region Material Part (subparts)
+
+        public List<MaterialPart> GetMaterialParts(int materialID) {
+            var mapper = new GenericMapperBuilder<MaterialPart>().build();
+            return StoredProcToList("spMaterialPartGet", mapper, _P("intMaterialID", materialID));
+        }
+
+        public void DeleteMaterialPart(int materialPartID) {
+            StoredProcUpdate("spMaterialPartDelete", _P("intMaterialPartID", materialPartID));
+        }
+
+        public int InsertMaterialPart(MaterialPart part) {
+            var retval = ReturnParam("NewMaterialPartID", System.Data.SqlDbType.Int);
+
+            StoredProcUpdate("spMaterialPartInsert",
+                _P("intMaterialID", part.MaterialID),
+                _P("vchrPartName", part.PartName),
+                _P("vchrSampleType", part.SampleType),
+                _P("intNoSpecimens", part.NoSpecimens),
+                _P("vchrNoSpecimensQual", part.NoSpecimensQual),
+                _P("vchrLifestage", part.Lifestage),
+                _P("vchrGender", part.Gender),
+                _P("vchrRegNo", part.RegNo),
+                _P("vchrCondition", part.Condition),
+                _P("vchrStorageSite", part.StorageSite),
+                _P("vchrStorageMethod", part.StorageMethod),
+                _P("vchrCurationStatus", part.CurationStatus),
+                _P("txtNotes", part.Notes),
+                retval
+            );
+
+            return (int)retval.Value;
+        }
+
+        public void UpdateMaterialPart(MaterialPart part) {
+            StoredProcUpdate("spMaterialPartInsert",
+                _P("intMaterialPartID", part.MaterialPartID),
+                _P("intMaterialID", part.MaterialID),
+                _P("vchrPartName", part.PartName),
+                _P("vchrSampleType", part.SampleType),
+                _P("intNoSpecimens", part.NoSpecimens),
+                _P("vchrNoSpecimensQual", part.NoSpecimensQual),
+                _P("vchrLifestage", part.Lifestage),
+                _P("vchrGender", part.Gender),
+                _P("vchrRegNo", part.RegNo),
+                _P("vchrCondition", part.Condition),
+                _P("vchrStorageSite", part.StorageSite),
+                _P("vchrStorageMethod", part.StorageMethod),
+                _P("vchrCurationStatus", part.CurationStatus),
+                _P("txtNotes", part.Notes)
+            );
+        }
+
+        #endregion
     }
 }
