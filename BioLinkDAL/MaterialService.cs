@@ -396,5 +396,54 @@ namespace BioLink.Data {
 
         #endregion
 
+        #region Material Identification
+
+        public List<MaterialIdentification> GetMaterialIdentification(int materialID) {
+            var mapper = new GenericMapperBuilder<MaterialIdentification>().build();
+            return StoredProcToList("spMaterialIDGet", mapper, _P("intMaterialID", materialID));            
+        }
+
+        public void DeleteMaterialIdentification(int materialIdentID) {
+            StoredProcUpdate("spMaterialIDDelete", _P("intMaterialIdentID", materialIdentID));
+        }
+
+        public int InsertMaterialIdentification(MaterialIdentification i) {
+            var retval = ReturnParam("NewMaterialIdentID", System.Data.SqlDbType.Int);
+            StoredProcUpdate("spMaterialIDInsert",
+                _P("intMaterialID", i.MaterialID),
+                _P("vchrTaxa", i.Taxa),
+                _P("vchrIDBy", i.IDBy),
+                _P("vchrIDDate", i.IDDate),
+                _P("vchrIDMethod", i.IDMethod),
+                _P("intIDRefID", i.IDRefID),
+                _P("vchrIDRefPage", i.IDRefPage),
+                _P("vchrIDAccuracy", i.IDAccuracy),
+                _P("vchrNameQual", i.NameQual),
+                _P("txtNotes", i.IDNotes),
+                retval
+            );
+
+            return (int)retval.Value;
+        }
+
+        public void UpdateMaterialIdentification(MaterialIdentification i) {            
+            StoredProcUpdate("spMaterialIDUpdate",
+                _P("intMaterialIdentID", i.MaterialIdentID),
+                _P("intMaterialID", i.MaterialID),
+                _P("vchrTaxa", i.Taxa),
+                _P("vchrIDBy", i.IDBy),
+                _P("vchrIDDate", i.IDDate),
+                _P("vchrIDMethod", i.IDMethod),
+                _P("intIDRefID", i.IDRefID),
+                _P("vchrIDRefPage", i.IDRefPage),
+                _P("vchrIDAccuracy", i.IDAccuracy),
+                _P("vchrNameQual", i.NameQual),
+                _P("txtNotes", i.IDNotes)
+            );
+
+        }
+
+
+        #endregion
     }
 }

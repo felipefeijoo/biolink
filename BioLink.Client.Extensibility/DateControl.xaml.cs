@@ -72,7 +72,7 @@ namespace BioLink.Client.Extensibility {
             SetDate(txt.Text);   
         }
 
-        private string DateToStr(string bldate) {
+        public static string DateToStr(string bldate) {
             if (bldate == null) {
                 return "";
             }
@@ -88,7 +88,7 @@ namespace BioLink.Client.Extensibility {
                     if (day == 0) {
                         return string.Format("{0}, {1:0000}", DateUtils.GetMonthName(month, true), year);
                     } else {
-                        return string.Format("{0:00} {1}, {2:0000}", day, DateUtils.GetMonthName(month, true), year);
+                        return string.Format("{0} {1}, {2:0000}", day, DateUtils.GetMonthName(month, true), year);
                     }
                 }
             } else {
@@ -157,7 +157,7 @@ namespace BioLink.Client.Extensibility {
             var control = obj as DateControl;
             control.lblDebug.Content = control.Date;
             if (!control._selfSet) {
-                control.txt.Text = control.DateToStr(control.Date);
+                control.txt.Text = DateControl.DateToStr(control.Date);
             }
         }
 
@@ -217,6 +217,40 @@ namespace BioLink.Client.Extensibility {
             int result = 0;
             Int32.TryParse(value as string, out result);
             return result;
+        }
+    }
+
+    public class HardDateConverter : IValueConverter {
+
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+            var dt = value as DateTime?;
+            if (dt != null && dt.HasValue) {
+                return string.Format("{0:0000}{1:00}{2:00}", dt.Value.Year, dt.Value.Month, dt.Value.Day);
+            } else {
+                return null;
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+            var str = value as string;
+            if (str != null) {
+                var formatted = DateControl.DateToStr(str);
+                DateTime dt;
+                if (DateTime.TryParse(formatted, out dt)) {
+                    return dt;
+                } else {
+                    int year;                    
+                    if (Int32.TryParse(formatted, out year)) {
+                        if (year > 0 && year <= 9999) {
+                            var tempDate = "01 jan " + formatted;
+                            if (DateTime.TryParse(tempDate, out dt)) {
+                                return dt;
+                            }
+                        }
+                    }
+                }
+            }
+            return null;            
         }
     }
 }

@@ -51,7 +51,15 @@ namespace BioLink.Client.Material {
 
             // Identification tab
             txtIdentification.BindUser(User, LookupType.Taxon);
+            txtIdentifiedBy.BindUser(User, "tblMaterial", "vchrIDBy");
+            txtReference.BindUser(User, LookupType.Reference);
+            txtAccuracy.BindUser(User, PickListType.Phrase, "Identification Accuracy", TraitCategoryType.Material);
+            txtMethod.BindUser(User, PickListType.Phrase, "Identification Method", TraitCategoryType.Material);
+            txtNameQual.BindUser(User, PickListType.Phrase, "Identification Qualifier", TraitCategoryType.Material);
 
+            var idhistory = new IdentificationHistoryControl(user, materialID);
+            idhistory.Margin = new Thickness(0);
+            tabIDHistory.Content = idhistory;
         }
 
         void viewModel_DataChanged(ChangeableModelBase viewmodel) {

@@ -59,7 +59,7 @@ namespace BioLink.Client.Material {
             set { SetProperty(() => Model.IdentifiedBy, value); }
         }
 
-        public DateTime IdentificationDate {
+        public DateTime? IdentificationDate {
             get { return Model.IdentificationDate; }
             set { SetProperty(() => Model.IdentificationDate, value); }
         }
@@ -67,6 +67,11 @@ namespace BioLink.Client.Material {
         public int IdentificationReferenceID {
             get { return Model.IdentificationReferenceID; }
             set { SetProperty(() => Model.IdentificationReferenceID, value); }
+        }
+
+        public string IdentificationRefPage {
+            get { return Model.IdentificationRefPage; }
+            set { SetProperty(() => Model.IdentificationRefPage, value); }
         }
 
         public string IdentificationMethod {
@@ -137,11 +142,6 @@ namespace BioLink.Client.Material {
         public int TrapID {
             get { return Model.TrapID; }
             set { SetProperty(() => Model.TrapID, value); }
-        }
-
-        public string IdentificationRefPage {
-            get { return Model.IdentificationRefPage; }
-            set { SetProperty(() => Model.IdentificationRefPage, value); }
         }
 
         public string TaxaDesc {

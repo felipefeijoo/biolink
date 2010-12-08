@@ -48,6 +48,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IdentificationHistoryControl.xaml.cs">
+      <DependentUpon>IdentificationHistoryControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MaterialDatabaseAction.cs" />
     <Compile Include="MaterialDetails.xaml.cs">
       <DependentUpon>MaterialDetails.xaml</DependentUpon>
@@ -103,6 +106,10 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="IdentificationHistoryControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MaterialDetails.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

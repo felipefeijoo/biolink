@@ -157,7 +157,7 @@ namespace BioLink.Client.Taxa {
         public override void Select(Type t, Action<SelectionResult> success) {
             IHierarchicalSelectorContentProvider selectionContent = null;
             if (typeof(Taxon).IsAssignableFrom(t)) {
-                selectionContent = new TaxonSelectorContentProvider(User);
+                selectionContent = new TaxonSelectorContentProvider(User, _explorer.Content as TaxonExplorer);
             } else {
                 throw new Exception("Unhandled Selection Type: " + t.Name);
             }
@@ -168,7 +168,16 @@ namespace BioLink.Client.Taxa {
                 frm.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
                 frm.ShowDialog();
             }
+        }
 
+        public override bool CanEditObjectType(LookupType type) {
+            return type == LookupType.Taxon;
+        }
+
+        public override void EditObject(LookupType type, int objectID) {
+            if (type == LookupType.Taxon) {
+                (_explorer.Content as TaxonExplorer).ShowTaxonDetails(objectID);
+            }
         }
     }
 
