@@ -82,6 +82,7 @@
     <Compile Include="Model\GenusAvailableName.cs" />
     <Compile Include="Model\Kingdom.cs" />
     <Compile Include="Model\Material.cs" />
+    <Compile Include="Model\MaterialIdentification.cs" />
     <Compile Include="Model\Multimedia.cs" />
     <Compile Include="Model\MultimediaLink.cs" />
     <Compile Include="Model\Note.cs" />

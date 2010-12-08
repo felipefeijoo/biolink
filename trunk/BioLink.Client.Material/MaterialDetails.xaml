@@ -5,16 +5,19 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
              mc:Ignorable="d" 
-             MinWidth="500" MinHeight="500"
+             MinWidth="700" MinHeight="530"
              d:DesignHeight="534" d:DesignWidth="707" UseLayoutRounding="True" SnapsToDevicePixels="True">
     <Grid>
+        <Grid.Resources>
+            <ext:HardDateConverter x:Key="hardDateConverter" />
+        </Grid.Resources>
         <Label Content="Site:" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" Name="label1" VerticalAlignment="Top" />
-        <ext:TextBox Height="23" Margin="109,14,12,0" Name="txtSiteName" VerticalAlignment="Top" IsEnabled="False" Text="{Binding SiteName}"/>
+        <ext:TextBox Height="23" Margin="109,14,12,0" Name="txtSiteName" VerticalAlignment="Top" IsEnabled="False" Text="{Binding SiteName}" />
         <Label Content="Site Visit:" Height="28" HorizontalAlignment="Left" Margin="12,46,0,0" Name="label2" VerticalAlignment="Top" />
-        <ext:TextBox Height="23" Margin="109,48,12,0" Name="txtSiteVisitName" VerticalAlignment="Top" IsEnabled="False" Text="{Binding SiteVisitName}"/>
+        <ext:TextBox Height="23" Margin="109,48,12,0" Name="txtSiteVisitName" VerticalAlignment="Top" IsEnabled="False" Text="{Binding SiteVisitName}" />
         <Label Content="Material Name:" Height="28" HorizontalAlignment="Left" Margin="12,80,0,0" Name="label3" VerticalAlignment="Top" />
-        <ext:TextBox Height="23" Margin="109,82,12,0" Name="txtMaterialName" VerticalAlignment="Top" Text="{Binding MaterialName}"/>
-        <TabControl Margin="7,114,12,12" Name="tabControl1">
+        <ext:TextBox Height="23" Margin="109,82,12,0" Name="txtMaterialName" VerticalAlignment="Top" Text="{Binding MaterialName}" />
+        <TabControl Margin="7,114,12,12" Name="tabMaterial">
             <TabItem Header="General" Name="tabGeneral">
                 <Grid>
                     <Label Content="Identification:" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label4" VerticalAlignment="Top" />
@@ -44,16 +47,50 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Identification" Name="tabIdentification">
-                <Grid>
-                    <TabControl Height="364" HorizontalAlignment="Left" Margin="6,6,0,0" Name="tabControl2" VerticalAlignment="Top" Width="666" TabStripPlacement="Right">
+                <Grid Margin="0">
+                    <TabControl Name="tabID" TabStripPlacement="Right" Margin="0">
                         <TabItem Header="Current">
                             <TabItem.LayoutTransform>
                                 <RotateTransform Angle="90"/>
                             </TabItem.LayoutTransform>
-                            <Grid>
+                            <Grid Margin="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="5" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="28"/>
+                                    <RowDefinition Height="28"/>
+                                    <RowDefinition Height="28"/>
+                                    <RowDefinition Height="28"/>
+                                    <RowDefinition Height="28"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+
+                                <Label Content="Identification:" HorizontalAlignment="Left" Name="label16" />
+                                <ext:LookupControl Height="23" Grid.Row="0" Grid.ColumnSpan="3" Grid.Column="1" Name="txtIdentification" ObjectID="{Binding BiotaID}" Text="{Binding TaxaDesc}" />
+                                <Label Grid.Row="1" Content="Identified By:" Name="label17" />
+                                <ext:PickListControl Grid.Row="1" Grid.Column="1" Height="23" Name="txtIdentifiedBy" Text="{Binding IdentifiedBy}"/>
+                                <Label Grid.Row="1" Grid.Column="2" Content="on date:" Name="label18"  />
+                                <ext:DateControl Grid.Row="1" Grid.Column="3" Height="23" Name="dtIDDate" Date="{Binding IdentificationDate, Converter={StaticResource hardDateConverter}}"/>
+                                <Label Grid.Row="2" Content="Reference:" Name="label19" />
+                                <ext:LookupControl Grid.Row="2" Grid.Column="1" Height="23" Name="txtReference" Text="{Binding RefCode}" ObjectID="{Binding IdentificationReferenceID}"/>
+                                <Label Grid.Row="2" Grid.Column="2" Content="Page:" Name="label20" />
+                                <ext:TextBox Grid.Row="2" Grid.Column="3" Height="23" Name="txtPage" Text="{Binding IdentificationRefPage}"/>
+                                <Label Grid.Row="3" Content="Accuracy:" HorizontalAlignment="Left" Name="label21" />
+                                <ext:PickListControl Grid.Row="3" Grid.Column="1" Height="23" Name="txtAccuracy"  Text="{Binding IdentificationAccuracy}"/>
+                                <Label Grid.Row="3" Grid.Column="2" Content="Method:" Name="label22" />
+                                <ext:PickListControl Grid.Row="3" Grid.Column="3" Height="23" Name="txtMethod" Text="{Binding IdentificationMethod}"/>
+                                <Label Grid.Row="4" Content="Name Qual.:" Name="label23" />
+                                <ext:PickListControl Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Height="23" Name="txtNameQual" Text="{Binding IdentificationNameQualification}"/>
+                                <Label Grid.Row="5" Content="Notes:" Name="label24" />                                
+                                <ext:BindableRichTextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Name="txtNotes" RTF="{Binding IdentificationNotes}" HorizontalAlignment="Left" Width="541" Height="226" VerticalAlignment="Top" />
                             </Grid>
                         </TabItem>
-                        <TabItem Header="History">
+                        <TabItem Header="History" x:Name="tabIDHistory">
                             <TabItem.LayoutTransform>
                                 <RotateTransform Angle="90"/>
                             </TabItem.LayoutTransform>
@@ -63,26 +100,6 @@
                 </Grid>                          
             </TabItem>
             <TabItem>
-                <Grid>
-                    <Label Content="Identification:" Height="28" HorizontalAlignment="Left" Margin="6,11,0,0" Name="label16" VerticalAlignment="Top" Width="87" />
-                    <ext:LookupControl HorizontalAlignment="Left" Margin="97,11,0,0" Name="txtIdentification" VerticalAlignment="Top" Width="546" />
-                    <ext:PickListControl Height="23" HorizontalAlignment="Left" Margin="97,40,0,0" Name="txtIdentifiedBy" VerticalAlignment="Top" Width="238" />                    
-                    <Label Content="on date:" Height="28" HorizontalAlignment="Left" Margin="341,40,0,0" Name="label18" VerticalAlignment="Top" Width="58" />
-                    <ext:DateControl HorizontalAlignment="Left" Margin="405,40,0,0" Name="dtIDDate" VerticalAlignment="Top" Width="238" />
-                    <Label Content="Identified By:" Height="28" HorizontalAlignment="Left" Margin="6,40,0,0" Name="label17" VerticalAlignment="Top" Width="87" />
-                    <ext:LookupControl HorizontalAlignment="Left" Margin="97,69,0,0" Name="txtReference" VerticalAlignment="Top" Width="238" />
-                    <Label Content="Reference:" Height="28" HorizontalAlignment="Left" Margin="6,69,0,0" Name="label19" VerticalAlignment="Top" Width="87" />
-                    <Label Content="Page:" Height="28" HorizontalAlignment="Left" Margin="341,69,0,0" Name="label20" VerticalAlignment="Top" Width="58" />
-                    <ext:TextBox Height="23" HorizontalAlignment="Right" Margin="0,69,35,0" Name="txtPage" VerticalAlignment="Top" Width="238" />
-                    <ext:PickListControl Height="23" HorizontalAlignment="Left" Margin="97,98,0,0" Name="txtAccuracy" VerticalAlignment="Top" Width="238" />
-                    <Label Content="Accuracy:" Height="28" HorizontalAlignment="Left" Margin="6,98,0,0" Name="label21" VerticalAlignment="Top" Width="87" />
-                    <Label Content="Method:" Height="28" HorizontalAlignment="Left" Margin="341,98,0,0" Name="label22" VerticalAlignment="Top" Width="58" />
-                    <ext:PickListControl Height="23" HorizontalAlignment="Left" Margin="405,98,0,0" Name="txtMethod" VerticalAlignment="Top" Width="238" />
-                    <Label Content="Name Qual.:" Height="28" HorizontalAlignment="Left" Margin="6,127,0,0" Name="label23" VerticalAlignment="Top" Width="87" />
-                    <ext:PickListControl Height="23" HorizontalAlignment="Left" Margin="97,127,0,0" Name="txtNameQual" VerticalAlignment="Top" Width="546" />
-                    <Label Content="Notes:" Height="28" HorizontalAlignment="Left" Margin="6,161,0,0" Name="label24" VerticalAlignment="Top" Width="87" />
-                    <ext:BindableRichTextBox HorizontalAlignment="Left" Margin="97,161,0,0" Name="txtNotes" Width="546" Height="159" VerticalAlignment="Top" />
-                </Grid>                
             </TabItem>
         </TabControl>
     </Grid>

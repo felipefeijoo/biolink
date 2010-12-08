@@ -11,8 +11,11 @@ namespace BioLink.Client.Taxa {
 
     public class TaxonSelectorContentProvider : IHierarchicalSelectorContentProvider {
 
-        public TaxonSelectorContentProvider(User user) {
+        private TaxonExplorer _explorer;
+
+        public TaxonSelectorContentProvider(User user, TaxonExplorer explorer) {
             this.User = user;
+            _explorer = explorer;
         }
 
         public string Caption {
@@ -28,7 +31,7 @@ namespace BioLink.Client.Taxa {
         }
 
         public bool CanRenameItem {
-            get { return false; }
+            get { return true; }
         }
 
         public List<HierarchicalViewModelBase> LoadModel(HierarchicalViewModelBase parent) {                        
@@ -80,7 +83,21 @@ namespace BioLink.Client.Taxa {
         }
 
         public Data.DatabaseAction RenameItem(HierarchicalViewModelBase selectedItem, string newName) {
-            throw new NotImplementedException();
+            var taxon = selectedItem as TaxonViewModel;
+            if (taxon != null) {
+                TaxonName name = TaxonNameParser.ParseName(taxon, newName);
+                if (name != null) {
+                    taxon.Author = name.Author;
+                    taxon.Epithet = name.Epithet;
+                    taxon.YearOfPub = name.Year;
+                    taxon.ChgComb = name.ChangeCombination;
+                    taxon.DisplayLabel = null;
+                    return new UpdateTaxonDatabaseAction(taxon.Taxon);                    
+                } else {
+                    ErrorMessage.Show("Please enter at least the epithet, with author and year where appropriate.");                    
+                }
+            }
+            return null;
         }
 
         public Data.DatabaseAction DeleteItem(HierarchicalViewModelBase selectedItem) {

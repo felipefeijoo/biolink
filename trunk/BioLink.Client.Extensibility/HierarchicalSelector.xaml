@@ -68,7 +68,7 @@
 
         </ext:VTreeView>
 
-        <ListBox Grid.Row="1" x:Name="lstSearchResults" Margin="0" Visibility="Collapsed">
+        <ListBox Grid.Row="1" x:Name="lstSearchResults" Margin="0" Visibility="Collapsed" MouseRightButtonUp="lstSearchResults_MouseRightButtonUp">
             <ListBox.Resources>
                 <DataTemplate DataType="{x:Type ext:HierarchicalViewModelBase}">
                     <StackPanel Orientation="Horizontal">

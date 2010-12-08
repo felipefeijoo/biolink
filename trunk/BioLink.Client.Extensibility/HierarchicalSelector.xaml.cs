@@ -178,8 +178,17 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void EditableTextBlock_EditingComplete(object sender, string text) {
-            if (_content.CanRenameItem) {
-                var action = _content.RenameItem(tvw.SelectedItem as HierarchicalViewModelBase, text);
+
+            HierarchicalViewModelBase selected = null;
+
+            if (tvw.IsVisible) {
+                selected = tvw.SelectedItem as HierarchicalViewModelBase;
+            } else {
+                selected = lstSearchResults.SelectedItem as HierarchicalViewModelBase;
+            }
+
+            if (_content.CanRenameItem && selected != null) {
+                var action = _content.RenameItem(selected, text);
                 if (action != null) {
                     RegisterUniquePendingChange(action, this);
                 }
@@ -257,11 +266,11 @@ namespace BioLink.Client.Extensibility {
         private void tvw_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
             var item = tvw.SelectedItem as HierarchicalViewModelBase;
             if (item != null) {
-                ShowContextMenu(item);
+                ShowContextMenu(item, tvw);
             }
         }
 
-        private void ShowContextMenu(HierarchicalViewModelBase selected) {
+        private void ShowContextMenu(HierarchicalViewModelBase selected, FrameworkElement control) {
             ContextMenuBuilder builder = new ContextMenuBuilder(null);
             if (_content.CanAddNewItem) {
                 builder.New("Add new").Handler(() => { AddNewItem(selected); }).End();
@@ -278,7 +287,7 @@ namespace BioLink.Client.Extensibility {
             }
 
             if (builder.HasItems) {
-                tvw.ContextMenu = builder.ContextMenu;
+                control.ContextMenu = builder.ContextMenu;
             }
         }
 
@@ -319,6 +328,13 @@ namespace BioLink.Client.Extensibility {
                 if (!this.Question("You have unsaved changes. Are you sure you want to discard those changes?", "Discard changes?")) {
                     e.Cancel = true;
                 }
+            }
+        }
+
+        private void lstSearchResults_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            var item = lstSearchResults.SelectedItem as HierarchicalViewModelBase;
+            if (item != null) {
+                ShowContextMenu(item, lstSearchResults);
             }
         }
 

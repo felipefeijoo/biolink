@@ -31,7 +31,7 @@ namespace BioLink.Data.Model {
         public string IdentifiedBy { get; set; }
 
         [MappingInfo("IDDate")]
-        public DateTime IdentificationDate { get; set; }
+        public DateTime? IdentificationDate { get; set; }
 
         [MappingInfo("IDRefID")]
         public int IdentificationReferenceID { get; set; }
