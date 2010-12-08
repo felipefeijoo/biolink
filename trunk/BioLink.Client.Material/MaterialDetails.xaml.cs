@@ -21,6 +21,11 @@ namespace BioLink.Client.Material {
     /// Interaction logic for MaterialDetails.xaml
     /// </summary>
     public partial class MaterialDetails : DatabaseActionControl {
+
+        private IdentificationHistoryControl _historyControl;
+
+        private MaterialViewModel _viewModel;
+
         #region Designer Constructor
         public MaterialDetails() {
             InitializeComponent();
@@ -31,9 +36,9 @@ namespace BioLink.Client.Material {
             InitializeComponent();
             var service = new MaterialService(user);
             var model = service.GetMaterial(materialID);
-            var viewModel = new MaterialViewModel(model);
-            viewModel.DataChanged += new DataChangedHandler(viewModel_DataChanged);
-            this.DataContext = viewModel;
+            _viewModel = new MaterialViewModel(model);
+            _viewModel.DataChanged += new DataChangedHandler(viewModel_DataChanged);
+            this.DataContext = _viewModel;
 
             // General tab
             txtAccessionNumber.BindUser(User, "MaterialAccessionNo", "tblMaterial", "vchrAccessionNo");            
@@ -51,15 +56,33 @@ namespace BioLink.Client.Material {
 
             // Identification tab
             txtIdentification.BindUser(User, LookupType.Taxon);
+            txtIdentification.ObjectIDChanged += new ObjectIDChangedHandler(txtIdentification_ObjectIDChanged);
             txtIdentifiedBy.BindUser(User, "tblMaterial", "vchrIDBy");
             txtReference.BindUser(User, LookupType.Reference);
             txtAccuracy.BindUser(User, PickListType.Phrase, "Identification Accuracy", TraitCategoryType.Material);
             txtMethod.BindUser(User, PickListType.Phrase, "Identification Method", TraitCategoryType.Material);
             txtNameQual.BindUser(User, PickListType.Phrase, "Identification Qualifier", TraitCategoryType.Material);
 
-            var idhistory = new IdentificationHistoryControl(user, materialID);
-            idhistory.Margin = new Thickness(0);
-            tabIDHistory.Content = idhistory;
+            _historyControl = new IdentificationHistoryControl(user, materialID);
+            _historyControl.Margin = new Thickness(0);
+            tabIDHistory.Content = _historyControl;
+        }
+
+        void txtIdentification_ObjectIDChanged(object source, int? objectID) {
+            if (this.Question("Do you wish to record a history of this identification change?", "Create identification history?")) {
+                _historyControl.AddHistoryFromMaterial(_viewModel);
+                // Clear id fields...
+                _viewModel.IdentificationAccuracy = "";
+                _viewModel.IdentificationDate = null;
+                _viewModel.IdentificationMethod = "";
+                _viewModel.IdentificationNameQualification = "";
+                _viewModel.IdentificationNotes = "";
+                _viewModel.IdentificationReferenceID = 0;
+                _viewModel.IdentificationRefPage = "";
+                _viewModel.IdentifiedBy = "";
+
+
+            }
         }
 
         void viewModel_DataChanged(ChangeableModelBase viewmodel) {

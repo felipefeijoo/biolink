@@ -21,6 +21,8 @@ namespace BioLink.Client.Extensibility {
     /// </summary>
     public partial class LookupControl : UserControl {
 
+        private bool _manualSet = false;
+
         public LookupControl() {
             InitializeComponent();
 
@@ -70,11 +72,13 @@ namespace BioLink.Client.Extensibility {
 
             if (t != null) {
                 PluginManager.Instance.StartSelect(t, (result) => {
-                    this.Text = result.Description;
+                    _manualSet = true;
                     this.ObjectID = result.ObjectID;
+                    this.Text = result.Description;                    
                     this.InvokeIfRequired(() => {
                         txt.Focus();
                     });
+                    _manualSet = false;
                 });
             }
         }
@@ -96,12 +100,8 @@ namespace BioLink.Client.Extensibility {
         private static void OnTextChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
             var control = (LookupControl)obj;
             control.txt.Text = args.NewValue as String;
-            control.FireValueChanged(control.txt.Text);
-        }
-
-        protected void FireValueChanged(string text) {
-            if (this.ValueChanged != null) {
-                ValueChanged(this, text);
+            if (control.ValueChanged != null) {
+                control.ValueChanged(control, control.txt.Text);
             }
         }
 
@@ -113,6 +113,10 @@ namespace BioLink.Client.Extensibility {
         public static readonly DependencyProperty ObjectIDProperty = DependencyProperty.Register("ObjectID", typeof(int?), typeof(LookupControl), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnObjectIDChanged)));
 
         private static void OnObjectIDChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            var control = (LookupControl) obj;
+            if (control.ObjectIDChanged != null && control._manualSet) {
+                control.ObjectIDChanged(control, control.ObjectID);
+            }
         }
 
         public int? ObjectID {
@@ -134,10 +138,14 @@ namespace BioLink.Client.Extensibility {
 
         public event TextChangedHandler ValueChanged;
 
+        public event ObjectIDChangedHandler ObjectIDChanged;
+
         #endregion
 
 
     }
+
+    public delegate void ObjectIDChangedHandler(object source, int? objectID);
 
     public enum LookupType {
         Taxon,

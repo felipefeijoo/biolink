@@ -13,6 +13,7 @@ namespace BioLink.Data.Model {
         public string ElemType { get; set; }
         public int NumChildren { get; set; }
         public int RegionID { get; set; }
+        public string RegionName { get; set; }
 
     }
 
