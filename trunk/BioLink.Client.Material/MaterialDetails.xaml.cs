@@ -66,6 +66,13 @@ namespace BioLink.Client.Material {
             _historyControl = new IdentificationHistoryControl(user, materialID);
             _historyControl.Margin = new Thickness(0);
             tabIDHistory.Content = _historyControl;
+
+            tabMaterial.AddTabItem("Subparts", new MaterialPartsControl(User, materialID));
+            tabMaterial.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Material, materialID));
+            tabMaterial.AddTabItem("Notes", new NotesControl(User, TraitCategoryType.Material, materialID));
+            tabMaterial.AddTabItem("Multimedia", new MultimediaControl(User, TraitCategoryType.Material, materialID));
+            tabMaterial.AddTabItem("Ownership", new OwnershipDetails(model));
+
         }
 
         void txtIdentification_ObjectIDChanged(object source, int? objectID) {

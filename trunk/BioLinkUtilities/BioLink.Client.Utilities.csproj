@@ -101,6 +101,7 @@
     <Compile Include="GlobalExceptionHandler.cs" />
     <Compile Include="GraphicsUtils.cs" />
     <Compile Include="IChangeable.cs" />
+    <Compile Include="ILazyPopulateControl.cs" />
     <Compile Include="ImageCache.cs" />
     <Compile Include="InputBox.xaml.cs">
       <DependentUpon>InputBox.xaml</DependentUpon>

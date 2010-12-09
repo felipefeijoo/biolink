@@ -20,7 +20,7 @@ namespace BioLink.Client.Extensibility {
     /// <summary>
     /// Interaction logic for NotesControl.xaml
     /// </summary>
-    public partial class NotesControl : DatabaseActionControl {
+    public partial class NotesControl : DatabaseActionControl, ILazyPopulateControl {
 
         private ObservableCollection<NoteViewModel> _model;
 
@@ -90,11 +90,9 @@ namespace BioLink.Client.Extensibility {
             LoadNotesPanel();
         }
 
-        public void PopulateControl() {
+        public void Populate() {
             this.InvokeIfRequired(() => {
             });            
-
-            
         }
 
         void viewModel_DataChanged(ChangeableModelBase viewmodel) {

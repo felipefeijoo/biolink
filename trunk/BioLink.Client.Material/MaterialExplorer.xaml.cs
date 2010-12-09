@@ -299,7 +299,7 @@ namespace BioLink.Client.Material {
             } else {
                 var editor = editorFactory();                
                 var caption = string.Format("{0} Detail {1} [{2}]", node.NodeType.ToString(), node.Name, node.ElemID);
-                PluginManager.Instance.AddNonDockableContent(Owner, editor, caption, SizeToContent.WidthAndHeight);
+                PluginManager.Instance.AddNonDockableContent(Owner, editor, caption, SizeToContent.Manual);
             }
         }
 

@@ -6,7 +6,7 @@
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
              xmlns:src="clr-namespace:BioLink.Client.Material"                           
              mc:Ignorable="d" 
-             Height="491" Width="821" MinWidth="400">
+             MinWidth="400">
     <UserControl.Resources>
         <ext:RadioButtonIntValueConverter x:Key="radioButtonConverter" />
     </UserControl.Resources>

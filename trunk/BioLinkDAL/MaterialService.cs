@@ -481,7 +481,7 @@ namespace BioLink.Data {
         }
 
         public void UpdateMaterialPart(MaterialPart part) {
-            StoredProcUpdate("spMaterialPartInsert",
+            StoredProcUpdate("spMaterialPartUpdate",
                 _P("intMaterialPartID", part.MaterialPartID),
                 _P("intMaterialID", part.MaterialID),
                 _P("vchrPartName", part.PartName),

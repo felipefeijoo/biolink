@@ -87,7 +87,7 @@
                                 <Label Grid.Row="4" Content="Name Qual.:" Name="label23" />
                                 <ext:PickListControl Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Height="23" Name="txtNameQual" Text="{Binding IdentificationNameQualification}"/>
                                 <Label Grid.Row="5" Content="Notes:" Name="label24" />                                
-                                <ext:BindableRichTextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Name="txtNotes" RTF="{Binding IdentificationNotes}" HorizontalAlignment="Left" Width="541" Height="226" VerticalAlignment="Top" />
+                                <ext:BindableRichTextBox Grid.Row="5" Name="txtNotes" RTF="{Binding IdentificationNotes}" Grid.Column="1" Grid.ColumnSpan="3" Margin="0,9,0,0" />
                             </Grid>
                         </TabItem>
                         <TabItem Header="History" x:Name="tabIDHistory">
@@ -98,8 +98,6 @@
                         </TabItem>
                     </TabControl>                    
                 </Grid>                          
-            </TabItem>
-            <TabItem>
             </TabItem>
         </TabControl>
     </Grid>
