@@ -119,14 +119,18 @@ namespace BioLink.Client.Utilities {
             }
         }
 
-        public static TabItem AddTabItem(this TabControl tab, string title, UIElement content, Action bringIntoViewAction = null) {
+        public static TabItem AddTabItem(this TabControl tab, string title, UIElement content) {
             TabItem tabItem = new TabItem();
             tabItem.Header = title;
             tabItem.Content = content;
             tab.Items.Add(tabItem);
-            if (bringIntoViewAction != null) {
+
+            if (content is ILazyPopulateControl) {
                 tabItem.RequestBringIntoView += new RequestBringIntoViewEventHandler((s, e) => {
-                    bringIntoViewAction();
+                    var lazyLoadee = content as ILazyPopulateControl;
+                    if (!lazyLoadee.IsPopulated) {
+                        lazyLoadee.Populate();
+                    }
                 });
             }
 

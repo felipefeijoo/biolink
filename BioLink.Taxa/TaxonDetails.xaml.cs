@@ -59,20 +59,8 @@ namespace BioLink.Client.Taxa {
 
 
             tabControl.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Taxon, taxon.TaxaID));
-            var mmc = new MultimediaControl(User, TraitCategoryType.Taxon, taxon.TaxaID);
-
-            tabControl.AddTabItem("Multimedia", mmc, () => {
-                if (!mmc.IsPopulated) {
-                    mmc.PopulateControl();
-                }
-            });
-
-            var notes = new NotesControl(User, TraitCategoryType.Taxon, taxon.TaxaID);
-            tabControl.AddTabItem("Notes", notes, () => {
-                if (!notes.IsPopulated) {
-                    notes.PopulateControl();
-                }
-            });
+            tabControl.AddTabItem("Multimedia", new MultimediaControl(User, TraitCategoryType.Taxon, taxon.TaxaID));
+            tabControl.AddTabItem("Notes", new NotesControl(User, TraitCategoryType.Taxon, taxon.TaxaID));
 
             tabControl.AddTabItem("Ownership", new OwnershipDetails(taxon.Taxon));
 

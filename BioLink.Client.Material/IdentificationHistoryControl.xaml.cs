@@ -94,6 +94,9 @@ namespace BioLink.Client.Material {
             model.Taxa = "<New identification>";
             var viewmodel = new MaterialIdentificationViewModel(model);
             _model.Add(viewmodel);
+
+            lst.SelectedItem = viewmodel;
+
             RegisterUniquePendingChange(new InsertMaterialIdentificationAction(viewmodel));
         }
 

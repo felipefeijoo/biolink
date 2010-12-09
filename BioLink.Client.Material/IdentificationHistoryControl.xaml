@@ -65,7 +65,7 @@
             <Label Grid.Row="4" Content="Name Qual.:" Name="label23" />
             <ext:PickListControl Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Height="23" Name="txtNameQual" Text="{Binding NameQual}"/>            
             <Label Grid.Row="5" Content="Notes:" Name="label24" />
-            <ext:BindableRichTextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3"  Name="txtNotes" RTF="{Binding IDNotes}" Margin="0,5" HorizontalAlignment="Left" Width="347" />
+            <ext:BindableRichTextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3"  Name="txtNotes" RTF="{Binding IDNotes}" Margin="0,5" />
             
         </Grid>
         <Button Content="_Delete" Grid.Row="1" Height="23" HorizontalAlignment="Left" Margin="81,5,0,0" Name="btnDelete" VerticalAlignment="Top" Width="75" Click="btnDelete_Click" />

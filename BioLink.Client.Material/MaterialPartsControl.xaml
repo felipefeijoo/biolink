@@ -6,7 +6,7 @@
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
              xmlns:mat="clr-namespace:BioLink.Client.Material"
              mc:Ignorable="d" 
-             d:DesignHeight="269" d:DesignWidth="577">
+             d:DesignHeight="396" d:DesignWidth="733">
     <Grid>
         <Grid.Resources>
             <ext:HardDateConverter x:Key="hardDateConverter" />
@@ -24,7 +24,7 @@
 
         <ListBox Grid.Column="0" Name="lst" Margin="0,0,8,0" MinWidth="180">
             <ListBox.Resources>
-                <DataTemplate DataType="{x:Type mat:MaterialIdentificationViewModel}">
+                <DataTemplate DataType="{x:Type mat:MaterialPartViewModel}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{Binding DisplayLabel}" />
                     </StackPanel>
@@ -45,28 +45,47 @@
                 <RowDefinition Height="28"/>
                 <RowDefinition Height="28"/>
                 <RowDefinition Height="28"/>
+                <RowDefinition Height="28"/>
+                <RowDefinition Height="28"/>
+                <RowDefinition Height="28"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <Label Content="Identification:" HorizontalAlignment="Left" Name="label16" />
-            <ext:TextBox Height="23" Grid.Row="0" Grid.ColumnSpan="3" Grid.Column="1" Name="txtIdentification" Text="{Binding Taxa}" />
-            <Label Grid.Row="1" Content="Identified By:" Name="label17" />
-            <ext:PickListControl Grid.Row="1" Grid.Column="1" Height="23" Name="txtIdentifiedBy" Text="{Binding IDBy}"/>
-            <Label Grid.Row="1" Grid.Column="2" Content="on date:" Name="label18"  />
-            <ext:DateControl Grid.Row="1" Grid.Column="3" Height="23" Name="dtIDDate" Date="{Binding IDDate, Converter={StaticResource hardDateConverter}}"/>
-            <Label Grid.Row="2" Content="Reference:" Name="label19" />
-            <ext:LookupControl Grid.Row="2" Grid.Column="1" Height="23" Name="txtReference" Text="{Binding RefCode}" ObjectID="{Binding IDRefID}"/>
-            <Label Grid.Row="2" Grid.Column="2" Content="Page:" Name="label20" />
-            <ext:TextBox Grid.Row="2" Grid.Column="3" Height="23" Name="txtPage" Text="{Binding IDRefPage}"/>
-            <Label Grid.Row="3" Content="Accuracy:" HorizontalAlignment="Left" Name="label21" />
-            <ext:PickListControl Grid.Row="3" Grid.Column="1" Height="23" Name="txtAccuracy"  Text="{Binding IDAccuracy}"/>
-            <Label Grid.Row="3" Grid.Column="2" Content="Method:" Name="label22" />
-            <ext:PickListControl Grid.Row="3" Grid.Column="3" Height="23" Name="txtMethod" Text="{Binding IDMethod}"/>
-            <Label Grid.Row="4" Content="Name Qual.:" Name="label23" />
-            <ext:PickListControl Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Height="23" Name="txtNameQual" Text="{Binding NameQual}"/>
-            <Label Grid.Row="5" Content="Notes:" Name="label24" />
-            <ext:BindableRichTextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3"  Name="txtNotes" RTF="{Binding IDNotes}" Margin="0,5" HorizontalAlignment="Left" Width="347" />
+            <Label Content="Name:" HorizontalAlignment="Left" Name="label16" />
+            <ext:TextBox Height="23" Grid.Row="0" Grid.ColumnSpan="3" Grid.Column="1" Name="txtName" Text="{Binding PartName}" />
+            
+            <Label Grid.Row="1" Content="Sample type:" Name="label17" />
+            <ext:PickListControl Grid.Row="1" Grid.Column="1" Height="23" Name="plSampleType" Text="{Binding SampleType}" Grid.ColumnSpan="3" />
+            
+            <Label Grid.Row="2" Content="# Specimens:" Name="label19" />
+            <ext:TextBox Grid.Row="2" Grid.Column="1" Height="23" Name="txtSpecimentCount" Text="{Binding NoSpecimens}" />
 
+            <Label Grid.Row="2" Grid.Column="2" Content="Qualifier:" Name="label20" />
+            <ext:PickListControl Height="23" Name="plQualifier" Text="{Binding NoSpecimenQual}" Grid.Column="3" Grid.Row="2" />
+            
+            <Label Grid.Row="3" Content="Gender:" Name="label23" />
+            <ext:PickListControl Grid.Row="3" Grid.Column="1" Height="23" Name="plGender" Text="{Binding Gender}" Margin="0,2" />
+            
+            <Label Content="Life stage:" Name="label1" Grid.Column="2" Grid.Row="3" />
+            <ext:PickListControl Height="23" Name="plLifeStage" Text="{Binding LifeStage}" Grid.Column="3" Grid.Row="3" />
+            
+            <Label Grid.Row="4" Content="Registration #:" Name="label24" Height="28" VerticalAlignment="Top" />
+            <ext:TextBox Height="23" Name="txtRegistrationNumber" Text="{Binding RegNo}" Grid.Column="1" Grid.Row="4" />
+            
+            <Label Content="Condition:" Name="label2" Grid.Column="2" Grid.Row="4" />
+            <ext:PickListControl Height="23" Name="plCondition" Text="{Binding Condition}" Grid.Column="3" Grid.Row="4" />
+            
+            <Label Content="Storage site:" Name="lblStorageSite" Grid.Row="5" />
+            <ext:PickListControl Height="23" Name="plStorageSite" Text="{Binding StorageSite}" Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="3" />
+
+            <Label Content="Storage method:" Name="label3" Grid.Row="6" />
+            <ext:PickListControl Height="23" Name="plStorageMethod" Text="{Binding StorageMethod}" Grid.Column="1" Grid.Row="6" Grid.ColumnSpan="3" />
+
+            <Label Content="Curation status:" Name="label4" Grid.Row="7" />
+            <ext:PickListControl Grid.ColumnSpan="3" Grid.Column="1" Height="23" Name="plCurationStatus" Text="{Binding CurationStatus}" Grid.Row="7" />
+            
+            <Label Content="Notes:" Name="lblNotes" Grid.Row="8" />
+            <ext:BindableRichTextBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="3" Name="txtNotes" RTF="{Binding Notes}" Margin="0,6,1,0" />
         </Grid>
         <Button Content="_Delete" Grid.Row="1" Height="23" HorizontalAlignment="Left" Margin="81,5,0,0" Name="btnDelete" VerticalAlignment="Top" Width="75" Click="btnDelete_Click" />
         <Button Content="_Add new" Height="23" HorizontalAlignment="Left" Margin="0,5,0,0" Name="btnAdd" VerticalAlignment="Top" Width="75" Grid.Row="1" Click="btnAdd_Click" />

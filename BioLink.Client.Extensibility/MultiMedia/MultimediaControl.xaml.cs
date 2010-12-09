@@ -25,7 +25,7 @@ namespace BioLink.Client.Extensibility {
     /// <summary>
     /// Interaction logic for MultimediaControl.xaml
     /// </summary>
-    public partial class MultimediaControl : DatabaseActionControl {
+    public partial class MultimediaControl : DatabaseActionControl, ILazyPopulateControl {
 
         private ObservableCollection<MultimediaLinkViewModel> _model;
 
@@ -45,7 +45,7 @@ namespace BioLink.Client.Extensibility {
             this.IntraCategoryID = intraCatId.Value;
             InitializeComponent();
 
-            txtMultimediaType.BindUser(user, PickListType.MultimediaType, null, TraitCategoryType.Taxon);
+            txtMultimediaType.BindUser(user, PickListType.MultimediaType, null, TraitCategoryType.Multimedia);
 
             _tempFileManager = new TempFileManager<int?>((mmId) => {
                 if (mmId.HasValue) {
@@ -68,8 +68,8 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        public void PopulateControl() {
-            List<MultimediaLink> data = Service.GetMultimediaItems(TraitCategoryType.Taxon.ToString(), IntraCategoryID);
+        public void Populate() {
+            List<MultimediaLink> data = Service.GetMultimediaItems(CategoryType.ToString(), IntraCategoryID);
             JobExecutor.QueueJob(() => {                
                 _model = new ObservableCollection<MultimediaLinkViewModel>(data.ConvertAll((item) => {
                     MultimediaLinkViewModel viewmodel = null;
@@ -268,70 +268,72 @@ namespace BioLink.Client.Extensibility {
         private void AddMultimedia() {
             var dlg = new OpenFileDialog();
             dlg.Filter = "All files (*.*)|*.*";
+            dlg.Multiselect = true;
             if (dlg.ShowDialog().ValueOrFalse()) {
-                string filename = dlg.FileName;
-                FileInfo finfo = new FileInfo(filename);
-                if (finfo.Exists) {
-                    MultimediaLink model = null;
-                    MultimediaLinkViewModel viewModel = null;
-                    Multimedia duplicate = null;
-                    var action = CheckDuplicate(finfo, out duplicate);
-                    switch (action) {
-                        case MultimediaDuplicateAction.Cancel:
-                            // Do nothing
-                            break;
-                        case MultimediaDuplicateAction.NoDuplicate:
-                        case MultimediaDuplicateAction.InsertDuplicate:
-                            // Insert new multimedia and new link
-                            model = new MultimediaLink();
-                            model.MultimediaID = NextNewId();
-                            model.MultimediaLinkID = model.MultimediaID;
-                            if (finfo.Name.Contains(".")) {
-                                model.Name = finfo.Name.Substring(0, finfo.Name.LastIndexOf("."));
-                                model.Extension = finfo.Extension.Substring(1);
-                            } else {
-                                model.Name = finfo.Name;
-                            }
-                            viewModel = new MultimediaLinkViewModel(model);
-                            viewModel.Thumbnail = GenerateThumbnail(filename, THUMB_SIZE);
-                            _tempFileManager.CopyToTempFile(viewModel.MultimediaID, filename);
-                            _model.Add(viewModel);
-                            RegisterPendingChange(new InsertMultimediaAction(model, _tempFileManager.GetContentFileName(viewModel.MultimediaID, finfo.Extension.Substring(1))));
-                            RegisterPendingChange(new InsertMultimediaLinkAction(model, CategoryType, IntraCategoryID));
-                            break;
-                        case MultimediaDuplicateAction.UseExisting:
-                            // Link to existing multimedia
-                            model = new MultimediaLink();
-                            model.MultimediaID = duplicate.MultimediaID;
-                            model.MultimediaLinkID = -1;
-                            model.Name = duplicate.Name;
-                            model.Extension = duplicate.FileExtension;
-                            viewModel = new MultimediaLinkViewModel(model);
-                            GenerateThumbnail(viewModel, THUMB_SIZE);
-                            _model.Add(viewModel);
-                            RegisterPendingChange(new InsertMultimediaLinkAction(model, CategoryType, IntraCategoryID));
-                            break;
-                        case MultimediaDuplicateAction.ReplaceExisting:
-                            // register an update for the multimedia,
-                            // and insert a new link
-                            // Link to existing multimedia
-                            model = new MultimediaLink();
-                            model.MultimediaID = duplicate.MultimediaID;
-                            model.MultimediaLinkID = -1;
-                            model.Name = duplicate.Name;
-                            model.Extension = duplicate.FileExtension;
-                            viewModel = new MultimediaLinkViewModel(model);
-                            GenerateThumbnail(viewModel, THUMB_SIZE);
-                            _model.Add(viewModel);
-                            _tempFileManager.CopyToTempFile(viewModel.MultimediaID, filename);
-                            RegisterPendingChange(new UpdateMultimediaBytesAction(model, filename));
-                            RegisterPendingChange(new InsertMultimediaLinkAction(model, CategoryType, IntraCategoryID));
-                            break;
-                    }
+                foreach (string filename in dlg.FileNames) {                
+                    FileInfo finfo = new FileInfo(filename);
+                    if (finfo.Exists) {
+                        MultimediaLink model = null;
+                        MultimediaLinkViewModel viewModel = null;
+                        Multimedia duplicate = null;
+                        var action = CheckDuplicate(finfo, out duplicate);
+                        switch (action) {
+                            case MultimediaDuplicateAction.Cancel:
+                                // Do nothing
+                                break;
+                            case MultimediaDuplicateAction.NoDuplicate:
+                            case MultimediaDuplicateAction.InsertDuplicate:
+                                // Insert new multimedia and new link
+                                model = new MultimediaLink();
+                                model.MultimediaID = NextNewId();
+                                model.MultimediaLinkID = model.MultimediaID;
+                                if (finfo.Name.Contains(".")) {
+                                    model.Name = finfo.Name.Substring(0, finfo.Name.LastIndexOf("."));
+                                    model.Extension = finfo.Extension.Substring(1);
+                                } else {
+                                    model.Name = finfo.Name;
+                                }
+                                viewModel = new MultimediaLinkViewModel(model);
+                                viewModel.Thumbnail = GenerateThumbnail(filename, THUMB_SIZE);
+                                _tempFileManager.CopyToTempFile(viewModel.MultimediaID, filename);
+                                _model.Add(viewModel);
+                                RegisterPendingChange(new InsertMultimediaAction(model, _tempFileManager.GetContentFileName(viewModel.MultimediaID, finfo.Extension.Substring(1))));
+                                RegisterPendingChange(new InsertMultimediaLinkAction(model, CategoryType, IntraCategoryID));
+                                break;
+                            case MultimediaDuplicateAction.UseExisting:
+                                // Link to existing multimedia
+                                model = new MultimediaLink();
+                                model.MultimediaID = duplicate.MultimediaID;
+                                model.MultimediaLinkID = -1;
+                                model.Name = duplicate.Name;
+                                model.Extension = duplicate.FileExtension;
+                                viewModel = new MultimediaLinkViewModel(model);
+                                GenerateThumbnail(viewModel, THUMB_SIZE);
+                                _model.Add(viewModel);
+                                RegisterPendingChange(new InsertMultimediaLinkAction(model, CategoryType, IntraCategoryID));
+                                break;
+                            case MultimediaDuplicateAction.ReplaceExisting:
+                                // register an update for the multimedia,
+                                // and insert a new link
+                                // Link to existing multimedia
+                                model = new MultimediaLink();
+                                model.MultimediaID = duplicate.MultimediaID;
+                                model.MultimediaLinkID = -1;
+                                model.Name = duplicate.Name;
+                                model.Extension = duplicate.FileExtension;
+                                viewModel = new MultimediaLinkViewModel(model);
+                                GenerateThumbnail(viewModel, THUMB_SIZE);
+                                _model.Add(viewModel);
+                                _tempFileManager.CopyToTempFile(viewModel.MultimediaID, filename);
+                                RegisterPendingChange(new UpdateMultimediaBytesAction(model, filename));
+                                RegisterPendingChange(new InsertMultimediaLinkAction(model, CategoryType, IntraCategoryID));
+                                break;
+                        }
 
-                    if (viewModel != null) {
-                        viewModel.IsSelected = true;
-                        thumbList.SelectedItem = viewModel;
+                        if (viewModel != null) {
+                            viewModel.IsSelected = true;
+                            thumbList.SelectedItem = viewModel;
+                        }
                     }
                 }
             }
