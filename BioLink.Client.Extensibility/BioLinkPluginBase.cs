@@ -81,7 +81,7 @@ namespace BioLink.Client.Extensibility {
         public virtual void Dispose() {            
         }
 
-        public virtual ViewModelBase CreatePinnableViewModel(object state) {
+        public virtual ViewModelBase CreatePinnableViewModel(PinnableObject pinnable) {
             return null;
         }
 

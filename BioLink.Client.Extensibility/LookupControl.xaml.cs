@@ -31,6 +31,38 @@ namespace BioLink.Client.Extensibility {
             });
 
             txt.IsReadOnly = true;
+
+            txt.PreviewDragEnter += new DragEventHandler(txt_PreviewDragEnter);
+            txt.PreviewDragOver += new DragEventHandler(txt_PreviewDragEnter);
+
+            txt.Drop += new DragEventHandler(txt_Drop);
+        }
+
+        void txt_Drop(object sender, DragEventArgs e) {
+            var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;
+            if (pinnable != null) {
+                var plugin = PluginManager.Instance.GetPluginByName(pinnable.PluginID);
+                if (plugin != null) {                    
+                    var viewModel = plugin.CreatePinnableViewModel(pinnable);
+                    _manualSet = true;
+                    this.ObjectID = pinnable.ObjectID;
+                    this.Text = viewModel.DisplayLabel;
+                    _manualSet = false;
+                }
+            }
+        }
+
+        void txt_PreviewDragEnter(object sender, DragEventArgs e) {
+            var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;
+            e.Effects = DragDropEffects.None;
+
+            if (pinnable != null) {
+                if (pinnable.LookupType == this.LookupType) {
+                    e.Effects = DragDropEffects.Link;
+                }
+            } 
+
+            e.Handled = true;            
         }
 
         public void BindUser(User user, LookupType lookupType) {
@@ -148,6 +180,7 @@ namespace BioLink.Client.Extensibility {
     public delegate void ObjectIDChangedHandler(object source, int? objectID);
 
     public enum LookupType {
+        Unknown,
         Taxon,
         Region,
         Material,

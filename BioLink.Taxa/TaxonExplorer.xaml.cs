@@ -47,9 +47,10 @@ namespace BioLink.Client.Taxa {
             Owner = owner;
 
             _searchModel = new ObservableCollection<TaxonViewModel>();
-            lstResults.ItemsSource = _searchModel;
+            tvwResults.ItemsSource = _searchModel;
 
-            ListCollectionView dataView = CollectionViewSource.GetDefaultView(lstResults.ItemsSource) as ListCollectionView;
+
+            ListCollectionView dataView = CollectionViewSource.GetDefaultView(tvwResults.ItemsSource) as ListCollectionView;
             dataView.SortDescriptions.Clear();
             dataView.SortDescriptions.Add(new SortDescription("IsAvailableOrLiteratureName", ListSortDirection.Ascending));
             dataView.SortDescriptions.Add(new SortDescription("TaxaFullName", ListSortDirection.Ascending));
@@ -66,31 +67,7 @@ namespace BioLink.Client.Taxa {
 
             btnLock.Unchecked += new RoutedEventHandler(btnLock_Unchecked);
 
-            lstResults.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(lstResults_PreviewMouseLeftButtonDown);
-            lstResults.PreviewMouseMove += new MouseEventHandler(lstResults_PreviewMouseMove);
-
             favorites.BindUser(User, this);
-        }
-
-        void lstResults_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
-            _startPoint = e.GetPosition(tvwAllTaxa);
-        }
-
-        void lstResults_PreviewMouseMove(object sender, MouseEventArgs e) {
-
-            if (e.LeftButton == MouseButtonState.Pressed && !_IsDragging) {
-                Point position = e.GetPosition(lstResults);
-                if (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance) {
-                    if (lstResults.SelectedItem != null) {
-                        var selected = lstResults.SelectedItem as TaxonViewModel;
-                        ListBoxItem item = lstResults.ItemContainerGenerator.ContainerFromItem(selected) as ListBoxItem;                                                
-                        if (item != null) {
-                            StartDrag(e, selected, item, lstResults);
-                        }
-                    }
-                }
-            }
-            
         }
 
         void btnLock_Unchecked(object sender, RoutedEventArgs e) {
@@ -112,8 +89,6 @@ namespace BioLink.Client.Taxa {
             buttonBar.Visibility = IsUnlocked ? Visibility.Visible : Visibility.Hidden;
             gridContentsHeader.Background = new LinearGradientBrush(Colors.DarkOrange, Colors.Orange, 90.0);
         }
-
-        
 
         public string GenerateTaxonDisplayLabel(TaxonViewModel taxon) {
 
@@ -164,23 +139,29 @@ namespace BioLink.Client.Taxa {
             } 
 
             try {
-                lstResults.InvokeIfRequired(() => {
-                    lstResults.Cursor = Cursors.Wait;
+                tvwResults.InvokeIfRequired(() => {
+                    tvwResults.Cursor = Cursors.Wait;
                 });
                 if (Owner == null) {
                     return;
                 }
                 List<TaxonSearchResult> results = new TaxaService(Owner.User).FindTaxa(searchTerm);
                 _searchModel.Clear();
-                lstResults.InvokeIfRequired(() => {                    
+                tvwResults.InvokeIfRequired(() => {                    
                     foreach (Taxon t in results) {
-                        _searchModel.Add(new TaxonViewModel(null, t, GenerateTaxonDisplayLabel));
+                        var item = new TaxonViewModel(null, t, GenerateTaxonDisplayLabel);
+                        if (item.NumChildren > 0) {
+                            item.LazyLoadChildren += new HierarchicalViewModelAction(item_LazyLoadChildren);
+                            item.Children.Add(new ViewModelPlaceholder(_R("TaxonExplorer.explorer.loading", item.Epithet)));
+                        }
+
+                        _searchModel.Add(item);
                     }
 
                 });
             } finally {
-                lstResults.InvokeIfRequired(() => {
-                    lstResults.Cursor = Cursors.Arrow;
+                tvwResults.InvokeIfRequired(() => {
+                    tvwResults.Cursor = Cursors.Arrow;
                 });
             }
         }
@@ -273,16 +254,18 @@ namespace BioLink.Client.Taxa {
 
         #region Drag and Drop stuff
 
-        void tvwAllTaxa_PreviewMouseMove(object sender, MouseEventArgs e) {
+        void TreeView_PreviewMouseMove(object sender, MouseEventArgs e) {
+
+            var tvw = sender as TreeView;
 
             if (e.LeftButton == MouseButtonState.Pressed && !_IsDragging) {
-                Point position = e.GetPosition(tvwAllTaxa);
+                Point position = e.GetPosition(tvw);
                 if (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance) {
-                    if (tvwAllTaxa.SelectedItem != null) {
-                        IInputElement hitelement = tvwAllTaxa.InputHitTest(_startPoint);
-                        TreeViewItem item = GetTreeViewItemClicked((FrameworkElement)hitelement, tvwAllTaxa);
+                    if (tvw.SelectedItem != null) {
+                        IInputElement hitelement = tvw.InputHitTest(_startPoint);
+                        TreeViewItem item = GetTreeViewItemClicked((FrameworkElement)hitelement, tvw);
                         if (item != null) {
-                            StartDrag(e, tvwAllTaxa.SelectedItem as TaxonViewModel, item, tvwAllTaxa);
+                            StartDrag(e, tvw.SelectedItem as TaxonViewModel, item, tvw);
                         }
                     }
                 }
@@ -298,8 +281,9 @@ namespace BioLink.Client.Taxa {
             return obj as TreeViewItem;
         }
 
-        void tvwAllTaxa_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
-            _startPoint = e.GetPosition(tvwAllTaxa);
+        void TreeView_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+            var tvw = sender as TreeView;
+            _startPoint = e.GetPosition(tvw);
         }
 
         private DependencyObject GetCurrentHoverItem(DragEventArgs e) {
@@ -576,10 +560,9 @@ namespace BioLink.Client.Taxa {
 
         private void txtFind_KeyUp(object sender, KeyEventArgs e) {
             if (e.Key == Key.Down) {
-                if (lstResults.IsVisible) {
-                    lstResults.SelectedIndex = 0;
-                    if (lstResults.SelectedItem != null) {
-                        ListBoxItem item = lstResults.ItemContainerGenerator.ContainerFromItem(lstResults.SelectedItem) as ListBoxItem;
+                if (tvwResults.IsVisible) {
+                    if (tvwResults.SelectedItem != null) {
+                        TreeViewItem item = tvwResults.ItemContainerGenerator.ContainerFromItem(tvwResults.SelectedItem) as TreeViewItem;
                         item.Focus();
                     }
                 } else {
@@ -588,12 +571,12 @@ namespace BioLink.Client.Taxa {
             }
         }
 
-        private void tvwAllTaxa_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
-            TaxonViewModel item = tvwAllTaxa.SelectedItem as TaxonViewModel;
+        private void TreeView_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            var tvw = sender as TreeView;
+            TaxonViewModel item = tvw.SelectedItem as TaxonViewModel;
             if (item != null) {
-                ShowTaxonMenu(item, tvwAllTaxa);
+                ShowTaxonMenu(item, tvw);
             }
-
         }
 
         private void ShowTaxonMenu(TaxonViewModel taxon, FrameworkElement source) {
@@ -948,13 +931,6 @@ namespace BioLink.Client.Taxa {
             if (item != null) {
                 item.Focus();
                 e.Handled = true;
-            }
-        }
-
-        private void lstResults_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
-            TaxonViewModel item = lstResults.SelectedItem as TaxonViewModel;
-            if (item != null) {
-                ShowTaxonMenu(item, lstResults);
             }
         }
 

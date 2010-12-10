@@ -58,14 +58,10 @@ namespace BioLink.Client.Extensibility {
                 btnApply.Visibility = System.Windows.Visibility.Collapsed;
             }
 
-            tvw.SelectedItemChanged += new RoutedPropertyChangedEventHandler<object>(tvw_SelectedItemChanged);
-            lstSearchResults.SelectionChanged += new SelectionChangedEventHandler(lstSearchResults_SelectionChanged);
+            tvwExplorer.SelectedItemChanged += new RoutedPropertyChangedEventHandler<object>(tvw_SelectedItemChanged);
+            tvwSearchResults.SelectedItemChanged += new RoutedPropertyChangedEventHandler<object>(tvw_SelectedItemChanged);
 
             btnSelect.IsEnabled = false;
-        }
-
-        void lstSearchResults_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            ValidateSelection();
         }
 
         void tvw_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e) {
@@ -74,13 +70,13 @@ namespace BioLink.Client.Extensibility {
 
         private void ValidateSelection() {
             HierarchicalViewModelBase selected = null;
-            if (tvw.IsVisible) {
-                if (tvw.SelectedItem != null) {
-                    selected = tvw.SelectedItem as HierarchicalViewModelBase;
+            if (tvwExplorer.IsVisible) {
+                if (tvwExplorer.SelectedItem != null) {
+                    selected = tvwExplorer.SelectedItem as HierarchicalViewModelBase;
                 }
-            } else if (lstSearchResults.IsVisible) {
-                if (lstSearchResults.SelectedItem != null) {
-                    selected = lstSearchResults.SelectedItem as HierarchicalViewModelBase;
+            } else if (tvwSearchResults.IsVisible) {
+                if (tvwSearchResults.SelectedItem != null) {
+                    selected = tvwSearchResults.SelectedItem as HierarchicalViewModelBase;
                 }
             }
 
@@ -147,7 +143,7 @@ namespace BioLink.Client.Extensibility {
 
         private void LoadTopLevel() {
             _model = LoadModel(null);
-            tvw.ItemsSource = _model;
+            tvwExplorer.ItemsSource = _model;
         }
 
         private ObservableCollection<HierarchicalViewModelBase> LoadModel(HierarchicalViewModelBase parent) {
@@ -181,10 +177,10 @@ namespace BioLink.Client.Extensibility {
 
             HierarchicalViewModelBase selected = null;
 
-            if (tvw.IsVisible) {
-                selected = tvw.SelectedItem as HierarchicalViewModelBase;
+            if (tvwExplorer.IsVisible) {
+                selected = tvwExplorer.SelectedItem as HierarchicalViewModelBase;
             } else {
-                selected = lstSearchResults.SelectedItem as HierarchicalViewModelBase;
+                selected = tvwSearchResults.SelectedItem as HierarchicalViewModelBase;
             }
 
             if (_content.CanRenameItem && selected != null) {
@@ -205,41 +201,53 @@ namespace BioLink.Client.Extensibility {
             }
 
             if (string.IsNullOrEmpty(txtFind.Text)) {
-                tvw.Visibility = System.Windows.Visibility.Visible;
-                lstSearchResults.Visibility = System.Windows.Visibility.Collapsed;
+                tvwExplorer.Visibility = System.Windows.Visibility.Visible;
+                tvwSearchResults.Visibility = System.Windows.Visibility.Collapsed;
             } else {
-                tvw.Visibility = System.Windows.Visibility.Collapsed;
-                lstSearchResults.Visibility = System.Windows.Visibility.Visible;
+                tvwExplorer.Visibility = System.Windows.Visibility.Collapsed;
+                tvwSearchResults.Visibility = System.Windows.Visibility.Visible;
             }
 
-            var model = new ObservableCollection<HierarchicalViewModelBase>(_content.Search(txtFind.Text));
-            lstSearchResults.ItemsSource = model;
+            var list = _content.Search(txtFind.Text);
+            var model = new ObservableCollection<HierarchicalViewModelBase>(list);
+            foreach (HierarchicalViewModelBase vm in list) {
+                vm.Children.Add(new ViewModelPlaceholder("Loading..."));
+                vm.LazyLoadChildren += new HierarchicalViewModelAction((p) => {
+                    p.Children.Clear();
+                    var children = LoadModel(p);
+                    foreach (HierarchicalViewModelBase child in children) {
+                        p.Children.Add(child);
+                    }
+                });
+            }
+
+            tvwSearchResults.ItemsSource = model;
 
         }
 
         private void txtFind_KeyUp(object sender, KeyEventArgs e) {
             if (e.Key == Key.Down) {
-                if (lstSearchResults.IsVisible) {
-                    lstSearchResults.SelectedIndex = 0;
-                    if (lstSearchResults.SelectedItem != null) {
-                        ListBoxItem item = lstSearchResults.ItemContainerGenerator.ContainerFromItem(lstSearchResults.SelectedItem) as ListBoxItem;
+                if (tvwSearchResults.IsVisible) {
+                    
+                    if (tvwSearchResults.SelectedItem != null) {
+                        TreeViewItem item = tvwSearchResults.ItemContainerGenerator.ContainerFromItem(tvwSearchResults.SelectedItem) as TreeViewItem;
                         item.Focus();
                     }
                 } else {
-                    tvw.Focus();
+                    tvwExplorer.Focus();
                 }
             }
         }
 
         private void btnSelect_Click(object sender, RoutedEventArgs e) {
             HierarchicalViewModelBase selected = null;
-            if (tvw.IsVisible) {
-                if (tvw.SelectedItem != null) {
-                    selected = tvw.SelectedItem as HierarchicalViewModelBase;
+            if (tvwExplorer.IsVisible) {
+                if (tvwExplorer.SelectedItem != null) {
+                    selected = tvwExplorer.SelectedItem as HierarchicalViewModelBase;
                 }
-            } else if (lstSearchResults.IsVisible) {
-                if (lstSearchResults.SelectedItem != null) {
-                    selected = lstSearchResults.SelectedItem as HierarchicalViewModelBase;
+            } else if (tvwSearchResults.IsVisible) {
+                if (tvwSearchResults.SelectedItem != null) {
+                    selected = tvwSearchResults.SelectedItem as HierarchicalViewModelBase;
                 }
             }
 
@@ -264,6 +272,9 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void tvw_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+
+            var tvw = sender as TreeView;
+
             var item = tvw.SelectedItem as HierarchicalViewModelBase;
             if (item != null) {
                 ShowContextMenu(item, tvw);
@@ -328,13 +339,6 @@ namespace BioLink.Client.Extensibility {
                 if (!this.Question("You have unsaved changes. Are you sure you want to discard those changes?", "Discard changes?")) {
                     e.Cancel = true;
                 }
-            }
-        }
-
-        private void lstSearchResults_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
-            var item = lstSearchResults.SelectedItem as HierarchicalViewModelBase;
-            if (item != null) {
-                ShowContextMenu(item, lstSearchResults);
             }
         }
 

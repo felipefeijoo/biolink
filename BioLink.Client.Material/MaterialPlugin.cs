@@ -81,20 +81,11 @@ namespace BioLink.Client.Material {
             }
         }
 
-        private static Regex PINNABLE_STATE_EXPR = new Regex(@"^(\w+)[:](\d+)$");
-
-        public override ViewModelBase CreatePinnableViewModel(object state) {
-            string str = state as string;
-            if (str != null) {
-                var matcher = PINNABLE_STATE_EXPR.Match(str);
-                if (matcher.Success) {
-                    var nodeTypeStr = matcher.Groups[1].Value;
-                    var elemId = Int32.Parse(matcher.Groups[2].Value);
-                    var nodeType = (SiteExplorerNodeType)Enum.Parse(typeof(SiteExplorerNodeType), nodeTypeStr);
-                    return ViewModelFromObjectID(nodeType, elemId);
-                }
+        public override ViewModelBase CreatePinnableViewModel(PinnableObject pinnable) {
+            SiteExplorerNodeType nodeType;
+            if (Enum.TryParse(pinnable.LookupType.ToString(), out nodeType)) {
+                return ViewModelFromObjectID(nodeType, pinnable.ObjectID);
             }
-
             return null;
         }
 

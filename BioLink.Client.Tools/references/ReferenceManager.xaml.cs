@@ -40,6 +40,23 @@ namespace BioLink.Client.Tools {
                     txtRTF.Document.Blocks.Clear();
                 }
             });
+
+            lvwResults.PreviewMouseRightButtonUp += new MouseButtonEventHandler(lvwResults_PreviewMouseRightButtonUp);
+        }
+
+        void lvwResults_PreviewMouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            ContextMenuBuilder builder = new ContextMenuBuilder(null);
+            builder.New("Pin to pinboard").Handler(() => { PinSelected(); }).End();
+
+            lvwResults.ContextMenu = builder.ContextMenu;
+        }
+
+        private void PinSelected() {
+            var selected = lvwResults.SelectedItem as ReferenceSearchResultViewModel;
+            if (selected != null) {
+                var pinnable = new PinnableObject(ToolsPlugin.TOOLS_PLUGIN_NAME, LookupType.Reference, selected.RefID, selected.DisplayLabel); // TODO need to do this properly!
+                PluginManager.Instance.PinObject(pinnable);
+            }
         }
 
         public SelectionResult Select() {
@@ -99,6 +116,15 @@ namespace BioLink.Client.Tools {
 
         public ReferenceSearchResultViewModel(ReferenceSearchResult model)
             : base(model) {
+        }
+
+        public override string DisplayLabel {
+            get {
+                return String.Format("{0}, {1} [{2}] ({3})", Title, Author, YearOfPub, RefCode);
+            }
+            set {
+                base.DisplayLabel = value;
+            }
         }
 
         public int RefID {
