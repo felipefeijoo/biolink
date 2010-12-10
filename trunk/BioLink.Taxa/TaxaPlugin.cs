@@ -92,18 +92,11 @@ namespace BioLink.Client.Taxa {
             }
         }
 
-        public override ViewModelBase CreatePinnableViewModel(object state) {
-            string str = state as string;
-            if (str != null) {
-                string[] bits = str.Split(':');
-                switch (bits[0].ToLower()) {
-                    case "taxon":
-                        Taxon t = Service.GetTaxon(Int32.Parse(bits[1]));
-                        TaxonViewModel m = new TaxonViewModel(null, t, _explorer.ContentControl.GenerateTaxonDisplayLabel);
-                        return m;                        
-                    default:
-                        throw new Exception("Unhandled favorites pinnable type: " + str);
-                }
+        public override ViewModelBase CreatePinnableViewModel(PinnableObject pinnable) {
+            if (pinnable != null && pinnable.LookupType == LookupType.Taxon) {
+                Taxon t = Service.GetTaxon(pinnable.ObjectID);
+                TaxonViewModel m = new TaxonViewModel(null, t, _explorer.ContentControl.GenerateTaxonDisplayLabel);
+                return m;
             }
 
             return null;            
@@ -147,7 +140,7 @@ namespace BioLink.Client.Taxa {
         }
 
         public PinnableObject CreatePinnableTaxon(int taxonID) {
-            return new PinnableObject(TAXA_PLUGIN_NAME, "Taxon:" + taxonID);
+            return new PinnableObject(TAXA_PLUGIN_NAME, LookupType.Taxon, taxonID);
         }
 
         public override bool CanSelect(Type t) {

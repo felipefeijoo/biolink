@@ -439,6 +439,23 @@ namespace BioLink.Client.Material {
             }            
         }
 
+        private LookupType GetLookupTypeFromNodeType(SiteExplorerNodeType nodeType) {
+            switch (nodeType) {
+                case SiteExplorerNodeType.Material:
+                    return LookupType.Material;
+                case SiteExplorerNodeType.Region:
+                    return LookupType.Region;
+                case SiteExplorerNodeType.Site:
+                    return LookupType.Site;
+                case SiteExplorerNodeType.SiteVisit:
+                    return LookupType.SiteVisit;
+                case SiteExplorerNodeType.Trap:
+                    return LookupType.Trap;
+                default:
+                    return LookupType.Unknown;
+            }
+        }
+
         #region Properties
 
         public MaterialPlugin Owner { get; private set; }
@@ -452,7 +469,7 @@ namespace BioLink.Client.Material {
         #endregion
 
         internal PinnableObject CreatePinnable(SiteExplorerNodeViewModel node) {
-            return new PinnableObject(MaterialPlugin.MATERIAL_PLUGIN_NAME, string.Format("{0}:{1}", node.NodeType.ToString(), node.ElemID));            
+            return new PinnableObject(MaterialPlugin.MATERIAL_PLUGIN_NAME, GetLookupTypeFromNodeType(node.NodeType), node.ElemID);
         }
 
         private void btnFind_Click(object sender, RoutedEventArgs e) {

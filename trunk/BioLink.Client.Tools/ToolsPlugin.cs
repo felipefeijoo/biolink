@@ -15,8 +15,10 @@ namespace BioLink.Client.Tools {
         private ControlHostWindow _phraseManager;
         private ControlHostWindow _refManager;
 
+        public const string TOOLS_PLUGIN_NAME = "Tools";
+
         public override string Name {
-            get { return "Tools"; }
+            get { return TOOLS_PLUGIN_NAME; }
         }
 
         public override void InitializePlugin(User user, PluginManager pluginManager, Window parentWindow) {
@@ -101,6 +103,17 @@ namespace BioLink.Client.Tools {
                     return true;
             }
             return false;
+        }
+
+        public override ViewModelBase CreatePinnableViewModel(PinnableObject pinnable) {
+
+            var service = new SupportService(User);
+            switch (pinnable.LookupType) {
+                case LookupType.Reference:
+                    return new ViewModelPlaceholder(pinnable.State as string);
+            }
+
+            return null;
         }
 
         public void EditReference(int refID) {

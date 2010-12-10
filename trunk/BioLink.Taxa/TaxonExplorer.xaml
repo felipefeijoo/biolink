@@ -32,7 +32,47 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid>        
+    <Grid>  
+        <Grid.Resources>
+            <HierarchicalDataTemplate x:Name="AllTaxaDataTemplate" DataType="{x:Type src:TaxonViewModel}" ItemsSource="{Binding Path=Children, Converter={StaticResource SortedTaxonConverter}}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,0" />
+                    <ext:EditableTextBlock FontSize="11" x:Name="TaxonName" Text="{Binding Path=DisplayLabel,Mode=TwoWay}" VerticalAlignment="Center" IsInEditMode="{Binding Path=IsRenaming, Mode=TwoWay}" EditingComplete="EditableTextBlock_EditingComplete" EditingCancelled="EditableTextBlock_EditingCancelled" ViewModel="{Binding}"/>
+                </StackPanel>
+                <HierarchicalDataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding IsDeleted}" Value="True">
+                        <Setter TargetName="TaxonName" Property="TextDecorations" Value="Strikethrough" />
+                    </DataTrigger>
+                </HierarchicalDataTemplate.Triggers>
+            </HierarchicalDataTemplate>
+
+            <Style TargetType="{x:Type ext:VTreeViewItem}">
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <!-- This custom VSP exposes BringIntoView -->
+                            <ext:BLVirtualizingStackPanel />
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+
+                <Setter Property="IsExpanded" Value="{Binding Path=IsExpanded, Mode=TwoWay}" />
+                <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
+                <EventSetter Event="TreeViewItem.MouseRightButtonDown" Handler="TreeViewItem_MouseRightButtonDown"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Unverified}" Value="True">
+                        <Setter Property="Foreground" Value="Red" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding AvailableName}" Value="True">
+                        <Setter Property="FontStyle" Value="Italic" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding IsRenaming}" Value="True">
+                        <Setter Property="TextBox.Visibility" Value="Visible" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+        </Grid.Resources>
         <TabControl Name="tabControl1" SelectionChanged="tabControl1_SelectionChanged">
             <TabItem Header="{StaticResource TaxonExplorer.Tab.AllTaxa}" Name="tabAllTaxa">
                 <Grid x:Name="allTaxaGrid">
@@ -88,46 +128,7 @@
                                 
                             </Grid>
                             <Grid Grid.Row="1">
-                                <ext:VTreeView x:Name="tvwAllTaxa" Margin="0,0,0,0" BorderThickness="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" PreviewMouseMove="tvwAllTaxa_PreviewMouseMove" PreviewMouseLeftButtonDown="tvwAllTaxa_PreviewMouseLeftButtonDown" MouseRightButtonUp="tvwAllTaxa_MouseRightButtonUp" AutoExpandTopLevel="True">
-                                    <TreeView.Resources>
-                                        <HierarchicalDataTemplate x:Name="AllTaxaDataTemplate" DataType="{x:Type src:TaxonViewModel}" ItemsSource="{Binding Path=Children, Converter={StaticResource SortedTaxonConverter}}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,0" />                                                
-                                                <ext:EditableTextBlock FontSize="11" x:Name="TaxonName" Text="{Binding Path=DisplayLabel,Mode=TwoWay}" VerticalAlignment="Center" IsInEditMode="{Binding Path=IsRenaming, Mode=TwoWay}" EditingComplete="EditableTextBlock_EditingComplete" EditingCancelled="EditableTextBlock_EditingCancelled" ViewModel="{Binding}"/>
-                                            </StackPanel>
-                                            <HierarchicalDataTemplate.Triggers>
-                                                <DataTrigger Binding="{Binding IsDeleted}" Value="True">
-                                                    <Setter TargetName="TaxonName" Property="TextDecorations" Value="Strikethrough" />
-                                                </DataTrigger>
-                                            </HierarchicalDataTemplate.Triggers>
-                                        </HierarchicalDataTemplate>
-
-                                        <Style TargetType="{x:Type ext:VTreeViewItem}">
-                                            <Setter Property="ItemsPanel">
-                                                <Setter.Value>
-                                                    <ItemsPanelTemplate>
-                                                        <!-- This custom VSP exposes BringIntoView -->
-                                                        <ext:BLVirtualizingStackPanel />
-                                                    </ItemsPanelTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-
-                                            <Setter Property="IsExpanded" Value="{Binding Path=IsExpanded, Mode=TwoWay}" />
-                                            <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />                                            
-                                            <EventSetter Event="TreeViewItem.MouseRightButtonDown" Handler="TreeViewItem_MouseRightButtonDown"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Unverified}" Value="True">
-                                                    <Setter Property="Foreground" Value="Red" />                                        
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding AvailableName}" Value="True">                                                    
-                                                    <Setter Property="FontStyle" Value="Italic" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding IsRenaming}" Value="True">
-                                                    <Setter Property="TextBox.Visibility" Value="Visible" />                                                    
-                                                </DataTrigger>                                                
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TreeView.Resources>
+                                <ext:VTreeView x:Name="tvwAllTaxa" Margin="0,0,0,0" BorderThickness="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" PreviewMouseMove="TreeView_PreviewMouseMove" PreviewMouseLeftButtonDown="TreeView_PreviewMouseLeftButtonDown" MouseRightButtonUp="TreeView_MouseRightButtonUp" AutoExpandTopLevel="True">
                                     <TreeView.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <!-- This custom VSP exposes BringIntoView -->
@@ -148,16 +149,16 @@
                 <Grid>
                     <Label Content="Find:" Height="23" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" Width="56" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" />
                     <ext:DelayedTriggerTextbox Height="23" Margin="68,6,6,0" Name="txtFind" VerticalAlignment="Top" TypingPaused="txtFind_TypingPaused" KeyUp="txtFind_KeyUp" />
-                    <ListBox Name="lstResults" MouseRightButtonUp="lstResults_MouseRightButtonUp" Margin="0,40,0,0">
-                        <ListBox.Resources>
-                            <DataTemplate DataType="{x:Type src:TaxonViewModel}">
-                                <StackPanel Orientation="Horizontal">
-                                    <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,1" />
-                                    <TextBlock Text="{Binding Path=TaxaFullName}" VerticalAlignment="Center" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.Resources>
-                    </ListBox>
+
+                    <ext:VTreeView x:Name="tvwResults" Margin="0,40,0,0" BorderThickness="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" PreviewMouseMove="TreeView_PreviewMouseMove" PreviewMouseLeftButtonDown="TreeView_PreviewMouseLeftButtonDown" MouseRightButtonUp="TreeView_MouseRightButtonUp" AutoExpandTopLevel="False">
+                        <TreeView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <!-- This custom VSP exposes BringIntoView -->
+                                <ext:BLVirtualizingStackPanel />
+                            </ItemsPanelTemplate>
+                        </TreeView.ItemsPanel>
+                    </ext:VTreeView>
+
                 </Grid>                    
             </TabItem>
             <TabItem Header="{StaticResource TaxonExplorer.Tab.Favorites}" Name="tabFavorites">
