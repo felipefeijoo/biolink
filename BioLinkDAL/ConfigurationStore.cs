@@ -23,7 +23,7 @@ namespace BioLink.Data {
         public ConfigurationStore(string filename)
             : base(filename) {
 
-            if (!File.Exists(FileName)) {
+            if (!File.Exists(FileName) || IsNew) {
                 ResetPreferences();
             }
         }
