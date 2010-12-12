@@ -363,6 +363,86 @@ namespace BioLink.Data {
 
         #region References
 
+        public Reference GetReference(int refID) {
+            var mapper = new GenericMapperBuilder<Reference>().build();
+            Reference ret = null;
+            StoredProcReaderFirst("spReferenceGet", (reader) => {
+                ret = mapper.Map(reader);
+            }, _P("intRefID", refID));
+            return ret;
+        }
+
+        public void DeleteReference(int refID) {
+            StoredProcUpdate("spReferenceDelete", _P("intRefID", refID));
+        }
+
+        public int InsertReference(Reference r) {
+            var retval = ReturnParam("NewRefID", SqlDbType.Int);
+            StoredProcUpdate("spReferenceInsert",
+                _P("vchrRefCode", r.RefCode),
+			    _P("vchrAuthor", r.Author),
+			    _P("vchrTitle", r.Title),
+			    _P("vchrBookTitle", r.BookTitle),
+			    _P("vchrEditor", r.Editor),
+			    _P("vchrRefType", r.RefType),
+			    _P("vchrYearOfPub", r.YearOfPub),
+			    _P("vchrActualDate", r.ActualDate),
+			    _P("intJournalID", r.JournalID),
+			    _P("vchrPartNo", r.PartNo),
+			    _P("vchrSeries", r.Series),
+			    _P("vchrPublisher", r.Publisher),
+			    _P("vchrPlace", r.Place),
+			    _P("vchrVolume", r.Volume),
+			    _P("vchrPages", r.Pages),
+			    _P("vchrTotalPages", r.TotalPages),
+			    _P("vchrPossess", r.Possess),
+			    _P("vchrSource", r.Source),
+			    _P("vchrEdition", r.Edition),
+			    _P("vchrISBN", r.ISBN),
+			    _P("vchrISSN", r.ISSN),
+			    _P("txtAbstract", r.Abstract),
+			    _P("txtFullText", r.FullText),
+			    _P("txtFullRTF", r.FullRTF),
+			    _P("intStartPage", r.StartPage),
+			    _P("intEndPage", r.EndPage),
+                retval
+            );
+            
+            return (int) retval.Value;
+        }
+
+        public void UpdateReference(Reference r) {
+            StoredProcUpdate("spReferenceUpdate",
+                _P("intRefID", r.RefID),
+                _P("vchrRefCode", r.RefCode),
+                _P("vchrAuthor", r.Author),
+                _P("vchrTitle", r.Title),
+                _P("vchrBookTitle", r.BookTitle),
+                _P("vchrEditor", r.Editor),
+                _P("vchrRefType", r.RefType),
+                _P("vchrYearOfPub", r.YearOfPub),
+                _P("vchrActualDate", r.ActualDate),
+                _P("intJournalID", r.JournalID),
+                _P("vchrPartNo", r.PartNo),
+                _P("vchrSeries", r.Series),
+                _P("vchrPublisher", r.Publisher),
+                _P("vchrPlace", r.Place),
+                _P("vchrVolume", r.Volume),
+                _P("vchrPages", r.Pages),
+                _P("vchrTotalPages", r.TotalPages),
+                _P("vchrPossess", r.Possess),
+                _P("vchrSource", r.Source),
+                _P("vchrEdition", r.Edition),
+                _P("vchrISBN", r.ISBN),
+                _P("vchrISSN", r.ISSN),
+                _P("txtAbstract", r.Abstract),
+                _P("txtFullText", r.FullText),
+                _P("txtFullRTF", r.FullRTF),
+                _P("intStartPage", r.StartPage),
+                _P("intEndPage", r.EndPage));
+
+        }
+
         public List<ReferenceSearchResult> FindReferences(string refCode, string author, string year, string other) {
             var mapper = new GenericMapperBuilder<ReferenceSearchResult>().Map("FullRTF","RefRTF").build();
             return StoredProcToList("spReferenceFind", mapper,

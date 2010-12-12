@@ -66,7 +66,7 @@ namespace BioLink.Client.Tools {
 
         private void ShowReferenceManager() {
             if (_refManager == null) {
-                _refManager = PluginManager.Instance.AddNonDockableContent(this, new ReferenceManager(User), "Reference Manager", SizeToContent.Manual,true,(window)=> {
+                _refManager = PluginManager.Instance.AddNonDockableContent(this, new ReferenceManager(User, this), "Reference Manager", SizeToContent.Manual,true,(window)=> {
                     window.btnOk.IsDefault = false;
                 });
                 _refManager.Closed += new EventHandler((sender, e) => {
@@ -117,8 +117,13 @@ namespace BioLink.Client.Tools {
         }
 
         public void EditReference(int refID) {
-            var service = new SupportService(User);
-            MessageBox.Show("TODO: Reference detail for ref id " + refID);
+            var control = new ReferenceDetail(User, refID);
+            PluginManager.Instance.AddNonDockableContent(this, control, "Reference Detail", SizeToContent.Manual);
+        }
+
+        public void AddNewReference() {
+            var control = new ReferenceDetail(User, -1);
+            PluginManager.Instance.AddNonDockableContent(this, control, "Reference Detail", SizeToContent.Manual);
         }
 
         public override void EditObject(LookupType type, int objectID) {

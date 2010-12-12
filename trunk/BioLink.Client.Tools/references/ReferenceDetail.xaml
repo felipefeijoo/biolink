@@ -1,0 +1,18 @@
+﻿<ext:DatabaseActionControl x:Class="BioLink.Client.Tools.ReferenceDetail"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+             mc:Ignorable="d" 
+             d:DesignHeight="432" d:DesignWidth="735">
+    <Grid>
+        <Label Content="Reference code:" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" Name="label1" VerticalAlignment="Top" Width="111" />
+        <ext:TextBox Height="23" Margin="129,14,12,0" Name="txtRefCode" VerticalAlignment="Top" IsReadOnly="True" IsEnabled="True" Text="{Binding RefCode}" />
+        <TabControl Margin="12,57,12,0" Name="tabRef">
+            <TabItem Header="_General" Name="tabGeneral">
+                <Grid />
+            </TabItem>
+        </TabControl>
+    </Grid>
+</ext:DatabaseActionControl>

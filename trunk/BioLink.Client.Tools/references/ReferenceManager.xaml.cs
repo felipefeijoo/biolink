@@ -29,9 +29,10 @@ namespace BioLink.Client.Tools {
         }
         #endregion
 
-        public ReferenceManager(User user) 
+        public ReferenceManager(User user, ToolsPlugin owner) 
             : base(user, "ReferenceManager") {
             InitializeComponent();
+            this.Owner = owner;
             lvwResults.SelectionChanged += new SelectionChangedEventHandler((sender, e) => {
                 var item = lvwResults.SelectedItem as ReferenceSearchResultViewModel;
                 if (item != null) {
@@ -41,14 +42,46 @@ namespace BioLink.Client.Tools {
                 }
             });
 
+            ChangesCommitted += new PendingChangesCommittedHandler(ReferenceManager_ChangesCommitted);
+
             lvwResults.PreviewMouseRightButtonUp += new MouseButtonEventHandler(lvwResults_PreviewMouseRightButtonUp);
+        }
+
+        void ReferenceManager_ChangesCommitted(object sender) {
+            // Redo the search...
+            DoSearch();
         }
 
         void lvwResults_PreviewMouseRightButtonUp(object sender, MouseButtonEventArgs e) {
             ContextMenuBuilder builder = new ContextMenuBuilder(null);
+
+            builder.New("Add New").Handler(() => AddNew()).End();
+            builder.Separator();
+            builder.New("Delete").Handler(() => DeleteSelected()).End();
+            builder.Separator();
             builder.New("Pin to pinboard").Handler(() => { PinSelected(); }).End();
+            builder.New("Edit").Handler(() => EditSelected()).End();
 
             lvwResults.ContextMenu = builder.ContextMenu;
+        }
+
+        private void EditSelected() {
+            var selected = lvwResults.SelectedItem as ReferenceSearchResultViewModel;
+            if (selected != null) {
+                Owner.EditReference(selected.RefID);
+            }
+        }
+
+        private void AddNew() {
+            Owner.AddNewReference();            
+        }
+
+        private void DeleteSelected() {
+            var selected = lvwResults.SelectedItem as ReferenceSearchResultViewModel;
+            if (selected != null) {
+                selected.IsDeleted = true;
+                RegisterUniquePendingChange(new DeleteReferenceAction(selected.RefID));                     
+            }
         }
 
         private void PinSelected() {
@@ -96,6 +129,8 @@ namespace BioLink.Client.Tools {
         }
 
         protected SupportService Service { get { return new SupportService(User); } }
+
+        protected ToolsPlugin Owner { get; private set; }
 
         private void btnFind_Click(object sender, RoutedEventArgs e) {
             DoSearch();

@@ -22,6 +22,7 @@ namespace BioLink.Data {
 
             if (!File.Exists(filename)) {
                 SQLiteConnection.CreateFile(filename);
+                IsNew = true;
             }
 
             if (persistConnection) {
@@ -128,6 +129,8 @@ namespace BioLink.Data {
                 }
             }
         }
+
+        public bool IsNew { get; private set; }
 
         public void Dispose() {
             if (_persistConnection && _connection != null) {

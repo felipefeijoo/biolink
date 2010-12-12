@@ -59,10 +59,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\shared\lib\SharpMap.dll</HintPath>
     </Reference>
-    <Reference Include="SharpMap.UI, Version=0.9.3917.20562, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\shared\lib\SharpMap.UI.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
