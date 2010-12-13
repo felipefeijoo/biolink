@@ -12,7 +12,8 @@ namespace BioLink.Client.Extensibility {
         SiteVisit,
         Trap,
         Material,                
-        Multimedia
+        Multimedia,
+        Reference
     }
 
 }

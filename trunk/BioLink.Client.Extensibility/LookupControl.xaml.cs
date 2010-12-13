@@ -187,7 +187,8 @@ namespace BioLink.Client.Extensibility {
         Site,
         SiteVisit,
         Trap,
-        Reference
+        Reference,
+        Journal
     }
 
 }

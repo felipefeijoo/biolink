@@ -56,6 +56,15 @@
       <DependentUpon>PhraseManager.xaml</DependentUpon>
     </Compile>
     <Compile Include="phrases\PhraseViewModel.cs" />
+    <Compile Include="references\BookDetails.xaml.cs">
+      <DependentUpon>BookDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="references\JournalDetails.xaml.cs">
+      <DependentUpon>JournalDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="references\MiscDetails.xaml.cs">
+      <DependentUpon>MiscDetails.xaml</DependentUpon>
+    </Compile>
     <Compile Include="references\ReferenceDatabaseAction.cs" />
     <Compile Include="references\ReferenceDetail.xaml.cs">
       <DependentUpon>ReferenceDetail.xaml</DependentUpon>
@@ -89,6 +98,18 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="phrases\PhraseManager.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="references\BookDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="references\JournalDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="references\MiscDetails.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

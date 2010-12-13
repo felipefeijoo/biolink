@@ -16,6 +16,15 @@ namespace BioLink.Client.Tools {
             : base(model) {
         }
 
+        public override string DisplayLabel {
+            get {
+                return RefCode;
+            }
+            set {
+                base.DisplayLabel = value;
+            }
+        }
+
         public int RefID {
             get { return Model.RefID; }
             set { SetProperty(() => Model.RefID, value); }
@@ -149,6 +158,11 @@ namespace BioLink.Client.Tools {
         public int? EndPage {
             get { return Model.EndPage; }
             set { SetProperty(() => Model.EndPage, value); }
+        }
+
+        public string JournalName {
+            get { return Model.JournalName; }
+            set { SetProperty(() => Model.JournalName, value); }
         }
         
     }
