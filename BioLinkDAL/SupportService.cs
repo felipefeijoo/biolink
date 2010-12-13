@@ -13,6 +13,17 @@ namespace BioLink.Data {
 
     public class SupportService : BioLinkService {
 
+        public static Dictionary<string, RefTypeMapping> RefTypeMap = new Dictionary<string, RefTypeMapping>();
+
+        static SupportService() {
+            RefTypeMap["J"] = new RefTypeMapping("J", "Journal");
+            RefTypeMap["JS"] = new RefTypeMapping("JS", "Journal Section");
+            RefTypeMap["B"] = new RefTypeMapping("B", "Book");
+            RefTypeMap["BS"] = new RefTypeMapping("BS", "Book Section");
+            RefTypeMap["M"] = new RefTypeMapping("M", "Miscellaneous");
+            RefTypeMap["U"] = new RefTypeMapping("U", "Internet URL");
+        }
+
         public SupportService(User user)
             : base(user) {
         }
@@ -366,9 +377,9 @@ namespace BioLink.Data {
         public Reference GetReference(int refID) {
             var mapper = new GenericMapperBuilder<Reference>().build();
             Reference ret = null;
-            StoredProcReaderFirst("spReferenceGet", (reader) => {
+            StoredProcReaderFirst("spReferenceList", (reader) => {
                 ret = mapper.Map(reader);
-            }, _P("intRefID", refID));
+            }, _P("vchrRefIDList", refID + ""));
             return ret;
         }
 
@@ -753,6 +764,17 @@ namespace BioLink.Data {
 
         #endregion
 
+    }
+
+    public class RefTypeMapping {
+
+        public RefTypeMapping(string code, string name) {
+            this.RefTypeCode = code;
+            this.RefTypeName = name;
+        }
+
+        public string RefTypeCode { get; set; }
+        public string RefTypeName { get; set; }
     }
 
 }

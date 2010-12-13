@@ -34,6 +34,7 @@ namespace BioLink.Data.Model {
         public string FullRTF { get; set; }
         public int? StartPage { get; set; }
         public int? EndPage { get; set; }
+        public string JournalName { get; set; }
 
     }
 }

@@ -80,6 +80,15 @@ namespace BioLink.Client.Tools {
 
 
         public override List<Command> GetCommandsForObject(ViewModelBase obj) {
+            if (obj is ReferenceViewModel) {
+                var list = new List<Command>();
+                list.Add(new Command("Edit", (vm) => {
+                    var r = vm as ReferenceViewModel;
+                    EditReference(r.RefID);
+                }));
+
+                return list;
+            }
             return null;
         }
 
@@ -110,7 +119,8 @@ namespace BioLink.Client.Tools {
             var service = new SupportService(User);
             switch (pinnable.LookupType) {
                 case LookupType.Reference:
-                    return new ViewModelPlaceholder(pinnable.State as string);
+                    var model = service.GetReference(pinnable.ObjectID);
+                    return new ReferenceViewModel(model);
             }
 
             return null;
@@ -133,5 +143,6 @@ namespace BioLink.Client.Tools {
                     break;
             }
         }
+        
     }
 }
