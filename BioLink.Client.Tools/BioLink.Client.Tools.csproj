@@ -59,8 +59,17 @@
     <Compile Include="references\BookDetails.xaml.cs">
       <DependentUpon>BookDetails.xaml</DependentUpon>
     </Compile>
+    <Compile Include="references\BookSectionDetails.xaml.cs">
+      <DependentUpon>BookSectionDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="references\InternetURLDetails.xaml.cs">
+      <DependentUpon>InternetURLDetails.xaml</DependentUpon>
+    </Compile>
     <Compile Include="references\JournalDetails.xaml.cs">
       <DependentUpon>JournalDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="references\JournalSectionDetails.xaml.cs">
+      <DependentUpon>JournalSectionDetails.xaml</DependentUpon>
     </Compile>
     <Compile Include="references\MiscDetails.xaml.cs">
       <DependentUpon>MiscDetails.xaml</DependentUpon>
@@ -105,7 +114,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="references\BookSectionDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="references\InternetURLDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="references\JournalDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="references\JournalSectionDetails.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
