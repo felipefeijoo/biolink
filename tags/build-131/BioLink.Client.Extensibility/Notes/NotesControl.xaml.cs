@@ -1,0 +1,253 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using BioLink.Data;
+using BioLink.Data.Model;
+using System.Collections.ObjectModel;
+using BioLink.Client.Utilities;
+
+namespace BioLink.Client.Extensibility {
+    /// <summary>
+    /// Interaction logic for NotesControl.xaml
+    /// </summary>
+    public partial class NotesControl : DatabaseActionControl, ILazyPopulateControl {
+
+        private ObservableCollection<NoteViewModel> _model;
+
+        #region Designer Constructor
+        public NotesControl() {
+            InitializeComponent();
+        }
+        #endregion
+
+        public NotesControl(User user, TraitCategoryType category, int? intraCatId) : base(user, "Notes:" + category.ToString() + ":" + intraCatId.Value) {
+            InitializeComponent();
+            Debug.Assert(intraCatId.HasValue);
+            TraitCategory = category;
+            this.IntraCatID = intraCatId.Value;
+
+            var service = new SupportService(User);
+            var list = service.GetNotes(TraitCategory.ToString(), IntraCatID);
+            _model = new ObservableCollection<NoteViewModel>(list.ConvertAll((model) => {
+                var viewModel = new NoteViewModel(model);
+                viewModel.DataChanged += new DataChangedHandler(viewModel_DataChanged);
+                return viewModel;
+            }));
+            btnColor.ColorSelected += new Action<Color>(btnColor_SelectedColorChanged);
+            LoadNotesPanel();
+        }
+
+        void btnColor_SelectedColorChanged(Color color) {
+            if (_currentNoteControl != null) {
+                _currentNoteControl.txtNote.Selection.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(color));
+            }
+        }
+
+        private void LoadNotesPanel(NoteViewModel selected = null) {
+            notesPanel.Children.Clear();
+            foreach (NoteViewModel m in _model) {
+                var control = new NoteControl(User, m);
+                control.NoteDeleted += new NoteControl.NoteEventHandler(control_NoteDeleted);
+                control.TextSelectionChanged +=new NoteControl.NoteEventHandler(control_TextSelectionChanged);
+
+                if (selected != null && selected == m) {
+                    control.IsExpanded = true;
+                }
+                notesPanel.Children.Add(control);
+            }
+        }
+
+        private NoteControl _currentNoteControl;        
+
+        private void control_TextSelectionChanged(object source, NoteViewModel note) {
+            _currentNoteControl = source as NoteControl;
+            if (_currentNoteControl != null) {
+                var selectionBrush = _currentNoteControl.txtNote.Selection.GetPropertyValue(TextElement.ForegroundProperty) as SolidColorBrush;
+                if (selectionBrush != null) {
+                    btnColor.SelectedColor = selectionBrush.Color;
+                } else {
+                    btnColor.SelectedColor = Color.FromArgb(0, 0, 0, 0);
+                }                
+            }
+        }
+
+        private void control_NoteDeleted(object source, NoteViewModel note) {
+
+            _model.Remove(note);
+            if (note.NoteID >= 0) {
+                RegisterPendingChange(new DeleteNoteAction(note.Model));
+            }
+            LoadNotesPanel();
+        }
+
+        public void Populate() {
+            this.InvokeIfRequired(() => {
+            });            
+        }
+
+        void viewModel_DataChanged(ChangeableModelBase viewmodel) {
+            var note = viewmodel as NoteViewModel;
+            if (note != null) {
+                if (note.NoteID >= 0) {
+                    RegisterUniquePendingChange(new UpdateNoteAction(note.Model));
+                }
+            }
+        }
+
+        public bool IsPopulated { get; private set; }
+
+        public TraitCategoryType TraitCategory { get; private set; }
+
+        public int IntraCatID { get; private set; }
+
+        private void btnAddNew_Click(object sender, RoutedEventArgs e) {
+            AddNewNote();
+        }
+
+        private void AddNewNote() {
+            var service = new SupportService(User);
+
+            List<String> noteTypes = service.GetNoteTypesForCategory(TraitCategory.ToString());
+
+            var picklist = new PickListWindow(User, "Choose a trait type...", () => {
+                return noteTypes;
+            }, (text) => {
+                noteTypes.Add(text);
+                return true;
+            });
+
+            picklist.Owner = this.FindParentWindow();
+            if (picklist.ShowDialog().ValueOrFalse()) {
+                Note note = new Note();
+                note.NoteID = -1;
+                note.NoteType = picklist.SelectedValue;
+                note.NoteCategory = TraitCategory.ToString();
+                note.IntraCatID = IntraCatID;
+                note.NoteRTF = "New Note";
+
+                NoteViewModel viewModel = new NoteViewModel(note);
+                _model.Add(viewModel);
+                RegisterUniquePendingChange(new InsertNoteAction(note));
+                LoadNotesPanel(viewModel);
+            }
+        }
+
+        private void ForEachNoteControl(Action<NoteControl> action) {
+            if (action == null) {
+                return;
+            }
+            foreach (NoteControl control in notesPanel.Children) {
+                action(control);
+            }
+        }
+
+        private void ExpandAll() {
+            ForEachNoteControl((control) => {
+                control.IsExpanded = true;
+            });
+        }
+
+        private void CollapseAll() {
+            ForEachNoteControl((control) => {
+                control.IsExpanded = false;
+            });
+        }
+
+        private void btnExpandALL_Click(object sender, RoutedEventArgs e) {
+            ExpandAll();
+        }
+
+        private void btnCollapseAll_Click(object sender, RoutedEventArgs e) {
+            CollapseAll();
+        }
+
+        private void btnFont_Click(object sender, RoutedEventArgs e) {
+            if (_currentNoteControl != null) {
+
+                var form = new FontChooser();
+                form.Owner = this.FindParentWindow();
+                form.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                if (form.ShowDialog().ValueOrFalse()) {
+                    form.ApplyPropertiesToTextSelection(_currentNoteControl.txtNote.Selection);
+                    //var selection = _currentNoteControl.txtNote.Selection;
+                    //selection.ApplyPropertyValue(TextElement.FontFamilyProperty, form.SelectedFontFamily);
+                    //selection.ApplyPropertyValue(TextElement.FontSizeProperty, form.SelectedFontSize);
+                    //selection.ApplyPropertyValue(TextElement.FontStretchProperty, form.SelectedFontStretch);
+                    //selection.ApplyPropertyValue(TextElement.FontStyleProperty, form.SelectedFontStyle);
+                    //selection.ApplyPropertyValue(TextElement.FontWeightProperty, form.SelectedFontWeight);                    
+                }
+            }
+
+
+        }
+
+    }
+
+    public class NoteViewModel : GenericViewModelBase<Note> {
+
+        public NoteViewModel(Note model)
+            : base(model) {
+        }
+
+        public string NoteCategory {
+            get { return Model.NoteCategory; }
+            set { SetProperty(() => Model.NoteCategory, value); }
+        }
+
+        public int NoteID {
+            get { return Model.NoteID; }
+            set { SetProperty(() => Model.NoteID, value); }
+        }
+
+        public string NoteType {
+            get { return Model.NoteType; }
+            set { SetProperty(() => Model.NoteType, value); }
+        }
+
+        public string NoteRTF {
+            get { return Model.NoteRTF; }
+            set { SetProperty(() => Model.NoteRTF, value); }
+        }
+
+        public string Author {
+            get { return Model.Author; }
+            set { SetProperty(() => Model.Author, value); }
+        }
+
+        public string Comments {
+            get { return Model.Comments; }
+            set { SetProperty(() => Model.Comments, value); }
+        }
+
+        public bool UseInReports {
+            get { return Model.UseInReports; }
+            set { SetProperty(() => Model.UseInReports, value); }
+        }
+
+        public int RefID {
+            get { return Model.RefID; }
+            set { SetProperty(() => Model.RefID, value); }
+        }
+
+        public string RefCode {
+            get { return Model.RefCode; }
+            set { SetProperty(() => Model.RefCode, value); }
+        }
+
+        public string RefPages {
+            get { return Model.RefPages; }
+            set { SetProperty(() => Model.RefPages, value); }
+        }
+
+    }
+}
