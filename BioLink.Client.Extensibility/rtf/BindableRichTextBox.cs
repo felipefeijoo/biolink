@@ -46,7 +46,7 @@ namespace BioLink.Client.Extensibility {
                     doc.Blocks.Clear();
                 } else {
                     using (var t = new CodeTimer("Loading RTF")) {
-                        using (var stream = new MemoryStream((new ASCIIEncoding()).GetBytes(rtf))) {
+                        using (var stream = new MemoryStream((new UTF8Encoding()).GetBytes(rtf))) {
                             var text = new TextRange(doc.ContentStart, doc.ContentEnd);
                             text.Load(stream, DataFormats.Rtf);
                         }
@@ -59,6 +59,12 @@ namespace BioLink.Client.Extensibility {
             get { return (string)GetValue(RTFProperty); }
             set { SetValue(RTFProperty, value); }
         }
+
+
+        public String PlainText {
+            get { return new TextRange(Document.ContentStart, Document.ContentEnd).Text; }
+        }
+
 
     }
 }

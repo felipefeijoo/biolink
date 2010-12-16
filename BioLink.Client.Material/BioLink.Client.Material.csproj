@@ -48,12 +48,20 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CurationEventDatabaseActions.cs" />
+    <Compile Include="CurationEventsControl.xaml.cs">
+      <DependentUpon>CurationEventsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CurationEventViewModel.cs" />
     <Compile Include="IdentificationHistoryControl.xaml.cs">
       <DependentUpon>IdentificationHistoryControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="MaterialDatabaseAction.cs" />
     <Compile Include="MaterialDetails.xaml.cs">
       <DependentUpon>MaterialDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MaterialLabelsControl.xaml.cs">
+      <DependentUpon>MaterialLabelsControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="MaterialPartAction.cs" />
     <Compile Include="MaterialPartsControl.xaml.cs">
@@ -111,6 +119,10 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="CurationEventsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="IdentificationHistoryControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -120,6 +132,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MaterialExplorer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MaterialLabelsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

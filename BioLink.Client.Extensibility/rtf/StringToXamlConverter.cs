@@ -15,7 +15,7 @@ namespace BioLink.Client.Extensibility {
                 var flowDocument = new FlowDocument();
                 var xaml = value.ToString();
 
-                using (var stream = new MemoryStream((new ASCIIEncoding()).GetBytes(xaml))) {
+                using (var stream = new MemoryStream((new UTF8Encoding()).GetBytes(xaml))) {
                     var text = new TextRange(flowDocument.ContentStart, flowDocument.ContentEnd);
                     text.Load(stream, DataFormats.Xaml);
                 }
