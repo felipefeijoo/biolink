@@ -15,7 +15,7 @@ namespace BioLink.Client.Extensibility {
                 var flowDocument = new FlowDocument();
                 var rtf = value.ToString();
 
-                using (var stream = new MemoryStream((new ASCIIEncoding()).GetBytes(rtf))) {
+                using (var stream = new MemoryStream((new UTF8Encoding()).GetBytes(rtf))) {
                     var text = new TextRange(flowDocument.ContentStart, flowDocument.ContentEnd);
                     text.Load(stream, DataFormats.Rtf);
                 }

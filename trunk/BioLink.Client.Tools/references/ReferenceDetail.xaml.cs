@@ -139,27 +139,18 @@ namespace BioLink.Client.Tools {
             var r = viewmodel as ReferenceViewModel;
             if (r != null) {
                 RegisterUniquePendingChange(new UpdateReferenceAction(r.Model));
+                r.FullRTF = AttachRTFHeaders(BuildRefRTF(r.Model));
+                r.FullText = txtPreview.PlainText;
             }
 
-            DisplayRTFPreview(txtPreview, BuildRefRTF(r.Model));
         }
 
-        public void DisplayRTFPreview(RichTextBox control, string rtf) {
+        public string AttachRTFHeaders(string rtf) {
             if (!rtf.StartsWith(@"{{\rtf")) {
                 rtf = string.Format(@"{{\rtf1\ansi\ansicpg1252\deff0\deftab720 {{\fonttbl{{\f1\fswiss Arial;}}}} \plain\f1\fs16 {0} }}", rtf);
             }
 
-            var doc = control.Document;
-            if (string.IsNullOrEmpty(rtf)) {
-                doc.Blocks.Clear();
-            } else {
-                using (var t = new CodeTimer("Loading RTF")) {
-                    using (var stream = new MemoryStream((new ASCIIEncoding()).GetBytes(rtf))) {
-                        var text = new TextRange(doc.ContentStart, doc.ContentEnd);
-                        text.Load(stream, DataFormats.Rtf);
-                    }
-                }
-            }
+            return rtf;
         }
 
         private string AtEnd(string pstrMain, string pstrLookFor) {
@@ -176,19 +167,22 @@ namespace BioLink.Client.Tools {
         private string ProcRefPages(string pstrPages, PagesType pagesType) {
 
             String strPages = pstrPages.Trim();
+            char nrule = '–';
 
-            //  Replace dashes with NRules.
-            strPages = strPages.Replace('-', (char)150);
 
             // Ensure there is no dash(NRules) without a closing number.
-            if (strPages[0] == 150) {
-                strPages = strPages + " *** Closing page expected ***";
+            if (!String.IsNullOrEmpty(strPages)) {
+                //  Replace dashes with NRules.
+                strPages = strPages.Replace('-', nrule);  
+                if (strPages[0] == nrule) {
+                    strPages = strPages + " *** Closing page expected ***";
+                }
             }
 
             // Install the pp for pages of a book.
             switch (pagesType) {
                 case PagesType.REF_SECTION_PAGES:
-                    if (!strPages.Contains((char)150)) {
+                    if (!strPages.Contains(nrule)) {
                         if (!strPages.Contains("p")) {
                             strPages = "p. " + strPages;
                         }
@@ -199,9 +193,9 @@ namespace BioLink.Client.Tools {
                     }
                     break;
                 case PagesType.ALWAYS_RANGE:
-                    if (!strPages.Contains((char)150)) {
+                    if (!strPages.Contains(nrule)) {
                         if (!strPages.Contains("pp")) {
-                            strPages = strPages + "pp.";
+                            strPages = strPages + " pp.";
                         }
                     } else {
                         if (!strPages.Contains("pp")) {
@@ -216,7 +210,7 @@ namespace BioLink.Client.Tools {
 
         private String ProcessEdition(String edition) {
 
-            if (edition == "11") {
+            if (edition == "11" || edition == "12" || edition=="13") {
                 edition += "th";
             } else {
                 char ch = edition[edition.Length - 1];
@@ -286,12 +280,12 @@ namespace BioLink.Client.Tools {
                     strRTF.AppendFormat(@"\b {0} \b0 ", model.Volume);
                     // Write the part number
                     if (!String.IsNullOrEmpty(model.PartNo)) {
-                        strRTF.AppendFormat(@" ({0}):", model.Volume);
+                        strRTF.AppendFormat(@" ({0}):", model.PartNo);
                     } else {
                         strRTF.Append(" :");
                     }
                     // Write the pages.
-                    strRTF.AppendFormat(" {0}", ProcRefPages(model.Pages, PagesType.NO_PP));
+                    strRTF.AppendFormat(" {0}", ProcRefPages(model.TotalPages, PagesType.NO_PP));
                     break;
                 case "JS":
                     strRTF.AppendFormat(@" {0} \i in \i0 {1} {2} \i {3} \i0 ", ProcRefPages(model.Pages, PagesType.REF_SECTION_PAGES), AtEnd(model.Editor, "."), AtEnd(model.BookTitle, "."), AtEnd(model.JournalName, "."));
@@ -301,7 +295,7 @@ namespace BioLink.Client.Tools {
                         strRTF.AppendFormat(@"\i {0} \i0 ", model.Series);
                     }
                     // Write the volume.
-                    strRTF.AppendFormat("\b  {0} \b0 ", model.Volume);
+                    strRTF.AppendFormat(@"\b  {0} \b0 ", model.Volume);
                     // Write the part number
                     if (!string.IsNullOrEmpty(model.PartNo)) {
                         strRTF.AppendFormat(" ({0}):", model.PartNo);
@@ -324,8 +318,7 @@ namespace BioLink.Client.Tools {
                     }
                     // Write the Total pages
                     if (!String.IsNullOrEmpty(model.TotalPages)) {
-                        strRTF.AppendFormat(" {0}", AtEnd(ProcRefPages(model.TotalPages, PagesType.ALWAYS_RANGE), "."));
-
+                        strRTF.AppendFormat(" {0}", AtEnd(ProcRefPages(model.Pages, PagesType.ALWAYS_RANGE), "."));
                     }
                     break;
                 case "BS":

@@ -500,5 +500,44 @@ namespace BioLink.Data {
         }
 
         #endregion
+
+        #region Material Curation Events
+
+        public List<CurationEvent> GetCurationEvents(int materialID) {
+            var mapper = new GenericMapperBuilder<CurationEvent>().build();
+            return StoredProcToList("spCurationEventGet", mapper, _P("intMaterialID", materialID));
+        }
+
+        public int InsertCurationEvent(CurationEvent e) {
+            var retval = ReturnParam("intNewID");
+            StoredProcUpdate("spCurationEventInsert",
+                _P("intMaterialID", e.MaterialID),
+                _P("vchrSubpartName", e.SubPartName),
+                _P("vchrWho", e.Who),
+                _P("dtWhen", e.When),
+                _P("vchrEventType", e.EventType),
+                _P("txtEventDesc", e.EventDesc),
+                retval
+            );
+            return (int)retval.Value;
+        }
+
+        public void UpdateCurationEvent(CurationEvent e) {            
+            StoredProcUpdate("spCurationEventUpdate",
+                _P("intCurationEventID", e.CurationEventID),
+                _P("intMaterialID", e.MaterialID),
+                _P("vchrSubpartName", e.SubPartName),
+                _P("vchrWho", e.Who),
+                _P("dtWhen", e.When),
+                _P("vchrEventType", e.EventType),
+                _P("txtEventDesc", e.EventDesc)
+            );
+        }
+
+        public void DeleteCurationEvent(int eventID) {
+            StoredProcUpdate("spCurationEventDelete", _P("intCurationEventID", eventID));
+        }
+
+        #endregion
     }
 }
