@@ -15,12 +15,13 @@ using BioLink.Data;
 using BioLink.Data.Model;
 using BioLink.Client.Extensibility;
 using System.Collections.ObjectModel;
+using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Taxa {
     /// <summary>
     /// Interaction logic for CommonNamesControl.xaml
     /// </summary>
-    public partial class CommonNamesControl : NameControlBase {
+    public partial class CommonNamesControl : NameControlBase, ILazyPopulateControl {
 
         private ObservableCollection<CommonNameViewModel> _model;
 
@@ -36,14 +37,27 @@ namespace BioLink.Client.Taxa {
             InitializeComponent();
 
             txtReference.BindUser(user, LookupType.Reference);
+            lstNames.SelectionChanged += new SelectionChangedEventHandler(lstNames_SelectionChanged);
 
-            var list = Service.GetCommonNames(taxon.TaxaID.Value);
+            ChangesCommitted += new PendingChangesCommittedHandler(CommonNamesControl_ChangesCommitted);
+
+        }
+
+        void CommonNamesControl_ChangesCommitted(object sender) {
+            LoadNames();
+        }
+
+        void lstNames_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            detailGrid.IsEnabled = lstNames.SelectedItem != null;
+        }
+
+        private void LoadNames() {
+            detailGrid.IsEnabled = false;
+            var list = Service.GetCommonNames(Taxon.TaxaID.Value);
             _model = new ObservableCollection<CommonNameViewModel>(list.ConvertAll(name => {
                 var vm = new CommonNameViewModel(name);
                 vm.DataChanged += new DataChangedHandler((x) => {
-                    if (vm.CommonNameID >= 0) {
-                        RegisterPendingChange(new UpdateCommonNameAction(vm.Model));
-                    }
+                    RegisterPendingChange(new UpdateCommonNameAction(vm.Model));
                 });
                 return vm;
             }));
@@ -51,6 +65,8 @@ namespace BioLink.Client.Taxa {
             if (_model.Count > 0) {
                 lstNames.SelectedIndex = 0;
             }
+
+            IsPopulated = true;
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e) {
@@ -83,6 +99,14 @@ namespace BioLink.Client.Taxa {
 
         protected TaxaService Service { get { return new TaxaService(User); } }
 
+
+        public bool IsPopulated { get; private set; }
+
+        public void Populate() {
+            if (!IsPopulated) {
+                LoadNames();
+            }
+        }
     }
 
 }

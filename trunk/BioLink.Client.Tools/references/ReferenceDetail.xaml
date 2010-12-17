@@ -6,9 +6,10 @@
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
              xmlns:tools="clr-namespace:BioLink.Client.Tools"
              mc:Ignorable="d" 
-             d:DesignHeight="619" d:DesignWidth="715">
+             d:DesignHeight="542" d:DesignWidth="722">
     <UserControl.Resources>
         <tools:RefTypeConverter x:Key="RefTypeConverter" />
+        <ext:ReferencePreviewConverter x:Key="ReferencePreviewConverter" />
     </UserControl.Resources>
     <Grid>
         <Label Content="Reference code:" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" Name="label1" VerticalAlignment="Top" Width="111" />
@@ -33,8 +34,8 @@
                     <Label Content="to" Height="28" HorizontalAlignment="Left" Margin="387,151,0,0" Name="label9" VerticalAlignment="Top" Width="28" />
                     <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="417,153,0,0" Name="txtEndPage" VerticalAlignment="Top" Width="41" Text="{Binding EndPage}" />
                     <Label Content=")" Height="28" HorizontalAlignment="Left" Margin="464,151,0,0" Name="label10" VerticalAlignment="Top" Width="18" />
-                    <Grid Margin="0,185,0,0" Name="gridSpecific" Height="226" VerticalAlignment="Top" />
-                    <ext:BindableRichTextBox Margin="6,417,6,6" Name="txtPreview" IsReadOnly="True" BorderBrush="Gray" RTF="{Binding FullRTF}" />
+                    <Grid Margin="0,185,0,57" Name="gridSpecific" Height="211" />
+                    <ext:BindableRichTextBox Margin="0,0,0,6" Name="txtPreview" IsReadOnly="True" BorderBrush="Gray" RTF="{Binding FullRTF, Mode=OneWay, Converter={StaticResource ReferencePreviewConverter}}" Height="45" VerticalAlignment="Bottom" Background="{x:Static SystemColors.ControlBrush}" />
                 </Grid>
             </TabItem>
             <TabItem Header="_Qualification" Name="tabQual">

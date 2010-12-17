@@ -46,6 +46,7 @@ namespace BioLink.Client.Extensibility {
             });
 
             txtReference.BindUser(user, LookupType.Reference);
+            txtReference.ObjectSelected += new ObjectSelectedHandler(txtReference_ObjectSelected);
 
             var list = Service.GetReferenceLinks(category.ToString(), IntraCategoryID);
             _model = new ObservableCollection<RefLinkViewModel>(list.ConvertAll((rl) => {
@@ -67,8 +68,38 @@ namespace BioLink.Client.Extensibility {
             });
         }
 
+        void txtReference_ObjectSelected(object source, SelectionResult result) {
+            var current = lstReferences.SelectedItem as RefLinkViewModel;
+
+            if (current != null && result.ObjectID.HasValue) {
+                current.FullRTF = "";
+                var searchResult = result.DataObject as ReferenceSearchResult;
+                if (searchResult != null) {
+                    current.FullRTF = searchResult.RefRTF;
+                } else {
+                    var service = new SupportService(User);
+                    var reference = service.GetReference(result.ObjectID.Value);
+                    if (reference != null) {
+                        current.FullRTF = reference.FullRTF;
+                    }
+                }
+            }            
+        }
+
+
         private string SelectRefType() {
-            var frm = new PickListWindow(User, "Ref Link types", () => { return Service.GetRefLinkTypes(); }, (newval) => {
+            var frm = new PickListWindow(User, "Reference Link types", () => {
+                var list = Service.GetRefLinkTypes();    
+                SortedDictionary<string, string> filtered = new SortedDictionary<string, string>();
+                // Remove the duplicates...Something really dodgey is going on when inserting ref links, it looks like
+                // duplicate ref link types are being created.
+                foreach (string item in list) {
+                    filtered[item] = item;
+                }
+                return filtered.Keys;
+            }, 
+                
+                (newval) => {
                 Service.InsertRefLinkType(newval, Category.ToString());
                 return true;
             });
@@ -102,8 +133,9 @@ namespace BioLink.Client.Extensibility {
             if (!string.IsNullOrEmpty(refLinkType)) {
                 var data = new RefLink();
                 data.RefLinkID = -1;
-                data.RefLinkType = refLinkType;                
-                RegisterPendingChange(new InsertRefLinkAction(data, Category.ToString(), IntraCategoryID));
+                data.RefLinkType = refLinkType;
+                data.IntraCatID = IntraCategoryID;
+                RegisterPendingChange(new InsertRefLinkAction(data, Category.ToString()));
 
                 var viewModel = new RefLinkViewModel(data);
                 viewModel.RefCode = NextNewName("<New {0}>", _model, () => viewModel.RefCode);

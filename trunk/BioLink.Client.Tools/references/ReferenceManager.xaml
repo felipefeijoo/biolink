@@ -8,12 +8,13 @@
              d:DesignHeight="323" d:DesignWidth="534" MinWidth="350" MinHeight="400">
     <UserControl.Resources>
         <ext:RtfToPlainTextConverter x:Key="RtfToPlainConverter"/>
+        <ext:ReferencePreviewConverter x:Key="ReferencePreviewConverter" />
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="80" />
+            <RowDefinition Height="45" />
         </Grid.RowDefinitions>
         <ToolBar Grid.Row="0">            
             <Button Name="btnProperties" Click="btnProperties_Click">
@@ -55,6 +56,6 @@
             </ListView>
             <Label Height="28" Margin="6,103,87,0" Name="lblStatus" VerticalAlignment="Top" Grid.ColumnSpan="2" />
         </Grid>
-        <ext:BindableRichTextBox Grid.Row="2" Margin="6,0,6,12" Name="txtRTF" IsReadOnly="True" RTF="{Binding RefRTF}" VerticalScrollBarVisibility="Auto" />
+        <ext:BindableRichTextBox Grid.Row="2" Margin="6,0,6,12" Name="txtRTF" IsReadOnly="True" RTF="{Binding RefRTF, Mode=OneWay, Converter={StaticResource ReferencePreviewConverter}}" VerticalScrollBarVisibility="Auto" Background="{x:Static SystemColors.ControlBrush}"/>
     </Grid>
 </ext:DatabaseActionControl>

@@ -36,6 +36,7 @@ namespace BioLink.Client.Tools {
         private TabItem _notesTab;
         private TabItem _traitsTab;
         private TabItem _mmTab;
+        private TabItem _linksTab;
 
         public ReferenceDetail(User user, int referenceID)
             : base(user, "Reference:" + referenceID) {
@@ -74,13 +75,16 @@ namespace BioLink.Client.Tools {
             _traitsTab = tabRef.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Reference, _viewModel.RefID));
             _notesTab = tabRef.AddTabItem("Notes", new NotesControl(User, TraitCategoryType.Reference, _viewModel.RefID));
             _mmTab = tabRef.AddTabItem("Multimedia", new MultimediaControl(User, TraitCategoryType.Reference, _viewModel.RefID));
+            _linksTab = tabRef.AddTabItem("Taxon Links", new TaxonRefLinksControl(User, _viewModel.RefID));
 
             tabRef.AddTabItem("Ownership", new OwnershipDetails(_viewModel.Model));
 
             if (model.RefID < 0) {
+                // Can't insert/update any of these things until we have a valid ref id!
                 _traitsTab.IsEnabled = false;
                 _notesTab.IsEnabled = false;
                 _mmTab.IsEnabled = false;
+                _linksTab.IsEnabled = true;
             }
 
             cmbRefType.SelectionChanged += new SelectionChangedEventHandler(cmbRefType_SelectionChanged);
@@ -126,6 +130,7 @@ namespace BioLink.Client.Tools {
             _traitsTab.IsEnabled = true;
             _notesTab.IsEnabled = true;
             _mmTab.IsEnabled = true;
+            _linksTab.IsEnabled = true;
         }
 
         void ReferenceDetail_Loaded(object sender, RoutedEventArgs e) {

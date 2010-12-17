@@ -11,6 +11,20 @@ namespace BioLink.Client.Tools {
 
         public TaxonRefLinkViewModel(TaxonRefLink model)
             : base(model) {
+                DataChanged += new DataChangedHandler(TaxonRefLinkViewModel_DataChanged);
+        }
+
+        void TaxonRefLinkViewModel_DataChanged(ChangeableModelBase viewmodel) {
+            RaisePropertyChanged("DisplayLabel");
+        }
+
+        public override string DisplayLabel {
+            get {
+                return string.Format("{0} ({1}) pg. {2}", FullName, RefLink, RefPage);
+            }
+            set {
+                base.DisplayLabel = value;
+            }
         }
 
         public int RefLinkID {
@@ -43,7 +57,7 @@ namespace BioLink.Client.Tools {
             set { SetProperty(() => Model.RefQual, value); }
         }
 
-        public bool? UseInReports {
+        public bool UseInReports {
             get { return Model.UseInReports; }
             set { SetProperty(() => Model.UseInReports, value); }
         }

@@ -464,13 +464,14 @@ namespace BioLink.Data {
         }
 
         public List<RefLink> GetReferenceLinks(string categoryName, int intraCatID) {
-            var mapper = new GenericMapperBuilder<RefLink>().Map("intCatID", "CategoryID").Map("RefLink", "RefLinkType").build();
+            var mapper = new GenericMapperBuilder<RefLink>().Map("intCatID", "CategoryID").Map("RefLink", "RefLinkType").PostMapAction((link) => {
+                link.IntraCatID = intraCatID;
+            }).build();
+
             return StoredProcToList("spRefLinkList", mapper,
                 _P("vchrCategory", categoryName),
                 _P("intIntraCatID", intraCatID));
         }
-
-
 
         public void UpdateRefLink(RefLink link, string categoryName) {
             StoredProcUpdate("spRefLinkUpdate",
@@ -484,11 +485,11 @@ namespace BioLink.Data {
                 _P("bitUseInReport", link.UseInReport));
         }
 
-        public void InsertRefLink(RefLink link, string categoryName, int intraCatID) {
+        public int InsertRefLink(RefLink link, string categoryName) {
             var retval = ReturnParam("RetVal", System.Data.SqlDbType.Int);
             StoredProcUpdate("spRefLinkInsert",
                 _P("vchrCategory", categoryName),
-                _P("intIntraCatID", intraCatID),                
+                _P("intIntraCatID", link.IntraCatID),                
                 _P("vchrRefLink", link.RefLinkType),                
                 _P("intRefID", link.RefID),
                 _P("vchrRefPage", link.RefPage),
@@ -497,6 +498,7 @@ namespace BioLink.Data {
                 _P("bitUseInReport", link.UseInReport),
                 retval);
             link.RefLinkID = (int)retval.Value;
+            return (int)retval.Value;
         }
 
         public void DeleteRefLink(int refLinkID) {
@@ -522,7 +524,9 @@ namespace BioLink.Data {
         }
 
         public List<TaxonRefLink> GetTaxonRefLinks(int referenceID) {
-            var mapper = new GenericMapperBuilder<TaxonRefLink>().build();
+            var mapper = new GenericMapperBuilder<TaxonRefLink>().PostMapAction((model) => {
+                model.RefID = referenceID;
+            }).build();
             return StoredProcToList("spRefLinkTaxonList", mapper, _P("intReferenceID", referenceID));
         }
 
