@@ -20,4 +20,27 @@ namespace BioLink.Client.Tools {
         }
 
     }
+
+    public class InsertTaxonRefLinkAction : GenericDatabaseAction<TaxonRefLink> {
+
+        public InsertTaxonRefLinkAction(TaxonRefLink model)
+            : base(model) {
+        }
+
+        protected override void ProcessImpl(User user) {
+            var service = new SupportService(user);
+
+            var reflink = new RefLink();
+            reflink.RefLinkID = Model.RefLinkID;
+            reflink.IntraCatID = Model.BiotaID;
+            reflink.RefID = Model.RefID;
+            reflink.RefPage = Model.RefPage;
+            reflink.RefQual = Model.RefQual;
+            reflink.RefLinkType = Model.RefLink;
+            reflink.UseInReport = Model.UseInReports;
+
+            Model.RefLinkID = service.InsertRefLink(reflink, TraitCategoryType.Taxon.ToString());
+        }
+
+    }
 }

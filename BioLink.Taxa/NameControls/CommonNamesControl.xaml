@@ -28,7 +28,7 @@
                 </DataTemplate>
             </ListBox.Resources>
         </ListBox>
-        <Grid Grid.Column="1" DataContext="{Binding ElementName=lstNames, Path=SelectedItem}">
+        <Grid Grid.Column="1" DataContext="{Binding ElementName=lstNames, Path=SelectedItem}" Name="detailGrid">
             <Label Content="Name:" Height="26" Margin="6,6,0,0" HorizontalAlignment="Left" Width="82" VerticalAlignment="Top" />
             <ext:TextBox Height="23" Margin="86,8,6,0" VerticalAlignment="Top" Text="{Binding Name}"/>
 

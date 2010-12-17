@@ -125,6 +125,23 @@ namespace BioLink.Client.Extensibility {
                         return service.GetMultimediaTypes().ConvertAll((mmtype) => mmtype.Name);
                     };
                     break;
+                case PickListType.RefLinkType:
+                    caption = "Reference Link types";
+                    itemsFunc = () => {
+                        var list = service.GetRefLinkTypes();    
+                        SortedDictionary<string, string> filtered = new SortedDictionary<string, string>();
+                        // Remove the duplicates...Something really dodgey is going on when inserting ref links, it looks like
+                        // duplicate ref link types are being created.
+                        foreach (string item in list) {
+                            filtered[item] = item;
+                        }
+                        return filtered.Keys;
+                    };
+                    addItemFunc = (newval) => {
+                        service.InsertRefLinkType(newval, traitCategory.ToString());
+                        return true;
+                    };
+                    break;
                 default:
                     throw new Exception("Unhandled pick list type: " + type);
             }
@@ -205,7 +222,8 @@ namespace BioLink.Client.Extensibility {
         Keyword,
         DistinctList,
         DistinctTraitList,        
-        MultimediaType
+        MultimediaType, 
+        RefLinkType
     }
 
     public delegate void TextChangedHandler(object source, string value);

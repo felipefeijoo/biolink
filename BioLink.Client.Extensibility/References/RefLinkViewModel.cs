@@ -18,6 +18,11 @@ namespace BioLink.Client.Extensibility {
             set { SetProperty(()=>Model.RefLinkID, value); }
         }
 
+        public int? IntraCatID {
+            get { return Model.IntraCatID; }
+            set { SetProperty(() => Model.IntraCatID, value); }
+        }
+
         public int RefID {
             get { return Model.RefID; }
             set { SetProperty(() => Model.RefID, value); }
@@ -33,12 +38,12 @@ namespace BioLink.Client.Extensibility {
             set { SetProperty(() => Model.RefQual, value); }
         }
 
-        public int Order {
+        public int? Order {
             get { return Model.Order; }
             set { SetProperty(() => Model.Order, value); }
         }
 
-        public bool UseInReport {
+        public bool? UseInReport {
             get { return Model.UseInReport; }
             set { SetProperty(()=>Model.UseInReport, value); }
         }

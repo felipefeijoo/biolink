@@ -110,6 +110,9 @@ namespace BioLink.Client.Extensibility {
                     this.InvokeIfRequired(() => {
                         txt.Focus();
                     });
+                    if (ObjectSelected != null) {
+                        ObjectSelected(this, result);
+                    }
                     _manualSet = false;
                 });
             }
@@ -172,12 +175,16 @@ namespace BioLink.Client.Extensibility {
 
         public event ObjectIDChangedHandler ObjectIDChanged;
 
+        public event ObjectSelectedHandler ObjectSelected;
+
         #endregion
 
 
     }
 
     public delegate void ObjectIDChangedHandler(object source, int? objectID);
+
+    public delegate void ObjectSelectedHandler(object source, SelectionResult result);
 
     public enum LookupType {
         Unknown,

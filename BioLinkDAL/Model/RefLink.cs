@@ -9,10 +9,11 @@ namespace BioLink.Data.Model {
        
         public int RefLinkID { get; set; }        
         public int RefID { get; set; }
+        public int? IntraCatID { get; set; }
         public string RefPage { get; set; }
         public string RefQual { get; set; }
-        public int Order { get; set; }
-        public bool UseInReport { get; set; }
+        public int? Order { get; set; }
+        public bool? UseInReport { get; set; }
         public string RefLinkType { get; set; }
         public string RefCode { get; set; }
         public string FullRTF { get; set; }

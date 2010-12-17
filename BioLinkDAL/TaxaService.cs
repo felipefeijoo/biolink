@@ -401,7 +401,7 @@ namespace BioLink.Data {
 
             var retval = ReturnParam("RetVal", System.Data.SqlDbType.Int);
 
-            StoredProcUpdate("spCommonNameUpdate",                
+            StoredProcUpdate("spCommonNameInsert",                
                 _P("intBiotaID", commonName.BiotaID),
                 _P("vchrCommonName", commonName.Name),
                 _P("intRefID", commonName.RefID, DBNull.Value),
