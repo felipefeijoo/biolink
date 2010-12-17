@@ -82,6 +82,11 @@
       <DependentUpon>ReferenceManager.xaml</DependentUpon>
     </Compile>
     <Compile Include="references\ReferenceViewModel.cs" />
+    <Compile Include="references\TaxonRefLinkDatabaseActions.cs" />
+    <Compile Include="references\TaxonRefLinksControl.xaml.cs">
+      <DependentUpon>TaxonRefLinksControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="references\TaxonRefLinkViewModel.cs" />
     <Compile Include="ToolsPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -139,6 +144,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="references\ReferenceManager.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="references\TaxonRefLinksControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

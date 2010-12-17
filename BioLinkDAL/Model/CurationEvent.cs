@@ -9,7 +9,7 @@ namespace BioLink.Data.Model {
 
         public int CurationEventID { get; set; }
         public int MaterialID { get; set; }
-        public string SubPartName { get; set; }
+        public string SubpartName { get; set; }
         public string Who { get; set; }
         public DateTime? When { get; set; }
         public string EventType { get; set; }

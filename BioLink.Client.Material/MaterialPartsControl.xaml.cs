@@ -50,6 +50,15 @@ namespace BioLink.Client.Material {
 
         }
 
+        public ObservableCollection<MaterialPartViewModel> Model { 
+            get {
+                if (!_populated) {
+                    Populate();
+                }
+                return _model; 
+            } 
+        }
+
         public void Populate() {
             if (!_populated) {
                 LoadParts();

@@ -64,6 +64,7 @@
       <DependentUpon>MaterialLabelsControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="MaterialPartAction.cs" />
+    <Compile Include="TypeDataConverter.cs" />
     <Compile Include="MaterialPartsControl.xaml.cs">
       <DependentUpon>MaterialPartsControl.xaml</DependentUpon>
     </Compile>

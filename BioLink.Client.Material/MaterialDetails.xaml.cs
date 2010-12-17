@@ -67,9 +67,10 @@ namespace BioLink.Client.Material {
             _historyControl.Margin = new Thickness(0);
             tabIDHistory.Content = _historyControl;
 
-            tabMaterial.AddTabItem("Subparts", new MaterialPartsControl(User, materialID));
+            var partsControl = new MaterialPartsControl(User, materialID);
+            tabMaterial.AddTabItem("Subparts", partsControl);
 
-            tabMaterial.AddTabItem("Events", new CurationEventsControl(User, materialID));
+            tabMaterial.AddTabItem("Events", new CurationEventsControl(User, materialID, partsControl));
             tabMaterial.AddTabItem("Labels", new MaterialLabelsControl(_viewModel));
             tabMaterial.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Material, materialID));
             tabMaterial.AddTabItem("Notes", new NotesControl(User, TraitCategoryType.Material, materialID));

@@ -4,12 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+             xmlns:mat="clr-namespace:BioLink.Client.Material"                           
              mc:Ignorable="d" 
              MinWidth="700" MinHeight="530"
              d:DesignHeight="534" d:DesignWidth="707" UseLayoutRounding="True" SnapsToDevicePixels="True">
     <Grid>
         <Grid.Resources>
             <ext:HardDateConverter x:Key="hardDateConverter" />
+            <mat:TypeDataConverter x:Key="typeDataConverter" />
         </Grid.Resources>
         <Label Content="Site:" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" Name="label1" VerticalAlignment="Top" />
         <ext:TextBox Height="23" Margin="109,14,12,0" Name="txtSiteName" VerticalAlignment="Top" IsEnabled="False" Text="{Binding SiteName}" />
@@ -43,7 +45,7 @@
                     <Label Content="Trap:" Height="28" HorizontalAlignment="Left" Margin="6,219,0,0" Name="label14" VerticalAlignment="Top" />
                     <ext:LookupControl HorizontalAlignment="Left" Margin="147,219,0,0" Name="txtTrap" VerticalAlignment="Top" Width="525" ObjectID="{Binding TrapID}" Text="{Binding TrapName}"/>
                     <Label Content="Type Details:" Height="28" HorizontalAlignment="Left" Margin="6,248,0,0" Name="label15" VerticalAlignment="Top" />
-                    <Label Height="28" HorizontalAlignment="Left" Margin="147,248,0,0" Name="lblTypeDetails" VerticalAlignment="Top" Width="525" Content="{Binding TypeData}"/>
+                    <TextBox Height="28" HorizontalAlignment="Left" Margin="147,248,0,0" Name="lblTypeDetails" VerticalAlignment="Top" Width="525" Text="{Binding TypeData, Mode=OneWay, Converter={StaticResource typeDataConverter}}" Background="{x:Static SystemColors.ControlBrush}" IsReadOnly="True" />
                 </Grid>
             </TabItem>
             <TabItem Header="Identification" Name="tabIdentification">

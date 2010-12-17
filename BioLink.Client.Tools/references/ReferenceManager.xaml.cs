@@ -135,6 +135,18 @@ namespace BioLink.Client.Tools {
         private void btnFind_Click(object sender, RoutedEventArgs e) {
             DoSearch();
         }
+
+        private void btnProperties_Click(object sender, RoutedEventArgs e) {
+            EditSelected();
+        }
+
+        private void btnAddNew_Click(object sender, RoutedEventArgs e) {
+            AddNew();
+        }
+
+        private void btnDelete_Click(object sender, RoutedEventArgs e) {
+            DeleteSelected();
+        }
     }
 
     public class ReferenceSelectionResult : SelectionResult {
