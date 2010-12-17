@@ -22,7 +22,7 @@ namespace BioLink.Client.Material {
 
         public override string DisplayLabel {
             get {
-                return String.Format("{0}  {1}  {2}", EventType, SubPartName, Who);
+                return String.Format("{0}  {1}  {2}", EventType, SubpartName, Who);
             }
             set {
                 base.DisplayLabel = value;
@@ -39,9 +39,9 @@ namespace BioLink.Client.Material {
             set { SetProperty(() => Model.MaterialID, value); }
         }
 
-        public string SubPartName {
-            get { return Model.SubPartName; }
-            set { SetProperty(() => Model.SubPartName, value); }
+        public string SubpartName {
+            get { return Model.SubpartName; }
+            set { SetProperty(() => Model.SubpartName, value); }
         }
 
         public string Who {

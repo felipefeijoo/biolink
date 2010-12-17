@@ -41,7 +41,8 @@ namespace BioLink.Client.Extensibility {
             if (_addItemFunc != null) {
                 btnAddNew.Visibility = Visibility.Visible;
                 btnAddNew.Click += new RoutedEventHandler((source, e) => {
-                    InputBox.Show(this, "Add a new value", "Enter the new value, and click OK", (text) => {
+                    string prefill = txtFilter.Text;
+                    InputBox.Show(this, "Add a new value", "Enter the new value, and click OK", prefill, (text) => {
                         if (_addItemFunc(text)) {
                             _model.Add(text);
                             lst.SelectedItem = text;

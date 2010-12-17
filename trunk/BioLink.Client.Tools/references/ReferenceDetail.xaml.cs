@@ -285,7 +285,7 @@ namespace BioLink.Client.Tools {
                         strRTF.Append(" :");
                     }
                     // Write the pages.
-                    strRTF.AppendFormat(" {0}", ProcRefPages(model.TotalPages, PagesType.NO_PP));
+                    strRTF.AppendFormat(" {0}", ProcRefPages(model.Pages, PagesType.NO_PP));
                     break;
                 case "JS":
                     strRTF.AppendFormat(@" {0} \i in \i0 {1} {2} \i {3} \i0 ", ProcRefPages(model.Pages, PagesType.REF_SECTION_PAGES), AtEnd(model.Editor, "."), AtEnd(model.BookTitle, "."), AtEnd(model.JournalName, "."));
@@ -307,7 +307,7 @@ namespace BioLink.Client.Tools {
                     break;
                 case "B":
                     // Write the place of publication
-                    strRTF.AppendFormat(" {0} : {1}", model.Place, AtEnd(model.Publisher, "."));
+                    strRTF.AppendFormat(" {0} :{1}", model.Place, AtEnd(model.Publisher, "."));
 
                     if (!String.IsNullOrEmpty(model.Volume)) {
                         strRTF.AppendFormat(" Vol. {0}", model.Volume);
@@ -331,7 +331,7 @@ namespace BioLink.Client.Tools {
 
 
                     //Write the editors.
-                    strRTF.AppendFormat(@" {0} \i  {1}\i0 {2} : {3}", model.Editor, AtEnd(model.BookTitle, "."), model.Place, model.Publisher);
+                    strRTF.AppendFormat(@" {0} \i  {1}\i0 {2} :{3}", model.Editor, AtEnd(model.BookTitle, "."), model.Place, model.Publisher);
                     // Write the volume
                     if (!String.IsNullOrEmpty(model.Volume)) {
                         strRTF.AppendFormat(" Vol. {0}", model.Volume);

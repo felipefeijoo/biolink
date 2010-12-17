@@ -470,6 +470,8 @@ namespace BioLink.Data {
                 _P("intIntraCatID", intraCatID));
         }
 
+
+
         public void UpdateRefLink(RefLink link, string categoryName) {
             StoredProcUpdate("spRefLinkUpdate",
                 _P("intRefLinkID", link.RefLinkID),
@@ -517,6 +519,22 @@ namespace BioLink.Data {
                 _P("intRefLinkTypeID", -1),
                 retval);
             return (int)retval.Value;
+        }
+
+        public List<TaxonRefLink> GetTaxonRefLinks(int referenceID) {
+            var mapper = new GenericMapperBuilder<TaxonRefLink>().build();
+            return StoredProcToList("spRefLinkTaxonList", mapper, _P("intReferenceID", referenceID));
+        }
+
+        public void UpdateTaxonRefLink(TaxonRefLink link) {
+            StoredProcUpdate("spRefLinkTaxonUpdate",
+                _P("intRefLinkID", link.RefLinkID),
+                _P("vchrRefLink", link.RefLink),
+                _P("intBiotaID", link.BiotaID),
+                _P("vchrRefPage", link.RefPage),
+                _P("txtRefQual", link.RefQual),
+                _P("bitUseInReport", link.UseInReports)
+            );
         }
 
         #endregion

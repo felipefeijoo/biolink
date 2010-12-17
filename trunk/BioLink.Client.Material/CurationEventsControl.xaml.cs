@@ -25,6 +25,7 @@ namespace BioLink.Client.Material {
 
         private ObservableCollection<CurationEventViewModel> _model;
         private bool _populated = false;
+        private MaterialPartsControl _partsControl;
 
         #region Designer Ctor
         public CurationEventsControl() {
@@ -32,8 +33,9 @@ namespace BioLink.Client.Material {
         }
         #endregion
 
-        public CurationEventsControl(User user, int materialID) : base(user, "CurationEvents:" + materialID) {
+        public CurationEventsControl(User user, int materialID, MaterialPartsControl partsControl) : base(user, "CurationEvents:" + materialID) {
             InitializeComponent();
+            _partsControl = partsControl;
             MaterialID = materialID;
             detailsGrid.IsEnabled = false;
             lstEvents.SelectionChanged += new SelectionChangedEventHandler(lstEvents_SelectionChanged);
@@ -41,8 +43,27 @@ namespace BioLink.Client.Material {
             txtEventType.BindUser(user, PickListType.Phrase, "Event Type", TraitCategoryType.Material);
             txtCurator.BindUser(user, PickListType.Phrase, "Curator", TraitCategoryType.Material);
 
-            ChangesCommitted += new PendingChangesCommittedHandler(CurationEventsControl_ChangesCommitted);
+            if (partsControl != null) {
+                LoadPartNames();
+                partsControl.Model.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(Model_CollectionChanged);
 
+            }
+            ChangesCommitted += new PendingChangesCommittedHandler(CurationEventsControl_ChangesCommitted);
+        }
+
+        private void LoadPartNames() {            
+            var list = new List<String>();
+            list.Add("");
+            if (_partsControl != null) {
+                foreach (MaterialPartViewModel vm in _partsControl.Model) {
+                    list.Add(vm.PartName);
+                }
+            }
+            cmbSubpart.ItemsSource = list;
+        }
+
+        void Model_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
+            LoadPartNames();
         }
 
         void CurationEventsControl_ChangesCommitted(object sender) {

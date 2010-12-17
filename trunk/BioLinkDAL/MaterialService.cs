@@ -512,7 +512,7 @@ namespace BioLink.Data {
             var retval = ReturnParam("intNewID");
             StoredProcUpdate("spCurationEventInsert",
                 _P("intMaterialID", e.MaterialID),
-                _P("vchrSubpartName", e.SubPartName),
+                _P("vchrSubpartName", e.SubpartName),
                 _P("vchrWho", e.Who),
                 _P("dtWhen", e.When),
                 _P("vchrEventType", e.EventType),
@@ -526,7 +526,7 @@ namespace BioLink.Data {
             StoredProcUpdate("spCurationEventUpdate",
                 _P("intCurationEventID", e.CurationEventID),
                 _P("intMaterialID", e.MaterialID),
-                _P("vchrSubpartName", e.SubPartName),
+                _P("vchrSubpartName", e.SubpartName),
                 _P("vchrWho", e.Who),
                 _P("dtWhen", e.When),
                 _P("vchrEventType", e.EventType),
