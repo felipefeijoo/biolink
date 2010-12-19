@@ -786,6 +786,60 @@ namespace BioLink.Data {
 
         #endregion
 
+        #region Associates
+
+        public List<Associate> GetAssociates(string category, int intraCatID) {
+            var mapper = new GenericMapperBuilder<Associate>().build();            
+            return StoredProcToList("spAssociateLoadFromList", mapper, _P("vchrCategory", category), _P("txtIntraCatIDList", intraCatID + ""));
+        }
+
+        public int InsertAssociate(Associate a) {
+            var retval = ReturnParam("NewAssociateID", SqlDbType.Int);
+            StoredProcUpdate("spAssociateInsert",
+                _P("intFromIntraCatID", a.FromIntraCatID),
+                _P("FromCategory", a.FromCategory),
+                _P("intToIntraCatID", a.ToIntraCatID),
+                _P("ToCategory", a.ToCategory),
+                _P("txtAssocDescription", a.AssocDescription),
+                _P("vchrRelationFromTo", a.RelationFromTo),
+                _P("vchrRelationToFrom", a.RelationToFrom),
+                _P("intPoliticalRegionID", a.PoliticalRegionID),
+                _P("vchrSource", a.Source),
+                _P("intRefID", a.RefID),
+                _P("vchrRefPage", a.RefPage),
+                _P("bitUncertain", a.Uncertain),
+                _P("txtNotes", a.Notes),
+                retval
+            );
+
+            return (int)retval.Value;
+        }
+
+        public void UpdateAssociate(Associate a) {
+            StoredProcUpdate("spAssociateUpdate",
+                _P("intAssociateID", a.AssociateID),
+                _P("intFromIntraCatID", a.FromIntraCatID),
+                _P("FromCategory", a.FromCategory),
+                _P("intToIntraCatID", a.ToIntraCatID),
+                _P("ToCategory", a.ToCategory),
+                _P("txtAssocDescription", a.AssocDescription),
+                _P("vchrRelationFromTo", a.RelationFromTo),
+                _P("vchrRelationToFrom", a.RelationToFrom),
+                _P("intPoliticalRegionID", a.PoliticalRegionID),
+                _P("vchrSource", a.Source),
+                _P("intRefID", a.RefID),
+                _P("vchrRefPage", a.RefPage),
+                _P("bitUncertain", a.Uncertain),
+                _P("txtNotes", a.Notes)
+            );
+        }
+
+        public void DeleteAssociate(int associateId) {
+            StoredProcUpdate("spAssociateDelete", _P("intAssociateID", associateId));
+        }
+
+
+        #endregion
     }
 
     public class RefTypeMapping {

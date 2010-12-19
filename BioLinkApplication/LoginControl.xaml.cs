@@ -121,23 +121,29 @@ namespace BioLinkApplication {
             
             string format = FindResource("LoginControl.Status.Connecting") as string;
             lblStatus.Content =  String.Format(format,  profile.Server);
-
-            LoginAsync(user,
-                () => { 
-                    this.InvokeIfRequired(() => {                        
-                        RaiseEvent(new LoginSuccessfulEventArgs(LoginControl.LoginSuccessfulEvent, user)); 
-                    }); 
-                }, 
-                (errorMsg) => {
-                    this.InvokeIfRequired(() => {                        
-                        btnCancel.Visibility = Visibility.Visible;
-                        btnLogin.Visibility = Visibility.Visible;
-                        txtPassword.Focus();
-                        txtPassword.SelectAll();
-                        ErrorMessage("LoginControl.Status.LoginFailed", errorMsg);
-                    });                
-                }
-            );
+            try {
+                detailsGrid.IsEnabled = false;
+                LoginAsync(user,
+                    () => {
+                        this.InvokeIfRequired(() => {
+                            detailsGrid.IsEnabled = true;
+                            RaiseEvent(new LoginSuccessfulEventArgs(LoginControl.LoginSuccessfulEvent, user));
+                        });
+                    },
+                    (errorMsg) => {
+                        this.InvokeIfRequired(() => {
+                            detailsGrid.IsEnabled = true;
+                            btnCancel.Visibility = Visibility.Visible;
+                            btnLogin.Visibility = Visibility.Visible;
+                            txtPassword.Focus();
+                            txtPassword.SelectAll();
+                            ErrorMessage("LoginControl.Status.LoginFailed", errorMsg);
+                        });
+                    }
+                );
+            } finally {
+                detailsGrid.IsEnabled = true;
+            }
             
         }
 

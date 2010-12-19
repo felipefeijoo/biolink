@@ -138,10 +138,8 @@ namespace BioLink.Client.Taxa {
                 return;
             } 
 
-            try {
-                tvwResults.InvokeIfRequired(() => {
-                    tvwResults.Cursor = Cursors.Wait;
-                });
+
+            using (new OverrideCursor(Cursors.Wait)) {
                 if (Owner == null) {
                     return;
                 }
@@ -159,11 +157,7 @@ namespace BioLink.Client.Taxa {
                     }
 
                 });
-            } finally {
-                tvwResults.InvokeIfRequired(() => {
-                    tvwResults.Cursor = Cursors.Arrow;
-                });
-            }
+            } 
         }
 
         private void tabControl1_SelectionChanged(object sender, SelectionChangedEventArgs e) {

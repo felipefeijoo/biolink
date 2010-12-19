@@ -16,5 +16,6 @@ namespace BioLink.Data.Model {
         public string Qual { get; set; }
         public string DistRegionFullPath { get; set; }
 
+        public int Changes { get; set; }
     }
 }

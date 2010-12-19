@@ -69,7 +69,7 @@ namespace BioLink.Client.Material {
 
             var partsControl = new MaterialPartsControl(User, materialID);
             tabMaterial.AddTabItem("Subparts", partsControl);
-
+            tabMaterial.AddTabItem("Associates", new OneToManyControl(new AssociatesControl(User, TraitCategoryType.Material, materialID)));
             tabMaterial.AddTabItem("Events", new CurationEventsControl(User, materialID, partsControl));
             tabMaterial.AddTabItem("Labels", new MaterialLabelsControl(_viewModel));
             tabMaterial.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Material, materialID));

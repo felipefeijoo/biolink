@@ -37,7 +37,7 @@ namespace BioLink.Client.Tools {
             set { SetProperty(() => Model.RefLink, value); }
         }
 
-        public int? BiotaID {
+        public int BiotaID {
             get { return Model.BiotaID; }
             set { SetProperty(() => Model.BiotaID, value); }
         }

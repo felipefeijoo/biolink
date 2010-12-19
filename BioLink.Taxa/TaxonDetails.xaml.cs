@@ -57,11 +57,10 @@ namespace BioLink.Client.Taxa {
                 tabControl.AddTabItem("Distribution", new DistributionControl(user, taxon));
             }
 
-
-            tabControl.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Taxon, taxon.TaxaID));
             tabControl.AddTabItem("Multimedia", new MultimediaControl(User, TraitCategoryType.Taxon, taxon.TaxaID));
+            tabControl.AddTabItem("Associates", new OneToManyControl(new AssociatesControl(User, TraitCategoryType.Taxon, taxon.TaxaID.Value)));
+            tabControl.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Taxon, taxon.TaxaID));            
             tabControl.AddTabItem("Notes", new NotesControl(User, TraitCategoryType.Taxon, taxon.TaxaID));
-
             tabControl.AddTabItem("Ownership", new OwnershipDetails(taxon.Taxon));
 
             this.Taxon = taxon;

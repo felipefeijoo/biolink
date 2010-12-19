@@ -43,4 +43,17 @@ namespace BioLink.Client.Tools {
         }
 
     }
+
+    public class DeleteTaxonRefLinkAction : GenericDatabaseAction<TaxonRefLink> {
+        public DeleteTaxonRefLinkAction(TaxonRefLink model)
+            : base(model) {
+        }
+
+        protected override void ProcessImpl(User user) {
+            if (Model.RefLinkID >= 0) {
+                var service = new SupportService(user);
+                service.DeleteRefLink(Model.RefLinkID);
+            }
+        }
+    }
 }

@@ -49,13 +49,12 @@ namespace BioLink.Client.Taxa {
                 JobExecutor.QueueJob(() => {
                     Explorer.tvwAllTaxa.InvokeIfRequired(() => {
                         try {
-                            Explorer.tvwAllTaxa.Cursor = Cursors.Wait;
-                            Explorer.ExpandChildren(Taxon);
+                            using (new OverrideCursor(Cursors.Wait)) {                                
+                                Explorer.ExpandChildren(Taxon);
+                            }
                         } catch (Exception ex) {
                             GlobalExceptionHandler.Handle(ex);
-                        } finally {
-                            Explorer.tvwAllTaxa.Cursor = Cursors.Arrow;
-                        }
+                        } 
                     });
                 });
             });

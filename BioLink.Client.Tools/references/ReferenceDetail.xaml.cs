@@ -75,7 +75,7 @@ namespace BioLink.Client.Tools {
             _traitsTab = tabRef.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Reference, _viewModel.RefID));
             _notesTab = tabRef.AddTabItem("Notes", new NotesControl(User, TraitCategoryType.Reference, _viewModel.RefID));
             _mmTab = tabRef.AddTabItem("Multimedia", new MultimediaControl(User, TraitCategoryType.Reference, _viewModel.RefID));
-            _linksTab = tabRef.AddTabItem("Taxon Links", new TaxonRefLinksControl(User, _viewModel.RefID));
+            _linksTab = tabRef.AddTabItem("Taxon Links", new OneToManyControl(new TaxonRefLinksControl(User, _viewModel.RefID)));
 
             tabRef.AddTabItem("Ownership", new OwnershipDetails(_viewModel.Model));
 

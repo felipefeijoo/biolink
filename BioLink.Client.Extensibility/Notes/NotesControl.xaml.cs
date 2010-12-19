@@ -23,6 +23,7 @@ namespace BioLink.Client.Extensibility {
     public partial class NotesControl : DatabaseActionControl, ILazyPopulateControl {
 
         private ObservableCollection<NoteViewModel> _model;
+        private NoteControl _currentNoteControl;        
 
         #region Designer Constructor
         public NotesControl() {
@@ -35,16 +36,8 @@ namespace BioLink.Client.Extensibility {
             Debug.Assert(intraCatId.HasValue);
             TraitCategory = category;
             this.IntraCatID = intraCatId.Value;
-
-            var service = new SupportService(User);
-            var list = service.GetNotes(TraitCategory.ToString(), IntraCatID);
-            _model = new ObservableCollection<NoteViewModel>(list.ConvertAll((model) => {
-                var viewModel = new NoteViewModel(model);
-                viewModel.DataChanged += new DataChangedHandler(viewModel_DataChanged);
-                return viewModel;
-            }));
             btnColor.ColorSelected += new Action<Color>(btnColor_SelectedColorChanged);
-            LoadNotesPanel();
+            // LoadNotesPanel();
         }
 
         void btnColor_SelectedColorChanged(Color color) {
@@ -54,20 +47,33 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void LoadNotesPanel(NoteViewModel selected = null) {
-            notesPanel.Children.Clear();
-            foreach (NoteViewModel m in _model) {
-                var control = new NoteControl(User, m);
-                control.NoteDeleted += new NoteControl.NoteEventHandler(control_NoteDeleted);
-                control.TextSelectionChanged +=new NoteControl.NoteEventHandler(control_TextSelectionChanged);
 
-                if (selected != null && selected == m) {
-                    control.IsExpanded = true;
+            using (new OverrideCursor(Cursors.Wait)) {
+
+                notesPanel.Children.Clear();
+
+                var service = new SupportService(User);
+                var list = service.GetNotes(TraitCategory.ToString(), IntraCatID);
+                _model = new ObservableCollection<NoteViewModel>(list.ConvertAll((model) => {
+                    var viewModel = new NoteViewModel(model);
+                    viewModel.DataChanged += new DataChangedHandler(viewModel_DataChanged);
+                    return viewModel;
+                }));
+
+                foreach (NoteViewModel m in _model) {
+                    var control = new NoteControl(User, m);
+                    control.NoteDeleted += new NoteControl.NoteEventHandler(control_NoteDeleted);
+                    control.TextSelectionChanged += new NoteControl.NoteEventHandler(control_TextSelectionChanged);
+
+                    if (selected != null && selected == m) {
+                        control.IsExpanded = true;
+                    }
+                    notesPanel.Children.Add(control);
                 }
-                notesPanel.Children.Add(control);
+
+                IsPopulated = true;
             }
         }
-
-        private NoteControl _currentNoteControl;        
 
         private void control_TextSelectionChanged(object source, NoteViewModel note) {
             _currentNoteControl = source as NoteControl;
@@ -91,8 +97,11 @@ namespace BioLink.Client.Extensibility {
         }
 
         public void Populate() {
-            this.InvokeIfRequired(() => {
-            });            
+            if (!IsPopulated) {
+                this.InvokeIfRequired(() => {
+                    LoadNotesPanel();
+                });
+            }
         }
 
         void viewModel_DataChanged(ChangeableModelBase viewmodel) {

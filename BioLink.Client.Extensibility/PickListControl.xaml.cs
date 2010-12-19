@@ -30,13 +30,19 @@ namespace BioLink.Client.Extensibility {
         public PickListControl(User user, PickListType type, string phraseCategory, TraitCategoryType traitCategory) {
             InitializeComponent();
             BindUser(user, type, phraseCategory, traitCategory);
+            GotFocus += new RoutedEventHandler(PickListControl_GotFocus);
         }
 
         public PickListControl(User user, string tableName, string fieldName) {
             InitializeComponent();
             BindUser(user, tableName, fieldName);
+
+            GotFocus += new RoutedEventHandler(PickListControl_GotFocus);
         }
 
+        void PickListControl_GotFocus(object sender, RoutedEventArgs e) {
+            txt.Focus();
+        }
 
         public void BindUser(User user, PickListType pickListType, String categoryName, TraitCategoryType traitCategory) {
             this.User = user;
