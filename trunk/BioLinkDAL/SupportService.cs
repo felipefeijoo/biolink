@@ -376,11 +376,7 @@ namespace BioLink.Data {
 
         public Reference GetReference(int refID) {
             var mapper = new GenericMapperBuilder<Reference>().build();
-            Reference ret = null;
-            StoredProcReaderFirst("spReferenceList", (reader) => {
-                ret = mapper.Map(reader);
-            }, _P("vchrRefIDList", refID + ""));
-            return ret;
+            return StoredProcGetOne("spReferenceList", mapper, _P("vchrRefIDList", refID + ""));
         }
 
         public void DeleteReference(int refID) {
@@ -838,6 +834,67 @@ namespace BioLink.Data {
             StoredProcUpdate("spAssociateDelete", _P("intAssociateID", associateId));
         }
 
+
+        #endregion
+
+        #region Journals
+        
+        public Journal GetJournal(int journalID) {
+            var mapper = new GenericMapperBuilder<Journal>().build();
+            return StoredProcGetOne("spJournalGet", mapper, _P("intJournalID", journalID));
+        }
+
+        public int InsertJournal(Journal journal) {
+            var retval = ReturnParam("NewJournalID", SqlDbType.Int);
+            StoredProcUpdate("spJournalInsert",
+                _P("vchrAbbrevName", journal.AbbrevName),
+                _P("vchrAbbrevName2", journal.AbbrevName2),
+                _P("vchrAlias", journal.Alias),
+                _P("vchrFullName", journal.FullName),
+                _P("txtNotes", journal.Notes),
+                retval
+            );
+            return (int)retval.Value;
+        }
+
+        public void UpdateJournal(Journal journal) {
+            StoredProcUpdate("spJournalUpdate",
+                _P("intJournalID", journal.JournalID),
+                _P("vchrAbbrevName", journal.AbbrevName),
+                _P("vchrAbbrevName2", journal.AbbrevName2),
+                _P("vchrAlias", journal.Alias),
+                _P("vchrFullName", journal.FullName),
+                _P("txtNotes", journal.Notes)
+            );
+        }
+
+        public void DeleteJournal(int journalID) {
+            StoredProcUpdate("spJournalDelete", _P("intJournalID", journalID));
+        }
+
+        public List<Journal> FindJournals(string criteria) {
+            var mapper = new GenericMapperBuilder<Journal>().build();
+            return StoredProcToList("spJournalFind", mapper, _P("vchrCriteria", criteria));
+        }
+
+        public List<Journal> ListJournalRange(string where) {
+            var mapper = new GenericMapperBuilder<Journal>().build();
+            return StoredProcToList("spJournalListRange", mapper, _P("vchrWhere", where));
+        }
+
+        public List<Journal> LookupJournal(string filter) {
+            var mapper = new GenericMapperBuilder<Journal>().build();
+            return StoredProcToList("spJournalLookup", mapper, _P("vchrFilter", filter));
+        }
+
+        public Boolean OkToDeleteJournal(int journalID) {
+            var refcount = ReturnParam("refcount", SqlDbType.Int);
+            StoredProcReaderFirst("spJournalOkToDelete", (reader) => {
+
+            }, _P("intJournalID", journalID));
+
+            return ((int)refcount.Value == 0);
+        }
 
         #endregion
     }
