@@ -874,7 +874,7 @@ namespace BioLink.Data {
 
         public List<Journal> FindJournals(string criteria) {
             var mapper = new GenericMapperBuilder<Journal>().build();
-            return StoredProcToList("spJournalFind", mapper, _P("vchrCriteria", criteria));
+            return StoredProcToList("spJournalFind", mapper, _P("vchrCriteria", criteria + "%"));
         }
 
         public List<Journal> ListJournalRange(string where) {
