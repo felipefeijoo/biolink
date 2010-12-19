@@ -181,6 +181,14 @@ namespace BioLink.Data {
             return list;
         }
 
+        protected T StoredProcGetOne<T>(string storedproc, GenericMapper<T> mapper, params SqlParameter[] @params) where T : new() {
+            T ret = default(T);
+            StoredProcReaderFirst(storedproc, (reader) => {
+                ret = mapper.Map(reader);
+            }, @params);
+            return ret;
+        }
+
         protected DataTable StoredProcDataTable(string proc, params SqlParameter[] @params) {
 
             DataTable table = null;

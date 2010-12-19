@@ -61,11 +61,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssociateDatabaseActions.cs" />
-    <Compile Include="AssociatesControl.xaml.cs">
+    <Compile Include="Associates\AssociateDatabaseActions.cs" />
+    <Compile Include="Associates\AssociatesControl.xaml.cs">
       <DependentUpon>AssociatesControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="AssociateViewModel.cs" />
+    <Compile Include="Associates\AssociateViewModel.cs" />
     <Compile Include="AutoNumber\AutoNumberBox.cs" />
     <Compile Include="AutoNumber\AutoNumberCategoryManager.xaml.cs">
       <DependentUpon>AutoNumberCategoryManager.xaml</DependentUpon>
@@ -247,7 +247,7 @@
     <Folder Include="lib\" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="AssociatesControl.xaml">
+    <Page Include="Associates\AssociatesControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

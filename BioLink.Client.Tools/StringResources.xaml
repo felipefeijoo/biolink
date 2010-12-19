@@ -10,5 +10,6 @@
     <system:String x:Key="Tools.Menu.Tools">_Tools</system:String>
     <system:String x:Key="Tools.Menu.Phrases">_Phrases</system:String>
     <system:String x:Key="Tools.Menu.ReferenceManager">_Reference manager</system:String>
+    <system:String x:Key="Tools.Menu.JournalManager">_Journal manager</system:String>
     
 </ResourceDictionary>

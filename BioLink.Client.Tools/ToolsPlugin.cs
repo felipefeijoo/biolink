@@ -14,6 +14,7 @@ namespace BioLink.Client.Tools {
 
         private ControlHostWindow _phraseManager;
         private ControlHostWindow _refManager;
+        private ControlHostWindow _journalManager;
 
         public const string TOOLS_PLUGIN_NAME = "Tools";
 
@@ -36,6 +37,12 @@ namespace BioLink.Client.Tools {
                 String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
                 String.Format("{{'Name':'ReferenceManager', 'Header':'{0}'}}", _R("Tools.Menu.ReferenceManager"))
             ));
+
+            contrib.Add(new MenuWorkspaceContribution(this, "JournalManager", (obj, e) => { ShowJournalManager(); },
+                String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
+                String.Format("{{'Name':'JournalManager', 'Header':'{0}'}}", _R("Tools.Menu.JournalManager"))
+            ));
+
 
             return contrib;
         }
@@ -76,6 +83,21 @@ namespace BioLink.Client.Tools {
 
             _refManager.Show();
             _refManager.Focus();
+        }
+
+        private void ShowJournalManager() {
+            if (_journalManager == null) {
+                _journalManager = PluginManager.Instance.AddNonDockableContent(this, new JournalManager(User, this), "Journal Manager", SizeToContent.Manual, true, (window) => {
+                    window.btnOk.IsDefault = false;
+                });
+                _journalManager.Closed += new EventHandler((sender, e) => {
+                    _journalManager = null;
+                });
+            }
+
+            _journalManager.Show();
+            _journalManager.Focus();
+
         }
 
 

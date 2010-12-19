@@ -51,6 +51,11 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="JournalDatabaseActions.cs" />
+    <Compile Include="JournalManager.xaml.cs">
+      <DependentUpon>JournalManager.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="JournalViewModel.cs" />
     <Compile Include="phrases\PhraseDatabaseAction.cs" />
     <Compile Include="phrases\PhraseManager.xaml.cs">
       <DependentUpon>PhraseManager.xaml</DependentUpon>
@@ -111,6 +116,10 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="JournalManager.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="phrases\PhraseManager.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
