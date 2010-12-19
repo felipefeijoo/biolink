@@ -4,9 +4,17 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+             xmlns:tools="clr-namespace:BioLink.Client.Tools"                           
              mc:Ignorable="d" 
              d:DesignHeight="386" d:DesignWidth="575">
     <Grid>
+        <Grid.Resources>
+            <DataTemplate DataType="{x:Type tools:JournalViewModel}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding FullName}" />
+                </StackPanel>
+            </DataTemplate>
+        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="30" />
             <RowDefinition Height="*" />
@@ -34,12 +42,14 @@
                     <Grid>
                         <Label Content="Find:" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" Width="45" />
                         <ext:DelayedTriggerTextbox Height="23" Margin="46,8,6,0" Name="txtFind" VerticalAlignment="Top" TypingPaused="txtFind_TypingPaused"/>
-                        <ListBox Margin="6,40,6,6" Name="listBox1" Width="553" Height="278" />
+                        <ListBox Margin="6,40,6,6" Name="lstResults">
+                        </ListBox>    
                     </Grid>                        
                 </TabItem>
                 <TabItem Header="Browse">
                     <Grid>
-                        
+                        <TabControl Name="tabPages" TabStripPlacement="Right" Margin="0" FontWeight="Normal">
+                        </TabControl>
                     </Grid>                    
                 </TabItem>
             </TabControl>
