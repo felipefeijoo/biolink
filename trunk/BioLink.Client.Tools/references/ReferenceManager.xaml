@@ -47,7 +47,7 @@
             <ListView Margin="6,132,6,6" Name="lvwResults" Grid.ColumnSpan="2">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Width="100" Header="Code" DisplayMemberBinding="{Binding RefCode}" />
+                        <GridViewColumn Width="150" Header="Code" DisplayMemberBinding="{Binding RefCode}" />
                         <GridViewColumn Width="200" Header="Author" DisplayMemberBinding="{Binding Author}"/>
                         <GridViewColumn Width="80" Header="Year" DisplayMemberBinding="{Binding YearOfPub}"/>
                         <GridViewColumn Width="400" Header="Title" DisplayMemberBinding="{Binding Title, Converter={StaticResource RtfToPlainConverter}}"/>

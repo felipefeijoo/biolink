@@ -60,7 +60,7 @@ namespace BioLink.Client.Material {
         }
 
         public override bool CanSelect(Type t) {
-            return typeof(Region).IsAssignableFrom(t) || typeof(Trap).IsAssignableFrom(t);
+            return typeof(Region).IsAssignableFrom(t) || typeof(Trap).IsAssignableFrom(t) || typeof(BioLink.Data.Model.Material).IsAssignableFrom(t);
         }
 
         public override void Select(Type t, Action<SelectionResult> success) {
@@ -69,7 +69,9 @@ namespace BioLink.Client.Material {
                 selectionContent = new RegionSelectorContentProvider(User, SiteExplorerNodeType.Region, (n) => { return n.ElemType != "Region"; }, "Region");
             } else if (typeof(Trap).IsAssignableFrom(t)) {
                 selectionContent = new RegionSelectorContentProvider(User, SiteExplorerNodeType.Trap, (n) => { return n.ElemType == "Material" || n.ElemType == "SiteVisit"; }, "Trap");
-            } else {
+            } else if (typeof(Data.Model.Material).IsAssignableFrom(t)) {
+                selectionContent = new RegionSelectorContentProvider(User, SiteExplorerNodeType.Material, (n) => { return false; }, "");
+            } else {                
                 throw new Exception("Unhandled Selection Type: " + t.Name);
             }
 

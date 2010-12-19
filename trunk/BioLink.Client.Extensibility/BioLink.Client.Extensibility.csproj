@@ -61,6 +61,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssociateDatabaseActions.cs" />
+    <Compile Include="AssociatesControl.xaml.cs">
+      <DependentUpon>AssociatesControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AssociateViewModel.cs" />
     <Compile Include="AutoNumber\AutoNumberBox.cs" />
     <Compile Include="AutoNumber\AutoNumberCategoryManager.xaml.cs">
       <DependentUpon>AutoNumberCategoryManager.xaml</DependentUpon>
@@ -160,6 +165,10 @@
     <Compile Include="NumberUpDown.xaml.cs">
       <DependentUpon>NumberUpDown.xaml</DependentUpon>
     </Compile>
+    <Compile Include="OneToManyControl.xaml.cs">
+      <DependentUpon>OneToManyControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="OneToManyDetailControl.cs" />
     <Compile Include="OwnershipDetails.xaml.cs">
       <DependentUpon>OwnershipDetails.xaml</DependentUpon>
     </Compile>
@@ -238,6 +247,10 @@
     <Folder Include="lib\" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="AssociatesControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="AutoNumber\AutoNumberCategoryManager.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -331,6 +344,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="NumberUpDown.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="OneToManyControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

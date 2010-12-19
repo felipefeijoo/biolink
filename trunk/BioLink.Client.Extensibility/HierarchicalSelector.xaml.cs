@@ -208,20 +208,23 @@ namespace BioLink.Client.Extensibility {
                 tvwSearchResults.Visibility = System.Windows.Visibility.Visible;
             }
 
-            var list = _content.Search(txtFind.Text);
-            var model = new ObservableCollection<HierarchicalViewModelBase>(list);
-            foreach (HierarchicalViewModelBase vm in list) {
-                vm.Children.Add(new ViewModelPlaceholder("Loading..."));
-                vm.LazyLoadChildren += new HierarchicalViewModelAction((p) => {
-                    p.Children.Clear();
-                    var children = LoadModel(p);
-                    foreach (HierarchicalViewModelBase child in children) {
-                        p.Children.Add(child);
-                    }
-                });
+            if (text.Length > 1) {
+                var list = _content.Search(txtFind.Text);
+                var model = new ObservableCollection<HierarchicalViewModelBase>(list);
+                foreach (HierarchicalViewModelBase vm in list) {
+                    vm.Children.Add(new ViewModelPlaceholder("Loading..."));
+                    vm.LazyLoadChildren += new HierarchicalViewModelAction((p) => {
+                        p.Children.Clear();
+                        var children = LoadModel(p);
+                        foreach (HierarchicalViewModelBase child in children) {
+                            p.Children.Add(child);
+                        }
+                    });
+                }
+                tvwSearchResults.ItemsSource = model;
+            } else {
+                tvwSearchResults.ItemsSource = null;
             }
-
-            tvwSearchResults.ItemsSource = model;
 
         }
 

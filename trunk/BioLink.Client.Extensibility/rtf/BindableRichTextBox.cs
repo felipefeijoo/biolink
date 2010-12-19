@@ -47,15 +47,6 @@ namespace BioLink.Client.Extensibility {
                     _selfSetting = true;
                     RTF = rtf;
                     _selfSetting = false;
-                    
-
-                    //BindingExpression expr = GetBindingExpression(RTFProperty);
-                    //if (expr != null) {
-                    //    if (expr.Status == BindingStatus.Active) {
-                    //        expr.UpdateSource();
-                    //    }
-                    //}
-
                 });
             } catch (Exception ex) {
                 GlobalExceptionHandler.Handle(ex);
@@ -78,18 +69,20 @@ namespace BioLink.Client.Extensibility {
         private static void OnRTFChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
             var control = (BindableRichTextBox)obj;
             if (!control._selfSetting) {
+                control._ignoreTextChanged = true;
                 var rtf = args.NewValue as string;
                 var doc = control.Document;
                 if (string.IsNullOrEmpty(rtf)) {
                     doc.Blocks.Clear();
                 } else {
-                    control._ignoreTextChanged = true;
-                    using (var stream = new MemoryStream((new UTF8Encoding()).GetBytes(rtf))) {
-                        var text = new TextRange(doc.ContentStart, doc.ContentEnd);
-                        text.Load(stream, DataFormats.Rtf);
+                    using (new OverrideCursor(System.Windows.Input.Cursors.Wait)) {
+                        using (var stream = new MemoryStream((new UTF8Encoding()).GetBytes(rtf))) {
+                            var text = new TextRange(doc.ContentStart, doc.ContentEnd);
+                            text.Load(stream, DataFormats.Rtf);
+                        }
                     }
-                    control._ignoreTextChanged = false;
                 }
+                control._ignoreTextChanged = false;
             }
         }
 
