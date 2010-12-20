@@ -9,6 +9,7 @@ using System.Windows;
 using System.ComponentModel;
 using System.Windows.Input;
 using System.IO;
+using System.Windows.Media;
 
 namespace BioLink.Client.Utilities {
 
@@ -136,6 +137,16 @@ namespace BioLink.Client.Utilities {
 
             return tabItem;
         }
+
+        public static TreeViewItem GetTreeViewItemClicked(this TreeView treeView, FrameworkElement sender) {
+            Point p = sender.TranslatePoint(new Point(1, 1), treeView);
+            DependencyObject obj = treeView.InputHitTest(p) as DependencyObject;
+            while (obj != null && !(obj is TreeViewItem)) {
+                obj = VisualTreeHelper.GetParent(obj);
+            }
+            return obj as TreeViewItem;
+        }
+
 
 
     }

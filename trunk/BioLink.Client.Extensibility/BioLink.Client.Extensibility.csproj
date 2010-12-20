@@ -461,6 +461,7 @@
     <Resource Include="images\ExpandAll.png" />
     <Resource Include="images\Font.png" />
     <Resource Include="images\Calendar.png" />
+    <Resource Include="images\ChangedOverlay.png" />
     <Content Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>

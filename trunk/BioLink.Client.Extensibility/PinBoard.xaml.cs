@@ -81,7 +81,6 @@ namespace BioLink.Client.Extensibility {
 
         private void StartDrag(MouseEventArgs mouseEventArgs, ListView listView, ListViewItem item) {
 
-            // Can only drag actual favorites (or favorite groups)...
             var selected = listView.SelectedItem as ViewModelBase;
             if (selected != null) {
                 var data = new DataObject("Pinnable", selected);

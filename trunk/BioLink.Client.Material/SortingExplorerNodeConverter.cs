@@ -17,7 +17,7 @@ namespace BioLink.Client.Material {
             IEnumerable<HierarchicalViewModelBase> element = value as IEnumerable<HierarchicalViewModelBase>;
             ListCollectionView lcv = (ListCollectionView)CollectionViewSource.GetDefaultView(element);
             
-            lcv.SortDescriptions.Add(new SortDescription("ElemType", ListSortDirection.Ascending));
+            lcv.SortDescriptions.Add(new SortDescription("NodeType", ListSortDirection.Ascending));
             lcv.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
 
             lcv.Refresh();

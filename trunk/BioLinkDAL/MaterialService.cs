@@ -92,6 +92,10 @@ namespace BioLink.Data {
             return StoredProcToList("spRegionFind", mapper, _P("vchrRegionToFind", searchTerm));
         }
 
+        public void MoveRegion(int regionId, int newParentID) {
+            StoredProcUpdate("spRegionMove", _P("intRegionID", regionId), _P("intNewParentID", newParentID));
+        }
+
         #endregion
 
         #region Site Group
@@ -126,13 +130,6 @@ namespace BioLink.Data {
             StoredProcUpdate("spSiteGroupDelete", _P("intSiteGroupID", siteGroupID));
         }
 
-        public void MergeSiteGroups(int sourceID, int targetID) {
-            StoredProcUpdate("spSiteGroupMerge",
-                _P("intOldSiteGroupID", sourceID),
-                _P("intNewSiteGroupID", targetID)
-            );
-        }
-
         public void MoveSiteGroup(int siteGroupID, int newParentType, int newParentID, int newRegionID) {
             StoredProcUpdate("spSiteGroupMove",
                 _P("intSiteGroupID", siteGroupID),
@@ -150,6 +147,10 @@ namespace BioLink.Data {
             );
 
             return results;
+        }
+
+        public void MergeSiteGroup(int oldSiteGroupID, int newSiteGroupID) {
+            StoredProcUpdate("spSiteGroupMerge", _P("intOldSiteGroupID", oldSiteGroupID), _P("intNewSiteGroupID", newSiteGroupID));
         }
 
         #endregion
@@ -287,6 +288,10 @@ namespace BioLink.Data {
             return list;
         }
 
+        public void MergeSiteVisit(int oldSiteVisitID, int newSiteVisitID) {
+            StoredProcUpdate("spSiteVisitMerge", _P("intOldSiteVisitID", oldSiteVisitID), _P("intNewSiteVisitID", newSiteVisitID));
+        }
+
         #endregion
 
         #region Trap
@@ -325,6 +330,10 @@ namespace BioLink.Data {
                 _P("vchrTrapType", trap.TrapType),
                 _P("vchrDescription", trap.Description)
             );
+        }
+
+        public void MergeTrap(int oldTrapID, int newTrapID) {
+            StoredProcUpdate("spTrapMerge", _P("intOldTrapID", oldTrapID), _P("intNewTrapID", newTrapID));
         }
 
         #endregion
@@ -390,8 +399,10 @@ namespace BioLink.Data {
                 _P("vchrSpecialLabel", material.SpecialLabel),
                 _P("vchrOriginalLabel", material.OriginalLabel)
             );
+        }
 
-
+        public void MergeMaterial(int oldMaterialID, int newMaterialID) {
+            StoredProcUpdate("spMaterialMerge", _P("intOldMaterialID", oldMaterialID), _P("intNewMaterialID", newMaterialID));
         }
 
         #endregion
