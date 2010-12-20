@@ -21,9 +21,6 @@ namespace BioLink.Client.Extensibility {
             get {
                 return String.Format("{0} ({1})", AssocName, this.RelationFromTo);
             }
-            set {
-                base.DisplayLabel = value;
-            }
         }
 
         public int AssociateID {

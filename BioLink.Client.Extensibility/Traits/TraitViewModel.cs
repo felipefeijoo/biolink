@@ -14,6 +14,10 @@ namespace BioLink.Client.Extensibility {
             : base(t) {
         }
 
+        public override string DisplayLabel {
+            get { return Name; }
+        }
+
         public int TraitID {
             get { return Model.TraitID; }
             set { SetProperty(() => Model.TraitID, value); }

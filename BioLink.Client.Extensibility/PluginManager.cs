@@ -263,6 +263,11 @@ namespace BioLink.Client.Extensibility {
             core.PinObject(pinnable);
         }
 
+        public void RefreshPinBoard() {
+            BioLinkCorePlugin core = GetExtensionsOfType<BioLinkCorePlugin>()[0];
+            core.RefreshPinBoard();            
+        }
+
         public bool StartSelect(Type datatype, Action<SelectionResult> successAction) {
 
             var list = new List<IBioLinkPlugin>();

@@ -16,13 +16,16 @@ namespace BioLink.Client.Taxa {
 
         public TaxonFavoriteViewModel(TaxonFavorite model)
             : base(model) {
+        }
 
-            if (model.IsGroup) {
-                this.DisplayLabel = model.GroupName;
-            } else {
-                this.DisplayLabel = model.TaxaFullName;
+        public override string DisplayLabel {
+            get {
+                if (IsGroup) {
+                    return GroupName;
+                } else {
+                    return TaxaFullName;
+                }
             }
-            
         }
 
         public override string ToString() {

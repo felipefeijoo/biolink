@@ -95,8 +95,10 @@ namespace BioLink.Client.Taxa {
         public override ViewModelBase CreatePinnableViewModel(PinnableObject pinnable) {
             if (pinnable != null && pinnable.LookupType == LookupType.Taxon) {
                 Taxon t = Service.GetTaxon(pinnable.ObjectID);
-                TaxonViewModel m = new TaxonViewModel(null, t, _explorer.ContentControl.GenerateTaxonDisplayLabel);
-                return m;
+                if (t != null) {
+                    TaxonViewModel m = new TaxonViewModel(null, t, _explorer.ContentControl.GenerateTaxonDisplayLabel);
+                    return m;
+                }                
             }
 
             return null;            

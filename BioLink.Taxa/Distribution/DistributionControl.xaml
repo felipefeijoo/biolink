@@ -23,7 +23,7 @@
             <TreeView.Resources>
                 <HierarchicalDataTemplate DataType="{x:Type src:DistributionPlaceholder}" ItemsSource="{Binding Path=Children}">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock FontSize="11" x:Name="RegionName" Text="{Binding Path=DisplayLabel}" VerticalAlignment="Center" FontWeight="Bold" />
+                        <TextBlock FontSize="11" x:Name="RegionName" Text="{Binding Path=DisplayLabel,Mode=OneWay}" VerticalAlignment="Center" FontWeight="Bold" />
                     </StackPanel>
                     
                     <HierarchicalDataTemplate.Triggers>

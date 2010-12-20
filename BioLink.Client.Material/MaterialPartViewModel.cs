@@ -12,19 +12,11 @@ namespace BioLink.Client.Material {
 
         public MaterialPartViewModel(MaterialPart model)
             : base(model) {
-                this.DataChanged += new DataChangedHandler(MaterialPartViewModel_DataChanged);
-        }
-
-        void MaterialPartViewModel_DataChanged(ChangeableModelBase viewmodel) {
-            RaisePropertyChanged("DisplayLabel");
         }
 
         public override string DisplayLabel {
             get {
                 return String.Format("{0}", PartName, NoSpecimens);
-            }
-            set {
-                base.DisplayLabel = value;
             }
         }
 

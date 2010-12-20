@@ -9,8 +9,15 @@ using BioLink.Data.Model;
 namespace BioLink.Client.Taxa {
 
     public class DistributionPlaceholder : HierarchicalViewModelBase {
+        private string _label;
         public DistributionPlaceholder(string label) {
-            this.DisplayLabel = label;
+            _label = label;
+        }
+
+        public override string DisplayLabel {
+            get {
+                return _label;
+            }
         }
     }
 

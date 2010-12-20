@@ -105,12 +105,12 @@ namespace BioLink.Client.Extensibility {
 
         public AutoNumberViewModel(AutoNumber model)
             : base(model) {
+        }
 
-                this.DisplayLabel = GenerateDisplayLabel();
-
-                this.DataChanged += new DataChangedHandler((m) => {
-                    DisplayLabel = GenerateDisplayLabel();
-                });
+        public override string DisplayLabel {
+            get {
+                return GenerateDisplayLabel();
+            }
         }
 
         public int AutoNumberCatID {

@@ -45,6 +45,10 @@ namespace BioLink.Client.Extensibility {
             this._pinboard.ContentControl.Pin(pinnable);
         }
 
+        internal void RefreshPinBoard() {           
+            _pinboard.ContentControl.RefreshPinBoard();
+        }
+
         public override List<Command> GetCommandsForObject(ViewModelBase obj) {
             return null;
         }

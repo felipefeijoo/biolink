@@ -13,6 +13,10 @@ namespace BioLink.Client.Extensibility {
             : base(model) {
         }
 
+        public override string DisplayLabel {
+            get { return string.Format("RefLink: {0}->{1}", IntraCatID, RefID); }
+        }
+
         public int RefLinkID {
             get { return Model.RefLinkID; } 
             set { SetProperty(()=>Model.RefLinkID, value); }

@@ -98,34 +98,50 @@ namespace BioLink.Client.Material {
             switch (nodeType) {
                 case SiteExplorerNodeType.Region:
                     var region = service.GetRegion(objectID);
-                    model.ElemID = region.PoliticalRegionID;                            
-                    model.Name = region.Name;
-                    model.RegionID = region.PoliticalRegionID;
-                    return new SiteExplorerNodeViewModel(model);
+                    if (region != null) {
+                        model.ElemID = region.PoliticalRegionID;                            
+                        model.Name = region.Name;
+                        model.RegionID = region.PoliticalRegionID;
+                        return new SiteExplorerNodeViewModel(model);
+                    }
+                    break;
                 case SiteExplorerNodeType.Site:
-                    var site = service.GetSite(objectID);                            
-                    model.ElemID = site.SiteID;
-                    model.Name = site.SiteName;
-                    model.RegionID = site.PoliticalRegionID;
-                    return new SiteExplorerNodeViewModel(model);
+                    var site = service.GetSite(objectID);
+                    if (site != null) {
+                        model.ElemID = site.SiteID;
+                        model.Name = site.SiteName;
+                        model.RegionID = site.PoliticalRegionID;
+                        return new SiteExplorerNodeViewModel(model);
+                    }
+                    break;
                 case SiteExplorerNodeType.SiteVisit:
                     var sitevisit = service.GetSiteVisit(objectID);
-                    model.ElemID = sitevisit.SiteVisitID;                    
-                    model.Name = sitevisit.SiteName;
-                    return new SiteExplorerNodeViewModel(model);                            
+                    if (sitevisit != null) {
+                        model.ElemID = sitevisit.SiteVisitID;
+                        model.Name = sitevisit.SiteName;
+                        return new SiteExplorerNodeViewModel(model);
+                    }
+                    break;
                 case SiteExplorerNodeType.Trap:
                     var trap = service.GetTrap(objectID);
-                    model.ElemID = trap.TrapID;
-                    model.Name = trap.TrapName;
-                    return new SiteExplorerNodeViewModel(model);
-                case SiteExplorerNodeType.Material:
+                    if (trap != null) {
+                        model.ElemID = trap.TrapID;
+                        model.Name = trap.TrapName;
+                        return new SiteExplorerNodeViewModel(model);
+                    }
+                    break;
+                case SiteExplorerNodeType.Material:                    
                     var material = service.GetMaterial(objectID);
-                    model.ElemID = material.MaterialID;
-                    model.Name = material.MaterialName;
-                    return new SiteExplorerNodeViewModel(model);                            
+                    if (material != null) {
+                        model.ElemID = material.MaterialID;
+                        model.Name = material.MaterialName;
+                        return new SiteExplorerNodeViewModel(model);
+                    }
+                    break;
                 default:
                     throw new Exception("Unhandled node type: " + nodeType);
             }
+            return null;
         }
 
         public override List<Command> GetCommandsForObject(ViewModelBase obj) {

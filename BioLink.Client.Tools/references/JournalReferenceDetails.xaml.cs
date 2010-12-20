@@ -19,13 +19,13 @@ namespace BioLink.Client.Tools {
     /// <summary>
     /// Interaction logic for JournalDetails.xaml
     /// </summary>
-    public partial class JournalDetails : UserControl {
+    public partial class JournalReferenceDetails : UserControl {
 
-        public JournalDetails() {
+        public JournalReferenceDetails() {
             InitializeComponent();
         }
 
-        public JournalDetails(User user) {
+        public JournalReferenceDetails(User user) {
             InitializeComponent();
             txtJournal.BindUser(user, LookupType.Journal);
         }

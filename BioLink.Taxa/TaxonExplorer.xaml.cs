@@ -717,8 +717,7 @@ namespace BioLink.Client.Taxa {
             viewModel.KingdomCode = parent.KingdomCode;
             viewModel.Author = "";
             viewModel.YearOfPub = "";
-            viewModel.Epithet = "";
-            viewModel.DisplayLabel = GetDefaultDisplayLabel(viewModel);
+            viewModel.Epithet = "";            
             parent.IsExpanded = true;
 
             try {
@@ -757,8 +756,7 @@ namespace BioLink.Client.Taxa {
                     } else {
                         // Create a new unplaced to hold the existing children
                         TaxonViewModel newUnplaced = AddNewTaxon(parent, rank.Code, (t) => {
-                            t.Unplaced = true;
-                            t.DisplayLabel = GetDefaultDisplayLabel(t);
+                            t.Unplaced = true;                            
                         }, false, false);
 
                         foreach (HierarchicalViewModelBase vm in parent.Children) {
@@ -1027,11 +1025,6 @@ namespace BioLink.Client.Taxa {
             ProcessRename(tvm, text);
         }
 
-        private void EditableTextBlock_EditingCancelled(object sender, string oldtext) {
-            TaxonViewModel tvm = (sender as EditableTextBlock).ViewModel as TaxonViewModel;
-            tvm.DisplayLabel = null;
-        }
-
         /// <summary>
         /// Attempt to extract epithet author year and change combination status from the text
         /// </summary>
@@ -1044,8 +1037,7 @@ namespace BioLink.Client.Taxa {
                 taxon.Author = name.Author;
                 taxon.Epithet = name.Epithet;
                 taxon.YearOfPub = name.Year;
-                taxon.ChgComb = name.ChangeCombination;
-                taxon.DisplayLabel = null;
+                taxon.ChgComb = name.ChangeCombination;                
                 InsertUniquePendingUpdate(taxon);
             } else {
                 ErrorMessage.Show("Please enter at least the epithet, with author and year where appropriate.");

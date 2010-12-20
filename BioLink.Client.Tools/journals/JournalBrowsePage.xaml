@@ -7,6 +7,6 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <Label Content="Journals - A-C" Height="28" Margin="6,6,6,0" Name="lblPageHeader" VerticalAlignment="Top" HorizontalContentAlignment="Center" Foreground="White" Background="Gray" FontWeight="Normal" FontSize="13" />
-        <ListView Margin="8,40,6,0" Name="lst" />
+        <ListBox Margin="8,40,6,0" Name="lst" />
     </Grid>
 </UserControl>

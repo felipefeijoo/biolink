@@ -51,14 +51,17 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="JournalBrowsePage.xaml.cs">
+    <Compile Include="journals\JournalBrowsePage.xaml.cs">
       <DependentUpon>JournalBrowsePage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="JournalDatabaseActions.cs" />
-    <Compile Include="JournalManager.xaml.cs">
+    <Compile Include="journals\JournalDatabaseActions.cs" />
+    <Compile Include="journals\JournalDetails.xaml.cs">
+      <DependentUpon>JournalDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="journals\JournalManager.xaml.cs">
       <DependentUpon>JournalManager.xaml</DependentUpon>
     </Compile>
-    <Compile Include="JournalViewModel.cs" />
+    <Compile Include="journals\JournalViewModel.cs" />
     <Compile Include="phrases\PhraseDatabaseAction.cs" />
     <Compile Include="phrases\PhraseManager.xaml.cs">
       <DependentUpon>PhraseManager.xaml</DependentUpon>
@@ -73,8 +76,8 @@
     <Compile Include="references\InternetURLDetails.xaml.cs">
       <DependentUpon>InternetURLDetails.xaml</DependentUpon>
     </Compile>
-    <Compile Include="references\JournalDetails.xaml.cs">
-      <DependentUpon>JournalDetails.xaml</DependentUpon>
+    <Compile Include="references\JournalReferenceDetails.xaml.cs">
+      <DependentUpon>JournalReferenceDetails.xaml</DependentUpon>
     </Compile>
     <Compile Include="references\JournalSectionDetails.xaml.cs">
       <DependentUpon>JournalSectionDetails.xaml</DependentUpon>
@@ -119,11 +122,15 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="JournalBrowsePage.xaml">
+    <Page Include="journals\JournalBrowsePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="JournalManager.xaml">
+    <Page Include="journals\JournalDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="journals\JournalManager.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -143,7 +150,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="references\JournalDetails.xaml">
+    <Page Include="references\JournalReferenceDetails.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -171,6 +178,12 @@
   <ItemGroup>
     <Resource Include="images\Phrase.png" />
     <Resource Include="images\Phrase_fixed.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Reference.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Journal.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

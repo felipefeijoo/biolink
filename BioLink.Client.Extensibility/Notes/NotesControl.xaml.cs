@@ -208,6 +208,10 @@ namespace BioLink.Client.Extensibility {
             : base(model) {
         }
 
+        public override string DisplayLabel {
+            get { return string.Format("Note: {0} - {1}", NoteID, NoteType); }
+        }
+
         public string NoteCategory {
             get { return Model.NoteCategory; }
             set { SetProperty(() => Model.NoteCategory, value); }

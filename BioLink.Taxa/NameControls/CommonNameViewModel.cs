@@ -11,8 +11,12 @@ namespace BioLink.Client.Taxa {
 
         public CommonNameViewModel(CommonName model)
             : base(model) {
+        }
 
-            GenerateDisplayLabel();
+        public override string DisplayLabel {
+            get {
+                return GenerateDisplayLabel();
+            }
         }
 
         public int CommonNameID {
@@ -56,15 +60,14 @@ namespace BioLink.Client.Taxa {
             set { SetProperty(() => Model.Notes, value); }
         }
 
-        private void GenerateDisplayLabel() {
+        private string GenerateDisplayLabel() {
             string label;
             if (string.IsNullOrEmpty(RefCode)) {
                 label = Name;
             } else {
                 label = String.Format("{0} ({1})", Name, RefCode);
             }
-            this.DisplayLabel = label;
-            RaisePropertyChanged("DisplayLabel");
+            return label;
         }
 
     }

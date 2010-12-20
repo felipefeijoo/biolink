@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using BioLink.Data;
 using BioLink.Data.Model;
 using System.Collections.ObjectModel;
+using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Tools {
     /// <summary>
@@ -21,25 +22,24 @@ namespace BioLink.Client.Tools {
     /// </summary>
     public partial class JournalBrowsePage : UserControl {
 
-        private ObservableCollection<JournalViewModel> _model;
+        private ObservableCollection<JournalViewModel> _model = new ObservableCollection<JournalViewModel>();
 
         public JournalBrowsePage() {
             InitializeComponent();
         }
 
-        public JournalBrowsePage(User user, string range) {
+        public JournalBrowsePage(User user) {
             InitializeComponent();
-            this.Range = range;
             this.User = user;
+            lst.ItemsSource = _model;
+        }
+
+        public void LoadPage(string range) {
 
             lblPageHeader.Content = string.Format("Journals - {0}", range);
 
-            lst.SelectionChanged += new SelectionChangedEventHandler(lst_SelectionChanged);
-        }
-
-        public void LoadPage() {
-            string[] bits = Range.Split('-');
-            _model = null;
+            string[] bits = range.Split('-');
+            _model.Clear();
             if (bits.Length == 2) {
                 string from = bits[0];
                 string to = bits[1];
@@ -47,25 +47,23 @@ namespace BioLink.Client.Tools {
                 var service = new SupportService(User);
                 string where = "((vchrAbbrevName is null or ltrim(rtrim(vchrAbbrevName)) = '') and Left(vchrFullName," + from.Length + ") between '" + from + "' and '" + to + "') or (Left(vchrAbbrevName," + from.Length + ") between '" + from + "' and '" + to + "')";
                 var list = service.ListJournalRange(where);
-                _model = new ObservableCollection<JournalViewModel>(list.ConvertAll((model) => {
-                    return new JournalViewModel(model);
-                }));
-                
+                foreach (Journal j in list) {
+                    _model.Add(new JournalViewModel(j));
+                }                
             }
-            lst.ItemsSource = _model;
-
+            
         }
 
         public void Clear() {
             _model.Clear();
         }
 
-        protected String Range { get; private set; }
-
         public User User { get; private set; }
 
-        void lst_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            
+        public JournalViewModel SelectedItem {
+            get { return lst.SelectedItem as JournalViewModel; }
         }
+
+        public ObservableCollection<JournalViewModel> Model { get { return _model; } }
     }
 }

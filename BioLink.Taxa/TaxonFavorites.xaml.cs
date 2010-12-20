@@ -398,13 +398,6 @@ namespace BioLink.Client.Taxa {
             RegisterUniquePendingChange(new RenameFavoriteGroupAction(viewModel.Model));
         }
 
-        private void TaxonName_EditingCancelled(object sender, string oldtext) {
-            var tvm = (sender as EditableTextBlock).ViewModel as HierarchicalViewModelBase;
-            if (tvm != null) {
-                tvm.DisplayLabel = null;
-            }
-        }
-
         internal void DeleteFavorite(int favoriteId) {
             var viewModel = FindFavorite(favoriteId);
             if (favoriteId < 0) {

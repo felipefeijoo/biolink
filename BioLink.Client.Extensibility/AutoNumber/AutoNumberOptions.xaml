@@ -11,7 +11,7 @@
         <ComboBox Height="23" Margin="12,46,0,0" Name="cmbCategories" VerticalAlignment="Top" HorizontalAlignment="Left" Width="298" DisplayMemberPath="DisplayLabel">
             <ComboBox.Resources>
                 <DataTemplate DataType="{x:Type my:AutoNumberViewModel}">
-                    <TextBlock Text="{Binding DisplayLabel}" />
+                    <TextBlock Text="{Binding DisplayLabel,Mode=OneWay}" />
                 </DataTemplate>
             </ComboBox.Resources>
         </ComboBox>
