@@ -23,6 +23,38 @@ namespace BioLink.Client.Material {
     /// </summary>
     public partial class MaterialExplorer : DatabaseActionControl {
 
+        private bool _IsDragging;
+        private Point _startPoint;
+
+        #region DROP MAP
+
+        private Dictionary<string, Action<SiteExplorerNodeViewModel, SiteExplorerNodeViewModel>> _DropMap = new Dictionary<string, Action<SiteExplorerNodeViewModel, SiteExplorerNodeViewModel>>();
+
+        private void AddToMap(SiteExplorerNodeType sourceType, SiteExplorerNodeType destType, Action<SiteExplorerNodeViewModel, SiteExplorerNodeViewModel> action) {            
+            _DropMap[MakeDropMapKey(sourceType, destType)] = action;
+        }
+
+        private string MakeDropMapKey(SiteExplorerNodeViewModel source, SiteExplorerNodeViewModel dest) {
+            return MakeDropMapKey(source.NodeType, dest.NodeType);
+        }
+
+        private string MakeDropMapKey(SiteExplorerNodeType sourceType, SiteExplorerNodeType destType) {
+            return string.Format("{0}_{1}", sourceType.ToString(), destType.ToString());
+        }
+
+        private void BuildDropMap() {
+            AddToMap(SiteExplorerNodeType.Trap, SiteExplorerNodeType.Trap, MergeNodes);
+            AddToMap(SiteExplorerNodeType.SiteVisit, SiteExplorerNodeType.SiteVisit, MergeNodes);
+            AddToMap(SiteExplorerNodeType.Material, SiteExplorerNodeType.Material, MergeNodes);
+
+            AddToMap(SiteExplorerNodeType.SiteGroup, SiteExplorerNodeType.SiteGroup, AskMoveMergeNode);
+            AddToMap(SiteExplorerNodeType.Region, SiteExplorerNodeType.Region, AskMoveMergeNode);
+
+            AddToMap(SiteExplorerNodeType.SiteGroup, SiteExplorerNodeType.Region, MoveNode);
+        }
+
+        #endregion
+
         #region Designer constructor
 
         public MaterialExplorer() {
@@ -35,6 +67,8 @@ namespace BioLink.Client.Material {
             : base(owner.User, "MaterialExplorer") {
 
             InitializeComponent();
+
+            BuildDropMap();
 
             this.ChangeRegistered += new Action<IList<DatabaseAction>>((list) => {
                 btnApply.IsEnabled = true;
@@ -73,8 +107,191 @@ namespace BioLink.Client.Material {
                 cmbFindScope.SelectedIndex = lastSelectedIndex;
             }
 
+            tvwFind.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(tvwFind_PreviewMouseLeftButtonDown);
+            tvwFind.PreviewMouseMove +=new MouseEventHandler(tvwFind_PreviewMouseMove);
+
+            tvwMaterial.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(tvwMaterial_PreviewMouseLeftButtonDown);
+            tvwMaterial.PreviewMouseMove += new MouseEventHandler(tvwMaterial_PreviewMouseMove);
+
+            tvwMaterial.PreviewDragOver += new DragEventHandler(tvwMaterial_PreviewDragOver);
+            tvwMaterial.PreviewDragEnter += new DragEventHandler(tvwMaterial_PreviewDragOver);
+
+
+            this.Drop += new DragEventHandler(MaterialExplorer_Drop);
+
+            tvwMaterial.AllowDrop = true;
+
 
         }
+
+        void MaterialExplorer_Drop(object sender, DragEventArgs e) {
+
+            var dest = tvwMaterial.SelectedItem as SiteExplorerNodeViewModel;
+            var source = e.Data.GetData("SiteExplorerNodeViewModel") as SiteExplorerNodeViewModel;
+
+            e.Effects = DragDropEffects.None;
+
+            if (dest != null && source != null) {
+                string key = MakeDropMapKey(source, dest);
+                if (_DropMap.ContainsKey(key)) {
+                    var action = _DropMap[key];
+                    action(source, dest);
+                }
+            }
+
+            e.Handled = true;
+            
+        }
+
+        private void AskMoveMergeNode(SiteExplorerNodeViewModel source, SiteExplorerNodeViewModel dest) {
+            // Regions and site groups can either be merged or moved. Need to ask...
+            var frm = new DragDropOptions(this.FindParentWindow());
+            if (frm.ShowDialog().GetValueOrDefault(false)) {
+                if (frm.DragDropOption == DragDropOption.Merge) {
+                    MergeNodes(source, dest);
+                } else {
+                    MoveNode(source, dest);
+                }
+            }
+        }
+
+        private void MoveNode(SiteExplorerNodeViewModel source, SiteExplorerNodeViewModel dest) {
+            DatabaseAction moveAction = null;
+            switch (source.NodeType) {
+                case SiteExplorerNodeType.SiteGroup:
+                    moveAction = new MoveSiteGroupAction(source.Model, dest.Model);
+                    break;
+                case SiteExplorerNodeType.Region:
+                    
+                    break;
+            }
+
+            if (moveAction != null) {
+                source.Parent.Children.Remove(source);
+                dest.IsChanged = true;
+                dest.IsExpanded = true;
+                dest.Children.Add(source);
+                RegisterPendingChange(moveAction);
+            }
+
+        }
+
+        private void MergeNodes(SiteExplorerNodeViewModel oldNode, SiteExplorerNodeViewModel newNode) {
+            DatabaseAction mergeAction = null;
+            switch (oldNode.NodeType) {
+                case SiteExplorerNodeType.SiteGroup:
+                    mergeAction = new MergeSiteGroupAction(oldNode.Model, newNode.Model);
+                    break;
+                case SiteExplorerNodeType.SiteVisit:
+                    mergeAction = new MergeSiteVisitAction(oldNode.Model, newNode.Model);
+                    break;
+                case SiteExplorerNodeType.Material:
+                    mergeAction = new MergeMaterialAction(oldNode.Model, newNode.Model);
+                    break;
+                case SiteExplorerNodeType.Trap:
+                    mergeAction = new MergeTrapAction(oldNode.Model, newNode.Model);
+                    break;
+            }
+
+            if (mergeAction != null) {
+                if (this.Question(string.Format("Are you sure you want to merge '{0}' with '{1}'?", oldNode.DisplayLabel, newNode.DisplayLabel), "Merge " + oldNode.NodeType)) {
+                    oldNode.IsDeleted = true;
+                    newNode.IsChanged = true;
+                    RegisterPendingChange(mergeAction);
+                }
+            }
+        }
+
+        private SiteExplorerNodeViewModel GetHoveredTreeViewItem(DragEventArgs e, TreeView tvw) {
+            DependencyObject elem = tvw.InputHitTest(e.GetPosition(tvw)) as DependencyObject;
+            while (elem != null && !(elem is TreeViewItem)) {
+                elem = VisualTreeHelper.GetParent(elem);
+            }
+            var treeItem = elem as TreeViewItem;            
+            if (treeItem != null) {
+                treeItem.Focus();
+                return treeItem.DataContext as SiteExplorerNodeViewModel;
+            }
+            return null;            
+        }
+
+        void tvwMaterial_PreviewDragOver(object sender, DragEventArgs e) {
+
+            var dest = GetHoveredTreeViewItem(e, tvwMaterial);
+            var source = e.Data.GetData("SiteExplorerNodeViewModel") as SiteExplorerNodeViewModel;
+
+            e.Effects = DragDropEffects.None;
+
+            if (dest != null && source != null) {
+                string key = MakeDropMapKey(source, dest);
+                if (_DropMap.ContainsKey(key)) {
+                    e.Effects = DragDropEffects.Move;
+                }
+            }
+
+            e.Handled = true;
+            
+        }
+
+        void tvwMaterial_PreviewMouseMove(object sender, MouseEventArgs e) {
+            CommonPreviewMouseMove(e, tvwMaterial);
+        }
+
+        void tvwMaterial_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+            _startPoint = e.GetPosition(tvwMaterial);
+        }
+
+        void tvwFind_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+            _startPoint = e.GetPosition(tvwFind);
+        }
+
+        void tvwFind_PreviewMouseMove(object sender, MouseEventArgs e) {
+            CommonPreviewMouseMove(e, tvwFind);
+        }
+
+
+        private void CommonPreviewMouseMove(MouseEventArgs e, TreeView treeView) {
+
+            if (_startPoint == null) {
+                return;
+            }
+
+            if (e.LeftButton == MouseButtonState.Pressed && !_IsDragging) {
+                Point position = e.GetPosition(treeView);
+                if (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance) {
+                    if (treeView.SelectedItem != null) {
+                        IInputElement hitelement = treeView.InputHitTest(_startPoint);
+                        TreeViewItem item = treeView.GetTreeViewItemClicked((FrameworkElement)hitelement);                        
+                        if (item != null) {
+                            StartDrag(e, treeView, item);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void StartDrag(MouseEventArgs mouseEventArgs, TreeView treeView, TreeViewItem item) {
+
+            var selected = treeView.SelectedItem as SiteExplorerNodeViewModel;
+            if (selected != null) {
+                var data = new DataObject("Pinnable", selected);
+                var pinnable = CreatePinnable(selected);
+                data.SetData(PinnableObject.DRAG_FORMAT_NAME, pinnable);
+                data.SetData(DataFormats.Text, selected.DisplayLabel);
+                data.SetData("SiteExplorerNodeViewModel", selected);
+
+
+                try {
+                    _IsDragging = true;
+                    DragDrop.DoDragDrop(item, data, DragDropEffects.Copy | DragDropEffects.Move | DragDropEffects.Link);
+                } finally {
+                    _IsDragging = false;
+                }
+            }
+
+            InvalidateVisual();
+        }
+
 
         private void cmbFindScope_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             Config.SetUser(User, "Material.Find.LastFilter", cmbFindScope.SelectedIndex);

@@ -109,6 +109,7 @@ namespace BioLink.Client.Extensibility {
 
         void ViewModelBase_DataChanged(ChangeableModelBase viewmodel) {
             RaisePropertyChanged("DisplayLabel");
+            RaisePropertyChanged("Icon");
         }
 
         public bool IsSelected {
@@ -127,12 +128,17 @@ namespace BioLink.Client.Extensibility {
         }
 
         public virtual BitmapSource Icon {
-            get {
+            get {                
                 if (_icon == null && RelativeImagePath != null) {
                     string assemblyName = this.GetType().Assembly.GetName().Name;
                     _icon = ImageCache.GetImage(String.Format("pack://application:,,,/{0};component/{1}", assemblyName, RelativeImagePath));
                 }
-                return _icon;
+
+                if (IsChanged) {
+                    return ImageCache.ApplyOverlay(_icon, String.Format("pack://application:,,,/BioLink.Client.Extensibility;component/images/ChangedOverlay.png"));
+                } else {
+                    return _icon;
+                }
             }
             set {
                 _icon = value;

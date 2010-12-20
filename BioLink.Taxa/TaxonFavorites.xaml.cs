@@ -57,7 +57,7 @@ namespace BioLink.Client.Taxa {
                 if (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance) {
                     if (treeView.SelectedItem != null) {
                         IInputElement hitelement = treeView.InputHitTest(_startPoint);
-                        TreeViewItem item = GetTreeViewItemClicked((FrameworkElement)hitelement, treeView);
+                        TreeViewItem item = treeView.GetTreeViewItemClicked((FrameworkElement)hitelement);
                         if (item != null) {
                             StartDrag(e, treeView, item);
                         }
@@ -186,15 +186,6 @@ namespace BioLink.Client.Taxa {
             return elem as TreeViewItem;
         }
 
-
-        private TreeViewItem GetTreeViewItemClicked(FrameworkElement sender, TreeView treeView) {
-            Point p = sender.TranslatePoint(new Point(1, 1), treeView);
-            DependencyObject obj = treeView.InputHitTest(p) as DependencyObject;
-            while (obj != null && !(obj is TreeViewItem)) {
-                obj = VisualTreeHelper.GetParent(obj);
-            }
-            return obj as TreeViewItem;
-        }
 
         public void BindUser(User user, TaxonExplorer explorer) {
             User = user;

@@ -59,4 +59,20 @@ namespace BioLink.Client.Material {
         }
     }
 
+    public class MergeMaterialAction : GenericDatabaseAction<SiteExplorerNode> {
+
+        public MergeMaterialAction(SiteExplorerNode source, SiteExplorerNode dest)
+            : base(source) {
+            Dest = dest;
+        }
+
+        protected override void ProcessImpl(User user) {
+            var service = new MaterialService(user);
+            service.MergeMaterial(Model.ElemID, Dest.ElemID);
+        }
+
+        public SiteExplorerNode Dest { get; private set; }
+    }
+
+
 }

@@ -50,4 +50,19 @@ namespace BioLink.Client.Material {
         public int RegionID { get; private set; }
     }
 
+    public class MoveRegionAction : GenericDatabaseAction<SiteExplorerNode> {
+
+        public MoveRegionAction(SiteExplorerNode source, SiteExplorerNode dest)
+            : base(source) {
+            this.Destination = dest;
+        }
+
+        protected override void ProcessImpl(User user) {
+            var service = new MaterialService(user);
+            service.MoveRegion(Model.RegionID, Destination.RegionID);
+        }
+
+        public SiteExplorerNode Destination { get; private set; }
+    }
+
 }

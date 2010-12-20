@@ -59,6 +59,23 @@ namespace BioLink.Client.Material {
             service.UpdateTrap(Model);
         }
     }
+
+    public class MergeTrapAction : GenericDatabaseAction<SiteExplorerNode> {
+
+        public MergeTrapAction(SiteExplorerNode source, SiteExplorerNode dest)
+            : base(source) {
+            Dest = dest;
+        }
+
+        protected override void ProcessImpl(User user) {
+            var service = new MaterialService(user);
+            service.MergeTrap(Model.ElemID, Dest.ElemID);
+        }
+
+        public SiteExplorerNode Dest { get; private set; }
+    }
+
+
     
 
 }

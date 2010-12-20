@@ -53,6 +53,9 @@
       <DependentUpon>CurationEventsControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="CurationEventViewModel.cs" />
+    <Compile Include="DragDropOptions.xaml.cs">
+      <DependentUpon>DragDropOptions.xaml</DependentUpon>
+    </Compile>
     <Compile Include="IdentificationHistoryControl.xaml.cs">
       <DependentUpon>IdentificationHistoryControl.xaml</DependentUpon>
     </Compile>
@@ -121,6 +124,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="CurationEventsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DragDropOptions.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
