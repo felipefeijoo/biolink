@@ -209,22 +209,13 @@ namespace BioLink.Client.Taxa {
             get { return new Pen(new SolidColorBrush(Color.FromRgb(184,71,19)), 2); }
         }
 
-        private string _displayLabel;
-
         public override String DisplayLabel {
             get {
-                if (String.IsNullOrEmpty(_displayLabel)) {
-                    if (_labelGenerator != null) {
-                        _displayLabel = _labelGenerator(this);
-                    } else {
-                        _displayLabel = Epithet;
-                    }                    
-                }
-                return _displayLabel;
-            }
-            set {
-                _displayLabel = value;
-                RaisePropertyChanged("DisplayLabel");                
+                if (_labelGenerator != null) {
+                    return _labelGenerator(this);
+                } else {
+                    return Epithet;
+                }                                    
             }
         }
 

@@ -13,15 +13,18 @@ namespace BioLink.Client.Tools {
     public class ReferenceViewModel : GenericViewModelBase<Reference> {
 
         public ReferenceViewModel(Reference model)
-            : base(model) {
+            : base(model) {            
+        }
+
+        protected override string RelativeImagePath {
+            get {
+                return @"images\Reference.png";
+            }
         }
 
         public override string DisplayLabel {
             get {
                 return RefCode;
-            }
-            set {
-                base.DisplayLabel = value;
             }
         }
 

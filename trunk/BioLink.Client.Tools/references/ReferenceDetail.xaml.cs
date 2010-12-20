@@ -100,7 +100,7 @@ namespace BioLink.Client.Tools {
                 FrameworkElement control = null;
                 switch (refTypeMapping.RefTypeCode) {
                     case "J":
-                        control = new JournalDetails(User);
+                        control = new JournalReferenceDetails(User);
                         break;
                     case "JS":
                         control = new JournalSectionDetails(User);

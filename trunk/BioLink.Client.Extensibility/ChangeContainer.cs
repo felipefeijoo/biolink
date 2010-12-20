@@ -116,7 +116,12 @@ namespace BioLink.Client.Extensibility {
                 }
 
                 _observers.Clear();
-                _pendingChanges.Clear();                
+                _pendingChanges.Clear();
+                
+                // Reload the pinboard...
+                JobExecutor.QueueJob(() => {
+                    PluginManager.Instance.RefreshPinBoard();
+                });
 
             } catch (Exception ex) {
                 if (commitTrans) {

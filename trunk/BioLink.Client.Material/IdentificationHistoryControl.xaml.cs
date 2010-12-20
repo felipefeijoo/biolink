@@ -132,19 +132,11 @@ namespace BioLink.Client.Material {
 
         public MaterialIdentificationViewModel(MaterialIdentification model)
             : base(model) {
-                DataChanged += new DataChangedHandler(MaterialIdentificationViewModel_DataChanged);
-        }
-
-        void MaterialIdentificationViewModel_DataChanged(ChangeableModelBase viewmodel) {
-            RaisePropertyChanged("DisplayLabel");
         }
 
         public override string DisplayLabel {
             get {
                 return string.Format("{0} by {1} on {2:d MMM, yyyy}", Taxa, IDBy, IDDate);
-            }
-            set {
-                base.DisplayLabel = value;
             }
         }
 

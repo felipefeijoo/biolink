@@ -13,7 +13,8 @@ namespace BioLink.Client.Extensibility {
         Trap,
         Material,                
         Multimedia,
-        Reference
+        Reference,
+        Journal
     }
 
 }

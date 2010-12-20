@@ -887,13 +887,9 @@ namespace BioLink.Data {
             return StoredProcToList("spJournalLookup", mapper, _P("vchrFilter", filter));
         }
 
-        public Boolean OkToDeleteJournal(int journalID) {
-            var refcount = ReturnParam("refcount", SqlDbType.Int);
-            StoredProcReaderFirst("spJournalOkToDelete", (reader) => {
-
-            }, _P("intJournalID", journalID));
-
-            return ((int)refcount.Value == 0);
+        public Boolean OkToDeleteJournal(int journalID) {            
+            int refcount = StoredProcReturnVal<int>("spJournalOkToDelete", _P("intJournalID", journalID));
+            return refcount == 0;
         }
 
         #endregion

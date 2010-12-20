@@ -111,17 +111,30 @@ namespace BioLink.Client.Tools {
 
                 return list;
             }
+
+            if (obj is JournalViewModel) {
+                var list = new List<Command>();
+                list.Add(new Command("Edit", (vm) => {
+                    var j = vm as JournalViewModel;
+                    EditJournal(j.JournalID);
+                }));
+
+                return list;
+            }
             return null;
         }
 
         public override bool CanSelect(Type t) {
-            return typeof(ReferenceSearchResult).IsAssignableFrom(t);
+            return typeof(ReferenceSearchResult).IsAssignableFrom(t) || typeof(Journal).IsAssignableFrom(t);
         }
 
         public override void Select(Type t, Action<SelectionResult> success) {
             if (typeof(ReferenceSearchResult).IsAssignableFrom(t)) {
                 ShowReferenceManager();
                 _refManager.BindSelectCallback(success);
+            } else if (typeof(Journal).IsAssignableFrom(t)) {
+                ShowJournalManager();
+                _journalManager.BindSelectCallback(success);
             } else {
                 throw new Exception("Unhandled Selection Type: " + t.Name);
             }
@@ -131,6 +144,7 @@ namespace BioLink.Client.Tools {
         public override bool CanEditObjectType(LookupType type) {
             switch (type) {
                 case LookupType.Reference:
+                case LookupType.Journal:
                     return true;
             }
             return false;
@@ -141,8 +155,17 @@ namespace BioLink.Client.Tools {
             var service = new SupportService(User);
             switch (pinnable.LookupType) {
                 case LookupType.Reference:
-                    var model = service.GetReference(pinnable.ObjectID);
-                    return new ReferenceViewModel(model);
+                    var refmodel = service.GetReference(pinnable.ObjectID);
+                    if (refmodel != null) {
+                        return new ReferenceViewModel(refmodel);
+                    }
+                    break;
+                case LookupType.Journal:
+                    var jmodel = service.GetJournal(pinnable.ObjectID);
+                    if (jmodel != null) {
+                        return new JournalViewModel(jmodel);
+                    }
+                    break;
             }
 
             return null;
@@ -150,7 +173,7 @@ namespace BioLink.Client.Tools {
 
         public void EditReference(int refID) {
             var control = new ReferenceDetail(User, refID);
-            PluginManager.Instance.AddNonDockableContent(this, control, "Reference Detail", SizeToContent.Manual);
+            PluginManager.Instance.AddNonDockableContent(this, control, string.Format("Reference Detail [{0}]", refID), SizeToContent.Manual);
         }
 
         public void AddNewReference() {
@@ -158,10 +181,23 @@ namespace BioLink.Client.Tools {
             PluginManager.Instance.AddNonDockableContent(this, control, "Reference Detail", SizeToContent.Manual);
         }
 
+        public void EditJournal(int journalID) {
+            var control = new JournalDetails(User, journalID);
+            PluginManager.Instance.AddNonDockableContent(this, control, string.Format("Journal Detail [{0}]", journalID), SizeToContent.Manual);
+        }
+
+        public void AddNewJournal() {
+            var control = new JournalDetails(User, -1);
+            PluginManager.Instance.AddNonDockableContent(this, control, "Journal Detail", SizeToContent.Manual);
+        }
+
         public override void EditObject(LookupType type, int objectID) {
             switch (type) {
                 case LookupType.Reference:
                     EditReference(objectID);
+                    break;
+                case LookupType.Journal:
+                    EditJournal(objectID);
                     break;
             }
         }

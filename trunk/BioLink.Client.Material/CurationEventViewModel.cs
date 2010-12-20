@@ -12,20 +12,12 @@ namespace BioLink.Client.Material {
     public class CurationEventViewModel : GenericViewModelBase<CurationEvent> {
 
         public CurationEventViewModel(CurationEvent model)
-            : base(model) {
-                DataChanged += new DataChangedHandler(CurationEventViewModel_DataChanged);
-        }
-
-        void CurationEventViewModel_DataChanged(ChangeableModelBase viewmodel) {
-            RaisePropertyChanged("DisplayLabel");
+            : base(model) {               
         }
 
         public override string DisplayLabel {
             get {
                 return String.Format("{0}  {1}  {2}", EventType, SubpartName, Who);
-            }
-            set {
-                base.DisplayLabel = value;
             }
         }
 

@@ -23,7 +23,7 @@
                 <ListBox.Resources>
                     <DataTemplate DataType="{x:Type ext:AutoNumberViewModel}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding DisplayLabel}" />
+                            <TextBlock Text="{Binding DisplayLabel,Mode=OneWay}" />
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.Resources>    

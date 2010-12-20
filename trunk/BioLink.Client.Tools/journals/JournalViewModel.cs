@@ -11,6 +11,21 @@ namespace BioLink.Client.Tools {
 
         public JournalViewModel(Journal model)
             : base(model) {
+                DataChanged += new DataChangedHandler(JournalViewModel_DataChanged);
+        }
+
+        void JournalViewModel_DataChanged(ChangeableModelBase viewmodel) {
+            RaisePropertyChanged("DisplayLabel");
+        }
+
+        protected override string RelativeImagePath {
+            get {
+                return @"images\Journal.png";
+            }
+        }
+
+        public override string DisplayLabel {
+            get { return FullName; }
         }
 
         public int JournalID {

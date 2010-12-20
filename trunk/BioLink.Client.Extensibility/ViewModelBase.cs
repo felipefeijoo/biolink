@@ -104,6 +104,11 @@ namespace BioLink.Client.Extensibility {
         private BitmapSource _icon;
 
         public ViewModelBase() {
+            DataChanged += new DataChangedHandler(ViewModelBase_DataChanged);
+        }
+
+        void ViewModelBase_DataChanged(ChangeableModelBase viewmodel) {
+            RaisePropertyChanged("DisplayLabel");
         }
 
         public bool IsSelected {
@@ -141,18 +146,7 @@ namespace BioLink.Client.Extensibility {
         public object Tag { get; set; }
 
         public virtual string DisplayLabel {
-            get {
-                return (string)GetValue(DisplayLabelProperty);
-            }
-            set {
-                SetValue(DisplayLabelProperty, value);
-            }
-        }
-
-        public static readonly DependencyProperty DisplayLabelProperty = DependencyProperty.Register("DisplayLabel", typeof(string), typeof(AutoNumberViewModel), new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnDisplayLabelChanged));
-
-        private static void OnDisplayLabelChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
-            var model = obj as AutoNumberViewModel;
+            get { return ToString(); }
         }
 
     }

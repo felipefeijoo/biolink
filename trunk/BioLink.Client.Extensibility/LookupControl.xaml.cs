@@ -98,6 +98,9 @@ namespace BioLink.Client.Extensibility {
                 case LookupType.Taxon:
                     t = typeof(Taxon);
                     break;
+                case LookupType.Journal:
+                    t = typeof(Journal);
+                    break;
                 default:
                     throw new Exception("Unhandled Lookup type: " + LookupType.ToString());
             }

@@ -120,8 +120,14 @@ namespace BioLink.Client.Extensibility {
 
     public class ViewModelPlaceholder : HierarchicalViewModelBase {
 
+        private string _label;
+
         public ViewModelPlaceholder(string label) {
-            this.DisplayLabel = label;
+            _label = label;
+        }
+
+        public override string DisplayLabel {
+            get { return _label; }
         }
 
     }

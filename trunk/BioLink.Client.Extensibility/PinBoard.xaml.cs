@@ -13,6 +13,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using BioLink.Data.Model;
 using BioLink.Data;
+using BioLink.Client.Utilities;
 using System.Collections.ObjectModel;
 
 namespace BioLink.Client.Extensibility {
@@ -171,12 +172,25 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        public void Pin(PinnableObject pinnable) {            
-            ViewModelBase model = GetViewModelForPinnable(pinnable);
-            if (model != null) {
-                model.Tag = pinnable;
-                _model.Add(model);
-            }
+        public void RefreshPinBoard() {
+            this.InvokeIfRequired(() => {
+                // First save the state...
+                PersistPinnedItems();
+                // Now clear the state...
+                _model.Clear();
+                // and reload the items...
+                InitializePinBoard();
+            });
+        }
+
+        public void Pin(PinnableObject pinnable) {
+            this.InvokeIfRequired(() => {
+                ViewModelBase model = GetViewModelForPinnable(pinnable);
+                if (model != null) {
+                    model.Tag = pinnable;
+                    _model.Add(model);
+                }
+            });
         }
 
         private ViewModelBase GetViewModelForPinnable(PinnableObject pinnable) {

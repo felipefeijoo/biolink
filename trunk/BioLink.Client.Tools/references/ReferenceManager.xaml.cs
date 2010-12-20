@@ -79,15 +79,17 @@ namespace BioLink.Client.Tools {
         private void DeleteSelected() {
             var selected = lvwResults.SelectedItem as ReferenceSearchResultViewModel;
             if (selected != null) {
-                selected.IsDeleted = true;
-                RegisterUniquePendingChange(new DeleteReferenceAction(selected.RefID));                     
+                if (this.Question(string.Format("Are you sure you wish to permanently delete the reference '{0}'?", selected.RefCode), "Delete Reference?")) {
+                    selected.IsDeleted = true;
+                    RegisterUniquePendingChange(new DeleteReferenceAction(selected.RefID));
+                }
             }
         }
 
         private void PinSelected() {
             var selected = lvwResults.SelectedItem as ReferenceSearchResultViewModel;
             if (selected != null) {
-                var pinnable = new PinnableObject(ToolsPlugin.TOOLS_PLUGIN_NAME, LookupType.Reference, selected.RefID, selected.DisplayLabel); // TODO need to do this properly!
+                var pinnable = new PinnableObject(ToolsPlugin.TOOLS_PLUGIN_NAME, LookupType.Reference, selected.RefID, selected.DisplayLabel);
                 PluginManager.Instance.PinObject(pinnable);
             }
         }
@@ -166,12 +168,7 @@ namespace BioLink.Client.Tools {
         }
 
         public override string DisplayLabel {
-            get {
-                return String.Format("{0}, {1} [{2}] ({3})", Title, Author, YearOfPub, RefCode);
-            }
-            set {
-                base.DisplayLabel = value;
-            }
+            get { return String.Format("{0}, {1} [{2}] ({3})", Title, Author, YearOfPub, RefCode); }
         }
 
         public int RefID {

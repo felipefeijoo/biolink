@@ -14,6 +14,12 @@
                     <TextBlock Text="{Binding FullName}" />
                 </StackPanel>
             </DataTemplate>
+            <Style TargetType="ListBox">
+                <Style.Setters>
+                    <EventSetter Event="ListBox.MouseRightButtonUp" Handler="lstResults_MouseRightButtonUp"/>
+                </Style.Setters>
+            </Style>
+
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="30" />
@@ -37,8 +43,8 @@
             </Button>
         </ToolBar>
         <Grid Grid.Row="1">
-            <TabControl>
-                <TabItem Header="Find Journal">
+            <TabControl Margin="6,6,6,0" Name="tab">
+                <TabItem Header="Find Journal" x:Name="findTab">
                     <Grid>
                         <Label Content="Find:" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" Width="45" />
                         <ext:DelayedTriggerTextbox Height="23" Margin="46,8,6,0" Name="txtFind" VerticalAlignment="Top" TypingPaused="txtFind_TypingPaused"/>
@@ -46,7 +52,7 @@
                         </ListBox>    
                     </Grid>                        
                 </TabItem>
-                <TabItem Header="Browse">
+                <TabItem Header="Browse" x:Name="browseTab">
                     <Grid>
                         <TabControl Name="tabPages" TabStripPlacement="Right" Margin="0" FontWeight="Normal">
                         </TabControl>
