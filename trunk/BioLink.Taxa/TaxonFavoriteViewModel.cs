@@ -38,8 +38,7 @@ namespace BioLink.Client.Taxa {
             get {
                 if (_image == null) {
                     if (IsGroup) {                        
-                        string assemblyName = typeof(TaxonViewModel).Assembly.GetName().Name;
-                        _image = ImageCache.GetImage(String.Format("pack://application:,,,/{0};component/images/FavFolder.png", assemblyName));
+                        _image = ImageCache.GetImage("pack://application:,,,/BioLink.Client.Extensibility;component/images/FavFolder.png");
                     } else {
                         _image = TaxonViewModel.ConstructIcon(false, Model.ElemType, IsChanged);
                     }

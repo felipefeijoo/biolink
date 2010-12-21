@@ -15,6 +15,10 @@ namespace BioLink.Client.Material {
             return NodeType(model.ElemType);
         }
 
+        public static ContextMenu BuildFavorites(SiteFavoriteViewModel node, MaterialExplorer explorer) {
+            return null;
+        }
+
         public static ContextMenu Build(SiteExplorerNodeViewModel node, MaterialExplorer explorer) {
 
             if (node == null) {
@@ -67,6 +71,10 @@ namespace BioLink.Client.Material {
                 builder.AddMenuItem(mnuReports);
             }
 
+            builder.Separator();
+            builder.AddMenuItem(CreateFavoriteMenuItems(explorer, node));
+
+
             if (type != SiteExplorerNodeType.SiteGroup) {
                 builder.Separator();
                 builder.New("Details...").Handler(() => {
@@ -89,6 +97,15 @@ namespace BioLink.Client.Material {
 
             return builder.ContextMenu;
         }
+
+        private static MenuItem CreateFavoriteMenuItems(MaterialExplorer explorer, SiteExplorerNodeViewModel node) {
+            MenuItemBuilder builder = new MenuItemBuilder();
+            MenuItem add = builder.New("Add to favorites").MenuItem;
+            add.Items.Add(builder.New("User specific").Handler(() => { explorer.AddToFavorites(node, false); }).MenuItem);
+            add.Items.Add(builder.New("Global").Handler(() => { explorer.AddToFavorites(node, true); }).MenuItem);
+            return add;
+        }
+
 
         private static MenuItem CreateReportMenuItems(SiteExplorerNodeViewModel node, MaterialExplorer explorer) {
             var builder = new MenuItemBuilder();
