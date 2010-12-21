@@ -75,6 +75,22 @@ namespace BioLink.Client.Material {
         public SiteExplorerNode Dest { get; private set; }
     }
 
+    public class MoveTrapAction : GenericDatabaseAction<SiteExplorerNode> {
+
+        public MoveTrapAction(SiteExplorerNode source, SiteExplorerNode dest)
+            : base(source) {
+            Dest = dest;
+        }
+
+        protected override void ProcessImpl(User user) {
+            var service = new MaterialService(user);
+            service.MoveTrap(Model.ElemID, Dest.ElemID);
+        }
+
+        public SiteExplorerNode Dest { get; private set; }
+    }
+
+
 
     
 

@@ -299,6 +299,12 @@ namespace BioLink.Data {
             return set;
         }
 
+        public string AsString(object obj, string @default = "") {
+            if (obj != null) {
+                return obj.ToString();
+            }
+            return @default;
+        }
      
         /// <summary>
         /// Holds user credentials, and is the conduit to gaining a Connection object
