@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using BioLink.Data.Model;
+using System.Xml;
 
 namespace BioLink.Data {
 
@@ -234,6 +235,93 @@ namespace BioLink.Data {
 
         }
 
+        public void MergeSite(int oldSiteID, int newSiteID) {
+            StoredProcUpdate("spSiteMerge", _P("intOldSiteID", oldSiteID), _P("intNewSiteID", newSiteID));
+        }
+
+        public void MoveSite(int siteID, int politicalRegionID, int siteGroupID) {
+            StoredProcUpdate("spSiteMove", _P("intSiteID", siteID), _P("intPoliticalRegionID", politicalRegionID), _P("intSiteGroupID", siteGroupID));
+        }
+
+        private void CreateNode(XmlDocument doc, string name, string value) {
+            var newNode = doc.CreateElement(name);
+            newNode.InnerText = value;
+            doc.DocumentElement.AppendChild(newNode);
+        }
+
+        public List<SiteDifference> CompareSites(int siteAID, int siteBID) {
+            string[] ignore = new string[] { "intSiteID" , "intPoliticalRegionID" , "intSiteGroupID" , "vchrSiteName" , "tintPosXYDisplayFormat" , "vchrWhoCreated" , "dtDateCreated" , "vchrWhoLastUpdated" , "dtDateLastUpdated" , "intOrder" , "tintTemplate" , "GUID" };
+            
+            var docA = GetSiteXML(siteAID, ignore);
+            var docB = GetSiteXML(siteBID, ignore);
+
+            var list = new List<SiteDifference>();
+
+            var processed = new List<String>();
+            // initially, loop throught the base data, looking for differences.
+            foreach (XmlElement elem in docA.DocumentElement.ChildNodes) {
+                string baseVal = elem.InnerText;
+                string otherVal = GetNodeText(docB, elem.Name);
+
+                processed.Add(elem.Name);
+
+                if (!baseVal.Equals(otherVal, StringComparison.InvariantCultureIgnoreCase)) {
+                    list.Add(new SiteDifference(elem.Name, baseVal, otherVal));
+
+                }
+            }
+
+            // Then loop through the Other fields. If we find any that have not been processed above,
+            // assume it is a difference if the value is not blank. Note that thsi will occur with
+            // traits, etc.
+            foreach (XmlElement elem in docB.DocumentElement.ChildNodes) {
+                if (!processed.Contains(elem.Name)) {
+                    string otherVal = elem.InnerText;
+                    if (!String.IsNullOrEmpty(otherVal)) {
+                        list.Add(new SiteDifference(elem.Name, "", otherVal));
+                    }
+                }
+            }
+
+            return list;
+        }
+
+        private String GetNodeText(XmlDocument doc, string name) {
+            string xpath = string.Format("//Site/{0}", name);
+            XmlElement elem = doc.SelectSingleNode(xpath) as XmlElement;
+            if (elem != null) {
+                return elem.InnerText;
+            }
+            return "";
+        }
+
+        public XmlDocument GetSiteXML(int siteID, params string[] ignorelist) {
+            var doc = new XmlDocument();            
+            var ignore = new List<String>(ignorelist);
+            doc.AppendChild(doc.CreateElement("Site"));
+
+            // Add the base items...
+            StoredProcReaderFirst("spSiteGet", (reader) => {
+                for (int i = 0; i < reader.FieldCount; ++i) {
+                    string name = reader.GetName(i);
+                    if (!ignorelist.Contains(name)) {
+                        CreateNode(doc, name, AsString(reader[i]));
+                    }                    
+                }
+            }, _P("intSiteID", siteID));
+
+            // Traits...            
+            StoredProcReaderForEach("spTraitList", (reader) => {
+                CreateNode(doc, "Trait." + AsString(reader["Trait"]) , AsString(reader["Value"]));
+            }, _P("vchrCategory", "Site"), _P("vchrIntraCatID", siteID+""));
+
+            StoredProcReaderForEach("spNoteList", (reader) => {
+                CreateNode(doc, "Note." + AsString(reader["NoteType"]), AsString(reader["Note"]));
+            }, _P("vchrCategory", "Site"), _P("intIntraCatID", siteID));
+
+            return doc;
+        }
+
         #endregion
 
         #region Site Visit
@@ -292,6 +380,10 @@ namespace BioLink.Data {
             StoredProcUpdate("spSiteVisitMerge", _P("intOldSiteVisitID", oldSiteVisitID), _P("intNewSiteVisitID", newSiteVisitID));
         }
 
+        public void MoveSiteVisit(int siteVisitID, int newParentID) {
+            StoredProcUpdate("spSiteVisitMove", _P("intSiteVisitID", siteVisitID), _P("intNewParentID", newParentID));
+        }
+
         #endregion
 
         #region Trap
@@ -334,6 +426,10 @@ namespace BioLink.Data {
 
         public void MergeTrap(int oldTrapID, int newTrapID) {
             StoredProcUpdate("spTrapMerge", _P("intOldTrapID", oldTrapID), _P("intNewTrapID", newTrapID));
+        }
+
+        public void MoveTrap(int trapID, int newSiteID) {
+            StoredProcUpdate("spTrapMove", _P("intTrapID", trapID), _P("intNewSiteID", newSiteID));
         }
 
         #endregion
@@ -403,6 +499,10 @@ namespace BioLink.Data {
 
         public void MergeMaterial(int oldMaterialID, int newMaterialID) {
             StoredProcUpdate("spMaterialMerge", _P("intOldMaterialID", oldMaterialID), _P("intNewMaterialID", newMaterialID));
+        }
+
+        public void MoveMaterial(int materialID, int newSiteVisitID) {
+            StoredProcUpdate("spMaterialMove", _P("intMaterialID", materialID), _P("intNewSiteVisitID", newSiteVisitID));
         }
 
         #endregion
@@ -550,5 +650,21 @@ namespace BioLink.Data {
         }
 
         #endregion
+    }
+
+    public class SiteDifference {
+
+        public SiteDifference() {
+        }
+
+        public SiteDifference(string item, string a, string b) {
+            this.Item = item;
+            this.A = a;
+            this.B = b;
+        }
+
+        public String Item { get; set; }
+        public String A { get; set; }
+        public String B { get; set; }
     }
 }

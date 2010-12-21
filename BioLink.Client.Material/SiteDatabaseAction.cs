@@ -60,4 +60,48 @@ namespace BioLink.Client.Material {
         public int SiteID { get; private set; }
     }
 
+    public class MergeSiteAction : GenericDatabaseAction<SiteExplorerNode> {
+
+        public MergeSiteAction(SiteExplorerNode model, SiteExplorerNode dest)
+            : base(model) {
+            this.Destination = dest;
+        }
+
+        protected override void ProcessImpl(User user) {
+            var service = new MaterialService(user);
+
+            service.MergeSite(Model.ElemID, Destination.ElemID);
+        }
+
+        public SiteExplorerNode Destination { get; set; }
+
+    }
+
+
+    public class MoveSiteAction : GenericDatabaseAction<SiteExplorerNode> {
+
+        public MoveSiteAction(SiteExplorerNode model, SiteExplorerNode dest)
+            : base(model) {
+            this.Destination = dest;
+        }
+
+        protected override void ProcessImpl(User user) {
+            var service = new MaterialService(user);
+
+            int siteGroupID = 0;
+
+            int regionID = Destination.ElemID;
+            if (Destination.ElemType == "SiteGroup") {
+                siteGroupID = Destination.ElemID;
+                regionID = Destination.RegionID;
+            }
+
+            service.MoveSite(Model.ElemID, Destination.RegionID, siteGroupID);
+        }
+
+        public SiteExplorerNode Destination { get; set; }
+
+       
+    }
+
 }

@@ -43,14 +43,25 @@ namespace BioLink.Client.Material {
         }
 
         private void BuildDropMap() {
+            AddToMap(SiteExplorerNodeType.Region, SiteExplorerNodeType.Region, AskMoveMergeNode);
+            AddToMap(SiteExplorerNodeType.SiteGroup, SiteExplorerNodeType.SiteGroup, AskMoveMergeNode);
+            AddToMap(SiteExplorerNodeType.Site, SiteExplorerNodeType.Site, MergeSites);
+
             AddToMap(SiteExplorerNodeType.Trap, SiteExplorerNodeType.Trap, MergeNodes);
             AddToMap(SiteExplorerNodeType.SiteVisit, SiteExplorerNodeType.SiteVisit, MergeNodes);
             AddToMap(SiteExplorerNodeType.Material, SiteExplorerNodeType.Material, MergeNodes);
+            
 
-            AddToMap(SiteExplorerNodeType.SiteGroup, SiteExplorerNodeType.SiteGroup, AskMoveMergeNode);
-            AddToMap(SiteExplorerNodeType.Region, SiteExplorerNodeType.Region, AskMoveMergeNode);
+            AddToMap(SiteExplorerNodeType.Site, SiteExplorerNodeType.SiteGroup, MoveNode);
+            AddToMap(SiteExplorerNodeType.Site, SiteExplorerNodeType.Region, MoveNode);
+
+            AddToMap(SiteExplorerNodeType.Trap, SiteExplorerNodeType.Site, MoveNode);
 
             AddToMap(SiteExplorerNodeType.SiteGroup, SiteExplorerNodeType.Region, MoveNode);
+
+            AddToMap(SiteExplorerNodeType.SiteVisit, SiteExplorerNodeType.Site, MoveNode);
+
+            AddToMap(SiteExplorerNodeType.Material, SiteExplorerNodeType.SiteVisit, MoveNode);
         }
 
         #endregion
@@ -157,12 +168,29 @@ namespace BioLink.Client.Material {
 
         private void MoveNode(SiteExplorerNodeViewModel source, SiteExplorerNodeViewModel dest) {
             DatabaseAction moveAction = null;
+            if (source.Parent == dest) {
+                ErrorMessage.Show("'{0}' is already a child of '{1}'.", source.Name, dest.Name);
+                return;
+            }
+
             switch (source.NodeType) {
+                case SiteExplorerNodeType.Site:
+                    moveAction = new MoveSiteAction(source.Model, dest.Model);
+                    break;
                 case SiteExplorerNodeType.SiteGroup:
                     moveAction = new MoveSiteGroupAction(source.Model, dest.Model);
                     break;
                 case SiteExplorerNodeType.Region:
-                    
+                    moveAction = new MoveRegionAction(source.Model, dest.Model);
+                    break;
+                case SiteExplorerNodeType.SiteVisit:
+                    moveAction = new MoveSiteVisitAction(source.Model, dest.Model);
+                    break;
+                case SiteExplorerNodeType.Material:
+                    moveAction = new MoveMaterialAction(source.Model, dest.Model);
+                    break;
+                case SiteExplorerNodeType.Trap:
+                    moveAction = new MoveTrapAction(source.Model, dest.Model);
                     break;
             }
 
@@ -174,6 +202,17 @@ namespace BioLink.Client.Material {
                 RegisterPendingChange(moveAction);
             }
 
+        }
+
+        private void MergeSites(SiteExplorerNodeViewModel oldNode, SiteExplorerNodeViewModel newNode) {
+            var frm = new MergeSiteOptions(this.FindParentWindow(), User, oldNode, newNode);
+            if (frm.ShowDialog().GetValueOrDefault(false)) {
+                newNode.IsChanged = true;
+                foreach (SiteExplorerNodeViewModel other in frm.SelectedNodes) {
+                    other.IsDeleted = true;                    
+                    RegisterPendingChange(new MergeSiteAction(other.Model, newNode.Model));
+                }
+            }
         }
 
         private void MergeNodes(SiteExplorerNodeViewModel oldNode, SiteExplorerNodeViewModel newNode) {
@@ -222,7 +261,7 @@ namespace BioLink.Client.Material {
 
             e.Effects = DragDropEffects.None;
 
-            if (dest != null && source != null) {
+            if (dest != null && source != null && dest != source) {
                 string key = MakeDropMapKey(source, dest);
                 if (_DropMap.ContainsKey(key)) {
                     e.Effects = DragDropEffects.Move;
@@ -336,6 +375,9 @@ namespace BioLink.Client.Material {
             if (expanded != null && expanded.Count > 0) {
                 ExpandParentages(RegionsModel, expanded);
             }
+
+            btnApply.IsEnabled = false;
+            btnCancel.IsEnabled = false;
 
             ClearPendingChanges();
         }
