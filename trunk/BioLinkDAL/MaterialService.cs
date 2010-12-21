@@ -13,6 +13,14 @@ namespace BioLink.Data {
             : base(user) {
         }
 
+        #region Reports
+
+        public DataMatrix GetMaterialForTrap(int trapID) {
+            return StoredProcDataMatrix("spMaterialListForTrap", _P("intTrapID", trapID));
+        }
+
+        #endregion
+
         #region Site Explorer
 
         public List<SiteExplorerNode> GetTopLevelExplorerItems(SiteExplorerNodeType parentType = SiteExplorerNodeType.Region) {

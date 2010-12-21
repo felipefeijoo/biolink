@@ -35,9 +35,45 @@ namespace BioLink.Client.Extensibility {
             }
             
             lvw.AddHandler(GridViewColumnHeader.ClickEvent, new RoutedEventHandler(GridViewColumnHeaderClickedHandler));
+
+            lvw.MouseRightButtonUp += new System.Windows.Input.MouseButtonEventHandler(lvw_MouseRightButtonUp);
             
             lvw.ItemsSource = Data.Rows;
             this.lvw.View = view;
+        }
+
+        private void EditSite(int siteID) {            
+            PluginManager.Instance.EditLookupObject(LookupType.Site, siteID);
+        }
+
+        void lvw_MouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e) {
+
+            var row = lvw.SelectedItem as MatrixRow;
+            if (row != null) {
+                ContextMenuBuilder builder = new ContextMenuBuilder(null);
+
+                AddLookupItem(builder, "SiteID", LookupType.Site);
+                AddLookupItem(builder, "SiteVisitID", LookupType.SiteVisit);
+                AddLookupItem(builder, "MaterialID", LookupType.Material);
+                AddLookupItem(builder, "BiotaID", LookupType.Taxon);
+
+                if (builder.ContextMenu.HasItems) {
+                    builder.Separator();
+                }
+                builder.New("Export data...").Handler(() => { Export(); }).End();
+
+
+                lvw.ContextMenu = builder.ContextMenu;
+            }
+
+        }
+
+        private void AddLookupItem(ContextMenuBuilder builder, String fieldName, LookupType lookupType) {
+            int index = Data.IndexOf(fieldName);
+            var row = lvw.SelectedItem as MatrixRow;
+            if (index > -1) {
+                builder.New("Edit " + lookupType.ToString()).Handler(() => { PluginManager.Instance.EditLookupObject(lookupType, (int)row[index]); }).End();
+            }
         }
 
         private void GridViewColumnHeaderClickedHandler(object sender, RoutedEventArgs e) {

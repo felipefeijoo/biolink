@@ -63,6 +63,7 @@
     <Compile Include="MaterialDetails.xaml.cs">
       <DependentUpon>MaterialDetails.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MaterialForTrapReport.cs" />
     <Compile Include="MaterialLabelsControl.xaml.cs">
       <DependentUpon>MaterialLabelsControl.xaml</DependentUpon>
     </Compile>
