@@ -123,6 +123,7 @@
     <Compile Include="FontChooser\NameDictionaryHelper.cs" />
     <Compile Include="FontChooser\TypefaceListItem.cs" />
     <Compile Include="FontChooser\TypographicFeatureListItem.cs" />
+    <Compile Include="FormattedLatLogVirtualColumn.cs" />
     <Compile Include="HierarchicalSelector.xaml.cs">
       <DependentUpon>HierarchicalSelector.xaml</DependentUpon>
     </Compile>
@@ -198,6 +199,7 @@
     </Compile>
     <Compile Include="References\RefLinkDatabaseAction.cs" />
     <Compile Include="References\RefLinkViewModel.cs" />
+    <Compile Include="ReportBase.cs" />
     <Compile Include="ReportResults.xaml.cs">
       <DependentUpon>ReportResults.xaml</DependentUpon>
     </Compile>

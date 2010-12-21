@@ -61,7 +61,11 @@ namespace BioLink.Client.Material {
                 builder.New("_Pin to pin board").Handler(() => { PluginManager.Instance.PinObject(pinnable); });
             }
 
-
+            var mnuReports = CreateReportMenuItems(node, explorer);
+            if (mnuReports.HasItems) {
+                builder.Separator();
+                builder.AddMenuItem(mnuReports);
+            }
 
             if (type != SiteExplorerNodeType.SiteGroup) {
                 builder.Separator();
@@ -85,6 +89,20 @@ namespace BioLink.Client.Material {
 
             return builder.ContextMenu;
         }
+
+        private static MenuItem CreateReportMenuItems(SiteExplorerNodeViewModel node, MaterialExplorer explorer) {
+            var builder = new MenuItemBuilder();
+
+            MenuItem reports = builder.New("Reports").MenuItem;
+            var list = explorer.Owner.GetReportsForNode(node);
+            foreach (IBioLinkReport report in list) {
+                IBioLinkReport reportToExecute = report;
+                reports.Items.Add(builder.New(report.Name).Handler(() => { PluginManager.Instance.RunReport(explorer.Owner, reportToExecute); }).MenuItem);
+            }
+
+            return reports;
+        }
+
 
         private static MenuItem CreateAddMenu(SiteExplorerNodeViewModel viewModel, MaterialExplorer explorer) {
             var addMenu = new MenuItem();

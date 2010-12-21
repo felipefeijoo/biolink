@@ -52,6 +52,15 @@ namespace BioLink.Data {
             }
             return -1;
         }
+
+        public bool ContainsColumn(string columnName) {
+            foreach (MatrixColumn col in Columns) {
+                if (col.Name == columnName) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     public class MatrixRow {

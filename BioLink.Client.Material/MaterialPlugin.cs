@@ -91,6 +91,19 @@ namespace BioLink.Client.Material {
             return null;
         }
 
+        public List<IBioLinkReport> GetReportsForNode(SiteExplorerNodeViewModel node) {
+            List<IBioLinkReport> list = new List<IBioLinkReport>();
+
+            switch (node.NodeType) {
+                case SiteExplorerNodeType.Trap:
+                    list.Add(new MaterialForTrapReport(User, node));
+                    break;
+            }
+
+            return list;
+        }
+
+
         private SiteExplorerNodeViewModel ViewModelFromObjectID(SiteExplorerNodeType nodeType, int objectID) {
             var service = new MaterialService(User);
             SiteExplorerNode model = new SiteExplorerNode();
