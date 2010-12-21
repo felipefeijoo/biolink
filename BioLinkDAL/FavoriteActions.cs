@@ -97,4 +97,18 @@ namespace BioLink.Data {
             Model.FavoriteID = newID;
         }
     }
+
+    public class InsertSiteFavoriteAction : GenericDatabaseAction<SiteFavorite> {
+
+        public InsertSiteFavoriteAction(SiteFavorite model)
+            : base(model) {
+        }
+
+        protected override void ProcessImpl(User user) {
+            var service = new SupportService(user);
+            var newID = service.InsertFavorite(FavoriteType.Site, Model.FavoriteParentID, Model.ElemID, Model.ElemType, Model.IsGlobal);
+            Model.FavoriteID = newID;
+        }
+
+    }
 }

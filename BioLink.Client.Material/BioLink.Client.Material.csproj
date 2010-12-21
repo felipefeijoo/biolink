@@ -77,6 +77,7 @@
     <Compile Include="SiteCompare.xaml.cs">
       <DependentUpon>SiteCompare.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SiteFavoriteViewModel.cs" />
     <Compile Include="TypeDataConverter.cs" />
     <Compile Include="MaterialPartsControl.xaml.cs">
       <DependentUpon>MaterialPartsControl.xaml</DependentUpon>

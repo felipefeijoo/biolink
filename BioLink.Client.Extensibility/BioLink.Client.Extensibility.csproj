@@ -124,6 +124,7 @@
     <Compile Include="FontChooser\TypefaceListItem.cs" />
     <Compile Include="FontChooser\TypographicFeatureListItem.cs" />
     <Compile Include="FormattedLatLogVirtualColumn.cs" />
+    <Compile Include="FrameworkExtensions.cs" />
     <Compile Include="HierarchicalSelector.xaml.cs">
       <DependentUpon>HierarchicalSelector.xaml</DependentUpon>
     </Compile>
@@ -464,6 +465,7 @@
     <Resource Include="images\Font.png" />
     <Resource Include="images\Calendar.png" />
     <Resource Include="images\ChangedOverlay.png" />
+    <Resource Include="images\FavFolder.png" />
     <Content Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>

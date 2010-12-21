@@ -30,7 +30,7 @@ namespace BioLink.Client.Material {
 
         private Dictionary<string, Action<SiteExplorerNodeViewModel, SiteExplorerNodeViewModel>> _DropMap = new Dictionary<string, Action<SiteExplorerNodeViewModel, SiteExplorerNodeViewModel>>();
 
-        private void AddToMap(SiteExplorerNodeType sourceType, SiteExplorerNodeType destType, Action<SiteExplorerNodeViewModel, SiteExplorerNodeViewModel> action) {            
+        private void AddToMap(SiteExplorerNodeType sourceType, SiteExplorerNodeType destType, Action<SiteExplorerNodeViewModel, SiteExplorerNodeViewModel> action) {
             _DropMap[MakeDropMapKey(sourceType, destType)] = action;
         }
 
@@ -50,7 +50,7 @@ namespace BioLink.Client.Material {
             AddToMap(SiteExplorerNodeType.Trap, SiteExplorerNodeType.Trap, MergeNodes);
             AddToMap(SiteExplorerNodeType.SiteVisit, SiteExplorerNodeType.SiteVisit, MergeNodes);
             AddToMap(SiteExplorerNodeType.Material, SiteExplorerNodeType.Material, MergeNodes);
-            
+
 
             AddToMap(SiteExplorerNodeType.Site, SiteExplorerNodeType.SiteGroup, MoveNode);
             AddToMap(SiteExplorerNodeType.Site, SiteExplorerNodeType.Region, MoveNode);
@@ -103,7 +103,7 @@ namespace BioLink.Client.Material {
             findScopes.Add(new MaterialFindScope("Visit name", "visit"));
             findScopes.Add(new MaterialFindScope("Material name", "material"));
             findScopes.Add(new MaterialFindScope("Accession No.", "accessionno"));
-            findScopes.Add(new MaterialFindScope("Registraton No.", "regno"));            
+            findScopes.Add(new MaterialFindScope("Registraton No.", "regno"));
             findScopes.Add(new MaterialFindScope("Region name", "region"));
             findScopes.Add(new MaterialFindScope("Site group name", "group"));
             findScopes.Add(new MaterialFindScope("Collector #", "collector"));
@@ -119,7 +119,7 @@ namespace BioLink.Client.Material {
             }
 
             tvwFind.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(tvwFind_PreviewMouseLeftButtonDown);
-            tvwFind.PreviewMouseMove +=new MouseEventHandler(tvwFind_PreviewMouseMove);
+            tvwFind.PreviewMouseMove += new MouseEventHandler(tvwFind_PreviewMouseMove);
 
             tvwMaterial.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(tvwMaterial_PreviewMouseLeftButtonDown);
             tvwMaterial.PreviewMouseMove += new MouseEventHandler(tvwMaterial_PreviewMouseMove);
@@ -131,8 +131,127 @@ namespace BioLink.Client.Material {
             this.Drop += new DragEventHandler(MaterialExplorer_Drop);
 
             tvwMaterial.AllowDrop = true;
+        }
+
+        private ObservableCollection<HierarchicalViewModelBase> _favModel;
+        private ViewModelPlaceholder _userRoot;
+        private ViewModelPlaceholder _globalRoot;
+
+        public void LoadFavorites() {
+
+            if (_favModel == null) {
+                _favModel = new ObservableCollection<HierarchicalViewModelBase>();
+                _userRoot = new ViewModelPlaceholder("User Favorites");
+                _globalRoot = new ViewModelPlaceholder("Global Favorites");
+
+                BuildFavoritesModel(_userRoot, false);
+                BuildFavoritesModel(_globalRoot, true);
+
+                _favModel.Add(_userRoot);
+                _favModel.Add(_globalRoot);
+
+                tvwFavorites.ItemsSource = _favModel;
+
+                btnCancel.IsEnabled = false;
+                btnApply.IsEnabled = false;
+            }
+        }
+
+        private void BuildFavoritesModel(HierarchicalViewModelBase root, bool global) {
+            var service = new SupportService(User);
+            var list = service.GetTopSiteFavorites(global);
+
+            foreach (SiteFavorite item in list) {
+                var viewModel = new SiteFavoriteViewModel(item);
+                viewModel.Parent = root;
+                if (item.NumChildren > 0) {
+                    viewModel.LazyLoadChildren += new HierarchicalViewModelAction(FavViewModel_LazyLoadChildren);
+                    viewModel.Children.Add(new ViewModelPlaceholder("Loading..."));
+                }
+                root.Children.Add(viewModel);
+                root.IsExpanded = true;
+                root.Tag = global;
+            }
+        }
+
+        public void ReloadFavorites() {
+            _favModel = null;
+            LoadFavorites();
+        }
+
+        internal void AddToFavorites(SiteExplorerNodeViewModel selected, bool global) {
+
+            SiteFavorite model = new SiteFavorite();
+            model.IsGroup = false;
+            model.ElemID = selected.ElemID;
+            model.ElemType = selected.ElemType;
+            model.Name = selected.Name;
+            model.FavoriteID = -1;
+            model.FavoriteParentID = 0;
+            model.IsGlobal = global;
+            model.Username = User.Username;
+
+            LoadFavorites();
+
+            SiteFavoriteViewModel viewModel = new SiteFavoriteViewModel(model);
+            if (global) {
+                _globalRoot.IsExpanded = true;
+                _globalRoot.Children.Add(viewModel);
+                viewModel.Parent = _globalRoot;
+            } else {
+                _userRoot.IsExpanded = true;
+                _userRoot.Children.Add(viewModel);
+                viewModel.Parent = _userRoot;
+            }
+
+            viewModel.IsSelected = true;
+
+            RegisterPendingChange(new InsertSiteFavoriteAction(viewModel.Model));
+        }
 
 
+        void FavViewModel_LazyLoadChildren(HierarchicalViewModelBase item) {
+            var vm = item as SiteFavoriteViewModel;
+            if (vm != null) {
+                if (vm.IsGroup) {
+                    // Load the children of this favorites group...
+                    var service = new SupportService(User);
+                    var list = service.GetSiteFavorites(vm.FavoriteID, vm.IsGlobal);
+                    vm.Children.Clear();
+                    list.ForEach((tf) => {
+                        var viewModel = new SiteFavoriteViewModel(tf);
+                        viewModel.Parent = item;
+                        if (tf.NumChildren > 0) {
+                            viewModel.LazyLoadChildren += new HierarchicalViewModelAction(viewModel_LazyLoadChildren);
+                            viewModel.Children.Add(new ViewModelPlaceholder("Loading..."));
+                        }
+                        vm.Children.Add(viewModel);
+                    });
+                } else {
+                    BuildSiteChildrenViewModel(item, vm.ElemID, vm.ElemType);
+                }
+            } else {
+                if (item is SiteExplorerNodeViewModel) {
+                    var tvm = item as SiteExplorerNodeViewModel;
+                    BuildSiteChildrenViewModel(item, tvm.ElemID, tvm.ElemType);
+                }
+            }
+        }
+
+        private void BuildSiteChildrenViewModel(HierarchicalViewModelBase item, int elemID, string elemType) {
+            // The model node is a Taxon favorites, so we can get the 'real' taxon children for it...
+            item.Children.Clear();
+
+            var service = new MaterialService(User);
+            List<SiteExplorerNode> nodes = service.GetExplorerElementsForParent(elemID, elemType);
+            foreach (SiteExplorerNode model in nodes) {
+                SiteExplorerNodeViewModel child = new SiteExplorerNodeViewModel(model);
+                if (child.NumChildren > 0) {
+                    child.LazyLoadChildren += new HierarchicalViewModelAction(FavViewModel_LazyLoadChildren);
+                    child.Children.Add(new ViewModelPlaceholder("Loading..."));
+                }
+                item.Children.Add(child);
+            }
         }
 
         void MaterialExplorer_Drop(object sender, DragEventArgs e) {
@@ -151,7 +270,7 @@ namespace BioLink.Client.Material {
             }
 
             e.Handled = true;
-            
+
         }
 
         private void AskMoveMergeNode(SiteExplorerNodeViewModel source, SiteExplorerNodeViewModel dest) {
@@ -209,7 +328,7 @@ namespace BioLink.Client.Material {
             if (frm.ShowDialog().GetValueOrDefault(false)) {
                 newNode.IsChanged = true;
                 foreach (SiteExplorerNodeViewModel other in frm.SelectedNodes) {
-                    other.IsDeleted = true;                    
+                    other.IsDeleted = true;
                     RegisterPendingChange(new MergeSiteAction(other.Model, newNode.Model));
                 }
             }
@@ -246,12 +365,12 @@ namespace BioLink.Client.Material {
             while (elem != null && !(elem is TreeViewItem)) {
                 elem = VisualTreeHelper.GetParent(elem);
             }
-            var treeItem = elem as TreeViewItem;            
+            var treeItem = elem as TreeViewItem;
             if (treeItem != null) {
                 treeItem.Focus();
                 return treeItem.DataContext as SiteExplorerNodeViewModel;
             }
-            return null;            
+            return null;
         }
 
         void tvwMaterial_PreviewDragOver(object sender, DragEventArgs e) {
@@ -269,7 +388,7 @@ namespace BioLink.Client.Material {
             }
 
             e.Handled = true;
-            
+
         }
 
         void tvwMaterial_PreviewMouseMove(object sender, MouseEventArgs e) {
@@ -300,7 +419,7 @@ namespace BioLink.Client.Material {
                 if (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance) {
                     if (treeView.SelectedItem != null) {
                         IInputElement hitelement = treeView.InputHitTest(_startPoint);
-                        TreeViewItem item = treeView.GetTreeViewItemClicked((FrameworkElement)hitelement);                        
+                        TreeViewItem item = treeView.GetTreeViewItemClicked((FrameworkElement)hitelement);
                         if (item != null) {
                             StartDrag(e, treeView, item);
                         }
@@ -342,9 +461,11 @@ namespace BioLink.Client.Material {
                 if (RegionsModel != null && RememberExpanded) {
                     // Now see if we can auto-expand from the last session...                    
                     var expanded = Config.GetProfile<List<String>>(Owner.User, "Material.Explorer.ExpandedNodes.Region", null);
-                    ExpandParentages(RegionsModel, expanded);                    
+                    ExpandParentages(RegionsModel, expanded);
                 }
-                
+
+                LoadFavorites();
+
             });
         }
 
@@ -360,7 +481,7 @@ namespace BioLink.Client.Material {
             // Unplaced sites (Sites with no region)...
             list = service.GetTopLevelExplorerItems(SiteExplorerNodeType.Unplaced);
             UnplacedModel = BuildExplorerModel(list);
-            unplacedNode.ItemsSource = UnplacedModel;            
+            unplacedNode.ItemsSource = UnplacedModel;
         }
 
         private void ReloadModel() {
@@ -415,40 +536,59 @@ namespace BioLink.Client.Material {
                 foreach (HierarchicalViewModelBase childViewModel in viewModel) {
                     childViewModel.Parent = parent;
                     parent.Children.Add(childViewModel);
-                }                
+                }
             }
         }
 
         private void TreeViewItem_MouseRightButtonDown(object sender, MouseEventArgs e) {
         }
 
-        private void EditableTextBlock_EditingComplete(object sender, string text) {
-            var selected = tvwMaterial.SelectedItem as SiteExplorerNodeViewModel;
-            if (selected != null) {
-                selected.Name = text;
-                switch (selected.NodeType) {
-                    case SiteExplorerNodeType.Region:
-                        RegisterPendingChange(new RenameRegionAction(selected));
-                        break;
-                    case SiteExplorerNodeType.SiteGroup:
-                        RegisterPendingChange(new RenameSiteGroupAction(selected));
-                        break;
-                    case SiteExplorerNodeType.Site:
-                        RegisterPendingChange(new RenameSiteAction(selected));
-                        break;
-                    case SiteExplorerNodeType.SiteVisit:
-                        RegisterPendingChange(new RenameSiteVisitAction(selected));
-                        break;                
-                    case SiteExplorerNodeType.Trap:
-                        RegisterPendingChange(new RenameTrapAction(selected));
-                        break;
-                    case SiteExplorerNodeType.Material:
-                        RegisterPendingChange(new RenameMaterialAction(selected));
-                        break;
-                    default:
-                        throw new NotImplementedException(selected.NodeType.ToString());
-                }                
+        private TreeView GetCurrentTree() {
+            if (tvwFavorites.IsVisible) {
+                return tvwFavorites;
             }
+
+            if (tvwMaterial.IsVisible) {
+                return tvwMaterial;
+            }
+
+            if (tvwFind.IsVisible) {
+                return tvwFind;
+            }
+
+            return null;
+        }
+
+        private void EditableTextBlock_EditingComplete(object sender, string text) {
+            var treeView = GetCurrentTree();
+            if (treeView != null) {
+                var selected = treeView.SelectedItem as SiteExplorerNodeViewModel;
+                if (selected != null) {
+                    selected.Name = text;
+                    switch (selected.NodeType) {
+                        case SiteExplorerNodeType.Region:
+                            RegisterPendingChange(new RenameRegionAction(selected));
+                            break;
+                        case SiteExplorerNodeType.SiteGroup:
+                            RegisterPendingChange(new RenameSiteGroupAction(selected));
+                            break;
+                        case SiteExplorerNodeType.Site:
+                            RegisterPendingChange(new RenameSiteAction(selected));
+                            break;
+                        case SiteExplorerNodeType.SiteVisit:
+                            RegisterPendingChange(new RenameSiteVisitAction(selected));
+                            break;
+                        case SiteExplorerNodeType.Trap:
+                            RegisterPendingChange(new RenameTrapAction(selected));
+                            break;
+                        case SiteExplorerNodeType.Material:
+                            RegisterPendingChange(new RenameMaterialAction(selected));
+                            break;
+                        default:
+                            throw new NotImplementedException(selected.NodeType.ToString());
+                    }
+                }
+            }            
         }
 
         private void EditableTextBlock_EditingCancelled(object sender, string oldtext) {
@@ -461,10 +601,9 @@ namespace BioLink.Client.Material {
         private void ShowContextMenu(TreeView tvw) {
             var selected = tvw.SelectedItem as SiteExplorerNodeViewModel;
             if (selected != null) {
-                var menu  = SiteExplorerMenuBuilder.Build(selected, this);
-                if (menu != null) {
-                    tvw.ContextMenu = menu;
-                }
+                tvw.ContextMenu = SiteExplorerMenuBuilder.Build(selected, this);
+            } else {
+                tvw.ContextMenu = null;
             }
         }
 
@@ -556,7 +695,7 @@ namespace BioLink.Client.Material {
                 ErrorMessage.Show("You must first apply the changes before editing the details of this item!");
                 return;
             } else {
-                var editor = editorFactory();                
+                var editor = editorFactory();
                 var caption = string.Format("{0} Detail {1} [{2}]", node.NodeType.ToString(), node.Name, node.ElemID);
                 PluginManager.Instance.AddNonDockableContent(Owner, editor, caption, SizeToContent.Manual);
             }
@@ -597,7 +736,7 @@ namespace BioLink.Client.Material {
         }
 
         internal void EditRegion(SiteExplorerNodeViewModel region) {
-            EditNode(region, () => { return new RegionDetails(User, region.ElemID ); });
+            EditNode(region, () => { return new RegionDetails(User, region.ElemID); });
         }
 
         internal void EditSite(SiteExplorerNodeViewModel site) {
@@ -650,7 +789,7 @@ namespace BioLink.Client.Material {
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e) {
-            ReloadModel();            
+            ReloadModel();
         }
 
         private void btnApply_Click(object sender, RoutedEventArgs e) {
@@ -689,13 +828,13 @@ namespace BioLink.Client.Material {
 
 
         internal void Refresh() {
-            if (HasPendingChanges) {            
+            if (HasPendingChanges) {
                 if (this.Question("You have unsaved changes. Refreshing will cause those changes to be discarded. Are you sure you want to discard unsaved changes?", "Discard unsaved changes?")) {
                     ReloadModel();
                 }
             } else {
                 ReloadModel();
-            }            
+            }
         }
 
         private LookupType GetLookupTypeFromNodeType(SiteExplorerNodeType nodeType) {
@@ -752,6 +891,10 @@ namespace BioLink.Client.Material {
                 DoFind();
                 e.Handled = true;
             }
+        }
+
+        private void FavoriteName_EditingComplete(object sender, string text) {
+
         }
 
     }

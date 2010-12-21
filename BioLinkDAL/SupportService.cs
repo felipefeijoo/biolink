@@ -644,7 +644,7 @@ namespace BioLink.Data {
         /// <list type="bullet">
         /// <item><description>the columns in the favorites table do not line up with the columns retrieved by the stored procedure</description></item>
         /// <item><description>Each different type of favorite will yield a different set of columns</description></item>
-        /// <item><description>Only a small set of columns are common across favorite, and not all desired common columns are desired (ID1 and ID2, for example).</description></item>
+        /// <item><description>Only a small set of columns are common across favorite, and not all desired common columns are returned (ID1 and ID2, for example).</description></item>
         /// </list>
         /// 
         /// <para>
@@ -690,7 +690,7 @@ namespace BioLink.Data {
 
                 // Copy over the nominated value for ID1
                 if (ID2Expr != null) {
-                    var srcProp = (PropertyInfo)((MemberExpression)ID1Expr.Body).Member;
+                    var srcProp = (PropertyInfo)((MemberExpression)ID2Expr.Body).Member;
                     favorite.ID2 = (string) srcProp.GetValue(favorite, null);
                 }
 
@@ -713,6 +713,11 @@ namespace BioLink.Data {
         public List<SiteFavorite> GetTopSiteFavorites(bool global) {
             var mapper = ConfigureFavoriteMapper(new GenericMapperBuilder<SiteFavorite>(), global, fav => fav.ElemID, fav => fav.ElemType);
             return GetTopFavorites<SiteFavorite>(FavoriteType.Site, global, mapper);
+        }
+
+        public List<SiteFavorite> GetSiteFavorites(int parentFavoriteId, bool global) {
+            var mapper = ConfigureFavoriteMapper(new GenericMapperBuilder<SiteFavorite>(), global, fav => fav.ElemID, fav => fav.ElemType);
+            return GetFavorites<SiteFavorite>(FavoriteType.Taxa, global, parentFavoriteId, mapper);
         }
 
         public List<ReferenceFavorite> GetTopReferenceFavorites(bool global) {

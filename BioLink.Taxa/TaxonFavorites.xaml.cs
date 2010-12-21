@@ -417,7 +417,6 @@ namespace BioLink.Client.Taxa {
             });
         }
 
-
         internal void AddToFavorites(TaxonViewModel Taxon, bool global) {
 
             TaxonFavorite model = new TaxonFavorite();
