@@ -16,12 +16,18 @@ using BioLink.Client.Utilities;
 using BioLink.Data;
 using BioLink.Data.Model;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace BioLink.Client.Tools {
     /// <summary>
     /// Interaction logic for FindReferencesControl.xaml
     /// </summary>
     public partial class ReferenceManager : DatabaseActionControl, ISelectionHostControl {
+
+        private Point _startPoint;
+        private bool _IsDragging;
+        private GridViewColumnHeader _lastHeaderClicked = null;
+        private ListSortDirection _lastDirection = ListSortDirection.Ascending;
 
         #region Designer Constructor
         public ReferenceManager() {
@@ -45,7 +51,119 @@ namespace BioLink.Client.Tools {
             ChangesCommitted += new PendingChangesCommittedHandler(ReferenceManager_ChangesCommitted);
 
             lvwResults.PreviewMouseRightButtonUp += new MouseButtonEventHandler(lvwResults_PreviewMouseRightButtonUp);
+
+            lvwResults.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(lvw_PreviewMouseLeftButtonDown);
+            lvwResults.PreviewMouseMove += new MouseEventHandler(lvw_PreviewMouseMove);
+
+            lvwResults.AddHandler(GridViewColumnHeader.ClickEvent, new RoutedEventHandler(GridViewColumnHeaderClickedHandler));
         }
+
+        private void GridViewColumnHeaderClickedHandler(object sender, RoutedEventArgs e) {
+            GridViewColumnHeader headerClicked = e.OriginalSource as GridViewColumnHeader;
+            ListSortDirection direction;
+
+            if (headerClicked != null) {
+                if (headerClicked.Role != GridViewColumnHeaderRole.Padding) {
+                    if (headerClicked != _lastHeaderClicked) {
+                        direction = ListSortDirection.Ascending;
+                    } else {
+                        if (_lastDirection == ListSortDirection.Ascending) {
+                            direction = ListSortDirection.Descending;
+                        } else {
+                            direction = ListSortDirection.Ascending;
+                        }
+                    }
+
+                    String b = headerClicked.Content as String;
+                    Sort(b, direction);
+
+                    if (direction == ListSortDirection.Ascending) {
+                        headerClicked.Column.HeaderTemplate = Resources["HeaderTemplateArrowUp"] as DataTemplate;
+                    } else {
+                        headerClicked.Column.HeaderTemplate = Resources["HeaderTemplateArrowDown"] as DataTemplate;
+                    }
+
+                    // Remove arrow from previously sorted header
+                    if (_lastHeaderClicked != null && _lastHeaderClicked != headerClicked) {
+                        _lastHeaderClicked.Column.HeaderTemplate = null;
+                    }
+
+                    _lastHeaderClicked = headerClicked;
+                    _lastDirection = direction;
+                }
+            }
+        }
+
+        private void Sort(String columnName, ListSortDirection direction) {
+            string memberName = "";
+            switch (columnName) {
+                case "Code":
+                    memberName = "RefCode";
+                    break;
+                case "Year":
+                    memberName = "YearOfPub";
+                    break;
+                default:
+                    memberName = columnName;
+                    break;
+            }
+
+            ListCollectionView dataView = CollectionViewSource.GetDefaultView(lvwResults.ItemsSource) as ListCollectionView;
+            dataView.SortDescriptions.Clear();
+            SortDescription sd = new SortDescription(memberName, direction);
+            dataView.SortDescriptions.Add(sd);
+            dataView.Refresh();
+        }
+
+        void lvw_PreviewMouseMove(object sender, MouseEventArgs e) {
+            CommonPreviewMouseMove(e, lvwResults);
+        }
+
+        void lvw_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+            _startPoint = e.GetPosition(lvwResults);
+        }
+
+        private void CommonPreviewMouseMove(MouseEventArgs e, ListView listView) {
+
+            if (_startPoint == null) {
+                return;
+            }
+
+            if (e.LeftButton == MouseButtonState.Pressed && !_IsDragging) {
+                Point position = e.GetPosition(listView);
+                if (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance) {
+                    if (listView.SelectedItem != null) {
+
+                        ListViewItem item = listView.ItemContainerGenerator.ContainerFromItem(listView.SelectedItem) as ListViewItem;
+                        if (item != null) {
+                            StartDrag(e, listView, item);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void StartDrag(MouseEventArgs mouseEventArgs, ListView listView, ListViewItem item) {
+
+            var selected = listView.SelectedItem as ReferenceSearchResultViewModel;
+            if (selected != null) {
+                var data = new DataObject("Pinnable", selected);
+
+                var pinnable = new PinnableObject(ToolsPlugin.TOOLS_PLUGIN_NAME, LookupType.Reference, selected.RefID); 
+                data.SetData(PinnableObject.DRAG_FORMAT_NAME, pinnable);
+                data.SetData(DataFormats.Text, selected.DisplayLabel);
+
+                try {
+                    _IsDragging = true;
+                    DragDrop.DoDragDrop(item, data, DragDropEffects.Copy | DragDropEffects.Move | DragDropEffects.Link);
+                } finally {
+                    _IsDragging = false;
+                }
+            }
+
+            InvalidateVisual();
+        }
+
 
         void ReferenceManager_ChangesCommitted(object sender) {
             // Redo the search...
