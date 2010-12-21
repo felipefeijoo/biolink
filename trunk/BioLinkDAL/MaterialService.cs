@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using BioLink.Data.Model;
 using System.Xml;
+using BioLink.Client.Utilities;
 
 namespace BioLink.Data {
 
@@ -37,9 +38,9 @@ namespace BioLink.Data {
 
         public List<SiteExplorerNode> GetExplorerElementsForParent(int parentID, string parentElemType) {
             var mapper = new GenericMapperBuilder<SiteExplorerNode>().build();
-            return StoredProcToList<SiteExplorerNode>("spSiteExplorerList", 
-                mapper, 
-                _P("intParentID", parentID), 
+            return StoredProcToList<SiteExplorerNode>("spSiteExplorerList",
+                mapper,
+                _P("intParentID", parentID),
                 _P("vchrParentType", parentElemType)
             );
         }
@@ -92,7 +93,7 @@ namespace BioLink.Data {
                 _P("intParentID", parentID),
                 retval
             );
-            return (int) retval.Value;
+            return (int)retval.Value;
         }
 
         public List<RegionSearchResult> FindRegions(string searchTerm) {
@@ -110,7 +111,7 @@ namespace BioLink.Data {
         #region Site Group
 
         public void RenameSiteGroup(int siteGroupID, string name) {
-            StoredProcUpdate("spSiteGroupRename", _P("intSiteGroupID",siteGroupID), _P("vchrSiteGroupName", name));
+            StoredProcUpdate("spSiteGroupRename", _P("intSiteGroupID", siteGroupID), _P("vchrSiteGroupName", name));
         }
 
         /// <summary>
@@ -148,7 +149,7 @@ namespace BioLink.Data {
             );
         }
 
-        public List<int> GetSiteGroupSiteIDList(int siteGroupID) {            
+        public List<int> GetSiteGroupSiteIDList(int siteGroupID) {
             var results = new List<int>();
             StoredProcReaderForEach("spSiteGroupGetSiteIDList",
                 (reader) => { results.Add(reader.GetInt32(0)); },
@@ -258,8 +259,8 @@ namespace BioLink.Data {
         }
 
         public List<SiteDifference> CompareSites(int siteAID, int siteBID) {
-            string[] ignore = new string[] { "intSiteID" , "intPoliticalRegionID" , "intSiteGroupID" , "vchrSiteName" , "tintPosXYDisplayFormat" , "vchrWhoCreated" , "dtDateCreated" , "vchrWhoLastUpdated" , "dtDateLastUpdated" , "intOrder" , "tintTemplate" , "GUID" };
-            
+            string[] ignore = new string[] { "intSiteID", "intPoliticalRegionID", "intSiteGroupID", "vchrSiteName", "tintPosXYDisplayFormat", "vchrWhoCreated", "dtDateCreated", "vchrWhoLastUpdated", "dtDateLastUpdated", "intOrder", "tintTemplate", "GUID" };
+
             var docA = GetSiteXML(siteAID, ignore);
             var docB = GetSiteXML(siteBID, ignore);
 
@@ -304,7 +305,7 @@ namespace BioLink.Data {
         }
 
         public XmlDocument GetSiteXML(int siteID, params string[] ignorelist) {
-            var doc = new XmlDocument();            
+            var doc = new XmlDocument();
             var ignore = new List<String>(ignorelist);
             doc.AppendChild(doc.CreateElement("Site"));
 
@@ -314,14 +315,14 @@ namespace BioLink.Data {
                     string name = reader.GetName(i);
                     if (!ignorelist.Contains(name)) {
                         CreateNode(doc, name, AsString(reader[i]));
-                    }                    
+                    }
                 }
             }, _P("intSiteID", siteID));
 
             // Traits...            
             StoredProcReaderForEach("spTraitList", (reader) => {
-                CreateNode(doc, "Trait." + AsString(reader["Trait"]) , AsString(reader["Value"]));
-            }, _P("vchrCategory", "Site"), _P("vchrIntraCatID", siteID+""));
+                CreateNode(doc, "Trait." + AsString(reader["Trait"]), AsString(reader["Value"]));
+            }, _P("vchrCategory", "Site"), _P("vchrIntraCatID", siteID + ""));
 
             StoredProcReaderForEach("spNoteList", (reader) => {
                 CreateNode(doc, "Note." + AsString(reader["NoteType"]), AsString(reader["Note"]));
@@ -472,7 +473,7 @@ namespace BioLink.Data {
                 result = mapper.Map(reader);
             }, _P("intMaterialID", materialID));
 
-            return result;            
+            return result;
         }
 
         public void UpdateMaterial(Material material) {
@@ -513,13 +514,82 @@ namespace BioLink.Data {
             StoredProcUpdate("spMaterialMove", _P("intMaterialID", materialID), _P("intNewSiteVisitID", newSiteVisitID));
         }
 
+        public string GetMaterialSummary(Material material) {
+
+            string strHEADER = @"{\rtf1\ansi\deff0\deflang1033 {\fonttbl {\f0\fswiss\fcharset0 SYSTEM;}{\f1\froman\fcharset0 TIMES NEW ROMAN;}}";
+            string strCOLOUR_TABLE = @"{\colortbl \red0\green0\blue0;\red255\green255\blue255;\red0\green0\blue255}";
+            string strPRE_TEXT = @"\paperw11895 \margr0\margl0\ATXph0 \plain \fs20 \f1 ";
+
+            var buf = new StringBuilder();
+
+            buf.AppendFormat("{0}\n{1}\n{2}", strHEADER, strCOLOUR_TABLE, strPRE_TEXT);
+            var site = GetSite(material.SiteID);
+
+            buf.Append(@"\pard\fs24\b\ul Site \b0\ul0 ");
+
+            buf.Append(FieldRTF(site.SiteName, "Name: ", 2));
+            buf.Append(FieldRTF(site.PoliticalRegion, "Region: ", 2));
+            buf.Append(FieldRTF(site.Locality, "Local: ", 2));
+            buf.Append(FieldRTF(site.DistanceFromPlace, "Distance: ", 2));
+            buf.Append(FieldRTF(site.DirFromPlace, "; Dir: ", 2, false));
+
+            buf.Append(FieldRTF(site.InformalLocal, "Informal: ", 2));
+            buf.Append(FieldRTF(site.PosX1, "Lat: ", 2));
+            buf.Append(FieldRTF(site.PosY1, "Long: ", 2));
+            buf.Append(FieldRTF(site.ElevUpper + " " + site.ElevUnits, "Elev. Upper: ", 1));
+            buf.Append(FieldRTF(site.ElevLower + " " + site.ElevUnits, "Elev. Lower: ", 1));
+            buf.Append(FieldRTF(site.ElevDepth + " " + site.ElevUnits, "Elev. Depth: ", 1));
+            buf.Append(FieldRTF(site.WhoCreated + ", " + site.DateCreated, "Created: ", 1));
+            buf.Append(FieldRTF(site.WhoLastUpdated + ", " + site.DateLastUpdated, "Last Updated: ", 1));
+
+            var visit = GetSiteVisit(material.SiteVisitID);
+
+            buf.Append(@"\pard\par\par\fs24\b\ul\cf0 Site Visit \b0\ul0 ");
+            buf.Append(FieldRTF(visit.SiteVisitName, "Name: ", 2));
+            buf.Append(FieldRTF(visit.Collector, "Collector: ", 1));
+            buf.Append(FieldRTF(visit.DateStart, "Date Start: ", 1));
+            buf.Append(FieldRTF(visit.DateEnd, "Date End: ", 1));
+            buf.Append(FieldRTF(visit.CasualTime, "Casual Date: ", 1));
+            buf.Append(FieldRTF(visit.WhoCreated + ", " + visit.DateCreated, "Created: ", 1));
+            buf.Append(FieldRTF(visit.WhoLastUpdated + ", " + visit.DateLastUpdated, "Last Updated: ", 1));
+
+            buf.Append(@"\pard\par }");
+
+            return buf.ToString();
+
+
+        }
+
+        private string FieldRTF(object obj, string title, int tabs, bool parabefore = true) {
+
+            if (obj == null) {
+                return "";
+            };
+
+            string str = obj.ToString().Trim();
+
+            if (String.IsNullOrEmpty(str)) {
+                return "";
+            }
+
+            var buf = new StringBuilder();
+            if (parabefore) {
+                buf.Append(@"\pard\par\fi-7000\li7000\tx7000");
+            }
+
+            buf.AppendFormat(@"\fs20\cf3\b {0}\b0\cf2{1} {2}", title, @"\tab".Repeat(tabs), str);
+
+            return buf.ToString();
+
+        }
+
         #endregion
 
         #region Material Identification
 
         public List<MaterialIdentification> GetMaterialIdentification(int materialID) {
             var mapper = new GenericMapperBuilder<MaterialIdentification>().build();
-            return StoredProcToList("spMaterialIDGet", mapper, _P("intMaterialID", materialID));            
+            return StoredProcToList("spMaterialIDGet", mapper, _P("intMaterialID", materialID));
         }
 
         public void DeleteMaterialIdentification(int materialIdentID) {
@@ -545,7 +615,7 @@ namespace BioLink.Data {
             return (int)retval.Value;
         }
 
-        public void UpdateMaterialIdentification(MaterialIdentification i) {            
+        public void UpdateMaterialIdentification(MaterialIdentification i) {
             StoredProcUpdate("spMaterialIDUpdate",
                 _P("intMaterialIdentID", i.MaterialIdentID),
                 _P("intMaterialID", i.MaterialID),
@@ -641,7 +711,7 @@ namespace BioLink.Data {
             return (int)retval.Value;
         }
 
-        public void UpdateCurationEvent(CurationEvent e) {            
+        public void UpdateCurationEvent(CurationEvent e) {
             StoredProcUpdate("spCurationEventUpdate",
                 _P("intCurationEventID", e.CurationEventID),
                 _P("intMaterialID", e.MaterialID),

@@ -147,7 +147,13 @@ namespace BioLink.Client.Utilities {
             return obj as TreeViewItem;
         }
 
-
+        public static string Repeat(this string stringToRepeat, int repeat) {
+            var builder = new StringBuilder(repeat);
+            for (int i = 0; i < repeat; i++) {
+                builder.Append(stringToRepeat);
+            }
+            return builder.ToString();
+        }
 
     }
 
