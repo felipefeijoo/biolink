@@ -21,7 +21,7 @@ namespace BioLink.Client.Extensibility {
     /// <summary>
     /// Interaction logic for HierarchicalSelector.xaml
     /// </summary>
-    public partial class HierarchicalSelector : ChangeContainer {
+    public partial class HierarchicalSelector : ChangeContainerWindow {
 
         private IHierarchicalSelectorContentProvider _content;
 

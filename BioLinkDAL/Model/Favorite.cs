@@ -5,10 +5,11 @@ using System.Text;
 
 namespace BioLink.Data.Model {
 
-    public class Favorite : BioLinkDataObject {
+    public abstract class Favorite : BioLinkDataObject {
 
-        public Favorite() {
+        protected Favorite(FavoriteType type) {
             FavoriteID = -1;
+            this.FavoriteType = type;
         }
 
         public string Username { get; set; }
@@ -24,6 +25,8 @@ namespace BioLink.Data.Model {
     }
 
     public class TaxonFavorite : Favorite {
+
+        public TaxonFavorite() : base(FavoriteType.Taxa) { }
         public int TaxaID { get; set; }
         public int TaxaParentID { get; set; }
         public string Epithet { get; set; }
@@ -40,24 +43,36 @@ namespace BioLink.Data.Model {
     }
 
     public class SiteFavorite : Favorite {
+
+        public SiteFavorite() : base(FavoriteType.Site) { }
+
         public int ElemID { get; set; }
         public string Name { get; set; }
         public string ElemType { get; set; }        
     }
 
     public class ReferenceFavorite : Favorite {
+
+        public ReferenceFavorite() : base(FavoriteType.Reference) {}
+
         public int RefID { get; set; }
         public string RefCode { get; set; }
         public string FullRTF { get; set; }        
     }
 
     public class DistRegionFavorite : Favorite {
+
+        public DistRegionFavorite() : base(FavoriteType.DistRegion) { }
+
         public int DistRegionID { get; set; }
         public int DistRegionParentID { get; set; }
         public string DistRegionName { get; set; }        
     }
 
     public class BiotaStorageFavorite : Favorite {
+
+        public BiotaStorageFavorite() : base(FavoriteType.BiotaStorage) { }
+
         public int BiotaStorageID { get; set; }
         public int BiotaStorageParentID { get; set; }
         public string BiotaStorageName { get; set; }

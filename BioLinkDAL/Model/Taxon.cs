@@ -39,7 +39,7 @@ namespace BioLink.Data.Model {
 
         public string NameStatus { get; set; }
 
-        public System.Nullable<int> NumChildren { get; set; }
+        public int NumChildren { get; set; }
 
         public string Parentage { get; set; }
 

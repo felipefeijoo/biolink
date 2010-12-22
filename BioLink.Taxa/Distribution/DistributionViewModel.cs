@@ -19,6 +19,7 @@ namespace BioLink.Client.Taxa {
                 return _label;
             }
         }
+
     }
 
     public class DistributionViewModel : DistributionPlaceholder {

@@ -23,19 +23,16 @@ namespace BioLink.Data {
 
     public class InsertFavoriteGroupAction : GenericDatabaseAction<Favorite> {
 
-        public InsertFavoriteGroupAction(Favorite model, FavoriteType favoriteType)
+        public InsertFavoriteGroupAction(Favorite model)
             : base(model) {
-            this.FavoriteType = favoriteType;
         }
-
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);
-            int favId = service.InsertFavoriteGroup(FavoriteType, Model.FavoriteParentID, Model.GroupName, Model.IsGlobal);
+            int favId = service.InsertFavoriteGroup(Model.FavoriteType, Model.FavoriteParentID, Model.GroupName, Model.IsGlobal);
             Model.FavoriteID = favId;
         }
 
-        internal FavoriteType FavoriteType { get; private set; }
     }
 
     public class RenameFavoriteGroupAction : GenericDatabaseAction<Favorite> {

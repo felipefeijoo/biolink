@@ -675,6 +675,9 @@ namespace BioLink.Data {
                 if (o is byte) {
                     var b = (byte)o;
                     return b != 0;
+                } else if (o is short) {
+                    var s = (short)o;
+                    return s != 0;
                 }
                 return null;
             }));
@@ -717,7 +720,7 @@ namespace BioLink.Data {
 
         public List<SiteFavorite> GetSiteFavorites(int parentFavoriteId, bool global) {
             var mapper = ConfigureFavoriteMapper(new GenericMapperBuilder<SiteFavorite>(), global, fav => fav.ElemID, fav => fav.ElemType);
-            return GetFavorites<SiteFavorite>(FavoriteType.Taxa, global, parentFavoriteId, mapper);
+            return GetFavorites<SiteFavorite>(FavoriteType.Site, global, parentFavoriteId, mapper);
         }
 
         public List<ReferenceFavorite> GetTopReferenceFavorites(bool global) {

@@ -20,7 +20,7 @@ namespace BioLinkApplication {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : ChangeContainer {
+    public partial class MainWindow : ChangeContainerWindow {
 
         private static MainWindow _instance;
         private BiolinkHost _hostControl;
