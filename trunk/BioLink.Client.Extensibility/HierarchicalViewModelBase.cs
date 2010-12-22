@@ -24,6 +24,9 @@ namespace BioLink.Client.Extensibility {
         }
 
         public bool IsAncestorOf(HierarchicalViewModelBase item) {
+            if (item == null) {
+                return false;
+            }
             HierarchicalViewModelBase p = item.Parent;
             while (p != null) {
                 if (p == this) {
@@ -107,6 +110,8 @@ namespace BioLink.Client.Extensibility {
             }
             return stack;
         }
+
+        public virtual int NumChildren { get; set; }
 
         public HierarchicalViewModelBase Parent { get; set; }
 

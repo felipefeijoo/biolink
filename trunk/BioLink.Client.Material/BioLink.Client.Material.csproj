@@ -63,6 +63,9 @@
     <Compile Include="MaterialDetails.xaml.cs">
       <DependentUpon>MaterialDetails.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MaterialFavorites.xaml.cs">
+      <DependentUpon>MaterialFavorites.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MaterialForTrapReport.cs" />
     <Compile Include="MaterialLabelsControl.xaml.cs">
       <DependentUpon>MaterialLabelsControl.xaml</DependentUpon>
@@ -151,6 +154,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MaterialExplorer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MaterialFavorites.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

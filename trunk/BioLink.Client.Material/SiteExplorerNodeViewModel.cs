@@ -82,7 +82,7 @@ namespace BioLink.Client.Material {
             set { SetProperty(() => Model.RegionID, value); }
         }
 
-        public int NumChildren {
+        public override int NumChildren {
             get { return Model.NumChildren; }
             set { SetProperty(() => Model.NumChildren, value); }
         }

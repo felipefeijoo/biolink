@@ -18,7 +18,7 @@ namespace BioLink.Client.Extensibility {
     /// <summary>
     /// Interaction logic for ControlHostWindow.xaml
     /// </summary>
-    public partial class ControlHostWindow : ChangeContainer {
+    public partial class ControlHostWindow : ChangeContainerWindow {
 
         private Action<SelectionResult> _selectionCallback;
 

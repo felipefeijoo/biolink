@@ -99,9 +99,9 @@ namespace BioLink.Client.Extensibility {
         private MessageFormatterFunc _formatter;
         private MenuItemBuilder _itemBuilder;
 
-        public ContextMenuBuilder(MessageFormatterFunc messageFormatter) {
+        public ContextMenuBuilder(MessageFormatterFunc messageFormatter, ContextMenu menu = null) {
             _formatter = messageFormatter;
-            _menu = new ContextMenu();
+            _menu = (menu == null ? new ContextMenu() : menu);
             _itemBuilder = new MenuItemBuilder(_formatter);
             _itemBuilder.EndAction = (menuItem) => {
                 _menu.Items.Add(menuItem);

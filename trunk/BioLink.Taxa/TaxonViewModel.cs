@@ -167,7 +167,7 @@ namespace BioLink.Client.Taxa {
             set { SetProperty(() => Taxon.NameStatus, Taxon, value); }
         }
 
-        public int? NumChildren {
+        public override int NumChildren {
             get { return Taxon.NumChildren; }
             set { SetProperty(() => Taxon.NumChildren, Taxon, value); }
         }

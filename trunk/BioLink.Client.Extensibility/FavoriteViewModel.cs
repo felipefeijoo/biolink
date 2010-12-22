@@ -18,6 +18,8 @@ namespace BioLink.Client.Extensibility {
             SetProperty(wrappedPropertyExpr, Model, value, doIfChanged, changeAgnostic);
         }
 
+        public override int NumChildren { get; set; }
+
         public T Model { get; private set; }
     
     }
@@ -53,13 +55,14 @@ namespace BioLink.Client.Extensibility {
             set { SetProperty(() => Model.GroupName, value); }
         }
 
-        public int NumChildren {
+        public override int NumChildren {
             get { return Model.NumChildren; }
             set { SetProperty(() => Model.NumChildren, value); }
         }
 
         public bool IsGlobal {
             get { return Model.IsGlobal; }
+            set { SetProperty(() => Model.IsGlobal, value); }
         }
 
     }

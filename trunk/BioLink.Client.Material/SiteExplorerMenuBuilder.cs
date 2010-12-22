@@ -15,8 +15,60 @@ namespace BioLink.Client.Material {
             return NodeType(model.ElemType);
         }
 
-        public static ContextMenu BuildFavorites(SiteFavoriteViewModel node, MaterialExplorer explorer) {
-            return null;
+        public static ContextMenu BuildForFavorite(SiteFavoriteViewModel fav, MaterialExplorer explorer) {
+            if (fav == null) {
+                return null;
+            }
+
+            ContextMenuBuilder builder = new ContextMenuBuilder(null);
+
+            builder.New("Refresh").Handler(() => { explorer.Refresh(); }).End();
+
+            builder.Separator();
+
+            builder.New("Rename").Handler(() => { fav.IsRenaming = true; }).End();
+
+            // A little bit of a hack to reuse the edit code...simulate a site explorer node, although its not really there...
+            SiteExplorerNode model = new SiteExplorerNode();
+            model.ElemID = fav.ElemID;
+            model.ElemType = fav.ElemType;
+            model.Name = fav.Name;
+            var node = new SiteExplorerNodeViewModel(model);
+
+            var pinnable = explorer.CreatePinnable(node);
+            if (pinnable != null) {
+                builder.Separator();
+                builder.New("_Pin to pin board").Handler(() => { PluginManager.Instance.PinObject(pinnable); });
+            }
+
+            var mnuReports = CreateReportMenuItems(node, explorer);
+            if (mnuReports.HasItems) {
+                builder.Separator();
+                builder.AddMenuItem(mnuReports);
+            }
+
+            SiteExplorerNodeType type = (SiteExplorerNodeType)Enum.Parse(typeof(SiteExplorerNodeType), fav.ElemType);
+            if (type != SiteExplorerNodeType.SiteGroup) {
+                builder.Separator();
+                builder.New("Details...").Handler(() => {                    
+                    switch (type) {
+                        case SiteExplorerNodeType.Region: explorer.EditRegion(node);
+                            break;
+                        case SiteExplorerNodeType.Site: explorer.EditSite(node);
+                            break;
+                        case SiteExplorerNodeType.SiteVisit: explorer.EditSiteVisit(node);
+                            break;
+                        case SiteExplorerNodeType.Trap: explorer.EditTrap(node);
+                            break;
+                        case SiteExplorerNodeType.Material: explorer.EditMaterial(node);
+                            break;
+                        default:
+                            throw new Exception("[Details] Unhandled site explorer element type: " + node.ElemType);
+                    }
+                }).End();
+            }
+
+            return builder.ContextMenu;
         }
 
         public static ContextMenu Build(SiteExplorerNodeViewModel node, MaterialExplorer explorer) {
@@ -101,8 +153,8 @@ namespace BioLink.Client.Material {
         private static MenuItem CreateFavoriteMenuItems(MaterialExplorer explorer, SiteExplorerNodeViewModel node) {
             MenuItemBuilder builder = new MenuItemBuilder();
             MenuItem add = builder.New("Add to favorites").MenuItem;
-            add.Items.Add(builder.New("User specific").Handler(() => { explorer.AddToFavorites(node, false); }).MenuItem);
-            add.Items.Add(builder.New("Global").Handler(() => { explorer.AddToFavorites(node, true); }).MenuItem);
+            add.Items.Add(builder.New("User specific").Handler(() => { explorer.Favorites.AddToFavorites(node, false); }).MenuItem);
+            add.Items.Add(builder.New("Global").Handler(() => { explorer.Favorites.AddToFavorites(node, true); }).MenuItem);
             return add;
         }
 

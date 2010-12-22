@@ -42,6 +42,10 @@ namespace BioLink.Client.Material {
         }
 
         public override bool RequestShutdown() {
+            if (!_explorer.RequestClose()) {
+                return false;
+            }
+
             return true;
         }
 

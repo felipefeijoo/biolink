@@ -251,7 +251,7 @@ namespace BioLink.Client.Taxa {
                         }
                         vm.Children.Add(viewModel);
                     });
-                } else {
+                } else {                    
                     BuildTaxaChildrenViewModel(item, vm.TaxaID);
                 }
             } else {
@@ -485,7 +485,7 @@ namespace BioLink.Client.Taxa {
 
             parent.Children.Add(viewModel);
 
-            RegisterUniquePendingChange(new InsertFavoriteGroupAction(model, FavoriteType.Taxa));
+            RegisterUniquePendingChange(new InsertFavoriteGroupAction(model));
             viewModel.IsRenaming = true;
         }
 

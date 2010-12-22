@@ -75,7 +75,8 @@
     </Compile>
     <Compile Include="BioLinkCorePlugin.cs" />
     <Compile Include="BioLinkPluginBase.cs" />
-    <Compile Include="ChangeContainer.cs" />
+    <Compile Include="ChangeContainerControl.cs" />
+    <Compile Include="ChangeContainerWindow.cs" />
     <Compile Include="ColorPicker\CustomColorPicker.xaml.cs">
       <DependentUpon>CustomColorPicker.xaml</DependentUpon>
     </Compile>
@@ -114,6 +115,7 @@
       <DependentUpon>ExportData.xaml</DependentUpon>
     </Compile>
     <Compile Include="Export\SQLiteExporter.cs" />
+    <Compile Include="FavoritesControl.cs" />
     <Compile Include="FavoriteViewModel.cs" />
     <Compile Include="FontChooser\FontChooser.xaml.cs">
       <DependentUpon>FontChooser.xaml</DependentUpon>
