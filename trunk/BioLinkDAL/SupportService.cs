@@ -728,6 +728,11 @@ namespace BioLink.Data {
             return GetTopFavorites<ReferenceFavorite>(FavoriteType.Reference, global, mapper);
         }
 
+        public List<ReferenceFavorite> GetReferenceFavorites(int parentFavoriteId, bool global) {
+            var mapper = ConfigureFavoriteMapper(new GenericMapperBuilder<ReferenceFavorite>(), global, fav => fav.RefID, null);
+            return GetFavorites<ReferenceFavorite>(FavoriteType.Reference, global, parentFavoriteId, mapper);
+        }
+
         public List<DistRegionFavorite> GetTopDistRegionFavorites(bool global) {
             var mapper = ConfigureFavoriteMapper(new GenericMapperBuilder<DistRegionFavorite>(), global, fav => fav.DistRegionID, null);
             return GetTopFavorites<DistRegionFavorite>(FavoriteType.DistRegion, global, mapper);

@@ -108,4 +108,17 @@ namespace BioLink.Data {
         }
 
     }
+
+    public class InsertReferenceFavoriteAction : GenericDatabaseAction<ReferenceFavorite> {
+
+        public InsertReferenceFavoriteAction(ReferenceFavorite model)
+            : base(model) {
+        }
+
+        protected override void ProcessImpl(User user) {
+            var service = new SupportService(user);
+            var newID = service.InsertFavorite(FavoriteType.Reference, Model.FavoriteParentID, Model.RefID, "", Model.IsGlobal);
+            Model.FavoriteID = newID;
+        }
+    }
 }

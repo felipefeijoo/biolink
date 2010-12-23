@@ -37,7 +37,7 @@ namespace BioLink.Client.Material {
         }
 
         private void FavoriteName_EditingComplete(object sender, string text) {
-            CompleteRename(text);
+            CompleteRename(sender, text);
         }
     }
 

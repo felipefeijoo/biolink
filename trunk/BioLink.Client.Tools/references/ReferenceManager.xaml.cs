@@ -28,6 +28,7 @@ namespace BioLink.Client.Tools {
         private bool _IsDragging;
         private GridViewColumnHeader _lastHeaderClicked = null;
         private ListSortDirection _lastDirection = ListSortDirection.Ascending;
+        private ReferenceFavorites _favorites;
 
         #region Designer Constructor
         public ReferenceManager() {
@@ -56,6 +57,9 @@ namespace BioLink.Client.Tools {
             lvwResults.PreviewMouseMove += new MouseEventHandler(lvw_PreviewMouseMove);
 
             lvwResults.AddHandler(GridViewColumnHeader.ClickEvent, new RoutedEventHandler(GridViewColumnHeaderClickedHandler));
+
+            _favorites = new ReferenceFavorites(user, this);
+            tabReferences.AddTabItem("Favorites", _favorites);
         }
 
         private void GridViewColumnHeaderClickedHandler(object sender, RoutedEventArgs e) {
@@ -168,6 +172,8 @@ namespace BioLink.Client.Tools {
         void ReferenceManager_ChangesCommitted(object sender) {
             // Redo the search...
             DoSearch();
+            // and reload the favorites...
+            _favorites.ReloadFavorites();
         }
 
         void lvwResults_PreviewMouseRightButtonUp(object sender, MouseButtonEventArgs e) {
@@ -176,6 +182,13 @@ namespace BioLink.Client.Tools {
             builder.New("Add New").Handler(() => AddNew()).End();
             builder.Separator();
             builder.New("Delete").Handler(() => DeleteSelected()).End();
+            builder.Separator();
+            MenuItemBuilder b = new MenuItemBuilder();
+            var selected = lvwResults.SelectedItem as ReferenceSearchResultViewModel;
+            var mnuFav = b.New("Add to Favorites").MenuItem;
+            mnuFav.Items.Add(b.New("User specific").Handler(() => { _favorites.AddToFavorites(selected, false); }).MenuItem);
+            mnuFav.Items.Add(b.New("Global").Handler(() => { _favorites.AddToFavorites(selected, true); }).MenuItem);
+            builder.AddMenuItem(mnuFav);
             builder.Separator();
             builder.New("Pin to pinboard").Handler(() => { PinSelected(); }).End();
             builder.New("Edit").Handler(() => EditSelected()).End();
@@ -196,11 +209,16 @@ namespace BioLink.Client.Tools {
 
         private void DeleteSelected() {
             var selected = lvwResults.SelectedItem as ReferenceSearchResultViewModel;
-            if (selected != null) {
-                if (this.Question(string.Format("Are you sure you wish to permanently delete the reference '{0}'?", selected.RefCode), "Delete Reference?")) {
-                    selected.IsDeleted = true;
-                    RegisterUniquePendingChange(new DeleteReferenceAction(selected.RefID));
-                }
+            if (selected != null) {                
+                DeleteReference(selected.RefID, selected.RefCode);
+                selected.IsDeleted = true;
+            }
+
+        }
+
+        public void DeleteReference(int refID, String refCode) {
+            if (this.Question(string.Format("Are you sure you wish to permanently delete the reference '{0}'?", refCode), "Delete Reference?")) {
+                RegisterUniquePendingChange(new DeleteReferenceAction(refID));
             }
         }
 
@@ -250,7 +268,7 @@ namespace BioLink.Client.Tools {
 
         protected SupportService Service { get { return new SupportService(User); } }
 
-        protected ToolsPlugin Owner { get; private set; }
+        public ToolsPlugin Owner { get; private set; }
 
         private void btnFind_Click(object sender, RoutedEventArgs e) {
             DoSearch();
@@ -279,7 +297,7 @@ namespace BioLink.Client.Tools {
         
     }
 
-    public class ReferenceSearchResultViewModel : GenericViewModelBase<ReferenceSearchResult> {
+    public class ReferenceSearchResultViewModel : GenericHierarchicalViewModelBase<ReferenceSearchResult> {
 
         public ReferenceSearchResultViewModel(ReferenceSearchResult model)
             : base(model) {

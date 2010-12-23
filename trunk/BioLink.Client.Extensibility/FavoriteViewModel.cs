@@ -5,6 +5,9 @@ using System.Linq.Expressions;
 using System.Text;
 using BioLink.Data;
 using BioLink.Data.Model;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Extensibility {
 
@@ -26,9 +29,30 @@ namespace BioLink.Client.Extensibility {
 
     public class FavoriteViewModel<T> : GenericHierarchicalViewModelBase<T> where T : Favorite {
 
+        private BitmapSource _image;
+
         public FavoriteViewModel(T model)
             : base(model) {
         }
+
+        public override BitmapSource Icon {
+            get {
+                if (_image == null) {
+                    if (IsGroup) {
+                        _image = ImageCache.GetImage("pack://application:,,,/BioLink.Client.Extensibility;component/images/FavFolder.png");
+                    } else {
+                        _image = base.Icon;
+                    }
+                }
+                return _image;
+            }
+
+            set {
+                _image = value;
+                RaisePropertyChanged("Icon");
+            }
+        }
+
 
         public string Username {
             get { return Model.Username; }
