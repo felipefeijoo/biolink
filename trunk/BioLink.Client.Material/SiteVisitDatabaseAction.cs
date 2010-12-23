@@ -37,15 +37,18 @@ namespace BioLink.Client.Material {
 
     public class InsertSiteVisitAction : AbstractSiteExplorerAction {
 
-        public InsertSiteVisitAction(SiteExplorerNodeViewModel model)
+        public InsertSiteVisitAction(SiteExplorerNodeViewModel model, int templateId = -1)
             : base(model) {
+            TemplateID = templateId;
         }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
-            Model.ElemID = service.InsertSiteVisit(Model.ParentID);
+            Model.ElemID = service.InsertSiteVisit(Model.ParentID, TemplateID);
             UpdateChildrenParentID();
         }
+
+        public int TemplateID { get; private set; }
     }
 
     public class UpdateSiteVisitAction : GenericDatabaseAction<SiteVisit> {

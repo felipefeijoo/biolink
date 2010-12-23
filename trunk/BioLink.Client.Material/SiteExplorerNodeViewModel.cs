@@ -91,5 +91,10 @@ namespace BioLink.Client.Material {
             return String.Format("{0}: {1} [{2}]", NodeType, Name, ElemID);
         }
 
+        public bool IsTemplate {
+            get { return Model.IsTemplate; }
+        }
+
+
     }
 }

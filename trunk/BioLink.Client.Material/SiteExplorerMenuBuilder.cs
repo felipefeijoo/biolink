@@ -41,7 +41,7 @@ namespace BioLink.Client.Material {
                     builder.Separator();
                     builder.New("_Pin to pin board").Handler(() => { PluginManager.Instance.PinObject(pinnable); });
                 }
-
+               
                 var mnuReports = CreateReportMenuItems(node, explorer);
                 if (mnuReports.HasItems) {
                     builder.Separator();
@@ -89,10 +89,12 @@ namespace BioLink.Client.Material {
 
             builder.New("Rename").Handler(() => { node.IsRenaming = true; }).End();
 
-            var addMenu = CreateAddMenu(node, explorer);
-            builder.AddMenuItem(addMenu);
+            if (!node.IsTemplate) {
+                var addMenu = CreateAddMenu(node, explorer);
+                builder.AddMenuItem(addMenu);
 
-            builder.Separator();
+                builder.Separator();
+            }
 
             var type = NodeType(node);
 
@@ -115,20 +117,22 @@ namespace BioLink.Client.Material {
                 }
             });
 
-            var pinnable = explorer.CreatePinnable(node);
-            if (pinnable != null) {
-                builder.Separator();
-                builder.New("_Pin to pin board").Handler(() => { PluginManager.Instance.PinObject(pinnable); });
-            }
+            if (!node.IsTemplate) {
+                var pinnable = explorer.CreatePinnable(node);
+                if (pinnable != null) {
+                    builder.Separator();
+                    builder.New("_Pin to pin board").Handler(() => { PluginManager.Instance.PinObject(pinnable); });
+                }
 
-            var mnuReports = CreateReportMenuItems(node, explorer);
-            if (mnuReports.HasItems) {
-                builder.Separator();
-                builder.AddMenuItem(mnuReports);
-            }
+                var mnuReports = CreateReportMenuItems(node, explorer);
+                if (mnuReports.HasItems) {
+                    builder.Separator();
+                    builder.AddMenuItem(mnuReports);
+                }
 
-            builder.Separator();
-            builder.AddMenuItem(CreateFavoriteMenuItems(explorer, node));
+                builder.Separator();
+                builder.AddMenuItem(CreateFavoriteMenuItems(explorer, node));
+            }
 
 
             if (type != SiteExplorerNodeType.SiteGroup) {
