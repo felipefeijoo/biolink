@@ -35,20 +35,34 @@ namespace BioLink.Client.Material {
 
     public class InsertSiteAction : AbstractSiteExplorerAction {
 
-        public InsertSiteAction(SiteExplorerNodeViewModel model)
+        public InsertSiteAction(SiteExplorerNodeViewModel model, int templateId = 0)
+            : base(model) {
+            this.TemplateID = templateId;
+        }
+
+        protected override void ProcessImpl(User user) {
+            var service = new MaterialService(user);
+            Model.ElemID = service.InsertSite(base.FindRegionID(Model), base.FindIDOfParentType(Model,SiteExplorerNodeType.SiteGroup, TemplateID));
+            base.UpdateChildrenParentID();
+        }
+
+        private int TemplateID { get; private set; }
+    }
+
+    public class InsertSiteTemplateAction : GenericDatabaseAction<SiteExplorerNode> {
+        public InsertSiteTemplateAction(SiteExplorerNode model)
             : base(model) {
         }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
-            Model.ElemID = service.InsertSite(base.FindRegionID(Model), base.FindIDOfParentType(Model,SiteExplorerNodeType.SiteGroup, 0));
-            base.UpdateChildrenParentID();
+            Model.ElemID = service.InsertSiteTemplate();
         }
     }
 
     public class DeleteSiteAction : DatabaseAction {
         public DeleteSiteAction(int siteID) {
-            this.SiteID = siteID;
+            this.SiteID = siteID;            
         }
 
         protected override void ProcessImpl(User user) {
@@ -58,6 +72,7 @@ namespace BioLink.Client.Material {
 
 
         public int SiteID { get; private set; }
+        
     }
 
     public class MergeSiteAction : GenericDatabaseAction<SiteExplorerNode> {

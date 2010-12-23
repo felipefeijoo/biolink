@@ -126,9 +126,20 @@ namespace BioLink.Client.Extensibility {
     public class ViewModelPlaceholder : HierarchicalViewModelBase {
 
         private string _label;
+        private string _imagePath;
 
-        public ViewModelPlaceholder(string label) {
+        public ViewModelPlaceholder(string label, string imagePath = null) {
             _label = label;
+            _imagePath = imagePath;            
+        }
+
+        protected override string RelativeImagePath {
+            get {
+                if (!String.IsNullOrEmpty(_imagePath)) {
+                    return _imagePath;
+                }
+                return base.RelativeImagePath;
+            }
         }
 
         public override string DisplayLabel {

@@ -54,6 +54,29 @@ namespace BioLink.Data {
             );
         }
 
+        public List<SiteExplorerNode> GetSiteTemplates() {
+            var mapper = new GenericMapperBuilder<SiteExplorerNode>().PostMapAction((n)=>{
+                n.IsTemplate = true;
+            }).build();
+            return StoredProcToList("spSiteListTemplates", mapper);
+        }
+
+        public List<SiteExplorerNode> GetSiteVisitTemplates() {
+            var mapper = new GenericMapperBuilder<SiteExplorerNode>().PostMapAction((n) => {
+                n.IsTemplate = true;
+            }).build();
+            return StoredProcToList("spSiteVisitListTemplates", mapper);
+        }
+
+        public List<SiteExplorerNode> GetMaterialTemplates() {
+            var mapper = new GenericMapperBuilder<SiteExplorerNode>().PostMapAction((n) => {
+                n.IsTemplate = true;
+            }).build();
+            return StoredProcToList("spMaterialListTemplates", mapper);
+        }
+
+
+
         #endregion
 
         #region Region
@@ -244,6 +267,12 @@ namespace BioLink.Data {
 
         }
 
+        public int InsertSiteTemplate() {
+            var retval = ReturnParam("intNewSiteID", System.Data.SqlDbType.Int);
+            StoredProcUpdate("spSiteInsertTemplate", retval);
+            return (int)retval.Value;
+        }
+
         public void MergeSite(int oldSiteID, int newSiteID) {
             StoredProcUpdate("spSiteMerge", _P("intOldSiteID", oldSiteID), _P("intNewSiteID", newSiteID));
         }
@@ -391,6 +420,12 @@ namespace BioLink.Data {
 
         public void MoveSiteVisit(int siteVisitID, int newParentID) {
             StoredProcUpdate("spSiteVisitMove", _P("intSiteVisitID", siteVisitID), _P("intNewParentID", newParentID));
+        }
+
+        public int InsertSiteVisitTemplate() {
+            var retval = ReturnParam("intNewSiteVisitID", System.Data.SqlDbType.Int);
+            StoredProcUpdate("spSiteVisitInsertTemplate", retval);
+            return (int)retval.Value;
         }
 
         #endregion
@@ -556,8 +591,6 @@ namespace BioLink.Data {
             buf.Append(@"\pard\par }");
 
             return buf.ToString();
-
-
         }
 
         private string FieldRTF(object obj, string title, int tabs, bool parabefore = true) {
@@ -581,6 +614,12 @@ namespace BioLink.Data {
 
             return buf.ToString();
 
+        }
+
+        public int InsertMaterialTemplate() {
+            var retval = ReturnParam("intNewMaterialID", System.Data.SqlDbType.Int);
+            StoredProcUpdate("spMaterialInsertTemplate", retval);
+            return (int)retval.Value;
         }
 
         #endregion

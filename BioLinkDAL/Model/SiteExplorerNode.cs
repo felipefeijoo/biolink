@@ -14,6 +14,7 @@ namespace BioLink.Data.Model {
         public int NumChildren { get; set; }
         public int RegionID { get; set; }
         public string RegionName { get; set; }
+        public bool IsTemplate { get; set; }
 
     }
 

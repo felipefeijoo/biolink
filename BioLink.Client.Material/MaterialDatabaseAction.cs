@@ -22,15 +22,19 @@ namespace BioLink.Client.Material {
     }
 
     public class InsertMaterialAction : AbstractSiteExplorerAction {
-        public InsertMaterialAction(SiteExplorerNodeViewModel model)
+
+        public InsertMaterialAction(SiteExplorerNodeViewModel model, int templateID = 0)
             : base(model) {
+            this.TemplateID = templateID;
         }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
-            Model.ElemID = service.InsertMaterial(Model.ParentID);
+            Model.ElemID = service.InsertMaterial(Model.ParentID, TemplateID);
             UpdateChildrenParentID();
         }
+
+        public int TemplateID { get; private set; }
     }
 
     public class DeleteMaterialAction : DatabaseAction {
@@ -88,5 +92,15 @@ namespace BioLink.Client.Material {
         public SiteExplorerNode Destination { get; private set; }
     }
 
+    public class InsertMaterialTemplateAction : GenericDatabaseAction<SiteExplorerNode> {
+        public InsertMaterialTemplateAction(SiteExplorerNode model)
+            : base(model) {
+        }
+
+        protected override void ProcessImpl(User user) {
+            var service = new MaterialService(user);
+            Model.ElemID = service.InsertMaterialTemplate();
+        }
+    }
 
 }

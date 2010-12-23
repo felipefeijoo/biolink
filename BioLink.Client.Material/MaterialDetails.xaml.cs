@@ -76,8 +76,9 @@ namespace BioLink.Client.Material {
             tabMaterial.AddTabItem("Notes", new NotesControl(User, TraitCategoryType.Material, materialID));
             tabMaterial.AddTabItem("Multimedia", new MultimediaControl(User, TraitCategoryType.Material, materialID));
             tabMaterial.AddTabItem("Ownership", new OwnershipDetails(model));
-            tabMaterial.AddTabItem("Summary", new MaterialSummary(User, _viewModel));
-
+            if (!model.IsTemplate) {
+                tabMaterial.AddTabItem("Summary", new MaterialSummary(User, _viewModel));
+            }
         }
 
         void txtIdentification_ObjectIDChanged(object source, int? objectID) {
