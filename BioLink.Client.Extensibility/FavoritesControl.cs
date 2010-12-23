@@ -59,9 +59,9 @@ namespace BioLink.Client.Extensibility {
                     if (favViewModel.IsGroup) {
                         builder.New("Rename group").Handler(() => { RenameFavoriteGroup(favViewModel); }).End();
                         builder.New("Remove favorite group").Handler(() => { DeleteFavoriteGroup(favViewModel); }).End();
+                    } else {
+                        builder.New("Remove from favorites").Handler(() => { DeleteFavorite(favViewModel.FavoriteID); }).End();
                     }
-
-                    builder.New("Remove from favorites").Handler(() => { DeleteFavorite(favViewModel.FavoriteID); }).End();
 
                 } else if (selected is ViewModelPlaceholder) {
                     builder.New("Add favorite group").Handler(() => { AddFavoriteGroup(selected); }).End();
@@ -102,8 +102,10 @@ namespace BioLink.Client.Extensibility {
 
             FavoriteViewModel<T> viewModel = Provider.CreateFavoriteViewModel(model);
             viewModel.Parent = parent;
+            viewModel.IsSelected = true;
 
             parent.Children.Add(viewModel);
+            
 
             RegisterUniquePendingChange(new InsertFavoriteGroupAction(model));
             viewModel.IsRenaming = true;
@@ -116,27 +118,32 @@ namespace BioLink.Client.Extensibility {
                 return;
             }
 
+            fav.IsSelected = true;
             fav.IsRenaming = true;            
         }
 
-        protected void CompleteRename(string text) {
-            var selected = Provider.FavoritesTree.SelectedItem as HierarchicalViewModelBase;
+        protected void CompleteRename(object sender, string text) {
+            var control = sender as FrameworkElement;
+            if (control != null && control.DataContext is HierarchicalViewModelBase) {
+                var selected = control.DataContext as HierarchicalViewModelBase;
 
-            DatabaseAction action = null;
-            if (selected is FavoriteViewModel<T>) {
-                var vm = selected as FavoriteViewModel<T>;
-                if (vm.IsGroup) {
-                    vm.GroupName = text;
-                    action = new RenameFavoriteGroupAction(vm.Model);
-                } else {
-                    action = Provider.RenameFavorite(vm, text);
+
+                DatabaseAction action = null;
+                if (selected is FavoriteViewModel<T>) {
+                    var vm = selected as FavoriteViewModel<T>;
+                    if (vm.IsGroup) {
+                        vm.GroupName = text;
+                        action = new RenameFavoriteGroupAction(vm.Model);
+                    } else {
+                        action = Provider.RenameFavorite(vm, text);
+                    }
+                } else if (selected is V) {
+                    action = Provider.RenameViewModel(selected as V, text);
                 }
-            } else if (selected is V) {
-                action = Provider.RenameViewModel(selected as V, text);
-            }
 
-            if (action != null) {
-                RegisterPendingChange(action);
+                if (action != null) {
+                    RegisterPendingChange(action);
+                }
             }
 
         }
@@ -182,40 +189,6 @@ namespace BioLink.Client.Extensibility {
             RegisterPendingChange(Provider.GetInsertAction(favViewModel));
         }
 
-        //internal void AddFavoriteGroup(HierarchicalViewModelBase parent) {
-
-        //    int parentGroupID = 0;
-        //    if (parent == null) {
-        //        return;
-        //    }
-
-        //    bool isGlobal = false;
-
-        //    if (parent is ViewModelPlaceholder) {
-        //        isGlobal = (bool)(parent as ViewModelPlaceholder).Tag;
-        //    } else if (parent is TaxonFavoriteViewModel) {
-        //        var parentViewModel = parent as TaxonFavoriteViewModel;
-        //        isGlobal = parentViewModel.IsGlobal;
-        //        parentGroupID = parentViewModel.FavoriteID;
-        //    }
-
-        //    TaxonFavorite model = new TaxonFavorite();
-
-        //    model.IsGroup = true;
-        //    model.GroupName = "<New Folder>";
-        //    model.IsGlobal = isGlobal;
-        //    model.FavoriteParentID = parentGroupID;
-
-        //    TaxonFavoriteViewModel viewModel = new TaxonFavoriteViewModel(model);
-        //    viewModel.Parent = parent;
-
-        //    parent.Children.Add(viewModel);
-
-        //    _actionControl.RegisterUniquePendingChange(new InsertFavoriteGroupAction(model, FavoriteType.Taxa));
-        //    viewModel.IsRenaming = true;
-        //}
-
-
         public void LoadFavorites() {
             _model = new ObservableCollection<HierarchicalViewModelBase>();
             _userRoot = new ViewModelPlaceholder("User Favorites");
@@ -226,6 +199,9 @@ namespace BioLink.Client.Extensibility {
 
             _model.Add(_userRoot);
             _model.Add(_globalRoot);
+
+            _globalRoot.IsExpanded = true;
+            _userRoot.IsExpanded = true;
 
             Provider.FavoritesTree.ItemsSource = _model;
 

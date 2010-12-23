@@ -10,6 +10,9 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Tools {
 
+    /// <summary>
+    /// Although references are not hierarchial the view model is because it is used by the generic favorites control.
+    /// </summary>
     public class ReferenceViewModel : GenericViewModelBase<Reference> {
 
         public ReferenceViewModel(Reference model)
@@ -169,4 +172,5 @@ namespace BioLink.Client.Tools {
         }
         
     }
+
 }

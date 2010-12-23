@@ -253,7 +253,7 @@ namespace BioLink.Client.Extensibility {
                 menu.Items.Add(new Separator());
                 menu.Items.Add(builder.New("Delete").Handler(() => { DeleteSelectedMultimedia(); }).MenuItem);
                 menu.Items.Add(new Separator());
-                menu.Items.Add(builder.New("Details...").Handler(() => { ShowProperties(); }).MenuItem);
+                menu.Items.Add(builder.New("Edit Details...").Handler(() => { ShowProperties(); }).MenuItem);
             }
         }
 

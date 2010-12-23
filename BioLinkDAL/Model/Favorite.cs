@@ -17,7 +17,7 @@ namespace BioLink.Data.Model {
         public int FavoriteParentID { get; set; }
         public bool IsGroup { get; set; }
         public string GroupName { get; set; }
-        public int NumChildren { get; set; }
+        public virtual int NumChildren { get; set; }
         public bool IsGlobal { get; set; }
         public FavoriteType FavoriteType { get; set; }
         public int ID1 { get; set; }
@@ -57,7 +57,11 @@ namespace BioLink.Data.Model {
 
         public int RefID { get; set; }
         public string RefCode { get; set; }
-        public string FullRTF { get; set; }        
+        public string FullRTF { get; set; }
+        public override int NumChildren {
+            get { return (IsGroup ? base.NumChildren : 0); }
+            set { base.NumChildren = value; }
+        }
     }
 
     public class DistRegionFavorite : Favorite {

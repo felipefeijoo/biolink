@@ -24,48 +24,52 @@ namespace BioLink.Client.Material {
 
             builder.New("Refresh").Handler(() => { explorer.Refresh(); }).End();
 
-            builder.Separator();
-
-            builder.New("Rename").Handler(() => { fav.IsRenaming = true; }).End();
-
-            // A little bit of a hack to reuse the edit code...simulate a site explorer node, although its not really there...
-            SiteExplorerNode model = new SiteExplorerNode();
-            model.ElemID = fav.ElemID;
-            model.ElemType = fav.ElemType;
-            model.Name = fav.Name;
-            var node = new SiteExplorerNodeViewModel(model);
-
-            var pinnable = explorer.CreatePinnable(node);
-            if (pinnable != null) {
+            if (!fav.IsGroup) {
                 builder.Separator();
-                builder.New("_Pin to pin board").Handler(() => { PluginManager.Instance.PinObject(pinnable); });
-            }
 
-            var mnuReports = CreateReportMenuItems(node, explorer);
-            if (mnuReports.HasItems) {
-                builder.Separator();
-                builder.AddMenuItem(mnuReports);
-            }
+                builder.New("Rename").Handler(() => { fav.IsRenaming = true; }).End();
 
-            SiteExplorerNodeType type = (SiteExplorerNodeType)Enum.Parse(typeof(SiteExplorerNodeType), fav.ElemType);
-            if (type != SiteExplorerNodeType.SiteGroup) {
-                builder.Separator();
-                builder.New("Details...").Handler(() => {                    
-                    switch (type) {
-                        case SiteExplorerNodeType.Region: explorer.EditRegion(node);
-                            break;
-                        case SiteExplorerNodeType.Site: explorer.EditSite(node);
-                            break;
-                        case SiteExplorerNodeType.SiteVisit: explorer.EditSiteVisit(node);
-                            break;
-                        case SiteExplorerNodeType.Trap: explorer.EditTrap(node);
-                            break;
-                        case SiteExplorerNodeType.Material: explorer.EditMaterial(node);
-                            break;
-                        default:
-                            throw new Exception("[Details] Unhandled site explorer element type: " + node.ElemType);
-                    }
-                }).End();
+                // A little bit of a hack to reuse the edit code...simulate a site explorer node, although its not really there...
+                SiteExplorerNode model = new SiteExplorerNode();
+                model.ElemID = fav.ElemID;
+                model.ElemType = fav.ElemType;
+                model.Name = fav.Name;
+                var node = new SiteExplorerNodeViewModel(model);
+
+                var pinnable = explorer.CreatePinnable(node);
+                if (pinnable != null) {
+                    builder.Separator();
+                    builder.New("_Pin to pin board").Handler(() => { PluginManager.Instance.PinObject(pinnable); });
+                }
+
+                var mnuReports = CreateReportMenuItems(node, explorer);
+                if (mnuReports.HasItems) {
+                    builder.Separator();
+                    builder.AddMenuItem(mnuReports);
+                }
+
+
+
+                SiteExplorerNodeType type = (SiteExplorerNodeType)Enum.Parse(typeof(SiteExplorerNodeType), fav.ElemType);
+                if (type != SiteExplorerNodeType.SiteGroup) {
+                    builder.Separator();
+                    builder.New("Edit Details...").Handler(() => {
+                        switch (type) {
+                            case SiteExplorerNodeType.Region: explorer.EditRegion(node);
+                                break;
+                            case SiteExplorerNodeType.Site: explorer.EditSite(node);
+                                break;
+                            case SiteExplorerNodeType.SiteVisit: explorer.EditSiteVisit(node);
+                                break;
+                            case SiteExplorerNodeType.Trap: explorer.EditTrap(node);
+                                break;
+                            case SiteExplorerNodeType.Material: explorer.EditMaterial(node);
+                                break;
+                            default:
+                                throw new Exception("[Details] Unhandled site explorer element type: " + node.ElemType);
+                        }
+                    }).End();
+                }
             }
 
             return builder.ContextMenu;
@@ -129,7 +133,7 @@ namespace BioLink.Client.Material {
 
             if (type != SiteExplorerNodeType.SiteGroup) {
                 builder.Separator();
-                builder.New("Details...").Handler(() => {
+                builder.New("Edit Details...").Handler(() => {
                     switch (type) {
                         case SiteExplorerNodeType.Region: explorer.EditRegion(node);
                             break;

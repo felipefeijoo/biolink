@@ -6,8 +6,6 @@ using BioLink.Data;
 using BioLink.Data.Model;
 using BioLink.Client.Extensibility;
 using BioLink.Client.Utilities;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace BioLink.Client.Material {
 
@@ -24,26 +22,6 @@ namespace BioLink.Client.Material {
                 } else {
                     return Name;
                 }
-            }
-        }
-
-        private BitmapSource _image;
-
-        public override BitmapSource Icon {
-            get {
-                if (_image == null) {
-                    if (IsGroup) {                        
-                        _image = ImageCache.GetImage("pack://application:,,,/BioLink.Client.Extensibility;component/images/FavFolder.png");
-                    } else {
-                        _image = base.Icon;
-                    }
-                }
-                return _image;
-            }
-
-            set {
-                _image = value;
-                RaisePropertyChanged("Icon");
             }
         }
 
