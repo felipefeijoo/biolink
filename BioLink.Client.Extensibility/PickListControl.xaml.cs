@@ -87,7 +87,7 @@ namespace BioLink.Client.Extensibility {
             PickListWindow frm = new PickListWindow(user, String.Format("Distinct values for {0}_{1}",table, field), itemsFunc, null);
 
             if (frm.ShowDialog().GetValueOrDefault(false)) {
-                return frm.SelectedValue;
+                return frm.SelectedValue as string;
             };
 
             return null;
@@ -155,7 +155,7 @@ namespace BioLink.Client.Extensibility {
             PickListWindow frm = new PickListWindow(user, caption, itemsFunc, addItemFunc);
 
             if (frm.ShowDialog().GetValueOrDefault(false)) {
-                return frm.SelectedValue;
+                return frm.SelectedValue as string;
             };
 
             return null;

@@ -105,7 +105,7 @@ namespace BioLink.Client.Extensibility {
             });
 
             if (frm.ShowDialog().ValueOrFalse()) {
-                return frm.SelectedValue;
+                return frm.SelectedValue as string;
             }
 
             return null;

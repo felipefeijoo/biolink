@@ -19,13 +19,14 @@
         </Grid>
 
         <ListView x:Name="lst" Grid.Row="1" Margin="7,0,6,0" MouseDoubleClick="lst_MouseDoubleClick" SelectionMode="Single">
-            <!--<ListView.Resources>
-                <DataTemplate DataType="{x:Type data:Phrase}">
-                    <StackPanel Orientation="Horizontal">                        
-                        <TextBlock Text="{Binding Path=PhraseText}" VerticalAlignment="Center" />
+            <ListView.Resources>
+                <DataTemplate DataType="{x:Type ext:ViewModelBase}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{Binding Path=Icon}" Margin="0,1,4,0" SnapsToDevicePixels="True" UseLayoutRounding="True"/>
+                        <TextBlock Text="{Binding Path=DisplayLabel, Mode=OneWay}" VerticalAlignment="Center" />
                     </StackPanel>
                 </DataTemplate>
-            </ListView.Resources>-->
+            </ListView.Resources>
         </ListView>
         
         <Grid Grid.Row="2">

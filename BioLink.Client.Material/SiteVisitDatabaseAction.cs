@@ -98,5 +98,17 @@ namespace BioLink.Client.Material {
         public SiteExplorerNode Dest { get; private set; }
     }
 
+    public class InsertSiteVisitTemplateAction : GenericDatabaseAction<SiteExplorerNode> {
+        public InsertSiteVisitTemplateAction(SiteExplorerNode model)
+            : base(model) {
+        }
+
+        protected override void ProcessImpl(User user) {
+            var service = new MaterialService(user);
+            Model.ElemID = service.InsertSiteVisitTemplate();
+        }
+    }
+
+
 
 }

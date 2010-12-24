@@ -42,11 +42,11 @@ namespace BioLink.Client.Material {
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
-            Model.ElemID = service.InsertSite(base.FindRegionID(Model), base.FindIDOfParentType(Model,SiteExplorerNodeType.SiteGroup, TemplateID));
+            Model.ElemID = service.InsertSite(base.FindRegionID(Model), base.FindIDOfParentType(Model, SiteExplorerNodeType.SiteGroup), TemplateID);
             base.UpdateChildrenParentID();
         }
 
-        private int TemplateID { get; private set; }
+        public int TemplateID { get; private set; }
     }
 
     public class InsertSiteTemplateAction : GenericDatabaseAction<SiteExplorerNode> {

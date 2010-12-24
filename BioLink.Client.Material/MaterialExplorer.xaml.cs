@@ -136,27 +136,6 @@ namespace BioLink.Client.Material {
 
             var service = new MaterialService(User);
 
-            _siteTemplatesRoot = CreateTemplateNode("Site Templates", @"images\Site.png", () => {
-                var list = service.GetSiteTemplates();
-                return list.ConvertAll((m) => {
-                    return new SiteExplorerNodeViewModel(m);
-                });
-            });
-
-            _siteVisitTemplatesRoot = CreateTemplateNode("Site Visit Templates", @"images\SiteVisit.png", () => {
-                var list = service.GetSiteVisitTemplates();
-                return list.ConvertAll((m) => {
-                    return new SiteExplorerNodeViewModel(m);
-                });
-            });
-
-            _materialTemplatesRoot = CreateTemplateNode("Material Templates", @"images\Material.png", () => {
-                var list = service.GetMaterialTemplates();
-                return list.ConvertAll((m) => {
-                    return new SiteExplorerNodeViewModel(m);
-                });
-            });
-
             tvwMaterial.AllowDrop = true;
             _favorites = new MaterialFavorites(User, this);
             tabMaterial.AddTabItem("Favorites", _favorites);
@@ -408,6 +387,33 @@ namespace BioLink.Client.Material {
             list = service.GetTopLevelExplorerItems(SiteExplorerNodeType.Unplaced);
             UnplacedModel = BuildExplorerModel(list);
             unplacedNode.ItemsSource = UnplacedModel;
+
+            // Templates...
+
+            templatesNode.ItemsSource = null;
+
+            _siteTemplatesRoot = CreateTemplateNode("Site Templates", @"images\Site.png", () => {
+                var templates = service.GetSiteTemplates();
+                return templates.ConvertAll((m) => {
+                    return new SiteExplorerNodeViewModel(m);
+                });
+            });
+
+            _siteVisitTemplatesRoot = CreateTemplateNode("Site Visit Templates", @"images\SiteVisit.png", () => {
+                var templates = service.GetSiteVisitTemplates();
+                return templates.ConvertAll((m) => {
+                    return new SiteExplorerNodeViewModel(m);
+                });
+            });
+
+            _materialTemplatesRoot = CreateTemplateNode("Material Templates", @"images\Material.png", () => {
+                var templates = service.GetMaterialTemplates();
+                return templates.ConvertAll((m) => {
+                    return new SiteExplorerNodeViewModel(m);
+                });
+            });
+
+
         }
 
         private void ReloadModel() {
@@ -539,10 +545,78 @@ namespace BioLink.Client.Material {
             ShowContextMenu(sender as TreeView);
         }
 
+        public int? ChooseTemplate(SiteExplorerNodeType templateType) {
+
+            var picklist = new PickListWindow(User, "Select Template", () => {
+                var service = new MaterialService(User);
+                List<SiteExplorerNode> list = new List<SiteExplorerNode>();
+                switch (templateType) {
+                    case SiteExplorerNodeType.Site:
+                        list.AddRange(service.GetSiteTemplates());
+                        break;
+                    case SiteExplorerNodeType.SiteVisit:
+                        list.AddRange(service.GetSiteVisitTemplates());
+                        break;
+                    case SiteExplorerNodeType.Material:
+                        list.AddRange(service.GetMaterialTemplates());
+                        break;
+                }                
+                return list.ConvertAll((node) => {
+                    return new SiteExplorerNodeViewModel(node);
+                });
+            }, null);
+
+            if (picklist.ShowDialog().GetValueOrDefault(false)) {
+                var selected = picklist.SelectedValue as SiteExplorerNodeViewModel;
+                if (selected != null) {
+                    return selected.ElemID;
+                }
+            }
+
+            return null;
+        }
+
         private void ShowContextMenu(TreeView tvw) {
             var selected = tvw.SelectedItem as SiteExplorerNodeViewModel;
+            var builder = new ContextMenuBuilder(null);
             if (selected != null) {
                 tvw.ContextMenu = SiteExplorerMenuBuilder.Build(selected, this);
+            } else if (tvw.SelectedItem == this.regionsNode) {                
+                builder.New("Add _Region").Handler(() => { 
+                    var newNode = AddRegion(null);
+                    RegionsModel.Insert(0, newNode);
+                }).End();
+                builder.Separator();
+                builder.AddMenuItem(SiteExplorerMenuBuilder.CreateTemplateItems(this));
+                tvw.ContextMenu = builder.ContextMenu;
+            } else if (tvw.SelectedItem == unplacedNode) {
+                builder.New("Add Site _Group").Handler(() => {
+                    var newNode = AddSiteGroup(null);
+                    UnplacedModel.Insert(0, newNode);
+                }).End();
+
+                MenuItemBuilder b = new MenuItemBuilder();
+                MenuItem addSite = b.New("Add Site").MenuItem;
+                addSite.Items.Add(b.New("Blank").Handler(() => {
+                    var newNode = AddSite(null);
+                    UnplacedModel.Insert(0, newNode);
+                }).MenuItem);
+
+                addSite.Items.Add(b.New("From _Template").Handler(() => {
+                    int? templateId = ChooseTemplate(SiteExplorerNodeType.Site);
+                    if (templateId != null && templateId.HasValue) {
+                        var newNode = AddSite(null, templateId.Value);
+                        UnplacedModel.Insert(0, newNode);
+                    }
+                }).MenuItem);
+
+
+                builder.AddMenuItem(addSite);
+
+                builder.Separator();
+                builder.AddMenuItem(SiteExplorerMenuBuilder.CreateTemplateItems(this));
+                tvw.ContextMenu = builder.ContextMenu;
+
             } else {
                 tvw.ContextMenu = null;
             }
@@ -585,7 +659,9 @@ namespace BioLink.Client.Material {
 
         internal SiteExplorerNodeViewModel AddNewNode(HierarchicalViewModelBase parent, SiteExplorerNodeType nodeType, Func<SiteExplorerNodeViewModel, DatabaseAction> actionFactory) {
 
-            parent.IsExpanded = true;
+            if (parent != null) {
+                parent.IsExpanded = true;
+            }
 
             var model = new SiteExplorerNode();
             model.Name = string.Format("<New {0}>", nodeType.ToString());
@@ -597,8 +673,11 @@ namespace BioLink.Client.Material {
             model.RegionID = -1;
 
             var viewModel = new SiteExplorerNodeViewModel(model);
-            viewModel.Parent = parent;
-            parent.Children.Add(viewModel);
+            if (parent != null) {
+                viewModel.Parent = parent;
+                parent.Children.Add(viewModel);
+            }
+
             viewModel.IsSelected = true;
             viewModel.IsRenaming = true;
 
@@ -609,16 +688,16 @@ namespace BioLink.Client.Material {
             return viewModel;
         }
 
-        internal void AddRegion(SiteExplorerNodeViewModel parent) {
-            AddNewNode(parent, SiteExplorerNodeType.Region, (viewModel) => { return new InsertRegionAction(viewModel); });
+        internal SiteExplorerNodeViewModel AddRegion(HierarchicalViewModelBase parent) {
+            return AddNewNode(parent, SiteExplorerNodeType.Region, (viewModel) => { return new InsertRegionAction(viewModel); });
         }
 
-        internal void AddSiteGroup(SiteExplorerNodeViewModel parent) {
-            AddNewNode(parent, SiteExplorerNodeType.SiteGroup, (viewModel) => { return new InsertSiteGroupAction(viewModel); });
+        internal SiteExplorerNodeViewModel AddSiteGroup(SiteExplorerNodeViewModel parent) {
+            return AddNewNode(parent, SiteExplorerNodeType.SiteGroup, (viewModel) => { return new InsertSiteGroupAction(viewModel); });
         }
 
-        internal void AddSite(SiteExplorerNodeViewModel parent, int templateId = 0) {
-            AddNewNode(parent, SiteExplorerNodeType.Site, (viewModel) => { return new InsertSiteAction(viewModel, templateId); });
+        internal SiteExplorerNodeViewModel AddSite(SiteExplorerNodeViewModel parent, int templateId = 0) {
+            return AddNewNode(parent, SiteExplorerNodeType.Site, (viewModel) => { return new InsertSiteAction(viewModel, templateId); });
         }
 
         internal void AddSiteVisit(SiteExplorerNodeViewModel parent, int templateId = 0) {
@@ -635,14 +714,21 @@ namespace BioLink.Client.Material {
 
         internal void AddSiteTemplate() {
             AddNewNode(_siteTemplatesRoot, SiteExplorerNodeType.Site, (viewModel) => {
-                return new InsertSiteTemplateAction(viewModel); 
+                return new InsertSiteTemplateAction(viewModel.Model); 
             });
         }
 
         internal void AddSiteVisitTemplate() {
+            AddNewNode(_siteVisitTemplatesRoot, SiteExplorerNodeType.SiteVisit, (viewModel) => {
+                return new InsertSiteVisitTemplateAction(viewModel.Model);
+            });
         }
 
         internal void AddMaterialTemplate() {
+            AddNewNode(_materialTemplatesRoot, SiteExplorerNodeType.Material, (viewModel) => {
+                return new InsertMaterialTemplateAction(viewModel.Model);
+            });
+
         }
 
 

@@ -22,12 +22,12 @@ namespace BioLink.Client.Extensibility {
         }
         #endregion
 
-        private Func<IEnumerable<string>> _itemsFunc;
+        private Func<IEnumerable<object>> _itemsFunc;
         private Func<String, bool> _addItemFunc;
 
-        private ObservableCollection<String> _model;
+        private ObservableCollection<Object> _model;
 
-        public PickListWindow(User user, string caption, Func<IEnumerable<string>> itemsFunc, Func<String, bool> addItemFunc) {
+        public PickListWindow(User user, string caption, Func<IEnumerable<object>> itemsFunc, Func<String, bool> addItemFunc) {
             _itemsFunc = itemsFunc;
             _addItemFunc = addItemFunc;
             this.User = user;
@@ -57,11 +57,18 @@ namespace BioLink.Client.Extensibility {
         public void LoadModel() {
             var list = _itemsFunc();
                         
-            _model = new ObservableCollection<String>();
-            foreach (string item in list) {                
-                if (!String.IsNullOrWhiteSpace(item)) {
-                    _model.Add(item.Trim());
+            _model = new ObservableCollection<Object>();
+            foreach (object item in list) {
+                if (item != null) {
+                    if (item is string) {
+                        if (!String.IsNullOrWhiteSpace(item as string)) {
+                            _model.Add((item as string).Trim());
+                        }
+                    } else {
+                        _model.Add(item);
+                    }
                 }
+
             }
             lst.ItemsSource = _model;
         }
@@ -83,18 +90,28 @@ namespace BioLink.Client.Extensibility {
                 return;
             }
 
-            text = text.ToLower();
+            String searchTerm = text.ToLower();
             
             dataView.Filter = (obj) => {
-                string str = obj as string;
-                return str.ToLower().Contains(text);
+                string test = null;
+                if (obj is string) {
+                    test = obj as string;
+                } else if (obj is ViewModelBase) {
+                    test = (obj as ViewModelBase).DisplayLabel;
+                } else if (obj != null) {
+                    test = obj.ToString();
+                }
+                if (test != null) {
+                    return test.ToLower().Contains(searchTerm);
+                }
+                return false;
             };
 
             dataView.Refresh();
         }
 
-        public string SelectedValue {
-            get { return lst.SelectedItem as string; }
+        public object SelectedValue {
+            get { return lst.SelectedItem; }
         }
 
         private void btnSelect_Click(object sender, RoutedEventArgs e) {

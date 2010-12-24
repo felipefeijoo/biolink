@@ -64,13 +64,17 @@ namespace BioLink.Client.Material {
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
-            var parentID = Parent.ElemID;
+            int parentID = 0;
             var parentType = 2;
-            if (Parent.NodeType == SiteExplorerNodeType.Region) {
-                // Weird! Need to do this otherwise stored proc crashes
-                parentID = 0;
-                parentType = 1;
+            if (Parent != null) {
+                parentID = Parent.ElemID;
+                if (Parent.NodeType == SiteExplorerNodeType.Region) {
+                    // Weird! Need to do this otherwise stored proc crashes
+                    parentID = 0;
+                    parentType = 1;
+                }
             }
+            
             var regionID = FindRegionID(Model);
             Model.ElemID = service.InsertSiteGroup(Model.Name, parentType, parentID, regionID);
             base.UpdateChildrenParentID();

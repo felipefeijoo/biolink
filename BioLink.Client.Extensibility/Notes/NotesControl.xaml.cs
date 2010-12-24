@@ -139,7 +139,7 @@ namespace BioLink.Client.Extensibility {
             if (picklist.ShowDialog().ValueOrFalse()) {
                 Note note = new Note();
                 note.NoteID = -1;
-                note.NoteType = picklist.SelectedValue;
+                note.NoteType = picklist.SelectedValue as String;
                 note.NoteCategory = TraitCategory.ToString();
                 note.IntraCatID = IntraCatID;
                 note.NoteRTF = "New Note";
