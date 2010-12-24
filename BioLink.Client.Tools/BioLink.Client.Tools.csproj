@@ -67,10 +67,10 @@
       <DependentUpon>PhraseManager.xaml</DependentUpon>
     </Compile>
     <Compile Include="phrases\PhraseViewModel.cs" />
-    <Compile Include="ReferenceFavorites.xaml.cs">
+    <Compile Include="references\ReferenceFavorites.xaml.cs">
       <DependentUpon>ReferenceFavorites.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ReferenceFavoriteViewModel.cs" />
+    <Compile Include="references\ReferenceFavoriteViewModel.cs" />
     <Compile Include="references\BookDetails.xaml.cs">
       <DependentUpon>BookDetails.xaml</DependentUpon>
     </Compile>
@@ -142,7 +142,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ReferenceFavorites.xaml">
+    <Page Include="references\ReferenceFavorites.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

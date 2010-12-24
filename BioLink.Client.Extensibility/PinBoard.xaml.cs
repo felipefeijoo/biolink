@@ -15,6 +15,7 @@ using BioLink.Data.Model;
 using BioLink.Data;
 using BioLink.Client.Utilities;
 using System.Collections.ObjectModel;
+using Newtonsoft.Json;
 
 namespace BioLink.Client.Extensibility {
     /// <summary>
@@ -212,17 +213,32 @@ namespace BioLink.Client.Extensibility {
         public PinnableObject(string pluginId, LookupType lookupType, int objectID, object state = null) {
             this.PluginID = pluginId;
             this.ObjectID = objectID;
-            this.State = state;
             this.LookupType = lookupType;
+            if (state != null) {
+                SetState(state);
+            }
         }
 
         public int ObjectID { get; private set; }
 
-        public object State { get; private set; } 
-
         public string PluginID { get; private set; }
 
         public LookupType LookupType { get; private set; }
+
+        public string StateData { get; set; }
+
+        public void SetState(object state) {
+            this.StateData = JsonConvert.SerializeObject(state);
+        }
+
+        public T GetState<T>() {
+            if (StateData != null) {
+                return JsonConvert.DeserializeObject<T>(StateData);
+            }
+            return default(T);
+        }
+
+
     }
 
 }

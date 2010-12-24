@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using BioLink.Client.Utilities;
 using BioLink.Client.Extensibility;
 using BioLink.Data;
+using BioLink.Data.Model;
 using System.Threading;
 using System.Collections.ObjectModel;
 using Microsoft.Win32;
@@ -25,19 +26,25 @@ namespace BioLink.Client.Gazetteer {
     public partial class Gazetteer : UserControl, IDisposable {
         
         GazetteerService _service;
-        private ObservableCollection<PlaceName> _searchModel = null;
+        private ObservableCollection<PlaceNameViewModel> _searchModel = null;
         private GazetterPlugin _owner;
-        private int _maximumSearchResults = 1000;        
+        private int _maximumSearchResults = 1000;
 
+        private Point _startPoint;
+        private bool _IsDragging;
+
+        #region Designer CTOR
         public Gazetteer() {
             InitializeComponent();
-            _searchModel = new ObservableCollection<PlaceName>();
-            lstResults.ItemsSource = _searchModel;
+            if (!this.IsDesignTime()) {
+                throw new Exception("Wrong constructor!");
+            }
         }
+        #endregion
 
         public Gazetteer(GazetterPlugin owner) {
             InitializeComponent();
-            _searchModel = new ObservableCollection<PlaceName>();
+            _searchModel = new ObservableCollection<PlaceNameViewModel>();
             lstResults.ItemsSource = _searchModel;
             _owner = owner;
             if (_owner != null) {
@@ -46,7 +53,61 @@ namespace BioLink.Client.Gazetteer {
                     LoadFile(lastFile);
                 }
             }
+
+            lstResults.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(lvw_PreviewMouseLeftButtonDown);
+            lstResults.PreviewMouseMove += new MouseEventHandler(lvw_PreviewMouseMove);
+
         }
+
+        void lvw_PreviewMouseMove(object sender, MouseEventArgs e) {
+            CommonPreviewMouseMove(e, lstResults);
+        }
+
+        void lvw_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+            _startPoint = e.GetPosition(lstResults);
+        }
+
+        private void CommonPreviewMouseMove(MouseEventArgs e, ListBox listView) {
+
+            if (_startPoint == null) {
+                return;
+            }
+
+            if (e.LeftButton == MouseButtonState.Pressed && !_IsDragging) {
+                Point position = e.GetPosition(listView);
+                if (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance) {
+                    if (listView.SelectedItem != null) {
+
+                        ListBoxItem item = listView.ItemContainerGenerator.ContainerFromItem(listView.SelectedItem) as ListBoxItem;
+                        if (item != null) {
+                            StartDrag(e, listView, item);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void StartDrag(MouseEventArgs mouseEventArgs, ListBox listbox, ListBoxItem item) {
+
+            var selected = listbox.SelectedItem as PlaceNameViewModel;
+            if (selected != null) {
+                var data = new DataObject("Pinnable", selected);
+
+                var pinnable = new PinnableObject(GazetterPlugin.GAZETTEER_PLUGIN_NAME, LookupType.PlaceName, 0, selected.Model);
+                data.SetData(PinnableObject.DRAG_FORMAT_NAME, pinnable);
+                data.SetData(DataFormats.Text, selected.DisplayLabel);
+
+                try {
+                    _IsDragging = true;
+                    DragDrop.DoDragDrop(item, data, DragDropEffects.Copy | DragDropEffects.Move | DragDropEffects.Link);
+                } finally {
+                    _IsDragging = false;
+                }
+            }
+
+            InvalidateVisual();
+        }
+
 
         private void LoadFile(string filename) {
             try {
@@ -125,9 +186,9 @@ namespace BioLink.Client.Gazetteer {
                             lblResults.Content = _owner.GetCaption("Gazetteer.Search.Results", results.Count);
                         }
 
-                        _searchModel.Clear();
+                        _searchModel.Clear();                        
                         foreach (PlaceName place in results) {
-                            _searchModel.Add(place);
+                            _searchModel.Add(new PlaceNameViewModel(place));
                         }
                     });
                 } else {

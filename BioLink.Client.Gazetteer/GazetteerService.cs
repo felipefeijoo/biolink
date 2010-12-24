@@ -5,6 +5,7 @@ using System.Text;
 using System.Data.SQLite;
 using System.IO;
 using BioLink.Data;
+using BioLink.Data.Model;
 using BioLink.Client.Utilities;
 using BioLink.Client.Extensibility;
 
@@ -84,14 +85,4 @@ namespace BioLink.Client.Gazetteer {
 
     }
 
-    public class PlaceName {
-        public string Name { get; set; }
-        public string PlaceType { get; set; }
-        public string Division { get; set; }
-        public string LatitudeString { get; set; }
-        public string LongitudeString { get; set; }
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
-        public string GazID { get; set; }
-    }
 }

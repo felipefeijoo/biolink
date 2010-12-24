@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:src="clr-namespace:BioLink.Client.Gazetteer"
              mc:Ignorable="d" 
-             d:DesignHeight="501" d:DesignWidth="460" xmlns:my="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility">
+             d:DesignHeight="416" d:DesignWidth="460" xmlns:my="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility">
     
     <UserControl.Resources>
         <ResourceDictionary>
@@ -19,23 +19,31 @@
 
         <Label Content="{StaticResource Gazetteer.SelectFile}" Height="28" Name="lblFile" VerticalAlignment="Top" Margin="12,7,99,0" />
         <Button Content="{StaticResource Gazetteer.btnOpen}" Height="23" Margin="0,8,12,0" Name="btnOpen" VerticalAlignment="Top" HorizontalAlignment="Right" Width="81" Click="btnOpen_Click" />
-        <ListBox Margin="12,76,12,230" Name="lstResults">
+
+        <Image Height="16" HorizontalAlignment="Left" Margin="12,44,0,0" Name="imgSearch" VerticalAlignment="Top" Width="16" Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/Find.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True"/>
+        <my:DelayedTriggerTextbox Margin="34,41,245,0" Name="txtFind" VerticalAlignment="Top" TypingPaused="delayedTriggerTextbox1_TypingPaused" TextChanged="delayedTriggerTextbox1_TextChanged" KeyUp="delayedTriggerTextbox1_KeyUp" MinWidth="30" />
+        <CheckBox Content="{StaticResource Gazetteer.chkLimit}" Height="18" HorizontalAlignment="Right" Margin="0,46,131,0" Name="chkLimit" VerticalAlignment="Top" Width="104" Checked="chkLimit_Checked" Unchecked="chkLimit_Unchecked" />
+        <ComboBox Height="23" Margin="0,41,12,0" Name="cmbDivision" VerticalAlignment="Top" HorizontalAlignment="Right" Width="120" IsEnabled="False" SelectionChanged="cmbDivision_SelectionChanged" />
+
+        <ListBox Margin="12,76,12,148" Name="lstResults">
             <ListBox.Resources>
-                <DataTemplate DataType="{x:Type src:PlaceName}">
+                <DataTemplate DataType="{x:Type src:PlaceNameViewModel}">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Path=Division, StringFormat='[{0}]  '}" VerticalAlignment="Center" />
-                        <TextBlock Text="{Binding Path=Name}" VerticalAlignment="Center" />
-                        <TextBlock Text="{Binding Path=PlaceType, StringFormat=' - {0}'}" VerticalAlignment="Center" />                        
-                        <TextBlock Text="{Binding Path=LatitudeString, StringFormat='  ({0},'}" VerticalAlignment="Center" />
-                        <TextBlock Text="{Binding Path=LongitudeString, StringFormat=' {0})'}" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding Path=DisplayLabel, Mode=OneWay}" VerticalAlignment="Center" />
                     </StackPanel>
                 </DataTemplate>
             </ListBox.Resources>
         </ListBox>
-        <Label Content="{StaticResource Gazetteer.Find}" Height="23" HorizontalAlignment="Left" Margin="12,41,0,0" Name="label2" VerticalAlignment="Top" Width="73" HorizontalContentAlignment="Right" />
-        <my:DelayedTriggerTextbox Margin="91,42,241,0" Name="txtFind" VerticalAlignment="Top" TypingPaused="delayedTriggerTextbox1_TypingPaused" TextChanged="delayedTriggerTextbox1_TextChanged" KeyUp="delayedTriggerTextbox1_KeyUp"/>
-        <Label Content="" Margin="12,0,12,204" Name="lblResults" Height="28" VerticalAlignment="Bottom" />
-        <CheckBox Content="{StaticResource Gazetteer.chkLimit}" Height="18" HorizontalAlignment="Right" Margin="0,46,131,0" Name="chkLimit" VerticalAlignment="Top" Width="104" Checked="chkLimit_Checked" Unchecked="chkLimit_Unchecked" />
-        <ComboBox Height="23" Margin="0,41,12,0" Name="cmbDivision" VerticalAlignment="Top" HorizontalAlignment="Right" Width="120" IsEnabled="False" SelectionChanged="cmbDivision_SelectionChanged" />
+        <Label Content="" Margin="12,0,12,119" Name="lblResults" Height="23" VerticalAlignment="Bottom" />
+        <GroupBox Header="Calculation" Height="107" Margin="12,303,0,0" Name="groupBox1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="132">
+            <Grid>
+                <RadioButton Content="Find Lat./Long." Height="16" HorizontalAlignment="Left" Margin="6,6,0,0" Name="radioButton1" VerticalAlignment="Top" IsChecked="False" />
+                <RadioButton Content="Find Dist./Dir." Height="16" HorizontalAlignment="Left" Margin="6,28,0,0" Name="radioButton2" VerticalAlignment="Top" />
+                <Button Content="Button" Height="23" HorizontalAlignment="Left" Margin="6,55,0,0" Name="button1" VerticalAlignment="Top" Width="108" />
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="groupBox2" Height="106" HorizontalAlignment="Left" Margin="150,304,0,0" Name="grpCalc" VerticalAlignment="Top" Width="298">
+            <Grid />
+        </GroupBox>
     </Grid>
 </UserControl>

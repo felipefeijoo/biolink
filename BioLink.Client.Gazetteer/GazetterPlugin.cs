@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using BioLink.Client.Extensibility;
 using BioLink.Data;
+using BioLink.Data.Model;
 using BioLink.Client.Utilities;
 using System.Windows;
 
@@ -13,11 +14,13 @@ namespace BioLink.Client.Gazetteer {
 
         private ExplorerWorkspaceContribution<Gazetteer> _gazetter;
 
+        public const string GAZETTEER_PLUGIN_NAME = "Gazetteer";
+
         public GazetterPlugin() {
         }
 
         public override string Name {
-            get { return "Gazetteer"; }
+            get { return GAZETTEER_PLUGIN_NAME; }
         }
 
         public override List<IWorkspaceContribution> GetContributions() {
@@ -45,6 +48,15 @@ namespace BioLink.Client.Gazetteer {
         }
 
         public override List<Command> GetCommandsForObject(ViewModelBase obj) {
+            return null;
+        }
+
+        public override ViewModelBase CreatePinnableViewModel(PinnableObject pinnable) {
+            var placeName = pinnable.GetState<PlaceName>();
+            if (placeName != null) {
+                return new PlaceNameViewModel(placeName);
+            }
+
             return null;
         }
     }
