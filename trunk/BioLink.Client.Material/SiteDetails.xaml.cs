@@ -34,7 +34,6 @@ namespace BioLink.Client.Material {
         public SiteDetails(User user, int siteID) : base(user, "Site:" + siteID) {
             InitializeComponent();
 
-
             var list = new List<Ellipsoid>(GeoUtils.ELLIPSOIDS);
             cmbDatum.ItemsSource = new ObservableCollection<string>(list.ConvertAll((ellipsoid) => { return ellipsoid.Name; }));
 
@@ -108,8 +107,40 @@ namespace BioLink.Client.Material {
             optElevElevation.Checked += new RoutedEventHandler(UpdateElevation);
             optElevNotSpecified.Checked += new RoutedEventHandler(UpdateElevation);
 
-            UpdateMiniMap(model.PosY1, model.PosX1);            
+            UpdateMiniMap(model.PosY1, model.PosX1);
+
+            this.PreviewDragOver += new DragEventHandler(site_PreviewDragEnter);
+            this.PreviewDragEnter += new DragEventHandler(site_PreviewDragEnter);
+
+            this.Drop += new DragEventHandler(site_Drop);
+
         }
+
+        void site_PreviewDragEnter(object sender, DragEventArgs e) {
+
+            var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;
+            if (pinnable != null) {
+                if (pinnable.LookupType == LookupType.PlaceName) {
+                    e.Effects = DragDropEffects.Link;
+                }
+            } else {
+                e.Effects = DragDropEffects.None;
+            }
+        }
+
+        void site_Drop(object sender, DragEventArgs e) {
+            var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;
+            if (pinnable != null && pinnable.LookupType == LookupType.PlaceName) {
+                PlaceName placeName = pinnable.GetState<PlaceName>();
+                ctlY1.Value = placeName.Latitude;
+                ctlX1.Value = placeName.Longitude;
+                if (this.Question(string.Format("Do you wish to update the locality from '{0}' to '{1}'?", _viewModel.Locality, placeName.Name), "Update locality?")) {
+                    _viewModel.Locality = placeName.Name;
+                }
+            }
+        }
+
+
 
         void UpdateElevation(object sender, RoutedEventArgs e) {
             lblDepth.IsEnabled = false;

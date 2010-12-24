@@ -58,6 +58,10 @@
     </Compile>
     <Compile Include="GazetteerService.cs" />
     <Compile Include="GazetterPlugin.cs" />
+    <Compile Include="OffsetControl.xaml.cs">
+      <DependentUpon>OffsetControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PlaceNameViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -76,6 +80,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Gazetteer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="OffsetControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
