@@ -124,6 +124,9 @@ namespace BioLink.Client.Material {
                     builder.New("_Pin to pin board").Handler(() => { PluginManager.Instance.PinObject(pinnable); });
                 }
 
+                builder.Separator();
+                builder.AddMenuItem(CreateFavoriteMenuItems(explorer, node));
+
                 var mnuReports = CreateReportMenuItems(node, explorer);
                 if (mnuReports.HasItems) {
                     builder.Separator();
@@ -131,7 +134,7 @@ namespace BioLink.Client.Material {
                 }
 
                 builder.Separator();
-                builder.AddMenuItem(CreateFavoriteMenuItems(explorer, node));
+                builder.AddMenuItem(CreateTemplateItems(explorer));
             }
 
 
@@ -156,6 +159,17 @@ namespace BioLink.Client.Material {
             }
 
             return builder.ContextMenu;
+        }
+
+        public static MenuItem CreateTemplateItems(MaterialExplorer explorer) {
+            MenuItemBuilder builder = new MenuItemBuilder();
+            MenuItem tmp = builder.New("Create Template").MenuItem;
+
+            tmp.Items.Add(builder.New("_Site").Handler(() => { explorer.AddSiteTemplate(); }).MenuItem);
+            tmp.Items.Add(builder.New("Site _Visit").Handler(() => { explorer.AddSiteVisitTemplate(); }).MenuItem);
+            tmp.Items.Add(builder.New("_Material").Handler(() => { explorer.AddMaterialTemplate(); }).MenuItem);
+
+            return tmp;
         }
 
         private static MenuItem CreateFavoriteMenuItems(MaterialExplorer explorer, SiteExplorerNodeViewModel node) {
@@ -191,18 +205,52 @@ namespace BioLink.Client.Material {
                 case SiteExplorerNodeType.Region:
                     addMenu.Items.Add(builder.New("New Region").Handler(() => { explorer.AddRegion(viewModel); }).MenuItem);
                     addMenu.Items.Add(builder.New("New Site Group").Handler(() => { explorer.AddSiteGroup(viewModel); }).MenuItem);
-                    addMenu.Items.Add(builder.New("New Site").Handler(() => { explorer.AddSite(viewModel); }).MenuItem);
+                    var addSite = builder.New("_Site").MenuItem;
+                    addSite.Items.Add(builder.New("_Blank").Handler(() => { explorer.AddSite(viewModel); }).MenuItem);
+                    addSite.Items.Add(builder.New("From _Template").Handler(() => {
+                        int? templateId = explorer.ChooseTemplate(SiteExplorerNodeType.Site);
+                        if (templateId.HasValue) {
+                            explorer.AddSite(viewModel, templateId.Value); 
+                        }                        
+                    }).MenuItem);
+                    addMenu.Items.Add(addSite);
                     break;
                 case SiteExplorerNodeType.SiteGroup:
                     addMenu.Items.Add(builder.New("New Site Group").Handler(() => { explorer.AddSiteGroup(viewModel); }).MenuItem);
-                    addMenu.Items.Add(builder.New("New Site").Handler(() => { explorer.AddSite(viewModel); }).MenuItem);
+                    addSite = builder.New("_Site").MenuItem;
+                    addSite.Items.Add(builder.New("_Blank").Handler(() => { explorer.AddSite(viewModel); }).MenuItem);
+                    addSite.Items.Add(builder.New("From _Template").Handler(() => {
+                        int? templateId = explorer.ChooseTemplate(SiteExplorerNodeType.Site);
+                        if (templateId.HasValue) {
+                            explorer.AddSite(viewModel, templateId.Value); 
+                        }                        
+                    }).MenuItem);
+                    addMenu.Items.Add(addSite);
                     break;
                 case SiteExplorerNodeType.Site:
-                    addMenu.Items.Add(builder.New("New Site Visit").Handler(() => { explorer.AddSiteVisit(viewModel); }).MenuItem);
                     addMenu.Items.Add(builder.New("New Trap").Handler(() => { explorer.AddTrap(viewModel); }).MenuItem);
+
+                    var addVisit = builder.New("Site _Visit").MenuItem;
+                    addVisit.Items.Add(builder.New("_Blank").Handler(() => { explorer.AddSiteVisit(viewModel); }).MenuItem);
+                    addVisit.Items.Add(builder.New("From _Template").Handler(() => {
+                        int? templateId = explorer.ChooseTemplate(SiteExplorerNodeType.SiteVisit);
+                        if (templateId.HasValue) {
+                            explorer.AddSiteVisit(viewModel, templateId.Value); 
+                        }                        
+                    }).MenuItem);
+                    addMenu.Items.Add(addVisit);
+                    
                     break;
                 case SiteExplorerNodeType.SiteVisit:
-                    addMenu.Items.Add(builder.New("New Material").Handler(() => { explorer.AddMaterial(viewModel); }).MenuItem);
+                    var addMaterial = builder.New("_Material").MenuItem;
+                    addMaterial.Items.Add(builder.New("_Blank").Handler(() => { explorer.AddMaterial(viewModel); }).MenuItem);
+                    addMaterial.Items.Add(builder.New("From _Template").Handler(() => {
+                        int? templateId = explorer.ChooseTemplate(SiteExplorerNodeType.Material);
+                        if (templateId.HasValue) {
+                            explorer.AddMaterial(viewModel, templateId.Value); 
+                        }                        
+                    }).MenuItem);
+                    addMenu.Items.Add(addMaterial);
                     break;
                 default:
                     break;

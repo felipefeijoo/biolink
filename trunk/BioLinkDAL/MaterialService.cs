@@ -269,7 +269,7 @@ namespace BioLink.Data {
 
         public int InsertSiteTemplate() {
             var retval = ReturnParam("intNewSiteID", System.Data.SqlDbType.Int);
-            StoredProcUpdate("spSiteInsertTemplate", retval);
+            StoredProcUpdate("spSiteInsertTemplate", _P("vchrDummy", ""), retval);
             return (int)retval.Value;
         }
 
@@ -424,7 +424,7 @@ namespace BioLink.Data {
 
         public int InsertSiteVisitTemplate() {
             var retval = ReturnParam("intNewSiteVisitID", System.Data.SqlDbType.Int);
-            StoredProcUpdate("spSiteVisitInsertTemplate", retval);
+            StoredProcUpdate("spSiteVisitInsertTemplate", _P("vchrDummy", ""), retval);
             return (int)retval.Value;
         }
 
@@ -618,7 +618,7 @@ namespace BioLink.Data {
 
         public int InsertMaterialTemplate() {
             var retval = ReturnParam("intNewMaterialID", System.Data.SqlDbType.Int);
-            StoredProcUpdate("spMaterialInsertTemplate", retval);
+            StoredProcUpdate("spMaterialInsertTemplate", _P("vchrDummy", ""), retval);
             return (int)retval.Value;
         }
 

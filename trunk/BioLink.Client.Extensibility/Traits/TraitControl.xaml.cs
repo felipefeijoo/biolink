@@ -104,7 +104,7 @@ namespace BioLink.Client.Extensibility {
                 t.Value = "<New Trait Value>";
                 t.Category = TraitCategory.ToString();
                 t.IntraCatID = IntraCatID;
-                t.Name = picklist.SelectedValue;
+                t.Name = picklist.SelectedValue as string;
 
                 TraitViewModel viewModel = new TraitViewModel(t);
                 _model.Add(viewModel);
