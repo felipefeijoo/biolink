@@ -24,11 +24,6 @@ using System.Drawing.Imaging;
 
 namespace BioLink.Client.Maps {
 
-    public enum MapMode {
-        Normal,
-        RegionSelect
-    }
-
     /// <summary>
     /// Interaction logic for MapControl.xaml
     /// </summary>
@@ -42,6 +37,7 @@ namespace BioLink.Client.Maps {
        
         private Timer _resizeTimer;
         private Point _distanceAnchor;
+        private string _anchorCaption;
         private Point _lastMousePos;
         // private ObservableCollection<LayerViewModel> _layers;
         private IDegreeDistanceConverter _distanceConverter = new DegreesToKilometresConverter();
@@ -76,11 +72,17 @@ namespace BioLink.Client.Maps {
                 _lastMousePos = p;
                 string lat = GeoUtils.DecDegToDMS(p.X, CoordinateType.Longitude);
                 string lng = GeoUtils.DecDegToDMS(p.Y, CoordinateType.Latitude);
-                txtPosition.Text = String.Format("Pos: {0}, {1}", lat, lng);
+                txtPosition.Text = String.Format("{0}, {1}", lat, lng);
 
                 if (_distanceAnchor != null && _distanceConverter != null) {
                     var distance = _distanceAnchor.Distance(_lastMousePos);
-                    txtDistance.Text = String.Format("Distance from drop anchor: {0}", _distanceConverter.Convert(distance));
+                    string from = "drop anchor";
+                    if (!string.IsNullOrEmpty(_anchorCaption)) {
+                        from = _anchorCaption;
+                    }
+                    string direction = GeoUtils.GreatCircleArcDirection(_distanceAnchor.Y, _distanceAnchor.X, _lastMousePos.Y, _lastMousePos.X, 32);
+
+                    txtDistance.Text = String.Format("Distance from {0}: {1} {2}", from, _distanceConverter.Convert(distance), direction);
                 }
 
             });
@@ -384,25 +386,59 @@ namespace BioLink.Client.Maps {
             }
         }
 
-        private void HideDistanceAnchor() {
+        public void HideDistanceAnchor(bool refresh = false) {
             RemoveLayerByName("_distanceAnchor");
             _distanceAnchor = null;
             txtDistance.Text = "";
+            if (refresh) {
+                mapBox.Refresh();
+            }
+        }
+
+        public void DropDistanceAnchor(double longitude, double latitude, string caption) {
+            Point p = new Point(longitude, latitude);
+            DropDistanceAnchor(p, caption);
         }
 
         private void DropDistanceAnchor() {
             if (_lastMousePos != null) {
                 Point p = new Point(_lastMousePos.X, _lastMousePos.Y);
+                DropDistanceAnchor(p);
+            }
+        }
 
-                HideDistanceAnchor();
+        private void DropDistanceAnchor(Point p, string caption = null) {
 
-                VectorLayer shapeFileLayer = new VectorLayer("_distanceAnchor", new SharpMap.Data.Providers.GeometryProvider(p));
-                shapeFileLayer.Style.Fill = new System.Drawing.SolidBrush(System.Drawing.Color.Blue);
-                shapeFileLayer.Style.Outline = new System.Drawing.Pen(new System.Drawing.SolidBrush(System.Drawing.Color.Black), 1);
-                shapeFileLayer.Style.Enabled = true;
-                shapeFileLayer.Style.EnableOutline = true;
-                _distanceAnchor = p;
-                addLayer(shapeFileLayer, null, false);
+            HideDistanceAnchor();
+            _anchorCaption = caption;
+            VectorLayer shapeFileLayer = new VectorLayer("_distanceAnchor", new SharpMap.Data.Providers.GeometryProvider(p));
+            shapeFileLayer.Style.Fill = new System.Drawing.SolidBrush(System.Drawing.Color.Blue);
+            shapeFileLayer.Style.Outline = new System.Drawing.Pen(new System.Drawing.SolidBrush(System.Drawing.Color.Black), 1);
+            shapeFileLayer.Style.Enabled = true;
+            shapeFileLayer.Style.EnableOutline = true;
+            _distanceAnchor = p;
+            addLayer(shapeFileLayer, null, false);
+        }
+
+        public void PlotPoints(List<MapPoint> points) {
+
+            List<SharpMap.Geometries.Geometry> model = new List<SharpMap.Geometries.Geometry>();
+            foreach (MapPoint mp in points) {
+                model.Add(new Point(mp.Longitude, mp.Latitude));
+            }
+
+            VectorLayer shapeFileLayer = new VectorLayer("_pointLayer", new SharpMap.Data.Providers.GeometryProvider(model));
+            shapeFileLayer.Style.Fill = new System.Drawing.SolidBrush(System.Drawing.Color.Red);
+            shapeFileLayer.Style.Outline = new System.Drawing.Pen(new System.Drawing.SolidBrush(System.Drawing.Color.Red), 1);
+            shapeFileLayer.Style.Enabled = true;
+            shapeFileLayer.Style.EnableOutline = true;
+            addLayer(shapeFileLayer, null, false);
+        }
+
+        public void ClearPoints(bool refresh = false) {
+            RemoveLayerByName("_pointLayer");
+            if (refresh) {
+                mapBox.Refresh();
             }
         }
 
@@ -692,6 +728,11 @@ namespace BioLink.Client.Maps {
             }
         }
 
+    }
+
+    public enum MapMode {
+        Normal,
+        RegionSelect
     }
 
     //public static class EnvelopeExtensions {

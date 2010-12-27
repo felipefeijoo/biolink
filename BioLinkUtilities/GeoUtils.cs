@@ -87,7 +87,7 @@ namespace BioLink.Client.Utilities {
 
         public static string GreatCircleArcDirection(double nsLat1, double nsLong1, double nsLat2, double nsLong2, int niNumberOfPoints) {
             // Calculate the Great Circle Arc direction between two points
-            double ndPi = 4 * Math.PI;
+            double ndPi = Math.PI;
             double ndRadLat1;
             double ndRadLong1;
             double ndRadLat2;

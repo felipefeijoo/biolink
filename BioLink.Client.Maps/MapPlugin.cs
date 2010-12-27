@@ -9,7 +9,7 @@ using System.Windows;
 
 namespace BioLink.Client.Maps {
 
-    public class MapPlugin : BiolinkPluginBase, IRegionSelector {
+    public class MapPlugin : BiolinkPluginBase, IRegionSelector, IMapProvider {
 
         private ControlHostWindow _map;
         private ControlHostWindow _regionMap;
@@ -64,6 +64,36 @@ namespace BioLink.Client.Maps {
             (_regionMap.Control as MapControl).SelectRegions(preselectedRegions);
             _regionMap.Show();
             _regionMap.Focus();
+        }
+
+        public void Show() {
+            ShowMap();
+        }
+
+        public void DropAnchor(double longitude, double latitude, string caption) {
+            if (_map != null && _map.IsVisible) {
+                (_map.Control as MapControl).DropDistanceAnchor(longitude, latitude, caption);
+            }
+        }
+
+        public void PlotPoints(List<MapPoint> points) {
+            if (_map != null && _map.IsVisible) {
+                (_map.Control as MapControl).PlotPoints(points);
+            }
+        }
+
+        public void ClearPoints() {
+            if (_map != null && _map.IsVisible) {
+                (_map.Control as MapControl).ClearPoints();
+            }
+
+        }
+
+
+        public void HideAnchor() {
+            if (_map != null && _map.IsVisible) {
+                (_map.Control as MapControl).HideDistanceAnchor(true);
+            }
         }
     }
 

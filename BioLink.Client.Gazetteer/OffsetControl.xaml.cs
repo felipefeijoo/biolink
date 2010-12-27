@@ -23,8 +23,7 @@ namespace BioLink.Client.Gazetteer {
         
         private Point _startPoint;
         private bool _IsDragging;
-
-
+        
         public OffsetControl() {
             InitializeComponent();
 
@@ -125,10 +124,14 @@ namespace BioLink.Client.Gazetteer {
             txtResults.Tag = null;
             if (place != null) {
                 if (double.TryParse(txtDistance.Text, out dist)) {
-                    PlaceName pn = OffsetLatLong(dist, cmbUnits.SelectedItem as string, cmbDirection.SelectedItem as string, place.Model);
-                    if (pn != null) {
-                        txtResults.Text = pn.LatitudeString + " " + pn.LongitudeString;
-                        txtResults.Tag = new PlaceNameViewModel(pn);
+                    OffsetPlace = OffsetLatLong(dist, cmbUnits.SelectedItem as string, cmbDirection.SelectedItem as string, place.Model);
+                    if (OffsetPlace != null) {
+                        txtResults.Text = OffsetPlace.LatitudeString + " " + OffsetPlace.LongitudeString;
+                        txtResults.Tag = new PlaceNameViewModel(OffsetPlace);
+                    }
+
+                    if (SelectedPlaceNameChanged != null) {
+                        SelectedPlaceNameChanged(OffsetPlace);
                     }
                 }
             }
@@ -336,9 +339,13 @@ namespace BioLink.Client.Gazetteer {
 
         }
 
+        public PlaceName OffsetPlace { get; private set; }
+
 
         internal void Clear() {
             txtDistance.Clear();
         }
+
+        public event Action<PlaceName> SelectedPlaceNameChanged;
     }
 }

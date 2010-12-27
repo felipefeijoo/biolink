@@ -136,6 +136,7 @@
     <Compile Include="Export\TabularDataExporter.cs" />
     <Compile Include="IChangeContainer.cs" />
     <Compile Include="IClosable.cs" />
+    <Compile Include="IMapProvider.cs" />
     <Compile Include="IRegionSelector.cs" />
     <Compile Include="LatLongInput.xaml.cs">
       <DependentUpon>LatLongInput.xaml</DependentUpon>

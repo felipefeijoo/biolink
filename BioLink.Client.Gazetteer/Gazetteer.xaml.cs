@@ -58,6 +58,10 @@ namespace BioLink.Client.Gazetteer {
             }
 
             _offsetControl = new OffsetControl();
+            _offsetControl.SelectedPlaceNameChanged += new Action<PlaceName>((place) => {
+                UpdateMap();
+            });
+
             _dirDistControl = new DistanceDirectionControl();
 
             lstResults.SelectionChanged += new SelectionChangedEventHandler(lstResults_SelectionChanged);
@@ -75,7 +79,8 @@ namespace BioLink.Client.Gazetteer {
         void lstResults_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             var place = lstResults.SelectedItem as PlaceNameViewModel;
             _offsetControl.DataContext = place;
-            _dirDistControl.DataContext = place;                
+            _dirDistControl.DataContext = place;
+            UpdateMap();
         }
 
         void optFindLatLong_Checked(object sender, RoutedEventArgs e) {
@@ -284,6 +289,48 @@ namespace BioLink.Client.Gazetteer {
 
         private void button1_Click(object sender, RoutedEventArgs e) {
             _offsetControl.Clear();
+        }
+
+        private void button2_Click(object sender, RoutedEventArgs e) {
+            ShowMap();
+        }
+
+        private IMapProvider _map;
+
+        public void ShowMap() {
+            var providers = PluginManager.Instance.GetExtensionsOfType<IMapProvider>();
+            if (providers != null && providers.Count > 0) {
+                _map = providers[0];
+                if (_map != null) {
+                    _map.Show();
+                    UpdateMap();
+                }
+            }
+        }
+
+        private void UpdateMap() {
+            var selected = lstResults.SelectedItem as PlaceNameViewModel;
+            if (_map != null) {
+                _map.HideAnchor();
+                _map.ClearPoints();
+
+                if (selected != null) {
+                    _map.DropAnchor(selected.Longitude, selected.Latitude, selected.Name);
+                    if (_offsetControl.IsVisible && _offsetControl.OffsetPlace != null) {
+                        MapPoint p = new MapPoint();
+                        p.Latitude = _offsetControl.OffsetPlace.Latitude;
+                        p.Longitude = _offsetControl.OffsetPlace.Longitude;
+
+                        var list = new List<MapPoint>();
+                        list.Add(p);
+
+
+                        _map.PlotPoints(list);
+
+                    }
+
+                } 
+            }
         }
 
     }
