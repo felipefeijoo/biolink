@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:src="clr-namespace:BioLink.Client.Gazetteer"
              mc:Ignorable="d" 
-             d:DesignHeight="416" d:DesignWidth="460" xmlns:my="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility">
+             d:DesignHeight="460" d:DesignWidth="548" xmlns:my="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility">
     
     <UserControl.Resources>
         <ResourceDictionary>
@@ -34,15 +34,15 @@
                 </DataTemplate>
             </ListBox.Resources>
         </ListBox>
-        <Label Content="" Margin="12,0,12,119" Name="lblResults" Height="23" VerticalAlignment="Bottom" />
-        <GroupBox Header="Calculation" Height="107" Margin="12,303,0,0" Name="groupBox1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="132">
+        <Label Content="" Margin="12,0,12,123" Name="lblResults" Height="26" VerticalAlignment="Bottom" />
+        <GroupBox Header="Calculation" Height="107" Margin="12,0,0,8" Name="groupBox1" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="132">
             <Grid>
-                <RadioButton Content="Find Lat./Long." Height="16" HorizontalAlignment="Left" Margin="6,6,0,0" Name="radioButton1" VerticalAlignment="Top" IsChecked="False" />
-                <RadioButton Content="Find Dist./Dir." Height="16" HorizontalAlignment="Left" Margin="6,28,0,0" Name="radioButton2" VerticalAlignment="Top" />
-                <Button Content="Button" Height="23" HorizontalAlignment="Left" Margin="6,55,0,0" Name="button1" VerticalAlignment="Top" Width="108" />
+                <RadioButton Content="Find Lat./Long." Height="16" HorizontalAlignment="Left" Margin="6,6,0,0" Name="optFindLatLong" VerticalAlignment="Top" IsChecked="False" />
+                <RadioButton Content="Find Dist./Dir." Height="16" HorizontalAlignment="Left" Margin="6,28,0,0" Name="optFindDistDir" VerticalAlignment="Top" />
+                <Button Content="_Clear" Height="23" HorizontalAlignment="Left" Margin="6,55,0,0" Name="button1" VerticalAlignment="Top" Width="108" Click="button1_Click" />
             </Grid>
         </GroupBox>
-        <GroupBox Header="groupBox2" Height="106" HorizontalAlignment="Left" Margin="150,304,0,0" Name="grpCalc" VerticalAlignment="Top" Width="298">
+        <GroupBox Header="groupBox2" Height="107" HorizontalAlignment="Left" Margin="150,0,0,8" Name="grpCalc" VerticalAlignment="Bottom" Width="333">
             <Grid />
         </GroupBox>
     </Grid>

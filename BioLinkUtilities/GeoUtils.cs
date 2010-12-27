@@ -8,18 +8,306 @@ namespace BioLink.Client.Utilities {
 
     public static class GeoUtils {
 
+        private static DirectionRange[] FourPoints = new DirectionRange[] {
+            new DirectionRange(0,45, "N"),
+            new DirectionRange(45, 135, "E"),
+            new DirectionRange(135, 225, "S"),
+            new DirectionRange(225, 315, "W"),
+            new DirectionRange(315, 361, "N")
+        };
+
+        private static DirectionRange[] EightPoints = new DirectionRange[] {
+            new DirectionRange(0,22.5, "N"),
+            new DirectionRange(22.5, 67.5, "NE"),
+            new DirectionRange(67.5,112.5, "E"),
+            new DirectionRange(112.5,157.5, "SE"),
+            new DirectionRange(157.5,202.5, "S"),
+            new DirectionRange(202.5,247.5, "SW"),
+            new DirectionRange(247.5,292.5, "W"),
+            new DirectionRange(292.5,337.5, "NW"),
+            new DirectionRange(337.5, 361, "N")
+        };
+
+        private static DirectionRange[] SixteenPoints = new DirectionRange[] {
+            new DirectionRange(0,11.25, "N"),
+            new DirectionRange(11.25,33.75, "NNE"),
+            new DirectionRange(33.75,56.25, "NE"),
+            new DirectionRange(56.25,78.75, "ENE"),
+            new DirectionRange(78.75,101.25, "E"),
+            new DirectionRange(101.25,123.75, "ESE"),
+            new DirectionRange(123.75,146.25, "SE"),
+            new DirectionRange(146.25,168.75, "SSE"),
+            new DirectionRange(168.75,191.25, "S"),
+            new DirectionRange(191.25,213.75, "SSW"),
+            new DirectionRange(213.75,236.25, "SW"),
+            new DirectionRange(236.25,258.75, "WSW"),
+            new DirectionRange(258.75,281.75, "W"),
+            new DirectionRange(281.75,303.75, "WNW"),
+            new DirectionRange(303.75,326.25, "NW"),
+            new DirectionRange(326.25,348.75, "NNW"),
+            new DirectionRange(348.75,361, "N"),
+        };
+
+        private static DirectionRange[] ThirtyTwoPoints = new DirectionRange[] {            
+                new DirectionRange(0 , 5.625, "N"),
+                new DirectionRange(5.625 ,16.875, "NbyE"),
+                new DirectionRange(16.875, 28.125, "NNE"),
+                new DirectionRange(28.125 , 39.375, "NEbyN"),
+                new DirectionRange(39.375 , 50.625,"NE"),
+                new DirectionRange(50.625 , 61.875, "NEbyE"),
+                new DirectionRange(61.875 , 73.125,  "ENE"),
+                new DirectionRange(73.125 , 84.375, "EbyN"),
+                new DirectionRange(84.375 , 95.625,"E"),
+                new DirectionRange(95.625 , 106.875, "EbyS"),
+                new DirectionRange(106.875 , 118.125, "ESE"),
+                new DirectionRange(118.125 , 129.375, "SEbyE"),
+                new DirectionRange(129.375 , 140.625, "SE"),
+                new DirectionRange(140.625 , 151.875, "SEbyS"),
+                new DirectionRange(151.875 , 163.125, "SSE"),
+                new DirectionRange(163.125 , 174.375, "SbyE"),
+                new DirectionRange(174.375 , 185.625, "S"),
+                new DirectionRange(185.625 , 196.875, "SbyW"),
+                new DirectionRange(196.875 , 208.125, "SSW"),
+                new DirectionRange(208.125 , 219.375, "SWbyS"),
+                new DirectionRange(219.375 , 230.625,  "SW"),
+                new DirectionRange(230.625 , 241.875, "SWbyW"),
+                new DirectionRange(241.875 , 253.125, "WSW"),
+                new DirectionRange(253.125 , 264.375, "WbyS"),
+                new DirectionRange(264.375 , 275.625, "W"),
+                new DirectionRange(275.625,286.875,"WbyN"),
+                new DirectionRange(286.875,298.125,"WNW"),
+                new DirectionRange(298.125,309.375,"NWbyW"),
+                new DirectionRange(309.375,320.625,"NW"),
+                new DirectionRange(320.625,331.875,"NWbyN"),
+                new DirectionRange(331.875,343.125,"NNW"),
+                new DirectionRange(343.125,354.375,"NbyW"),
+                new DirectionRange(354.375,361,"N")
+        };
+
+
+        public static string GreatCircleArcDirection(double nsLat1, double nsLong1, double nsLat2, double nsLong2, int niNumberOfPoints) {
+            // Calculate the Great Circle Arc direction between two points
+            double ndPi = 4 * Math.PI;
+            double ndRadLat1;
+            double ndRadLong1;
+            double ndRadLat2;
+            double ndRadLong2;
+            double nsDistance;
+            double ndPartial;
+            double nsDirection;
+
+
+            // Convert degrees to radians
+            // Radians = Degrees * (Pi / 180)
+            ndRadLat1 = nsLat1 * (ndPi / 180);
+            ndRadLong1 = nsLong1 * (ndPi / 180) * -1;  // The * -1 is a bug fix
+            ndRadLat2 = nsLat2 * (ndPi / 180);
+            ndRadLong2 = nsLong2 * (ndPi / 180) * -1;  // The * -1 is a bug fix
+
+            // Get distance between the points in radians
+            nsDistance = GreatCircleArcLength(nsLat1, nsLong1, nsLat2, nsLong2, "R");
+
+            if (nsDistance == 0) { // the points are very close together
+                return "-";  // Return nothing
+            }
+
+            // Calculate direction in radians
+            ndPartial = (Math.Sin(ndRadLat2) - Math.Sin(ndRadLat1) * Math.Cos(nsDistance)) / (Math.Sin(nsDistance) * Math.Cos(ndRadLat1));
+            // Arccos(X) = Atn(-X / Sqr(-X * X + 1)) + 1.5708
+            // ndPartial = Math.Atan((ndPartial * -1) / Math.Sqr((ndPartial * -1) * ndPartial + 1)) + 1.5708;
+            ndPartial = Math.Acos(ndPartial);
+
+            if (Math.Sin(ndRadLong2 - ndRadLong1) <= 0) {
+                nsDirection = ndPartial;
+            } else {
+                nsDirection = 2 * ndPi - ndPartial;
+            }
+
+            // Convert to degrees
+            nsDirection = (180 / ndPi) * nsDirection;
+
+            DirectionRange[] arr = null;
+
+            // Convert to compass direction
+            switch (niNumberOfPoints) {
+                case 0: // ' Return the direction in degrees
+                    return nsDirection + "";
+                case 4:
+                    arr = FourPoints;
+                    break;
+                case 8:
+                    arr = EightPoints;
+                    break;
+                case 16:
+                    arr = SixteenPoints;
+                    break;
+                case 32:
+                    arr = ThirtyTwoPoints;
+                    break;
+            }
+            if (arr != null) {
+                foreach (DirectionRange r in arr) {
+                    if (nsDirection >= r.StartAngle && nsDirection <= r.EndAngle) {
+                        return r.Direction;
+                    }
+                }
+                return "Direction not found for angle " + nsDirection;
+            } else {
+                return "Invalid number of points: " + niNumberOfPoints;
+            }
+        }
+
+        //BIOLINKCUTILS_API DWORD WINAPI BLGreatCircleArcLength( float fLat1, float fLong1, float fLat2, float fLong2, BSTR bszUnits, float *fRet ) {
+        public static double GreatCircleArcLength(double fLat1, double fLong1, double fLat2, double fLong2, string bszUnits) {
+            double dfRadLat1, dfRadLat2;
+            double dfRadDeltaLong;
+            double dfCosZ, dfACosZ;
+            double dfPi = Math.PI;
+            double dfDiv;
+
+            dfRadLat1 = fLat1 * (dfPi / (double)180);
+            dfRadLat2 = fLat2 * (dfPi / (double)180);
+            dfRadDeltaLong = (fLong2 - fLong1) * (dfPi / (double)180);
+            dfCosZ = Math.Sin(dfRadLat1) * Math.Sin(dfRadLat2) + Math.Cos(dfRadLat1) * Math.Cos(dfRadLat2) * Math.Cos(dfRadDeltaLong);
+
+            if (Math.Abs(dfCosZ - 1.0) < 0.0000000001) {
+                // The points were very close together
+                return 0;
+            } else {
+                dfDiv = Math.Sqrt((dfCosZ * -1) * dfCosZ + 1);
+                if (dfDiv == 0) {
+                    return 0;
+                } else {
+                    dfACosZ = Math.Atan((dfCosZ * -1) / dfDiv) + 1.5708; // Magic Number ?			
+                    switch (Char.ToLower(bszUnits[0])) {
+                        case 'k':
+                            return (double)dfACosZ * (float)6371.1;	// Mean radius of Earth is 6371.1 KM
+                        case 'm':
+                            return (double)dfACosZ * (float)3959;	// Mean radius of Earth is 3959 Miles
+                        default:
+                            return (double)dfACosZ;					// Users can apply their own Mean Radius to get different units
+                    }
+                }
+            }
+        }
+        public static bool DMSStrToDecDeg(string szIn, CoordinateType iCoordType, out double dfRet, out string bszReason) {
+
+            int iDegrees = 0, iMinutes = 0;
+            double dfSeconds = 0.0;
+            char cDirection = '_';
+            int i = 0, j = 0;
+            bool isDMS = false;
+            int iFirstLength = 2;
+
+            dfRet = 0;
+            bszReason = "";
+
+            int lStrLen = szIn.Length;
+
+            for (i = lStrLen - 1; i >= 0; i--) {
+
+                if ("NSEW:;'\"°".Contains(Char.ToUpper(szIn[i]))) {
+                    isDMS = true;
+
+                    if ("NSEW".Contains(Char.ToUpper(szIn[i]))) {
+                        cDirection = Char.ToUpper(szIn[i]);
+                        if ((Char.ToUpper(szIn[i]) == 'N') || (Char.ToUpper(szIn[i]) == 'S')) {
+                            iFirstLength = 2;		// Latitudes can only have two digits (00-90)
+                        } else {
+                            iFirstLength = 3;		// Longitudes can have 3 (000-180)
+                        }
+                        //break;
+                    }
+                }
+            }
+
+
+            // -db- #19/01/00# Validate direction...
+            if (!isDMS) {
+                bszReason = string.Format("Coordinate to be converted incorrectly formatted [{0}] ! - try 'dd:mm:ss D'", szIn);
+                return false;
+            }
+
+            if (cDirection == '_') {
+                bszReason = String.Format("No valid direction in '{0}'. Try 'dd:mm:ss D' where D is either N,S,E or W.", szIn);
+                return false;
+            }
+
+            switch (iCoordType) {
+                case CoordinateType.Latitude:			// 0 = Latitude
+                    if ((cDirection != 'N') && (cDirection != 'S')) {
+                        bszReason = string.Format("Invalid direction for a Latitude. Expected 'N' or 'S' but got '{0}'.", cDirection);
+                        return false;
+                    }
+                    break;
+                case CoordinateType.Longitude:			// 1 = Longitude
+                    if ((cDirection != 'E') && (cDirection != 'W')) {
+                        bszReason = string.Format("Invalid direction for a Longitude. Expected 'E' or 'W' but got '{0}'.", cDirection);
+                        return false;
+                    }
+                    break;
+            }
+
+            if (isDMS) {
+                int idx = 0;
+
+                // Get Degrees		
+                while ((idx < szIn.Length) && !Char.IsDigit(szIn[idx])) idx++;		// find first numeric
+                if (idx < szIn.Length) {										// Not at end of string
+                    i = 0;
+                    while (Char.IsDigit(szIn[idx + i]) && (i < iFirstLength)) i++;						// find last digit for this number
+                    string strBuf = szIn.Substring(idx, i);
+                    iDegrees = Int32.Parse(strBuf);
+                    idx += i;
+                }
+
+                // Get Minutes
+                while ((idx < szIn.Length) && !Char.IsDigit(szIn[idx])) idx++;		// find first numeric
+                if (idx < szIn.Length) {										// Not at end of string
+                    i = 0;
+                    while (Char.IsDigit(szIn[idx + i]) && (i < 2)) i++;		// find last digit for this number
+                    string szBuf = szIn.Substring(idx, i);
+                    iMinutes = Int32.Parse(szBuf);
+                    idx += i;
+                }
+
+                // Get Seconds
+                while ((idx < szIn.Length) && !Char.IsDigit(szIn[idx])) idx++;		// find first numeric
+                if (idx < szIn.Length) {										// Not at end of string
+                    i = 0;
+                    while (char.IsDigit(szIn[idx + i]) || (szIn[idx + i] == '.') && (i < 2)) i++;// find last digit for this number
+                    string szBuf = szIn.Substring(idx, i);
+
+                    dfSeconds = double.Parse(szBuf);
+                }
+
+                dfRet = (double)iDegrees + ((double)iMinutes / (double)60) + (dfSeconds / (double)3600);
+
+                switch (cDirection) {
+                    case 'S':
+                    case 'W':
+                        dfRet *= -1;								// Change sign for these directions
+                        break;
+                }
+
+            }
+
+            return isDMS;
+        }
+
+
         /// <summary>
         /// Ported from BioLink 2.x
         /// Originally Adapted from VB code as follows...
-	    /// Convert Decimal Degrees to Degrees, Minutes, Seconds or Hemisphere (N,S,E,W)
-	    /// From Robert K. Colwell, Univ. of Connecticut, from TAXACOM list server posting,
-	    /// 30 July, 1996
-	    /// AbsDD = Abs(Decimal Degrees)
-	    /// Degrees = Int(AbsDD)
-	    /// Decimal Minutes = (AbsDD - Degrees) * 60
-	    /// Minutes = Int(Decimal Minutes)
-	    /// Decimal Seconds = (Decimal Minutes - Minutes) * 60
-	    /// Seconds = Round(Decimal Seconds)
+        /// Convert Decimal Degrees to Degrees, Minutes, Seconds or Hemisphere (N,S,E,W)
+        /// From Robert K. Colwell, Univ. of Connecticut, from TAXACOM list server posting,
+        /// 30 July, 1996
+        /// AbsDD = Abs(Decimal Degrees)
+        /// Degrees = Int(AbsDD)
+        /// Decimal Minutes = (AbsDD - Degrees) * 60
+        /// Minutes = Int(Decimal Minutes)
+        /// Decimal Seconds = (Decimal Minutes - Minutes) * 60
+        /// Seconds = Round(Decimal Seconds)
         /// </summary>
         /// <param name="decdeg"></param>
         /// <param name="coordType"></param>
@@ -30,9 +318,9 @@ namespace BioLink.Client.Utilities {
             var absDecDeg = Math.Abs(decdeg);
             int iDegrees = (int)Math.Floor(absDecDeg);
             double dfMinutes = (absDecDeg - iDegrees) * 60;
-            int iMinutes = (int) Math.Floor(dfMinutes);
+            int iMinutes = (int)Math.Floor(dfMinutes);
             var dfSeconds = (dfMinutes - iMinutes) * 60;
-            int iSeconds = (int) Math.Round(dfSeconds);
+            int iSeconds = (int)Math.Round(dfSeconds);
 
             if (iSeconds > 59) {
                 iMinutes++;
@@ -94,7 +382,7 @@ namespace BioLink.Client.Utilities {
             return b.ToString();
         }
 
-        public static double DDecMToDecDeg(int degrees, double minutes) {            
+        public static double DDecMToDecDeg(int degrees, double minutes) {
             return degrees + (minutes / 60.0) * (degrees < 0 ? -1 : 1);
         }
 
@@ -108,16 +396,16 @@ namespace BioLink.Client.Utilities {
         */
 
         public static double DDecMDirToDecDeg(int degrees, double minutes, string direction) {
-            int sign = ("sw".Contains(direction.ToLower()) ? -1 : 1 );
-            return (Math.Abs(degrees) + (minutes / 60)) * (double) sign;
+            int sign = ("sw".Contains(direction.ToLower()) ? -1 : 1);
+            return (Math.Abs(degrees) + (minutes / 60)) * (double)sign;
         }
 
         public static void DecDegToDMS(double decdeg, CoordinateType coordType, out int degrees, out int minutes, out int seconds, out string direction) {
-            degrees = (int) Math.Abs(decdeg);
+            degrees = (int)Math.Abs(decdeg);
             double leftover = (Math.Abs(decdeg) - degrees);
-            minutes = (int) (leftover * 60);
-            leftover = leftover - ((double) minutes / 60.0);
-            seconds = (int) Math.Round(leftover * 3600,MidpointRounding.AwayFromZero);
+            minutes = (int)(leftover * 60);
+            leftover = leftover - ((double)minutes / 60.0);
+            seconds = (int)Math.Round(leftover * 3600, MidpointRounding.AwayFromZero);
 
             if (seconds >= 60) {
                 minutes++;
@@ -159,7 +447,7 @@ namespace BioLink.Client.Utilities {
                 direction = "N";
             }
             var decdeg = (double)degrees + ((double)minutes / 60.0) + ((double)seconds / 3600.0);
-            var sign = (double) ("sw".Contains(direction.ToLower()) ? -1 : 1); 
+            var sign = (double)("sw".Contains(direction.ToLower()) ? -1 : 1);
             return decdeg * sign;
         }
 
@@ -212,63 +500,63 @@ namespace BioLink.Client.Utilities {
             easting = 0;
             zone = "";
 
-	        double a = referenceEllipsoid.EquatorialRadius;
-	        double eccSquared = referenceEllipsoid.EccentricitySquared;
-	        double k0 = 0.9996;  // Magic constant :-(
+            double a = referenceEllipsoid.EquatorialRadius;
+            double eccSquared = referenceEllipsoid.EccentricitySquared;
+            double k0 = 0.9996;  // Magic constant :-(
 
-	        double LongOrigin;
-	        double eccPrimeSquared;
-	        double N, T, C, A, M;
+            double LongOrigin;
+            double eccPrimeSquared;
+            double N, T, C, A, M;
 
-	        double LatRad = latitude * DEGREES_TO_RADS;
-	        double LongRad = longitude * DEGREES_TO_RADS;
-	        double LongOriginRad;
+            double LatRad = latitude * DEGREES_TO_RADS;
+            double LongRad = longitude * DEGREES_TO_RADS;
+            double LongOriginRad;
 
             // Outside bounds checking -db- 01/09/1998
-	        if ( latitude < -90.0 ) { 
-                latitude = -90.0; 
+            if (latitude < -90.0) {
+                latitude = -90.0;
             }
 
-	        if ( latitude > 90.0 ) {
+            if (latitude > 90.0) {
                 latitude = 90.0;
             }
 
-	        if ( longitude < -180.0 ) {
+            if (longitude < -180.0) {
                 longitude = -180.0;
             }
 
-	        if ( longitude > 180.0 ) {
+            if (longitude > 180.0) {
                 longitude = 180.0;
             }
 
-	        if ( longitude > -6 && longitude <= 0 ) {
+            if (longitude > -6 && longitude <= 0) {
                 LongOrigin = -3;	//arbitrarily set origin at 0 longitude to 3W
-            } else if ( longitude < 6 && longitude > 0 ) {
+            } else if (longitude < 6 && longitude > 0) {
                 LongOrigin = 3;
             } else {
-                LongOrigin = ((int) longitude / 6 ) * 6 + 3 * ((int) longitude / 6 ) / Math.Abs( (int) longitude / 6 );
+                LongOrigin = ((int)longitude / 6) * 6 + 3 * ((int)longitude / 6) / Math.Abs((int)longitude / 6);
             }
 
-	        LongOriginRad = LongOrigin * DEGREES_TO_RADS;
+            LongOriginRad = LongOrigin * DEGREES_TO_RADS;
 
-	        //compute the UTM Zone from the latitude and longitude
-            zone = string.Format("{0}{1}", (int) ((longitude + 180) / 6) + 1, UTMLetterDesignator(latitude));
-	
-	        eccPrimeSquared = (eccSquared)/(1-eccSquared);
+            //compute the UTM Zone from the latitude and longitude
+            zone = string.Format("{0}{1}", (int)((longitude + 180) / 6) + 1, UTMLetterDesignator(latitude));
 
-	        N = a / Math.Sqrt(1-eccSquared * Math.Sin(LatRad) * Math.Sin(LatRad));
-	        T = Math.Tan(LatRad) * Math.Tan(LatRad);
-	        C = eccPrimeSquared * Math.Cos(LatRad) * Math.Cos(LatRad);
-	        A = Math.Cos(LatRad) * (LongRad-LongOriginRad);
+            eccPrimeSquared = (eccSquared) / (1 - eccSquared);
 
-	        M = a*((1	- eccSquared/4		- 3*eccSquared*eccSquared/64	- 5*eccSquared*eccSquared*eccSquared/256)*LatRad 
-				- (3*eccSquared/8	+ 3*eccSquared*eccSquared/32	+ 45*eccSquared*eccSquared*eccSquared/1024)* Math.Sin(2*LatRad)
-									+ (15*eccSquared*eccSquared/256 + 45*eccSquared*eccSquared*eccSquared/1024)*Math.Sin(4*LatRad) 
-									- (35*eccSquared*eccSquared*eccSquared/3072) * Math.Sin(6*LatRad));
-	
-	        easting = (double)(k0*N*(A+(1-T+C)*A*A*A/6 + (5-18*T+T*T+72*C-58*eccPrimeSquared)*A*A*A*A*A/120) + 500000.0);
+            N = a / Math.Sqrt(1 - eccSquared * Math.Sin(LatRad) * Math.Sin(LatRad));
+            T = Math.Tan(LatRad) * Math.Tan(LatRad);
+            C = eccPrimeSquared * Math.Cos(LatRad) * Math.Cos(LatRad);
+            A = Math.Cos(LatRad) * (LongRad - LongOriginRad);
 
-	        northing = (double)(k0*(M+N* Math.Tan(LatRad)*(A*A/2+(5-T+9*C+4*C*C)*A*A*A*A/24 + (61-58*T+T*T+600*C-330*eccPrimeSquared)*A*A*A*A*A*A/720)));
+            M = a * ((1 - eccSquared / 4 - 3 * eccSquared * eccSquared / 64 - 5 * eccSquared * eccSquared * eccSquared / 256) * LatRad
+                - (3 * eccSquared / 8 + 3 * eccSquared * eccSquared / 32 + 45 * eccSquared * eccSquared * eccSquared / 1024) * Math.Sin(2 * LatRad)
+                                    + (15 * eccSquared * eccSquared / 256 + 45 * eccSquared * eccSquared * eccSquared / 1024) * Math.Sin(4 * LatRad)
+                                    - (35 * eccSquared * eccSquared * eccSquared / 3072) * Math.Sin(6 * LatRad));
+
+            easting = (double)(k0 * N * (A + (1 - T + C) * A * A * A / 6 + (5 - 18 * T + T * T + 72 * C - 58 * eccPrimeSquared) * A * A * A * A * A / 120) + 500000.0);
+
+            northing = (double)(k0 * (M + N * Math.Tan(LatRad) * (A * A / 2 + (5 - T + 9 * C + 4 * C * C) * A * A * A * A / 24 + (61 - 58 * T + T * T + 600 * C - 330 * eccPrimeSquared) * A * A * A * A * A * A / 720)));
             if (latitude <= 0) {
                 northing += 10000000.0; //10000000 meter offset for southern hemisphere
             }
@@ -319,7 +607,7 @@ namespace BioLink.Client.Utilities {
             }
 
             if ((ZoneLetter - 'N') > 0) {
-               // NorthernHemisphere = 1;//point is in northern hemisphere
+                // NorthernHemisphere = 1;//point is in northern hemisphere
             } else {
                 // NorthernHemisphere = 0;//point is in southern hemisphere
                 y -= 10000000.0;//remove 10,000,000 meter offset used for southern hemisphere
@@ -416,5 +704,18 @@ namespace BioLink.Client.Utilities {
         Point = 1,
         Line = 2,
         Box = 3
+    }
+
+    public class DirectionRange {
+
+        public DirectionRange(double start, double end, string dir) {
+            this.StartAngle = start;
+            this.EndAngle = end;
+            this.Direction = dir;
+        }
+
+        public double StartAngle { get; set; }
+        public double EndAngle { get; set; }
+        public string Direction { get; set; }
     }
 }

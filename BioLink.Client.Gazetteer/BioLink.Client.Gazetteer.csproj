@@ -53,6 +53,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DistanceDirectionControl.xaml.cs">
+      <DependentUpon>DistanceDirectionControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Gazetteer.xaml.cs">
       <DependentUpon>Gazetteer.xaml</DependentUpon>
     </Compile>
@@ -79,6 +82,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="DistanceDirectionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Gazetteer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
