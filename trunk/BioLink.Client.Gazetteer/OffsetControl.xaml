@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
              mc:Ignorable="d" 
-             d:DesignHeight="84" d:DesignWidth="457">
+             Height="76" Width="300">
     <Grid>
         <Label Content="Distance" Name="lblAxis" HorizontalContentAlignment="Center" Padding="1" VerticalContentAlignment="Center" Background="DimGray" Foreground="White" FontWeight="Bold" FontSize="10" Height="17" VerticalAlignment="Top" HorizontalAlignment="Left" Width="96" />
         <Label Background="DimGray" Content="Units" FontSize="10" FontWeight="Bold" Foreground="White" Height="17" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="102,0,0,0" Name="label1" Padding="1" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="96" />
@@ -13,6 +13,6 @@
         <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="0,23,0,0" Name="txtDistance" VerticalAlignment="Top" Width="96" />
         <ComboBox Height="23" HorizontalAlignment="Left" Margin="102,23,0,0" Name="cmbUnits" VerticalAlignment="Top" Width="96" />
         <ComboBox Height="23" HorizontalAlignment="Left" Margin="204,23,0,0" Name="cmbDirection" VerticalAlignment="Top" Width="96" />
-        <TextBox Height="23" HorizontalAlignment="Left" Margin="0,52,0,0" Name="textBox2" VerticalAlignment="Top" Width="300" Background="{x:Static SystemColors.ControlBrush}" IsReadOnly="True" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="0,52,0,0" Name="txtResults" VerticalAlignment="Top" Width="300" Background="{x:Static SystemColors.ControlLightBrush}" IsReadOnly="True" />
     </Grid>
 </UserControl>

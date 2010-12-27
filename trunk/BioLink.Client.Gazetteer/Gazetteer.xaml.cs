@@ -33,6 +33,9 @@ namespace BioLink.Client.Gazetteer {
         private Point _startPoint;
         private bool _IsDragging;
 
+        private OffsetControl _offsetControl;
+        private DistanceDirectionControl _dirDistControl;
+
         #region Designer CTOR
         public Gazetteer() {
             InitializeComponent();
@@ -54,8 +57,44 @@ namespace BioLink.Client.Gazetteer {
                 }
             }
 
+            _offsetControl = new OffsetControl();
+            _dirDistControl = new DistanceDirectionControl();
+
+            lstResults.SelectionChanged += new SelectionChangedEventHandler(lstResults_SelectionChanged);
+
             lstResults.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(lvw_PreviewMouseLeftButtonDown);
             lstResults.PreviewMouseMove += new MouseEventHandler(lvw_PreviewMouseMove);
+
+            optFindDistDir.Checked += new RoutedEventHandler(optFindDistDir_Checked);
+            optFindLatLong.Checked += new RoutedEventHandler(optFindLatLong_Checked);
+
+            optFindLatLong.IsChecked = true;
+
+        }
+
+        void lstResults_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            var place = lstResults.SelectedItem as PlaceNameViewModel;
+            _offsetControl.DataContext = place;
+            _dirDistControl.DataContext = place;                
+        }
+
+        void optFindLatLong_Checked(object sender, RoutedEventArgs e) {
+            CalcOptionChanged();
+        }
+
+        void optFindDistDir_Checked(object sender, RoutedEventArgs e) {
+            CalcOptionChanged();
+        }
+
+        private void CalcOptionChanged() {
+            grpCalc.Content = null;
+            if (optFindLatLong.IsChecked.GetValueOrDefault(false)) {
+                grpCalc.Content = _offsetControl;
+                grpCalc.Header = "Find Lat./Long. using Dist./Dir.";
+            } else {
+                grpCalc.Content = _dirDistControl;
+                grpCalc.Header = "Find Dist./Dir. using Lat./Long.";
+            }
 
         }
 
@@ -243,5 +282,10 @@ namespace BioLink.Client.Gazetteer {
             DoSearch(txtFind.Text);
         }
 
+        private void button1_Click(object sender, RoutedEventArgs e) {
+            _offsetControl.Clear();
+        }
+
     }
+    
 }

@@ -134,8 +134,20 @@ namespace BioLink.Client.Material {
                 PlaceName placeName = pinnable.GetState<PlaceName>();
                 ctlY1.Value = placeName.Latitude;
                 ctlX1.Value = placeName.Longitude;
-                if (this.Question(string.Format("Do you wish to update the locality from '{0}' to '{1}'?", _viewModel.Locality, placeName.Name), "Update locality?")) {
-                    _viewModel.Locality = placeName.Name;
+                string place = placeName.Name;
+                if (placeName.PlaceNameType == PlaceNameType.OffsetAndDirection) {
+                    place = string.Format("{0} {1} {2} of {3}", placeName.Offset, placeName.Units, placeName.Direction, placeName.Name);
+                }
+                if (this.Question(string.Format("Do you wish to update the locality from '{0}' to '{1}'?", _viewModel.Locality, place), "Update locality?")) {
+                    if (placeName.PlaceNameType == PlaceNameType.OffsetAndDirection) {
+                        optNearestPlace.IsChecked = true;
+                        _viewModel.Locality = placeName.Name;
+                        txtDistanceFrom.Text = string.Format("{0} {1}", placeName.Offset, placeName.Units);
+                        txtDirectionFrom.Text = placeName.Direction;                       
+                    } else {
+                        optLocality.IsChecked = true;                        
+                    }
+                    _viewModel.Locality = placeName.Name;                    
                 }
             }
         }

@@ -15,7 +15,12 @@ namespace BioLink.Client.Gazetteer {
 
         public override string DisplayLabel {
             get {
-                return String.Format("[{0}] {1} - {2}  ({3},{4})", Division, Name, PlaceType, LatitudeString, LongitudeString);
+                if (PlaceNameType == Data.Model.PlaceNameType.Location) {
+                    return String.Format("[{0}] {1} - {2}  ({3},{4})", Division, Name, PlaceType, LatitudeString, LongitudeString);
+                } else {
+                    string place = string.Format("{0} {1} {2} of {3}", Offset, Units, Direction, Name);
+                    return String.Format("[{0}] {1} - {2}  ({3},{4})", Division, place, PlaceType, LatitudeString, LongitudeString);
+                }
             }
         }
 
