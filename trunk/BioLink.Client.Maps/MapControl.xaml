@@ -66,14 +66,14 @@
             <Button Content="_Update" HorizontalAlignment="Right" Margin="0,6,6,0" Name="btnUpdate" Width="75" Height="23" VerticalAlignment="Top" Click="btnUpdate_Click" />
         </Grid>
         <StatusBar Grid.Row="3">
-            <StatusBarItem DockPanel.Dock="Right">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock x:Name="txtDistance" Width="250" />                    
-                    <TextBlock x:Name="txtPosition" Width="180" TextAlignment="Right"/>
+            <StatusBarItem DockPanel.Dock="Left">
+                <StackPanel Orientation="Horizontal">                    
+                    <TextBlock x:Name="txtPosition" Width="200" TextAlignment="Left"/>
                 </StackPanel>
             </StatusBarItem>
             <StatusBarItem>
-                <TextBlock x:Name="txtStatus" />
+                <TextBlock x:Name="txtDistance" />
+                <!-- <TextBlock x:Name="txtStatus" /> -->
             </StatusBarItem>
         </StatusBar>
     </Grid>
