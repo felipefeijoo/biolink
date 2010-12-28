@@ -46,9 +46,21 @@ namespace BioLink.Client.Extensibility {
 
     public class MapPoint {
 
+        public MapPoint() {
+        }
+
+        public MapPoint(double lat, double lon) {
+            this.Latitude = lat;
+            this.Longitude = lon;
+        }
+
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public string Label { get; set; }
+
+        public int SiteID { get; set; }
+        public int SiteVisitID { get; set; }
+        public int MaterialID { get; set; }
 
         // TODO - extra stuff in here for click events etc...
 

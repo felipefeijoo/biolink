@@ -5,6 +5,8 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using BioLink.Client.Utilities;
 using BioLink.Data;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace BioLink.Client.Extensibility {
     /// <summary>
@@ -15,6 +17,7 @@ namespace BioLink.Client.Extensibility {
         private GridViewColumnHeader _lastHeaderClicked = null;
         private ListSortDirection _lastDirection = ListSortDirection.Ascending;
         private IProgressObserver _progress;
+        private IBioLinkReport _report;
 
         #region DesignTime Constructor
         public TabularDataViewer() {
@@ -26,6 +29,7 @@ namespace BioLink.Client.Extensibility {
             InitializeComponent();
             this.Data = data;
             _progress = progress;
+            _report = report;
             GridView view = new GridView();
 
             foreach (DisplayColumnDefinition c in report.DisplayColumns) {
@@ -57,15 +61,86 @@ namespace BioLink.Client.Extensibility {
                 AddLookupItem(builder, "MaterialID", LookupType.Material);
                 AddLookupItem(builder, "BiotaID", LookupType.Taxon);
 
+                if (Data.IndexOf("Lat") >= 0 && Data.IndexOf("Long") >= 0) {
+                    if (builder.ContextMenu.HasItems) {
+                        builder.Separator();
+                        builder.New("Plot selected rows on Map").Handler(() => { PlotSelected(); }).End();
+                        builder.New("Plot all rows on Map").Handler(() => { PlotAll(); }).End();
+                    }
+                }
+
                 if (builder.ContextMenu.HasItems) {
                     builder.Separator();
                 }
+                
                 builder.New("Export data...").Handler(() => { Export(); }).End();
 
 
                 lvw.ContextMenu = builder.ContextMenu;
             }
 
+        }
+
+        private IMapProvider GetMap() {
+            var maps = PluginManager.Instance.GetExtensionsOfType<IMapProvider>();
+            if (maps != null && maps.Count > 0) {
+                return maps[0];
+            }
+            return null;
+        }
+
+        private void PlotSelected() {
+            var list = new List<MatrixRow>();
+            if (lvw.SelectedItems.Count > 0) {
+                foreach (object selected in lvw.SelectedItems) {
+                    list.Add(selected as MatrixRow);
+                }                
+            }
+            Plot(list);
+        }
+
+        private void PlotAll() {            
+            var list = new List<MatrixRow>();
+            if (lvw.SelectedItems.Count > 0) {
+                foreach (MatrixRow row in Data.Rows) {
+                    list.Add(row);
+                }
+            }
+            Plot(list);
+        }
+
+        private void Plot(List<MatrixRow> rows) {
+            var map = GetMap();
+            if (map != null && rows.Count > 0) {
+                var set = new MapPointSet(_report.Name);
+
+                int latIndex = Data.IndexOf("Lat");
+                int longIndex = Data.IndexOf("Long");
+                int siteIndex = Data.IndexOf("SiteID");
+                int siteVisitIndex = Data.IndexOf("SiteVisitID");
+                int materialIndex = Data.IndexOf("MaterialID");
+
+                foreach (MatrixRow row in rows) {
+                    double? lat = row[latIndex] as double?;
+                    double? lon = row[longIndex] as double?;
+                    if (lat.HasValue && lon.HasValue) {
+                        MapPoint p = new MapPoint(lat.Value, lon.Value);
+                        set.Add(p);
+                        if (siteIndex >= 0) {
+                            p.SiteID = (int)row[siteIndex];
+                        }
+                        if (siteVisitIndex >= 0) {
+                            p.SiteVisitID = (int)row[siteVisitIndex];
+                        }
+                        if (materialIndex >= 0) {
+                            p.MaterialID = (int)row[materialIndex];
+                        }
+                    }
+                }
+
+                map.Show();
+                map.PlotPoints(set);
+            }
         }
 
         private void AddLookupItem(ContextMenuBuilder builder, String fieldName, LookupType lookupType) {
@@ -225,3 +300,4 @@ namespace BioLink.Client.Extensibility {
 
     }
 }
+

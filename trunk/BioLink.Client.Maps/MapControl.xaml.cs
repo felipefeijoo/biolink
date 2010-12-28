@@ -113,7 +113,7 @@ namespace BioLink.Client.Maps {
                     }
                 }
             });
-
+            
             Unloaded += new System.Windows.RoutedEventHandler(MapControl_Unloaded);
 
         }
@@ -153,11 +153,56 @@ namespace BioLink.Client.Maps {
             });            
         }
 
+        private List<Int32> FindIDs(List<FeatureDataRow> rows, string columnName) {
+            var results = new List<Int32>();
+
+            foreach (FeatureDataRow row in rows) {
+                if (row.Table.Columns.IndexOf(columnName) >= 0) {
+                    results.Add((int) row[columnName]);
+                }
+            }
+
+            return results;
+        }
+
+        private void EditObject(List<Int32> ids, LookupType objectType) {
+            if (ids.Count == 1) {
+                PluginManager.Instance.EditLookupObject(objectType, ids[0]);
+            } else {
+                System.Windows.MessageBox.Show("There are " + ids.Count + " " + objectType + " records...");
+            }
+        }
+
         void map_MouseUp(Point WorldPos, System.Windows.Forms.MouseEventArgs evt) {
+
+            var pointClick = new SharpMap.Geometries.Point(WorldPos.X, WorldPos.Y);
             if (evt.Button == System.Windows.Forms.MouseButtons.Right) {
                 mapBox.Focus();
                 var menu = new System.Windows.Forms.ContextMenu();
 
+                var rows = Drill(pointClick);
+
+                var siteIDs = FindIDs(rows, "SiteID");
+                if (siteIDs.Count > 0) {
+                    BuildMenuItem(menu, "Edit Site...", () => {
+                        EditObject(siteIDs, LookupType.Site);
+                    });
+                }
+
+                var siteVisitIDs = FindIDs(rows, "SiteVisitID");
+                if (siteVisitIDs.Count > 0) {
+                    BuildMenuItem(menu, "Edit Site Visit...", () => {
+                        EditObject(siteVisitIDs, LookupType.SiteVisit);
+                    });
+                }
+
+                var materialIDs = FindIDs(rows, "MaterialID");
+                if (siteVisitIDs.Count > 0) {
+                    BuildMenuItem(menu, "Edit Material...", () => {
+                        EditObject(materialIDs, LookupType.Material);
+                    });
+                }
+                
                 if (Mode == MapMode.Normal) {
                     if (_distanceAnchor == null) {
                         BuildMenuItem(menu, "Drop distance anchor", () => {
@@ -169,8 +214,7 @@ namespace BioLink.Client.Maps {
                             mapBox.Refresh();
                         });
                     }
-                } else {
-                    var pointClick = new SharpMap.Geometries.Point(WorldPos.X, WorldPos.Y);
+                } else {                    
                     var feature = FindRegionFeature(pointClick);
                     if (feature != null) {
                         string regionPath = feature["BLREGHIER"] as string;
@@ -197,11 +241,11 @@ namespace BioLink.Client.Maps {
             } else {
 
                 if (mapBox.ActiveTool == MapBox.Tools.None) {
-                    var pointClick = new SharpMap.Geometries.Point(WorldPos.X, WorldPos.Y);
+                    
 
                     if (Mode == MapMode.RegionSelect) {
                         SelectRegion(pointClick);
-                    }
+                    } 
                 }
             }
         }
@@ -350,6 +394,39 @@ namespace BioLink.Client.Maps {
             return null;
         }
 
+        public List<FeatureDataRow> Drill(SharpMap.Geometries.Point pos) {
+
+            var list = new List<FeatureDataRow>();
+
+            // BoundingBox bbox = pos.GetBoundingBox();            
+            double delta = mapBox.Map.MapHeight * 0.01;
+            BoundingBox bbox = new BoundingBox(pos.X - delta, pos.Y - delta, pos.X + delta, pos.Y + delta);
+
+            foreach (ILayer l in mapBox.Map.Layers) {
+                if (l is VectorLayer) {
+                    var layer = l as VectorLayer;
+                    
+                    if (bbox != null) {
+                        SharpMap.Data.FeatureDataSet ds = new SharpMap.Data.FeatureDataSet();
+                        layer.DataSource.Open();
+                        layer.DataSource.ExecuteIntersectionQuery(bbox, ds);
+                        DataTable tbl = ds.Tables[0] as SharpMap.Data.FeatureDataTable;
+                        GisSharpBlog.NetTopologySuite.IO.WKTReader reader = new GisSharpBlog.NetTopologySuite.IO.WKTReader();
+                        GeoAPI.Geometries.IGeometry point = reader.Read(pos.ToString());
+                        if (tbl.Rows.Count == 0) {
+                            layer.DataSource.Close();
+                        } else {
+                            for (int i = 0; i < tbl.Rows.Count; ++i) {
+                                list.Add(tbl.Rows[i] as FeatureDataRow);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return list;
+        }
+
         public SharpMap.Data.FeatureDataRow FindGeoNearPoint(SharpMap.Geometries.Point pos, SharpMap.Layers.VectorLayer layer) {
             BoundingBox bbox = pos.GetBoundingBox();
             if (bbox != null) {
@@ -424,18 +501,27 @@ namespace BioLink.Client.Maps {
 
             FeatureDataTable table = new FeatureDataTable();
             table.Columns.Add(new DataColumn("Label", typeof(string)));
+            table.Columns.Add(new DataColumn("SiteID", typeof(int)));
+            table.Columns.Add(new DataColumn("SiteVisitID", typeof(int)));
+            table.Columns.Add(new DataColumn("MaterialID", typeof(int)));
 
             foreach (MapPoint mp in points) {
                 var row = table.NewRow();
                 row.Geometry = new Point(mp.Longitude, mp.Latitude);
-                row["Label"] = mp.Label; 
+                row["Label"] = mp.Label;
+                row["SiteID"] = mp.SiteID;
+                row["SiteVisitID"] = mp.SiteVisitID;
+                row["MaterialID"] = mp.MaterialID;
+                
                 table.AddRow(row);
             }
 
+            string labelLayerName = string.Format("{0} Labels", points.Name);
 
-            // VectorLayer shapeFileLayer = new VectorLayer("_pointLayer", new SharpMap.Data.Providers.GeometryProvider(model));
+            RemoveLayerByName(points.Name);
+            RemoveLayerByName(labelLayerName);
 
-            VectorLayer shapeFileLayer = new VectorLayer("_pointLayer", new SharpMap.Data.Providers.GeometryFeatureProvider(table));
+            VectorLayer shapeFileLayer = new VectorLayer(points.Name, new SharpMap.Data.Providers.GeometryFeatureProvider(table));
 
             shapeFileLayer.SmoothingMode = SmoothingMode.AntiAlias;
 
@@ -443,7 +529,7 @@ namespace BioLink.Client.Maps {
             addLayer(shapeFileLayer, null, false);
 
             if (points.DrawLabels) {
-                var labelLayer = new SharpMap.Layers.LabelLayer("_pointLayerLabels");
+                var labelLayer = new SharpMap.Layers.LabelLayer(labelLayerName);
                 labelLayer.DataSource = shapeFileLayer.DataSource;
                 labelLayer.LabelColumn = "Label";
                 labelLayer.LabelFilter = SharpMap.Rendering.LabelCollisionDetection.ThoroughCollisionDetection;
