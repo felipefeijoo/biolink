@@ -317,15 +317,17 @@ namespace BioLink.Client.Gazetteer {
                 if (selected != null) {
                     _map.DropAnchor(selected.Longitude, selected.Latitude, selected.Name);
                     if (_offsetControl.IsVisible && _offsetControl.OffsetPlace != null) {
+                        var offset = _offsetControl.OffsetPlace;
+
                         MapPoint p = new MapPoint();
-                        p.Latitude = _offsetControl.OffsetPlace.Latitude;
-                        p.Longitude = _offsetControl.OffsetPlace.Longitude;
+                        p.Latitude = offset.Latitude;
+                        p.Longitude = offset.Longitude;
+                        p.Label = string.Format("{0} {1} {2} of {3}", offset.Offset, offset.Units, offset.Direction, offset.Name);
+                        var set = new MapPointSet("Offset");
+                        set.DrawLabels = true;
+                        set.Add(p);
 
-                        var list = new List<MapPoint>();
-                        list.Add(p);
-
-
-                        _map.PlotPoints(list);
+                        _map.PlotPoints(set);
 
                     }
 

@@ -210,8 +210,9 @@ namespace BioLink.Client.Maps {
                         MapRefreshed(this, null);
                     }
                 }
-            } catch (Exception) {
+            } catch (Exception ex) {
                 // ignore
+                Logger.Debug(ex.ToString());
             }
         }
 

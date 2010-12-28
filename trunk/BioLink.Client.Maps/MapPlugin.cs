@@ -76,7 +76,7 @@ namespace BioLink.Client.Maps {
             }
         }
 
-        public void PlotPoints(List<MapPoint> points) {
+        public void PlotPoints(MapPointSet points) {
             if (_map != null && _map.IsVisible) {
                 (_map.Control as MapControl).PlotPoints(points);
             }
