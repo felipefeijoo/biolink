@@ -21,6 +21,7 @@ using System.Collections.ObjectModel;
 using System.Data;
 using Microsoft.Win32;
 using System.Drawing.Imaging;
+using System.Drawing.Drawing2D;
 
 namespace BioLink.Client.Maps {
 
@@ -40,7 +41,7 @@ namespace BioLink.Client.Maps {
         private string _anchorCaption;
         private Point _lastMousePos;
         // private ObservableCollection<LayerViewModel> _layers;
-        private IDegreeDistanceConverter _distanceConverter = new DegreesToKilometresConverter();
+        // private IDegreeDistanceConverter _distanceConverter = new DegreesToKilometresConverter();
         private Action<List<RegionDescriptor>> _callback;
         private RegionTreeNode _regionModel;
         private VectorLayer _regionLayer;
@@ -74,15 +75,17 @@ namespace BioLink.Client.Maps {
                 string lng = GeoUtils.DecDegToDMS(p.Y, CoordinateType.Latitude);
                 txtPosition.Text = String.Format("{0}, {1}", lat, lng);
 
-                if (_distanceAnchor != null && _distanceConverter != null) {
-                    var distance = _distanceAnchor.Distance(_lastMousePos);
+                if (_distanceAnchor != null) {
+                    // var distance = _distanceAnchor.Distance(_lastMousePos);                    
                     string from = "drop anchor";
+                    string units = "Km";
                     if (!string.IsNullOrEmpty(_anchorCaption)) {
                         from = _anchorCaption;
                     }
+                    var distance = GeoUtils.GreatCircleArcLength(_distanceAnchor.Y, _distanceAnchor.X, _lastMousePos.Y, _lastMousePos.X, units);
                     string direction = GeoUtils.GreatCircleArcDirection(_distanceAnchor.Y, _distanceAnchor.X, _lastMousePos.Y, _lastMousePos.X, 32);
 
-                    txtDistance.Text = String.Format("Distance from {0}: {1} {2}", from, _distanceConverter.Convert(distance), direction);
+                    txtDistance.Text = String.Format("Distance from {0}: {1:0.00} {2} {3}", from, distance, units, direction);
                 }
 
             });
@@ -412,31 +415,59 @@ namespace BioLink.Client.Maps {
             HideDistanceAnchor();
             _anchorCaption = caption;
             VectorLayer shapeFileLayer = new VectorLayer("_distanceAnchor", new SharpMap.Data.Providers.GeometryProvider(p));
-            shapeFileLayer.Style.Fill = new System.Drawing.SolidBrush(System.Drawing.Color.Blue);
-            shapeFileLayer.Style.Outline = new System.Drawing.Pen(new System.Drawing.SolidBrush(System.Drawing.Color.Black), 1);
-            shapeFileLayer.Style.Enabled = true;
-            shapeFileLayer.Style.EnableOutline = true;
+            shapeFileLayer.Style.Symbol = MapSymbolGenerator.Triangle(10, System.Drawing.Color.Blue, true, System.Drawing.Color.Black);
             _distanceAnchor = p;
             addLayer(shapeFileLayer, null, false);
         }
 
-        public void PlotPoints(List<MapPoint> points) {
+        public void PlotPoints(MapPointSet points) {
 
-            List<SharpMap.Geometries.Geometry> model = new List<SharpMap.Geometries.Geometry>();
+            FeatureDataTable table = new FeatureDataTable();
+            table.Columns.Add(new DataColumn("Label", typeof(string)));
+
             foreach (MapPoint mp in points) {
-                model.Add(new Point(mp.Longitude, mp.Latitude));
+                var row = table.NewRow();
+                row.Geometry = new Point(mp.Longitude, mp.Latitude);
+                row["Label"] = mp.Label; 
+                table.AddRow(row);
             }
 
-            VectorLayer shapeFileLayer = new VectorLayer("_pointLayer", new SharpMap.Data.Providers.GeometryProvider(model));
-            shapeFileLayer.Style.Fill = new System.Drawing.SolidBrush(System.Drawing.Color.Red);
-            shapeFileLayer.Style.Outline = new System.Drawing.Pen(new System.Drawing.SolidBrush(System.Drawing.Color.Red), 1);
-            shapeFileLayer.Style.Enabled = true;
-            shapeFileLayer.Style.EnableOutline = true;
+
+            // VectorLayer shapeFileLayer = new VectorLayer("_pointLayer", new SharpMap.Data.Providers.GeometryProvider(model));
+
+            VectorLayer shapeFileLayer = new VectorLayer("_pointLayer", new SharpMap.Data.Providers.GeometryFeatureProvider(table));
+
+            shapeFileLayer.SmoothingMode = SmoothingMode.AntiAlias;
+
+            shapeFileLayer.Style.Symbol = MapSymbolGenerator.GetSymbolForPointSet(points);
             addLayer(shapeFileLayer, null, false);
+
+            if (points.DrawLabels) {
+                var labelLayer = new SharpMap.Layers.LabelLayer("_pointLayerLabels");
+                labelLayer.DataSource = shapeFileLayer.DataSource;
+                labelLayer.LabelColumn = "Label";
+                labelLayer.LabelFilter = SharpMap.Rendering.LabelCollisionDetection.ThoroughCollisionDetection;
+
+                labelLayer.Style = new SharpMap.Styles.LabelStyle();
+                labelLayer.Style.CollisionBuffer = new System.Drawing.SizeF(2f, 2f);
+                labelLayer.Style.CollisionDetection = true;
+                labelLayer.Style.Font = new System.Drawing.Font("Tahoma", 12); // , System.Drawing.FontStyle.Bold
+                labelLayer.Style.ForeColor = System.Drawing.Color.Black;
+                labelLayer.Style.Offset = new System.Drawing.PointF(25, 20);
+                labelLayer.Style.HorizontalAlignment = SharpMap.Styles.LabelStyle.HorizontalAlignmentEnum.Center;
+
+                //labelLayer.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+                //labelLayer.SmoothingMode = SmoothingMode.AntiAlias;
+
+                addLayer(labelLayer, null, false);
+            }
         }
 
         public void ClearPoints(bool refresh = false) {
+
             RemoveLayerByName("_pointLayer");
+            RemoveLayerByName("_pointLayerLabels");
+
             if (refresh) {
                 mapBox.Refresh();
             }

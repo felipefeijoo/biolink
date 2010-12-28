@@ -93,6 +93,7 @@
       <DependentUpon>MapControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="MapPlugin.cs" />
+    <Compile Include="MapSymbolGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

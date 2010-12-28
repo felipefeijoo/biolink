@@ -18,6 +18,7 @@ using SharpMap.Styles;
 using SharpMap;
 using BioLink.Client.Utilities;
 using Microsoft.Win32;
+using System.Drawing.Drawing2D;
 
 namespace BioLink.Client.Maps {
     /// <summary>
@@ -33,7 +34,18 @@ namespace BioLink.Client.Maps {
 
         private MapControl _mapControl;
         private ObservableCollection<VectorLayerViewModel> _model;
-        private List<StyleViewModel> _styleModel;
+
+        internal static List<StyleViewModel> _styleModel;
+
+        static LayersWindow() {
+            _styleModel = new List<StyleViewModel>();
+            _styleModel.Add(new StyleViewModel(null));
+
+            foreach (HatchStyle item in Enum.GetValues(typeof(HatchStyle))) {
+                _styleModel.Add(new StyleViewModel(item));
+            }
+
+        }
 
         public LayersWindow(MapControl mapControl) {
             InitializeComponent();
@@ -46,13 +58,6 @@ namespace BioLink.Client.Maps {
             }
 
             lstLayers.ItemsSource = _model;
-
-            _styleModel = new List<StyleViewModel>();
-            _styleModel.Add(new StyleViewModel(null));
-
-            foreach (System.Drawing.Drawing2D.HatchStyle item in Enum.GetValues(typeof(System.Drawing.Drawing2D.HatchStyle))) {
-                _styleModel.Add(new StyleViewModel(item));
-            }
 
             this.MapBackColor = mapControl.mapBox.BackColor;
 
@@ -67,14 +72,6 @@ namespace BioLink.Client.Maps {
             var selected = lstLayers.SelectedItem as VectorLayerViewModel;
             grpLayer.IsEnabled = (selected != null);
             grpLayer.DataContext = selected;
-            if (selected != null) {
-                var selectedStyle = _styleModel.Find((vm) => {
-                    return vm.HatchStyle == selected.HatchStyle;
-                });
-                cmbStyle.SelectedItem = selectedStyle;
-            } else {
-                cmbStyle.SelectedItem = null;                
-            }
         }
 
         private void btnApply_Click(object sender, RoutedEventArgs e) {
@@ -89,7 +86,7 @@ namespace BioLink.Client.Maps {
 
             for (int i = _model.Count -1; i >=0; i--) {
                 var m = _model[i];
-                var layer = LayerFileLoader.LoadLayer(m.ConnectionID);
+                var layer = m.Model;          
                 if (layer != null) {
                     map.Layers.Add(layer);
                     if (layer is VectorLayer) {
@@ -97,7 +94,7 @@ namespace BioLink.Client.Maps {
                         vl.Style.Fill = m.FillBrush();
                         vl.Style.EnableOutline = m.DrawOutline;
                     }
-                } else {
+                } else {                    
                     throw new Exception("Could not load layer " + m.ConnectionID + "!");
                 }
             }
@@ -114,13 +111,13 @@ namespace BioLink.Client.Maps {
             this.Close();
         }
 
-        private void cmbStyle_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            var layer = grpLayer.DataContext as VectorLayerViewModel;
-            if (layer != null) {
-                var selected = cmbStyle.SelectedItem as StyleViewModel;
-                layer.HatchStyle = selected.HatchStyle;
-            }
-        }
+        //private void cmbStyle_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+        //    var layer = grpLayer.DataContext as VectorLayerViewModel;
+        //    if (layer != null) {
+        //        var selected = cmbStyle.SelectedItem as StyleViewModel;
+        //        layer.HatchStyle = selected.HatchStyle;
+        //    }
+        //}
 
         private void AddNewLayer() {
             OpenFileDialog dlg = new OpenFileDialog();
@@ -188,45 +185,44 @@ namespace BioLink.Client.Maps {
 
         protected int _iconSize = 15;
 
-        public StyleViewModel(System.Drawing.Drawing2D.HatchStyle? hatchStyle) {
+        public StyleViewModel(HatchStyle? hatchStyle) {
             this.HatchStyle = hatchStyle;
             this.Icon = MakeHatchIcon(hatchStyle);
         }
 
-        private BitmapSource MakeHatchIcon(System.Drawing.Drawing2D.HatchStyle? hatchStyle) {
+        private BitmapSource MakeHatchIcon(HatchStyle? hatchStyle) {
 
             System.Drawing.Color foreColor = System.Drawing.Color.Black;
             System.Drawing.Color backColor = System.Drawing.Color.White;
             System.Drawing.Bitmap bm = new System.Drawing.Bitmap(_iconSize, _iconSize);
-            System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bm);
+            using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bm)) {
 
-            var rect = new System.Drawing.Rectangle(0, 0, _iconSize - 1, _iconSize - 1);
-            if (hatchStyle != null && hatchStyle.HasValue) {
-                g.FillRectangle(new System.Drawing.Drawing2D.HatchBrush(hatchStyle.Value, foreColor, backColor), rect);
-                g.DrawRectangle(new System.Drawing.Pen(foreColor), rect);
-            } else {
-                g.FillRectangle(new System.Drawing.SolidBrush(foreColor), rect);
+                var rect = new System.Drawing.Rectangle(0, 0, _iconSize - 1, _iconSize - 1);
+                if (hatchStyle != null && hatchStyle.HasValue) {
+                    g.FillRectangle(new HatchBrush(hatchStyle.Value, foreColor, backColor), rect);
+                    g.DrawRectangle(new System.Drawing.Pen(foreColor), rect);
+                } else {
+                    g.FillRectangle(new System.Drawing.SolidBrush(foreColor), rect);
+                }
             }
 
             return GraphicsUtils.SystemDrawingImageToBitmapSource(bm);
         }
 
-        public System.Drawing.Drawing2D.HatchStyle? HatchStyle { get; set;  }
+        public HatchStyle? HatchStyle { get; set;  }
     }
 
     internal class VectorLayerViewModel : ViewModelBase {
-
-        private VectorLayer _model;
         
         private System.Drawing.Pen _Line;
         private bool _drawOutline;
         private System.Drawing.Image _symbol;
         private System.Drawing.Color _fillColor;
-        private System.Drawing.Drawing2D.HatchStyle? _hatchStyle;
+        private HatchStyle? _hatchStyle;
         
 
         public VectorLayerViewModel(VectorLayer model) {
-            _model = model;
+            Model = model;
             ConnectionID = model.DataSource.ConnectionID;
 
             _fillColor = GraphicsUtils.GetColorFromBrush(model.Style.Fill);
@@ -237,7 +233,7 @@ namespace BioLink.Client.Maps {
         }
 
         public string Name {
-            get { return _model.LayerName; }
+            get { return Model.LayerName; }
         }
 
         public System.Drawing.Color FillColor {
@@ -245,7 +241,7 @@ namespace BioLink.Client.Maps {
             set { SetProperty("FillColor", ref _fillColor, value); }
         }
 
-        public System.Drawing.Drawing2D.HatchStyle? HatchStyle {
+        public HatchStyle? HatchStyle {
             get { return _hatchStyle; }
             set { SetProperty("HatchStyle", ref _hatchStyle, value); }
         }
@@ -261,31 +257,28 @@ namespace BioLink.Client.Maps {
         internal System.Drawing.Brush FillBrush() {
             return GraphicsUtils.CreateBrush(FillColor, HatchStyle);
         }
+
+        public ILayer Model { get; private set; }
     }
 
-    [ValueConversion(typeof(StyleViewModel), typeof(System.Drawing.Drawing2D.HatchStyle))]
-    internal class HatchStyleConverter : IMultiValueConverter {
-
-        public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
-            var list = values[1] as List<StyleViewModel>;
-            var style = values[0] as System.Drawing.Drawing2D.HatchStyle?;
-            if (list != null) {
-                foreach (StyleViewModel m in list) {
-                    if (m.HatchStyle == style) {
-                        return m;
-                    }
+    public class HatchStyleConverter : IValueConverter {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+            var hs = value as HatchStyle?;
+            foreach (StyleViewModel vm in LayersWindow._styleModel) {
+                if (vm.HatchStyle == hs) {
+                    return vm;
                 }
             }
-            return null;
+            return new StyleViewModel(hs);
         }
 
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture) {
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
             var vm = value as StyleViewModel;
             if (vm != null) {
-                return new object[] {vm.HatchStyle, null};
-            }  
-
-            return null;
+                return vm.HatchStyle;
+            }
+            return default(HatchStyle);
         }
     }
+
 }
