@@ -30,12 +30,12 @@ namespace BioLink.Client.Maps {
             set { SetProperty(() => Model.Collector, value); }
         }
 
-        public string DateStart {
+        public int? DateStart {
             get { return Model.DateStart; }
             set { SetProperty(() => Model.DateStart, value); }
         }
 
-        public string DateEnd {
+        public int? DateEnd {
             get { return Model.DateEnd; }
             set { SetProperty(() => Model.DateEnd, value); }
         }

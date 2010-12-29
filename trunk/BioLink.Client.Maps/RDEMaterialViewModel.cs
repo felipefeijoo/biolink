@@ -111,5 +111,7 @@ namespace BioLink.Client.Maps {
             set { SetProperty(() => Model.TemplateID, value); }
         }
 
+        public RDESiteVisitViewModel SiteVisit { get; set; }
+
     }
 }

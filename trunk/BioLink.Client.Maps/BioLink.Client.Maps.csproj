@@ -111,6 +111,9 @@
     <Compile Include="RDESiteViewModel.cs" />
     <Compile Include="RDESiteVisitViewModel.cs" />
     <Compile Include="RegionTreeNode.cs" />
+    <Compile Include="SelectedObjectChooser.xaml.cs">
+      <DependentUpon>SelectedObjectChooser.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SerializedEnvelope.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -142,6 +145,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MapControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SelectedObjectChooser.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
