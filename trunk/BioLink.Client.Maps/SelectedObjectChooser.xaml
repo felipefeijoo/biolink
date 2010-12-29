@@ -4,7 +4,7 @@
         Title="SelectedObjectChooser" Height="357" Width="698">
     <Grid>
         <ListView Name="lvw" Margin="0,0,0,41" />
-        <Button Content="_Cancel" Height="23" Margin="0,0,12,12" Name="btnCancel" VerticalAlignment="Bottom" IsCancel="True" HorizontalAlignment="Right" Width="75" />
+        <Button Content="_Cancel" Height="23" Margin="0,0,12,12" Name="btnCancel" VerticalAlignment="Bottom" IsCancel="True" HorizontalAlignment="Right" Width="75" Click="btnCancel_Click" />
         <Label Height="28" Margin="12,0,93,8" Name="lblStatus" VerticalAlignment="Bottom" />
     </Grid>
 </Window>
