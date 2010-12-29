@@ -323,7 +323,7 @@ namespace BioLink.Client.Gazetteer {
                         p.Latitude = offset.Latitude;
                         p.Longitude = offset.Longitude;
                         p.Label = string.Format("{0} {1} {2} of {3}", offset.Offset, offset.Units, offset.Direction, offset.Name);
-                        var set = new MapPointSet("Offset");
+                        var set = new ListMapPointSet("Offset");
                         set.DrawLabels = true;
                         set.Add(p);
 

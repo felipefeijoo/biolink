@@ -22,6 +22,8 @@ using System.Data;
 using Microsoft.Win32;
 using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
+using BioLink.Data;
+using BioLink.Data.Model;
 
 namespace BioLink.Client.Maps {
 
@@ -153,23 +155,52 @@ namespace BioLink.Client.Maps {
             });            
         }
 
-        private List<Int32> FindIDs(List<FeatureDataRow> rows, string columnName) {
-            var results = new List<Int32>();
+        private Dictionary<Int32, FeatureDataRow> FindIDs(List<FeatureDataRow> rows, string columnName) {
+            var results = new Dictionary<Int32, FeatureDataRow>();
 
             foreach (FeatureDataRow row in rows) {
                 if (row.Table.Columns.IndexOf(columnName) >= 0) {
-                    results.Add((int) row[columnName]);
+                    results[(int) row[columnName]] = row;                    
                 }
             }
 
             return results;
         }
 
-        private void EditObject(List<Int32> ids, LookupType objectType) {
-            if (ids.Count == 1) {
-                PluginManager.Instance.EditLookupObject(objectType, ids[0]);
+        private void EditObject(Dictionary<Int32, FeatureDataRow> idMap, LookupType objectType) {
+            if (idMap.Count == 1) {
+                PluginManager.Instance.EditLookupObject(objectType, idMap.First().Key);
             } else {
-                System.Windows.MessageBox.Show("There are " + ids.Count + " " + objectType + " records...");
+                var service = new MaterialService(PluginManager.Instance.User);
+                if (objectType == LookupType.Site) {                    
+                    var sites = service.GetRDESites(idMap.Keys.ToArray<int>());
+                    var model = sites.ConvertAll((s) => { return new RDESiteViewModel(s); });
+
+                } else if (objectType == LookupType.SiteVisit) {
+                    var siteVisits = service.GetRDESiteVisits(idMap.Keys.ToArray<int>());
+                    var siteIds = siteVisits.Aggregate<RDESiteVisit, List<int>>(new List<int>(), (l, v) => {
+                        if (!l.Contains(v.SiteID)) {
+                            l.Add(v.SiteID);
+                        }
+                        return l;
+                    });
+                    var sites = service.GetRDESites(siteIds.ToArray<int>()).ConvertAll((site) => { return new RDESiteViewModel(site); });
+                    var siteMap = sites.ToDictionary<RDESiteViewModel, int>( (s) => { return s.SiteID; } );
+
+                    var model = siteVisits.ConvertAll((sv) => {
+                        var vm = new RDESiteVisitViewModel(sv);
+                        if (siteMap.ContainsKey(sv.SiteID)) {
+                            vm.Site = siteMap[sv.SiteID];
+                        }
+                        return vm;
+                    });
+
+                    foreach (RDESiteVisit visit in siteVisits) {
+
+                    }
+                } else {
+                    System.Windows.MessageBox.Show("There are " + idMap.Count + " " + objectType + " records...");
+                }
             }
         }
 

@@ -107,6 +107,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="RDEMaterialViewModel.cs" />
+    <Compile Include="RDESiteViewModel.cs" />
+    <Compile Include="RDESiteVisitViewModel.cs" />
     <Compile Include="RegionTreeNode.cs" />
     <Compile Include="SerializedEnvelope.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
