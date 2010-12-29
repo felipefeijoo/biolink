@@ -264,7 +264,12 @@ namespace BioLink.Data {
                 _P("vchrGeoAgeTop", site.GeoAgeTop),
                 _P("vchrGeoNotes", site.GeoNotes)
             );
+        }
 
+        public List<RDESite> GetRDESites(params int[] siteIds) {
+            var mapper = new GenericMapperBuilder<RDESite>().Override(new IntToBoolConvertingMapper("Locked")).build();
+            string siteIdList = siteIds.Join(",");
+            return StoredProcToList("spSiteGetRDEFromIDList", mapper, _P("vchrSiteIDList", siteIdList));
         }
 
         public int InsertSiteTemplate() {
@@ -426,6 +431,12 @@ namespace BioLink.Data {
             var retval = ReturnParam("intNewSiteVisitID", System.Data.SqlDbType.Int);
             StoredProcUpdate("spSiteVisitInsertTemplate", _P("vchrDummy", ""), retval);
             return (int)retval.Value;
+        }
+
+        public List<RDESiteVisit> GetRDESiteVisits(params int[] siteVisitIDs) {
+            var mapper = new GenericMapperBuilder<RDESiteVisit>().Override(new IntToBoolConvertingMapper("Locked")).build();
+            var ids = siteVisitIDs.Join(",");
+            return StoredProcToList("spSiteVisitGetRDEFromIDList", mapper, _P("vchrType", "v"), _P("txtIDList", ids));
         }
 
         #endregion
@@ -620,6 +631,11 @@ namespace BioLink.Data {
             var retval = ReturnParam("intNewMaterialID", System.Data.SqlDbType.Int);
             StoredProcUpdate("spMaterialInsertTemplate", _P("vchrDummy", ""), retval);
             return (int)retval.Value;
+        }
+
+        public List<RDEMaterial> GetRDEMaterial(int[] idlist, string type = "m") {
+            var mapper = new GenericMapperBuilder<RDEMaterial>().Override(new IntToBoolConvertingMapper("Locked")).build();            
+            return StoredProcToList("spMaterialGetRDEFromIDList", mapper, _P("vchrType", type), _P("txtIDList", idlist.Join(",")));
         }
 
         #endregion

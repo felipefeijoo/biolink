@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
+using System.Collections;
 
 namespace BioLink.Client.Utilities {
 
@@ -57,7 +58,7 @@ namespace BioLink.Client.Utilities {
             return message;
         }
 
-        public static bool Question(this Control control, string question, string caption) {            
+        public static bool Question(this Control control, string question, string caption) {
             Window parent = Window.GetWindow(control);
             MessageBoxResult result = MessageBox.Show(parent, question, caption, MessageBoxButton.YesNo, MessageBoxImage.Question);
             return result == MessageBoxResult.Yes;
@@ -69,7 +70,7 @@ namespace BioLink.Client.Utilities {
 
         public static bool IsNumeric(this string value) {
             int result;
-            return Int32.TryParse(value, out result);            
+            return Int32.TryParse(value, out result);
         }
 
         public static bool IsSubclassOfRawGeneric(this Type toCheck, Type generic) {
@@ -87,8 +88,8 @@ namespace BioLink.Client.Utilities {
             if (string.IsNullOrEmpty(fragment)) {
                 control.Document.Blocks.Clear();
             } else {
-                control.SelectAll();                
-                control.Selection.Load(new MemoryStream(UTF8Encoding.Default.GetBytes(fragment)), DataFormats.Rtf);                                
+                control.SelectAll();
+                control.Selection.Load(new MemoryStream(UTF8Encoding.Default.GetBytes(fragment)), DataFormats.Rtf);
             }
         }
 
@@ -125,6 +126,18 @@ namespace BioLink.Client.Utilities {
                 builder.Append(stringToRepeat);
             }
             return builder.ToString();
+        }
+
+        public static string Join<T>(this T[] items, string delimiter) {            
+            if (items.Length == 0) {
+                return "";
+            }
+            StringBuilder sb = new StringBuilder(items[0].ToString());
+            for (int i = 1; i < items.Length; ++i) {
+                sb.Append(delimiter);
+                sb.Append(items[i] == null ? "" : items[i].ToString());
+            }
+            return sb.ToString();
         }
 
     }

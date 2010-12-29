@@ -231,4 +231,13 @@ namespace BioLink.Data {
         }
     }
 
+    public class IntToBoolConvertingMapper : ConvertingMapper {
+
+        public IntToBoolConvertingMapper(string columnName)
+            : base(columnName, (intval) => {
+                return (int)intval != 0;
+            }) {
+        }
+    }
+
 }

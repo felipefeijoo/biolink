@@ -92,6 +92,9 @@
     <Compile Include="Model\Note.cs" />
     <Compile Include="Model\Phrase.cs" />
     <Compile Include="Model\PlaceName.cs" />
+    <Compile Include="Model\RDEMaterial.cs" />
+    <Compile Include="Model\RDESite.cs" />
+    <Compile Include="Model\RDESiteVisit.cs" />
     <Compile Include="Model\Reference.cs" />
     <Compile Include="Model\ReferenceSearchResult.cs" />
     <Compile Include="Model\RefLink.cs" />

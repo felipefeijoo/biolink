@@ -90,54 +90,26 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void PlotSelected() {
-            var list = new List<MatrixRow>();
+
+            var selectedRowIndexes = new int[lvw.SelectedItems.Count];
             if (lvw.SelectedItems.Count > 0) {
+                int i = 0;
                 foreach (object selected in lvw.SelectedItems) {
-                    list.Add(selected as MatrixRow);
+                    var row = selected as MatrixRow;
+                    selectedRowIndexes[i++] = Data.Rows.IndexOf(row);
                 }                
             }
-            Plot(list);
+            Plot(selectedRowIndexes);
         }
 
         private void PlotAll() {            
-            var list = new List<MatrixRow>();
-            if (lvw.SelectedItems.Count > 0) {
-                foreach (MatrixRow row in Data.Rows) {
-                    list.Add(row);
-                }
-            }
-            Plot(list);
+            Plot();
         }
 
-        private void Plot(List<MatrixRow> rows) {
+        private void Plot(int[] selectedRowIndexes = null) {
             var map = GetMap();
-            if (map != null && rows.Count > 0) {
-                var set = new MapPointSet(_report.Name);
-
-                int latIndex = Data.IndexOf("Lat");
-                int longIndex = Data.IndexOf("Long");
-                int siteIndex = Data.IndexOf("SiteID");
-                int siteVisitIndex = Data.IndexOf("SiteVisitID");
-                int materialIndex = Data.IndexOf("MaterialID");
-
-                foreach (MatrixRow row in rows) {
-                    double? lat = row[latIndex] as double?;
-                    double? lon = row[longIndex] as double?;
-                    if (lat.HasValue && lon.HasValue) {
-                        MapPoint p = new MapPoint(lat.Value, lon.Value);
-                        set.Add(p);
-                        if (siteIndex >= 0) {
-                            p.SiteID = (int)row[siteIndex];
-                        }
-                        if (siteVisitIndex >= 0) {
-                            p.SiteVisitID = (int)row[siteVisitIndex];
-                        }
-                        if (materialIndex >= 0) {
-                            p.MaterialID = (int)row[materialIndex];
-                        }
-                    }
-                }
-
+            if (map != null) {
+                var set = new MatrixMapPointSet(_report.Name, Data, selectedRowIndexes);
                 map.Show();
                 map.PlotPoints(set);
             }
