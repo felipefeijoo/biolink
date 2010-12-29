@@ -172,12 +172,13 @@ namespace BioLink.Client.Maps {
                 PluginManager.Instance.EditLookupObject(objectType, idMap.First().Key);
             } else {
                 var service = new MaterialService(PluginManager.Instance.User);
+                List<ViewModelBase> model = null;
                 if (objectType == LookupType.Site) {                    
-                    var sites = service.GetRDESites(idMap.Keys.ToArray<int>());
-                    var model = sites.ConvertAll((s) => { return new RDESiteViewModel(s); });
+                    var sites = service.GetRDESites(idMap.Keys.ToArray());
+                    model = sites.ConvertAll((s) => { return (ViewModelBase) new RDESiteViewModel(s); });
 
                 } else if (objectType == LookupType.SiteVisit) {
-                    var siteVisits = service.GetRDESiteVisits(idMap.Keys.ToArray<int>());
+                    var siteVisits = service.GetRDESiteVisits(idMap.Keys.ToArray());
                     var siteIds = siteVisits.Aggregate<RDESiteVisit, List<int>>(new List<int>(), (l, v) => {
                         if (!l.Contains(v.SiteID)) {
                             l.Add(v.SiteID);
@@ -185,21 +186,56 @@ namespace BioLink.Client.Maps {
                         return l;
                     });
                     var sites = service.GetRDESites(siteIds.ToArray<int>()).ConvertAll((site) => { return new RDESiteViewModel(site); });
-                    var siteMap = sites.ToDictionary<RDESiteViewModel, int>( (s) => { return s.SiteID; } );
+                    var siteMap = sites.ToDictionary( (s) => { return s.SiteID; } );
 
-                    var model = siteVisits.ConvertAll((sv) => {
+                    model = siteVisits.ConvertAll((sv) => {
                         var vm = new RDESiteVisitViewModel(sv);
                         if (siteMap.ContainsKey(sv.SiteID)) {
                             vm.Site = siteMap[sv.SiteID];
                         }
-                        return vm;
+                        return (ViewModelBase) vm;
                     });
 
-                    foreach (RDESiteVisit visit in siteVisits) {
+                } else if (objectType == LookupType.Material) {
+                    // First get the material records....
+                    var material = service.GetRDEMaterial(idMap.Keys.ToArray());
+                    // Get the distinct list of site visit ids...
+                    var visitIds = material.Aggregate(new List<int>(), (l, v) => {
+                        if (!l.Contains(v.SiteVisitID)) {
+                            l.Add(v.SiteVisitID);
+                        }
+                        return l;
+                    });
 
-                    }
-                } else {
-                    System.Windows.MessageBox.Show("There are " + idMap.Count + " " + objectType + " records...");
+                    // Get the visit records, and convert into a dictionary of SiteVisitID => SiteVisit for easy lookup
+                    var visits = service.GetRDESiteVisits(visitIds.ToArray()).ConvertAll((sv)=> new RDESiteVisitViewModel(sv));
+                    var visitMap = visits.ToDictionary((sv) => { return sv.SiteVisitID; });
+
+                    // Then get the unique (distinct) list of site ids...
+                    var siteIds = visits.Aggregate(new List<int>(), (l, v) => {
+                        if (!l.Contains(v.SiteID)) {
+                            l.Add(v.SiteID);
+                        }
+                        return l;
+                    });
+
+                    // and create a map of SiteID => Site record for easy look up...
+                    var sites = service.GetRDESites(siteIds.ToArray<int>()).ConvertAll((site) => { return new RDESiteViewModel(site); });
+                    var siteMap = sites.ToDictionary((s) => { return s.SiteID; });
+
+                    // Now we hook it all up - for every material record we attach its site visit record, and its site record
+                    model = material.ConvertAll((m) => {
+                        var vm = new RDEMaterialViewModel(m);
+                        vm.SiteVisit = visitMap[vm.SiteVisitID];
+                        vm.SiteVisit.Site = siteMap[vm.SiteVisit.SiteID];                    
+                        return (ViewModelBase) vm;
+                    });
+                }
+
+                if (model != null) {
+                    var frm = new SelectedObjectChooser(PluginManager.Instance.User, model, objectType);
+                    frm.Owner = this.FindParentWindow();
+                    frm.Show();
                 }
             }
         }
