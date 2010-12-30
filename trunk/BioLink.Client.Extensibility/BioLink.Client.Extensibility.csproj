@@ -138,6 +138,7 @@
     <Compile Include="IClosable.cs" />
     <Compile Include="IMapProvider.cs" />
     <Compile Include="IRegionSelector.cs" />
+    <Compile Include="ItemsGroupBox.cs" />
     <Compile Include="LatLongInput.xaml.cs">
       <DependentUpon>LatLongInput.xaml</DependentUpon>
     </Compile>
@@ -219,6 +220,9 @@
     <Compile Include="TabularDataViewer.xaml.cs">
       <DependentUpon>TabularDataViewer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="TestControl.xaml.cs">
+      <DependentUpon>TestControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="tests\PreferencesTests.cs" />
     <Compile Include="TextBox.cs" />
     <Compile Include="TimeControl.xaml.cs">
@@ -253,6 +257,7 @@
     <Folder Include="lib\" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Themes\EditSmall.png" />
     <Page Include="Associates\AssociatesControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -393,6 +398,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Themes\generic.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TestControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="TimeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -469,6 +482,10 @@
     <Resource Include="images\Calendar.png" />
     <Resource Include="images\ChangedOverlay.png" />
     <Resource Include="images\FavFolder.png" />
+    <Resource Include="images\LeftArrowSmall.png" />
+    <Resource Include="images\RightArrowSmall.png" />
+    <Resource Include="images\EditSmall.png" />
+    <Resource Include="images\AddNewSmall.png" />
     <Content Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>

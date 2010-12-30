@@ -952,6 +952,11 @@ namespace BioLink.Client.Material {
 
         }
 
+
+        internal void EditRDE(SiteExplorerNodeViewModel node) {
+            var control = new RapidDataEntry();
+            PluginManager.Instance.AddNonDockableContent(Owner, control, "RDE", SizeToContent.Manual);
+        }
     }
 
     internal class MaterialFindScope {

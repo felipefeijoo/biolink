@@ -77,6 +77,9 @@
     <Compile Include="MergeSiteOptions.xaml.cs">
       <DependentUpon>MergeSiteOptions.xaml</DependentUpon>
     </Compile>
+    <Compile Include="RapidDataEntry.xaml.cs">
+      <DependentUpon>RapidDataEntry.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SiteCompare.xaml.cs">
       <DependentUpon>SiteCompare.xaml</DependentUpon>
     </Compile>
@@ -174,6 +177,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MergeSiteOptions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="RapidDataEntry.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
