@@ -69,6 +69,7 @@ namespace BioLink.Client.Material {
                                 throw new Exception("[Details] Unhandled site explorer element type: " + node.ElemType);
                         }
                     }).End();
+                    builder.New("Open in Rapid Data Entry...").Handler(() => { explorer.EditRDE(node); }).End();
                 }
             }
 
@@ -156,6 +157,8 @@ namespace BioLink.Client.Material {
                             throw new Exception("[Details] Unhandled site explorer element type: " + node.ElemType);
                     }
                 }).End();
+
+                builder.New("Open in Rapid Data Entry...").Handler(() => { explorer.EditRDE(node); }).End();
             }
 
             return builder.ContextMenu;
