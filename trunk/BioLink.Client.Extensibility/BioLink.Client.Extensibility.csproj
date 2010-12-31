@@ -158,6 +158,7 @@
     <Compile Include="MultiMedia\MultimediaLinkViewModel.cs" />
     <Compile Include="MultiMedia\MultimediaViewModel.cs" />
     <Compile Include="MultiMedia\UpdateMultimediaAction.cs" />
+    <Compile Include="NegatingConverter.cs" />
     <Compile Include="Notes\NoteActions.cs" />
     <Compile Include="Notes\NoteControl.xaml.cs">
       <DependentUpon>NoteControl.xaml</DependentUpon>
@@ -189,6 +190,9 @@
     </Compile>
     <Compile Include="PluginManager.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="PositionControl.xaml.cs">
+      <DependentUpon>PositionControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ProgressWindow.xaml.cs">
       <DependentUpon>ProgressWindow.xaml</DependentUpon>
     </Compile>
@@ -378,6 +382,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="PositionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ProgressWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -486,6 +494,8 @@
     <Resource Include="images\RightArrowSmall.png" />
     <Resource Include="images\EditSmall.png" />
     <Resource Include="images\AddNewSmall.png" />
+    <Resource Include="images\Locked.png" />
+    <Resource Include="images\Unlocked.png" />
     <Content Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>

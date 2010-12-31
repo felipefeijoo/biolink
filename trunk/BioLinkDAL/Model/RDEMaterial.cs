@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BioLink.Data.Model {
 
-    public class RDEMaterial : BioLinkDataObject {
+    public class RDEMaterial : RDEObject {
         public int SiteVisitID { get; set; }	
         public int MaterialID { get; set; }
         public string MaterialName { get; set; }
@@ -23,8 +23,5 @@ namespace BioLink.Data.Model {
         public string TrapName { get; set; }
         public string MaterialSource { get; set; }
         public string CollectionMethod { get; set; }
-        public int? Changes	{ get; set; }
-        public bool Locked { get; set; }
-        public int TemplateID { get; set; }
     }
 }

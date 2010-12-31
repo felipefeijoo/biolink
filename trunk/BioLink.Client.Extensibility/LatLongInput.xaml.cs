@@ -47,6 +47,23 @@ namespace BioLink.Client.Extensibility {
                         list = new String[] { "N", "S" };
                     }
                     cmbDirection.ItemsSource = list;
+                    cmbDirection.SelectedIndex = 0;
+                }
+            }
+        }
+
+        private bool _hideLabel;
+
+        public bool HideLabel {
+            get { return _hideLabel;  }
+            set {
+                _hideLabel = value;
+                if (_hideLabel) {
+                    grid.RowDefinitions[0].Height = new GridLength(0);
+                    grid.RowDefinitions[1].Height = new GridLength(0);
+                } else {
+                    grid.RowDefinitions[0].Height = new GridLength(18);
+                    grid.RowDefinitions[1].Height = new GridLength(2);
                 }
             }
         }
@@ -61,12 +78,7 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register(
-            "Value", 
-            typeof(double), 
-            typeof(LatLongInput), 
-            new FrameworkPropertyMetadata((double) 0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnValueChanged)
-        );
+        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register( "Value",  typeof(double),  typeof(LatLongInput), new FrameworkPropertyMetadata((double) 0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnValueChanged));
 
         private static void OnValueChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
             
@@ -99,6 +111,27 @@ namespace BioLink.Client.Extensibility {
             get { return (double) GetValue(ValueProperty); }
             set { SetValue(ValueProperty, value); }
         }
+
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(LatLongInput), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnIsReadOnlyChanged));
+
+        public bool IsReadOnly {
+            get { return (bool)GetValue(IsReadOnlyProperty); }
+            set { SetValue(IsReadOnlyProperty, value); }
+        }
+
+        private static void OnIsReadOnlyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+
+            var control = obj as LatLongInput;
+            if (control != null) {
+                bool val = (bool) args.NewValue;
+                control.txtDegrees.IsReadOnly = val;
+                control.txtMinutes.IsReadOnly = val;
+                control.txtSeconds.IsReadOnly = val;
+                control.cmbDirection.IsEnabled = !val;
+            }
+
+        }
+
 
         private void RecalculateValue() {
 

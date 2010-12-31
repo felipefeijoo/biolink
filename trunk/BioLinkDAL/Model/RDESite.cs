@@ -5,7 +5,15 @@ using System.Text;
 
 namespace BioLink.Data.Model {
 
-    public class RDESite : BioLinkDataObject {
+    public class RDEObject : BioLinkDataObject {
+
+        public bool Locked { get; set; }
+        public int? Changes { get; set; }
+        public int? TemplateID { get; set; }
+
+    }
+
+    public class RDESite : RDEObject {
         public int SiteID { get;set; }
         public int ParentID	{get;set;}
         public string SiteName { get;set;}	
@@ -27,8 +35,6 @@ namespace BioLink.Data.Model {
         public string ElevError	{ get; set; }
         public string LLSource	{ get; set; }
         public string LLError	{ get; set; }        
-        public int Changes	{ get; set; }
-        public int TemplateID { get; set; }
-        public bool Locked { get; set; }
+        
     }
 }

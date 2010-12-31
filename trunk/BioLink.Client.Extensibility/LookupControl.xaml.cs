@@ -162,6 +162,23 @@ namespace BioLink.Client.Extensibility {
             set { SetValue(ObjectIDProperty, value); }
         }
 
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(LookupControl), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnIsReadOnlyChanged)));
+
+        public bool IsReadOnly {
+            get { return (bool)GetValue(IsReadOnlyProperty); }
+            set { SetValue(IsReadOnlyProperty, value); }
+        }
+
+        private static void OnIsReadOnlyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            var control = (LookupControl)obj;
+            if (control != null) {
+                control.btnLookup.IsEnabled = !(bool)args.NewValue;
+                // TODO: when filtering in the textbox is enabled, need to disable it when read only...
+                // control.txt.IsEnabled = !(bool)args.NewValue;
+            }
+        }
+
+
         #endregion
 
         #region Properties

@@ -4,16 +4,66 @@ using System.Linq;
 using System.Text;
 using BioLink.Client.Extensibility;
 using BioLink.Data.Model;
+using System.Windows;
+using System.Windows.Media;
 
-namespace BioLink.Client.Maps {
+namespace BioLink.Client.Material {
 
-    public class RDESiteViewModel : GenericViewModelBase<RDESite> {
+    public abstract class RDEViewModel<T> : GenericViewModelBase<T> where T: RDEObject {
+
+        public RDEViewModel(T model)
+            : base(model) {
+        }
+
+        public int? TemplateID {
+            get { return Model.TemplateID; }
+            set { SetProperty(() => Model.TemplateID, value); }
+        }
+
+        // Locked and Changes are not a really database properties, and we don't really care if they have been changed or not - they never get saved anyway, so 
+        // we treat them like regular properties (no changed detection).
+        public bool Locked {
+            get { return Model.Locked; }
+            set { 
+                Model.Locked = value;
+                RaisePropertyChanged("HeaderForeground");
+                RaisePropertyChanged("Locked");
+            }
+        }
+
+        public int? Changes {
+            get { return Model.Changes; }
+            set { Model.Changes = value; }
+        }
+
+        public abstract int ObjectID { get; }
+
+        public Brush HeaderForeground {
+            get {
+                if (!Locked) {
+                    if (ObjectID < 0) {
+                        return Brushes.Blue;
+                    } else {
+                        return Brushes.Red;
+                    }
+                }
+                return SystemColors.ControlTextBrush;
+            }
+        }
+
+    }
+
+    public class RDESiteViewModel : RDEViewModel<RDESite> {
 
         public RDESiteViewModel(RDESite model) : base(model) { }
 
         public int SiteID {
             get { return Model.SiteID; }
             set { SetProperty(() => Model.SiteID, value); }
+        }
+
+        public override int ObjectID {
+            get { return SiteID; }
         }
 
         public int ParentID {
@@ -114,21 +164,6 @@ namespace BioLink.Client.Maps {
         public string LLError {
             get { return Model.LLError; }
             set { SetProperty(() => Model.LLError, value); }
-        }
-
-        public int? Changes {
-            get { return Model.Changes; }
-            set { SetProperty(() => Model.Changes, value); }
-        }
-
-        public int? TemplateID {
-            get { return Model.TemplateID; }
-            set { SetProperty(() => Model.TemplateID, value); }
-        }
-
-        public bool Locked {
-            get { return Model.Locked; }
-            set { SetProperty(() => Model.Locked, value); }
         }
 
     }
