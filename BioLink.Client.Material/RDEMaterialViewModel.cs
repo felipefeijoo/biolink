@@ -5,9 +5,9 @@ using System.Text;
 using BioLink.Client.Extensibility;
 using BioLink.Data.Model;
 
-namespace BioLink.Client.Maps {
+namespace BioLink.Client.Material {
 
-    public class RDEMaterialViewModel : GenericViewModelBase<RDEMaterial> {
+    public class RDEMaterialViewModel : RDEViewModel<RDEMaterial> {
 
         public RDEMaterialViewModel(RDEMaterial model) : base(model) { }
 
@@ -96,22 +96,11 @@ namespace BioLink.Client.Maps {
             set { SetProperty(() => Model.CollectionMethod, value); }
         }
 
-        public int? Changes {
-            get { return Model.Changes; }
-            set { SetProperty(() => Model.Changes, value); }
-        }
-
-        public bool Locked {
-            get { return Model.Locked; }
-            set { SetProperty(() => Model.Locked, value); }
-        }
-
-        public int? TemplateID {
-            get { return Model.TemplateID; }
-            set { SetProperty(() => Model.TemplateID, value); }
-        }
-
         public RDESiteVisitViewModel SiteVisit { get; set; }
 
+
+        public override int ObjectID {
+            get { return MaterialID; }
+        }
     }
 }

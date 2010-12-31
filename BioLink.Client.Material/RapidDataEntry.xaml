@@ -3,12 +3,18 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+             xmlns:mat="clr-namespace:BioLink.Client.Material"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="650" xmlns:my="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility">
+             d:DesignHeight="450" d:DesignWidth="650" >
     <Grid>
+        <Grid.Resources>
+            <ext:NegatingConverter x:Key="NegatingConverter" />            
+        </Grid.Resources>
         <ScrollViewer>
             <Grid MinWidth="600" MinHeight="450">
-                <my:ItemsGroupBox Margin="6,6,6,0" Name="itemsGroupBox1" VerticalAlignment="Top" Height="170" BorderBrush="Aquamarine"/>
+                <ext:ItemsGroupBox Margin="6,6,6,0" Name="grpSites" VerticalAlignment="Top" Height="170" HeaderPrefix="Site:" Header="{Binding SiteName}" HeaderFontWeight="Bold" IsUnlocked="{Binding Locked, Converter={StaticResource NegatingConverter}}" HeaderForeground="{Binding HeaderForeground}" AddNewClicked="grpSites_AddNewClicked">
+                </ext:ItemsGroupBox>
             </Grid>
         </ScrollViewer>
             

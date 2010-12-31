@@ -182,6 +182,25 @@ namespace BioLink.Client.Extensibility {
             control.FireValueChanged(control.txt.Text);
         }
 
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(PickListControl), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnIsReadOnlyChanged));
+
+        public bool IsReadOnly {
+            get { return (bool)GetValue(IsReadOnlyProperty); }
+            set { SetValue(IsReadOnlyProperty, value); }
+        }
+
+        private static void OnIsReadOnlyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+
+            var control = obj as PickListControl;
+            if (control != null) {
+                bool val = (bool)args.NewValue;
+                control.txt.IsReadOnly = val;
+                control.btn.IsEnabled = !val;
+            }
+
+        }
+
+
         protected void FireValueChanged(string text) {
             if (this.ValueChanged != null) {
                 ValueChanged(this, text);

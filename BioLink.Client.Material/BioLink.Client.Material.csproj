@@ -80,10 +80,16 @@
     <Compile Include="RapidDataEntry.xaml.cs">
       <DependentUpon>RapidDataEntry.xaml</DependentUpon>
     </Compile>
+    <Compile Include="RDEMaterialViewModel.cs" />
+    <Compile Include="RDESiteViewModel.cs" />
+    <Compile Include="RDESiteVisitViewModel.cs" />
     <Compile Include="SiteCompare.xaml.cs">
       <DependentUpon>SiteCompare.xaml</DependentUpon>
     </Compile>
     <Compile Include="SiteFavoriteViewModel.cs" />
+    <Compile Include="SiteRDEControl.xaml.cs">
+      <DependentUpon>SiteRDEControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TypeDataConverter.cs" />
     <Compile Include="MaterialPartsControl.xaml.cs">
       <DependentUpon>MaterialPartsControl.xaml</DependentUpon>
@@ -193,6 +199,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="SiteDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SiteRDEControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="40" d:DesignWidth="232">
+             d:DesignHeight="45" d:DesignWidth="232">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -17,7 +17,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="18"></RowDefinition>
             <RowDefinition Height="2"></RowDefinition>
-            <RowDefinition></RowDefinition>            
+            <RowDefinition Height="23"></RowDefinition>            
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition ></ColumnDefinition>
