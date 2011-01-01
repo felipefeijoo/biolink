@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using BioLink.Data;
 using System.Windows.Controls;
+using System.Collections.ObjectModel;
 
 namespace BioLink.Client.Extensibility {
 
@@ -23,7 +24,7 @@ namespace BioLink.Client.Extensibility {
 
         bool HasPendingChanges { get; }
 
-        List<DatabaseAction> PendingChanges { get; }
+        ObservableCollection<DatabaseAction> PendingChanges { get; }
     }
 
     public interface IChangeContainerObserver {

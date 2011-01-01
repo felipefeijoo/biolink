@@ -6,9 +6,7 @@ namespace BioLink.Client.Extensibility {
 
     public class UpdateMultimediaAction : GenericDatabaseAction<MultimediaViewModel> {
 
-        public UpdateMultimediaAction(MultimediaViewModel model)
-            : base(model) {
-        }
+        public UpdateMultimediaAction(MultimediaViewModel model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);
@@ -18,9 +16,7 @@ namespace BioLink.Client.Extensibility {
 
     public class DeleteMultimediaLinkAction : GenericDatabaseAction<MultimediaLink> {
 
-        public DeleteMultimediaLinkAction(MultimediaLink model)
-            : base(model) {
-        }
+        public DeleteMultimediaLinkAction(MultimediaLink model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);
@@ -31,8 +27,7 @@ namespace BioLink.Client.Extensibility {
 
     public class InsertMultimediaAction : GenericDatabaseAction<MultimediaLink> {
 
-        public InsertMultimediaAction(MultimediaLink model, string filename)
-            : base(model) {
+        public InsertMultimediaAction(MultimediaLink model, string filename) : base(model) {
             this.Filename = filename;
         }
 
@@ -43,29 +38,26 @@ namespace BioLink.Client.Extensibility {
             Model.MultimediaID = newId;
         }
 
-        public string Filename { get; private set; }
-
+        public string Filename { get; private set; }        
     }
 
     public class InsertMultimediaLinkAction : GenericDatabaseAction<MultimediaLink> {
 
-        public InsertMultimediaLinkAction(MultimediaLink model, TraitCategoryType category, int intraCatId)
-            : base(model) {
+        public InsertMultimediaLinkAction(MultimediaLink model, TraitCategoryType category, ViewModelBase owner) : base(model) {
             this.Category = category;
-            this.IntraCategoryID = intraCatId;
+            this.Owner = owner;
         }
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);
             BioLink.Client.Utilities.Debug.Assert(Model.MultimediaID >= 0, "Not a valid multimedia ID!");
-
-            var newId = service.InsertMultimediaLink(Category.ToString(), IntraCategoryID, Model.MultimediaType, Model.MultimediaID, Model.Caption);
+            var newId = service.InsertMultimediaLink(Category.ToString(), Owner.ObjectID.Value, Model.MultimediaType, Model.MultimediaID, Model.Caption);
             Model.MultimediaLinkID = newId;
         }
 
         public TraitCategoryType Category { get; private set; }
 
-        public int IntraCategoryID { get; private set; }
+        public ViewModelBase Owner{ get; private set; }
     }
 
     public class UpdateMultimediaLinkAction : GenericDatabaseAction<MultimediaLink> {

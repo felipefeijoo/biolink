@@ -30,7 +30,7 @@ namespace BioLink.Client.Extensibility {
         public MultimediaDetails(Multimedia multimedia, User user) : base(user, "Multimedia::" + multimedia.MultimediaID) {
             InitializeComponent();
             this.Multimedia = new MultimediaViewModel(multimedia);
-            AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Multimedia, multimedia.MultimediaID));
+            AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Multimedia, Multimedia));
             AddTabItem("Ownership", new OwnershipDetails(multimedia));
             txtArtist.BindUser(user, "tblMultimedia", "vchrArtist");
             txtOwner.BindUser(user, "tblMultimedia", "vchrOwner");

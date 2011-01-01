@@ -59,9 +59,9 @@ namespace BioLink.Client.Material {
             _viewModel = new SiteViewModel(model);
             this.DataContext = _viewModel;
 
-            tabSite.AddTabItem("Traits", new TraitControl(user, TraitCategoryType.Site, siteID));
-            tabSite.AddTabItem("Notes", new NotesControl(user, TraitCategoryType.Site, siteID));
-            tabSite.AddTabItem("Multimedia", new MultimediaControl(user, TraitCategoryType.Site, siteID));
+            tabSite.AddTabItem("Traits", new TraitControl(user, TraitCategoryType.Site, _viewModel));
+            tabSite.AddTabItem("Notes", new NotesControl(user, TraitCategoryType.Site, _viewModel));
+            tabSite.AddTabItem("Multimedia", new MultimediaControl(user, TraitCategoryType.Site, _viewModel));
             tabSite.AddTabItem("Ownership", new OwnershipDetails(_viewModel.Model));
 
             txtPosSource.BindUser(User, PickListType.Phrase, "Source", TraitCategoryType.Site);

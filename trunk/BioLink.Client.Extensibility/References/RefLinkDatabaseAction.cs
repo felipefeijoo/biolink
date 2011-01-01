@@ -48,19 +48,13 @@ namespace BioLink.Client.Extensibility {
 
     }
 
-    public class DeleteRefLinkAction : DatabaseAction {
+    public class DeleteRefLinkAction : GenericDatabaseAction<RefLink> {
 
-        public DeleteRefLinkAction(RefLink model) {
-            this.RefLinkID = model.RefLinkID;
-        }
-
-        public DeleteRefLinkAction(int refLinkID) {
-            this.RefLinkID = refLinkID;
-        }
+        public DeleteRefLinkAction(RefLink model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);
-            service.DeleteRefLink(RefLinkID);
+            service.DeleteRefLink(Model.RefLinkID);
         }
 
         public int RefLinkID { get; private set; }

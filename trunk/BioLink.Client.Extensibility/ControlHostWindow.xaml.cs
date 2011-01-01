@@ -146,6 +146,15 @@ namespace BioLink.Client.Extensibility {
 
         #endregion
 
+        private void btnDebug_Click(object sender, RoutedEventArgs e) {
+            if (btnDebug.IsChecked.ValueOrFalse()) {
+                lstPendingChanges.ItemsSource = PendingChanges;
+                grid.RowDefinitions[2].Height = new GridLength(200);
+            } else {
+                grid.RowDefinitions[2].Height = new GridLength(0);
+            }
+        }
+
     }
 
 }

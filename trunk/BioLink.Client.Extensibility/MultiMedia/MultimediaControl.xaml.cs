@@ -38,11 +38,10 @@ namespace BioLink.Client.Extensibility {
         }
         #endregion
 
-        public MultimediaControl(User user, TraitCategoryType category, int? intraCatId)
-            : base(user, "Multimedia:" + category.ToString() + ":" + intraCatId.Value) {
+        public MultimediaControl(User user, TraitCategoryType category, ViewModelBase owner) : base(user, "Multimedia:" + category.ToString() + ":" + owner.ObjectID.Value) {
 
             this.CategoryType = category;
-            this.IntraCategoryID = intraCatId.Value;
+            this.Owner = owner;
             InitializeComponent();
 
             txtMultimediaType.BindUser(user, PickListType.MultimediaType, null, TraitCategoryType.Multimedia);
@@ -69,7 +68,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         public void Populate() {
-            List<MultimediaLink> data = Service.GetMultimediaItems(CategoryType.ToString(), IntraCategoryID);
+            List<MultimediaLink> data = Service.GetMultimediaItems(CategoryType.ToString(), Owner.ObjectID.Value);
             JobExecutor.QueueJob(() => {                
                 _model = new ObservableCollection<MultimediaLinkViewModel>(data.ConvertAll((item) => {
                     MultimediaLinkViewModel viewmodel = null;
@@ -298,7 +297,7 @@ namespace BioLink.Client.Extensibility {
                                 _tempFileManager.CopyToTempFile(viewModel.MultimediaID, filename);
                                 _model.Add(viewModel);
                                 RegisterPendingChange(new InsertMultimediaAction(model, _tempFileManager.GetContentFileName(viewModel.MultimediaID, finfo.Extension.Substring(1))));
-                                RegisterPendingChange(new InsertMultimediaLinkAction(model, CategoryType, IntraCategoryID));
+                                RegisterPendingChange(new InsertMultimediaLinkAction(model, CategoryType, Owner));
                                 break;
                             case MultimediaDuplicateAction.UseExisting:
                                 // Link to existing multimedia
@@ -310,7 +309,7 @@ namespace BioLink.Client.Extensibility {
                                 viewModel = new MultimediaLinkViewModel(model);
                                 GenerateThumbnail(viewModel, THUMB_SIZE);
                                 _model.Add(viewModel);
-                                RegisterPendingChange(new InsertMultimediaLinkAction(model, CategoryType, IntraCategoryID));
+                                RegisterPendingChange(new InsertMultimediaLinkAction(model, CategoryType, Owner));
                                 break;
                             case MultimediaDuplicateAction.ReplaceExisting:
                                 // register an update for the multimedia,
@@ -326,7 +325,7 @@ namespace BioLink.Client.Extensibility {
                                 _model.Add(viewModel);
                                 _tempFileManager.CopyToTempFile(viewModel.MultimediaID, filename);
                                 RegisterPendingChange(new UpdateMultimediaBytesAction(model, filename));
-                                RegisterPendingChange(new InsertMultimediaLinkAction(model, CategoryType, IntraCategoryID));
+                                RegisterPendingChange(new InsertMultimediaLinkAction(model, CategoryType, Owner));
                                 break;
                         }
 
@@ -410,7 +409,7 @@ namespace BioLink.Client.Extensibility {
 
         public TraitCategoryType CategoryType { get; private set; }
 
-        public int IntraCategoryID { get; private set; }
+        public ViewModelBase Owner { get; private set; }
 
         protected SupportService Service {
             get { return new SupportService(User); }

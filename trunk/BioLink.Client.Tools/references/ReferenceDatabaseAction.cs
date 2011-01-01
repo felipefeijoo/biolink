@@ -43,6 +43,20 @@ namespace BioLink.Client.Tools {
             service.DeleteReference(RefID);
         }
 
+        public override bool Equals(object obj) {
+            if (obj is DeleteReferenceAction) {
+                var other = obj as DeleteReferenceAction;
+                if (other.RefID == this.RefID) {
+                    return true;
+                }
+            }
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode() {
+            return base.GetHashCode();
+        }
+
         public int RefID { get; private set; }
     }
 }

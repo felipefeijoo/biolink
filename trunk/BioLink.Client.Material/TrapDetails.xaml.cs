@@ -42,8 +42,8 @@ namespace BioLink.Client.Material {
 
             txtTrapType.BindUser(User, PickListType.Phrase, "Trap Type", TraitCategoryType.Trap);
 
-            tabTrap.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Trap, model.TrapID));
-            tabTrap.AddTabItem("Notes", new NotesControl(User, TraitCategoryType.Trap, model.TrapID));
+            tabTrap.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Trap, viewModel));
+            tabTrap.AddTabItem("Notes", new NotesControl(User, TraitCategoryType.Trap, viewModel));
             tabTrap.AddTabItem("Ownership", new OwnershipDetails(model));
 
         }

@@ -18,6 +18,10 @@ namespace BioLink.Client.Extensibility {
             Model.AssociateID = service.InsertAssociate(Model);
         }
 
+        public override string ToString() {
+            return string.Format("Insert Associate: Name={0}", Model.AssocName);
+        }
+
     }
 
     public class UpdateAssociateAction : GenericDatabaseAction<Associate> {
@@ -29,6 +33,11 @@ namespace BioLink.Client.Extensibility {
             var service = new SupportService(user);
             service.UpdateAssociate(Model);
         }
+
+        public override string ToString() {
+            return string.Format("Update Associate: Name={0}", Model.AssocName);
+        }
+
     }
 
     public class DeleteAssociateAction : GenericDatabaseAction<Associate> {

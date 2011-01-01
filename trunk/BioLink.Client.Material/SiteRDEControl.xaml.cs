@@ -28,7 +28,7 @@ namespace BioLink.Client.Material {
             txtSource.BindUser(user, PickListType.Phrase, "Source", TraitCategoryType.Material);
             txtElevSource.BindUser(user, PickListType.Phrase, "Source", TraitCategoryType.Material);
             txtUnits.BindUser(user, PickListType.Phrase, "Units", TraitCategoryType.Material);
-            var traits = new TraitControl(user, TraitCategoryType.Material, 0);
+            // var traits = new TraitControl(user, TraitCategoryType.Material, 0);
         }
 
     }

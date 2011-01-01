@@ -20,7 +20,7 @@ namespace BioLink.Client.Extensibility {
     /// <summary>
     /// Interaction logic for TraitControl.xaml
     /// </summary>
-    public partial class TraitControl : DatabaseActionControl {
+    public partial class TraitControl : DatabaseActionControl, ILazyPopulateControl {
 
         private List<TraitViewModel> _model;
 
@@ -30,23 +30,13 @@ namespace BioLink.Client.Extensibility {
         }
         #endregion
 
-        public TraitControl(User user, TraitCategoryType category, int? intraCatId) :base(user, "Traits:" + category.ToString() + ":" + intraCatId.Value) {
+        public TraitControl(User user, TraitCategoryType category, ViewModelBase owner) : base(user, "Traits:" + category.ToString() + ":" + owner.ObjectID.Value) {
             
             this.TraitCategory = category;
-            this.IntraCatID = intraCatId.Value;
+            this.Owner = owner;
 
             InitializeComponent();
 
-            if (intraCatId.HasValue) {
-                SupportService service = new SupportService(user);
-                var list = service.GetTraits(category.ToString(), intraCatId.Value);
-                var modellist = list.Select((t) => {
-                    return new TraitViewModel(t);
-                });
-                _model = new List<TraitViewModel>(modellist);
-            }
-
-            ReloadTraitPanel();            
         }
 
         private void ReloadTraitPanel() {
@@ -69,13 +59,13 @@ namespace BioLink.Client.Extensibility {
         private void AddTraitEditor(TraitViewModel model) {
             var itemControl = new TraitElementControl(User, model);
             itemControl.TraitChanged += new TraitElementControl.TraitEventHandler((source, trait) => {
-                RegisterUniquePendingChange(new UpdateTraitDatabaseAction(trait.Model));
+                RegisterUniquePendingChange(new UpdateTraitDatabaseAction(trait.Model, Owner));
             });
 
             itemControl.TraitDeleted += new TraitElementControl.TraitEventHandler((source, trait) => {
                 _model.Remove(trait);
                 ReloadTraitPanel();
-                RegisterPendingChange(new DeleteTraitDatabaseAction(trait.Model));                
+                RegisterPendingChange(new DeleteTraitDatabaseAction(trait.Model, Owner));                
             });
             traitsPanel.Children.Add(itemControl);
         }
@@ -103,24 +93,47 @@ namespace BioLink.Client.Extensibility {
                 t.TraitID = -1;
                 t.Value = "<New Trait Value>";
                 t.Category = TraitCategory.ToString();
-                t.IntraCatID = IntraCatID;
+                t.IntraCatID = Owner.ObjectID.Value;
                 t.Name = picklist.SelectedValue as string;
 
                 TraitViewModel viewModel = new TraitViewModel(t);
                 _model.Add(viewModel);
-                RegisterUniquePendingChange(new UpdateTraitDatabaseAction(t));
+                RegisterUniquePendingChange(new UpdateTraitDatabaseAction(t, Owner));
                 ReloadTraitPanel();
             }
 
         }
 
+        public void Populate() {
+            if (!IsPopulated) {
+                if (Owner.ObjectID.HasValue && Owner.ObjectID.Value >= 0) {
+                    SupportService service = new SupportService(User);
+                    var list = service.GetTraits(TraitCategory.ToString(), Owner.ObjectID.Value);
+                    var modellist = list.Select((t) => {
+                        return new TraitViewModel(t);
+                    });
+                    _model = new List<TraitViewModel>(modellist);
+                } else {
+                    _model = new List<TraitViewModel>();
+                }
+                ReloadTraitPanel();
+                IsPopulated = true;
+            }
+        }
+
+
         #region Properties
 
         public TraitCategoryType TraitCategory { get; private set; }
 
-        public int IntraCatID { get; private set; }
+        public ViewModelBase Owner { get; private set; }
+
+        public bool IsPopulated { get; private set; }
 
         #endregion
+
+        
+
     }
 
 }

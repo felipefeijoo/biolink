@@ -72,9 +72,9 @@ namespace BioLink.Client.Material {
             tabMaterial.AddTabItem("Associates", new OneToManyControl(new AssociatesControl(User, TraitCategoryType.Material, materialID)));
             tabMaterial.AddTabItem("Events", new CurationEventsControl(User, materialID, partsControl));
             tabMaterial.AddTabItem("Labels", new MaterialLabelsControl(_viewModel));
-            tabMaterial.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Material, materialID));
-            tabMaterial.AddTabItem("Notes", new NotesControl(User, TraitCategoryType.Material, materialID));
-            tabMaterial.AddTabItem("Multimedia", new MultimediaControl(User, TraitCategoryType.Material, materialID));
+            tabMaterial.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Material, _viewModel));
+            tabMaterial.AddTabItem("Notes", new NotesControl(User, TraitCategoryType.Material, _viewModel));
+            tabMaterial.AddTabItem("Multimedia", new MultimediaControl(User, TraitCategoryType.Material, _viewModel));
             tabMaterial.AddTabItem("Ownership", new OwnershipDetails(model));
             if (!model.IsTemplate) {
                 tabMaterial.AddTabItem("Summary", new MaterialSummary(User, _viewModel));
