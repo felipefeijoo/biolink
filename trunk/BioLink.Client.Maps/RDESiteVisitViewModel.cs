@@ -8,7 +8,7 @@ using BioLink.Data.Model;
 namespace BioLink.Client.Maps {
     public class RDESiteVisitViewModel : GenericViewModelBase<RDESiteVisit> {
 
-        public RDESiteVisitViewModel(RDESiteVisit model) : base(model) {}
+        public RDESiteVisitViewModel(RDESiteVisit model) : base(model, ()=>model.SiteVisitID) {}
 
         public int SiteVisitID {
             get { return Model.SiteVisitID; }

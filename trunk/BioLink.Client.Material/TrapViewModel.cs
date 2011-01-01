@@ -10,9 +10,7 @@ namespace BioLink.Client.Material {
 
     public class TrapViewModel : GenericViewModelBase<Trap> {
 
-        public TrapViewModel(Trap model)
-            : base(model) {
-        }
+        public TrapViewModel(Trap model) : base(model, ()=>model.TrapID) { }
 
         public int TrapID {
             get { return Model.TrapID; }

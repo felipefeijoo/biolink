@@ -10,9 +10,7 @@ namespace BioLink.Client.Material {
 
     public class MaterialViewModel : GenericViewModelBase<BioLink.Data.Model.Material> {
 
-        public MaterialViewModel(BioLink.Data.Model.Material model)
-            : base(model) {
-        }
+        public MaterialViewModel(BioLink.Data.Model.Material model) : base(model, ()=>model.MaterialID) { }
 
         public int MaterialID {
             get { return Model.MaterialID; }

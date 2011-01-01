@@ -8,8 +8,7 @@ namespace BioLink.Client.Extensibility {
 
     public class AssociateViewModel : GenericViewModelBase<Associate> {
 
-        public AssociateViewModel(Associate model)
-            : base(model) {
+        public AssociateViewModel(Associate model) : base(model, ()=>model.AssociateID) {
             DataChanged += new DataChangedHandler(AssociateViewModel_DataChanged);
         }
 

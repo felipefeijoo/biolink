@@ -10,9 +10,7 @@ namespace BioLink.Client.Extensibility {
 
     public class TraitViewModel : GenericViewModelBase<Trait> {
 
-        public TraitViewModel(Trait t)
-            : base(t) {
-        }
+        public TraitViewModel(Trait t)  : base(t, ()=>t.TraitID) { }
 
         public override string DisplayLabel {
             get { return Name; }

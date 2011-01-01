@@ -9,9 +9,7 @@ namespace BioLink.Client.Material {
 
     public class SiteVisitViewModel : GenericViewModelBase<SiteVisit> {
 
-        public SiteVisitViewModel(SiteVisit model)
-            : base(model) {
-        }
+        public SiteVisitViewModel(SiteVisit model) : base(model, ()=>model.SiteVisitID) { }
 
         public int SiteVisitID {
             get { return Model.SiteVisitID; }

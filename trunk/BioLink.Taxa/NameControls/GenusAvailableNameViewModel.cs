@@ -9,9 +9,7 @@ namespace BioLink.Client.Taxa {
 
     public class GenusAvailableNameViewModel : GenericViewModelBase<GenusAvailableName> {
 
-        public GenusAvailableNameViewModel(GenusAvailableName model)
-            : base(model) {
-        }
+        public GenusAvailableNameViewModel(GenusAvailableName model) : base(model, null) { }
 
         public int BiotaID {
             get { return Model.BiotaID; }
@@ -66,9 +64,7 @@ namespace BioLink.Client.Taxa {
     }
 
     public class GANIncludedSpeciesViewModel : GenericViewModelBase<GANIncludedSpecies> {
-        public GANIncludedSpeciesViewModel(GANIncludedSpecies model)
-            : base(model) {
-        }
+        public GANIncludedSpeciesViewModel(GANIncludedSpecies model) : base(model, ()=>model.GANISID) { }
 
         public int GANISID {
             get { return Model.GANISID; }

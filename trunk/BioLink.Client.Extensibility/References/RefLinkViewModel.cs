@@ -9,9 +9,7 @@ namespace BioLink.Client.Extensibility {
 
     public class RefLinkViewModel : GenericViewModelBase<RefLink> {
 
-        public RefLinkViewModel(RefLink model)
-            : base(model) {
-        }
+        public RefLinkViewModel(RefLink model) : base(model, ()=>model.RefLinkID) { }
 
         public override string DisplayLabel {
             get { return string.Format("RefLink: {0}->{1}", IntraCatID, RefID); }

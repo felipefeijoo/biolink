@@ -9,9 +9,7 @@ namespace BioLink.Client.Taxa {
 
     public class CommonNameViewModel : GenericViewModelBase<CommonName> {
 
-        public CommonNameViewModel(CommonName model)
-            : base(model) {
-        }
+        public CommonNameViewModel(CommonName model) : base(model, ()=>model.CommonNameID) { }
 
         public override string DisplayLabel {
             get {

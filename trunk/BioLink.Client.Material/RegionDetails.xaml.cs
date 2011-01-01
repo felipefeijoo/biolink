@@ -77,9 +77,7 @@ namespace BioLink.Client.Material {
 
     public class RegionViewModel : GenericViewModelBase<Region> {
 
-        public RegionViewModel(Region model)
-            : base(model) {
-        }
+        public RegionViewModel(Region model) : base(model, ()=>model.PoliticalRegionID) { }
 
         public int PoliticalRegionID { 
             get { return Model.PoliticalRegionID; }

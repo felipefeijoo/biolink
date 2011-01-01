@@ -6,13 +6,14 @@ using BioLink.Client.Extensibility;
 using BioLink.Data.Model;
 using System.Windows;
 using System.Windows.Media;
+using System.Linq.Expressions;
 
 namespace BioLink.Client.Material {
 
     public abstract class RDEViewModel<T> : GenericViewModelBase<T> where T: RDEObject {
 
-        public RDEViewModel(T model)
-            : base(model) {
+        public RDEViewModel(T model, Expression<Func<int>> objectIDExpr)
+            : base(model, objectIDExpr) {
         }
 
         public int? TemplateID {
@@ -36,8 +37,6 @@ namespace BioLink.Client.Material {
             set { Model.Changes = value; }
         }
 
-        public abstract int ObjectID { get; }
-
         public Brush HeaderForeground {
             get {
                 if (!Locked) {
@@ -55,15 +54,11 @@ namespace BioLink.Client.Material {
 
     public class RDESiteViewModel : RDEViewModel<RDESite> {
 
-        public RDESiteViewModel(RDESite model) : base(model) { }
+        public RDESiteViewModel(RDESite model) : base(model, ()=>model.SiteID) { }
 
         public int SiteID {
             get { return Model.SiteID; }
             set { SetProperty(() => Model.SiteID, value); }
-        }
-
-        public override int ObjectID {
-            get { return SiteID; }
         }
 
         public int ParentID {

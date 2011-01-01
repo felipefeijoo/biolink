@@ -15,9 +15,7 @@ namespace BioLink.Client.Tools {
     /// </summary>
     public class ReferenceViewModel : GenericViewModelBase<Reference> {
 
-        public ReferenceViewModel(Reference model)
-            : base(model) {            
-        }
+        public ReferenceViewModel(Reference model) : base(model, ()=>model.RefID) { }
 
         protected override string RelativeImagePath {
             get {

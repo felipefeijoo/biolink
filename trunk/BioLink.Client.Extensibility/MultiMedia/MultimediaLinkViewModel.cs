@@ -10,9 +10,7 @@ namespace BioLink.Client.Extensibility {
 
     public class MultimediaLinkViewModel : GenericViewModelBase<MultimediaLink> {
 
-        public MultimediaLinkViewModel(MultimediaLink model)
-            : base(model) {
-        }
+        public MultimediaLinkViewModel(MultimediaLink model) : base(model, ()=>model.MultimediaLinkID) { }
 
         public int MultimediaID {
             get { return Model.MultimediaID; }
