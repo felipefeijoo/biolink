@@ -9,7 +9,7 @@ namespace BioLink.Client.Maps {
 
     public class RDEMaterialViewModel : GenericViewModelBase<RDEMaterial> {
 
-        public RDEMaterialViewModel(RDEMaterial model) : base(model) { }
+        public RDEMaterialViewModel(RDEMaterial model) : base(model, ()=>model.MaterialID) { }
 
         public int SiteVisitID {
             get { return Model.SiteVisitID; }

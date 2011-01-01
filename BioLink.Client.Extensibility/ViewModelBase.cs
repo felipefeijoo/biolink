@@ -103,7 +103,7 @@ namespace BioLink.Client.Extensibility {
         private bool _renaming;
         private BitmapSource _icon;
 
-        public ViewModelBase() {
+        public ViewModelBase() {            
             DataChanged += new DataChangedHandler(ViewModelBase_DataChanged);
         }
 
@@ -159,8 +159,11 @@ namespace BioLink.Client.Extensibility {
 
     public abstract class GenericViewModelBase<T> : ViewModelBase {
 
-        protected GenericViewModelBase(T model) {
+        private Expression<Func<int>> _objectIDExpr = null;
+
+        protected GenericViewModelBase(T model, Expression<Func<int>> objectIDExpr) {
             this.Model = model;
+            _objectIDExpr = objectIDExpr;
         }
 
         protected void SetProperty<K>(Expression<Func<K>> wrappedPropertyExpr, K value, Action doIfChanged = null, bool changeAgnostic = false) {
@@ -168,13 +171,23 @@ namespace BioLink.Client.Extensibility {
         }
         
         public T Model { get; private set; }
+
+        public int ObjectID {
+            get {
+                if (_objectIDExpr == null) {
+                    throw new NotImplementedException("Make sure you set the Object ID expression!");
+                } else {
+                    var destProp = (PropertyInfo)((MemberExpression)_objectIDExpr.Body).Member;                    
+                    return (int)destProp.GetValue(Model, null);
+                }
+            }
+        }
+
     }
 
     public abstract class GenericOwnedViewModel<T> : GenericViewModelBase<T> where T : OwnedDataObject {
 
-        public GenericOwnedViewModel(T model)
-            : base(model) {
-        }
+        public GenericOwnedViewModel(T model, Expression<Func<int>> objectIDExpr) : base(model, objectIDExpr) { }
 
         public DateTime DateCreated {
             get { return Model.DateCreated; }

@@ -5,9 +5,7 @@ namespace BioLink.Client.Maps {
 
     public class LayerViewModel : GenericViewModelBase<ILayer> {
 
-        public LayerViewModel(ILayer layer)
-            : base(layer) {
-        }
+        public LayerViewModel(ILayer layer) : base(layer, null) { }
 
         public string LayerName {
             get { return Model.LayerName; }

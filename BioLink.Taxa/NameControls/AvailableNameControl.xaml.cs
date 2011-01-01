@@ -74,9 +74,7 @@ namespace BioLink.Client.Taxa {
 
     public class AvailableNameViewModel : GenericViewModelBase<AvailableName> {
 
-        public AvailableNameViewModel(AvailableName model)
-            : base(model) {
-        }
+        public AvailableNameViewModel(AvailableName model) : base(model, null) { }
 
         public int BiotaID {
             get { return Model.BiotaID; }

@@ -11,9 +11,7 @@ namespace BioLink.Client.Material {
 
     public class CurationEventViewModel : GenericViewModelBase<CurationEvent> {
 
-        public CurationEventViewModel(CurationEvent model)
-            : base(model) {               
-        }
+        public CurationEventViewModel(CurationEvent model) : base(model, ()=>model.CurationEventID) { }
 
         public override string DisplayLabel {
             get {

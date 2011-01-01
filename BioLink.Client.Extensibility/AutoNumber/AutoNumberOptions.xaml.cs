@@ -103,9 +103,7 @@ namespace BioLink.Client.Extensibility {
 
     public class AutoNumberViewModel : GenericViewModelBase<AutoNumber> {
 
-        public AutoNumberViewModel(AutoNumber model)
-            : base(model) {
-        }
+        public AutoNumberViewModel(AutoNumber model) : base(model, null) { }
 
         public override string DisplayLabel {
             get {

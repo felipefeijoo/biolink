@@ -9,9 +9,7 @@ namespace BioLink.Client.Tools {
 
     public class TaxonRefLinkViewModel : GenericViewModelBase<TaxonRefLink> {
 
-        public TaxonRefLinkViewModel(TaxonRefLink model)
-            : base(model) {
-        }
+        public TaxonRefLinkViewModel(TaxonRefLink model) : base(model, ()=>model.RefLinkID) { }
 
         public override string DisplayLabel {
             get {

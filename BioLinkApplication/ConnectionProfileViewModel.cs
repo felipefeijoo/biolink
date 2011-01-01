@@ -9,9 +9,7 @@ namespace BioLinkApplication {
 
     public class ConnectionProfileViewModel : GenericViewModelBase<ConnectionProfile> {
 
-        public ConnectionProfileViewModel(ConnectionProfile model)
-            : base(model) {
-        }
+        public ConnectionProfileViewModel(ConnectionProfile model) : base(model, null) { }
 
         public String Name {
             get { return Model.Name; }

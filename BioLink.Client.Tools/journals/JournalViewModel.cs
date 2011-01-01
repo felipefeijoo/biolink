@@ -9,9 +9,8 @@ namespace BioLink.Client.Tools {
 
     public class JournalViewModel : GenericViewModelBase<Journal> {
 
-        public JournalViewModel(Journal model)
-            : base(model) {
-                DataChanged += new DataChangedHandler(JournalViewModel_DataChanged);
+        public JournalViewModel(Journal model) : base(model, ()=>model.JournalID) {
+            DataChanged += new DataChangedHandler(JournalViewModel_DataChanged);
         }
 
         void JournalViewModel_DataChanged(ChangeableModelBase viewmodel) {

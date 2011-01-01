@@ -10,9 +10,7 @@ using BioLink.Data;
 namespace BioLink.Client.Material {
     public class MaterialPartViewModel : GenericViewModelBase<MaterialPart> {
 
-        public MaterialPartViewModel(MaterialPart model)
-            : base(model) {
-        }
+        public MaterialPartViewModel(MaterialPart model) : base(model, ()=>model.MaterialPartID) { }
 
         public override string DisplayLabel {
             get {

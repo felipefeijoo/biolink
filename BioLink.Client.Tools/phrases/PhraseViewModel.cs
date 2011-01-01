@@ -9,9 +9,8 @@ using System.Windows.Media.Imaging;
 namespace BioLink.Client.Tools {
 
     public class PhraseCategoryViewModel : GenericViewModelBase<PhraseCategory> {
-        public PhraseCategoryViewModel(PhraseCategory category)
-            : base(category) {
-        }
+
+        public PhraseCategoryViewModel(PhraseCategory category) : base(category, ()=>category.CategoryID) { }
 
         public int CategoryID {
             get { return Model.CategoryID; }
@@ -36,9 +35,7 @@ namespace BioLink.Client.Tools {
 
     public class PhraseViewModel : GenericViewModelBase<Phrase> {
 
-        public PhraseViewModel(Phrase phrase)
-            : base(phrase) {
-        }
+        public PhraseViewModel(Phrase phrase) : base(phrase, ()=>phrase.PhraseID) { }
 
         public string PhraseText {
             get { return Model.PhraseText; }

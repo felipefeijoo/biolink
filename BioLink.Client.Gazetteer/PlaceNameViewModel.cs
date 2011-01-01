@@ -9,9 +9,7 @@ namespace BioLink.Client.Gazetteer {
 
     public class PlaceNameViewModel : GenericViewModelBase<PlaceName> {
 
-        public PlaceNameViewModel(PlaceName model)
-            : base(model) {
-        }
+        public PlaceNameViewModel(PlaceName model) : base(model, null) { }
 
         public override string DisplayLabel {
             get {

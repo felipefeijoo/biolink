@@ -9,7 +9,7 @@ namespace BioLink.Client.Material {
 
     public class RDEMaterialViewModel : RDEViewModel<RDEMaterial> {
 
-        public RDEMaterialViewModel(RDEMaterial model) : base(model) { }
+        public RDEMaterialViewModel(RDEMaterial model) : base(model, ()=>model.MaterialID) { }
 
         public int SiteVisitID {
             get { return Model.SiteVisitID; }
@@ -98,9 +98,5 @@ namespace BioLink.Client.Material {
 
         public RDESiteVisitViewModel SiteVisit { get; set; }
 
-
-        public override int ObjectID {
-            get { return MaterialID; }
-        }
     }
 }

@@ -130,9 +130,7 @@ namespace BioLink.Client.Material {
 
     public class MaterialIdentificationViewModel : GenericViewModelBase<MaterialIdentification> {
 
-        public MaterialIdentificationViewModel(MaterialIdentification model)
-            : base(model) {
-        }
+        public MaterialIdentificationViewModel(MaterialIdentification model) : base(model, ()=>model.MaterialIdentID) { }
 
         public override string DisplayLabel {
             get {

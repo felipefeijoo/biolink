@@ -204,9 +204,7 @@ namespace BioLink.Client.Extensibility {
 
     public class NoteViewModel : GenericViewModelBase<Note> {
 
-        public NoteViewModel(Note model)
-            : base(model) {
-        }
+        public NoteViewModel(Note model) : base(model, ()=>model.NoteID) { }
 
         public override string DisplayLabel {
             get { return string.Format("Note: {0} - {1}", NoteID, NoteType); }
