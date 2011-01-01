@@ -72,20 +72,20 @@ namespace BioLink.Client.Tools {
             txtPossess.BindUser(User, PickListType.Phrase, "Reference Possess", TraitCategoryType.Reference);
             txtSource.BindUser(User, PickListType.Phrase, "Reference Source", TraitCategoryType.Reference);
 
-            _traitsTab = tabRef.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Reference, _viewModel.RefID));
-            _notesTab = tabRef.AddTabItem("Notes", new NotesControl(User, TraitCategoryType.Reference, _viewModel.RefID));
-            _mmTab = tabRef.AddTabItem("Multimedia", new MultimediaControl(User, TraitCategoryType.Reference, _viewModel.RefID));
+            _traitsTab = tabRef.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Reference, _viewModel));
+            _notesTab = tabRef.AddTabItem("Notes", new NotesControl(User, TraitCategoryType.Reference, _viewModel));
+            _mmTab = tabRef.AddTabItem("Multimedia", new MultimediaControl(User, TraitCategoryType.Reference, _viewModel));
             _linksTab = tabRef.AddTabItem("Taxon Links", new OneToManyControl(new TaxonRefLinksControl(User, _viewModel.RefID)));
 
             tabRef.AddTabItem("Ownership", new OwnershipDetails(_viewModel.Model));
 
-            if (model.RefID < 0) {
+//            if (model.RefID < 0) {
                 // Can't insert/update any of these things until we have a valid ref id!
-                _traitsTab.IsEnabled = false;
-                _notesTab.IsEnabled = false;
-                _mmTab.IsEnabled = false;
-                _linksTab.IsEnabled = true;
-            }
+                //_traitsTab.IsEnabled = false;
+                //_notesTab.IsEnabled = false;
+                //_mmTab.IsEnabled = false;
+                //_linksTab.IsEnabled = true;
+  //          }
 
             cmbRefType.SelectionChanged += new SelectionChangedEventHandler(cmbRefType_SelectionChanged);
 
@@ -162,6 +162,10 @@ namespace BioLink.Client.Tools {
             //'
             //' If the main string doesn't have the find string at the end, then put it there.
             //'
+            if (pstrMain == null) {
+                return "";
+            }
+
             if (!pstrMain.EndsWith(pstrLookFor)) {
                 return pstrMain + pstrLookFor;
             }
@@ -170,6 +174,10 @@ namespace BioLink.Client.Tools {
         }
 
         private string ProcRefPages(string pstrPages, PagesType pagesType) {
+
+            if (pstrPages == null) {
+                return "";
+            }
 
             String strPages = pstrPages.Trim();
             char nrule = '–';
@@ -266,10 +274,12 @@ namespace BioLink.Client.Tools {
 
             String strTitle = model.Title;
 
-            if (strTitle.EndsWith("}")) {
-                strRTF.Append(" ").Append(AtEnd(strTitle.Substring(0, strTitle.Length - 1), ".")).Append("}");
-            } else {
-                strRTF.Append(" ").Append(AtEnd(strTitle, "."));
+            if (strTitle != null) {
+                if (strTitle.EndsWith("}")) {
+                    strRTF.Append(" ").Append(AtEnd(strTitle.Substring(0, strTitle.Length - 1), ".")).Append("}");
+                } else {
+                    strRTF.Append(" ").Append(AtEnd(strTitle, "."));
+                }
             }
 
             // Perform the type specific markup...

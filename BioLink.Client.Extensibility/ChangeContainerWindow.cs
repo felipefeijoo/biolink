@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows;
 using BioLink.Data;
 using BioLink.Client.Utilities;
+using System.Collections.ObjectModel;
 
 namespace BioLink.Client.Extensibility {
 
@@ -66,7 +67,7 @@ namespace BioLink.Client.Extensibility {
             _impl.CommitPendingChanges(successAction);
         }
 
-        public List<DatabaseAction> PendingChanges {
+        public ObservableCollection<DatabaseAction> PendingChanges {
             get { return _impl.PendingChanges; }
         }
 
@@ -88,7 +89,8 @@ namespace BioLink.Client.Extensibility {
 
     public class ChangeContainerImpl : IChangeContainer {
 
-        private List<DatabaseAction> _pendingChanges = new List<DatabaseAction>();
+        private ObservableCollection<DatabaseAction> _pendingChanges = new ObservableCollection<DatabaseAction>();
+
         private List<IChangeContainerObserver> _observers = new List<IChangeContainerObserver>();
 
         public ChangeContainerImpl(User user) {
@@ -204,7 +206,7 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        public List<DatabaseAction> PendingChanges {
+        public ObservableCollection<DatabaseAction> PendingChanges {
             get { return _pendingChanges; }
         }
 

@@ -38,8 +38,8 @@ namespace BioLink.Client.Material {
 
             viewModel.DataChanged += new DataChangedHandler(viewModel_DataChanged);
 
-            tab.AddTabItem("Traits", new TraitControl(user, TraitCategoryType.SiteVisit, siteVisitId));
-            tab.AddTabItem("Notes", new NotesControl(user, TraitCategoryType.SiteVisit, siteVisitId));
+            tab.AddTabItem("Traits", new TraitControl(user, TraitCategoryType.SiteVisit, viewModel));
+            tab.AddTabItem("Notes", new NotesControl(user, TraitCategoryType.SiteVisit, viewModel));
             tab.AddTabItem("Ownership", new OwnershipDetails(model));
         }
 

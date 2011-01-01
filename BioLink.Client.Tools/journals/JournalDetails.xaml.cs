@@ -47,11 +47,13 @@ namespace BioLink.Client.Tools {
                 model.FullName = "<New Journal>";
             }
 
-            _traits = tabJournal.AddTabItem("Traits", new TraitControl(user, TraitCategoryType.Journal, journalID));
-            _notes = tabJournal.AddTabItem("Notes", new NotesControl(user, TraitCategoryType.Journal, journalID));
+            _viewModel = new JournalViewModel(model);
+
+            _traits = tabJournal.AddTabItem("Traits", new TraitControl(user, TraitCategoryType.Journal, _viewModel));
+            _notes = tabJournal.AddTabItem("Notes", new NotesControl(user, TraitCategoryType.Journal, _viewModel));
             tabJournal.AddTabItem("Ownership", new OwnershipDetails(model));
 
-            _viewModel = new JournalViewModel(model);
+            
             if (_viewModel.JournalID >= 0) {
                 _viewModel.DataChanged += new DataChangedHandler(viewModel_DataChanged);
             } else {

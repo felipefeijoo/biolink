@@ -14,6 +14,7 @@ namespace BioLink.Data {
         }
 
         protected abstract void ProcessImpl(User user);
+        
     }
 
     public abstract class GenericDatabaseAction<T> : DatabaseAction {
@@ -34,6 +35,10 @@ namespace BioLink.Data {
 
         public override int GetHashCode() {
             return base.GetHashCode() + Model.GetHashCode();
+        }
+
+        public override string ToString() {
+            return string.Format("{0}: {1}", this.GetType().Name, Model);
         }
 
     }

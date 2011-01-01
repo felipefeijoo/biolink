@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Controls;
 using BioLink.Data;
 using BioLink.Client.Utilities;
+using System.Collections.ObjectModel;
 
 namespace BioLink.Client.Extensibility {
 
@@ -65,7 +66,7 @@ namespace BioLink.Client.Extensibility {
             _impl.CommitPendingChanges(successAction);
         }
 
-        public List<DatabaseAction> PendingChanges {
+        public ObservableCollection<DatabaseAction> PendingChanges {
             get { return _impl.PendingChanges; }
         }
 

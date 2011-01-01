@@ -42,7 +42,7 @@ namespace BioLink.Client.Material {
 
             txtRegionType.BindUser(User, PickListType.Phrase, "Region Rank", TraitCategoryType.Region);
 
-            tabRegion.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Region, ViewModel.PoliticalRegionID));
+            tabRegion.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Region, ViewModel));
             tabRegion.AddTabItem("Ownership", new OwnershipDetails(_viewModel.Model));
 
         }

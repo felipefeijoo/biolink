@@ -136,11 +136,15 @@ namespace BioLink.Client.Tools {
             if (e.LeftButton == MouseButtonState.Pressed && !_IsDragging) {
                 Point position = e.GetPosition(listView);
                 if (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance) {
-                    if (listView.SelectedItem != null) {
 
-                        ListViewItem item = listView.ItemContainerGenerator.ContainerFromItem(listView.SelectedItem) as ListViewItem;
-                        if (item != null) {
-                            StartDrag(e, listView, item);
+                    var x = listView.InputHitTest(position) as FrameworkElement;
+                    if (x != null && x.DataContext is ReferenceSearchResultViewModel) {
+                        if (listView.SelectedItem != null) {
+
+                            ListViewItem item = listView.ItemContainerGenerator.ContainerFromItem(listView.SelectedItem) as ListViewItem;
+                            if (item != null) {
+                                StartDrag(e, listView, item);
+                            }
                         }
                     }
                 }

@@ -19,6 +19,10 @@ namespace BioLink.Data {
 
         public int FavoriteID { get; set; }
 
+        public override string ToString() {
+            return string.Format("Delete Favorite: ID={0}", FavoriteID);
+        }
+
     }
 
     public class InsertFavoriteGroupAction : GenericDatabaseAction<Favorite> {
@@ -33,18 +37,26 @@ namespace BioLink.Data {
             Model.FavoriteID = favId;
         }
 
+        public override string ToString() {
+            return string.Format("Insert Favorite Group: Name={0}, IsGlobal={1}", Model.GroupName, Model.IsGlobal);
+        }
+
+
     }
 
     public class RenameFavoriteGroupAction : GenericDatabaseAction<Favorite> {
 
-        public RenameFavoriteGroupAction(Favorite model)
-            : base(model) {
-        }
+        public RenameFavoriteGroupAction(Favorite model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);            
             service.RenameFavoriteGroup(Model.FavoriteID, Model.GroupName);            
         }
+
+        public override string ToString() {
+            return string.Format("Rename Favorite Group: ID={0}, GroupName={1}", Model.FavoriteID, Model.GroupName);
+        }
+
     }
 
     public class MoveFavoriteAction : GenericDatabaseAction<Favorite> {
@@ -80,6 +92,11 @@ namespace BioLink.Data {
         }
 
         public Favorite NewParent { get; private set; }
+
+        public override string ToString() {
+            return string.Format("Move Favorite: ID={0}, NewParentID={1}", Model.FavoriteID, NewParent.FavoriteID);
+        }
+
     }
 
     public class InsertTaxonFavoriteAction : GenericDatabaseAction<TaxonFavorite> {
@@ -93,6 +110,11 @@ namespace BioLink.Data {
             var newID = service.InsertFavorite(FavoriteType.Taxa, Model.FavoriteParentID, Model.TaxaID, "", Model.IsGlobal);
             Model.FavoriteID = newID;
         }
+
+        public override string ToString() {
+            return string.Format("Insert Taxon Favorite: TaxaID={0}, IsGlobal={1}", Model.TaxaID, Model.IsGlobal);
+        }
+
     }
 
     public class InsertSiteFavoriteAction : GenericDatabaseAction<SiteFavorite> {
@@ -107,6 +129,11 @@ namespace BioLink.Data {
             Model.FavoriteID = newID;
         }
 
+        public override string ToString() {
+            return string.Format("Insert Site Favorite: SiteID={0}, IsGlobal={1}", Model.ElemID, Model.IsGlobal);
+        }
+
+
     }
 
     public class InsertReferenceFavoriteAction : GenericDatabaseAction<ReferenceFavorite> {
@@ -120,5 +147,10 @@ namespace BioLink.Data {
             var newID = service.InsertFavorite(FavoriteType.Reference, Model.FavoriteParentID, Model.RefID, "", Model.IsGlobal);
             Model.FavoriteID = newID;
         }
+
+        public override string ToString() {
+            return string.Format("Insert Reference Favorite: RefID={0}, IsGlobal={1}", Model.RefID, Model.IsGlobal);
+        }
+
     }
 }

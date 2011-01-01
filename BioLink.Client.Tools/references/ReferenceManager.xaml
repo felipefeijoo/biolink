@@ -17,7 +17,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30" />
                         <RowDefinition Height="*" />
-                        <RowDefinition Height="45" />
+                        <RowDefinition Height="60" />
                     </Grid.RowDefinitions>
                     <ToolBar Grid.Row="0">            
                         <Button Name="btnProperties" Click="btnProperties_Click">
@@ -47,7 +47,7 @@
                         <TextBox Height="23" Margin="228,42,6,0" Name="txtCode" VerticalAlignment="Top" Grid.ColumnSpan="2" />
                         <TextBox Height="23" Margin="86,74,6,0" Name="txtOther" VerticalAlignment="Top" Grid.ColumnSpan="2" />
                         <Button Content="_Search" Height="23" HorizontalAlignment="Right" Margin="0,103,6,0" Name="btnFind" VerticalAlignment="Top" Width="75" Click="btnFind_Click" Grid.Column="1" IsDefault="True" />
-                        <ListView Margin="6,132,6,6" Name="lvwResults" Grid.ColumnSpan="2">
+                        <ListView Margin="6,132,6,6" Name="lvwResults">
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn Width="150" Header="Code" DisplayMemberBinding="{Binding RefCode}" />
@@ -59,7 +59,7 @@
                         </ListView>
                         <Label Height="28" Margin="6,103,87,0" Name="lblStatus" VerticalAlignment="Top" Grid.ColumnSpan="2" />
                     </Grid>
-                    <ext:BindableRichTextBox Grid.Row="2" Margin="6,0,6,12" Name="txtRTF" IsReadOnly="True" RTF="{Binding RefRTF, Mode=OneWay, Converter={StaticResource ReferencePreviewConverter}}" VerticalScrollBarVisibility="Auto" Background="{x:Static SystemColors.ControlBrush}"/>
+                    <ext:BindableRichTextBox Grid.Row="2" Margin="6,0,6,5" Name="txtRTF" IsReadOnly="True" RTF="{Binding RefRTF, Mode=OneWay, Converter={StaticResource ReferencePreviewConverter}}" VerticalScrollBarVisibility="Auto" Background="{x:Static SystemColors.ControlBrush}" Height="54" />
                 </Grid>
             </TabItem>
         </TabControl>

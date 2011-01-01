@@ -31,13 +31,11 @@ namespace BioLink.Client.Extensibility {
         }
         #endregion
 
-        public NotesControl(User user, TraitCategoryType category, int? intraCatId) : base(user, "Notes:" + category.ToString() + ":" + intraCatId.Value) {
-            InitializeComponent();
-            Debug.Assert(intraCatId.HasValue);
+        public NotesControl(User user, TraitCategoryType category, ViewModelBase owner) : base(user, "Notes:" + category.ToString() + ":" + owner.ObjectID.Value) {
+            InitializeComponent();            
             TraitCategory = category;
-            this.IntraCatID = intraCatId.Value;
+            this.Owner = owner;
             btnColor.ColorSelected += new Action<Color>(btnColor_SelectedColorChanged);
-            // LoadNotesPanel();
         }
 
         void btnColor_SelectedColorChanged(Color color) {
@@ -53,7 +51,7 @@ namespace BioLink.Client.Extensibility {
                 notesPanel.Children.Clear();
 
                 var service = new SupportService(User);
-                var list = service.GetNotes(TraitCategory.ToString(), IntraCatID);
+                var list = service.GetNotes(TraitCategory.ToString(), Owner.ObjectID.Value);
                 _model = new ObservableCollection<NoteViewModel>(list.ConvertAll((model) => {
                     var viewModel = new NoteViewModel(model);
                     viewModel.DataChanged += new DataChangedHandler(viewModel_DataChanged);
@@ -91,7 +89,7 @@ namespace BioLink.Client.Extensibility {
 
             _model.Remove(note);
             if (note.NoteID >= 0) {
-                RegisterPendingChange(new DeleteNoteAction(note.Model));
+                RegisterPendingChange(new DeleteNoteAction(note.Model, Owner));
             }
             LoadNotesPanel();
         }
@@ -108,7 +106,7 @@ namespace BioLink.Client.Extensibility {
             var note = viewmodel as NoteViewModel;
             if (note != null) {
                 if (note.NoteID >= 0) {
-                    RegisterUniquePendingChange(new UpdateNoteAction(note.Model));
+                    RegisterUniquePendingChange(new UpdateNoteAction(note.Model, Owner));
                 }
             }
         }
@@ -117,7 +115,7 @@ namespace BioLink.Client.Extensibility {
 
         public TraitCategoryType TraitCategory { get; private set; }
 
-        public int IntraCatID { get; private set; }
+        public ViewModelBase Owner { get; private set; }
 
         private void btnAddNew_Click(object sender, RoutedEventArgs e) {
             AddNewNote();
@@ -141,12 +139,12 @@ namespace BioLink.Client.Extensibility {
                 note.NoteID = -1;
                 note.NoteType = picklist.SelectedValue as String;
                 note.NoteCategory = TraitCategory.ToString();
-                note.IntraCatID = IntraCatID;
+                note.IntraCatID = Owner.ObjectID.Value;
                 note.NoteRTF = "New Note";
 
                 NoteViewModel viewModel = new NoteViewModel(note);
                 _model.Add(viewModel);
-                RegisterUniquePendingChange(new InsertNoteAction(note));
+                RegisterUniquePendingChange(new InsertNoteAction(note, Owner));
                 LoadNotesPanel(viewModel);
             }
         }
