@@ -176,6 +176,9 @@ namespace BioLink.Client.Material {
             return ConvertType(_elevType, type);
         }
 
+        public override int? ObjectID {
+            get { return null; }
+        }
 
     }
 

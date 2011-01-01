@@ -348,6 +348,11 @@ namespace BioLink.Client.Taxa {
             }
         }
 
+        public override int? ObjectID {
+            get { return Taxon.TaxaID; }
+        }
+
+
     }
 
     public delegate string TaxonLabelGenerator(TaxonViewModel taxon);

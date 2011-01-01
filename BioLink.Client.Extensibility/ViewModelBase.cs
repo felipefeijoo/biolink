@@ -155,6 +155,8 @@ namespace BioLink.Client.Extensibility {
             get { return ToString(); }
         }
 
+        public abstract int? ObjectID { get; }
+
     }
 
     public abstract class GenericViewModelBase<T> : ViewModelBase {
@@ -172,10 +174,10 @@ namespace BioLink.Client.Extensibility {
         
         public T Model { get; private set; }
 
-        public int ObjectID {
+        public override int? ObjectID {
             get {
                 if (_objectIDExpr == null) {
-                    throw new NotImplementedException("Make sure you set the Object ID expression!");
+                    return null;                    
                 } else {
                     var destProp = (PropertyInfo)((MemberExpression)_objectIDExpr.Body).Member;                    
                     return (int)destProp.GetValue(Model, null);

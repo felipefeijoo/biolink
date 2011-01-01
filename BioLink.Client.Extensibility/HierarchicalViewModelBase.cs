@@ -146,5 +146,9 @@ namespace BioLink.Client.Extensibility {
             get { return _label; }
         }
 
+        public override int? ObjectID {
+            get { return null; }
+        }
+
     }
 }

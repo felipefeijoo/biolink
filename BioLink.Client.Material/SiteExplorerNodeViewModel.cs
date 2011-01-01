@@ -6,9 +6,7 @@ namespace BioLink.Client.Material {
 
     public class SiteExplorerNodeViewModel : GenericHierarchicalViewModelBase<SiteExplorerNode> {
 
-        public SiteExplorerNodeViewModel(SiteExplorerNode model)
-            : base(model) {           
-        }
+        public SiteExplorerNodeViewModel(SiteExplorerNode model) : base(model, ()=>model.ElemID) { }
 
         public override string DisplayLabel {
             get { return Name; }
