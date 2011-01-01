@@ -210,6 +210,10 @@ namespace BioLink.Client.Maps {
         }
 
         public HatchStyle? HatchStyle { get; set;  }
+
+        public override int? ObjectID {
+            get { return null; }
+        }
     }
 
     internal class VectorLayerViewModel : ViewModelBase {
@@ -259,6 +263,11 @@ namespace BioLink.Client.Maps {
         }
 
         public ILayer Model { get; private set; }
+
+        public override int? ObjectID {
+            get { return null; }
+        }
+
     }
 
     public class HatchStyleConverter : IValueConverter {

@@ -20,6 +20,10 @@ namespace BioLink.Client.Taxa {
             }
         }
 
+        public override int? ObjectID {
+            get { return null; }
+        }
+
     }
 
     public class DistributionViewModel : DistributionPlaceholder {
@@ -69,6 +73,11 @@ namespace BioLink.Client.Taxa {
             get { return Model.DistRegionFullPath; }
             set { SetProperty(() => Model.DistRegionFullPath, Model, value); }
         }
+
+        public override int? ObjectID {
+            get { return Model.BiotaDistID; }
+        }
+
 
     }
 }

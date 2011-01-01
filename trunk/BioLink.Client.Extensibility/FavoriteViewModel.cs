@@ -8,13 +8,17 @@ using BioLink.Data.Model;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using BioLink.Client.Utilities;
+using System.Reflection;
 
 namespace BioLink.Client.Extensibility {
 
     public class GenericHierarchicalViewModelBase<T> : HierarchicalViewModelBase {
 
-        public GenericHierarchicalViewModelBase(T model) {
+        private Expression<Func<int>> _objectIDExpr = null;
+
+        public GenericHierarchicalViewModelBase(T model, Expression<Func<int>> objectIDExpr) {
             this.Model = model;
+            _objectIDExpr = objectIDExpr;
         }
 
         protected void SetProperty<K>(Expression<Func<K>> wrappedPropertyExpr, K value, Action doIfChanged = null, bool changeAgnostic = false) {
@@ -24,6 +28,18 @@ namespace BioLink.Client.Extensibility {
         public override int NumChildren { get; set; }
 
         public T Model { get; private set; }
+
+        public override int? ObjectID {
+            get {
+                if (_objectIDExpr == null) {
+                    return null;
+                } else {
+                    var destProp = (PropertyInfo)((MemberExpression)_objectIDExpr.Body).Member;
+                    return (int)destProp.GetValue(Model, null);
+                }
+            }
+        }
+
     
     }
 
@@ -31,9 +47,7 @@ namespace BioLink.Client.Extensibility {
 
         private BitmapSource _image;
 
-        public FavoriteViewModel(T model)
-            : base(model) {
-        }
+        public FavoriteViewModel(T model) : base(model, ()=>model.FavoriteID) { }
 
         public override BitmapSource Icon {
             get {

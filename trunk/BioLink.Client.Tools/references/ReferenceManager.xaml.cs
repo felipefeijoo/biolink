@@ -299,9 +299,7 @@ namespace BioLink.Client.Tools {
 
     public class ReferenceSearchResultViewModel : GenericHierarchicalViewModelBase<ReferenceSearchResult> {
 
-        public ReferenceSearchResultViewModel(ReferenceSearchResult model)
-            : base(model) {
-        }
+        public ReferenceSearchResultViewModel(ReferenceSearchResult model) : base(model, ()=>model.RefID) { }
 
         public override string DisplayLabel {
             get { return String.Format("{0}, {1} [{2}] ({3})", Title, Author, YearOfPub, RefCode); }
