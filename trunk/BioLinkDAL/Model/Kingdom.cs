@@ -10,5 +10,9 @@ namespace BioLink.Data.Model {
         public String KingdomCode { get; set; }
         public String KingdomName { get; set; }
 
+
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return null; }
+        }
     }
 }

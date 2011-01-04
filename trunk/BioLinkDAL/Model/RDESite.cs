@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BioLink.Data.Model {
 
-    public class RDEObject : BioLinkDataObject {
+    public abstract class RDEObject : BioLinkDataObject {
 
         public bool Locked { get; set; }
         public int? Changes { get; set; }
@@ -34,7 +34,11 @@ namespace BioLink.Data.Model {
         public string ElevSource { get; set; }
         public string ElevError	{ get; set; }
         public string LLSource	{ get; set; }
-        public string LLError	{ get; set; }        
+        public string LLError	{ get; set; }
+
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return () => this.SiteID; }
+        }
         
     }
 }

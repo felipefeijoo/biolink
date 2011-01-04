@@ -12,5 +12,9 @@ namespace BioLink.Data.Model {
         public int ParentID { get; set; }
         public int NumChildren { get; set; }
 
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return () => this.RegionID; }
+        }
+
     }
 }

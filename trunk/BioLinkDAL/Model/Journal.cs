@@ -13,6 +13,9 @@ namespace BioLink.Data.Model {
         public string Alias { get; set; }
         public string FullName { get; set; }
         public string Notes { get; set; }
-        
+
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return () => this.JournalID; }
+        }
     }
 }

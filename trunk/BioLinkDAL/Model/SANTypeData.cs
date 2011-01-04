@@ -18,5 +18,9 @@ namespace BioLink.Data.Model {
         public int? MaterialID { get; set; }
         public string MaterialName { get; set; }
 
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return () => this.SANTypeDataID; }
+        }
+
     }
 }

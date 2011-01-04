@@ -55,6 +55,10 @@ namespace BioLink.Data.Model {
             }
             return longrank;
         }
+
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return null; }
+        }
         
     }
 }

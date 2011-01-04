@@ -11,6 +11,10 @@ namespace BioLink.Data.Model {
         public string Rank { get; set; }
         public string Parentage { get; set; }
 
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return () => this.PoliticalRegionID; }
+        }
+
     }
 
 }

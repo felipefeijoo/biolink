@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
+using System.Reflection;
 
 namespace BioLink.Data.Model {
 
@@ -17,15 +19,38 @@ namespace BioLink.Data.Model {
 
     // Place holder class representing all Biolink Transfer Objects (TO)
     public abstract class BioLinkDataObject {
+
+        
+
+        protected BioLinkDataObject() {            
+        }
+
+        protected abstract Expression<Func<int>> IdentityExpression { get; }
+
+        public int? ObjectID {
+            get {
+                if (IdentityExpression == null) {
+                    return null;
+                } else {
+                    var destProp = (PropertyInfo)((MemberExpression)IdentityExpression.Body).Member;
+                    return (int)destProp.GetValue(this, null);
+                }
+            }
+        }
+
     }
 
+
+
     // Biolink data objects that have a GUID column
-    public abstract class GUIDObject : BioLinkDataObject {
+    public abstract class GUIDObject : BioLinkDataObject {      
+
         public Nullable<Guid> GUID { get; set; }
     }
 
     // Biolink data objects that have ownership columns
     public abstract class OwnedDataObject : GUIDObject {
+
         public DateTime DateCreated { get; set; }
         public string WhoCreated { get; set; }
         public DateTime DateLastUpdated { get; set; }

@@ -36,5 +36,9 @@ namespace BioLink.Data.Model {
         public int? EndPage { get; set; }
         public string JournalName { get; set; }
 
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return () => this.RefID; }
+        }
+
     }
 }

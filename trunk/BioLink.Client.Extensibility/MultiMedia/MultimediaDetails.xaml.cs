@@ -41,7 +41,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         void Multimedia_DataChanged(ChangeableModelBase viewmodel) {
-            RegisterUniquePendingChange(new UpdateMultimediaAction(Multimedia));
+            RegisterUniquePendingChange(new UpdateMultimediaAction(Multimedia.Model));
         }
 
         private TabItem AddTabItem(string title, UIElement content, Action bringIntoViewAction = null) {

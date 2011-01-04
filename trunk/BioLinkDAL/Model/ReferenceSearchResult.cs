@@ -21,5 +21,8 @@ namespace BioLink.Data.Model {
         public string RefType { get; set; }
         public string RefRTF { get; set; }
 
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return () => this.RefID; }
+        }
     }
 }

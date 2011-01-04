@@ -8,11 +8,9 @@ using BioLink.Client.Extensibility;
 
 namespace BioLink.Client.Material {
 
-    public class RenameMaterialAction : GenericDatabaseAction<SiteExplorerNodeViewModel> {
+    public class RenameMaterialAction : GenericDatabaseAction<SiteExplorerNode> {
 
-        public RenameMaterialAction(SiteExplorerNodeViewModel model)
-            : base(model) {
-        }
+        public RenameMaterialAction(SiteExplorerNode model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
@@ -23,8 +21,7 @@ namespace BioLink.Client.Material {
 
     public class InsertMaterialAction : AbstractSiteExplorerAction {
 
-        public InsertMaterialAction(SiteExplorerNodeViewModel model, int templateID = 0)
-            : base(model) {
+        public InsertMaterialAction(SiteExplorerNode model, SiteExplorerNodeViewModel viewModel, int templateID = 0) : base(model, viewModel) {
             this.TemplateID = templateID;
         }
 
@@ -51,15 +48,13 @@ namespace BioLink.Client.Material {
         public int MaterialID { get; private set; }
     }
 
-    public class UpdateMaterialAction : GenericDatabaseAction<MaterialViewModel> {
+    public class UpdateMaterialAction : GenericDatabaseAction<BioLink.Data.Model.Material> {
 
-        public UpdateMaterialAction(MaterialViewModel model)
-            : base(model) {
-        }
+        public UpdateMaterialAction(BioLink.Data.Model.Material model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
-            service.UpdateMaterial(Model.Model);
+            service.UpdateMaterial(Model);
         }
     }
 

@@ -22,6 +22,10 @@ namespace BioLink.Data.Model {
         public FavoriteType FavoriteType { get; set; }
         public int ID1 { get; set; }
         public string ID2 { get; set; }
+
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return () => this.FavoriteID; }
+        }
     }
 
     public class TaxonFavorite : Favorite {
@@ -80,6 +84,10 @@ namespace BioLink.Data.Model {
         public int BiotaStorageID { get; set; }
         public int BiotaStorageParentID { get; set; }
         public string BiotaStorageName { get; set; }
+
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return () => this.FavoriteID; }
+        }
     }
 
     public enum FavoriteType {

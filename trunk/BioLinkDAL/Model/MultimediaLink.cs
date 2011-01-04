@@ -25,6 +25,10 @@ namespace BioLink.Data.Model {
 
         public int BlobChanges { get; set; }
 
+
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return () => this.MultimediaLinkID; }
+        }
     }
 
     public class MultimediaType {

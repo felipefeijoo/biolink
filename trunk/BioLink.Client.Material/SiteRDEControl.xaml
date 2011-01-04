@@ -20,7 +20,9 @@
             <Style TargetType="{x:Type ext:PickListControl}">
                 <Setter Property="IsReadOnly" Value="{Binding Locked}" />
             </Style>
-
+            <Style TargetType="{x:Type ext:TraitControl}">
+                <Setter Property="IsReadOnly" Value="{Binding Locked}" />
+            </Style>
         </Grid.Resources>
         <TabControl Name="tabSite" TabStripPlacement="Right" Margin="0">
             <TabItem Header="_Site">

@@ -8,11 +8,9 @@ using BioLink.Client.Extensibility;
 
 namespace BioLink.Client.Material {
 
-    public class RenameSiteAction : GenericDatabaseAction<SiteExplorerNodeViewModel> {
+    public class RenameSiteAction : GenericDatabaseAction<SiteExplorerNode> {
 
-        public RenameSiteAction(SiteExplorerNodeViewModel model)
-            : base(model) {
-        }
+        public RenameSiteAction(SiteExplorerNode model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
@@ -20,29 +18,28 @@ namespace BioLink.Client.Material {
         }
     }
 
-    public class UpdateSiteAction : GenericDatabaseAction<SiteViewModel> {
+    public class UpdateSiteAction : GenericDatabaseAction<Site> {
 
-        public UpdateSiteAction(SiteViewModel model)
+        public UpdateSiteAction(Site model)
             : base(model) {
         }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
-            service.UpdateSite(Model.Model);
+            service.UpdateSite(Model);
         }
 
     }
 
     public class InsertSiteAction : AbstractSiteExplorerAction {
 
-        public InsertSiteAction(SiteExplorerNodeViewModel model, int templateId = 0)
-            : base(model) {
+        public InsertSiteAction(SiteExplorerNode model, SiteExplorerNodeViewModel viewModel, int templateId = 0) : base(model, viewModel) {
             this.TemplateID = templateId;
         }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
-            Model.ElemID = service.InsertSite(base.FindRegionID(Model), base.FindIDOfParentType(Model, SiteExplorerNodeType.SiteGroup), TemplateID);
+            Model.ElemID = service.InsertSite(base.FindRegionID(ViewModel), base.FindIDOfParentType(ViewModel, SiteExplorerNodeType.SiteGroup), TemplateID);
             base.UpdateChildrenParentID();
         }
 
@@ -117,6 +114,67 @@ namespace BioLink.Client.Material {
         public SiteExplorerNode Destination { get; set; }
 
        
+    }
+
+    public class InsertRDESiteAction : GenericDatabaseAction<RDESite> {
+
+        public InsertRDESiteAction(RDESite model) : base(model) { }
+
+        protected override void ProcessImpl(User user) {
+            var service = new MaterialService(user);
+            Model.SiteID = service.InsertSite(Model.PoliticalRegionID.GetValueOrDefault(-1), -1);
+        }
+
+    }
+
+    public class UpdateRDESiteAction : GenericDatabaseAction<RDESite> {
+
+        public UpdateRDESiteAction(RDESite model) : base(model) { }
+
+        protected override void ProcessImpl(User user) {
+            var service = new MaterialService(user);
+            service.UpdateSite(MapToSite(Model));
+        }
+
+        private static Site MapToSite(RDESite model) {
+            var site = new Site();
+
+            site.SiteID = model.SiteID;
+
+            site.ElevError = model.ElevError;
+            site.ElevLower = model.ElevLower;
+            site.ElevSource = model.ElevSource;
+            site.ElevType = 1;
+            site.ElevUnits = model.ElevUnits;
+            site.ElevUpper = model.ElevUpper;
+
+            if (model.Longitude.HasValue) {
+                site.PosX1 = model.Longitude.Value;
+            }
+
+            if (model.Latitude.HasValue) {
+                site.PosY1 = model.Latitude.Value;
+            }
+
+            if (string.IsNullOrEmpty(model.SiteName)) {
+                site.SiteName = model.Locality;
+            } else {
+                site.SiteName = model.SiteName;
+            }
+
+            site.Locality = model.Locality;
+            site.LocalityType = 1;
+            site.PoliticalRegionID = model.PoliticalRegionID.GetValueOrDefault(0);
+            site.PosAreaType = 1;
+            site.PosCoordinates = 1;
+            site.PosError = model.LLError;
+            site.PosSource = model.LLSource;
+
+            return site;
+        }
+
+
+
     }
 
 }

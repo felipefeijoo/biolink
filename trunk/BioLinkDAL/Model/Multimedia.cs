@@ -16,5 +16,9 @@ namespace BioLink.Data.Model {
         public string Copyright { get; set; }
         public string FileExtension { get; set; }
 
+
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return ()=>this.MultimediaID; }
+        }
     }
 }

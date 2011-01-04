@@ -8,11 +8,9 @@ using BioLink.Client.Extensibility;
 
 namespace BioLink.Client.Material {
 
-    public class RenameTrapAction : GenericDatabaseAction<SiteExplorerNodeViewModel> {
+    public class RenameTrapAction : GenericDatabaseAction<SiteExplorerNode> {
 
-        public RenameTrapAction(SiteExplorerNodeViewModel model)
-            : base(model) {
-        }
+        public RenameTrapAction(SiteExplorerNode model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
@@ -37,9 +35,7 @@ namespace BioLink.Client.Material {
 
     public class InsertTrapAction : AbstractSiteExplorerAction {
 
-        public InsertTrapAction(SiteExplorerNodeViewModel model)
-            : base(model) {
-        }
+        public InsertTrapAction(SiteExplorerNode model, SiteExplorerNodeViewModel viewModel) : base(model, viewModel) { }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);

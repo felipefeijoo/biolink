@@ -23,6 +23,7 @@ namespace BioLink.Client.Extensibility {
     public partial class TraitControl : DatabaseActionControl, ILazyPopulateControl {
 
         private List<TraitViewModel> _model;
+        private bool _rdeMode = false;
 
         #region Designer Constructor
         public TraitControl() {
@@ -30,13 +31,30 @@ namespace BioLink.Client.Extensibility {
         }
         #endregion
 
-        public TraitControl(User user, TraitCategoryType category, ViewModelBase owner) : base(user, "Traits:" + category.ToString() + ":" + owner.ObjectID.Value) {
-            
+        public TraitControl(User user, TraitCategoryType category, ViewModelBase owner, bool RDEMode = false) : base(user, "Traits:" + category.ToString() + ":" + (owner == null ? -1 : owner.ObjectID.Value)) {            
             this.TraitCategory = category;
             this.Owner = owner;
+            _rdeMode = RDEMode;
 
             InitializeComponent();
 
+        }
+
+        public void BindModel(List<Trait> traits, ViewModelBase owner) {
+            this.Owner = owner;
+
+            if (traits == null) {
+                traits = new List<Trait>();
+            }
+
+            _model = traits.ConvertAll((model) => {
+                return new TraitViewModel(model);
+            });
+            ReloadTraitPanel();
+        }
+
+        public List<Trait> GetModel() {
+            return _model.ConvertAll((vm) => { return vm.Model; });
         }
 
         private void ReloadTraitPanel() {
@@ -67,6 +85,9 @@ namespace BioLink.Client.Extensibility {
                 ReloadTraitPanel();
                 RegisterPendingChange(new DeleteTraitDatabaseAction(trait.Model, Owner));                
             });
+
+            itemControl.IsReadOnly = this.IsReadOnly;
+
             traitsPanel.Children.Add(itemControl);
         }
 
@@ -105,7 +126,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         public void Populate() {
-            if (!IsPopulated) {
+            if (!IsPopulated && !_rdeMode) {
                 if (Owner.ObjectID.HasValue && Owner.ObjectID.Value >= 0) {
                     SupportService service = new SupportService(User);
                     var list = service.GetTraits(TraitCategory.ToString(), Owner.ObjectID.Value);
@@ -120,6 +141,23 @@ namespace BioLink.Client.Extensibility {
                 IsPopulated = true;
             }
         }
+
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(TraitControl), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnIsReadOnlyChanged));
+
+        public bool IsReadOnly {
+            get { return (bool)GetValue(IsReadOnlyProperty); }
+            set { SetValue(IsReadOnlyProperty, value); }
+        }
+
+        private static void OnIsReadOnlyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+
+            var control = obj as TraitControl;
+            if (control != null) {
+                control.ReloadTraitPanel();
+                control.btnAddTrait.IsEnabled = !(bool) args.NewValue;
+            }
+        }
+
 
 
         #region Properties

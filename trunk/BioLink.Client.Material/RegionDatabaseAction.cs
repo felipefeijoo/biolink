@@ -7,11 +7,9 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Material {
 
-    public class RenameRegionAction : GenericDatabaseAction<SiteExplorerNodeViewModel> {
+    public class RenameRegionAction : GenericDatabaseAction<SiteExplorerNode> {
 
-        public RenameRegionAction(SiteExplorerNodeViewModel model)
-            : base(model) {
-        }
+        public RenameRegionAction(SiteExplorerNode model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
@@ -19,20 +17,22 @@ namespace BioLink.Client.Material {
         }
     }
 
-    public class InsertRegionAction : GenericDatabaseAction<SiteExplorerNodeViewModel> {
+    public class InsertRegionAction : GenericDatabaseAction<SiteExplorerNode> {
 
-        public InsertRegionAction(SiteExplorerNodeViewModel model)
-            : base(model) {
+        public InsertRegionAction(SiteExplorerNode model, SiteExplorerNodeViewModel viewModel) : base(model) {
+            this.ViewModel = viewModel;
         }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
             Model.ElemID = service.InsertRegion(Model.Name, Model.ParentID);
             Model.RegionID = Model.ElemID;
-            foreach (SiteExplorerNodeViewModel child in Model.Children) {
+            foreach (SiteExplorerNodeViewModel child in ViewModel.Children) {
                 child.ParentID = Model.ElemID;
             }
         }
+
+        protected SiteExplorerNodeViewModel ViewModel { get; private set; }
 
     }
 

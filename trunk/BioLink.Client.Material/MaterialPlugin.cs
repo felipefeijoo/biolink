@@ -333,14 +333,14 @@ namespace BioLink.Client.Material {
             viewModel.IsSelected = true;
             viewModel.IsRenaming = true;
 
-            return new InsertRegionAction(viewModel);
+            return new InsertRegionAction(viewModel.Model, viewModel);
         }
 
         public DatabaseAction RenameItem(HierarchicalViewModelBase selectedItem, string newName) {
             var item = selectedItem as SiteExplorerNodeViewModel;
             if (item != null) {
                 item.Name = newName;
-                return new RenameRegionAction(item);
+                return new RenameRegionAction(item.Model);
             }
             return null;
         }

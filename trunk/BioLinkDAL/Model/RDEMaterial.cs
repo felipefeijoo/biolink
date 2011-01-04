@@ -23,5 +23,9 @@ namespace BioLink.Data.Model {
         public string TrapName { get; set; }
         public string MaterialSource { get; set; }
         public string CollectionMethod { get; set; }
+
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return () => this.MaterialID; }
+        }
     }
 }

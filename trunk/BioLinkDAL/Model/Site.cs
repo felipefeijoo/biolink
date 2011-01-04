@@ -55,5 +55,9 @@ namespace BioLink.Data.Model {
         [MappingInfo("tintTemplate")]
         public bool IsTemplate { get; set; }
         public string PoliticalRegion { get; set; }
+
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return () => this.SiteID; }
+        }
     }
 }

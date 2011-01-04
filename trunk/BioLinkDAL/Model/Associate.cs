@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BioLink.Data.Model {
 
-    public class Associate : BioLinkDataObject{
+    public class Associate : BioLinkDataObject {
 
         public int AssociateID { get; set; }
         public int FromIntraCatID { get; set; }
@@ -31,5 +31,9 @@ namespace BioLink.Data.Model {
         public Guid RegionGUID { get; set; }
 
         public int Changes { get; set; }
+
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return () => this.AssociateID; }
+        }
     }
 }

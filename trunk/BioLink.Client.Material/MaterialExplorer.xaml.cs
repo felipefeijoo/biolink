@@ -522,17 +522,17 @@ namespace BioLink.Client.Material {
             if (selected != null) {
                 switch (selected.NodeType) {
                     case SiteExplorerNodeType.Region:
-                        return new RenameRegionAction(selected);
+                        return new RenameRegionAction(selected.Model);
                     case SiteExplorerNodeType.SiteGroup:
-                        return new RenameSiteGroupAction(selected);
+                        return new RenameSiteGroupAction(selected.Model);
                     case SiteExplorerNodeType.Site:
-                        return new RenameSiteAction(selected);
+                        return new RenameSiteAction(selected.Model);
                     case SiteExplorerNodeType.SiteVisit:
-                        return new RenameSiteVisitAction(selected);
+                        return new RenameSiteVisitAction(selected.Model);
                     case SiteExplorerNodeType.Trap:
-                        return new RenameTrapAction(selected);
+                        return new RenameTrapAction(selected.Model);
                     case SiteExplorerNodeType.Material:
-                        return new RenameMaterialAction(selected);
+                        return new RenameMaterialAction(selected.Model);
                 }
             }
             return null;
@@ -689,27 +689,27 @@ namespace BioLink.Client.Material {
         }
 
         internal SiteExplorerNodeViewModel AddRegion(HierarchicalViewModelBase parent) {
-            return AddNewNode(parent, SiteExplorerNodeType.Region, (viewModel) => { return new InsertRegionAction(viewModel); });
+            return AddNewNode(parent, SiteExplorerNodeType.Region, (viewModel) => { return new InsertRegionAction(viewModel.Model, viewModel); });
         }
 
         internal SiteExplorerNodeViewModel AddSiteGroup(SiteExplorerNodeViewModel parent) {
-            return AddNewNode(parent, SiteExplorerNodeType.SiteGroup, (viewModel) => { return new InsertSiteGroupAction(viewModel); });
+            return AddNewNode(parent, SiteExplorerNodeType.SiteGroup, (viewModel) => { return new InsertSiteGroupAction(viewModel.Model, viewModel); });
         }
 
         internal SiteExplorerNodeViewModel AddSite(SiteExplorerNodeViewModel parent, int templateId = 0) {
-            return AddNewNode(parent, SiteExplorerNodeType.Site, (viewModel) => { return new InsertSiteAction(viewModel, templateId); });
+            return AddNewNode(parent, SiteExplorerNodeType.Site, (viewModel) => { return new InsertSiteAction(viewModel.Model, viewModel, templateId); });
         }
 
         internal void AddSiteVisit(SiteExplorerNodeViewModel parent, int templateId = 0) {
-            AddNewNode(parent, SiteExplorerNodeType.SiteVisit, (viewModel) => { return new InsertSiteVisitAction(viewModel, templateId); });
+            AddNewNode(parent, SiteExplorerNodeType.SiteVisit, (viewModel) => { return new InsertSiteVisitAction(viewModel.Model, viewModel, templateId); });
         }
 
         internal void AddTrap(SiteExplorerNodeViewModel parent) {
-            AddNewNode(parent, SiteExplorerNodeType.Trap, (viewModel) => { return new InsertTrapAction(viewModel); });
+            AddNewNode(parent, SiteExplorerNodeType.Trap, (viewModel) => { return new InsertTrapAction(viewModel.Model, viewModel); });
         }
 
         internal void AddMaterial(SiteExplorerNodeViewModel parent, int templateId = 0) {
-            AddNewNode(parent, SiteExplorerNodeType.Material, (viewModel) => { return new InsertMaterialAction(viewModel, templateId); });
+            AddNewNode(parent, SiteExplorerNodeType.Material, (viewModel) => { return new InsertMaterialAction(viewModel.Model, viewModel, templateId); });
         }
 
         internal void AddSiteTemplate() {
@@ -952,10 +952,11 @@ namespace BioLink.Client.Material {
 
         }
 
-
         internal void EditRDE(SiteExplorerNodeViewModel node) {
-            var control = new RapidDataEntry();
-            PluginManager.Instance.AddNonDockableContent(Owner, control, "RDE", SizeToContent.Manual);
+            if (node.NodeType == SiteExplorerNodeType.Site || node.NodeType == SiteExplorerNodeType.SiteVisit || node.NodeType == SiteExplorerNodeType.Material) {
+                var control = new RapidDataEntry(User, node.ElemID, node.NodeType);
+                PluginManager.Instance.AddNonDockableContent(Owner, control, "RDE", SizeToContent.Manual);
+            }
         }
     }
 
