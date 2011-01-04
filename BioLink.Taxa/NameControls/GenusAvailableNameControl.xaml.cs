@@ -50,7 +50,7 @@ namespace BioLink.Client.Taxa {
 
             this.DataContext = _model;
             _model.DataChanged += new DataChangedHandler((vm) => {
-                RegisterUniquePendingChange(new UpdateGenusAvailableNameAction(_model));
+                RegisterUniquePendingChange(new UpdateGenusAvailableNameAction(_model.Model));
                 EnableTabs();
             });
 

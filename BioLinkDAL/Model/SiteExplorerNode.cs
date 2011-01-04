@@ -16,6 +16,10 @@ namespace BioLink.Data.Model {
         public string RegionName { get; set; }
         public bool IsTemplate { get; set; }
 
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return () => this.ElemID; }
+        }
+
     }
 
 }

@@ -7,6 +7,7 @@ using BioLink.Data.Model;
 using System.Windows;
 using System.Windows.Media;
 using System.Linq.Expressions;
+using System.Collections.ObjectModel;
 
 namespace BioLink.Client.Material {
 
@@ -49,6 +50,8 @@ namespace BioLink.Client.Material {
                 return SystemColors.ControlTextBrush;
             }
         }
+
+        public List<Trait> Traits { get; set; }
 
     }
 
@@ -160,6 +163,8 @@ namespace BioLink.Client.Material {
             get { return Model.LLError; }
             set { SetProperty(() => Model.LLError, value); }
         }
+
+        public ObservableCollection<ViewModelBase> SiteVisits { get; set; }
 
     }
 }

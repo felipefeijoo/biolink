@@ -7,14 +7,13 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Taxa {
 
-    public class UpdateGenusAvailableNameAction : GenericDatabaseAction<GenusAvailableNameViewModel> {
-        public UpdateGenusAvailableNameAction(GenusAvailableNameViewModel model)
-            : base(model) {
-        }
+    public class UpdateGenusAvailableNameAction : GenericDatabaseAction<GenusAvailableName> {
+
+        public UpdateGenusAvailableNameAction(GenusAvailableName model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new TaxaService(user);
-            service.InsertOrUpdateGenusAvailableName(Model.Model);
+            service.InsertOrUpdateGenusAvailableName(Model);
         }
     }
 

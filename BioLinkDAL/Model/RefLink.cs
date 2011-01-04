@@ -20,6 +20,8 @@ namespace BioLink.Data.Model {
         public int? StartPage { get; set; }
         public int? EndPage { get; set; }
 
-
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return () => this.RefLinkID; }
+        }
     }
 }

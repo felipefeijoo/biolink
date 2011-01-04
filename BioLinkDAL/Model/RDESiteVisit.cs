@@ -14,5 +14,9 @@ namespace BioLink.Data.Model {
         public int? DateStart { get; set; }
         public int? DateEnd { get; set; }
 
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return () => this.SiteVisitID; }
+        }
+
     }
 }

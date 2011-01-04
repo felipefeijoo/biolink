@@ -242,7 +242,7 @@ namespace BioLink.Client.Extensibility {
 
             ItemsGroupBox target = e.Source as ItemsGroupBox;
 
-            if (target != null) {
+            if (target != null && target.Items != null) {
                 e.CanExecute = target.SelectedIndex < target.Items.Count - 1;
             } else {
                 e.CanExecute = false;

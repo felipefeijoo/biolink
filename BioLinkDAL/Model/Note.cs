@@ -29,6 +29,10 @@ namespace BioLink.Data.Model {
         public string RefCode { get; set; }
 
         public string RefPages { get; set; }
+
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return ()=>this.NoteID; }
+        }
     }
 
 }

@@ -21,6 +21,9 @@ namespace BioLink.Client.Material {
     /// Interaction logic for SiteRDEControl.xaml
     /// </summary>
     public partial class SiteRDEControl : UserControl {
+
+        private TraitControl _traits;
+        private RDESiteViewModel _currentSite;
        
         public SiteRDEControl(User user) {
             InitializeComponent();
@@ -28,7 +31,23 @@ namespace BioLink.Client.Material {
             txtSource.BindUser(user, PickListType.Phrase, "Source", TraitCategoryType.Material);
             txtElevSource.BindUser(user, PickListType.Phrase, "Source", TraitCategoryType.Material);
             txtUnits.BindUser(user, PickListType.Phrase, "Units", TraitCategoryType.Material);
-            // var traits = new TraitControl(user, TraitCategoryType.Material, 0);
+            _traits = new TraitControl(user, TraitCategoryType.Site, null, true);
+            tabTraits.Content = _traits;
+
+            this.DataContextChanged += new DependencyPropertyChangedEventHandler(SiteRDEControl_DataContextChanged);
+        }
+
+        void SiteRDEControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e) {
+            var site = DataContext as RDESiteViewModel;
+            if (site != null) {
+                if (_currentSite != null) {
+                    // although the database actions are registered for new/modified traits, we need to keep track of them so we can
+                    // redisplay them as the user flips around the different sites.
+                    _currentSite.Traits = _traits.GetModel();
+                }
+                _traits.BindModel(site.Traits, site);
+                _currentSite = site;
+            }
         }
 
     }

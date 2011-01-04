@@ -433,7 +433,12 @@ namespace BioLink.Data {
             return (int)retval.Value;
         }
 
-        public List<RDESiteVisit> GetRDESiteVisits(params int[] siteVisitIDs) {
+        public List<RDESiteVisit> GetRDESiteVisits(int siteID) {
+            var mapper = new GenericMapperBuilder<RDESiteVisit>().Override(new IntToBoolConvertingMapper("Locked")).build();
+            return StoredProcToList("spSiteVisitGetRDEFromIDList", mapper, _P("vchrType", "s"), _P("txtIDList", siteID+""));
+        }
+
+        public List<RDESiteVisit> GetRDESiteVisits(int[] siteVisitIDs) {
             var mapper = new GenericMapperBuilder<RDESiteVisit>().Override(new IntToBoolConvertingMapper("Locked")).build();
             var ids = siteVisitIDs.Join(",");
             return StoredProcToList("spSiteVisitGetRDEFromIDList", mapper, _P("vchrType", "v"), _P("txtIDList", ids));

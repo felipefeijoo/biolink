@@ -16,6 +16,10 @@ namespace BioLink.Data.Model {
         public int LastNumber { get; set; }
         public bool Locked { get; set; }
         public bool EnsureUnique { get; set; }
+
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return () => this.AutoNumberCatID; }
+        }
     }
 
     public class NewAutoNumber : AutoNumber {

@@ -4,9 +4,9 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Extensibility {
 
-    public class UpdateMultimediaAction : GenericDatabaseAction<MultimediaViewModel> {
+    public class UpdateMultimediaAction : GenericDatabaseAction<Multimedia> {
 
-        public UpdateMultimediaAction(MultimediaViewModel model) : base(model) { }
+        public UpdateMultimediaAction(Multimedia model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);

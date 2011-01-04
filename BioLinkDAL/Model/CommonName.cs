@@ -14,6 +14,10 @@ namespace BioLink.Data.Model {
         public string RefPage { get; set; }
         public int? RefID { get; set; }
         public string Notes { get; set; }
+
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return () => this.CommonNameID; }
+        }
     }
 
 }

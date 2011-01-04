@@ -8,11 +8,9 @@ using BioLink.Client.Extensibility;
 
 namespace BioLink.Client.Material {
 
-    public class RenameSiteGroupAction : GenericDatabaseAction<SiteExplorerNodeViewModel> {
+    public class RenameSiteGroupAction : GenericDatabaseAction<SiteExplorerNode> {
 
-        public RenameSiteGroupAction(SiteExplorerNodeViewModel model)
-            : base(model) {
-        }
+        public RenameSiteGroupAction(SiteExplorerNode model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
@@ -21,11 +19,10 @@ namespace BioLink.Client.Material {
 
     }
 
-    public abstract class AbstractSiteExplorerAction : GenericDatabaseAction<SiteExplorerNodeViewModel> {
+    public abstract class AbstractSiteExplorerAction : GenericDatabaseAction<SiteExplorerNode> {
 
-        public AbstractSiteExplorerAction(SiteExplorerNodeViewModel model)
-            : base(model) {
-            this.Parent = model.Parent as SiteExplorerNodeViewModel;
+        public AbstractSiteExplorerAction(SiteExplorerNode model, SiteExplorerNodeViewModel viewModel) : base(model) {
+            this.ViewModel = viewModel;
         }
 
         protected int FindRegionID(SiteExplorerNodeViewModel node) {
@@ -46,21 +43,21 @@ namespace BioLink.Client.Material {
         }
 
         protected void UpdateChildrenParentID() {
-            foreach (SiteExplorerNodeViewModel child in Model.Children) {
+            foreach (SiteExplorerNodeViewModel child in ViewModel.Children) {
                 child.ParentID = Model.ElemID;
             }
 
         }
 
-        internal SiteExplorerNodeViewModel Parent { get; private set; }
+        protected SiteExplorerNodeViewModel ViewModel { get; private set; }
+
+        protected SiteExplorerNodeViewModel Parent { get { return ViewModel.Parent as SiteExplorerNodeViewModel; } }
 
     }
 
     public class InsertSiteGroupAction : AbstractSiteExplorerAction {
 
-        public InsertSiteGroupAction(SiteExplorerNodeViewModel model)
-            : base(model) {            
-        }
+        public InsertSiteGroupAction(SiteExplorerNode model, SiteExplorerNodeViewModel viewModel) : base(model, viewModel) { }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
@@ -75,7 +72,7 @@ namespace BioLink.Client.Material {
                 }
             }
             
-            var regionID = FindRegionID(Model);
+            var regionID = FindRegionID(ViewModel);
             Model.ElemID = service.InsertSiteGroup(Model.Name, parentType, parentID, regionID);
             base.UpdateChildrenParentID();
         }

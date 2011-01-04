@@ -18,5 +18,9 @@ namespace BioLink.Data.Model {
         public bool UseInReports { get; set; }
 
         public int Changes { get; set; }
+
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return () => this.RefLinkID; }
+        }
     }
 }

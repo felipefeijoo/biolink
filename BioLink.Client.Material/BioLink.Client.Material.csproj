@@ -90,6 +90,9 @@
     <Compile Include="SiteRDEControl.xaml.cs">
       <DependentUpon>SiteRDEControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SiteVisitRDEControl.xaml.cs">
+      <DependentUpon>SiteVisitRDEControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TypeDataConverter.cs" />
     <Compile Include="MaterialPartsControl.xaml.cs">
       <DependentUpon>MaterialPartsControl.xaml</DependentUpon>
@@ -207,6 +210,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="SiteVisitDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SiteVisitRDEControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

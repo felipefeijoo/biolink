@@ -17,7 +17,7 @@ namespace BioLink.Data {
         
     }
 
-    public abstract class GenericDatabaseAction<T> : DatabaseAction {
+    public abstract class GenericDatabaseAction<T> : DatabaseAction where T: BioLinkDataObject {
         
         public GenericDatabaseAction(T model) {
             Model = model;            
@@ -28,7 +28,7 @@ namespace BioLink.Data {
         public override bool Equals(object obj) {
             GenericDatabaseAction<T> other = obj as GenericDatabaseAction<T>;
             if (other != null) {
-                return other.Model.Equals(this.Model);
+                return other.Model.ObjectID == Model.ObjectID;
             }
             return false;
         }

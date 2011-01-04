@@ -16,6 +16,10 @@ namespace BioLink.Data.Model {
         public bool IntegratedSecurity { get; set; }
         public String LastUser { get; set; }
 
+
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return null; }
+        }
     }
 
 }

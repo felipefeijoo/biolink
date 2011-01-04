@@ -45,6 +45,10 @@ namespace BioLink.Data.Model {
 
         public string DistQual { get; set; }
 
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return () => this.TaxaID.Value; }
+        }
+
     }
 
     public class TaxonSearchResult : Taxon {

@@ -13,6 +13,10 @@ namespace BioLink.Data.Model {
 
         public bool Fixed { get; set; }
 
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return () => this.CategoryID; }
+        }
+
     }
 
     public class Phrase : OwnedDataObject {
@@ -22,6 +26,10 @@ namespace BioLink.Data.Model {
         public int PhraseCatID { get; set; }
 
         public string PhraseText { get; set; }
+
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return () => this.PhraseID; }
+        }
     }
 
 }

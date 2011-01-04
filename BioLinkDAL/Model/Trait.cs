@@ -23,6 +23,10 @@ namespace BioLink.Data.Model {
 
         public string Category { get; set; }
 
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return () => this.TraitID; }
+        }
+
     }
 
     public class TraitCategory : GUIDObject {
@@ -30,6 +34,10 @@ namespace BioLink.Data.Model {
         public int TraitCategoryID { get; set; }
 
         public string Category { get; set; }
+
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return () => this.TraitCategoryID; }
+        }
 
     }
 
@@ -39,6 +47,10 @@ namespace BioLink.Data.Model {
         public string DataType { get; set; }
         public string ValidationStr { get; set; }
         public int CategoryID { get; set; }
+
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return () => this.TraitTypeID; }
+        }
     }
 
 }
