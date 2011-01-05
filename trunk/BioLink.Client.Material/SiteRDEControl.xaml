@@ -5,25 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
              mc:Ignorable="d" 
-             d:DesignHeight="258" d:DesignWidth="791">
+             d:DesignHeight="258" d:DesignWidth="791" SnapsToDevicePixels="True" UseLayoutRounding="True">
     <Grid>
-        <Grid.Resources>
-            <Style TargetType="{x:Type ext:TextBox}">
-                <Setter Property="IsReadOnly" Value="{Binding Locked}" />
-            </Style>
-            <Style TargetType="{x:Type ext:LookupControl}">
-                <Setter Property="IsReadOnly" Value="{Binding Locked}" />
-            </Style>
-            <Style TargetType="{x:Type ext:PositionControl}">
-                <Setter Property="IsReadOnly" Value="{Binding Locked}" />
-            </Style>
-            <Style TargetType="{x:Type ext:PickListControl}">
-                <Setter Property="IsReadOnly" Value="{Binding Locked}" />
-            </Style>
-            <Style TargetType="{x:Type ext:TraitControl}">
-                <Setter Property="IsReadOnly" Value="{Binding Locked}" />
-            </Style>
-        </Grid.Resources>
         <TabControl Name="tabSite" TabStripPlacement="Right" Margin="0">
             <TabItem Header="_Site">
                 <TabItem.LayoutTransform>

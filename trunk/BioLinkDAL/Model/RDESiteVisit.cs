@@ -7,6 +7,11 @@ namespace BioLink.Data.Model {
 
     public class RDESiteVisit : RDEObject {
 
+        public RDESiteVisit() {
+            SiteVisitID = -1;
+            SiteID = -1;
+        }
+
         public int SiteVisitID { get; set; }
         public int SiteID { get; set; }
         public string VisitName { get; set; }

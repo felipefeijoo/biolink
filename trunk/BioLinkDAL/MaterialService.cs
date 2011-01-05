@@ -433,15 +433,11 @@ namespace BioLink.Data {
             return (int)retval.Value;
         }
 
-        public List<RDESiteVisit> GetRDESiteVisits(int siteID) {
-            var mapper = new GenericMapperBuilder<RDESiteVisit>().Override(new IntToBoolConvertingMapper("Locked")).build();
-            return StoredProcToList("spSiteVisitGetRDEFromIDList", mapper, _P("vchrType", "s"), _P("txtIDList", siteID+""));
-        }
-
-        public List<RDESiteVisit> GetRDESiteVisits(int[] siteVisitIDs) {
+        public List<RDESiteVisit> GetRDESiteVisits(int[] siteVisitIDs, RDEObjectType idType=RDEObjectType.SiteVisit) {
+            string type = GetRDEObjectTypeStr(idType);
             var mapper = new GenericMapperBuilder<RDESiteVisit>().Override(new IntToBoolConvertingMapper("Locked")).build();
             var ids = siteVisitIDs.Join(",");
-            return StoredProcToList("spSiteVisitGetRDEFromIDList", mapper, _P("vchrType", "v"), _P("txtIDList", ids));
+            return StoredProcToList("spSiteVisitGetRDEFromIDList", mapper, _P("vchrType", type), _P("txtIDList", ids));
         }
 
         #endregion
@@ -638,9 +634,20 @@ namespace BioLink.Data {
             return (int)retval.Value;
         }
 
-        public List<RDEMaterial> GetRDEMaterial(int[] idlist, string type = "m") {
+        public List<RDEMaterial> GetRDEMaterial(int[] idlist, RDEObjectType idType=RDEObjectType.Material) {
+            string type = GetRDEObjectTypeStr(idType);
             var mapper = new GenericMapperBuilder<RDEMaterial>().Override(new IntToBoolConvertingMapper("Locked")).build();            
             return StoredProcToList("spMaterialGetRDEFromIDList", mapper, _P("vchrType", type), _P("txtIDList", idlist.Join(",")));
+        }
+
+        private string GetRDEObjectTypeStr(RDEObjectType objType) {
+            switch (objType) {
+                case RDEObjectType.Material: return "m";
+                case RDEObjectType.Site: return "s";
+                case RDEObjectType.SiteVisit: return "v";
+                default:
+                    throw new Exception("Unhandled RDEObjectType: " + objType.ToString());
+            }
         }
 
         #endregion
@@ -788,6 +795,12 @@ namespace BioLink.Data {
         }
 
         #endregion
+    }
+
+    public enum RDEObjectType {
+        Site, 
+        SiteVisit,
+        Material
     }
 
     public class SiteDifference {

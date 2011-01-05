@@ -98,4 +98,16 @@ namespace BioLink.Client.Material {
         }
     }
 
+    public class InsertRDEMaterialAction : GenericDatabaseAction<RDEMaterial> {
+
+        public InsertRDEMaterialAction(RDEMaterial model) : base(model) { }
+
+        protected override void ProcessImpl(User user) {
+            var service = new MaterialService(user);
+            Model.MaterialID = service.InsertMaterial(Model.SiteVisitID);
+        }
+
+    }
+
+
 }

@@ -25,7 +25,26 @@ namespace BioLink.Client.Material {
 
         public SiteVisitRDEControl(User user) {
             InitializeComponent();
-
+            this.User = user;
         }
+
+        private void txtCollector_Click(object sender, RoutedEventArgs e) {
+            Func<IEnumerable<string>> itemsFunc = () => {
+                var service = new MaterialService(User);
+                return service.GetDistinctCollectors();
+            };
+
+            PickListWindow frm = new PickListWindow(User, "Select a collector", itemsFunc, null);
+            if (frm.ShowDialog().ValueOrFalse()) {
+                if (String.IsNullOrWhiteSpace(txtCollector.Text)) {
+                    txtCollector.Text = frm.SelectedValue as string;
+                } else {
+                    txtCollector.Text += ", " + frm.SelectedValue;
+                }
+            }
+        }
+
+        public User User { get; private set; }
+
     }
 }

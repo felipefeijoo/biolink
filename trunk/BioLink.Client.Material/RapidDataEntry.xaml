@@ -9,13 +9,45 @@
              d:DesignHeight="550" d:DesignWidth="826" >
     <Grid>
         <Grid.Resources>
-            <ext:NegatingConverter x:Key="NegatingConverter" />            
+            <ext:NegatingConverter x:Key="NegatingConverter" />
+            
+            <Style TargetType="{x:Type ext:TextBox}">
+                <Setter Property="IsReadOnly" Value="{Binding Locked}" />
+            </Style>
+            <Style TargetType="{x:Type ext:LookupControl}">
+                <Setter Property="IsReadOnly" Value="{Binding Locked}" />
+            </Style>
+            <Style TargetType="{x:Type ext:PositionControl}">
+                <Setter Property="IsReadOnly" Value="{Binding Locked}" />
+            </Style>
+            <Style TargetType="{x:Type ext:PickListControl}">
+                <Setter Property="IsReadOnly" Value="{Binding Locked}" />
+            </Style>
+            <Style TargetType="{x:Type ext:TraitControl}">
+                <Setter Property="IsReadOnly" Value="{Binding Locked}" />
+            </Style>
+            <Style TargetType="{x:Type ext:EllipsisTextBox}">
+                <Setter Property="IsReadOnly" Value="{Binding Locked}" />
+            </Style>
+            <Style TargetType="{x:Type ext:DateControl}">
+                <Setter Property="IsReadOnly" Value="{Binding Locked}" />
+            </Style>
+            <Style TargetType="{x:Type ext:AutoNumberBox}">
+                <Setter Property="IsReadOnly" Value="{Binding Locked}" />
+            </Style>
+            
         </Grid.Resources>
-        <ScrollViewer>
+        
+        <ScrollViewer HorizontalScrollBarVisibility="Auto">
             <Grid MinWidth="600" MinHeight="450">
-                <ext:ItemsGroupBox Margin="6,6,6,0" Name="grpSites" VerticalAlignment="Top" Height="170" HeaderPrefix="Site:" Header="{Binding SiteName}" HeaderFontWeight="Bold" IsUnlocked="{Binding Locked, Converter={StaticResource NegatingConverter}}" HeaderForeground="{Binding HeaderForeground}" AddNewClicked="grpSites_AddNewClicked">
-                </ext:ItemsGroupBox>
-                <ext:ItemsGroupBox Height="62" Margin="6,182,6,0" Name="grpSiteVisits" HeaderPrefix="Visit:" Header="{Binding SiteVisitName}" VerticalAlignment="Top" IsUnlocked="{Binding Locked, Converter={StaticResource NegatingConverter}}" HeaderForeground="{Binding HeaderForeground}" AddNewClicked="grpSites_AddNewClicked" />
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="62" />
+                    <RowDefinition Height="2*" />
+                </Grid.RowDefinitions>
+                <ext:ItemsGroupBox Margin="6,0,6,0" Name="grpSites" HeaderPrefix="Site:" Header="{Binding SiteName}" HeaderFontWeight="Bold" IsUnlocked="{Binding Locked, Converter={StaticResource NegatingConverter}}" HeaderForeground="{Binding HeaderForeground}" AddNewClicked="grpSites_AddNewClicked" Focusable="false"/>
+                <ext:ItemsGroupBox Grid.Row="1" Margin="6,0,6,0" Name="grpSiteVisits" HeaderPrefix="Visit:" Header="{Binding SiteVisitName}" HeaderFontWeight="Bold" IsUnlocked="{Binding Locked, Converter={StaticResource NegatingConverter}}" HeaderForeground="{Binding HeaderForeground}" AddNewClicked="grpSiteVisits_AddNewClicked" Focusable="False" />
+                <ext:ItemsGroupBox Grid.Row="2" Margin="6,0,6,6" Name="grpMaterial" HeaderPrefix="Material:" Header="{Binding MaterialName}" HeaderFontWeight="Bold" IsUnlocked="{Binding Locked, Converter={StaticResource NegatingConverter}}" HeaderForeground="{Binding HeaderForeground}" AddNewClicked="grpMaterial_AddNewClicked" Focusable="False" />
             </Grid>
         </ScrollViewer>
             

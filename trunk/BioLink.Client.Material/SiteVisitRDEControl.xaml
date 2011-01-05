@@ -17,7 +17,7 @@
         </Grid.ColumnDefinitions>      
         
         <Label Content="Collectors:" />
-        <ext:PickListControl Grid.Column="1" Name="txtCollectors" Text="{Binding Collector}"/>
+        <ext:EllipsisTextBox Grid.Column="1" Name="txtCollector" Text="{Binding Collector}" Height="23" Click="txtCollector_Click"/>
         
         <Label Grid.Column="2" Content="Start:" />
         <ext:DateControl Grid.Column="3" Height="23" Name="dtStart" Date="{Binding DateStart}"/>

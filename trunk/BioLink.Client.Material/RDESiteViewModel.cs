@@ -57,7 +57,9 @@ namespace BioLink.Client.Material {
 
     public class RDESiteViewModel : RDEViewModel<RDESite> {
 
-        public RDESiteViewModel(RDESite model) : base(model, ()=>model.SiteID) { }
+        public RDESiteViewModel(RDESite model) : base(model, ()=>model.SiteID) {
+            SiteVisits = new ObservableCollection<ViewModelBase>();
+        }
 
         public int SiteID {
             get { return Model.SiteID; }

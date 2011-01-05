@@ -15,7 +15,7 @@
         
         <my:TextBox  x:Name="txt" />
         <Label Grid.Column="1" x:Name="lblDebug" BorderBrush="Azure" />
-        <Button Grid.Column="4" Click="Button_Click" Focusable="False">
+        <Button Grid.Column="4" Click="Button_Click" Focusable="False" x:Name="btnChooseDate">
             <Button.Content>
                 <Image Source="images/Calendar.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None" />
             </Button.Content>
