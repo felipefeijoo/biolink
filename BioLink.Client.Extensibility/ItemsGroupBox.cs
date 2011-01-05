@@ -16,6 +16,7 @@ namespace BioLink.Client.Extensibility {
 
         private ObservableCollection<ViewModelBase> _items;
         private ViewModelBase _selectedItem;
+        private System.Collections.Specialized.NotifyCollectionChangedEventHandler _collectionChangedHandler;
 
         static ItemsGroupBox() {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(ItemsGroupBox), new FrameworkPropertyMetadata(typeof(ItemsGroupBox)));
@@ -32,6 +33,10 @@ namespace BioLink.Client.Extensibility {
             this.CommandBindings.Add(new CommandBinding(AddNew, ExecutedAddNew, CanExecuteAddNew));
 
             this.LockIcon = ImageCache.GetImage("pack://application:,,,/BioLink.Client.Extensibility;component/images/Locked.png");
+
+            _collectionChangedHandler = new System.Collections.Specialized.NotifyCollectionChangedEventHandler((s, e) => {
+                UpdateCurrentPosition();
+            });
         }
 
 
@@ -84,13 +89,27 @@ namespace BioLink.Client.Extensibility {
         public ObservableCollection<ViewModelBase> Items {
             get { return _items; }
             set {
+                if (_items != null) {
+                    _items.CollectionChanged -= _collectionChangedHandler;
+                }
                 _items = value;
-                var old = this.SelectedItem;
+
+                if (_items != null) {
+                    _items.CollectionChanged += _collectionChangedHandler;
+                }                
                 if (value != null && value.Count > 0) {                    
                     this.SelectedItem = value[0];
                 } else {
                     SelectedItem = null;
                 }
+            }
+        }
+
+        protected void UpdateCurrentPosition() {
+            if (_selectedItem == null) {
+                CurrentPosition = "???";
+            } else {
+                CurrentPosition = string.Format("{0} of {1}", SelectedIndex + 1, _items.Count);
             }
         }
 
@@ -103,8 +122,7 @@ namespace BioLink.Client.Extensibility {
                 if (value != null) {
                     SelectedIndex = _items.IndexOf(value);
                     if (SelectedIndex >= 0) {
-                        _selectedItem = value;
-                        CurrentPosition = string.Format("{0} of {1}", SelectedIndex + 1, _items.Count);
+                        _selectedItem = value;                        
                     } else {
                         _selectedItem = null;
                     }
@@ -117,12 +135,9 @@ namespace BioLink.Client.Extensibility {
                     OnSelectedItemChanged(oldValue, _selectedItem);
                 }
 
-                if (_selectedItem == null) {
-                    CurrentPosition = "???";
-                }
+                UpdateCurrentPosition();
 
-                this.DataContext = _selectedItem;
-                
+                this.DataContext = _selectedItem;                
             }
         }
 
@@ -162,6 +177,16 @@ namespace BioLink.Client.Extensibility {
         public BitmapSource LockIcon {
             get { return (BitmapSource)GetValue(LockIconProperty); }
             set { SetValue(LockIconProperty, value); }
+        }
+
+        public static readonly DependencyProperty LockIconVisibilityProperty = DependencyProperty.Register("LockIconVisibility", typeof(Visibility), typeof(ItemsGroupBox), new FrameworkPropertyMetadata(Visibility.Visible, new PropertyChangedCallback(OnLockIconVisibilityChanged)));
+
+        public Visibility LockIconVisibility {
+            get { return (Visibility)GetValue(LockIconVisibilityProperty); }
+            set { SetValue(LockIconVisibilityProperty, value); }
+        }
+
+        private static void OnLockIconVisibilityChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
         }
 
         public static readonly DependencyProperty IsUnlockedProperty = DependencyProperty.Register("IsUnlocked", typeof(bool), typeof(ItemsGroupBox), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(IsUnlockedChanged)));
@@ -209,6 +234,13 @@ namespace BioLink.Client.Extensibility {
         public Brush HeaderForeground {
             get { return (Brush)GetValue(HeaderForegroundProperty); }
             set { SetValue(HeaderForegroundProperty, value); }
+        }
+
+        public static readonly DependencyProperty HeaderBackgroundProperty = DependencyProperty.Register("HeaderBackground", typeof(Brush), typeof(ItemsGroupBox), new FrameworkPropertyMetadata(SystemColors.WindowBrush));
+
+        public Brush HeaderBackground{
+            get { return (Brush)GetValue(HeaderBackgroundProperty); }
+            set { SetValue(HeaderBackgroundProperty, value); }
         }
 
         #endregion

@@ -60,6 +60,22 @@ namespace BioLink.Client.Extensibility {
             set { SetValue(SelectedTextProperty, value); }
         }
 
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(EllipsisTextBox), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnIsReadOnlyChanged)));
+
+        public bool IsReadOnly {
+            get { return (bool)GetValue(IsReadOnlyProperty); }
+            set { SetValue(IsReadOnlyProperty, value); }
+        }
+
+        private static void OnIsReadOnlyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            var control = (EllipsisTextBox)obj;
+            if (control != null) {
+                control.btn.IsEnabled = !(bool)args.NewValue;
+                control.txt.IsReadOnly = (bool)args.NewValue;
+            }
+        }
+
+
         public event RoutedEventHandler Click;
 
         public event TextChangedHandler TextChanged;

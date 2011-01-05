@@ -106,6 +106,51 @@ namespace BioLink.Client.Material {
         }
     }
 
+    public class InsertRDESiteVisitAction : GenericDatabaseAction<RDESiteVisit> {
 
+        public InsertRDESiteVisitAction(RDESiteVisit model) : base(model) { }
+
+        protected override void ProcessImpl(User user) {
+            var service = new MaterialService(user);
+            Model.SiteVisitID = service.InsertSiteVisit(Model.SiteID);
+        }
+
+    }
+
+    public class UpdateRDESiteVisitAction : GenericDatabaseAction<RDESiteVisit> {
+
+        public UpdateRDESiteVisitAction(RDESiteVisit model) : base(model) { }
+
+        protected override void ProcessImpl(User user) {
+            var service = new MaterialService(user);
+            service.UpdateSiteVisit(MapToSiteVisit(Model));
+        }
+
+        private static SiteVisit MapToSiteVisit(RDESiteVisit model) {
+            var visit = new SiteVisit();
+
+            if (string.IsNullOrEmpty(model.VisitName)) {
+                int? date = model.DateStart;
+                if (!date.HasValue || date.Value == 0) {
+                    date = model.DateEnd;
+                }
+
+                if (date.HasValue && date.Value != 0) {
+                    model.VisitName = string.Format("{0} {1}", model.Collector, DateControl.DateToStr(date.ToString()));
+                } else {
+                    model.VisitName = model.Collector;
+                }
+            }
+
+            visit.SiteVisitID = model.SiteVisitID;
+            visit.SiteID = model.SiteID;
+
+            visit.Collector = model.Collector;
+            visit.DateStart = model.DateStart;
+            visit.DateEnd = model.DateEnd;
+
+            return visit;
+        }
+    }
 
 }

@@ -71,6 +71,9 @@
       <DependentUpon>MaterialLabelsControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="MaterialPartAction.cs" />
+    <Compile Include="MaterialRDEControl.xaml.cs">
+      <DependentUpon>MaterialRDEControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MaterialSummary.xaml.cs">
       <DependentUpon>MaterialSummary.xaml</DependentUpon>
     </Compile>
@@ -178,6 +181,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MaterialPartsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MaterialRDEControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

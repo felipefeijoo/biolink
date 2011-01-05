@@ -6,6 +6,11 @@ using System.Text;
 namespace BioLink.Data.Model {
 
     public class RDEMaterial : RDEObject {
+
+        public RDEMaterial() {
+            MaterialID = -1;
+        }
+
         public int SiteVisitID { get; set; }	
         public int MaterialID { get; set; }
         public string MaterialName { get; set; }

@@ -161,6 +161,20 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(DateControl), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnIsReadOnlyChanged)));
+
+        public bool IsReadOnly {
+            get { return (bool)GetValue(IsReadOnlyProperty); }
+            set { SetValue(IsReadOnlyProperty, value); }
+        }
+
+        private static void OnIsReadOnlyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            var control = (DateControl)obj;
+            if (control != null) {
+                control.btnChooseDate.IsEnabled = !(bool)args.NewValue;
+            }
+        }
+
         private KeyEventHandler _keyHandler;
 
         private void ToggleCalendar() {

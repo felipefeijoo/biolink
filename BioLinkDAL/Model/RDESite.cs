@@ -14,6 +14,11 @@ namespace BioLink.Data.Model {
     }
 
     public class RDESite : RDEObject {
+
+        public RDESite() {
+            SiteID = -1;
+        }
+
         public int SiteID { get;set; }
         public int ParentID	{get;set;}
         public string SiteName { get;set;}	
