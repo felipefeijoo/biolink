@@ -61,6 +61,7 @@ namespace BioLink.Client.Material {
             var supportService = new SupportService(User);
 
             RDESiteViewModel root = null;
+            List<RDEMaterial> material = null;
 
             switch (objectType) {
                 case SiteExplorerNodeType.Site:
@@ -76,7 +77,7 @@ namespace BioLink.Client.Material {
                         }));
 
                         // This service call gets all the material for all site visits, saving multiple round trips to the database
-                        var material = service.GetRDEMaterial(idList.ToArray(), RDEObjectType.SiteVisit);
+                        material = service.GetRDEMaterial(idList.ToArray(), RDEObjectType.SiteVisit);
 
                         // But now we have to attach the material to the right visit...
                         foreach (RDESiteVisitViewModel sv in root.SiteVisits) {
@@ -97,15 +98,15 @@ namespace BioLink.Client.Material {
                             root = CreateSiteViewModel(sites[0]);
                             var visitModel = CreateSiteVisitViewModel(visits[0], root);
                             // get the material...
-                            var material = service.GetRDEMaterial(new int[] { visitModel.SiteVisitID }, RDEObjectType.SiteVisit);
+                            material = service.GetRDEMaterial(new int[] { visitModel.SiteVisitID }, RDEObjectType.SiteVisit);
                             CreateMaterialViewModels(material, visitModel);
                         }            
                     }
                     break;
                 case SiteExplorerNodeType.Material:
-                    var materialList = service.GetRDEMaterial(new int[] { objectId });
-                    if (materialList.Count > 0) {
-                        var m = materialList[0];
+                    material = service.GetRDEMaterial(new int[] { objectId });
+                    if (material.Count > 0) {
+                        var m = material[0];
 
                         // Get the Visit...
                         visits = service.GetRDESiteVisits(new int[] { m.SiteVisitID }, RDEObjectType.SiteVisit);
@@ -115,14 +116,51 @@ namespace BioLink.Client.Material {
                             if (sites.Count > 0) {
                                 root = CreateSiteViewModel(sites[0]);
                                 var siteVisit = CreateSiteVisitViewModel(visits[0], root);
-                                CreateMaterialViewModels(materialList, siteVisit);
+                                CreateMaterialViewModels(material, siteVisit);
                             }
                         }
                     }
                     break;
             }
 
+            if (root != null) {
+                // Get a single list of all the material view models loaded...
+                var materialList = new List<RDEMaterialViewModel>();
+                root.SiteVisits.ForEach((vm) => {
+                    var sv = vm as RDESiteVisitViewModel;
+                    sv.Material.ForEach((vm2) => {
+                        var m = vm2 as RDEMaterialViewModel;
+                        materialList.Add(m);
+                    });
+                });
+
+                var materialIds = materialList.Select((m) => {
+                    return m.MaterialID;
+                }).ToArray();
+
+                // for the material id list we can extract all the subparts in one round trip...
+                var subparts = service.GetMaterialParts(materialIds);
+                // But we have to hook them back up to the right material.
+                foreach (RDEMaterialViewModel m in materialList) {
+                    var selected = subparts.Where((part) => { return part.MaterialID == m.MaterialID; });
+                    m.SubParts = new ObservableCollection<ViewModelBase>(selected.Select((part) => {
+                        var vm = new MaterialPartViewModel(part);
+                        vm.Locked = m.Locked;
+                        vm.DataChanged += new DataChangedHandler(SubPart_DataChanged);
+                        return vm;
+                    }));
+                }
+
+            }
+
             return root;
+        }
+
+        void SubPart_DataChanged(ChangeableModelBase viewmodel) {
+            var subpart = viewmodel as MaterialPartViewModel;
+            if (subpart != null) {
+                RegisterUniquePendingChange(new UpdateMaterialPartAction(subpart.Model));
+            }
         }
 
         private RDESiteViewModel CreateSiteViewModel(RDESite site) {

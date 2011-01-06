@@ -6,6 +6,7 @@ using BioLink.Client.Utilities;
 using BioLink.Client.Extensibility;
 using BioLink.Data.Model;
 using BioLink.Data;
+using System.Windows;
 
 namespace BioLink.Client.Material {
     public class MaterialPartViewModel : GenericViewModelBase<MaterialPart> {
@@ -88,7 +89,7 @@ namespace BioLink.Client.Material {
             get { return Model.NoOfUnits; } 
             set { SetProperty(()=> Model.NoOfUnits, value); }
         }
-
+        
         public string Notes {
             get { return Model.Notes; }
             set { SetProperty(() => Model.Notes, value); }
@@ -102,6 +103,13 @@ namespace BioLink.Client.Material {
         public int? BasedOnID {
             get { return Model.BasedOnID; }
             set { SetProperty(() => Model.BasedOnID, value); }
+        }
+
+        public static readonly DependencyProperty LockedProperty = DependencyProperty.Register("Locked", typeof(bool), typeof(MaterialPartViewModel), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+        public bool Locked {
+            get { return (bool)GetValue(LockedProperty); }
+            set { SetValue(LockedProperty, value); }
         }
 
     }

@@ -86,6 +86,9 @@
     <Compile Include="RDEMaterialViewModel.cs" />
     <Compile Include="RDESiteViewModel.cs" />
     <Compile Include="RDESiteVisitViewModel.cs" />
+    <Compile Include="RDESubPartControl.xaml.cs">
+      <DependentUpon>RDESubPartControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SiteCompare.xaml.cs">
       <DependentUpon>SiteCompare.xaml</DependentUpon>
     </Compile>
@@ -197,6 +200,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="RapidDataEntry.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="RDESubPartControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

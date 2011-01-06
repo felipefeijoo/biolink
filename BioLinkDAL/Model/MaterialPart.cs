@@ -20,6 +20,7 @@ namespace BioLink.Data.Model {
         public string StorageMethod { get; set; }
         public string CurationStatus { get; set; }
         public string NoOfUnits	{ get; set; }
+        [IgnoreRTFFormattingChanges]
         public string Notes	{ get; set; }
         public bool OnLoan { get; set; }
         public int? BasedOnID { get; set; }

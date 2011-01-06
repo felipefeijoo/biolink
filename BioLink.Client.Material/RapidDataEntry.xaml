@@ -35,7 +35,10 @@
             <Style TargetType="{x:Type ext:AutoNumberBox}">
                 <Setter Property="IsReadOnly" Value="{Binding Locked}" />
             </Style>
-            
+            <Style TargetType="{x:Type mat:RDESubPartControl}">
+                <Setter Property="IsReadOnly" Value="{Binding Locked}" />
+            </Style>
+
         </Grid.Resources>
         
         <ScrollViewer HorizontalScrollBarVisibility="Auto">

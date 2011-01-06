@@ -797,9 +797,10 @@ namespace BioLink.Data {
 
         #region Associates
 
-        public List<Associate> GetAssociates(string category, int intraCatID) {
-            var mapper = new GenericMapperBuilder<Associate>().build();            
-            return StoredProcToList("spAssociateLoadFromList", mapper, _P("vchrCategory", category), _P("txtIntraCatIDList", intraCatID + ""));
+        public List<Associate> GetAssociates(string category, params int[] intraCatIDs) {
+            var mapper = new GenericMapperBuilder<Associate>().build();
+            var ids = intraCatIDs.Join(",");
+            return StoredProcToList("spAssociateLoadFromList", mapper, _P("vchrCategory", category), _P("txtIntraCatIDList", ids));
         }
 
         public int InsertAssociate(Associate a) {

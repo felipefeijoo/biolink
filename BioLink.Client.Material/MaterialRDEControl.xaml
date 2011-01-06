@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+             xmlns:mat="clr-namespace:BioLink.Client.Material"
              mc:Ignorable="d" 
              d:DesignHeight="358" d:DesignWidth="651" SnapsToDevicePixels="True" UseLayoutRounding="True">
     <Grid>
@@ -85,7 +86,9 @@
 
                     </Grid>
 
-                    <ext:ItemsGroupBox Grid.Row="2" Grid.Column="3" Grid.RowSpan="8" AddNewButtonVisibility="Collapsed" EditButtonVisibility="Collapsed" LockIconVisibility="Collapsed" HeaderPrefix="Subparts" HeaderBackground="{Binding Path=Background,RelativeSource={RelativeSource AncestorType=TabControl}}"/>
+                    <ext:ItemsGroupBox Grid.Row="2" Grid.Column="3" Grid.RowSpan="8" AddNewButtonVisibility="Collapsed" EditButtonVisibility="Collapsed" LockIconVisibility="Collapsed" HeaderPrefix="Subparts" HeaderBackground="{Binding Path=Background,RelativeSource={RelativeSource AncestorType=TabControl}}" Name="grpSubParts" IsUnlocked="{Binding Path=IsUnlocked, RelativeSource={RelativeSource AncestorType=ext:ItemsGroupBox}}" IsUnlockedChanged="grpSubParts_IsUnlockedChanged">
+                        <mat:RDESubPartControl x:Name="subparts"/>
+                    </ext:ItemsGroupBox>
 
                 </Grid>
             </TabItem>
@@ -94,12 +97,12 @@
                     <RotateTransform Angle="90"/>
                 </TabItem.LayoutTransform>
             </TabItem>
-            <TabItem Header="_Subparts" >
+            <TabItem Header="_Subparts" x:Name="tabSubparts" >
                 <TabItem.LayoutTransform>
                     <RotateTransform Angle="90"/>
                 </TabItem.LayoutTransform>
             </TabItem>
-            <TabItem Header="_Associates" >
+            <TabItem Header="_Associates" x:Name="tabAssociates">
                 <TabItem.LayoutTransform>
                     <RotateTransform Angle="90"/>
                 </TabItem.LayoutTransform>
