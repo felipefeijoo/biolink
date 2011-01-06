@@ -10,14 +10,17 @@ namespace BioLink.Client.Material {
 
     public class InsertMaterialPartAction : GenericDatabaseAction<MaterialPart> {
 
-        public InsertMaterialPartAction(MaterialPart model)
-            : base(model) {
+        public InsertMaterialPartAction(MaterialPart model, ViewModelBase owner) : base(model) {
+            this.Owner = owner;
         }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
+            Model.MaterialID = Owner.ObjectID.Value;
             Model.MaterialPartID = service.InsertMaterialPart(Model);
         }
+
+        protected ViewModelBase Owner { get; private set; }
     }
 
     public class UpdateMaterialPartAction : GenericDatabaseAction<MaterialPart> {

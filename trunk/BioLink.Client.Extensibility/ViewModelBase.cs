@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Windows.Media.Imaging;
 using System.Reflection;
 using BioLink.Client.Utilities;
+using BioLink.Data;
 using BioLink.Data.Model;
 using System.Windows;
 
@@ -34,7 +35,13 @@ namespace BioLink.Client.Extensibility {
             var destProp = (PropertyInfo)( (MemberExpression) wrappedPropertyExpr.Body).Member;
             T currVal = (T) destProp.GetValue(wrappedObj, null);
 
-            var changed = !EqualityComparer<T>.Default.Equals(currVal, value);
+            bool changed = false;
+            var ignoreRtfAttr = Attribute.GetCustomAttribute(destProp, typeof(IgnoreRTFFormattingChanges));
+            if (ignoreRtfAttr != null) {
+                changed = CompareRTF(currVal as string, value as string);
+            } else {
+                changed = !EqualityComparer<T>.Default.Equals(currVal, value);
+            }
 
             if (changed) {
                 destProp.SetValue(wrappedObj, value, null);
@@ -47,6 +54,27 @@ namespace BioLink.Client.Extensibility {
                 }
             }
             return changed;
+        }
+
+        private bool CompareRTF(string current, string newval) {
+
+            if (current == null) {
+                current = "";
+            }
+
+            if (newval == null) {
+                newval = "";
+            }
+
+            // basic tests first
+            if (current == newval) {
+                return false;
+            }
+
+            string lhs = RTFUtils.StripMarkup(current);
+            string rhs = RTFUtils.StripMarkup(newval);
+
+            return lhs != rhs;
         }
 
         /// <summary>

@@ -15,6 +15,7 @@ using BioLink.Client.Extensibility;
 using BioLink.Client.Utilities;
 using BioLink.Data;
 using BioLink.Data.Model;
+using System.Collections.ObjectModel;
 
 namespace BioLink.Client.Material {
     /// <summary>
@@ -22,8 +23,9 @@ namespace BioLink.Client.Material {
     /// </summary>
     public partial class MaterialRDEControl : UserControl {
 
-        private TraitControl _traits;
+        private TraitControl _traits;        
         private RDEMaterialViewModel _currentMaterial;
+        private MaterialPartsControl _subpartsFull;
 
 
         public MaterialRDEControl(User user) {
@@ -48,6 +50,9 @@ namespace BioLink.Client.Material {
             _traits = new TraitControl(user, TraitCategoryType.Material, null, true);
             tabTraits.Content = _traits;
 
+            _subpartsFull = new MaterialPartsControl(user, null, true);
+            tabSubparts.Content = _subpartsFull;
+
             this.DataContextChanged += new DependencyPropertyChangedEventHandler(MaterialRDEControl_DataContextChanged);
         }
 
@@ -61,9 +66,19 @@ namespace BioLink.Client.Material {
                 }
                 _traits.BindModel(mat.Traits, mat);
                 _currentMaterial= mat;
+
+                grpSubParts.Items = _currentMaterial.SubParts;
+                _subpartsFull.SetModel(mat, _currentMaterial.SubParts);                
             }
         }
 
         internal User User { get; private set; }
+
+        private void grpSubParts_IsUnlockedChanged(ItemsGroupBox obj, bool newValue) {
+            var subpart = grpSubParts.SelectedItem as MaterialPartViewModel;
+            if (subpart != null) {
+                subpart.Locked = !newValue;
+            }
+        }
     }
 }

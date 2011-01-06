@@ -709,6 +709,12 @@ namespace BioLink.Data {
             return StoredProcToList("spMaterialPartGet", mapper, _P("intMaterialID", materialID));
         }
 
+        public List<MaterialPart> GetMaterialParts(params int[] materialIds) {
+            var mapper = new GenericMapperBuilder<MaterialPart>().build();
+            var ids = materialIds.Join(",");
+            return StoredProcToList("spMaterialPartGetRDEFromIDList", mapper, _P("txtMaterialIDList", ids));
+        }
+
         public void DeleteMaterialPart(int materialPartID) {
             StoredProcUpdate("spMaterialPartDelete", _P("intMaterialPartID", materialPartID));
         }

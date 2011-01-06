@@ -61,13 +61,13 @@
             <ext:TextBox Grid.Row="2" Grid.Column="1" Height="23" Name="txtSpecimentCount" Text="{Binding NoSpecimens}" />
 
             <Label Grid.Row="2" Grid.Column="2" Content="Qualifier:" Name="label20" />
-            <ext:PickListControl Height="23" Name="plQualifier" Text="{Binding NoSpecimenQual}" Grid.Column="3" Grid.Row="2" />
+            <ext:PickListControl Height="23" Name="plQualifier" Text="{Binding NoSpecimensQual}" Grid.Column="3" Grid.Row="2" />
             
             <Label Grid.Row="3" Content="Gender:" Name="label23" />
             <ext:PickListControl Grid.Row="3" Grid.Column="1" Height="23" Name="plGender" Text="{Binding Gender}" Margin="0,2" />
             
             <Label Content="Life stage:" Name="label1" Grid.Column="2" Grid.Row="3" />
-            <ext:PickListControl Height="23" Name="plLifeStage" Text="{Binding LifeStage}" Grid.Column="3" Grid.Row="3" />
+            <ext:PickListControl Height="23" Name="plLifeStage" Text="{Binding Lifestage}" Grid.Column="3" Grid.Row="3" />
             
             <Label Grid.Row="4" Content="Registration #:" Name="label24" Height="28" VerticalAlignment="Top" />
             <ext:TextBox Height="23" Name="txtRegistrationNumber" Text="{Binding RegNo}" Grid.Column="1" Grid.Row="4" />
@@ -85,7 +85,9 @@
             <ext:PickListControl Grid.ColumnSpan="3" Grid.Column="1" Height="23" Name="plCurationStatus" Text="{Binding CurationStatus}" Grid.Row="7" />
             
             <Label Content="Notes:" Name="lblNotes" Grid.Row="8" />
-            <ext:BindableRichTextBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="3" Name="txtNotes" RTF="{Binding Notes}" Margin="0,6,1,0" />
+            <ext:BindableRichTextBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="3" Name="txtNotes" RTF="{Binding Notes}" Margin="0,6,1,0">
+                <FlowDocument PageWidth="{Binding ElementName=txtNotes, Path=ActualWidth}" />
+            </ext:BindableRichTextBox>
         </Grid>
         <Button Content="_Delete" Grid.Row="1" Height="23" HorizontalAlignment="Left" Margin="81,5,0,0" Name="btnDelete" VerticalAlignment="Top" Width="75" Click="btnDelete_Click" />
         <Button Content="_Add new" Height="23" HorizontalAlignment="Left" Margin="0,5,0,0" Name="btnAdd" VerticalAlignment="Top" Width="75" Grid.Row="1" Click="btnAdd_Click" />

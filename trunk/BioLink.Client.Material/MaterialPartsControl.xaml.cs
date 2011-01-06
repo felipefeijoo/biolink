@@ -23,8 +23,8 @@ namespace BioLink.Client.Material {
     /// </summary>
     public partial class MaterialPartsControl : DatabaseActionControl, ILazyPopulateControl {
 
-        private ObservableCollection<MaterialPartViewModel> _model;
-
+        private ObservableCollection<ViewModelBase> _model;
+        private bool _rdeMode;
         private bool _populated;
 
         #region Designer Constructor
@@ -33,9 +33,10 @@ namespace BioLink.Client.Material {
         }
         #endregion
 
-        public MaterialPartsControl(User user, int materialID) : base(user, "MaterialParts:" + materialID) {
+        public MaterialPartsControl(User user, ViewModelBase owner, bool rdeMode = false) : base(user, "MaterialParts:" + (owner == null ? -1 : owner.ObjectID) ) {
             InitializeComponent();
-            this.MaterialID = materialID;
+            _rdeMode = rdeMode;
+            this.Owner = owner;
 
             plCondition.BindUser(User, PickListType.Phrase, "Specimen Condition", TraitCategoryType.Material);
             plCurationStatus.BindUser(User, PickListType.Phrase, "Curation Status", TraitCategoryType.Material);
@@ -48,9 +49,20 @@ namespace BioLink.Client.Material {
 
             this.ChangesCommitted += new PendingChangesCommittedHandler(MaterialPartsControl_ChangesCommitted);
 
+            lst.SelectionChanged += new SelectionChangedEventHandler(lst_SelectionChanged);
         }
 
-        public ObservableCollection<MaterialPartViewModel> Model { 
+        public void SetModel(ViewModelBase owner, ObservableCollection<ViewModelBase> model) {
+            this.Owner = owner;
+            _model = model;
+            lst.ItemsSource = _model;
+
+            if (_model != null && _model.Count > 0) {
+                lst.SelectedItem = _model[0];
+            }
+        }
+
+        public ObservableCollection<ViewModelBase> Model { 
             get {
                 if (!_populated) {
                     Populate();
@@ -67,22 +79,23 @@ namespace BioLink.Client.Material {
 
         private void LoadParts() {
 
-            detailGrid.IsEnabled = false;
+            if (!_rdeMode && Owner != null) {
+                detailGrid.IsEnabled = false;
 
-            var service = new MaterialService(User);
-            var list = service.GetMaterialParts(MaterialID);
+                var service = new MaterialService(User);
+                var list = service.GetMaterialParts(Owner.ObjectID.Value);
 
-            _model = new ObservableCollection<MaterialPartViewModel>(list.ConvertAll((part) => {
-                var viewmodel = new MaterialPartViewModel(part);
-                viewmodel.DataChanged += new DataChangedHandler(viewmodel_DataChanged);
-                return viewmodel;
-            }));
+                _model = new ObservableCollection<ViewModelBase>(list.ConvertAll((part) => {
+                    var viewmodel = new MaterialPartViewModel(part);
+                    viewmodel.DataChanged += new DataChangedHandler(viewmodel_DataChanged);
+                    return viewmodel;
+                }));
 
-            lst.ItemsSource = _model;
-            lst.SelectionChanged += new SelectionChangedEventHandler(lst_SelectionChanged);
+                lst.ItemsSource = _model;
 
-            if (_model.Count > 0) {
-                lst.SelectedItem = _model[0];
+                if (_model.Count > 0) {
+                    lst.SelectedItem = _model[0];
+                }
             }
 
             _populated = true;
@@ -114,7 +127,7 @@ namespace BioLink.Client.Material {
 
         private void AddNew() {
             var part = new MaterialPart();
-            part.MaterialID = MaterialID;
+            part.MaterialID = Owner.ObjectID.Value;
             part.MaterialPartID = -1;
             part.PartName = "<New Material part>";
 
@@ -124,9 +137,7 @@ namespace BioLink.Client.Material {
 
             lst.SelectedItem = viewModel;
 
-            RegisterPendingChange(new InsertMaterialPartAction(part));
-
-
+            RegisterPendingChange(new InsertMaterialPartAction(part, Owner));
         }
 
         private void DeleteSelected() {
@@ -137,7 +148,7 @@ namespace BioLink.Client.Material {
             }
         }
 
-        public int MaterialID { get; private set; }
+        public ViewModelBase Owner { get; private set; }
 
 
         public bool IsPopulated {

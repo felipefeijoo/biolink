@@ -67,7 +67,8 @@ namespace BioLink.Client.Material {
             _historyControl.Margin = new Thickness(0);
             tabIDHistory.Content = _historyControl;
 
-            var partsControl = new MaterialPartsControl(User, materialID);
+            var partsControl = new MaterialPartsControl(User, _viewModel);
+
             tabMaterial.AddTabItem("Subparts", partsControl);
             tabMaterial.AddTabItem("Associates", new OneToManyControl(new AssociatesControl(User, TraitCategoryType.Material, materialID)));
             tabMaterial.AddTabItem("Events", new CurationEventsControl(User, materialID, partsControl));

@@ -189,20 +189,24 @@ namespace BioLink.Client.Extensibility {
         private static void OnLockIconVisibilityChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
         }
 
-        public static readonly DependencyProperty IsUnlockedProperty = DependencyProperty.Register("IsUnlocked", typeof(bool), typeof(ItemsGroupBox), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(IsUnlockedChanged)));
+        public static readonly DependencyProperty IsUnlockedProperty = DependencyProperty.Register("IsUnlocked", typeof(bool), typeof(ItemsGroupBox), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(IsUnlockedChangedHandler)));
 
         public bool IsUnlocked {
             get { return (bool)GetValue(IsUnlockedProperty); }
             set { SetValue(IsUnlockedProperty, value); }
         }
 
-        private static void IsUnlockedChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+        private static void IsUnlockedChangedHandler(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
             var c = obj as ItemsGroupBox;
             if (c != null) {
                 if ((bool)args.NewValue) {
                     c.LockIcon = ImageCache.GetImage("pack://application:,,,/BioLink.Client.Extensibility;component/images/Unlocked.png");
                 } else {
                     c.LockIcon = ImageCache.GetImage("pack://application:,,,/BioLink.Client.Extensibility;component/images/Locked.png");                    
+                }
+
+                if (c.IsUnlockedChanged != null) {
+                    c.IsUnlockedChanged(c, (bool) args.NewValue);
                 }
             }
             
@@ -329,6 +333,8 @@ namespace BioLink.Client.Extensibility {
         #region Events
 
         public event Action<ViewModelBase, ViewModelBase> SelectedItemChanged;
+
+        public event Action<ItemsGroupBox, bool> IsUnlockedChanged;
 
         public event RoutedEventHandler NextClicked;
         public event RoutedEventHandler PrevClicked;

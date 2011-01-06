@@ -34,18 +34,6 @@
     <PostSharpProperties>IgnoredAssemblies=System.Data.SQLite</PostSharpProperties>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Itenso.Rtf.Converter.Html">
-      <HintPath>..\shared\lib\Itenso.Rtf.Converter.Html.dll</HintPath>
-    </Reference>
-    <Reference Include="Itenso.Rtf.Interpreter">
-      <HintPath>..\shared\lib\Itenso.Rtf.Interpreter.dll</HintPath>
-    </Reference>
-    <Reference Include="Itenso.Rtf.Parser">
-      <HintPath>..\shared\lib\Itenso.Rtf.Parser.dll</HintPath>
-    </Reference>
-    <Reference Include="Itenso.Sys">
-      <HintPath>..\shared\lib\Itenso.Sys.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Practices.EnterpriseLibrary.Common, Version=5.0.414.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\shared\lib\Microsoft.Practices.EnterpriseLibrary.Common.dll</HintPath>
@@ -77,6 +65,7 @@
       <HintPath>..\shared\lib\System.Data.SQLite.DLL</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />

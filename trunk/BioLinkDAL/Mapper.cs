@@ -36,7 +36,6 @@ namespace BioLink.Data {
 
 
                 var x = Attribute.GetCustomAttribute(propInfo, typeof(MappingInfo));
-                    //propInfo.GetCustomAttributes(typeof(ColumnMapping), false);
                 if (x != null) {
                     var mapping = x as MappingInfo;
                     propMap.Add(mapping.Column, propInfo);

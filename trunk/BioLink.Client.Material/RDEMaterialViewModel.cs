@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using BioLink.Client.Extensibility;
 using BioLink.Data.Model;
+using System.Collections.ObjectModel;
 
 namespace BioLink.Client.Material {
 
@@ -98,6 +99,8 @@ namespace BioLink.Client.Material {
         }
 
         public RDESiteVisitViewModel SiteVisit { get; set; }
+
+        public ObservableCollection<ViewModelBase> SubParts { get; set; }
 
     }
 }
