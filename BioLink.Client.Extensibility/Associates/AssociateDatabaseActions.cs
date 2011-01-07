@@ -9,18 +9,34 @@ namespace BioLink.Client.Extensibility {
 
     public class InsertAssociateAction : GenericDatabaseAction<Associate> {
 
-        public InsertAssociateAction(Associate model)
-            : base(model) {
+        public InsertAssociateAction(Associate model, ViewModelBase owner) : base(model) {
+            this.Owner = owner;
         }
 
         protected override void ProcessImpl(User user) {
             var service =new SupportService(user);
+            Model.FromIntraCatID = Owner.ObjectID.Value;
+
+            switch (Model.ToCatID.GetValueOrDefault(-1)) {
+                case 1:
+                    Model.ToCategory = "Material";
+                    break;
+                case 2:
+                    Model.ToCategory = "Taxon";
+                    break;
+                default:
+                    Model.ToCategory = "";
+                    break;
+            }
+
             Model.AssociateID = service.InsertAssociate(Model);
         }
 
         public override string ToString() {
             return string.Format("Insert Associate: Name={0}", Model.AssocName);
         }
+
+        protected ViewModelBase Owner { get; private set; }
 
     }
 
@@ -31,6 +47,19 @@ namespace BioLink.Client.Extensibility {
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);
+
+            switch (Model.ToCatID.GetValueOrDefault(-1)) {
+                case 1:
+                    Model.ToCategory = "Material";
+                    break;
+                case 2:
+                    Model.ToCategory = "Taxon";
+                    break;
+                default:
+                    Model.ToCategory = "";
+                    break;
+            }
+
             service.UpdateAssociate(Model);
         }
 

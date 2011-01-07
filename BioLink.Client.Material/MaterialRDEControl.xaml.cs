@@ -26,7 +26,7 @@ namespace BioLink.Client.Material {
         private TraitControl _traits;        
         private RDEMaterialViewModel _currentMaterial;
         private MaterialPartsControl _subpartsFull;
-
+        private OneToManyControl _associates;
 
         public MaterialRDEControl(User user) {
             InitializeComponent();
@@ -53,6 +53,9 @@ namespace BioLink.Client.Material {
             _subpartsFull = new MaterialPartsControl(user, null, true);
             tabSubparts.Content = _subpartsFull;
 
+            _associates = new OneToManyControl(new AssociatesControl(user, TraitCategoryType.Material, null), true);
+            tabAssociates.Content = _associates;
+
             this.DataContextChanged += new DependencyPropertyChangedEventHandler(MaterialRDEControl_DataContextChanged);
         }
 
@@ -68,7 +71,8 @@ namespace BioLink.Client.Material {
                 _currentMaterial= mat;
 
                 grpSubParts.Items = _currentMaterial.SubParts;
-                _subpartsFull.SetModel(mat, _currentMaterial.SubParts);                
+                _subpartsFull.SetModel(_currentMaterial, _currentMaterial.SubParts);
+                _associates.SetModel(_currentMaterial, _currentMaterial.Associates);
             }
         }
 

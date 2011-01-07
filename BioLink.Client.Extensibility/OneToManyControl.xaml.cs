@@ -25,6 +25,7 @@ namespace BioLink.Client.Extensibility {
 
         private OneToManyDetailControl _control;
         private ObservableCollection<ViewModelBase> _model;
+        private bool _rdeMode;        
 
         #region Designer Constructor
         public OneToManyControl() {
@@ -32,14 +33,16 @@ namespace BioLink.Client.Extensibility {
         }
         #endregion
 
-        public OneToManyControl(OneToManyDetailControl control)
-            : base(control.User, control.ContentID) {
+        public OneToManyControl(OneToManyDetailControl control, bool rdeMode = false) : base(control.User, control.ContentID) {
 
             InitializeComponent();
-
+            _rdeMode = rdeMode;
             _control = control;
             detailsGrid.Children.Add(_control);
             lst.SelectionChanged += new SelectionChangedEventHandler(lst_SelectionChanged);
+
+            control.Host = this;
+            detailsGrid.IsEnabled = false;
 
             ChangesCommitted += new PendingChangesCommittedHandler(OneToManyControl_ChangesCommitted);
         }
@@ -53,8 +56,20 @@ namespace BioLink.Client.Extensibility {
                 if (_model.Count > 0) {
                     lst.SelectedIndex = 0;
                 }
+            }            
+        }
+
+        protected ViewModelBase Owner { get; set; }
+
+        public void SetModel(ViewModelBase owner, ObservableCollection<ViewModelBase> model) {
+            _model = model;
+            lst.ItemsSource = _model;
+            _control.Owner = owner;
+            if (_model.Count > 0) {
+                lst.SelectedItem = _model[0];
+            } else {
+                detailsGrid.IsEnabled = false;
             }
-            
         }
 
         void lst_SelectionChanged(object sender, SelectionChangedEventArgs e) {
@@ -104,7 +119,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void LoadModel() {
-            if (_control != null) {
+            if (_control != null && !_rdeMode) {
                 detailsGrid.IsEnabled = false;
 
                 var list = _control.LoadModel();
@@ -132,7 +147,6 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-
         public bool IsPopulated { get; private set; }
 
         public void Populate() {
@@ -142,6 +156,26 @@ namespace BioLink.Client.Extensibility {
             }
 
         }
+
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(OneToManyControl), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnIsReadOnlyChanged));
+
+        public bool IsReadOnly {
+            get { return (bool)GetValue(IsReadOnlyProperty); }
+            set { SetValue(IsReadOnlyProperty, value); }
+        }
+
+        private static void OnIsReadOnlyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+
+            var control = obj as OneToManyControl;
+            if (control != null) {
+                bool val = (bool)args.NewValue;
+                control._control.IsEnabled = !val;
+                control.btnAdd.IsEnabled = !val;
+                control.btnDelete.IsEnabled = !val;
+            }
+
+        }
+
     }
 
     static class FocusHelper {

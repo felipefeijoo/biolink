@@ -50,7 +50,9 @@
         </Grid>
         <Label Content="Reference:" Height="28" HorizontalAlignment="Left" Name="label6" VerticalAlignment="Top" Width="100" Grid.Row="6" />
         <Label Content="Notes:" Height="28" HorizontalAlignment="Left" Name="label8" VerticalAlignment="Top" Width="100" Grid.Row="7" />
-        <ext:BindableRichTextBox Grid.Column="1" Grid.Row="7" x:Name="txtNotes" Grid.ColumnSpan="2" Margin="0,0,12,0" RTF="{Binding Notes}" />
+        <ext:BindableRichTextBox Grid.Column="1" Grid.Row="7" x:Name="txtNotes" Grid.ColumnSpan="2" Margin="0,0,12,0" RTF="{Binding Notes}" >
+            <FlowDocument PageWidth="{Binding ElementName=txtNotes, Path=ActualWidth}" />
+        </ext:BindableRichTextBox>
     </Grid>
 </ext:OneToManyDetailControl>
     

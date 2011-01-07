@@ -103,5 +103,7 @@ namespace BioLink.Client.Material {
 
         public ObservableCollection<ViewModelBase> SubParts { get; set; }
 
+        public ObservableCollection<ViewModelBase> Associates { get; set; }
+
     }
 }

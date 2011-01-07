@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using BioLink.Data.Model;
+using System.Windows;
 
 namespace BioLink.Client.Extensibility {
 
@@ -203,6 +204,13 @@ namespace BioLink.Client.Extensibility {
         public Guid RegionGUID {
             get { return Model.RegionGUID; }
             set { SetProperty(() => Model.RegionGUID, value); }
+        }
+
+        public static readonly DependencyProperty LockedProperty = DependencyProperty.Register("Locked", typeof(bool), typeof(AssociateViewModel), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+        public bool Locked {
+            get { return (bool)GetValue(LockedProperty); }
+            set { SetValue(LockedProperty, value); }
         }
 
     }

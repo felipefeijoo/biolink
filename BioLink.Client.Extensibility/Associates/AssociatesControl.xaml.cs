@@ -26,12 +26,11 @@ namespace BioLink.Client.Extensibility {
             InitializeComponent();
         }
 
-        public AssociatesControl(User user, TraitCategoryType category, int intraCatId)
-            : base(user, "Associates:" + category.ToString() + ":" + intraCatId) {
+        public AssociatesControl(User user, TraitCategoryType category, ViewModelBase owner) : base(user, "Associates:" + category.ToString() + ":" + (owner == null ? -1 : owner.ObjectID.Value)) {
 
             InitializeComponent();
             this.Category = category;
-            this.IntraCatID = intraCatId;
+            this.Owner = owner;
 
             var itemsList =new List<String>(new String[] {"Description", "Taxon", "Material" });
             cmbType.ItemsSource = itemsList;
@@ -98,7 +97,7 @@ namespace BioLink.Client.Extensibility {
 
         public override List<ViewModelBase> LoadModel() {
             var service = new SupportService(User);
-            var list = service.GetAssociates(Category.ToString(), IntraCatID);
+            var list = service.GetAssociates(Category.ToString(), Owner.ObjectID.Value);
             return list.ConvertAll((model) => {
                 return (ViewModelBase) new AssociateViewModel(model);
             });
@@ -108,12 +107,12 @@ namespace BioLink.Client.Extensibility {
         public override ViewModelBase AddNewItem(out DatabaseAction addAction) {
             var model = new Associate();
             model.AssociateID = -1;
-            model.FromIntraCatID = IntraCatID;
+            model.FromIntraCatID = Owner.ObjectID.Value;
             model.FromCategory = Category.ToString();
             model.Direction = "FromTo";
 
             var viewModel = new AssociateViewModel(model);
-            addAction = new InsertAssociateAction(model);
+            addAction = new InsertAssociateAction(model, Owner);
             return viewModel;
         }
 
@@ -140,8 +139,6 @@ namespace BioLink.Client.Extensibility {
         }
 
         public TraitCategoryType Category { get; private set; }
-
-        public int IntraCatID { get; private set; }
 
     }
 
