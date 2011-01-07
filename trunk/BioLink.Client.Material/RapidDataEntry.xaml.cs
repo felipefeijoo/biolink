@@ -196,7 +196,10 @@ namespace BioLink.Client.Material {
         }
 
         void materialViewModel_DataChanged(ChangeableModelBase viewmodel) {
-            // TODO:!
+            var material = viewmodel as RDEMaterialViewModel;
+            if (material != null) {
+                RegisterUniquePendingChange(new UpdateRDEMaterialAction(material.Model));
+            }
         }
 
         void siteVisitViewModel_DataChanged(ChangeableModelBase viewmodel) {
@@ -218,29 +221,18 @@ namespace BioLink.Client.Material {
             if (g != null) {
                 // First add the site
                 var siteViewModel = new RDESiteViewModel(new RDESite());
-                siteViewModel.DataChanged +=new DataChangedHandler(siteViewModel_DataChanged);
 
                 // and a new visit
-                var siteVisitViewModel = new RDESiteVisitViewModel(new RDESiteVisit());                
-                siteVisitViewModel.DataChanged +=new DataChangedHandler(siteVisitViewModel_DataChanged);
-                siteVisitViewModel.Site = siteViewModel;
-                siteVisitViewModel.SiteID = siteVisitViewModel.SiteID;
-                siteViewModel.SiteVisits.Add(siteVisitViewModel);
+                var siteVisitViewModel = AddNewSiteVisit(siteViewModel);
 
                 // and some material...
-                var materialViewModel = new RDEMaterialViewModel(new RDEMaterial());
-                materialViewModel.DataChanged +=new DataChangedHandler(materialViewModel_DataChanged);
-                materialViewModel.SiteVisit = siteVisitViewModel;
-                materialViewModel.SiteVisitID = siteVisitViewModel.SiteVisitID;
-                siteVisitViewModel.Material.Add(materialViewModel);
+                var materialViewModel = AddNewMaterial(siteVisitViewModel);
 
                 // Add the new site to the group and select it...
                 g.Items.Add(siteViewModel);
                 g.SelectedItem = siteViewModel;
 
                 RegisterPendingChange(new InsertRDESiteAction(siteViewModel.Model));
-                RegisterPendingChange(new InsertRDESiteVisitAction(siteVisitViewModel.Model));
-                RegisterPendingChange(new InsertRDEMaterialAction(materialViewModel.Model));
             }
 
         }
@@ -250,23 +242,13 @@ namespace BioLink.Client.Material {
             if (siteViewModel != null) {
 
                 // Add a new visit
-                var siteVisitViewModel = new RDESiteVisitViewModel(new RDESiteVisit());
-                siteVisitViewModel.DataChanged += new DataChangedHandler(siteVisitViewModel_DataChanged);
-                siteVisitViewModel.Site = siteViewModel;
-                siteVisitViewModel.SiteID = siteVisitViewModel.SiteID;
-                siteViewModel.SiteVisits.Add(siteVisitViewModel);
+                var siteVisitViewModel = AddNewSiteVisit(siteViewModel);
 
                 // and some material...
-                var materialViewModel = new RDEMaterialViewModel(new RDEMaterial());
-                materialViewModel.DataChanged += new DataChangedHandler(materialViewModel_DataChanged);
-                materialViewModel.SiteVisit = siteVisitViewModel;
-                materialViewModel.SiteVisitID = siteVisitViewModel.SiteVisitID;
-                siteVisitViewModel.Material.Add(materialViewModel);
+                var materialViewModel = AddNewMaterial(siteVisitViewModel);
 
                 grpSiteVisits.SelectedItem = siteVisitViewModel;
                 
-                RegisterPendingChange(new InsertRDESiteVisitAction(siteVisitViewModel.Model));
-                RegisterPendingChange(new InsertRDEMaterialAction(materialViewModel.Model));
             }
 
         }
@@ -274,21 +256,56 @@ namespace BioLink.Client.Material {
         private void grpMaterial_AddNewClicked(object sender, RoutedEventArgs e) {
             var siteVisitViewModel = grpSiteVisits.SelectedItem as RDESiteVisitViewModel;
             if (siteVisitViewModel != null) {
+                // create the new material...
+                var materialViewModel = AddNewMaterial(siteVisitViewModel);
+                // and select it
+                if (materialViewModel != null) {
+                    grpMaterial.SelectedItem = materialViewModel;
+                }
+            }
+        }
+
+        private RDESiteVisitViewModel AddNewSiteVisit(RDESiteViewModel site) {
+            var siteVisit = new RDESiteVisitViewModel(new RDESiteVisit());
+            
+            siteVisit.Site = site;
+            siteVisit.SiteID = site.SiteID;
+            site.SiteVisits.Add(siteVisit);
+
+            siteVisit.DataChanged +=new DataChangedHandler(siteVisitViewModel_DataChanged);
+            RegisterPendingChange(new InsertRDESiteVisitAction(siteVisit.Model, site.Model));
+            return siteVisit;
+        }
+
+        private RDEMaterialViewModel AddNewMaterial(RDESiteVisitViewModel siteVisit) {
+            if (siteVisit != null) {
 
                 // create the new material...
                 var materialViewModel = new RDEMaterialViewModel(new RDEMaterial());
-                materialViewModel.DataChanged += new DataChangedHandler(materialViewModel_DataChanged);
-                materialViewModel.SiteVisit = siteVisitViewModel;
-                materialViewModel.SiteVisitID = siteVisitViewModel.SiteVisitID;
-                siteVisitViewModel.Material.Add(materialViewModel);
-
-                grpMaterial.SelectedItem = materialViewModel;
                 
-                RegisterPendingChange(new InsertRDEMaterialAction(materialViewModel.Model));
-            }
-            
-        }
+                materialViewModel.SiteVisit = siteVisit;
+                materialViewModel.SiteVisitID = siteVisit.SiteVisitID;
 
+                siteVisit.Material.Add(materialViewModel);
+
+                // Add one subpart...
+                var subpart = new MaterialPartViewModel(new MaterialPart());
+                subpart.MaterialPartID = -1;
+                subpart.PartName = "<New>";
+
+                materialViewModel.SubParts.Add(subpart);
+
+                materialViewModel.DataChanged +=new DataChangedHandler(materialViewModel_DataChanged);
+
+                RegisterPendingChange(new InsertRDEMaterialAction(materialViewModel.Model, siteVisit.Model));
+                RegisterPendingChange(new InsertMaterialPartAction(subpart.Model, materialViewModel));
+
+                return materialViewModel;
+            }
+
+            return null;
+
+        }
 
     }
     

@@ -100,11 +100,44 @@ namespace BioLink.Client.Material {
 
     public class InsertRDEMaterialAction : GenericDatabaseAction<RDEMaterial> {
 
-        public InsertRDEMaterialAction(RDEMaterial model) : base(model) { }
+        public InsertRDEMaterialAction(RDEMaterial model, RDESiteVisit owner) : base(model) {
+            this.Owner = owner;
+        }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
+            Model.SiteVisitID = Owner.SiteVisitID;
             Model.MaterialID = service.InsertMaterial(Model.SiteVisitID);
+        }
+
+        protected RDESiteVisit Owner { get; private set; }
+    }
+
+    public class UpdateRDEMaterialAction : GenericDatabaseAction<RDEMaterial> {
+
+        public UpdateRDEMaterialAction(RDEMaterial model) : base(model) { }
+
+        protected override void ProcessImpl(User user) {
+            var service = new MaterialService(user);
+            service.UpdateMaterial(MapToMaterial(Model));
+        }
+
+        private static Data.Model.Material MapToMaterial(RDEMaterial s) {
+            var m = new Data.Model.Material();
+            m.MaterialID = s.MaterialID;
+            m.SiteVisitID = s.SiteVisitID;
+            m.MaterialName = s.MaterialName;
+            m.AccessionNumber = s.AccessionNo;
+            m.BiotaID = s.BiotaID;
+            m.CollectionMethod = s.CollectionMethod;
+            m.CollectorNumber = s.CollectorNo;
+            m.IdentificationDate = s.IDDate;
+            m.IdentifiedBy = s.ClassifiedBy;
+            m.Institution = s.Institution;
+            m.MacroHabitat = s.MacroHabitat;
+            m.MicroHabitat = s.MicroHabitat;
+            m.TrapID = s.TrapID.GetValueOrDefault(-1);
+            return m;
         }
 
     }

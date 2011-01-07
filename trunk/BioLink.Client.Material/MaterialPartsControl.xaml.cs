@@ -154,5 +154,25 @@ namespace BioLink.Client.Material {
         public bool IsPopulated {
             get { return _populated; }
         }
+
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(MaterialPartsControl), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnIsReadOnlyChanged));
+
+        public bool IsReadOnly {
+            get { return (bool)GetValue(IsReadOnlyProperty); }
+            set { SetValue(IsReadOnlyProperty, value); }
+        }
+
+        private static void OnIsReadOnlyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+
+            var control = obj as MaterialPartsControl;
+            if (control != null) {
+                bool val = (bool)args.NewValue;
+                control.detailGrid.IsEnabled = !val;
+                control.btnAdd.IsEnabled = !val;
+                control.btnDelete.IsEnabled = !val;
+            }
+
+        }
+
     }
 }

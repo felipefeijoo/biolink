@@ -26,9 +26,10 @@ namespace BioLink.Data {
         public T Model { get; private set; }
 
         public override bool Equals(object obj) {
-            GenericDatabaseAction<T> other = obj as GenericDatabaseAction<T>;
-            if (other != null) {
-                return other.Model.ObjectID == Model.ObjectID;
+
+            if (obj.GetType() == this.GetType()) {
+                var other = obj as GenericDatabaseAction<T>;
+                return other.Model == Model;
             }
             return false;
         }
