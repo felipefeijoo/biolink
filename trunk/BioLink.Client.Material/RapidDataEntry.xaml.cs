@@ -48,12 +48,24 @@ namespace BioLink.Client.Material {
 
                 grpSites.Items = siteModel;
                 
-            }            
+            }
+
+            grpMaterial.IsUnlockedChanged += new Action<ItemsGroupBox, bool>(grpMaterial_IsUnlockedChanged);
 
             grpSites.Content = new SiteRDEControl(user);
             grpSiteVisits.Content = new SiteVisitRDEControl(user);
             grpMaterial.Content = new MaterialRDEControl(user);
 
+        }
+
+        void grpMaterial_IsUnlockedChanged(ItemsGroupBox arg1, bool isUnlocked) {
+            //var material = grpMaterial.SelectedItem as RDEMaterialViewModel;
+            //if (material != null) {
+            //    foreach (ViewModelBase vmb in material.Associates) {
+            //        var assoc = vmb as AssociateViewModel;
+            //        assoc.Locked = !isUnlocked;
+            //    }
+            //}
         }
 
         private RDESiteViewModel BuildModel(int objectId, SiteExplorerNodeType objectType) {
@@ -140,13 +152,23 @@ namespace BioLink.Client.Material {
 
                 // for the material id list we can extract all the subparts in one round trip...
                 var subparts = service.GetMaterialParts(materialIds);
+                // and associates as well. This means we only need one pass through the material list in order to
+                // hook up subordinate records
+                var associates = supportService.GetAssociates(TraitCategoryType.Material.ToString(), materialIds);
                 // But we have to hook them back up to the right material.
                 foreach (RDEMaterialViewModel m in materialList) {
-                    var selected = subparts.Where((part) => { return part.MaterialID == m.MaterialID; });
-                    m.SubParts = new ObservableCollection<ViewModelBase>(selected.Select((part) => {
+                    var selectedSubParts = subparts.Where((part) => { return part.MaterialID == m.MaterialID; });
+                    m.SubParts = new ObservableCollection<ViewModelBase>(selectedSubParts.Select((part) => {
                         var vm = new MaterialPartViewModel(part);
                         vm.Locked = m.Locked;
                         vm.DataChanged += new DataChangedHandler(SubPart_DataChanged);
+                        return vm;
+                    }));
+
+                    var selectedAssociates = associates.Where((assoc) => { return assoc.FromIntraCatID == m.MaterialID || assoc.ToIntraCatID == m.MaterialID; });
+                    m.Associates = new ObservableCollection<ViewModelBase>(selectedAssociates.Select((assoc) => {
+                        var vm = new AssociateViewModel(assoc);                        
+                        vm.DataChanged += new DataChangedHandler(associate_DataChanged);
                         return vm;
                     }));
                 }
@@ -154,6 +176,13 @@ namespace BioLink.Client.Material {
             }
 
             return root;
+        }
+
+        void associate_DataChanged(ChangeableModelBase viewmodel) {
+            var assoc = viewmodel as AssociateViewModel;
+            if (assoc != null) {
+                RegisterUniquePendingChange(new UpdateAssociateAction(assoc.Model));
+            }
         }
 
         void SubPart_DataChanged(ChangeableModelBase viewmodel) {

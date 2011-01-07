@@ -42,11 +42,7 @@ namespace BioLink.Client.Tools {
             this.Owner = owner;
             lvwResults.SelectionChanged += new SelectionChangedEventHandler((sender, e) => {
                 var item = lvwResults.SelectedItem as ReferenceSearchResultViewModel;
-                if (item != null) {
-                    txtRTF.DataContext = item;
-                } else {
-                    txtRTF.Document.Blocks.Clear();
-                }
+                txtRTF.DataContext = item;
             });
 
             ChangesCommitted += new PendingChangesCommittedHandler(ReferenceManager_ChangesCommitted);
@@ -245,9 +241,16 @@ namespace BioLink.Client.Tools {
 
         }
 
+        private ObservableCollection<ReferenceSearchResultViewModel> _searchModel;
+
         private void DoSearch() {
 
-            lvwResults.ItemsSource = null;
+            if (_searchModel == null) {
+                _searchModel = new ObservableCollection<ReferenceSearchResultViewModel>();
+                lvwResults.ItemsSource = _searchModel;
+            }
+
+            _searchModel.Clear();
 
             if (string.IsNullOrEmpty(txtAuthor.Text) && string.IsNullOrEmpty(txtCode.Text) && string.IsNullOrEmpty(txtOther.Text) && string.IsNullOrEmpty(txtYear.Text)) {
                 ErrorMessage.Show("Please enter some search criteria");
@@ -258,8 +261,10 @@ namespace BioLink.Client.Tools {
 
             lblStatus.Content = string.Format("{0} matching references found.", data.Count);
 
-            var model = new ObservableCollection<ReferenceSearchResultViewModel>(data.ConvertAll(item => new ReferenceSearchResultViewModel(item)));
-            lvwResults.ItemsSource = model;
+            data.ForEach(item => {
+                _searchModel.Add(new ReferenceSearchResultViewModel(item));
+            });
+            
         }
 
         private string Wildcard(string str) {

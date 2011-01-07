@@ -17,7 +17,7 @@ namespace BioLink.Client.Extensibility {
 
 
         public OneToManyDetailControl(User user, string contentId) {
-            this.User = user;
+            this.User = user;            
             this.ContentID = contentId;
         }
 
@@ -47,6 +47,10 @@ namespace BioLink.Client.Extensibility {
         public string ContentID { get; private set; }
 
         public User User { get; private set; }
+
+        public ViewModelBase Owner { get; set; }
+
+        public OneToManyControl Host { get; set; }
 
         #endregion
 

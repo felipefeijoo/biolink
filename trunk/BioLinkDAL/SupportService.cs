@@ -826,6 +826,7 @@ namespace BioLink.Data {
         }
 
         public void UpdateAssociate(Associate a) {
+
             StoredProcUpdate("spAssociateUpdate",
                 _P("intAssociateID", a.AssociateID),
                 _P("intFromIntraCatID", a.FromIntraCatID),

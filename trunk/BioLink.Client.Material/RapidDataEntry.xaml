@@ -43,6 +43,9 @@
                 <Setter Property="IsReadOnly" Value="{Binding Locked}" />
             </Style>
 
+            <Style TargetType="{x:Type ext:OneToManyControl}">
+                <Setter Property="IsReadOnly" Value="{Binding Locked}" />
+            </Style>
 
         </Grid.Resources>
         

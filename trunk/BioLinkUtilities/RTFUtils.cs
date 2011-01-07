@@ -16,6 +16,10 @@ namespace BioLink.Client.Utilities {
                 return rtf;
             }
 
+            if (!rtf.StartsWith("{") && !rtf.EndsWith("}")) {
+                return rtf;
+            }
+
             var m = XX.Match(rtf);
             if (m.Success) {
                 rtf = string.Format("{{{0}}}", m.Groups[1]);
