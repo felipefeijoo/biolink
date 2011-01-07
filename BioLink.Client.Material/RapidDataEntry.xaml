@@ -39,6 +39,11 @@
                 <Setter Property="IsReadOnly" Value="{Binding Locked}" />
             </Style>
 
+            <Style TargetType="{x:Type mat:MaterialPartsControl}">
+                <Setter Property="IsReadOnly" Value="{Binding Locked}" />
+            </Style>
+
+
         </Grid.Resources>
         
         <ScrollViewer HorizontalScrollBarVisibility="Auto">

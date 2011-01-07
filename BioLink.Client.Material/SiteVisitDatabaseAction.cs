@@ -108,12 +108,15 @@ namespace BioLink.Client.Material {
 
     public class InsertRDESiteVisitAction : GenericDatabaseAction<RDESiteVisit> {
 
-        public InsertRDESiteVisitAction(RDESiteVisit model) : base(model) { }
+        public InsertRDESiteVisitAction(RDESiteVisit model, RDESite owner) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
+            Model.SiteID = Owner.SiteID;
             Model.SiteVisitID = service.InsertSiteVisit(Model.SiteID);
         }
+
+        protected RDESite Owner { get; private set; }
 
     }
 

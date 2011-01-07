@@ -27,7 +27,7 @@
                         <Label Grid.Row="0" Background="{TemplateBinding HeaderBackground}" Margin="14,0,0,0" HorizontalAlignment="Left">
                             <Label.Content>
                                 <StackPanel Orientation="Horizontal">
-                                    <Image Source="{TemplateBinding LockIcon}" UseLayoutRounding="True" SnapsToDevicePixels="True" Height="16" Width="16" Visibility="{TemplateBinding LockIconVisibility}"/>
+                                    <Image Source="{TemplateBinding LockIcon}" UseLayoutRounding="True" SnapsToDevicePixels="True" Height="20" Width="20" Visibility="{TemplateBinding LockIconVisibility}" />
                                     <TextBlock Text="{TemplateBinding HeaderPrefix}" Margin="3,0,3,0" FontWeight="{TemplateBinding HeaderFontWeight}" Foreground="{TemplateBinding HeaderForeground}" />
                                     <TextBlock Text="{TemplateBinding Header}" FontWeight="{TemplateBinding HeaderFontWeight}" Foreground="{TemplateBinding HeaderForeground}"/>
                                 </StackPanel>
