@@ -46,6 +46,14 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
+        public void MoveNext(RoutedEventArgs e) {
+            OnNextClicked(e);
+        }
+
+        public void MovePrevious(RoutedEventArgs e) {
+            OnPrevClicked(e);
+        }
+
         private void OnNextClicked(RoutedEventArgs e) {
 
             if (_items != null) {

@@ -6,7 +6,7 @@
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
              xmlns:mat="clr-namespace:BioLink.Client.Material"
              mc:Ignorable="d" 
-             d:DesignHeight="550" d:DesignWidth="826" >
+             d:DesignHeight="550" d:DesignWidth="826" FocusManager.IsFocusScope="True">
     <Grid>
         <Grid.Resources>
             <ext:NegatingConverter x:Key="NegatingConverter" />
@@ -49,7 +49,31 @@
 
         </Grid.Resources>
         
-        <ScrollViewer HorizontalScrollBarVisibility="Auto">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="23" />                
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <Menu>
+            <MenuItem Header="_File" />
+            <MenuItem Header="_Edit">
+                <MenuItem Header="E_dit Detail">
+                    <MenuItem x:Name="mnuEditSite" Header="_Site..." Click="mnuEditSite_Click" />
+                    <MenuItem x:Name="mnuEditSiteVisit" Header="Site _Visit..." Click="mnuEditSiteVisit_Click" />
+                    <MenuItem x:Name="mnuEditMaterial" Header="_Material..." Click="mnuEditMaterial_Click" />
+                </MenuItem>
+                <MenuItem Header="_Add">
+                    <MenuItem x:Name="mnuAddSite" Header="_Site" Command="{x:Static mat:RapidDataEntry.AddNewSiteCmd}" />
+                    <MenuItem x:Name="mnuAddSiteVisit" Header="Site Visit" Command="{x:Static mat:RapidDataEntry.AddNewSiteVisitCmd}" />
+                    <MenuItem x:Name="mnuAddMaterial" Header="_Material" Command="{x:Static mat:RapidDataEntry.AddNewMaterialCmd}" />
+                </MenuItem>
+                <Separator />
+                <MenuItem x:Name="mnuNext" Header="_Next" Command="{x:Static mat:RapidDataEntry.MoveNextCmd}" />
+                <MenuItem x:Name="mnuPrev" Header="_Previous" Command="{x:Static mat:RapidDataEntry.MovePreviousCmd}" />
+            </MenuItem>
+        </Menu>
+        
+        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto">
             <Grid MinWidth="600" MinHeight="450">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />

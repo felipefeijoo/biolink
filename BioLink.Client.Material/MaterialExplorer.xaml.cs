@@ -953,9 +953,14 @@ namespace BioLink.Client.Material {
         }
 
         internal void EditRDE(SiteExplorerNodeViewModel node) {
-            if (node.NodeType == SiteExplorerNodeType.Site || node.NodeType == SiteExplorerNodeType.SiteVisit || node.NodeType == SiteExplorerNodeType.Material) {
-                var control = new RapidDataEntry(User, node.ElemID, node.NodeType);
+            if (node == null) {
+                var control = new RapidDataEntry(User, -1, SiteExplorerNodeType.Site);
                 PluginManager.Instance.AddNonDockableContent(Owner, control, "RDE", SizeToContent.Manual);
+            } else {
+                if (node.NodeType == SiteExplorerNodeType.Site || node.NodeType == SiteExplorerNodeType.SiteVisit || node.NodeType == SiteExplorerNodeType.Material) {
+                    var control = new RapidDataEntry(User, node.ElemID, node.NodeType);
+                    PluginManager.Instance.AddNonDockableContent(Owner, control, "RDE", SizeToContent.Manual);
+                }
             }
         }
     }
