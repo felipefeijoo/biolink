@@ -32,6 +32,12 @@ namespace BioLink.Client.Material {
                 String.Format("{{'Name':'ShowMaterialExplorer', 'Header':'{0}'}}", _R("MATERIAL.Menu.ShowExplorer"))
             ));
 
+            contrib.Add(new MenuWorkspaceContribution(this, "ShowRDE", (obj, e) => { ShowRDE(); },
+                "{'Name':'Tools', 'Header':'_Tools','InsertAfter':'File'}",
+                "{'Name':'ShowMaterialExplorer', 'Header':'_Rapid Data Entry'}"
+            ));
+
+
             _explorer = new MaterialExplorer(this);
             contrib.Add(new ExplorerWorkspaceContribution<MaterialExplorer>(this, "MaterialExplorer", _explorer, _R("MaterialExplorer.Title"), (explorer) => {
                 explorer.InitializeMaterialExplorer();
@@ -174,6 +180,10 @@ namespace BioLink.Client.Material {
             }
 
             return list;
+        }
+
+        public void ShowRDE() {            
+            _explorer.EditRDE(null);
         }
 
         public override bool CanEditObjectType(LookupType type) {

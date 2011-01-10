@@ -23,15 +23,27 @@ namespace BioLink.Client.Material {
     /// </summary>
     public partial class RapidDataEntry : DatabaseActionControl {
 
+        private int _objectId;
+        private SiteExplorerNodeType _objectType;
+
         public RapidDataEntry(User user, int objectId, SiteExplorerNodeType objectType) : base(user, "RDE") {
             InitializeComponent();
 
-            var root = BuildModel(objectId, objectType);
+            _objectId = objectId;
+            _objectType = objectType;
+
+            this.Loaded += new RoutedEventHandler(RapidDataEntry_Loaded);
+
+        }
+
+        void RapidDataEntry_Loaded(object sender, RoutedEventArgs evt) {
+
+            var root = BuildModel(_objectId, _objectType);
 
             if (root != null) {
                 var siteModel = new ObservableCollection<ViewModelBase>();
                 siteModel.Add(root);
-                
+
                 grpSites.DataContextChanged += new DependencyPropertyChangedEventHandler((s, e) => {
                     var site = e.NewValue as RDESiteViewModel;
                     if (site != null) {
@@ -47,25 +59,28 @@ namespace BioLink.Client.Material {
                 });
 
                 grpSites.Items = siteModel;
-                
-            }
 
-            grpMaterial.IsUnlockedChanged += new Action<ItemsGroupBox, bool>(grpMaterial_IsUnlockedChanged);
+            } 
 
-            grpSites.Content = new SiteRDEControl(user);
-            grpSiteVisits.Content = new SiteVisitRDEControl(user);
-            grpMaterial.Content = new MaterialRDEControl(user);
+            grpSites.Content = new SiteRDEControl(User);
+            grpSiteVisits.Content = new SiteVisitRDEControl(User);
+            grpMaterial.Content = new MaterialRDEControl(User);
 
-        }
+            // Bind input gestures to the commands...
+            AddNewSiteCmd.InputGestures.Add(new KeyGesture(Key.T, ModifierKeys.Control));
+            AddNewSiteVisitCmd.InputGestures.Add(new KeyGesture(Key.I, ModifierKeys.Control));
+            AddNewMaterialCmd.InputGestures.Add(new KeyGesture(Key.M, ModifierKeys.Control));
+            MoveNextCmd.InputGestures.Add(new KeyGesture(Key.N, ModifierKeys.Control));
+            MovePreviousCmd.InputGestures.Add(new KeyGesture(Key.P, ModifierKeys.Control));
 
-        void grpMaterial_IsUnlockedChanged(ItemsGroupBox arg1, bool isUnlocked) {
-            //var material = grpMaterial.SelectedItem as RDEMaterialViewModel;
-            //if (material != null) {
-            //    foreach (ViewModelBase vmb in material.Associates) {
-            //        var assoc = vmb as AssociateViewModel;
-            //        assoc.Locked = !isUnlocked;
-            //    }
-            //}
+            // Command Bindings...            
+            this.FindParentWindow().CommandBindings.Add(new CommandBinding(AddNewSiteCmd, ExecutedAddNewSite, CanExecuteAddNewSite));
+            this.FindParentWindow().CommandBindings.Add(new CommandBinding(AddNewSiteVisitCmd, ExecutedAddNewSiteVisit, CanExecuteAddNewSiteVisit));
+            this.FindParentWindow().CommandBindings.Add(new CommandBinding(AddNewMaterialCmd, ExecutedAddNewMaterial, CanExecuteAddNewMaterial));
+
+            this.FindParentWindow().CommandBindings.Add(new CommandBinding(MoveNextCmd, ExecutedMoveNext, CanExecuteMoveNext));
+            this.FindParentWindow().CommandBindings.Add(new CommandBinding(MovePreviousCmd, ExecutedMovePrevious, CanExecuteMovePrevious));
+
         }
 
         private RDESiteViewModel BuildModel(int objectId, SiteExplorerNodeType objectType) {
@@ -74,6 +89,14 @@ namespace BioLink.Client.Material {
 
             RDESiteViewModel root = null;
             List<RDEMaterial> material = null;
+
+            if (objectId < 0) {                
+                root = CreateSiteViewModel(new RDESite());
+                RegisterPendingChange(new InsertRDESiteAction(root.Model));
+                var siteVisit = AddNewSiteVisit(root);
+                var newMaterial = AddNewMaterial(siteVisit);
+                return root;
+            }
 
             switch (objectType) {
                 case SiteExplorerNodeType.Site:
@@ -246,27 +269,31 @@ namespace BioLink.Client.Material {
         }
 
         private void grpSites_AddNewClicked(object sender, RoutedEventArgs e) {
-            var g = sender as ItemsGroupBox;
-            if (g != null) {
-                // First add the site
-                var siteViewModel = new RDESiteViewModel(new RDESite());
-
-                // and a new visit
-                var siteVisitViewModel = AddNewSiteVisit(siteViewModel);
-
-                // and some material...
-                var materialViewModel = AddNewMaterial(siteVisitViewModel);
-
-                // Add the new site to the group and select it...
-                g.Items.Add(siteViewModel);
-                g.SelectedItem = siteViewModel;
-
-                RegisterPendingChange(new InsertRDESiteAction(siteViewModel.Model));
-            }
-
+            AddNewSite();
         }
 
-        private void grpSiteVisits_AddNewClicked(object sender, RoutedEventArgs e) {            
+        private void AddNewSite() {
+            // First add the site
+            var siteViewModel = CreateSiteViewModel(new RDESite());
+
+            // and a new visit
+            var siteVisitViewModel = AddNewSiteVisit(siteViewModel);
+
+            // and some material...
+            var materialViewModel = AddNewMaterial(siteVisitViewModel);
+
+            // Add the new site to the group and select it...
+            grpSites.Items.Add(siteViewModel);
+            grpSites.SelectedItem = siteViewModel;
+
+            RegisterPendingChange(new InsertRDESiteAction(siteViewModel.Model));
+        }
+
+        private void grpSiteVisits_AddNewClicked(object sender, RoutedEventArgs e) {
+            AddNewSiteVisit();
+        }
+
+        private void AddNewSiteVisit() {
             var siteViewModel = grpSites.SelectedItem as RDESiteViewModel;
             if (siteViewModel != null) {
 
@@ -279,10 +306,13 @@ namespace BioLink.Client.Material {
                 grpSiteVisits.SelectedItem = siteVisitViewModel;
                 
             }
-
         }
 
         private void grpMaterial_AddNewClicked(object sender, RoutedEventArgs e) {
+            AddNewMaterial();
+        }
+
+        private void AddNewMaterial() {
             var siteVisitViewModel = grpSiteVisits.SelectedItem as RDESiteVisitViewModel;
             if (siteVisitViewModel != null) {
                 // create the new material...
@@ -335,6 +365,187 @@ namespace BioLink.Client.Material {
             return null;
 
         }
+
+        private void EditDetails(ViewModelBase selected, LookupType objectType) {
+
+            if (selected == null || !selected.ObjectID.HasValue) {
+                return;
+            }
+
+            if (HasPendingChanges) {
+                if (this.Question("There are unsaved changes. Press 'Yes' to save all changes and continue, or 'No' to cancel the edit", "Edit unsaved data")) {
+                    CommitPendingChanges();
+                } else {
+                    // abort!
+                    return;
+                }
+            }
+
+            PluginManager.Instance.EditLookupObject(objectType, selected.ObjectID.Value);
+        }
+
+        private void mnuEditSite_Click(object sender, RoutedEventArgs e) {
+            EditDetails(grpSites.SelectedItem, LookupType.Site);
+        }
+
+        private void mnuEditSiteVisit_Click(object sender, RoutedEventArgs e) {
+            EditDetails(grpSiteVisits.SelectedItem, LookupType.SiteVisit);
+        }
+
+        private void mnuEditMaterial_Click(object sender, RoutedEventArgs e) {
+            EditDetails(grpMaterial.SelectedItem, LookupType.Material);
+        }
+
+        private ItemsGroupBox GetSelectedGroup() {
+            var element = FocusManager.GetFocusedElement(this);
+
+            if (element != null && element is FrameworkElement) {
+                var fw = element as FrameworkElement;
+                var group = fw.FindParent<ItemsGroupBox>();
+                return group;
+            }
+            return null;
+        }
+
+        private void MoveNext(RoutedEventArgs e) {
+            var group = GetSelectedGroup();
+            if (group != null) {
+                group.MoveNext(e);
+            }
+        }
+
+        private void MovePrevious(RoutedEventArgs e) {
+            var group = GetSelectedGroup();
+            if (group != null) {
+                group.MovePrevious(e);
+            }
+        }
+
+        public static RoutedCommand AddNewSiteCmd = new RoutedCommand();
+
+        private void ExecutedAddNewSite(object sender, ExecutedRoutedEventArgs e) {
+            RapidDataEntry rde = null;
+            if (e.Source is RapidDataEntry) {
+                rde = e.Source as RapidDataEntry;
+            } else if (e.Source is ControlHostWindow) {
+                var window = e.Source as ControlHostWindow;
+                rde = window.Control as RapidDataEntry;
+            }
+            if (rde != null) {
+                rde.AddNewSite();
+            }
+        }
+
+        private void CanExecuteAddNewSite(object sender, CanExecuteRoutedEventArgs e) {
+            Control target = e.Source as Control;
+
+            if (target != null) {
+                e.CanExecute = true;
+            } else {
+                e.CanExecute = false;
+            }
+        }
+
+        public static RoutedCommand AddNewSiteVisitCmd = new RoutedCommand();
+
+        private void ExecutedAddNewSiteVisit(object sender, ExecutedRoutedEventArgs e) {
+            RapidDataEntry rde = null;
+            if (e.Source is RapidDataEntry) {
+                rde = e.Source as RapidDataEntry;
+            } else if (e.Source is ControlHostWindow) {
+                var window = e.Source as ControlHostWindow;
+                rde = window.Control as RapidDataEntry;
+            }
+            if (rde != null) {
+                rde.AddNewSiteVisit();
+            }
+        }
+
+        private void CanExecuteAddNewSiteVisit(object sender, CanExecuteRoutedEventArgs e) {
+            Control target = e.Source as Control;
+
+            if (target != null) {
+                e.CanExecute = true;
+            } else {
+                e.CanExecute = false;
+            }
+        }
+
+        public static RoutedCommand AddNewMaterialCmd = new RoutedCommand();
+
+        private void ExecutedAddNewMaterial(object sender, ExecutedRoutedEventArgs e) {
+            RapidDataEntry rde = null;
+            if (e.Source is RapidDataEntry) {
+                rde = e.Source as RapidDataEntry;
+            } else if (e.Source is ControlHostWindow) {
+                var window = e.Source as ControlHostWindow;
+                rde = window.Control as RapidDataEntry;
+            }
+            if (rde != null) {
+                rde.AddNewMaterial();
+            }
+        }
+
+        private void CanExecuteAddNewMaterial(object sender, CanExecuteRoutedEventArgs e) {
+            Control target = e.Source as Control;
+
+            if (target != null) {
+                e.CanExecute = true;
+            } else {
+                e.CanExecute = false;
+            }
+        }
+
+        public static RoutedCommand MoveNextCmd = new RoutedCommand();
+
+        private void ExecutedMoveNext(object sender, ExecutedRoutedEventArgs e) {
+            RapidDataEntry rde = null;
+            if (e.Source is RapidDataEntry) {
+                rde = e.Source as RapidDataEntry;
+            } else if (e.Source is ControlHostWindow) {
+                var window = e.Source as ControlHostWindow;
+                rde = window.Control as RapidDataEntry;
+            }
+            if (rde != null) {
+                rde.MoveNext(e);
+            }
+        }
+
+        private void CanExecuteMoveNext(object sender, CanExecuteRoutedEventArgs e) {
+            Control target = e.Source as Control;
+
+            if (target != null) {
+                e.CanExecute = true;
+            } else {
+                e.CanExecute = false;
+            }
+        }
+
+        public static RoutedCommand MovePreviousCmd = new RoutedCommand();
+
+        private void ExecutedMovePrevious(object sender, ExecutedRoutedEventArgs e) {
+            RapidDataEntry rde = null;
+            if (e.Source is RapidDataEntry) {
+                rde = e.Source as RapidDataEntry;
+            } else if (e.Source is ControlHostWindow) {
+                var window = e.Source as ControlHostWindow;
+                rde = window.Control as RapidDataEntry;
+            }
+            if (rde != null) {
+                rde.MovePrevious(e);
+            }
+        }
+
+        private void CanExecuteMovePrevious(object sender, CanExecuteRoutedEventArgs e) {
+            Control target = e.Source as Control;
+
+            if (target != null) {
+                e.CanExecute = true;
+            } else {
+                e.CanExecute = false;
+            }
+        }
+
 
     }
     

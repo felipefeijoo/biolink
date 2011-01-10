@@ -12,6 +12,7 @@ namespace BioLink.Client.Material {
 
         public RDEMaterialViewModel(RDEMaterial model) : base(model, ()=>model.MaterialID) {
             this.SubParts = new ObservableCollection<ViewModelBase>();
+            this.Associates = new ObservableCollection<ViewModelBase>();
         }
 
         public int SiteVisitID {
