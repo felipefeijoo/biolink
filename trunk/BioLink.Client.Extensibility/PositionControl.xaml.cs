@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using BioLink.Data.Model;
 
 namespace BioLink.Client.Extensibility {
     /// <summary>
@@ -108,6 +109,20 @@ namespace BioLink.Client.Extensibility {
                 control.btnEgaz.IsEnabled = !val;
             }
 
+        }
+
+        private void btnEgaz_Click(object sender, RoutedEventArgs e) {
+            LaunchGazetteer();
+        }
+
+        private void LaunchGazetteer() {
+            PluginManager.Instance.StartSelect(typeof(PlaceName), (result) => {
+                var place = result.DataObject as PlaceName;
+                if (place != null) {
+                    lat.Value = place.Latitude;
+                    lon.Value = place.Longitude;
+                }
+            });
         }
 
     }

@@ -23,10 +23,25 @@ namespace BioLink.Client.Material {
     /// </summary>
     public partial class RapidDataEntry : DatabaseActionControl {
 
+        private static string CONFIG_LAT_LONG_FORMAT = "RDE.LatLongFormat";
+        private static string CONFIG_LOCKING_MODE = "RDE.LockAtStartMode";
+        private static string CONFIG_AUTOFILL_MODE = "RDE.AutoFillMode";
+
         private int _objectId;
         private SiteExplorerNodeType _objectType;
+        private bool _startLockMode;
+        private AutoFillMode _autoFillMode = AutoFillMode.NoAutoFill;
 
         public RapidDataEntry(User user, int objectId, SiteExplorerNodeType objectType) : base(user, "RDE") {
+
+            // Bind input gestures to the commands...
+            AddNewSiteCmd.InputGestures.Add(new KeyGesture(Key.T, ModifierKeys.Control));
+            AddNewSiteVisitCmd.InputGestures.Add(new KeyGesture(Key.I, ModifierKeys.Control));
+            AddNewMaterialCmd.InputGestures.Add(new KeyGesture(Key.M, ModifierKeys.Control));
+            MoveNextCmd.InputGestures.Add(new KeyGesture(Key.N, ModifierKeys.Control));
+            MovePreviousCmd.InputGestures.Add(new KeyGesture(Key.P, ModifierKeys.Control));
+            UnlockAllCmd.InputGestures.Add(new KeyGesture(Key.U, ModifierKeys.Control));
+
             InitializeComponent();
 
             _objectId = objectId;
@@ -37,6 +52,12 @@ namespace BioLink.Client.Material {
         }
 
         void RapidDataEntry_Loaded(object sender, RoutedEventArgs evt) {
+
+            _startLockMode = Config.GetUser(User, CONFIG_LOCKING_MODE, true);
+            SetStartingLockMode(_startLockMode);
+
+            _autoFillMode = Config.GetUser(User, CONFIG_AUTOFILL_MODE, AutoFillMode.NoAutoFill);
+            SetAutoFillMode(_autoFillMode);
 
             var root = BuildModel(_objectId, _objectType);
 
@@ -60,26 +81,22 @@ namespace BioLink.Client.Material {
 
                 grpSites.Items = siteModel;
 
-            } 
+            }
 
             grpSites.Content = new SiteRDEControl(User);
             grpSiteVisits.Content = new SiteVisitRDEControl(User);
             grpMaterial.Content = new MaterialRDEControl(User);
 
-            // Bind input gestures to the commands...
-            AddNewSiteCmd.InputGestures.Add(new KeyGesture(Key.T, ModifierKeys.Control));
-            AddNewSiteVisitCmd.InputGestures.Add(new KeyGesture(Key.I, ModifierKeys.Control));
-            AddNewMaterialCmd.InputGestures.Add(new KeyGesture(Key.M, ModifierKeys.Control));
-            MoveNextCmd.InputGestures.Add(new KeyGesture(Key.N, ModifierKeys.Control));
-            MovePreviousCmd.InputGestures.Add(new KeyGesture(Key.P, ModifierKeys.Control));
+            var latLongMode = Config.GetUser(User, CONFIG_LAT_LONG_FORMAT, LatLongInput.LatLongMode.DegreesMinutesSeconds);
+            SetLatLongFormat(latLongMode);
 
             // Command Bindings...            
             this.FindParentWindow().CommandBindings.Add(new CommandBinding(AddNewSiteCmd, ExecutedAddNewSite, CanExecuteAddNewSite));
             this.FindParentWindow().CommandBindings.Add(new CommandBinding(AddNewSiteVisitCmd, ExecutedAddNewSiteVisit, CanExecuteAddNewSiteVisit));
             this.FindParentWindow().CommandBindings.Add(new CommandBinding(AddNewMaterialCmd, ExecutedAddNewMaterial, CanExecuteAddNewMaterial));
-
             this.FindParentWindow().CommandBindings.Add(new CommandBinding(MoveNextCmd, ExecutedMoveNext, CanExecuteMoveNext));
             this.FindParentWindow().CommandBindings.Add(new CommandBinding(MovePreviousCmd, ExecutedMovePrevious, CanExecuteMovePrevious));
+            this.FindParentWindow().CommandBindings.Add(new CommandBinding(UnlockAllCmd, ExecutedUnlockAll, CanExecuteUnlockAll));
 
         }
 
@@ -107,7 +124,7 @@ namespace BioLink.Client.Material {
                         var idList = new List<Int32>(); // This collection will keep track of every site visit id for later use...
                         root.SiteVisits = new ObservableCollection<ViewModelBase>(siteVisits.ConvertAll((sv) => {
                             var vm = CreateSiteVisitViewModel(sv, root);
-                            idList.Add(vm.SiteVisitID);
+                            idList.Add(vm.SiteVisitID);                            
                             return vm;
                         }));
 
@@ -218,7 +235,10 @@ namespace BioLink.Client.Material {
         private RDESiteViewModel CreateSiteViewModel(RDESite site) {
             var supportService = new SupportService(User);
             var vm = new RDESiteViewModel(site);
-            vm.Traits = supportService.GetTraits(TraitCategoryType.Site.ToString(), site.SiteID);
+            vm.Locked = _startLockMode;
+            if (site.SiteID >= 0) {
+                vm.Traits = supportService.GetTraits(TraitCategoryType.Site.ToString(), site.SiteID);
+            }
             vm.DataChanged += new DataChangedHandler(siteViewModel_DataChanged);
             return vm;
         }
@@ -228,6 +248,7 @@ namespace BioLink.Client.Material {
             vm.DataChanged += new DataChangedHandler(siteVisitViewModel_DataChanged);
             vm.Site = site;
             vm.SiteID = site.SiteID;
+            vm.Locked = _startLockMode;
             site.SiteVisits.Add(vm);
             return vm;
         }
@@ -243,6 +264,7 @@ namespace BioLink.Client.Material {
                 vm.SiteVisit = siteVisit;
                 vm.SiteVisitID = siteVisit.SiteVisitID;
                 siteVisit.Material.Add(vm);
+                vm.Locked = _startLockMode;
                 return (ViewModelBase)vm;
             }));
         }
@@ -272,28 +294,111 @@ namespace BioLink.Client.Material {
             AddNewSite();
         }
 
-        private void AddNewSite() {
+        private RDESite CreateNewSite(out List<Trait> traits) {
+            RDESite ret = null;
+            traits = null;
+            switch (_autoFillMode) {
+                case AutoFillMode.NoAutoFill:
+                    ret = new RDESite();
+                    break;
+                case AutoFillMode.CopyCurrentData:
+                    var current = grpSites.SelectedItem as RDESiteViewModel;
+                    
+                    if (current != null) {
+                        ret = ReflectionUtils.Clone(current.Model);
+                        ret.SiteID = -1;
+                        ret.SiteName = null;
+                        traits = new List<Trait>();
+                        var control = grpSites.Content as SiteRDEControl;
+                        if (control != null) {
+                            foreach (Trait t in control.GetTraits()) {
+                                var newTrait = ReflectionUtils.Clone(t);
+                                newTrait.IntraCatID = -1;
+                                traits.Add(newTrait);
+                            }
+                        }
+                    }
+                    break;
+                case AutoFillMode.TemplateData:
+                    throw new NotImplementedException();
+                    
+            }
+
+            if (ret == null) {
+                ret = new RDESite();
+            }
+
+            ret.Locked = false;
+
+            return ret;
+        }
+
+        private RDESiteVisit CreateNewSiteVisit() {
+            RDESiteVisit ret = null;
+            
+            switch (_autoFillMode) {
+                case AutoFillMode.NoAutoFill:
+                    ret = new RDESiteVisit();
+                    break;
+                case AutoFillMode.CopyCurrentData:
+                    var current = grpSiteVisits.SelectedItem as RDESiteVisitViewModel;
+
+                    if (current != null) {
+                        ret = ReflectionUtils.Clone(current.Model);
+                        ret.SiteVisitID = -1;
+                        ret.VisitName = null;
+                    }
+                    break;
+                case AutoFillMode.TemplateData:
+                    throw new NotImplementedException();
+
+            }
+
+            if (ret == null) {
+                ret = new RDESiteVisit();
+            }
+
+            ret.Locked = false;
+
+            return ret;
+        }
+
+
+        private void AddNewSite(bool createNewMaterial = true) {
             // First add the site
-            var siteViewModel = CreateSiteViewModel(new RDESite());
+            var traits = new List<Trait>();
+            var site = CreateNewSite(out traits);
+            var siteViewModel = new RDESiteViewModel(site);            
+            siteViewModel.DataChanged += new DataChangedHandler(siteViewModel_DataChanged);
+
+            RegisterPendingChange(new InsertRDESiteAction(site));
+            RegisterUniquePendingChange(new UpdateRDESiteAction(site));
+
+            if (traits != null && traits.Count > 0) {
+                foreach (Trait t in traits) {
+                    siteViewModel.Traits.Add(t);
+                    RegisterPendingChange(new UpdateTraitDatabaseAction(t, siteViewModel));
+                }
+            }
 
             // and a new visit
             var siteVisitViewModel = AddNewSiteVisit(siteViewModel);
 
             // and some material...
-            var materialViewModel = AddNewMaterial(siteVisitViewModel);
+            if (createNewMaterial) {
+                AddNewMaterial(siteVisitViewModel);
+            }
 
             // Add the new site to the group and select it...
             grpSites.Items.Add(siteViewModel);
-            grpSites.SelectedItem = siteViewModel;
-
-            RegisterPendingChange(new InsertRDESiteAction(siteViewModel.Model));
+            grpSites.SelectedItem = siteViewModel;            
         }
 
         private void grpSiteVisits_AddNewClicked(object sender, RoutedEventArgs e) {
             AddNewSiteVisit();
         }
 
-        private void AddNewSiteVisit() {
+        private void AddNewSiteVisit(bool addNewMaterial = true) {
             var siteViewModel = grpSites.SelectedItem as RDESiteViewModel;
             if (siteViewModel != null) {
 
@@ -301,7 +406,9 @@ namespace BioLink.Client.Material {
                 var siteVisitViewModel = AddNewSiteVisit(siteViewModel);
 
                 // and some material...
-                var materialViewModel = AddNewMaterial(siteVisitViewModel);
+                if (addNewMaterial) {                    
+                    AddNewMaterial(siteVisitViewModel);
+                }
 
                 grpSiteVisits.SelectedItem = siteVisitViewModel;
                 
@@ -325,7 +432,9 @@ namespace BioLink.Client.Material {
         }
 
         private RDESiteVisitViewModel AddNewSiteVisit(RDESiteViewModel site) {
-            var siteVisit = new RDESiteVisitViewModel(new RDESiteVisit());
+
+            var sv = CreateNewSiteVisit();
+            var siteVisit = new RDESiteVisitViewModel(sv);
             
             siteVisit.Site = site;
             siteVisit.SiteID = site.SiteID;
@@ -333,6 +442,7 @@ namespace BioLink.Client.Material {
 
             siteVisit.DataChanged +=new DataChangedHandler(siteVisitViewModel_DataChanged);
             RegisterPendingChange(new InsertRDESiteVisitAction(siteVisit.Model, site.Model));
+            RegisterPendingChange(new UpdateRDESiteVisitAction(siteVisit.Model));
             return siteVisit;
         }
 
@@ -546,6 +656,149 @@ namespace BioLink.Client.Material {
             }
         }
 
+        public static RoutedCommand UnlockAllCmd = new RoutedCommand();
+
+        private void ExecutedUnlockAll(object sender, ExecutedRoutedEventArgs e) {
+            RapidDataEntry rde = null;
+            if (e.Source is RapidDataEntry) {
+                rde = e.Source as RapidDataEntry;
+            } else if (e.Source is ControlHostWindow) {
+                var window = e.Source as ControlHostWindow;
+                rde = window.Control as RapidDataEntry;
+            }
+            if (rde != null) {
+                rde.UnlockAll();
+            }
+        }
+
+        private void CanExecuteUnlockAll(object sender, CanExecuteRoutedEventArgs e) {
+            Control target = e.Source as Control;
+
+            if (target != null) {
+                e.CanExecute = true;
+            } else {
+                e.CanExecute = false;
+            }
+        }
+
+        private void UnlockAll() {
+            grpSites.IsUnlocked = true;
+            grpSiteVisits.IsUnlocked = true;
+            grpMaterial.IsUnlocked = true;
+        }
+
+        private void mnuMoveToNewSite_Click(object sender, RoutedEventArgs e) {
+            MoveMaterialToNewSite();
+        }
+
+        private void mnuMoveToNewSiteVisit_Click(object sender, RoutedEventArgs e) {
+            MoveMaterialToNewSiteVisit();
+        }
+
+        private void MoveMaterialToNewSite() {
+            var mat = grpMaterial.SelectedItem as RDEMaterialViewModel;
+            if (mat == null) {
+                return;
+            }
+
+            if (this.Question("Are you sure you want to remove this material (" + mat.TaxaDesc + ") from the current Site and Site Visit, and attach it to a new Site and Site Visit?", "Move material?")) {
+                grpMaterial.Items.Remove(mat);
+                AddNewSite(false); // Suppress the creation of a new piece of material...
+                // attach the existing piece of material
+                grpMaterial.Items.Add(mat);
+                var newParent = grpSiteVisits.SelectedItem as RDESiteVisitViewModel;
+                mat.SiteVisit = newParent;
+                // mat.SiteVisitID = newParent.SiteVisitID;
+                RegisterPendingChange(new MoveRDEMaterialAction(mat.Model, newParent.Model));
+            }
+        }
+
+        private void MoveMaterialToNewSiteVisit() {
+            var mat = grpMaterial.SelectedItem as RDEMaterialViewModel;
+            if (mat == null) {
+                return;
+            }
+
+            if (this.Question("Are you sure you want to remove this material (" + mat.TaxaDesc + ") from the current Site Visit, and attach it to a new Site Visit?", "Move material?")) {
+                grpMaterial.Items.Remove(mat);
+                AddNewSiteVisit(false); // Suppress the creation of a new piece of material...
+                // attach the existing piece of material
+                grpMaterial.Items.Add(mat);
+                var newParent = grpSiteVisits.SelectedItem as RDESiteVisitViewModel;
+                mat.SiteVisit = newParent;
+                // mat.SiteVisitID = newParent.SiteVisitID;
+                RegisterPendingChange(new MoveRDEMaterialAction(mat.Model, newParent.Model));
+            }
+
+        }
+
+        private void SetLatLongFormat(LatLongInput.LatLongMode mode) {
+            var siteControl = grpSites.Content as SiteRDEControl;
+            if (siteControl != null) {
+                siteControl.SetLatLongFormat(mode);
+
+                mnuLLDD.IsChecked = mode == LatLongInput.LatLongMode.DecimalDegrees;
+                mnuLLDMS.IsChecked = mode == LatLongInput.LatLongMode.DegreesMinutesSeconds;
+                mnuLLDDM.IsChecked = mode == LatLongInput.LatLongMode.DegreesDecimalMinutes;
+
+                Config.SetUser(User, CONFIG_LAT_LONG_FORMAT, mode);
+            }
+        }
+
+        private void mnuLLDMS_Click(object sender, RoutedEventArgs e) {
+            SetLatLongFormat(LatLongInput.LatLongMode.DegreesMinutesSeconds);
+        }
+
+        private void mnuLLDD_Click(object sender, RoutedEventArgs e) {
+            SetLatLongFormat(LatLongInput.LatLongMode.DecimalDegrees);
+        }
+
+        private void mnuLLDDM_Click(object sender, RoutedEventArgs e) {
+            SetLatLongFormat(LatLongInput.LatLongMode.DegreesDecimalMinutes);
+        }
+
+        private void mnuLockAtStart_Click(object sender, RoutedEventArgs e) {
+            SetStartingLockMode(true);
+        }
+
+        private void mnuUnlockAtStart_Click(object sender, RoutedEventArgs e) {
+            SetStartingLockMode(false);
+        }
+
+        private void SetStartingLockMode(bool lockAtStart) {
+            mnuLockAtStart.IsChecked = lockAtStart;
+            mnuUnlockAtStart.IsChecked = !lockAtStart;
+            Config.SetUser(User, CONFIG_LOCKING_MODE, lockAtStart);
+        }
+
+        private void SetAutoFillMode(AutoFillMode mode) {
+
+            mnuAutoFillNone.IsChecked = mode == AutoFillMode.NoAutoFill;
+            mnuAutoFillCopyCurrent.IsChecked = mode == AutoFillMode.CopyCurrentData;
+            mnuAutoFillTemplate.IsChecked = mode == AutoFillMode.TemplateData;
+
+            _autoFillMode = mode;
+
+            Config.SetUser(User, CONFIG_AUTOFILL_MODE, mode);
+        }
+
+        public enum AutoFillMode {
+            NoAutoFill,
+            CopyCurrentData,
+            TemplateData
+        }
+
+        private void mnuAutoFillNone_Click(object sender, RoutedEventArgs e) {
+            SetAutoFillMode(AutoFillMode.NoAutoFill);
+        }
+
+        private void mnuAutoFillCopyCurrent_Click(object sender, RoutedEventArgs e) {
+            SetAutoFillMode(AutoFillMode.CopyCurrentData);
+        }
+
+        private void mnuAutoFillTemplate_Click(object sender, RoutedEventArgs e) {
+            SetAutoFillMode(AutoFillMode.TemplateData);
+        }
 
     }
     

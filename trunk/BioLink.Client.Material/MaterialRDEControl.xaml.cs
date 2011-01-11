@@ -55,24 +55,27 @@ namespace BioLink.Client.Material {
 
             _associates = new OneToManyControl(new AssociatesControl(user, TraitCategoryType.Material, null), true);
             tabAssociates.Content = _associates;
-
+            this.IsEnabled = false;
             this.DataContextChanged += new DependencyPropertyChangedEventHandler(MaterialRDEControl_DataContextChanged);
         }
 
         void MaterialRDEControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e) {
             var mat = DataContext as RDEMaterialViewModel;
             if (mat != null) {
+                this.IsEnabled = true;
                 if (_currentMaterial != null) {
                     // although the database actions are registered for new/modified traits, we need to keep track of them so we can
                     // redisplay them as the user flips around the different material.
                     _currentMaterial.Traits = _traits.GetModel();
                 }
                 _traits.BindModel(mat.Traits, mat);
-                _currentMaterial= mat;
+                _currentMaterial = mat;
 
                 grpSubParts.Items = _currentMaterial.SubParts;
                 _subpartsFull.SetModel(_currentMaterial, _currentMaterial.SubParts);
                 _associates.SetModel(_currentMaterial, _currentMaterial.Associates);
+            } else {
+                this.IsEnabled = false;
             }
         }
 

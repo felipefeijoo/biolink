@@ -13,8 +13,8 @@ namespace BioLink.Client.Material {
 
     public abstract class RDEViewModel<T> : GenericViewModelBase<T> where T: RDEObject {
 
-        public RDEViewModel(T model, Expression<Func<int>> objectIDExpr)
-            : base(model, objectIDExpr) {
+        public RDEViewModel(T model, Expression<Func<int>> objectIDExpr) : base(model, objectIDExpr) {
+            Traits = new List<Trait>();
         }
 
         public int? TemplateID {

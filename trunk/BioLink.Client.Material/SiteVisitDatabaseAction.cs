@@ -147,6 +147,7 @@ namespace BioLink.Client.Material {
                 }
             }
 
+            visit.SiteVisitName = model.VisitName;
             visit.SiteVisitID = model.SiteVisitID;
             visit.SiteID = model.SiteID;
 

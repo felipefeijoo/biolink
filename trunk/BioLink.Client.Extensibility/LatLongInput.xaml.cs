@@ -97,6 +97,21 @@ namespace BioLink.Client.Extensibility {
                             control.txtSeconds.Text = seconds + "";
                             control.cmbDirection.SelectedItem = direction;
                             break;
+                        case LatLongMode.DecimalDegrees:
+                            control.txtDegrees.Text = "" + newValue;
+                            break;
+                        case LatLongMode.DegreesDecimalMinutes:
+                            double dblMinutes;
+                            GeoUtils.DecDegToDDecM(control.Value, out degrees, out dblMinutes);
+                            control.txtDegrees.Text = degrees + "";
+                            control.txtMinutes.Text = dblMinutes + "";
+                            break;
+                        case LatLongMode.DegreesDecimalMinutesDirection:                            
+                            GeoUtils.DecDegToDDecMDir(control.Value, out degrees, out dblMinutes, out direction, control._coordType);
+                            control.txtDegrees.Text = degrees + "";
+                            control.txtMinutes.Text = dblMinutes + "";
+                            control.cmbDirection.SelectedItem = direction;
+                            break;
                     }
                 }
 
@@ -181,6 +196,13 @@ namespace BioLink.Client.Extensibility {
             switch (Mode) {
                 case LatLongMode.DecimalDegrees:
                     txtDegrees.Text = "" + Value;
+                    txtDegrees.Visibility = Visibility.Visible;
+                    lblDegreeSeparator.Visibility = Visibility.Visible;
+                    txtMinutes.Visibility = Visibility.Collapsed;
+                    lblMinuteSeparator.Visibility = Visibility.Collapsed;
+                    txtSeconds.Visibility = Visibility.Collapsed;
+                    lblSecondSeparator.Visibility = Visibility.Collapsed;
+                    cmbDirection.Visibility = Visibility.Collapsed;
                     widths = new object[] { STAR, 15, 0, 0, 0, 0, 0 };
                     break;
                 case LatLongMode.DegreesDecimalMinutes:
@@ -189,6 +211,14 @@ namespace BioLink.Client.Extensibility {
                     GeoUtils.DecDegToDDecM(Value, out degrees, out minutes);
                     txtDegrees.Text = degrees + "";
                     txtMinutes.Text = minutes + "";
+                    txtDegrees.Visibility = Visibility.Visible;
+                    lblDegreeSeparator.Visibility = Visibility.Visible;
+                    txtMinutes.Visibility = Visibility.Visible;
+                    lblMinuteSeparator.Visibility = Visibility.Visible;
+                    txtSeconds.Visibility = Visibility.Collapsed;
+                    lblSecondSeparator.Visibility = Visibility.Collapsed;
+                    cmbDirection.Visibility = Visibility.Collapsed;
+
                     widths = new object[] { STAR, 15, STAR, 15, 0, 0, 0 };
                     break;
                 case LatLongMode.DegreesDecimalMinutesDirection:
@@ -197,6 +227,15 @@ namespace BioLink.Client.Extensibility {
                     txtDegrees.Text = degrees + "";
                     txtMinutes.Text = minutes + "";
                     cmbDirection.SelectedItem = direction;
+
+                    txtDegrees.Visibility = Visibility.Visible;
+                    lblDegreeSeparator.Visibility = Visibility.Visible;
+                    txtMinutes.Visibility = Visibility.Visible;
+                    lblMinuteSeparator.Visibility = Visibility.Visible;
+                    txtSeconds.Visibility = Visibility.Collapsed;
+                    lblSecondSeparator.Visibility = Visibility.Collapsed;
+                    cmbDirection.Visibility = Visibility.Visible;
+
                     widths = new object[] { STAR, 15, STAR, 15, 0, 0, 35 };
                     break;
                 default: // DMS
@@ -207,6 +246,15 @@ namespace BioLink.Client.Extensibility {
                     txtMinutes.Text = iMinutes + "";
                     txtSeconds.Text = seconds + "";
                     cmbDirection.SelectedItem = direction;
+
+                    txtDegrees.Visibility = Visibility.Visible;
+                    lblDegreeSeparator.Visibility = Visibility.Visible;
+                    txtMinutes.Visibility = Visibility.Visible;
+                    lblMinuteSeparator.Visibility = Visibility.Visible;
+                    txtSeconds.Visibility = Visibility.Visible;
+                    lblSecondSeparator.Visibility = Visibility.Visible;
+                    cmbDirection.Visibility = Visibility.Visible;
+
                     widths = new object[] { STAR, 15, STAR, 15, STAR, 15, 35 };
                     break;
             }
@@ -216,7 +264,7 @@ namespace BioLink.Client.Extensibility {
 
             // Now apply the column widths
             for (int i = 0; i < widths.Length; ++i) {
-                object w = widths[i];
+                object w = widths[i];                
                 grid.ColumnDefinitions[i].Width = (w is GridLength ? (GridLength)w : new GridLength((int)w));
             }
 

@@ -5,6 +5,7 @@ using System.Text;
 
 namespace BioLink.Data.Model {
 
+    [Serializable()]
     public abstract class RDEObject : BioLinkDataObject {
 
         public bool Locked { get; set; }
@@ -13,6 +14,7 @@ namespace BioLink.Data.Model {
 
     }
 
+    [Serializable()]
     public class RDESite : RDEObject {
 
         public RDESite() {
