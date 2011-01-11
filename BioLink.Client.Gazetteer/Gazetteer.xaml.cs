@@ -35,6 +35,7 @@ namespace BioLink.Client.Gazetteer {
 
         private OffsetControl _offsetControl;
         private DistanceDirectionControl _dirDistControl;
+        private Action<SelectionResult> _selectionCallback;
 
         #region Designer CTOR
         public Gazetteer() {
@@ -333,6 +334,51 @@ namespace BioLink.Client.Gazetteer {
 
                 } 
             }
+        }
+
+        public void BindSelectCallback(Action<SelectionResult> selectionFunc) {
+            if (selectionFunc != null) {
+                btnSelect.Visibility = Visibility.Visible;
+                btnSelect.IsEnabled = true;
+                _selectionCallback = selectionFunc;
+            } else {
+                ClearSelectCallback();
+            }
+        }
+
+        public void ClearSelectCallback() {
+            _selectionCallback = null;
+            btnSelect.Visibility = Visibility.Hidden;
+        }
+
+        private void btnSelect_Click(object sender, RoutedEventArgs e) {
+            DoSelect();
+        }
+
+        private void DoSelect() {
+
+            PlaceName result = null;
+            if (optFindLatLong.IsChecked.GetValueOrDefault(false)) {
+                result = _offsetControl.OffsetPlace;
+            }
+
+            if (result == null) {
+                var selected = lstResults.SelectedItem as PlaceNameViewModel;
+                if (selected != null) {
+                    result = selected.Model;
+                }
+            }
+
+            if (result != null && _selectionCallback != null) {
+                var selResult = new SelectionResult {
+                    ObjectID = null,
+                    DataObject = result,
+                    Description = result.Name
+                };
+
+                _selectionCallback(selResult);
+            }
+
         }
 
     }

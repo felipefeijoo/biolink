@@ -67,9 +67,37 @@
                     <MenuItem x:Name="mnuAddSiteVisit" Header="Site Visit" Command="{x:Static mat:RapidDataEntry.AddNewSiteVisitCmd}" />
                     <MenuItem x:Name="mnuAddMaterial" Header="_Material" Command="{x:Static mat:RapidDataEntry.AddNewMaterialCmd}" />
                 </MenuItem>
+                <MenuItem Header="_Move Material To">
+                    <MenuItem x:Name="mnuMoveToNewSite" Header="New _Site" Click="mnuMoveToNewSite_Click" />
+                    <MenuItem x:Name="mnuMoveToNewSiteVisit" Header="New Site _Visit" Click="mnuMoveToNewSiteVisit_Click" />
+                </MenuItem>
                 <Separator />
                 <MenuItem x:Name="mnuNext" Header="_Next" Command="{x:Static mat:RapidDataEntry.MoveNextCmd}" />
                 <MenuItem x:Name="mnuPrev" Header="_Previous" Command="{x:Static mat:RapidDataEntry.MovePreviousCmd}" />
+                <Separator />
+                <MenuItem Header="Auto _Fill" >
+                    <MenuItem x:Name="mnuAutoFillNone" Header="_No Auto Fill" IsCheckable="True" IsChecked="True" Click="mnuAutoFillNone_Click" />
+                    <MenuItem x:Name="mnuAutoFillCopyCurrent" Header="New items copy _Current Data" IsCheckable="True" Click="mnuAutoFillCopyCurrent_Click" />
+                    <MenuItem x:Name="mnuAutoFillTemplate" Header="New items use _Template Data" IsCheckable="True" Click="mnuAutoFillTemplate_Click" />
+                    <Separator />
+                    <MenuItem x:Name="mnuAutoNumber" Header="Auto Num_ber" IsCheckable="True" />
+                    <Separator />
+                    <MenuItem x:Name="mnuSetSiteTemplate" Header="Set _Site Template..." />
+                    <MenuItem x:Name="mnuSetSiteVisitTemplate" Header="Set Site _Visit Template..." />
+                    <MenuItem x:Name="mnuSetMaterialTemplate" Header="Set _Material Template..." />
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="Lat./Long. Format">
+                    <MenuItem x:Name="mnuLLDMS" Header="_Degrees Minutes Seconds" IsCheckable="True" IsChecked="True" Click="mnuLLDMS_Click"/>
+                    <MenuItem x:Name="mnuLLDD" Header="De_cimal Degrees" IsCheckable="True" Click="mnuLLDD_Click"/>
+                    <MenuItem x:Name="mnuLLDDM" Header="Degrees - Decimal _Minutes" IsCheckable="True" Click="mnuLLDDM_Click"/>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="_Unlock all" x:Name="mnuUnlockAll" Command="{x:Static mat:RapidDataEntry.UnlockAllCmd}" />
+                <MenuItem Header="Locking">
+                    <MenuItem x:Name="mnuLockAtStart" Header="Lock Existing Records at Start" IsCheckable="True" IsChecked="True" Click="mnuLockAtStart_Click"/>
+                    <MenuItem x:Name="mnuUnlockAtStart" Header="Unlock Existing Records at Start" IsCheckable="True" Click="mnuUnlockAtStart_Click"/>
+                 </MenuItem>
             </MenuItem>
         </Menu>
         

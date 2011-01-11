@@ -50,5 +50,13 @@ namespace BioLink.Client.Material {
             }
         }
 
+        public void SetLatLongFormat(LatLongInput.LatLongMode mode) {
+            this.ctlPosition.Mode = mode;
+        }
+
+        public List<Trait> GetTraits() {
+            return _traits.GetModel();
+        }
+
     }
 }

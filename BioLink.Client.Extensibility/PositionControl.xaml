@@ -30,7 +30,7 @@
 
         <ext:LatLongInput Grid.Row="2" Grid.Column="2" Axis="Longitude" x:Name="lon" VerticalAlignment="Center" HideLabel="True"/>
 
-        <Button Grid.Row="2" Grid.Column="4" Height="23" Width="23" Name="btnEgaz">
+        <Button Grid.Row="2" Grid.Column="4" Height="23" Width="23" Name="btnEgaz" Click="btnEgaz_Click">
             <Button.Content>
                 <Image Source="images/Ellipsis.png" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
             </Button.Content>

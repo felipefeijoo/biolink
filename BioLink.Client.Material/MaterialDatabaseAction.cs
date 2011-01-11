@@ -142,5 +142,19 @@ namespace BioLink.Client.Material {
 
     }
 
+    public class MoveRDEMaterialAction : GenericDatabaseAction<RDEMaterial> {
+
+        public MoveRDEMaterialAction(RDEMaterial model, RDESiteVisit newParent) : base(model) {
+            this.NewParent = newParent;
+        }
+
+        protected override void ProcessImpl(User user) {
+            var service = new MaterialService(user);
+            service.MoveMaterial(Model.MaterialID, NewParent.SiteVisitID);
+        }
+
+        protected RDESiteVisit NewParent { get; private set; }
+    }
+
 
 }

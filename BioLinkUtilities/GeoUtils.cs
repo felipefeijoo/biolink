@@ -195,7 +195,7 @@ namespace BioLink.Client.Utilities {
             int iDegrees = 0, iMinutes = 0;
             double dfSeconds = 0.0;
             char cDirection = '_';
-            int i = 0, j = 0;
+            int i = 0;
             bool isDMS = false;
             int iFirstLength = 2;
 

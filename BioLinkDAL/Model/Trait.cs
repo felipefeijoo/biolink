@@ -5,6 +5,7 @@ using System.Text;
 
 namespace BioLink.Data.Model {
 
+    [Serializable()]
     public class Trait : GUIDObject{
 
         public int TraitID { get; set; }

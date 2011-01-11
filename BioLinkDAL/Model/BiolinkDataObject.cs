@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace BioLink.Data.Model {
 
@@ -17,10 +18,9 @@ namespace BioLink.Data.Model {
         public string Column { get; set; }
     }
 
-    // Place holder class representing all Biolink Transfer Objects (TO)
-    public abstract class BioLinkDataObject {
-
-        
+    // Place holder class representing all Biolink Transfer Objects (TO)    
+    [Serializable()]
+    public abstract class BioLinkDataObject  {
 
         protected BioLinkDataObject() {            
         }
@@ -38,17 +38,23 @@ namespace BioLink.Data.Model {
             }
         }
 
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context) {
+            throw new NotImplementedException();
+        }
     }
 
 
 
     // Biolink data objects that have a GUID column
+    [Serializable()]
     public abstract class GUIDObject : BioLinkDataObject {      
 
         public Nullable<Guid> GUID { get; set; }
     }
 
     // Biolink data objects that have ownership columns
+    [Serializable()]
     public abstract class OwnedDataObject : GUIDObject {
 
         public DateTime DateCreated { get; set; }
