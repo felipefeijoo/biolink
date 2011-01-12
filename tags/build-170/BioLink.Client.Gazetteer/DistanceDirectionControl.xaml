@@ -1,0 +1,19 @@
+﻿<UserControl x:Class="BioLink.Client.Gazetteer.DistanceDirectionControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+             mc:Ignorable="d" 
+             Height="76" Width="300">
+    <Grid>
+        <Label Content="Latitude" Name="lblAxis" HorizontalContentAlignment="Center" Padding="1" VerticalContentAlignment="Center" Background="DimGray" Foreground="White" FontWeight="Bold" FontSize="10" Height="17" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120" />
+        <Label Background="DimGray" Content="Longitude" FontSize="10" FontWeight="Bold" Foreground="White" Height="17" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="124,0,0,0" Name="label1" Padding="1" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="120" />
+        <Label Background="DimGray" Content="Units" FontSize="10" FontWeight="Bold" Foreground="White" Height="17" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="250,0,0,0" Name="label2" Padding="1" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="50" />
+        <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="0,23,0,0" Name="txtLatitude" VerticalAlignment="Top" Width="120" />
+        <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="124,23,0,0" Name="txtLongitude" VerticalAlignment="Top" Width="120" />
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="250,23,0,0" Name="cmbUnits" VerticalAlignment="Top" Width="50" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="0,52,0,0" Name="txtResults" VerticalAlignment="Top" Width="300" Background="{x:Static SystemColors.ControlLightBrush}" IsReadOnly="True" />
+        
+    </Grid>
+</UserControl>
