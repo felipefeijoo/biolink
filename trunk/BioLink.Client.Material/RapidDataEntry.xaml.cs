@@ -363,6 +363,66 @@ namespace BioLink.Client.Material {
             return ret;
         }
 
+        private RDEMaterial CreateNewMaterial(out List<Trait> traits, out List<Associate> associates, out List<MaterialPart> subparts) {
+
+            RDEMaterial ret = null;
+
+            traits = null;
+            associates = null;
+            subparts = null;
+
+            switch (_autoFillMode) {
+                case AutoFillMode.NoAutoFill:
+                    ret = new RDEMaterial();
+                    break;
+                case AutoFillMode.CopyCurrentData:
+                    var current = grpMaterial.SelectedItem as RDEMaterialViewModel;
+
+                    if (current != null) {
+                        ret = ReflectionUtils.Clone(current.Model);
+                        ret.MaterialID = -1;
+                        ret.MaterialName = null;
+
+                        var control = grpMaterial.Content as MaterialRDEControl;
+                        if (control != null) {
+                            traits = new List<Trait>();
+                            associates = new List<Associate>();
+                            subparts = new List<MaterialPart>();
+
+                            foreach (Trait t in control.GetTraits()) {
+                                var newTrait = ReflectionUtils.Clone(t);
+                                newTrait.IntraCatID = -1;
+                                traits.Add(newTrait);
+                            }
+
+                            foreach (Associate a in control.GetAssociates()) {
+                                var newAssoc = ReflectionUtils.Clone(a);
+                                newAssoc.AssociateID = -1;
+                                associates.Add(newAssoc);
+                            }
+
+                            foreach (MaterialPart p in control.GetSubParts()) {
+                                var newSubpart = ReflectionUtils.Clone(p);
+                                newSubpart.MaterialPartID = -1;
+                                subparts.Add(newSubpart);
+                            }
+                        }
+
+                    }
+                    break;
+                case AutoFillMode.TemplateData:
+                    throw new NotImplementedException();
+
+            }
+
+            if (ret == null) {
+                ret = new RDEMaterial();
+            }
+
+            ret.Locked = false;
+
+            return ret;
+        }
 
         private void AddNewSite(bool createNewMaterial = true) {
             // First add the site
@@ -446,28 +506,65 @@ namespace BioLink.Client.Material {
             return siteVisit;
         }
 
+        
+
         private RDEMaterialViewModel AddNewMaterial(RDESiteVisitViewModel siteVisit) {
             if (siteVisit != null) {
 
                 // create the new material...
-                var materialViewModel = new RDEMaterialViewModel(new RDEMaterial());
+                List<Trait> traits = null;
+                List<Associate> associates = null;
+                List<MaterialPart> subparts = null;
+
+                var material = CreateNewMaterial(out traits, out associates, out subparts);
+                var materialViewModel = new RDEMaterialViewModel(material);
+
+                RegisterPendingChange(new InsertRDEMaterialAction(material, siteVisit.Model));
+                RegisterUniquePendingChange(new UpdateRDEMaterialAction(material));
+
+                if (traits != null && traits.Count > 0) {
+                    foreach (Trait t in traits) {
+                        materialViewModel.Traits.Add(t);
+                        RegisterPendingChange(new UpdateTraitDatabaseAction(t, materialViewModel));
+                    }
+                }
+
+                if (associates != null && associates.Count > 0) {
+                    foreach (Associate a in associates) {
+                        var vm = new AssociateViewModel(a);
+                        vm.DataChanged += new DataChangedHandler(associate_DataChanged);
+                        materialViewModel.Associates.Add(vm);
+                        RegisterPendingChange(new InsertAssociateAction(a, materialViewModel));
+                    }
+                }
+
+                if (subparts != null && subparts.Count > 0) {
+                    foreach (MaterialPart subpart in subparts) {
+                        var vm = new MaterialPartViewModel(subpart);
+                        vm.DataChanged +=new DataChangedHandler(SubPart_DataChanged);
+                        materialViewModel.SubParts.Add(vm);
+                        RegisterPendingChange(new InsertMaterialPartAction(subpart, materialViewModel));
+                    }
+                } else {
+                    // Add one subpart...
+                    var subpart = new MaterialPartViewModel(new MaterialPart());
+                    subpart.MaterialPartID = -1;
+                    subpart.PartName = "<New>";
+                    materialViewModel.SubParts.Add(subpart);
+                    RegisterPendingChange(new InsertMaterialPartAction(subpart.Model, materialViewModel));
+                }
+
                 
                 materialViewModel.SiteVisit = siteVisit;
                 materialViewModel.SiteVisitID = siteVisit.SiteVisitID;
 
                 siteVisit.Material.Add(materialViewModel);
 
-                // Add one subpart...
-                var subpart = new MaterialPartViewModel(new MaterialPart());
-                subpart.MaterialPartID = -1;
-                subpart.PartName = "<New>";
-
-                materialViewModel.SubParts.Add(subpart);
 
                 materialViewModel.DataChanged +=new DataChangedHandler(materialViewModel_DataChanged);
 
-                RegisterPendingChange(new InsertRDEMaterialAction(materialViewModel.Model, siteVisit.Model));
-                RegisterPendingChange(new InsertMaterialPartAction(subpart.Model, materialViewModel));
+                
+                
 
                 return materialViewModel;
             }

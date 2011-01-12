@@ -87,5 +87,34 @@ namespace BioLink.Client.Material {
                 subpart.Locked = !newValue;
             }
         }
+
+        public List<Trait> GetTraits() {
+            return _traits.GetModel();
+        }
+
+        public List<Associate> GetAssociates() {
+            var m = _associates.GetModel();
+
+            return new List<Associate>( m.Select((vmb) => {
+                var assocVM = vmb as AssociateViewModel;
+                if (assocVM != null) {
+                    return assocVM.Model;
+                }
+                return null;
+            }));            
+        }
+
+        public List<MaterialPart> GetSubParts() {
+            var parts = _subpartsFull.Model;
+
+            return new List<MaterialPart>(parts.Select((vmb) => {
+                var subpart = vmb as MaterialPartViewModel;
+                if (subpart != null) {
+                    return subpart.Model;
+                }
+                return null;
+            }));
+        }
+
     }
 }
