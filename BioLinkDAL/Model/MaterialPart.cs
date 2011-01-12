@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 
 namespace BioLink.Data.Model {
+
+    [Serializable()]
     public class MaterialPart : GUIDObject {
 
         public int MaterialID { get; set; }

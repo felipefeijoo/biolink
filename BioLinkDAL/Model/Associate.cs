@@ -5,6 +5,7 @@ using System.Text;
 
 namespace BioLink.Data.Model {
 
+    [Serializable()]
     public class Associate : BioLinkDataObject {
 
         public int AssociateID { get; set; }

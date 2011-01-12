@@ -126,7 +126,25 @@ namespace BioLink.Client.Material {
             var m = new Data.Model.Material();
             m.MaterialID = s.MaterialID;
             m.SiteVisitID = s.SiteVisitID;
+
+            if (String.IsNullOrEmpty(s.MaterialName)) {
+                var name = new StringBuilder();
+                if (!string.IsNullOrEmpty(s.AccessionNo)) {
+                    name.Append(s.AccessionNo).Append("; ");
+                } else {
+                    if (!string.IsNullOrEmpty(s.RegNo)) {
+                        name.Append(s.RegNo).Append("; ");
+                    }
+                }
+
+                name.Append(s.TaxaDesc);
+
+                s.MaterialName = name.ToString();
+            }
+
             m.MaterialName = s.MaterialName;
+
+
             m.AccessionNumber = s.AccessionNo;
             m.BiotaID = s.BiotaID;
             m.CollectionMethod = s.CollectionMethod;

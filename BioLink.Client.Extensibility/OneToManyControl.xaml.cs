@@ -72,6 +72,10 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
+        public ObservableCollection<ViewModelBase> GetModel() {
+            return _model;
+        }
+
         void lst_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             detailsGrid.IsEnabled = lst.SelectedItem != null;
         }
