@@ -82,9 +82,9 @@
                     <Separator />
                     <MenuItem x:Name="mnuAutoNumber" Header="Auto Num_ber" IsCheckable="True" />
                     <Separator />
-                    <MenuItem x:Name="mnuSetSiteTemplate" Header="Set _Site Template..." />
-                    <MenuItem x:Name="mnuSetSiteVisitTemplate" Header="Set Site _Visit Template..." />
-                    <MenuItem x:Name="mnuSetMaterialTemplate" Header="Set _Material Template..." />
+                    <MenuItem x:Name="mnuSetSiteTemplate" Header="Set _Site Template..." Click="mnuSetSiteTemplate_Click" />
+                    <MenuItem x:Name="mnuSetSiteVisitTemplate" Header="Set Site _Visit Template..." Click="mnuSetSiteVisitTemplate_Click" />
+                    <MenuItem x:Name="mnuSetMaterialTemplate" Header="Set _Material Template..." Click="mnuSetMaterialTemplate_Click" />
                 </MenuItem>
                 <Separator />
                 <MenuItem Header="Lat./Long. Format">
