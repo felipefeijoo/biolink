@@ -27,6 +27,10 @@ namespace BioLink.Client.Material {
         private static string CONFIG_LOCKING_MODE = "RDE.LockAtStartMode";
         private static string CONFIG_AUTOFILL_MODE = "RDE.AutoFillMode";
 
+        private static string CONFIG_SITE_TEMPLATE_ID = "RDE.SiteTemplateID";
+        private static string CONFIG_SITEVISIT_TEMPLATE_ID = "RDE.SiteVisitTemplateID"; 
+        private static string CONFIG_MATERIAL_TEMPLATE_ID = "RDE.MaterialTemplateID";
+
         private int _objectId;
         private SiteExplorerNodeType _objectType;
         private bool _startLockMode;
@@ -97,6 +101,22 @@ namespace BioLink.Client.Material {
             this.FindParentWindow().CommandBindings.Add(new CommandBinding(MoveNextCmd, ExecutedMoveNext, CanExecuteMoveNext));
             this.FindParentWindow().CommandBindings.Add(new CommandBinding(MovePreviousCmd, ExecutedMovePrevious, CanExecuteMovePrevious));
             this.FindParentWindow().CommandBindings.Add(new CommandBinding(UnlockAllCmd, ExecutedUnlockAll, CanExecuteUnlockAll));
+
+            // Load templates, if any...
+            int siteTemplateId = Config.GetProfile(User, CONFIG_SITE_TEMPLATE_ID, -1);
+            if (siteTemplateId >= 0) {
+                LoadSiteTemplate(siteTemplateId);
+            }
+
+            int siteVisitTemplateId = Config.GetProfile(User, CONFIG_SITEVISIT_TEMPLATE_ID, -1);
+            if (siteVisitTemplateId >= 0) {
+                LoadSiteVisitTemplate(siteVisitTemplateId);
+            }
+
+            int materialTemplateId = Config.GetProfile(User, CONFIG_MATERIAL_TEMPLATE_ID, -1);
+            if (materialTemplateId >= 0) {
+                LoadMaterialTemplate(materialTemplateId);
+            }
 
         }
 
@@ -232,14 +252,16 @@ namespace BioLink.Client.Material {
             }
         }
 
-        private RDESiteViewModel CreateSiteViewModel(RDESite site) {
+        private RDESiteViewModel CreateSiteViewModel(RDESite site, bool addChangedHandler = true) {
             var supportService = new SupportService(User);
             var vm = new RDESiteViewModel(site);
             vm.Locked = _startLockMode;
             if (site.SiteID >= 0) {
                 vm.Traits = supportService.GetTraits(TraitCategoryType.Site.ToString(), site.SiteID);
             }
-            vm.DataChanged += new DataChangedHandler(siteViewModel_DataChanged);
+            if (addChangedHandler) {
+                vm.DataChanged += new DataChangedHandler(siteViewModel_DataChanged);
+            }
             return vm;
         }
 
@@ -295,36 +317,33 @@ namespace BioLink.Client.Material {
         }
 
         private RDESite CreateNewSite(out List<Trait> traits) {
-            RDESite ret = null;
+
             traits = null;
+            RDESiteViewModel copyFrom = null;
             switch (_autoFillMode) {
-                case AutoFillMode.NoAutoFill:
-                    ret = new RDESite();
-                    break;
                 case AutoFillMode.CopyCurrentData:
-                    var current = grpSites.SelectedItem as RDESiteViewModel;
-                    
-                    if (current != null) {
-                        ret = ReflectionUtils.Clone(current.Model);
-                        ret.SiteID = -1;
-                        ret.SiteName = null;
-                        traits = new List<Trait>();
-                        var control = grpSites.Content as SiteRDEControl;
-                        if (control != null) {
-                            foreach (Trait t in control.GetTraits()) {
-                                var newTrait = ReflectionUtils.Clone(t);
-                                newTrait.IntraCatID = -1;
-                                traits.Add(newTrait);
-                            }
-                        }
-                    }
+                    copyFrom = grpSites.SelectedItem as RDESiteViewModel;                    
                     break;
                 case AutoFillMode.TemplateData:
-                    throw new NotImplementedException();
-                    
+                    copyFrom = _SiteTemplate;
+                    break;                    
             }
 
-            if (ret == null) {
+            RDESite ret = null;
+            if (copyFrom != null) {
+                ret = ReflectionUtils.Clone(copyFrom.Model);
+                ret.SiteID = -1;
+                ret.SiteName = null;
+                traits = new List<Trait>();
+                var control = grpSites.Content as SiteRDEControl;
+                if (control != null) {
+                    foreach (Trait t in control.GetTraits()) {
+                        var newTrait = ReflectionUtils.Clone(t);
+                        newTrait.IntraCatID = -1;
+                        traits.Add(newTrait);
+                    }
+                }
+            } else {
                 ret = new RDESite();
             }
 
@@ -334,27 +353,23 @@ namespace BioLink.Client.Material {
         }
 
         private RDESiteVisit CreateNewSiteVisit() {
-            RDESiteVisit ret = null;
             
+            RDESiteVisitViewModel copyFrom = null;
             switch (_autoFillMode) {
-                case AutoFillMode.NoAutoFill:
-                    ret = new RDESiteVisit();
-                    break;
                 case AutoFillMode.CopyCurrentData:
-                    var current = grpSiteVisits.SelectedItem as RDESiteVisitViewModel;
-
-                    if (current != null) {
-                        ret = ReflectionUtils.Clone(current.Model);
-                        ret.SiteVisitID = -1;
-                        ret.VisitName = null;
-                    }
+                    copyFrom = grpSiteVisits.SelectedItem as RDESiteVisitViewModel;
                     break;
                 case AutoFillMode.TemplateData:
-                    throw new NotImplementedException();
-
+                    copyFrom = _SiteVisitTemplate;
+                    break;
             }
 
-            if (ret == null) {
+            RDESiteVisit ret = null;
+            if (copyFrom != null) {
+                ret = ReflectionUtils.Clone(copyFrom.Model);
+                ret.SiteVisitID = -1;
+                ret.VisitName = null;
+            } else {
                 ret = new RDESiteVisit();
             }
 
@@ -365,57 +380,62 @@ namespace BioLink.Client.Material {
 
         private RDEMaterial CreateNewMaterial(out List<Trait> traits, out List<Associate> associates, out List<MaterialPart> subparts) {
 
-            RDEMaterial ret = null;
+            
+            RDEMaterialViewModel copyFrom = null;
 
             traits = null;
             associates = null;
             subparts = null;
 
+            IEnumerable<Associate> copyFromAssociates = null;
+            IEnumerable<MaterialPart> copyFromSubparts = null;
+
             switch (_autoFillMode) {
-                case AutoFillMode.NoAutoFill:
-                    ret = new RDEMaterial();
-                    break;
                 case AutoFillMode.CopyCurrentData:
-                    var current = grpMaterial.SelectedItem as RDEMaterialViewModel;
-
-                    if (current != null) {
-                        ret = ReflectionUtils.Clone(current.Model);
-                        ret.MaterialID = -1;
-                        ret.MaterialName = null;
-
+                    copyFrom = grpMaterial.SelectedItem as RDEMaterialViewModel;
+                    if (copyFrom != null) {
                         var control = grpMaterial.Content as MaterialRDEControl;
-                        if (control != null) {
-                            traits = new List<Trait>();
-                            associates = new List<Associate>();
-                            subparts = new List<MaterialPart>();
-
-                            foreach (Trait t in control.GetTraits()) {
-                                var newTrait = ReflectionUtils.Clone(t);
-                                newTrait.IntraCatID = -1;
-                                traits.Add(newTrait);
-                            }
-
-                            foreach (Associate a in control.GetAssociates()) {
-                                var newAssoc = ReflectionUtils.Clone(a);
-                                newAssoc.AssociateID = -1;
-                                associates.Add(newAssoc);
-                            }
-
-                            foreach (MaterialPart p in control.GetSubParts()) {
-                                var newSubpart = ReflectionUtils.Clone(p);
-                                newSubpart.MaterialPartID = -1;
-                                subparts.Add(newSubpart);
-                            }
-                        }
-
+                        copyFrom.Traits = control.GetTraits();
+                        copyFromAssociates = control.GetAssociates();
+                        copyFromSubparts = control.GetSubParts();
                     }
                     break;
                 case AutoFillMode.TemplateData:
-                    throw new NotImplementedException();
-
+                    copyFrom = _MaterialTemplate;
+                    copyFromAssociates = _MaterialTemplate.Associates.Select(vm => (vm as AssociateViewModel).Model);
+                    copyFromSubparts = _MaterialTemplate.SubParts.Select( vm => (vm as MaterialPartViewModel).Model);
+                    break;
             }
 
-            if (ret == null) {
+            RDEMaterial ret = null;
+            if (copyFrom != null) {
+                ret = ReflectionUtils.Clone(copyFrom.Model);
+                ret.MaterialID = -1;
+                ret.MaterialName = null;
+                
+                traits = new List<Trait>();
+                associates = new List<Associate>();
+                subparts = new List<MaterialPart>();
+
+                foreach (Trait t in copyFrom.Traits) {
+                    var newTrait = ReflectionUtils.Clone(t);
+                    newTrait.IntraCatID = -1;
+                    traits.Add(newTrait);
+                }
+
+                foreach (Associate a in copyFromAssociates) {
+                    var newAssoc = ReflectionUtils.Clone(a);
+                    newAssoc.AssociateID = -1;
+                    associates.Add(newAssoc);
+                }
+
+                foreach (MaterialPart p in copyFromSubparts) {
+                    var newSubpart = ReflectionUtils.Clone(p);
+                    newSubpart.MaterialPartID = -1;
+                    subparts.Add(newSubpart);
+                }
+
+            } else {
                 ret = new RDEMaterial();
             }
 
@@ -895,6 +915,136 @@ namespace BioLink.Client.Material {
 
         private void mnuAutoFillTemplate_Click(object sender, RoutedEventArgs e) {
             SetAutoFillMode(AutoFillMode.TemplateData);
+        }
+
+        private void mnuSetSiteTemplate_Click(object sender, RoutedEventArgs e) {
+            ChooseSiteTemplate();
+        }
+
+        private void mnuSetSiteVisitTemplate_Click(object sender, RoutedEventArgs e) {
+            ChooseSiteVisitTemplate();
+        }
+
+        private void mnuSetMaterialTemplate_Click(object sender, RoutedEventArgs e) {
+            ChooseMaterialTemplate();
+        }
+
+        private RDESiteViewModel _SiteTemplate;
+        private RDESiteVisitViewModel _SiteVisitTemplate;
+        private RDEMaterialViewModel _MaterialTemplate;
+
+        private int? ChooseTemplateID(Func<List<SiteExplorerNode>> func) {
+            var pickList = new PickListWindow(User, "Select template", () => {                
+                var templates = func();
+                return templates.Select((m) => {
+                    return new SiteExplorerNodeViewModel(m);
+                });
+            }, null);
+
+            if (pickList.ShowDialog().ValueOrFalse()) {
+                var selected = pickList.SelectedValue as SiteExplorerNodeViewModel;
+                if (selected != null) {
+                    return selected.ElemID;
+                }
+            }
+
+            return null;
+        }
+
+        private void ChooseSiteTemplate() {
+            var service = new MaterialService(User);
+            var templateId = ChooseTemplateID(() => service.GetSiteTemplates());
+            if (templateId != null && templateId.HasValue) {
+                LoadSiteTemplate(templateId.Value);
+            }
+        }
+
+        private void ChooseSiteVisitTemplate() {
+            var service = new MaterialService(User);
+            var templateId = ChooseTemplateID(() => service.GetSiteVisitTemplates());
+            if (templateId != null && templateId.HasValue) {
+                LoadSiteVisitTemplate(templateId.Value);
+            }
+        }
+
+        private void ChooseMaterialTemplate() {
+            var service = new MaterialService(User);
+            var supportService = new SupportService(User);
+            var templateId = ChooseTemplateID(() => service.GetMaterialTemplates());
+            if (templateId != null && templateId.HasValue) {
+                LoadMaterialTemplate(templateId.Value);
+            }
+        }
+
+        private void LoadSiteTemplate(int templateId) {
+            var service = new MaterialService(User);
+            var list = service.GetRDESites(templateId);
+            if (list != null && list.Count > 0) {
+                _SiteTemplate = CreateSiteViewModel(list[0], false);
+            } else {
+                _SiteTemplate = null;
+            }
+
+            if (_SiteTemplate != null) {
+                mnuSetSiteTemplate.Header = String.Format("Set _Site Template ({0}) ...", _SiteTemplate.SiteName);
+                Config.SetProfile(User, CONFIG_SITE_TEMPLATE_ID, templateId);
+            } else {
+                mnuSetSiteTemplate.Header = "Set _Site Template...";
+                Config.SetProfile(User, CONFIG_SITE_TEMPLATE_ID, -1);
+            }
+
+        }
+
+        private void LoadSiteVisitTemplate(int templateId) {
+            var service = new MaterialService(User);
+            var list = service.GetRDESiteVisits(new int[] { templateId });
+            if (list != null && list.Count > 0) {
+                _SiteVisitTemplate = new RDESiteVisitViewModel(list[0]);
+                
+            }
+
+            if (_SiteVisitTemplate != null) {
+                mnuSetSiteVisitTemplate.Header = String.Format("Set Site _Visit Template ({0}) ...", _SiteVisitTemplate.VisitName);
+                Config.SetProfile(User, CONFIG_SITEVISIT_TEMPLATE_ID, templateId);
+            } else {
+                mnuSetSiteVisitTemplate.Header = "Set Site _Visit Template...";
+                Config.SetProfile(User, CONFIG_SITEVISIT_TEMPLATE_ID, -1);
+            }
+            
+        }
+
+        private void LoadMaterialTemplate(int templateId) {
+            var supportService = new SupportService(User);
+            var service = new MaterialService(User);
+
+            var list = service.GetRDEMaterial(new int[] { templateId });
+            if (list != null && list.Count > 0) {
+                _MaterialTemplate = new RDEMaterialViewModel(list[0]);
+                _MaterialTemplate.Traits = supportService.GetTraits(TraitCategoryType.Material.ToString(), _MaterialTemplate.MaterialID);
+                // need to get associates and subparts...
+                var subparts = service.GetMaterialParts(templateId);
+                var associates = supportService.GetAssociates(TraitCategoryType.Material.ToString(), templateId);
+
+                foreach (Associate assoc in associates) {
+                    var vm = new AssociateViewModel(assoc);
+                    _MaterialTemplate.Associates.Add(vm);
+                }
+
+                foreach (MaterialPart part in subparts) {
+                    var vm = new MaterialPartViewModel(part);
+                    _MaterialTemplate.SubParts.Add(vm);
+                }
+
+            }
+
+            if (_MaterialTemplate != null) {
+                mnuSetMaterialTemplate.Header = String.Format("Set _Material Template ({0}) ...", _MaterialTemplate.MaterialName);
+                Config.SetProfile(User, CONFIG_MATERIAL_TEMPLATE_ID, templateId);
+            } else {
+                mnuSetMaterialTemplate.Header = "Set _Material Template...";
+                Config.SetProfile(User, CONFIG_MATERIAL_TEMPLATE_ID, -1);
+            }
+            
         }
 
     }
