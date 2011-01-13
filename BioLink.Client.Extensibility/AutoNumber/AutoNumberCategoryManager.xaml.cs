@@ -44,12 +44,19 @@ namespace BioLink.Client.Extensibility {
                     RegisterUniquePendingChange(new UpdateAutoNumberAction(model));
                 });
                 return viewmodel;
-            }));            
+            }));
             lst.ItemsSource = _model;
+
+            gridAutonumber.IsEnabled = false;
+
+            if (_model.Count > 0) {
+                lst.SelectedItem = _model[0];
+            }
         }
 
         private void lst_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             gridAutonumber.DataContext = lst.SelectedItem;
+            gridAutonumber.IsEnabled = lst.SelectedItem != null;
         }
 
         private void btnAddNew_Click(object sender, RoutedEventArgs e) {

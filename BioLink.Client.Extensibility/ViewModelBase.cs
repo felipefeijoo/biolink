@@ -89,10 +89,20 @@ namespace BioLink.Client.Extensibility {
         protected bool SetProperty<T>(string propertyName, ref T backingField, T value, bool changeAgnostic = false) {
             var changed = !EqualityComparer<T>.Default.Equals(backingField, value);
             if (changed) {
-                backingField = value;
-                RaisePropertyChanged(propertyName);
-                if (!SuspendChangeMonitoring && !changeAgnostic) {
-                    IsChanged = true;
+
+                var destProp = this.GetType().GetProperty(propertyName);
+                
+                var ignoreRtfAttr = Attribute.GetCustomAttribute(destProp, typeof(IgnoreRTFFormattingChanges));
+                if (ignoreRtfAttr != null) {
+                    changed = CompareRTF(backingField as string, value as string);
+                }
+
+                if (changed) {
+                    backingField = value;
+                    RaisePropertyChanged(propertyName);
+                    if (!SuspendChangeMonitoring && !changeAgnostic) {
+                        IsChanged = true;
+                    }
                 }
             }
             return changed;

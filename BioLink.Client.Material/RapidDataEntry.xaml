@@ -80,7 +80,7 @@
                     <MenuItem x:Name="mnuAutoFillCopyCurrent" Header="New items copy _Current Data" IsCheckable="True" Click="mnuAutoFillCopyCurrent_Click" />
                     <MenuItem x:Name="mnuAutoFillTemplate" Header="New items use _Template Data" IsCheckable="True" Click="mnuAutoFillTemplate_Click" />
                     <Separator />
-                    <MenuItem x:Name="mnuAutoNumber" Header="Auto Num_ber" IsCheckable="True" />
+                    <MenuItem x:Name="mnuAutoNumber" Header="Auto Num_ber" IsCheckable="True" Click="mnuAutoNumber_Click" />
                     <Separator />
                     <MenuItem x:Name="mnuSetSiteTemplate" Header="Set _Site Template..." Click="mnuSetSiteTemplate_Click" />
                     <MenuItem x:Name="mnuSetSiteVisitTemplate" Header="Set Site _Visit Template..." Click="mnuSetSiteVisitTemplate_Click" />

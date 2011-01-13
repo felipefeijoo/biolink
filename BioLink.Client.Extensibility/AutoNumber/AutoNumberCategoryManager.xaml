@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility"
              mc:Ignorable="d" 
-             d:Height="250" d:Width="600" d:DesignHeight="250" d:DesignWidth="600">
+             d:MinHeight="250" d:MinWidth="600" d:DesignHeight="250" d:DesignWidth="600">
     
     <Grid Margin="5">
         <Grid.ColumnDefinitions>
