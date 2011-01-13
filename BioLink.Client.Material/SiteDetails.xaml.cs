@@ -173,10 +173,12 @@ namespace BioLink.Client.Material {
 
         private void UpdateGeomType() {
             if (_viewModel.PosAreaType == 1) {
-                lblStart.Content = "Coordinates";
+                lblStart.Content = "Coordinates:";
                 lblEnd.Visibility = System.Windows.Visibility.Hidden;                    
                 ctlX2.Visibility = System.Windows.Visibility.Hidden;
                 ctlY2.Visibility = System.Windows.Visibility.Hidden;
+                ctlEastingsNorthings2.Visibility = System.Windows.Visibility.Collapsed;
+                btnEgaz2.Visibility = System.Windows.Visibility.Collapsed;
                 if (_viewModel.PosCoordinates == 2) {
                     ctlX1.Visibility = System.Windows.Visibility.Collapsed;
                     ctlY1.Visibility = System.Windows.Visibility.Collapsed;
@@ -187,8 +189,9 @@ namespace BioLink.Client.Material {
                     ctlEastingsNorthings1.Visibility = System.Windows.Visibility.Collapsed;
                 }
             } else {
-                lblStart.Content = "Start";
+                lblStart.Content = "Start:";
                 lblEnd.Visibility = System.Windows.Visibility.Visible;
+                btnEgaz2.Visibility = System.Windows.Visibility.Visible;
                 if (_viewModel.PosCoordinates == 2) {
                     ctlX1.Visibility = System.Windows.Visibility.Collapsed;
                     ctlY1.Visibility = System.Windows.Visibility.Collapsed;
@@ -206,8 +209,6 @@ namespace BioLink.Client.Material {
                 }
 
             }
-
-
             
         }
 
@@ -304,6 +305,14 @@ namespace BioLink.Client.Material {
         public int SiteID { get; private set; }
 
         #endregion
+
+        private void btnEgaz1_Click(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void btnEgaz2_Click(object sender, RoutedEventArgs e) {
+
+        }
 
     
     }
