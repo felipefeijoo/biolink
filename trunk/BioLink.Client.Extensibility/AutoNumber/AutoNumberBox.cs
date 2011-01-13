@@ -38,6 +38,17 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
+        public void GenerateNumber() {
+            Debug.Assert(User != null, "User has not been set!");
+
+            var frm = new AutoNumberOptions(User, AutoNumberCategory, AutoNumberTable, AutoNumberField);
+            frm.Owner = this.FindParentWindow();
+            if (frm.GenerateNumber()) {
+                txt.Text = frm.AutoNumber;
+            }
+
+        }
+
         public string AutoNumberCategory { get; set; }
 
         public string AutoNumberTable { get; set; }

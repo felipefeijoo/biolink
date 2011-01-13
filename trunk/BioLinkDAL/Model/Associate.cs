@@ -21,6 +21,7 @@ namespace BioLink.Data.Model {
         public int RefID { get; set; }
         public string RefPage { get; set; }
         public bool Uncertain { get; set; }
+        [IgnoreRTFFormattingChanges]
         public string Notes { get; set; }
         public string AssocName { get; set; }
         public string RefCode { get; set; }

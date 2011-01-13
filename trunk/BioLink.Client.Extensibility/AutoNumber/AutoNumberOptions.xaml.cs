@@ -31,6 +31,8 @@ namespace BioLink.Client.Extensibility {
             InitializeComponent();
             this.User = user;
             this.AutoNumberCategory = autoNumberCategory;
+            this.AutoNumberTable = table;
+            this.AutoNumberField = field;
             LoadModel();
         }        
 
@@ -55,7 +57,16 @@ namespace BioLink.Client.Extensibility {
             var model = list.ConvertAll((n) => {
                 return new AutoNumberViewModel(n);
             });
-            cmbCategories.ItemsSource = model;            
+            cmbCategories.ItemsSource = model;
+            string lastSelectedName = Config.GetProfile<string>(User, ConfigKey, null);
+            if (!string.IsNullOrEmpty(lastSelectedName)) {
+                foreach (AutoNumberViewModel vm in model) {
+                    if (vm.Name.Equals(lastSelectedName)) {
+                        cmbCategories.SelectedItem = vm;
+                        break;
+                    }
+                }
+            }
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e) {
@@ -69,7 +80,7 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        private bool GenerateNumber() {
+        public bool GenerateNumber() {
 
             var autoNum = cmbCategories.SelectedItem as AutoNumberViewModel;
             if (autoNum != null) {
@@ -85,6 +96,10 @@ namespace BioLink.Client.Extensibility {
             return false;                
         }
 
+        private string ConfigKey {
+            get { return String.Format("AutoNumber.{0}.LastSelected", AutoNumberCategory); }
+        }
+
         #region Properties
 
         public string AutoNumber { get; private set; }
@@ -98,6 +113,13 @@ namespace BioLink.Client.Extensibility {
         public User User { get; private set; }
 
         #endregion
+
+        private void cmbCategories_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            var autoNum = cmbCategories.SelectedItem as AutoNumberViewModel;
+            if (autoNum != null) {
+                Config.SetProfile(User, ConfigKey, autoNum.Name);
+            }
+        }
 
     }
 

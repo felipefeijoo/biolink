@@ -8,7 +8,7 @@
              Height="204" Width="482" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" Title="Automatic Number Generation">
     <Grid>
         <Label Content="Choose category:" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" Name="label1" VerticalAlignment="Top" Width="107" />
-        <ComboBox Height="23" Margin="12,46,0,0" Name="cmbCategories" VerticalAlignment="Top" HorizontalAlignment="Left" Width="298" DisplayMemberPath="DisplayLabel">
+        <ComboBox Height="23" Margin="12,46,0,0" Name="cmbCategories" VerticalAlignment="Top" HorizontalAlignment="Left" Width="298" DisplayMemberPath="DisplayLabel" SelectionChanged="cmbCategories_SelectionChanged">
             <ComboBox.Resources>
                 <DataTemplate DataType="{x:Type my:AutoNumberViewModel}">
                     <TextBlock Text="{Binding DisplayLabel,Mode=OneWay}" />

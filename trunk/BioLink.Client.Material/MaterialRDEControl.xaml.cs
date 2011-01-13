@@ -79,6 +79,13 @@ namespace BioLink.Client.Material {
             }
         }
 
+        public void GenerateAutoNumbers() {
+            txtAccessionNo.GenerateNumber();
+            txtRegistrationNo.GenerateNumber();
+            txtCollectorNo.GenerateNumber();
+
+        }
+
         internal User User { get; private set; }
 
         private void grpSubParts_IsUnlockedChanged(ItemsGroupBox obj, bool newValue) {

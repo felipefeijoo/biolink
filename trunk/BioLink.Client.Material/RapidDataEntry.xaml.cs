@@ -27,6 +27,8 @@ namespace BioLink.Client.Material {
         private static string CONFIG_LOCKING_MODE = "RDE.LockAtStartMode";
         private static string CONFIG_AUTOFILL_MODE = "RDE.AutoFillMode";
 
+        private static string CONFIG_AUTO_NUMBER = "RDE.AutoNumber";
+
         private static string CONFIG_SITE_TEMPLATE_ID = "RDE.SiteTemplateID";
         private static string CONFIG_SITEVISIT_TEMPLATE_ID = "RDE.SiteVisitTemplateID"; 
         private static string CONFIG_MATERIAL_TEMPLATE_ID = "RDE.MaterialTemplateID";
@@ -35,6 +37,7 @@ namespace BioLink.Client.Material {
         private SiteExplorerNodeType _objectType;
         private bool _startLockMode;
         private AutoFillMode _autoFillMode = AutoFillMode.NoAutoFill;
+        private bool _autoNumber = false;
 
         public RapidDataEntry(User user, int objectId, SiteExplorerNodeType objectType) : base(user, "RDE") {
 
@@ -62,6 +65,9 @@ namespace BioLink.Client.Material {
 
             _autoFillMode = Config.GetUser(User, CONFIG_AUTOFILL_MODE, AutoFillMode.NoAutoFill);
             SetAutoFillMode(_autoFillMode);
+
+            _autoNumber = Config.GetUser(User, CONFIG_AUTO_NUMBER, false);
+            SetAutoNumber(_autoNumber);
 
             var root = BuildModel(_objectId, _objectType);
 
@@ -507,6 +513,14 @@ namespace BioLink.Client.Material {
                 // and select it
                 if (materialViewModel != null) {
                     grpMaterial.SelectedItem = materialViewModel;
+
+                    if (_autoNumber) {
+                        var control = grpMaterial.Content as MaterialRDEControl;
+                        if (control != null) {
+                            control.GenerateAutoNumbers();
+                        }
+                    }
+
                 }
             }
         }
@@ -573,18 +587,11 @@ namespace BioLink.Client.Material {
                     materialViewModel.SubParts.Add(subpart);
                     RegisterPendingChange(new InsertMaterialPartAction(subpart.Model, materialViewModel));
                 }
-
-                
+               
                 materialViewModel.SiteVisit = siteVisit;
                 materialViewModel.SiteVisitID = siteVisit.SiteVisitID;
-
                 siteVisit.Material.Add(materialViewModel);
-
-
                 materialViewModel.DataChanged +=new DataChangedHandler(materialViewModel_DataChanged);
-
-                
-                
 
                 return materialViewModel;
             }
@@ -888,6 +895,12 @@ namespace BioLink.Client.Material {
             Config.SetUser(User, CONFIG_LOCKING_MODE, lockAtStart);
         }
 
+        private void SetAutoNumber(bool autonumber) {
+            mnuAutoNumber.IsChecked = autonumber;
+            _autoNumber = autonumber;
+            Config.SetUser(User, CONFIG_AUTO_NUMBER, autonumber);
+        }
+
         private void SetAutoFillMode(AutoFillMode mode) {
 
             mnuAutoFillNone.IsChecked = mode == AutoFillMode.NoAutoFill;
@@ -1045,6 +1058,10 @@ namespace BioLink.Client.Material {
                 Config.SetProfile(User, CONFIG_MATERIAL_TEMPLATE_ID, -1);
             }
             
+        }
+
+        private void mnuAutoNumber_Click(object sender, RoutedEventArgs e) {
+            SetAutoNumber(mnuAutoNumber.IsChecked);
         }
 
     }
