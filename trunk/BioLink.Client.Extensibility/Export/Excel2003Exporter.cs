@@ -13,17 +13,12 @@ namespace BioLink.Client.Extensibility.Export {
 
     public class Excel2003Exporter : TabularDataExporter {
 
-        protected override object GetOptions(Window parentWindow) {
+        protected override object GetOptions(Window parentWindow, DataMatrix matrix) {
 
-            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
-            dlg.FileName = "Export"; // Default file name
-            dlg.DefaultExt = ".txt"; // Default file extension
-            dlg.OverwritePrompt = false;
-            dlg.Filter = "XML Excel Workbook (.xml)|*.xml|All files (*.*)|*.*"; // Filter files by extension
-            Nullable<bool> result = dlg.ShowDialog();
-            if (result == true) {
+            var filename = PromptForFilename(".txt", "XML Excel Workbook (.xml)|*.xml");
+            if (!String.IsNullOrEmpty(filename)) {
                 ExcelExporterOptions options = new ExcelExporterOptions();
-                options.Filename = dlg.FileName;
+                options.Filename = filename;
                 return options;
             }
 
@@ -96,6 +91,10 @@ namespace BioLink.Client.Extensibility.Export {
 
         #endregion
 
+
+        public override bool CanExport(DataMatrix matrix) {
+            return true;
+        }
     }
 
 

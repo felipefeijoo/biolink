@@ -16,7 +16,7 @@ namespace BioLink.Client.Extensibility {
 
         public void Export(Window parentWindow, DataMatrix matrix, IProgressObserver progress) {
             this.ProgressObserver = progress;
-            object options = GetOptions(parentWindow);
+            object options = GetOptions(parentWindow, matrix);
             JobExecutor.QueueJob(() => {
                 this.ExportImpl(parentWindow, matrix, options);
                 ProgressEnd("");
@@ -58,8 +58,9 @@ namespace BioLink.Client.Extensibility {
             return false;
         }
 
+        public abstract bool CanExport(DataMatrix matrix);
 
-        protected abstract object GetOptions(Window parentWindow);
+        protected abstract object GetOptions(Window parentWindow, DataMatrix matrix);
 
         public abstract void ExportImpl(Window parentWindow, DataMatrix matrix, object options);
 
@@ -81,6 +82,20 @@ namespace BioLink.Client.Extensibility {
             if (ProgressObserver != null) {
                 ProgressObserver.ProgressEnd(message);                
             }
+        }
+
+        protected string PromptForFilename(string extension, string filter) {
+            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+            dlg.FileName = "Export"; // Default file name
+            dlg.DefaultExt = extension; // Default file extension
+            dlg.OverwritePrompt = false;
+            dlg.Filter = filter + "|All files (*.*)|*.*"; // Filter files by extension
+            Nullable<bool> result = dlg.ShowDialog();
+            if (result == true) {
+                return dlg.FileName;
+            }
+
+            return null;
         }
 
         #region Properties

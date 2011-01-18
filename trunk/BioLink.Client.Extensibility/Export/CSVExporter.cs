@@ -11,7 +11,7 @@ namespace BioLink.Client.Extensibility.Export {
 
         private string _quote = "\"";
 
-        protected override object GetOptions(Window parentWindow) {
+        protected override object GetOptions(Window parentWindow, DataMatrix matrix) {
             CSVExporterOptionsWindow optionsWindow = new CSVExporterOptionsWindow();
             optionsWindow.Owner = parentWindow;
             if (optionsWindow.ShowDialog().GetValueOrDefault(false)) {
@@ -105,6 +105,10 @@ namespace BioLink.Client.Extensibility.Export {
 
         #endregion
 
+
+        public override bool CanExport(DataMatrix matrix) {
+            return true;
+        }
     }
 
 }
