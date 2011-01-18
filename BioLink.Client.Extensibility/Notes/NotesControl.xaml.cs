@@ -48,8 +48,6 @@ namespace BioLink.Client.Extensibility {
 
             using (new OverrideCursor(Cursors.Wait)) {
 
-                notesPanel.Children.Clear();
-
                 var service = new SupportService(User);
                 var list = service.GetNotes(TraitCategory.ToString(), Owner.ObjectID.Value);
                 _model = new ObservableCollection<NoteViewModel>(list.ConvertAll((model) => {
@@ -58,19 +56,26 @@ namespace BioLink.Client.Extensibility {
                     return viewModel;
                 }));
 
-                foreach (NoteViewModel m in _model) {
-                    var control = new NoteControl(User, m);
-                    control.NoteDeleted += new NoteControl.NoteEventHandler(control_NoteDeleted);
-                    control.TextSelectionChanged += new NoteControl.NoteEventHandler(control_TextSelectionChanged);
-
-                    if (selected != null && selected == m) {
-                        control.IsExpanded = true;
-                    }
-                    notesPanel.Children.Add(control);
-                }
+                RedrawNotes(selected);
 
                 IsPopulated = true;
             }
+        }
+
+        private void RedrawNotes(NoteViewModel selected = null) {
+            notesPanel.Children.Clear();
+
+            foreach (NoteViewModel m in _model) {
+                var control = new NoteControl(User, m);
+                control.NoteDeleted += new NoteControl.NoteEventHandler(control_NoteDeleted);
+                control.TextSelectionChanged += new NoteControl.NoteEventHandler(control_TextSelectionChanged);
+
+                if (selected != null && selected == m) {
+                    control.IsExpanded = true;
+                }
+                notesPanel.Children.Add(control);
+            }
+
         }
 
         private void control_TextSelectionChanged(object source, NoteViewModel note) {
@@ -91,7 +96,7 @@ namespace BioLink.Client.Extensibility {
             if (note.NoteID >= 0) {
                 RegisterPendingChange(new DeleteNoteAction(note.Model, Owner));
             }
-            LoadNotesPanel();
+            RedrawNotes();
         }
 
         public void Populate() {
@@ -126,7 +131,7 @@ namespace BioLink.Client.Extensibility {
 
             List<String> noteTypes = service.GetNoteTypesForCategory(TraitCategory.ToString());
 
-            var picklist = new PickListWindow(User, "Choose a trait type...", () => {
+            var picklist = new PickListWindow(User, "Choose a note type...", () => {
                 return noteTypes;
             }, (text) => {
                 noteTypes.Add(text);
@@ -145,7 +150,7 @@ namespace BioLink.Client.Extensibility {
                 NoteViewModel viewModel = new NoteViewModel(note);
                 _model.Add(viewModel);
                 RegisterUniquePendingChange(new InsertNoteAction(note, Owner));
-                LoadNotesPanel(viewModel);
+                RedrawNotes(viewModel);
             }
         }
 

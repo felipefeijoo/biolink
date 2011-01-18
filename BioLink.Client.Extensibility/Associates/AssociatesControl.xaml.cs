@@ -146,7 +146,7 @@ namespace BioLink.Client.Extensibility {
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
             var toCatID = value as int?;
-            if (toCatID != null && toCatID.HasValue) {
+            if (toCatID != null && toCatID.HasValue && toCatID.Value > 0) {
                 if (toCatID == 1) {
                     return TraitCategoryType.Material.ToString();
                 } if (toCatID == 2) {

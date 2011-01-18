@@ -470,12 +470,12 @@ namespace BioLink.Client.Maps {
             BoundingBox bbox = new BoundingBox(pos.X - delta, pos.Y - delta, pos.X + delta, pos.Y + delta);
 
             foreach (ILayer l in mapBox.Map.Layers) {
-                if (l is VectorLayer) {
+                if (l is VectorLayer && !l.LayerName.StartsWith("_")) {
                     var layer = l as VectorLayer;
                     
                     if (bbox != null) {
                         SharpMap.Data.FeatureDataSet ds = new SharpMap.Data.FeatureDataSet();
-                        layer.DataSource.Open();
+                        layer.DataSource.Open();                        
                         layer.DataSource.ExecuteIntersectionQuery(bbox, ds);
                         DataTable tbl = ds.Tables[0] as SharpMap.Data.FeatureDataTable;
                         GisSharpBlog.NetTopologySuite.IO.WKTReader reader = new GisSharpBlog.NetTopologySuite.IO.WKTReader();

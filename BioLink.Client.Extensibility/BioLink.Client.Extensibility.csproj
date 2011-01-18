@@ -114,6 +114,7 @@
     <Compile Include="Export\ExportData.xaml.cs">
       <DependentUpon>ExportData.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Export\KMLExporter.cs" />
     <Compile Include="Export\SQLiteExporter.cs" />
     <Compile Include="FavoritesControl.cs" />
     <Compile Include="FavoriteViewModel.cs" />
@@ -489,6 +490,7 @@
     <Resource Include="images\AddNewSmall.png" />
     <Resource Include="images\Locked.png" />
     <Resource Include="images\Unlocked.png" />
+    <Resource Include="images\kml_exporter.png" />
     <Content Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>

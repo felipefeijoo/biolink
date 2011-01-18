@@ -12,17 +12,12 @@ using BioLink.Data;
 namespace BioLink.Client.Extensibility.Export {
     public class SQLiteExporter : TabularDataExporter {
 
-        protected override object GetOptions(Window parentWindow) {
+        protected override object GetOptions(Window parentWindow, DataMatrix matrix) {
 
-            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
-            dlg.FileName = "Export"; // Default file name
-            dlg.DefaultExt = ".sqlite"; // Default file extension
-            dlg.OverwritePrompt = false;
-            dlg.Filter = "SQLite database (.sqlite)|*.sqlite|All files (*.*)|*.*"; // Filter files by extension
-            Nullable<bool> result = dlg.ShowDialog();
-            if (result == true) {
+            string filename = PromptForFilename(".sqlite", "SQLite database (.sqlite)|*.sqlite");
+            if (!String.IsNullOrEmpty(filename)) {
                 ExcelExporterOptions options = new ExcelExporterOptions();
-                options.Filename = dlg.FileName;
+                options.Filename = filename;
                 return options;
             }
 
@@ -84,6 +79,10 @@ namespace BioLink.Client.Extensibility.Export {
         }
 
         #endregion
+
+        public override bool CanExport(DataMatrix matrix) {
+            return true;
+        }
     }
 
     internal class SQLiteExporterService : SQLiteServiceBase {
