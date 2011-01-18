@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VisualState xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ShowCheckBoxes="false">
+  <TopNode>[0-1000]C:\Users\baird\dev\BioLink\BioLinkUtilities\BioLinkUtilities.csproj</TopNode>
+  <SelectedNode>[0-1012]BioLink.Utilities.PreferencesTests.testJSON</SelectedNode>
+  <ExcludeCategories>false</ExcludeCategories>
+  <Nodes>
+    <Node UniqueName="[0-1000]C:\Users\baird\dev\BioLink\BioLinkUtilities\BioLinkUtilities.csproj" Expanded="true" />
+    <Node UniqueName="[0-1013]C:\Users\baird\dev\BioLink\BioLinkUtilities\bin\Debug\BioLinkUtilities.dll" Expanded="true" />
+    <Node UniqueName="[0-1014]BioLink" Expanded="true" />
+    <Node UniqueName="[0-1015]BioLink.Utilities" Expanded="true" />
+    <Node UniqueName="[0-1001]BioLink.Utilities.PreferencesTests" Expanded="true" />
+  </Nodes>
+</VisualState>
