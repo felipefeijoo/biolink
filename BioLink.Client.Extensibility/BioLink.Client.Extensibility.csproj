@@ -115,6 +115,9 @@
       <DependentUpon>ExportData.xaml</DependentUpon>
     </Compile>
     <Compile Include="Export\KMLExporter.cs" />
+    <Compile Include="Export\MatrixColumnChooser.xaml.cs">
+      <DependentUpon>MatrixColumnChooser.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Export\SQLiteExporter.cs" />
     <Compile Include="FavoritesControl.cs" />
     <Compile Include="FavoriteViewModel.cs" />
@@ -244,6 +247,7 @@
     <Compile Include="Traits\TraitViewModel.cs" />
     <Compile Include="ViewModelBase.cs" />
     <Compile Include="VirtualizingStackPanel.cs" />
+    <Compile Include="WatermarkService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BioLinkDAL\BioLink.Data.csproj">
@@ -313,6 +317,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Export\ExportData.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Export\MatrixColumnChooser.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
