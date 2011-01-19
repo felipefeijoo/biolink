@@ -15,11 +15,18 @@ namespace BioLink.Client.Extensibility.Export {
         }
 
         protected override object GetOptions(System.Windows.Window parentWindow, DataMatrix matrix) {
-            var filename = PromptForFilename(".kml", "KML Files (*.kml)|*.kml");
-            if (!string.IsNullOrEmpty(filename)) {
-                KMLExporterOptions options = new KMLExporterOptions();
-                options.Filename = filename;
-                return options;
+
+            var frm = new MatrixColumnChooser(matrix, "Select the label column for each point:");
+            frm.Owner = parentWindow;
+            if (frm.ShowDialog().ValueOrFalse()) {
+
+                var filename = PromptForFilename(".kml", "KML Files (*.kml)|*.kml");
+                if (!string.IsNullOrEmpty(filename)) {
+                    KMLExporterOptions options = new KMLExporterOptions();                    
+                    options.Filename = filename;
+                    options.LabelColumn = frm.SelectedColumn;
+                    return options;
+                }
             }
 
             return null;
@@ -34,25 +41,29 @@ namespace BioLink.Client.Extensibility.Export {
 
                 int latIndex = matrix.IndexOf("Lat");
                 int lonIndex = matrix.IndexOf("Long");
-                int nameIndex = matrix.IndexOf("AccessionNo");
-                if (nameIndex < 0) {
-                    nameIndex = matrix.IndexOf("Taxa");
-                }
+                int nameIndex = matrix.IndexOf(opt.LabelColumn);
 
+                int rowCount = 0;
                 using (var writer = new StreamWriter(filename)) {
                     writer.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     writer.WriteLine("<kml xmlns=\"http://www.opengis.net/kml/2.2\">");
                     writer.WriteLine("<Document>");
 
+                    
                     foreach (MatrixRow row in matrix.Rows) {
                         var lat = row[latIndex];
                         var lon = row[lonIndex];
                         if (lat != null && lon != null) {
-                            writer.WriteLine("<Placemark>");
-                            string name = "";
+                            writer.WriteLine("<Placemark>");                            
+                            string name = "" + rowCount;
                             if (nameIndex >= 0) {
-                                name = row[nameIndex] as string;
-                            }
+                                var nameObj = row[nameIndex];
+                                if (nameObj != null) {
+                                    name = row[nameIndex].ToString();
+                                } else {
+                                    name = "";
+                                }
+                            } 
                             if (!string.IsNullOrEmpty(name)) {
                                 writer.WriteLine(string.Format("<name>{0}</name>", name));
                             }
@@ -61,21 +72,28 @@ namespace BioLink.Client.Extensibility.Export {
                             writer.WriteLine(string.Format("<Point><coordinates>{0},{1}</coordinates></Point>", lon, lat));
                             writer.WriteLine("</Placemark>");
                         }
+
+                        if (++rowCount % 1000 == 0) {
+                            double percent = ((double)rowCount / (double)matrix.Rows.Count) * 100;
+                            this.ProgressMessage("Exporting points to '" + filename + "'", percent);
+                        }
                     }
                     
                     writer.WriteLine("</Document>");
                     writer.WriteLine("</kml>");
                 }
+
+                ProgressEnd(string.Format("{0} rows exported.", rowCount));
             }
         }
 
         private string BuildDescription(MatrixRow row) {
-            StringBuilder b = new StringBuilder("<![CDATA[\n<ul>");
+            StringBuilder b = new StringBuilder("<![CDATA[\n<table>");
             foreach (MatrixColumn col in row.Matrix.Columns) {
-                b.AppendFormat("<li>{0} : {1}</li>", col.Name, row[row.Matrix.IndexOf(col.Name)]);
+                b.AppendFormat("<tr><td>{0}</td><td>{1}</td></tr>", col.Name, row[row.Matrix.IndexOf(col.Name)]);
             }
 
-            b.Append("</ul>\n]]>");
+            b.Append("</table>\n]]>");
 
             return b.ToString();
         }
@@ -101,6 +119,8 @@ namespace BioLink.Client.Extensibility.Export {
     internal class KMLExporterOptions {
 
         public string Filename { get; set; }
+
+        public string LabelColumn { get; set; }
 
     }
 }

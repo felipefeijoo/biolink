@@ -6,7 +6,7 @@
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
              xmlns:mat="clr-namespace:BioLink.Client.Material"
              mc:Ignorable="d" 
-             d:DesignHeight="550" d:DesignWidth="826" FocusManager.IsFocusScope="True">
+             d:DesignHeight="550" d:DesignWidth="826" FocusManager.IsFocusScope="True" AllowDrop="True">
     <Grid>
         <Grid.Resources>
             <ext:NegatingConverter x:Key="NegatingConverter" />

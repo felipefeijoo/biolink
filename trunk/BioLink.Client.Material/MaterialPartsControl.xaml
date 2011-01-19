@@ -52,8 +52,15 @@
             </Grid.RowDefinitions>
 
             <Label Content="Name:" HorizontalAlignment="Left" Name="label16" />
-            <ext:TextBox Height="23" Grid.Row="0" Grid.ColumnSpan="3" Grid.Column="1" Name="txtName" Text="{Binding PartName}" />
             
+            <AdornerDecorator Grid.Row="0" Grid.ColumnSpan="3" Grid.Column="1">
+                <ext:TextBox Height="23" Name="txtName" Text="{Binding PartName}" >
+                    <ext:WatermarkService.Watermark>
+                        <TextBlock>Leave blank to automatically generate name</TextBlock>
+                    </ext:WatermarkService.Watermark>                    
+                </ext:TextBox>
+            </AdornerDecorator>
+
             <Label Grid.Row="1" Content="Sample type:" Name="label17" />
             <ext:PickListControl Grid.Row="1" Grid.Column="1" Height="23" Name="plSampleType" Text="{Binding SampleType}" Grid.ColumnSpan="3" />
             

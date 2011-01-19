@@ -22,30 +22,60 @@
         <TabControl Margin="7,114,12,12" Name="tabMaterial">
             <TabItem Header="General" Name="tabGeneral">
                 <Grid>
-                    <Label Content="Identification:" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label4" VerticalAlignment="Top" />
-                    <Label Content="&lt;Identification&gt;" Height="28" Margin="147,6,6,0" Name="lblIdentification" VerticalAlignment="Top" />
-                    <Label Content="Accession #:" Height="28" HorizontalAlignment="Left" Margin="6,40,0,0" Name="label5" VerticalAlignment="Top" />
-                    <ext:AutoNumberBox Margin="147,40,0,0" Name="txtAccessionNumber" VerticalAlignment="Top" Text="{Binding AccessionNumber}" HorizontalAlignment="Left" Width="213" />
-                    <Label Content="Registration #:" Height="28" HorizontalAlignment="Left" Margin="6,69,0,0" Name="label6" VerticalAlignment="Top" />
-                    <ext:AutoNumberBox HorizontalAlignment="Left" Margin="147,69,0,0" Name="txtRegistrationNumber" Text="{Binding RegistrationNumber}" VerticalAlignment="Top" Width="213" />
-                    <Label Content="Collector's #:" Height="28" HorizontalAlignment="Left" Margin="6,98,0,0" Name="label7" VerticalAlignment="Top" />
-                    <ext:AutoNumberBox HorizontalAlignment="Left" Margin="147,98,0,0" Name="txtCollectorNo" Text="{Binding CollectorNumber}" VerticalAlignment="Top" Width="213" />
-                    <Label Content="Abundance:" Height="28" HorizontalAlignment="Left" Margin="366,40,0,0" Name="label8" VerticalAlignment="Top" />
-                    <ext:PickListControl Height="23" Margin="445,40,0,0" Name="txtAbundance" VerticalAlignment="Top" Text="{Binding Abundance}" HorizontalAlignment="Left" Width="227" />
-                    <Label Content="Source:" Height="28" HorizontalAlignment="Left" Margin="366,69,0,0" Name="label9" VerticalAlignment="Top" />
-                    <ext:PickListControl Height="23" Margin="445,69,0,0" Name="txtSource" Text="{Binding Source}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="227" />
-                    <Label Content="Institution:" Height="28" HorizontalAlignment="Left" Margin="366,98,0,0" Name="label10" VerticalAlignment="Top" />
-                    <ext:PickListControl Height="23" Margin="445,98,0,0" Name="txtInstitution" Text="{Binding Institution}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="227" />
-                    <Label Content="Collection method:" Height="28" HorizontalAlignment="Left" Margin="6,132,0,0" Name="label11" VerticalAlignment="Top" />
-                    <ext:PickListControl Height="23" HorizontalAlignment="Left" Margin="147,132,0,0" Name="txtCollectionMethod" Text="{Binding CollectionMethod}" VerticalAlignment="Top" Width="525" />
-                    <Label Content="Macro Habitat" Height="28" HorizontalAlignment="Left" Margin="6,161,0,0" Name="label12" VerticalAlignment="Top" />
-                    <ext:PickListControl Height="23" HorizontalAlignment="Left" Margin="147,161,0,0" Name="txtMacroHabitat" Text="{Binding MacroHabitat}" VerticalAlignment="Top" Width="525" />
-                    <Label Content="Micro Habitat:" Height="28" HorizontalAlignment="Left" Margin="6,190,0,0" Name="label13" VerticalAlignment="Top" />
-                    <ext:PickListControl Height="23" HorizontalAlignment="Left" Margin="147,190,0,0" Name="txtMicroHabitat" Text="{Binding MicroHabitat}" VerticalAlignment="Top" Width="525" />
-                    <Label Content="Trap:" Height="28" HorizontalAlignment="Left" Margin="6,219,0,0" Name="label14" VerticalAlignment="Top" />
-                    <ext:LookupControl HorizontalAlignment="Left" Margin="147,219,0,0" Name="txtTrap" VerticalAlignment="Top" Width="525" ObjectID="{Binding TrapID}" Text="{Binding TrapName}"/>
-                    <Label Content="Type Details:" Height="28" HorizontalAlignment="Left" Margin="6,248,0,0" Name="label15" VerticalAlignment="Top" />
-                    <TextBox Height="28" HorizontalAlignment="Left" Margin="147,248,0,0" Name="lblTypeDetails" VerticalAlignment="Top" Width="525" Text="{Binding TypeData, Mode=OneWay, Converter={StaticResource typeDataConverter}}" Background="{x:Static SystemColors.ControlBrush}" IsReadOnly="True" />
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="80" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="28" />
+                        <RowDefinition Height="28" />
+                        <RowDefinition Height="28" />
+                        <RowDefinition Height="28" />
+                        <RowDefinition Height="28" />
+                        <RowDefinition Height="28" />
+                        <RowDefinition Height="28" />
+                        <RowDefinition Height="28" />
+                        <RowDefinition Height="28" />
+                    </Grid.RowDefinitions>
+                    
+                    <Label Content="Identification:" Name="label4" />
+                    <Label Grid.Column="1" Grid.ColumnSpan="3" Content="{Binding TaxaDesc}" Name="lblIdentification" />
+                    
+                    <Label Grid.Row="1" Content="Accession #:" Name="label5" VerticalAlignment="Top" />
+                    <ext:AutoNumberBox Grid.Row="1" Grid.Column="1" Height="23" Name="txtAccessionNumber" Text="{Binding AccessionNumber}" />
+                    
+                    <Label Grid.Row="2" Content="Registration #:" Name="label6" />
+                    <ext:AutoNumberBox Grid.Row="2" Grid.Column="1" Height="23" Name="txtRegistrationNumber" Text="{Binding RegistrationNumber}" />
+                                        
+                    <Label Grid.Row="3" Content="Collector's #:" Name="label7" />
+                    <ext:AutoNumberBox Grid.Row="3" Grid.Column="1" Height="23" Name="txtCollectorNo" Text="{Binding CollectorNumber}" />
+                    
+                    <Label Grid.Column="2" Grid.Row="1" Content="Abundance:" Name="label8" />
+                    <ext:PickListControl Grid.Row="1" Grid.Column="3" Height="23" Name="txtAbundance" Text="{Binding Abundance}" />
+                    
+                    <Label Grid.Row="2" Grid.Column="2" Content="Source:" Name="label9" />
+                    <ext:PickListControl Height="23" Grid.Row="2" Grid.Column="3" Name="txtSource" Text="{Binding Source}" />
+                    
+                    <Label Grid.Row="3" Grid.Column="2" Content="Institution:" Name="label10" />
+                    <ext:PickListControl Height="23" Grid.Row="3" Grid.Column="3" Name="txtInstitution" Text="{Binding Institution}" />
+                    
+                    <Label Grid.Row="4" Content="Collection method:" />
+                    <ext:PickListControl Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Height="23" Name="txtCollectionMethod" Text="{Binding CollectionMethod}" />
+                    
+                    <Label Grid.Row="5" Content="Macro Habitat:" Name="label12" />
+                    <ext:PickListControl Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Height="23" Name="txtMacroHabitat" Text="{Binding MacroHabitat}" />
+                    
+                    <Label Grid.Row="6" Content="Micro Habitat:" Name="label13" />
+                    <ext:PickListControl Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3" Height="23" Name="txtMicroHabitat" Text="{Binding MicroHabitat}" />
+                    
+                    <Label Grid.Row="7" Content="Trap:" Name="label14" />
+                    <ext:LookupControl Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="3" Height="23" Name="txtTrap" ObjectID="{Binding TrapID}" Text="{Binding TrapName}"/>
+                    
+                    <Label Grid.Row="8" Content="Type Details:" Name="label15" VerticalAlignment="Top" />
+                    <TextBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="3" Height="23" Name="lblTypeDetails" Text="{Binding TypeData, Mode=OneWay, Converter={StaticResource typeDataConverter}}" Background="{x:Static SystemColors.ControlBrush}" IsReadOnly="True" />
+                    
                 </Grid>
             </TabItem>
             <TabItem Header="Identification" Name="tabIdentification">

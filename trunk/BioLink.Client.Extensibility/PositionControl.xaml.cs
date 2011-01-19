@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using BioLink.Client.Utilities;
 using BioLink.Data.Model;
 
 namespace BioLink.Client.Extensibility {
@@ -23,6 +24,58 @@ namespace BioLink.Client.Extensibility {
             InitializeComponent();
             lon.CoordinateValueChanged += new CoordinateValueChangedHandler(lon_CoordinateValueChanged);
             lat.CoordinateValueChanged += new CoordinateValueChangedHandler(lat_CoordinateValueChanged);
+
+            AllowDrop = true;
+
+            this.PreviewDragOver += new DragEventHandler(PositionControl_PreviewDragEnter);
+            this.PreviewDragEnter += new DragEventHandler(PositionControl_PreviewDragEnter);
+            this.Drop += new DragEventHandler(PositionControl_Drop);
+            this.DragEnter += new DragEventHandler(PositionControl_DragEnter);
+            this.DragOver += new DragEventHandler(PositionControl_DragEnter);
+
+            HookLatLongControl(lat);
+            HookLatLongControl(lon);            
+        }
+
+        private void HookLatLongControl(LatLongInput ctl) {
+            HookTextBox(ctl.txtDegrees);
+            HookTextBox(ctl.txtMinutes);
+            HookTextBox(ctl.txtSeconds);
+        }
+
+        private void HookTextBox(System.Windows.Controls.TextBox box) {
+            box.AllowDrop = true;
+
+            box.PreviewDragEnter += new DragEventHandler(PositionControl_PreviewDragEnter);
+            box.PreviewDragOver += new DragEventHandler(PositionControl_PreviewDragEnter);
+            box.PreviewDrop += new DragEventHandler(PositionControl_Drop);
+        }
+
+        void PositionControl_DragEnter(object sender, DragEventArgs e) {
+            e.Handled = true;
+        }
+
+        void PositionControl_PreviewDragEnter(object sender, DragEventArgs e) {
+
+            var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;
+            if (pinnable != null) {
+                if (pinnable.LookupType == LookupType.PlaceName) {
+                    e.Effects = DragDropEffects.Link;
+                }
+            } else {
+                e.Effects = DragDropEffects.None;
+            }
+            e.Handled = true;
+        }
+
+        void PositionControl_Drop(object sender, DragEventArgs e) {
+            var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;
+            if (pinnable != null && pinnable.LookupType == LookupType.PlaceName) {
+                PlaceName placeName = pinnable.GetState<PlaceName>();
+                this.lat.Value = placeName.Latitude;
+                lon.Value = placeName.Longitude;
+            }
+            e.Handled = true;
         }
 
         void lat_CoordinateValueChanged(object source, double value) {

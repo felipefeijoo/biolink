@@ -129,12 +129,10 @@ namespace BioLink.Client.Material {
             var part = new MaterialPart();
             part.MaterialID = Owner.ObjectID.Value;
             part.MaterialPartID = -1;
-            part.PartName = "<New Material part>";
+            part.PartName = "";
 
             var viewModel = new MaterialPartViewModel(part);
-
             _model.Add(viewModel);
-
             lst.SelectedItem = viewModel;
 
             RegisterPendingChange(new InsertMaterialPartAction(part, Owner));
