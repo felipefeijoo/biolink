@@ -14,6 +14,7 @@ namespace BioLink.Data {
     public class SupportService : BioLinkService {
 
         public static Dictionary<string, RefTypeMapping> RefTypeMap = new Dictionary<string, RefTypeMapping>();
+        public static List<FieldDescriptor> FieldDescriptors = new List<FieldDescriptor>();
 
         static SupportService() {
             RefTypeMap["J"] = new RefTypeMapping("J", "Journal");
@@ -22,6 +23,133 @@ namespace BioLink.Data {
             RefTypeMap["BS"] = new RefTypeMapping("BS", "Book Section");
             RefTypeMap["M"] = new RefTypeMapping("M", "Miscellaneous");
             RefTypeMap["U"] = new RefTypeMapping("U", "Internet URL");
+
+            // START FIELD DESCRIPTORS
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Biota Identifier", FieldName = "intBiotaID", TableName = "tblBiota", Category = "Nomenclature", Description = "Internal Database Indentifier for the Taxon", Format = "null", UseInRDE = true, DataType = "ObjectID" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Full Name", FieldName = "vchrFullName", TableName = "tblBiota", Category = "Nomenclature", Description = "Full Name of a taxon including Author and Year", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Name", FieldName = "vchrEpithet", TableName = "tblBiota", Category = "Nomenclature", Description = "Name/Epithet of the taxon", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Author", FieldName = "vchrAuthor", TableName = "tblBiota", Category = "Nomenclature", Description = "", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Year", FieldName = "vchrYearOfPub", TableName = "tblBiota", Category = "Nomenclature", Description = "", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Changed Combination", FieldName = "bitChangedComb", TableName = "tblBiota", Category = "Nomenclature", Description = "", Format = "null", UseInRDE = true, DataType = "Boolean" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Common Name", FieldName = "vchrCommonName", TableName = "tblCommonName", Category = "Nomenclature", Description = "Taxon's common name", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Rank", FieldName = "vchrLongName", TableName = "tblBiotaDefRank", Category = "Nomenclature", Description = "Element rank in full", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Rank Code", FieldName = "chrElemType", TableName = "tblBiota", Category = "Nomenclature", Description = "Element rank code", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Is Available Name", FieldName = "bitAvailableName", TableName = "tblBiota", Category = "Nomenclature", Description = "Taxon is an available name", Format = "null", UseInRDE = true, DataType = "Boolean" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Is Literature Name", FieldName = "bitLiteratureName", TableName = "tblBiota", Category = "Nomenclature", Description = "Taxon is a literature name", Format = "null", UseInRDE = true, DataType = "Boolean" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Is Unverified", FieldName = "bitUnverified", TableName = "tblBiota", Category = "Nomenclature", Description = "Taxon is an unverified entry", Format = "null", UseInRDE = true, DataType = "Boolean" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Name Status", FieldName = "vchrAvailableNameStatus", TableName = "tblBiota", Category = "Nomenclature", Description = "Status of Available Names", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Storage Location", FieldName = "vchrName", TableName = "tblBiotaStorage", Category = "Nomenclature", Description = "Where specimens are stored", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Who Created", FieldName = "vchrWhoCreated", TableName = "tblBiota", Category = "Nomenclature", Description = "The username of the user who created the entry", Format = "null", UseInRDE = false, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Date Created", FieldName = "dtDateCreated", TableName = "tblBiota", Category = "Nomenclature", Description = "The date the entry was created", Format = "null", UseInRDE = false, DataType = "Date" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Who Last Updated", FieldName = "vchrWhoLastUpdated", TableName = "tblBiota", Category = "Nomenclature", Description = "The username of the user who last updated the entry", Format = "null", UseInRDE = false, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Date Last Updated", FieldName = "dtDateLastUpdated", TableName = "tblBiota", Category = "Nomenclature", Description = "The date the entry was last updated", Format = "null", UseInRDE = false, DataType = "Date" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Region", FieldName = "vchrName", TableName = "tblDistributionRegion", Category = "strCATEGORY_BIOTA_REGION", Description = "Taxon distribution region", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Introduced", FieldName = "bitIntroduced", TableName = "tblBiotaDistribution", Category = "strCATEGORY_BIOTA_REGION", Description = "True/False if taxon was introduced", Format = "null", UseInRDE = true, DataType = "Boolean" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Associate", FieldName = "Associate", TableName = "vwAssociateText", Category = "Associates", Description = "Name of the associate being searched for", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Forward Relationship", FieldName = "vchrRelationFromTo", TableName = "vwAssociateText", Category = "Associates", Description = "Eg. Parasite: Aus is a Parasite of Bus", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Reverse Relationship", FieldName = "vchrRelationToFrom", TableName = "vwAssociateText", Category = "Associates", Description = "Eg. Host: Bus is a Host of Aus", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Region Identifier", FieldName = "intPoliticalRegionID", TableName = "tblPoliticalRegion", Category = "PoliticalRegion", Description = "Internal Database Identifier for this region", Format = "null", UseInRDE = true, DataType = "ObjectID" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Region Name", FieldName = "vchrName", TableName = "tblPoliticalRegion", Category = "PoliticalRegion", Description = "Political Region Name", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Region Type", FieldName = "vchrRank", TableName = "tblPoliticalRegion", Category = "PoliticalRegion", Description = "Type of Region: Region, Country, Province, etc", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Who Created", FieldName = "vchrWhoCreated", TableName = "tblPoliticalRegion", Category = "PoliticalRegion", Description = "The username of the user who created the entry", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Date Created", FieldName = "dtDateCreated", TableName = "tblPoliticalRegion", Category = "PoliticalRegion", Description = "The date the entry was created", Format = "null", UseInRDE = true, DataType = "Date" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Who Last Updated", FieldName = "vchrWhoLastUpdated", TableName = "tblPoliticalRegion", Category = "PoliticalRegion", Description = "The username of the user who last updated the entry", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Date Last Updated", FieldName = "dtDateLastUpdated", TableName = "tblPoliticalRegion", Category = "PoliticalRegion", Description = "The date the entry was last updated", Format = "null", UseInRDE = true, DataType = "Date" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Site Identifier", FieldName = "intSiteID", TableName = "tblSite", Category = "Site", Description = "Internal Database Identifier for this site", Format = "null", UseInRDE = true, DataType = "ObjectID" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Site Name", FieldName = "vchrSiteName", TableName = "tblSite", Category = "Site", Description = "Identifier (name or code) for this site/station assigned by the collector (need not be unique)", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Locality Type", FieldName = "tintLocalType", TableName = "tblSite", Category = "Site", Description = "Integer representing the type of locality data (1=Locality only, 2=Locality offset, 3=Informal Locality) ", Format = "null", UseInRDE = true, DataType = "IntCode[1=Locality only,2=Locality offset,3=Informal locality]" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Locality", FieldName = "vchrLocal", TableName = "tblSite", Category = "Site", Description = "Place name and optional offset where the material was found", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Distance from Place", FieldName = "vchrDistanceFromPlace", TableName = "tblSite", Category = "Site", Description = "Distance from the locality", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Direction from Place", FieldName = "vchrDirFromPlace", TableName = "tblSite", Category = "Site", Description = "Direction from the locality", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Informal locality", FieldName = "vchrInformalLocal", TableName = "tblSite", Category = "Site", Description = "", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Position Area Type", FieldName = "tintPosAreaType", TableName = "tblSite", Category = "Site", Description = "Integer representing the type of position data (1=point 2=line 3=bounding box)", Format = "null", UseInRDE = true, DataType = "IntCode[1=Point,2=Line,3=Bounding box]" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Position Coordinate Type", FieldName = "tintPosCoordinates", TableName = "tblSite", Category = "Site", Description = "Integer representing the type of coordinates used (1=Lat/Long 2=Easting/Northings)", Format = "null", UseInRDE = true, DataType = "IntCode[1=Lat/Long,2=Eastings/Northings]" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Longitude", FieldName = "fltPosX1", TableName = "tblSite", Category = "Site", Description = "Latitude in decimal degrees", Format = "strFFO_LONG", UseInRDE = true, DataType = "Longitude" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Latitude", FieldName = "fltPosY1", TableName = "tblSite", Category = "Site", Description = "Longitude in decimal degrees", Format = "strFFO_LAT", UseInRDE = true, DataType = "Latitude" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Longitude 2", FieldName = "fltPosX2", TableName = "tblSite", Category = "Site", Description = "Optional South-East Latitude in decimal degrees", Format = "strFFO_LONG", UseInRDE = true, DataType = "Longitude" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Latitude 2", FieldName = "fltPosY2", TableName = "tblSite", Category = "Site", Description = "Optional South-East Longitude in decimal degrees", Format = "strFFO_LAT", UseInRDE = true, DataType = "Latitude" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Position source", FieldName = "vchrPosSource", TableName = "tblSite", Category = "Site", Description = "Source of position data", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Position error", FieldName = "vchrPosError", TableName = "tblSite", Category = "Site", Description = "Estimate of the accuracy of position data", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Generated by", FieldName = "vchrPosWho", TableName = "tblSite", Category = "Site", Description = "Person who generated position data", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Generated on", FieldName = "vchrPosDate", TableName = "tblSite", Category = "Site", Description = "Date the position data were generated", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Original position", FieldName = "vchrPosOriginal", TableName = "tblSite", Category = "Site", Description = "", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "UTM source", FieldName = "vchrPosUTMSource", TableName = "tblSite", Category = "Site", Description = "", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "UTM map projection", FieldName = "vchrPosUTMMapProj", TableName = "tblSite", Category = "Site", Description = "", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "UTM map name", FieldName = "vchrPosUTMMapName", TableName = "tblSite", Category = "Site", Description = "", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "UTM map version", FieldName = "vchrPosUTMMapVer", TableName = "tblSite", Category = "Site", Description = "", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Elevation type", FieldName = "tintElevType", TableName = "tblSite", Category = "Site", Description = "Integer representing the type of elevation data(1=Elevation 2=Depth)", Format = "null", UseInRDE = true, DataType = "IntCode[1=Elevation,2=Depth]" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Elevation upper", FieldName = "fltElevUpper", TableName = "tblSite", Category = "Site", Description = "", Format = "null", UseInRDE = true, DataType = "Double" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Elevation lower", FieldName = "fltElevLower", TableName = "tblSite", Category = "Site", Description = "", Format = "null", UseInRDE = true, DataType = "Double" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Elevation depth", FieldName = "fltElevDepth", TableName = "tblSite", Category = "Site", Description = "", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Elevation units", FieldName = "vchrElevUnits", TableName = "tblSite", Category = "Site", Description = "", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Elevation source", FieldName = "vchrElevSource", TableName = "tblSite", Category = "Site", Description = "", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Elevation error", FieldName = "vchrElevError", TableName = "tblSite", Category = "Site", Description = "", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological Era", FieldName = "vchrGeoEra", TableName = "tblSite", Category = "Site", Description = "", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological State", FieldName = "vchrGeoState", TableName = "tblSite", Category = "Site", Description = "", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological Plate", FieldName = "vchrGeoPlate", TableName = "tblSite", Category = "Site", Description = "", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological Formation", FieldName = "vchrGeoFormation", TableName = "tblSite", Category = "Site", Description = "", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological Member", FieldName = "vchrGeoMember", TableName = "tblSite", Category = "Site", Description = "", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological Bed", FieldName = "vchrGeoBed", TableName = "tblSite", Category = "Site", Description = "", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological Name", FieldName = "vchrGeoName", TableName = "tblSite", Category = "Site", Description = "", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological Age Bottom", FieldName = "vchrGeoAgeBottom", TableName = "tblSite", Category = "Site", Description = "", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological Age Top", FieldName = "vchrGeoAgeTop", TableName = "tblSite", Category = "Site", Description = "", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological Notes", FieldName = "vchrGeoNotes", TableName = "tblSite", Category = "Site", Description = "", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Who Created", FieldName = "vchrWhoCreated", TableName = "tblSite", Category = "Site", Description = "The username of the user who created the entry", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Date Created", FieldName = "dtDateCreated", TableName = "tblSite", Category = "Site", Description = "The date the entry was created", Format = "null", UseInRDE = true, DataType = "Date" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Who Last Updated", FieldName = "vchrWhoLastUpdated", TableName = "tblSite", Category = "Site", Description = "The username of the user who last updated the entry", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Date Last Updated", FieldName = "dtDateLastUpdated", TableName = "tblSite", Category = "Site", Description = "The date the entry was last updated", Format = "null", UseInRDE = true, DataType = "Date" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Visit Identifier", FieldName = "intSiteVisitID", TableName = "tblSiteVisit", Category = "SiteVisit", Description = "Internal Database Indentifier for the visit", Format = "null", UseInRDE = true, DataType = "ObjectID" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Collector(s)", FieldName = "vchrCollector", TableName = "tblSiteVisit", Category = "SiteVisit", Description = "Persons collecting the material", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Start Date", FieldName = "intDateStart", TableName = "tblSiteVisit", Category = "SiteVisit", Description = "Date the collection took place or began", Format = "strFFO_DATE", UseInRDE = true, DataType = "BLDate" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Start Time", FieldName = "intTimeStart", TableName = "tblSiteVisit", Category = "SiteVisit", Description = "Optional Time the collection took place or began", Format = "null", UseInRDE = true, DataType = "BLTime" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "End Date", FieldName = "intDateEnd", TableName = "tblSiteVisit", Category = "SiteVisit", Description = "Optional date the collection concluded", Format = "strFFO_DATE", UseInRDE = true, DataType = "BLDate" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "End Time", FieldName = "intTimeEnd", TableName = "tblSiteVisit", Category = "SiteVisit", Description = "Optional time the collection concluded", Format = "null", UseInRDE = true, DataType = "BLTime" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Casual Time", FieldName = "vchrCasualTime", TableName = "tblSiteVisit", Category = "SiteVisit", Description = "Less rigorous date/time structure, eg. Spring 45", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Visit Name", FieldName = "vchrSiteVisitName", TableName = "tblSiteVisit", Category = "SiteVisit", Description = "Name given to site visit", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Field number", FieldName = "vchrFieldNumber", TableName = "tblSiteVisit", Category = "SiteVisit", Description = "", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Who Created", FieldName = "vchrWhoCreated", TableName = "tblSiteVisit", Category = "SiteVisit", Description = "The username of the user who created the entry", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Date Created", FieldName = "dtDateCreated", TableName = "tblSiteVisit", Category = "SiteVisit", Description = "The date the entry was created", Format = "strFFO_DATE", UseInRDE = true, DataType = "Date" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Who Last Updated", FieldName = "vchrWhoLastUpdated", TableName = "tblSiteVisit", Category = "SiteVisit", Description = "The username of the user who last updated the entry", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Date Last Updated", FieldName = "dtDateLastUpdated", TableName = "tblSiteVisit", Category = "SiteVisit", Description = "The date the entry was last updated", Format = "strFFO_DATE", UseInRDE = true, DataType = "Date" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Material Identifier", FieldName = "intMaterialID", TableName = "tblMaterial", Category = "Material", Description = "Internal Database Indentifier for the material", Format = "null", UseInRDE = true, DataType = "ObjectID" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Material name", FieldName = "vchrMaterialName", TableName = "tblMaterial", Category = "Material", Description = "Descriptive name given to material", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Accession number", FieldName = "vchrAccessionNo", TableName = "tblMaterial", Category = "Material", Description = "Unique collection number", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Registration number", FieldName = "vchrRegNo", TableName = "tblMaterial", Category = "Material", Description = "Code assigned by collection owner", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Collector number", FieldName = "vchrCollectorNo", TableName = "tblMaterial", Category = "Material", Description = "Code assigned by collector", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Identified by", FieldName = "vchrIDBy", TableName = "tblMaterial", Category = "Material", Description = "Person providing identification", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Identified on", FieldName = "dtIDDate", TableName = "tblMaterial", Category = "Material", Description = "Date identification was made", Format = "null", UseInRDE = true, DataType = "Date" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Identification Reference Code", FieldName = "vchrIDRefID", TableName = "tblMaterial", Category = "Material", Description = "The publication in which this identification appears", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Identification method", FieldName = "vchrIDMethod", TableName = "tblMaterial", Category = "Material", Description = "The method used to make the identification", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Identification accuracy", FieldName = "vchrIDAccuracy", TableName = "tblMaterial", Category = "Material", Description = "Likelihood that ID is correct: (0) unchecked by any authority, (1) compared with other named specimens, (2) determined by authority based on existing classification or named material, (3) determined by authority during revision, (4) part of type series", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Identification name qualifier", FieldName = "vchrIDNameQual", TableName = "tblMaterial", Category = "Material", Description = "An indication that the cited name is uncertain.  Includes cf (compare with), near, incorrect (current name is incorrect but true name is unknown), ? (questionable)", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Identification notes", FieldName = "vchrIDNotes", TableName = "tblMaterial", Category = "Material", Description = "Assorted notes on this identification", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Institute", FieldName = "vchrInstitution", TableName = "tblMaterial", Category = "Material", Description = "Institute where material is held", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Collection method", FieldName = "vchrCollectionMethod", TableName = "tblMaterial", Category = "Material", Description = "Method used to collect material", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Abundance", FieldName = "vchrAbundance", TableName = "tblMaterial", Category = "Material", Description = "Abundance or frequency of material", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Macrohabitat", FieldName = "vchrMacroHabitat", TableName = "tblMaterial", Category = "Material", Description = "General description of habitat.  Can include vegetation, soil, landform, etc.", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Microhabitat", FieldName = "vchrMicroHabitat", TableName = "tblMaterial", Category = "Material", Description = "Specific, small-scale habitat or situation of collection", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Source", FieldName = "vchrSource", TableName = "tblMaterial", Category = "Material", Description = "Source of this information (collection (specimen), electronic (specimen no longer available), literature (published record only), observation (unvouchered sighting), photograph (of existing specimen)", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Special label", FieldName = "vchrSpecialLabel", TableName = "tblMaterial", Category = "Material", Description = "Special text to appear on printed labels", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Original label", FieldName = "vchrOriginalLabel", TableName = "tblMaterial", Category = "Material", Description = "Special text to appear on printed labels", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Who Created", FieldName = "vchrWhoCreated", TableName = "tblMaterial", Category = "Material", Description = "The username of the user who created the entry", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Date Created", FieldName = "dtDateCreated", TableName = "tblMaterial", Category = "Material", Description = "The date the entry was created", Format = "null", UseInRDE = true, DataType = "Date" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Who Last Updated", FieldName = "vchrWhoLastUpdated", TableName = "tblMaterial", Category = "Material", Description = "The username of the user who last updated the entry", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Date Last Updated", FieldName = "dtDateLastUpdated", TableName = "tblMaterial", Category = "Material", Description = "The date the entry was last updated", Format = "null", UseInRDE = true, DataType = "Date" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Name", FieldName = "vchrPartName", TableName = "tblMaterialPart", Category = "MaterialPart", Description = "Name of the part", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Sample Type", FieldName = "vchrSampleType", TableName = "tblMaterialPart", Category = "MaterialPart", Description = "Sample type", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Number of Specimens", FieldName = "intNoSpecimens", TableName = "tblMaterialPart", Category = "MaterialPart", Description = "Number of specimens in the subpart", Format = "null", UseInRDE = true, DataType = "Integer" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Qualification", FieldName = "vchrNoSpecimensQual", TableName = "tblMaterialPart", Category = "MaterialPart", Description = "Qualification of the number of specimens", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Lifestage", FieldName = "vchrLifestage", TableName = "tblMaterialPart", Category = "MaterialPart", Description = "Lifestage", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Gender", FieldName = "vchrGender", TableName = "tblMaterialPart", Category = "MaterialPart", Description = "Gender", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Registration #", FieldName = "vchrRegNo", TableName = "tblMaterialPart", Category = "MaterialPart", Description = "registration of the Subpart", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Condition", FieldName = "vchrCondition", TableName = "tblMaterialPart", Category = "MaterialPart", Description = "Condition of the material", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Storage Site", FieldName = "vchrStorageSite", TableName = "tblMaterialPart", Category = "MaterialPart", Description = "Where is the subpart stored", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Storage Method", FieldName = "vchrStorageMethod", TableName = "tblMaterialPart", Category = "MaterialPart", Description = "How is the subpart stored", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Curation Status", FieldName = "vchrCurationStatus", TableName = "tblMaterialPart", Category = "MaterialPart", Description = "Curation status of the part", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Notes", FieldName = "txtNotes", TableName = "tblMaterialPart", Category = "MaterialPart", Description = "Notes", Format = "null", UseInRDE = true, DataType = "Text" });
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "On Loan", FieldName = "tintOnLoan", TableName = "tblMaterialPart", Category = "MaterialPart", Description = "= 1 if on loan", Format = "null", UseInRDE = true, DataType = "Boolean" });
+
+            // END FIELD DESCRIPTORS
         }
 
         public SupportService(User user)
@@ -907,6 +1035,44 @@ namespace BioLink.Data {
             return refcount == 0;
         }
 
+        #endregion
+
+        #region Query Tool
+
+        public List<FieldDescriptor> GetFieldMappings() {
+
+            // Start off with the base list of static fields...
+            var list = new List<FieldDescriptor>(FieldDescriptors);
+
+            // Now need to add trait fields for key nouns
+            list.AddRange(ExtractTraits("Taxon", "Nomenclature", "tblBiota"));
+            list.AddRange(ExtractTraits("Region", "PoliticalRegion", "tblPoliticalRegion"));
+            list.AddRange(ExtractTraits("Site", "Site", "tblSite"));
+            list.AddRange(ExtractTraits("SiteVisit", "SiteVisit", "tblSiteVisit"));
+            list.AddRange(ExtractTraits("Material", "Material", "tblMaterial"));
+
+            return list;
+        }
+
+        private List<FieldDescriptor> ExtractTraits(string traitCategory, string fieldCategory, string table) {
+
+            var list = new List<FieldDescriptor>();
+
+            StoredProcReaderForEach("spTraitTypeListForCategory", (reader) => {
+                var desc = new FieldDescriptor { TableName = String.Format("{0}.{1}.{2}", table, reader["ID"], reader["CategoryID"]) };
+                desc.FieldName = reader["Trait"] as string;
+                desc.Category = fieldCategory;
+                desc.DisplayName = desc.FieldName;
+                desc.Description = "Trait category";
+
+                list.Add(desc);
+                
+            }, _P("vchrCategory", traitCategory));
+
+
+
+            return list;
+        }
         #endregion
     }
 
