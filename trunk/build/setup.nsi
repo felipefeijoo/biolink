@@ -76,13 +76,7 @@ Section -Main SEC0000
     File ..\BioLinkApplication\bin\Debug\*.dll
     File /x *.vshost.exe.config ..\BioLinkApplication\bin\Debug\*.config	
 	File ..\shared\lib\*.dll
-	
-	${If} ${RunningX64}		
-		File ..\shared\lib\x64\*.dll
-	${Else}
-		File ..\shared\lib\x86\*.dll
-	${EndIf}
-	
+		
     SetOutPath $INSTDIR\Plugins
    
     File ..\BioLinkApplication\bin\Debug\Plugins\*.dll
