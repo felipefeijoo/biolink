@@ -67,6 +67,9 @@
       <DependentUpon>PhraseManager.xaml</DependentUpon>
     </Compile>
     <Compile Include="phrases\PhraseViewModel.cs" />
+    <Compile Include="QueryTool.xaml.cs">
+      <DependentUpon>QueryTool.xaml</DependentUpon>
+    </Compile>
     <Compile Include="references\ReferenceFavorites.xaml.cs">
       <DependentUpon>ReferenceFavorites.xaml</DependentUpon>
     </Compile>
@@ -139,6 +142,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="phrases\PhraseManager.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="QueryTool.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

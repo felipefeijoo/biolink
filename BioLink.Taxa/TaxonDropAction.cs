@@ -93,7 +93,7 @@ namespace BioLink.Client.Taxa {
             // Now convert available names to the new rank...
             foreach (TaxonViewModel child in Source.Children) {
                 if (child.AvailableName.GetValueOrDefault(false) || child.LiteratureName.GetValueOrDefault(false)) {
-                    child.ElemType = Context.TargetChildRank.Code;
+                    child.ElemType = ConvertRank.Code;
                     dbActions.Add(new UpdateTaxonDatabaseAction(child.Taxon));
                 }
             }

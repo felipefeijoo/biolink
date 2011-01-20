@@ -15,6 +15,7 @@ namespace BioLink.Client.Tools {
         private ControlHostWindow _phraseManager;
         private ControlHostWindow _refManager;
         private ControlHostWindow _journalManager;
+        private ControlHostWindow _queryTool;
 
         public const string TOOLS_PLUGIN_NAME = "Tools";
 
@@ -42,6 +43,12 @@ namespace BioLink.Client.Tools {
                 String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
                 String.Format("{{'Name':'JournalManager', 'Header':'{0}'}}", _R("Tools.Menu.JournalManager"))
             ));
+
+            contrib.Add(new MenuWorkspaceContribution(this, "QueryTool", (obj, e) => { ShowQueryTool(); },
+                String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
+                String.Format("{{'Name':'QueryTool', 'Header':'{0}'}}", "Query Tool")
+            ));
+
 
 
             return contrib;
@@ -97,8 +104,23 @@ namespace BioLink.Client.Tools {
 
             _journalManager.Show();
             _journalManager.Focus();
+        }
+
+        private void ShowQueryTool() {
+            if (_queryTool == null) {
+                _queryTool = PluginManager.Instance.AddNonDockableContent(this, new QueryTool(User, this), "Query Tool", SizeToContent.Manual, true, (window) => {
+                    window.btnOk.IsDefault = false;
+                });
+                _queryTool.Closed += new EventHandler((sender, e) => {
+                    _queryTool = null;
+                });
+            }
+
+            _queryTool.Show();
+            _queryTool.Focus();
 
         }
+
 
 
         public override List<Command> GetCommandsForObject(ViewModelBase obj) {
