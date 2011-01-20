@@ -77,11 +77,9 @@ Section -Main SEC0000
     File /x *.vshost.exe.config ..\BioLinkApplication\bin\Debug\*.config	
 	File ..\shared\lib\*.dll
 	
-	${If} ${RunningX64}
-		MessageBox MB_OK "running on x64"
+	${If} ${RunningX64}		
 		File ..\shared\lib\x64\*.dll
 	${Else}
-		MessageBox MB_OK "running on x86"
 		File ..\shared\lib\x86\*.dll
 	${EndIf}
 	
