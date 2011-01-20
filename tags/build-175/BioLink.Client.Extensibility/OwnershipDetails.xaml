@@ -1,0 +1,25 @@
+﻿<UserControl x:Class="BioLink.Client.Extensibility.OwnershipDetails"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="233" d:DesignWidth="403">
+    <Grid>
+        <Grid.Resources>
+            <Style TargetType="TextBlock">
+                <Setter Property="FontWeight" Value="Bold" />                
+            </Style>
+        </Grid.Resources>
+        <Label Content="Date created:" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" Name="label1" VerticalAlignment="Top" Width="123" />
+        <Label Content="Created by:" Height="28" HorizontalAlignment="Left" Margin="12,41,0,0" Name="label2" VerticalAlignment="Top" Width="123" />
+        <Label Content="Date last modifed:" Height="28" HorizontalAlignment="Left" Margin="12,70,0,0" Name="label3" VerticalAlignment="Top" Width="123" />
+        <Label Content="Last modified by:" Height="28" HorizontalAlignment="Left" Margin="12,99,0,0" Name="label4" VerticalAlignment="Top" Width="108" />
+
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="141,17,0,0" Name="txtDateCreated" Text="{Binding DateCreated}" VerticalAlignment="Top" Width="202" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="141,46,0,0" Name="textBlock1" Text="{Binding WhoCreated}" VerticalAlignment="Top" Width="202" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="141,75,0,0" Name="textBlock2" Text="{Binding DateLastUpdated}" VerticalAlignment="Top" Width="202" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="141,104,0,0" Name="textBlock3" Text="{Binding WhoLastUpdated}" VerticalAlignment="Top" Width="202" />
+        
+    </Grid>
+</UserControl>
