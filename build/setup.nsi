@@ -82,8 +82,6 @@ Section -Main SEC0000
        
     WriteRegStr HKLM "${REGKEY}\Components" Main 1
 	
-	CreateShortCut "$SMPROGRAMS\$StartMenuGroup\BioLink.lnk" $INSTDIR\BiolinkApplication.exe
-	
 SectionEnd
 
 Section -post SEC0001
@@ -93,6 +91,7 @@ Section -post SEC0001
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     SetOutPath $SMPROGRAMS\$StartMenuGroup	
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk" $INSTDIR\uninstall.exe
+	CreateShortCut "$SMPROGRAMS\$StartMenuGroup\BioLink.lnk" $INSTDIR\BiolinkApplication.exe
     !insertmacro MUI_STARTMENU_WRITE_END
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayName "$(^Name)"
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayVersion "${VERSION}"
@@ -129,6 +128,7 @@ SectionEnd
 Section -un.post UNSEC0001
     DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk"
+	Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\BioLink.lnk"
     Delete /REBOOTOK $INSTDIR\uninstall.exe
     DeleteRegValue HKLM "${REGKEY}" StartMenuGroup
     DeleteRegValue HKLM "${REGKEY}" Path
