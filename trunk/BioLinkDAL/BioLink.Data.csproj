@@ -113,6 +113,7 @@
     <Compile Include="Model\TaxonRefLink.cs" />
     <Compile Include="Model\Trait.cs" />
     <Compile Include="Model\Trap.cs" />
+    <Compile Include="QuerySQLGenerator.cs" />
     <Compile Include="SupportService.cs" />
     <Compile Include="Model\Taxon.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

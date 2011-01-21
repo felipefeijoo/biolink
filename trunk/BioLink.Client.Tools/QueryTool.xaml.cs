@@ -16,6 +16,7 @@ using BioLink.Client.Utilities;
 using BioLink.Data;
 using BioLink.Data.Model;
 using System.Collections.ObjectModel;
+using System.IO;
 
 namespace BioLink.Client.Tools {
     /// <summary>
@@ -24,6 +25,8 @@ namespace BioLink.Client.Tools {
     public partial class QueryTool : UserControl {
 
         private ObservableCollection<QueryCriteria> _model;
+        private List<FieldDescriptor> _fields;
+        private bool _distinct = false;
 
         static QueryTool() {
             AddCriteria = new RoutedCommand("AddCriteriaCommand", typeof(QueryTool));
@@ -59,8 +62,8 @@ namespace BioLink.Client.Tools {
             this.Owner = owner;
 
             var service = new SupportService(user);
-            var mappings = service.GetFieldMappings();
-            lvwFields.ItemsSource = mappings;
+            _fields = service.GetFieldMappings();
+            lvwFields.ItemsSource = _fields;
 
             CollectionView myView = (CollectionView)CollectionViewSource.GetDefaultView(lvwFields.ItemsSource);
             PropertyGroupDescription groupDescription = new PropertyGroupDescription("Category");
@@ -69,7 +72,7 @@ namespace BioLink.Client.Tools {
             _model = new ObservableCollection<QueryCriteria>();
             criteriaGrid.ItemsSource = _model;
 
-            var sortItems = new List<String>(new string[] { "(No sort)", "Ascending", "Descending" });
+            var sortItems = new List<String>(new string[] { CriteriaSortConverter.NOT_SORTED, "Ascending", "Descending" });
             sortColumn.ItemsSource = sortItems;
 
         }
@@ -117,19 +120,103 @@ namespace BioLink.Client.Tools {
         }
 
         private void NewQueryImpl() {
-            MessageBox.Show("New Query!");
+            if (_model.Count > 0) {
+                if (!this.Question("Are you sure you wish to discard the current query and create a new one?", "Discard query?")) {
+                    return;
+                }
+            }
+            _model.Clear();
         }
 
         private void OpenQueryImpl() {
-            MessageBox.Show("Open Query!");
+            var dlg = new Microsoft.Win32.OpenFileDialog();
+            dlg.Title = "Load Query";
+            dlg.DefaultExt = "blq"; // Default file extension
+            dlg.Filter = "Query Files (*.blq)|*.blq|All files (*.*)|*.*"; // Filter files by extension
+            Nullable<bool> result = dlg.ShowDialog();
+            if (result == true) {                
+                _model = LoadQueryFile(dlg.FileName);
+                criteriaGrid.ItemsSource = _model;
+            }
+            
+        }
+
+        private ObservableCollection<QueryCriteria> LoadQueryFile(string filename) {
+            var model = new ObservableCollection<QueryCriteria>();
+            using (var reader = new StreamReader(filename)) {
+                string strLine = reader.ReadLine(); // Skip first line (contains header...);
+                string expected = string.Format("Field{0}Criteria{0}Output{0}Alias{0}Sort", (char)2);
+                if (strLine != expected) {
+                    throw new Exception("Invalid query file. Header mismatch.");
+                }
+
+                int lineCount = 0;
+                while ((strLine = reader.ReadLine()) != null) {
+                    if (strLine.Trim().Length > 0) {
+                        lineCount++;
+                        String[] bits = strLine.Split((char)2);
+                        if (bits.Length != 5) {
+                            throw new Exception("Invalid query file. Incorrect number of delimiters on line " + lineCount);
+                        }
+
+                        // first find the field given its category/name combo...
+                        var field = FindFieldByLongName(bits[0]);
+                        if (field != null) {
+                            var c = new QueryCriteria { Field = field, Criteria = bits[1], Output = (bits[2].Trim() == "1"), Alias = bits[3], Sort = bits[4] };
+                            model.Add(c);
+                        } else {
+                            // Could not locate the field...what to do? Ignore or throw?
+                        }
+                    }
+                }
+            }
+            return model;
+        }
+
+        private FieldDescriptor FindFieldByLongName(string name) {
+            int index = name.IndexOf(".");
+            if (index > 0) {
+                string category = name.Substring(0, index);
+                string displayName = name.Substring(index + 1);
+
+                foreach (FieldDescriptor f in _fields) {
+                    if (f.Category == category && f.DisplayName == displayName) {
+                        return f;
+                    }
+                }
+            }
+
+            return null;
         }
 
         private void SaveQueryImpl() {
-            MessageBox.Show("Save Query!");
+            var dlg = new Microsoft.Win32.SaveFileDialog();
+            dlg.Title = "Save Query";
+            dlg.FileName = "query"; // Default file name
+            dlg.DefaultExt = "blq"; // Default file extension
+            dlg.OverwritePrompt = true;
+            dlg.Filter = "Query Files (*.blq)|*.blq|All files (*.*)|*.*"; // Filter files by extension
+            Nullable<bool> result = dlg.ShowDialog();
+            if (result == true) {
+                SaveQueryFile(_model, dlg.FileName);                
+            }
+        }
+
+        private void SaveQueryFile(ObservableCollection<QueryCriteria> model, string filename) {
+            using (StreamWriter writer = new StreamWriter(filename)) {
+                writer.WriteLine(string.Format("Field{0}Criteria{0}Output{0}Alias{0}Sort", (char)2));
+                foreach (QueryCriteria c in model) {
+                    writer.WriteLine(string.Format("{1}.{2}{0}{3}{0}{4}{0}{5}{0}{6}", (char)2, c.Field.Category, c.Field.DisplayName, c.Criteria, c.Output ? "1" : "0", c.Alias, c.Sort));
+                }
+            }
         }
 
         private void ShowSQLImpl() {
-            MessageBox.Show("Show SQL!");
+            var service = new SupportService(User);
+            var sql = service.GenerateQuerySQL(_model, _distinct);
+            var frm = new SQLViewer(sql);
+            frm.Owner = this.FindParentWindow();
+            frm.ShowDialog();            
         }
 
         private void ExecuteQueryImpl() {
@@ -325,11 +412,43 @@ namespace BioLink.Client.Tools {
 
     }
 
-    public class QueryCriteria {
-        public FieldDescriptor Field { get; set; }
-        public string Criteria { get; set; }
-        public bool Output { get; set; }
-        public string Alias { get; set; }
-        public string Sort { get; set; }
+    internal class CriteriaSortConverter : IValueConverter {
+
+        public const string NOT_SORTED = "(Not sorted)";
+
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+            var s = value as string;
+            if (string.IsNullOrEmpty(s)) {
+                return NOT_SORTED;
+            }
+            return s;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+            var s = value as string;
+            if (s == NOT_SORTED) {
+                return "";
+            }
+            return value;
+        }
+
     }
+
+    internal class QueryFieldConverter : IValueConverter {
+
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+            var fld = value as FieldDescriptor;
+            if (fld != null) {
+                return string.Format("{0}.{1}", fld.Category, fld.DisplayName);
+            }
+            return "!";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+            throw new NotImplementedException();
+        }
+    }
+
 }
+
+
