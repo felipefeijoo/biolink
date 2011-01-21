@@ -9,6 +9,11 @@
              mc:Ignorable="d" 
              d:DesignHeight="357" d:DesignWidth="870">
     <Grid>
+        <Grid.Resources>
+            <src:CriteriaSortConverter x:Key="CriteriaSortConverter" />
+            <src:QueryFieldConverter x:Key="QueryFieldConverter" />
+        </Grid.Resources>
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="23" />
             <RowDefinition Height="28" />
@@ -110,12 +115,12 @@
 
                 <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Auto">
                     <DataGrid x:Name="criteriaGrid"  RowHeaderWidth="20" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="False" AutoGenerateColumns="False" VerticalContentAlignment="Center">
-                        <DataGrid.Columns>                                 
-                            <DataGridTextColumn Header="Field" Width="180" Binding="{Binding Field}"/>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Field" Width="180" Binding="{Binding Field, Converter={StaticResource QueryFieldConverter}}" IsReadOnly="True" />
                             <DataGridTextColumn Header="Criteria" Width="250" Binding="{Binding Criteria}"/>
                             <DataGridCheckBoxColumn Header="Output" Binding="{Binding Output}" />
                             <DataGridTextColumn Header="Alias" Width="100" Binding="{Binding Alias}"/>
-                            <DataGridComboBoxColumn Header="Sort" Width="100" SelectedItemBinding="{Binding Sort}" x:Name="sortColumn" />
+                            <DataGridComboBoxColumn Header="Sort" Width="100" TextBinding="{Binding Sort, Converter={StaticResource CriteriaSortConverter}}" x:Name="sortColumn" />
                         </DataGrid.Columns>                
                     </DataGrid>
                 </ScrollViewer>

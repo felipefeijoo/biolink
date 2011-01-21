@@ -21,4 +21,15 @@ namespace BioLink.Data.Model {
         }
 
     }
+
+    public class QueryCriteria {
+
+        public FieldDescriptor Field { get; set; }
+        public string Criteria { get; set; }
+        public bool Output { get; set; }
+        public string Alias { get; set; }
+        public string Sort { get; set; }
+
+    }
+
 }

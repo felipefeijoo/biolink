@@ -105,6 +105,9 @@
       <DependentUpon>TaxonRefLinksControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="references\TaxonRefLinkViewModel.cs" />
+    <Compile Include="SQLViewer.xaml.cs">
+      <DependentUpon>SQLViewer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ToolsPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -186,6 +189,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="references\TaxonRefLinksControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SQLViewer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

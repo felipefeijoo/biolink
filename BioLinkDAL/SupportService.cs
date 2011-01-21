@@ -15,7 +15,9 @@ namespace BioLink.Data {
 
         public static Dictionary<string, RefTypeMapping> RefTypeMap = new Dictionary<string, RefTypeMapping>();
         public static List<FieldDescriptor> FieldDescriptors = new List<FieldDescriptor>();
+        public static Dictionary<string, string> TableAliases = new Dictionary<string, string>();
 
+        #region Static Initializer
         static SupportService() {
             RefTypeMap["J"] = new RefTypeMapping("J", "Journal");
             RefTypeMap["JS"] = new RefTypeMapping("JS", "Journal Section");
@@ -23,6 +25,27 @@ namespace BioLink.Data {
             RefTypeMap["BS"] = new RefTypeMapping("BS", "Book Section");
             RefTypeMap["M"] = new RefTypeMapping("M", "Miscellaneous");
             RefTypeMap["U"] = new RefTypeMapping("U", "Internet URL");
+
+            // TABLE ALIASES
+            TableAliases["tblPoliticalRegion"] = "R";
+            TableAliases["tblSiteGroup"] = "SG";
+            TableAliases["tblSite"] = "S";
+            TableAliases["tblSiteVisit"] = "SV";
+            TableAliases["tblMaterial"] = "M";
+            TableAliases["tblMaterialPart"] = "MP";
+            TableAliases["tblMaterialAssoc"] = "MA";
+
+            TableAliases["tblBiota"] = "B";
+            TableAliases["tblBiotaDefRank"] = "DBF";
+
+            TableAliases["tblCommonName"] = "CN";
+            TableAliases["tblBiotaDistribution"] = "BD";
+            TableAliases["vwAssociateText"] = "AT";
+            TableAliases["tblBiotaLocation"] = "BL";
+
+            TableAliases["tblBiotaStorage"] = "BS";
+            TableAliases["tblDistributionRegion"] = "DR";
+
 
             // START FIELD DESCRIPTORS
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Biota Identifier", FieldName="intBiotaID", TableName="tblBiota", Category="Nomenclature", Description="Internal Database Indentifier for the Taxon", Format="", UseInRDE=true, DataType="ObjectID" });
@@ -151,6 +174,8 @@ namespace BioLink.Data {
             // END FIELD DESCRIPTORS
 
         }
+
+        #endregion
 
         public SupportService(User user)
             : base(user) {
@@ -1069,10 +1094,13 @@ namespace BioLink.Data {
                 
             }, _P("vchrCategory", traitCategory));
 
-
-
             return list;
         }
+
+        public string GenerateQuerySQL(IEnumerable<QueryCriteria> criteria, bool distinct) {
+            return QuerySQLGenerator.GenerateSQL(criteria, distinct);
+        }
+
         #endregion
     }
 
