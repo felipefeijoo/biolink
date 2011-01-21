@@ -499,6 +499,13 @@
     <Resource Include="images\Locked.png" />
     <Resource Include="images\Unlocked.png" />
     <Resource Include="images\kml_exporter.png" />
+    <Resource Include="images\DoubleLeftArrowSmall.png" />
+    <Resource Include="images\DownArrowSmall.png" />
+    <Resource Include="images\UpArrowSmall.png" />
+    <Resource Include="images\Open.png" />
+    <Resource Include="images\Save.png" />
+    <Resource Include="images\Run.png" />
+    <Resource Include="images\SQL.png" />
     <Content Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>
