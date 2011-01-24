@@ -1079,7 +1079,6 @@ namespace BioLink.Client.Taxa {
 
         #endregion
 
-
         internal void RunReport(IBioLinkReport report) {
             ReportResults results = new ReportResults(report);
             PluginManager.Instance.AddDockableContent(this.Owner, results, report.Name);            

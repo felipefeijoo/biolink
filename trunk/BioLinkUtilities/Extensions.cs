@@ -140,6 +140,19 @@ namespace BioLink.Client.Utilities {
             return sb.ToString();
         }
 
+        public static string Join<T>(this IList<T> items, string delimiter) {
+            if (items.Count == 0) {
+                return "";
+            }
+            StringBuilder sb = new StringBuilder(items[0].ToString());
+            for (int i = 1; i < items.Count; ++i) {
+                sb.Append(delimiter);
+                sb.Append(items[i] == null ? "" : items[i].ToString());
+            }
+            return sb.ToString();
+        }
+
+
     }
 
     public delegate string MessageFormatterFunc(string format, params object[] args);

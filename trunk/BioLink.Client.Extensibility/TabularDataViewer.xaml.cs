@@ -32,7 +32,12 @@ namespace BioLink.Client.Extensibility {
             _report = report;
             GridView view = new GridView();
 
-            foreach (DisplayColumnDefinition c in report.DisplayColumns) {
+            var columns = report.DisplayColumns;
+            if (columns == null || columns.Count == 0) {
+                columns = GenerateDefaultColumns(data);
+            }
+
+            foreach (DisplayColumnDefinition c in columns) {
                 DisplayColumnDefinition coldef = c;
                 var column = new GridViewColumn { Header = BuildColumnHeader(coldef), DisplayMemberBinding = new Binding(String.Format("[{0}]", data.IndexOf(coldef.ColumnName))) };
                 view.Columns.Add(column);
@@ -44,6 +49,15 @@ namespace BioLink.Client.Extensibility {
             
             lvw.ItemsSource = Data.Rows;
             this.lvw.View = view;
+        }
+
+        private List<DisplayColumnDefinition> GenerateDefaultColumns(DataMatrix data) {
+            var list = new List<DisplayColumnDefinition>();
+            foreach (MatrixColumn col in data.Columns) {
+                var colDef = new DisplayColumnDefinition { ColumnName = col.Name, DisplayName = col.Name };
+                list.Add(colDef);
+            }
+            return list;
         }
 
         private void EditSite(int siteID) {            
