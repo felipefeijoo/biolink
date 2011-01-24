@@ -220,7 +220,15 @@ namespace BioLink.Client.Tools {
         }
 
         private void ExecuteQueryImpl() {
-            MessageBox.Show("Execute Query!");
+
+            try {
+                var report = new QueryReport(User, _model, _distinct);
+                ReportResults results = new ReportResults(report);
+                PluginManager.Instance.AddDockableContent(this.Owner, results, report.Name);            
+            } catch (Exception ex) {
+                ErrorMessage.Show(ex.Message);
+            }
+
         }
 
         #region Commands
@@ -447,6 +455,27 @@ namespace BioLink.Client.Tools {
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
             throw new NotImplementedException();
         }
+    }
+
+    internal class QueryReport : ReportBase {
+
+        public QueryReport(User user, IEnumerable<QueryCriteria> criteria, bool distinct) : base(user) {
+            this.Criteria = criteria;
+            this.Distinct = distinct;
+            RegisterViewer(new TabularDataViewerSource());
+        }
+
+        public override string Name {
+            get { return "Query Results"; }
+        }
+
+        public override DataMatrix ExtractReportData(IProgressObserver progress) {
+            var service = new SupportService(User);
+            return service.ExecuteQuery(Criteria, Distinct);
+        }
+
+        public IEnumerable<QueryCriteria> Criteria { get; private set; }
+        public bool Distinct { get; private set; }
     }
 
 }

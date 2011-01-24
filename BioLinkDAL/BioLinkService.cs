@@ -55,7 +55,7 @@ namespace BioLink.Data {
             
         }
 
-        protected void SQLReaderForEach(string SQL, ServiceReaderAction action, params SqlParameter[] @params) {
+        internal void SQLReaderForEach(string SQL, ServiceReaderAction action, params SqlParameter[] @params) {
             Message("Executing query...");
             using (new CodeTimer(String.Format("SQLReaderForEach '{0}'", SQL))) {
                 Logger.Debug("Calling stored procedure (reader): {0}", SQL);
@@ -93,7 +93,7 @@ namespace BioLink.Data {
         /// <param name="proc">The name of the stored procedure</param>
         /// <param name="func">The action to be called for each row</param>
         /// <param name="params">A params array for the arguments of the stored proc</param>
-        protected void StoredProcReaderForEach(string proc, ServiceReaderAction action, params SqlParameter[] @params) {
+        internal void StoredProcReaderForEach(string proc, ServiceReaderAction action, params SqlParameter[] @params) {
             Message("Executing query...");
             using (new CodeTimer(String.Format("StoredProcReaderForEach '{0}'", proc))) {
                 Logger.Debug("Calling stored procedure (reader): {0}", proc);
@@ -123,7 +123,7 @@ namespace BioLink.Data {
             }
         }
 
-        protected void StoredProcReaderFirst(string proc, ServiceReaderAction action, params SqlParameter[] @params) {
+        internal void StoredProcReaderFirst(string proc, ServiceReaderAction action, params SqlParameter[] @params) {
             using (new CodeTimer(String.Format("StoredProcReaderFirst '{0}'", proc))) {
                 Logger.Debug("Calling stored procedure (reader): {0}", proc);
                 Command((con, cmd) => {
@@ -147,7 +147,7 @@ namespace BioLink.Data {
             }
         }
 
-        protected T StoredProcReturnVal<T>(string proc, params SqlParameter[] @params) {
+        internal T StoredProcReturnVal<T>(string proc, params SqlParameter[] @params) {
             using (new CodeTimer(String.Format("StoredProcReaderFirst '{0}'", proc))) {
                 
                 Array.Resize(ref @params, @params.Length + 1);
@@ -171,7 +171,7 @@ namespace BioLink.Data {
             }
         }
 
-        protected List<T> StoredProcToList<T>(string storedproc, GenericMapper<T> mapper, params SqlParameter[] @params) where T : new() {
+        internal List<T> StoredProcToList<T>(string storedproc, GenericMapper<T> mapper, params SqlParameter[] @params) where T : new() {
             List<T> list = new List<T>();
 
             StoredProcReaderForEach(storedproc, (reader) => {
@@ -181,7 +181,7 @@ namespace BioLink.Data {
             return list;
         }
 
-        protected T StoredProcGetOne<T>(string storedproc, GenericMapper<T> mapper, params SqlParameter[] @params) where T : new() {
+        internal T StoredProcGetOne<T>(string storedproc, GenericMapper<T> mapper, params SqlParameter[] @params) where T : new() {
             T ret = default(T);
             StoredProcReaderFirst(storedproc, (reader) => {
                 ret = mapper.Map(reader);
@@ -189,7 +189,7 @@ namespace BioLink.Data {
             return ret;
         }
 
-        protected DataTable StoredProcDataTable(string proc, params SqlParameter[] @params) {
+        internal DataTable StoredProcDataTable(string proc, params SqlParameter[] @params) {
 
             DataTable table = null;
             StoredProcReaderForEach(proc, (reader) => {
@@ -213,7 +213,7 @@ namespace BioLink.Data {
             return table;
         }
 
-        protected DataMatrix StoredProcDataMatrix(string proc, params SqlParameter[] @params) {
+        internal DataMatrix StoredProcDataMatrix(string proc, params SqlParameter[] @params) {
 
             DataMatrix matrix = null;
             StoredProcReaderForEach(proc, (reader) => {
@@ -243,7 +243,7 @@ namespace BioLink.Data {
         }
 
 
-        protected int StoredProcUpdate(string proc, params SqlParameter[] @params) {
+        internal int StoredProcUpdate(string proc, params SqlParameter[] @params) {
             int rowsAffected = -1;
             using (new CodeTimer(String.Format("StoredProcUpdate '{0}'", proc))) {
                 Logger.Debug("Calling stored procedure (update): {0}", proc);
@@ -262,7 +262,7 @@ namespace BioLink.Data {
             return rowsAffected;
         }
 
-        protected SqlParameter _P(string name, object value, object defIfNull = null) {
+        internal SqlParameter _P(string name, object value, object defIfNull = null) {
             if (value == null) {
                 if (defIfNull == null) {
                     value = DBNull.Value;
@@ -273,7 +273,7 @@ namespace BioLink.Data {
             return new SqlParameter(name, value);
         }
 
-        protected SqlParameter ReturnParam(string name, SqlDbType type = SqlDbType.Int) {
+        internal SqlParameter ReturnParam(string name, SqlDbType type = SqlDbType.Int) {
             SqlParameter param = new SqlParameter(name, type);
             param.Direction = ParameterDirection.ReturnValue;
             return param;

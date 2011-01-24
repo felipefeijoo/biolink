@@ -16,6 +16,7 @@ namespace BioLink.Data {
         public static Dictionary<string, RefTypeMapping> RefTypeMap = new Dictionary<string, RefTypeMapping>();
         public static List<FieldDescriptor> FieldDescriptors = new List<FieldDescriptor>();
         public static Dictionary<string, string> TableAliases = new Dictionary<string, string>();
+        public static Dictionary<string, string> TableTraitKeyFields = new Dictionary<string, string>();
 
         #region Static Initializer
         static SupportService() {
@@ -34,18 +35,30 @@ namespace BioLink.Data {
             TableAliases["tblMaterial"] = "M";
             TableAliases["tblMaterialPart"] = "MP";
             TableAliases["tblMaterialAssoc"] = "MA";
-
             TableAliases["tblBiota"] = "B";
             TableAliases["tblBiotaDefRank"] = "DBF";
-
             TableAliases["tblCommonName"] = "CN";
             TableAliases["tblBiotaDistribution"] = "BD";
             TableAliases["vwAssociateText"] = "AT";
             TableAliases["tblBiotaLocation"] = "BL";
-
             TableAliases["tblBiotaStorage"] = "BS";
             TableAliases["tblDistributionRegion"] = "DR";
 
+            // Trait table key fields...
+            TableTraitKeyFields["tblPoliticalRegion"] = "intPoliticalRegionID";
+            TableTraitKeyFields["tblSiteGroup"] = "intSiteGroupID";
+            TableTraitKeyFields["tblSite"] = "intSiteID";
+            TableTraitKeyFields["tblSiteVisit"] = "intSiteVisitID";
+            TableTraitKeyFields["tblMaterial"] = "intMaterialID";
+            TableTraitKeyFields["tblMaterialPart"] = "intMaterialID";
+            TableTraitKeyFields["tblBiota"] = "intBiotaID";
+            TableTraitKeyFields["tblBiotaDefRank"] = "chrCode";
+            TableTraitKeyFields["tblCommonName"] = "intCommonNameID";
+            TableTraitKeyFields["tblBiotaDistribution"] = "intBiotaDistID";
+            TableTraitKeyFields["vwAssociateText"] = "intAssociateID";
+            TableTraitKeyFields["tblBiotaStorage"] = "intBiotaStorageID";
+            TableTraitKeyFields["tblBiotaLocation"] = "intBiotaLocationID";
+            TableTraitKeyFields["tblDistributionRegion"] = "intDistributionRegionID";
 
             // START FIELD DESCRIPTORS
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Biota Identifier", FieldName="intBiotaID", TableName="tblBiota", Category="Nomenclature", Description="Internal Database Indentifier for the Taxon", Format="", UseInRDE=true, DataType="ObjectID" });
@@ -1098,7 +1111,14 @@ namespace BioLink.Data {
         }
 
         public string GenerateQuerySQL(IEnumerable<QueryCriteria> criteria, bool distinct) {
-            return QuerySQLGenerator.GenerateSQL(criteria, distinct);
+            var query = QuerySQLGenerator.GenerateSQL(User, criteria, distinct);
+            var sql = String.Format("SELECT {0}\nFROM {1}\nWHERE {2}\n", query.Select, query.From, query.Where);
+            return sql;
+        }
+
+        public DataMatrix ExecuteQuery(IEnumerable<QueryCriteria> criteria, bool distinct) {
+            var query = QuerySQLGenerator.GenerateSQL(User, criteria, distinct);
+            return StoredProcDataMatrix("spQuerySelect", _P("txtSELECT", query.Select), _P("txtFROM", query.From), _P("txtWHERE", query.Where));
         }
 
         #endregion

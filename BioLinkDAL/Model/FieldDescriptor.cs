@@ -29,6 +29,7 @@ namespace BioLink.Data.Model {
         public bool Output { get; set; }
         public string Alias { get; set; }
         public string Sort { get; set; }
+        public string FormatOption { get; set; }
 
     }
 
