@@ -1118,7 +1118,7 @@ namespace BioLink.Data {
 
         public DataMatrix ExecuteQuery(IEnumerable<QueryCriteria> criteria, bool distinct) {
             var query = QuerySQLGenerator.GenerateSQL(User, criteria, distinct);
-            return StoredProcDataMatrix("spQuerySelect", _P("txtSELECT", query.Select), _P("txtFROM", query.From), _P("txtWHERE", query.Where));
+            return StoredProcDataMatrix("spQuerySelect", _P("txtSELECT", query.SelectHidden), _P("txtFROM", query.From), _P("txtWHERE", query.Where));
         }
 
         #endregion

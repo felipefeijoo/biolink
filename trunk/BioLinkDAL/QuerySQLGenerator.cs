@@ -93,7 +93,10 @@ namespace BioLink.Data {
                 strWhereClause += " ORDER BY " + strOrderByClause;
             }
 
-            var ret = new QueryComponents { Select = strDistinctClause + strFieldList, From = strFromClause, Where = strWhereClause };
+            var fullFrom = new List<String>(_fieldList);
+            fullFrom.AddRange(_hiddenFieldList);
+
+            var ret = new QueryComponents { Select = strDistinctClause + strFieldList, From = strFromClause, Where = strWhereClause, SelectHidden=fullFrom.Join(",") };
             return ret;
         }
 
@@ -779,6 +782,7 @@ namespace BioLink.Data {
 
     class QueryComponents {
         public string Select { get; set; }
+        public string SelectHidden { get; set; }
         public string Where { get; set; }
         public string From { get; set; }        
     }
