@@ -74,6 +74,7 @@
     <Compile Include="Model\AutoNumber.cs" />
     <Compile Include="Model\AvailableName.cs" />
     <Compile Include="Model\BiolinkDataObject.cs" />
+    <Compile Include="Model\BiolinkUser.cs" />
     <Compile Include="Model\CommonName.cs" />
     <Compile Include="Model\ConnectionProfile.cs" />
     <Compile Include="DatabaseAction.cs" />
@@ -85,6 +86,7 @@
     <Compile Include="Model\FieldDescriptor.cs" />
     <Compile Include="Model\GANIncludedSpecies.cs" />
     <Compile Include="Model\GenusAvailableName.cs" />
+    <Compile Include="Model\Group.cs" />
     <Compile Include="Model\Journal.cs" />
     <Compile Include="Model\Kingdom.cs" />
     <Compile Include="Model\Material.cs" />
@@ -93,6 +95,7 @@
     <Compile Include="Model\Multimedia.cs" />
     <Compile Include="Model\MultimediaLink.cs" />
     <Compile Include="Model\Note.cs" />
+    <Compile Include="Model\Permission.cs" />
     <Compile Include="Model\Phrase.cs" />
     <Compile Include="Model\PlaceName.cs" />
     <Compile Include="Model\RDEMaterial.cs" />
@@ -114,6 +117,7 @@
     <Compile Include="Model\TaxonRefLink.cs" />
     <Compile Include="Model\Trait.cs" />
     <Compile Include="Model\Trap.cs" />
+    <Compile Include="Model\UserSearchResult.cs" />
     <Compile Include="QuerySQLGenerator.cs" />
     <Compile Include="SupportService.cs" />
     <Compile Include="Model\Taxon.cs" />

@@ -506,6 +506,8 @@
     <Resource Include="images\Save.png" />
     <Resource Include="images\Run.png" />
     <Resource Include="images\SQL.png" />
+    <Resource Include="images\Group.png" />
+    <Resource Include="images\User.png" />
     <Content Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>

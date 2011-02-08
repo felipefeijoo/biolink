@@ -45,6 +45,10 @@ namespace BioLink.Client.Taxa {
             txtSpecimen.BindUser(user, LookupType.Material);
 
             SpeciesAvailableName data = Service.GetSpeciesAvailableName(taxon.TaxaID.Value);
+            if (data == null) {
+                data = new SpeciesAvailableName { BiotaID = taxon.TaxaID.Value };
+            }
+
             _model = new SpeciesAvailableNameViewModel(data);
 
             _model.DataChanged += new DataChangedHandler((changed) => {

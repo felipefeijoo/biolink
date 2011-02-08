@@ -74,7 +74,7 @@
 
         </ToolBar>
 
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="2" Background="{x:Static SystemColors.ControlBrush}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="250" />
                 <ColumnDefinition Width="*" />
@@ -88,7 +88,9 @@
             <GridSplitter ResizeDirection="Rows" Grid.Row="1" Height="8" Width="Auto" HorizontalAlignment="Stretch" />
             <GridSplitter ResizeDirection="Columns" Grid.Column="0" Grid.RowSpan="3" Width="8"/>
 
-            <ListView Grid.Column="0" x:Name="lvwFields" Margin="0,0,8,0" SelectionChanged="lvwFields_SelectionChanged" MouseDoubleClick="lvwFields_MouseDoubleClick">
+            <Label Content="Filter:" Height="28" HorizontalAlignment="Left" Name="label1" VerticalAlignment="Top" Width="60" Margin="0,6,0,0" />
+            <ext:DelayedTriggerTextbox Height="23" VerticalAlignment="Top" Margin="41,6,8,0" x:Name="txtFilter" TypingPaused="txtFilter_TypingPaused" />
+            <ListView x:Name="lvwFields" Margin="0,33,8,0" SelectionChanged="lvwFields_SelectionChanged" MouseDoubleClick="lvwFields_MouseDoubleClick">
                 <ListView.Resources>
                     <DataTemplate DataType="{x:Type model:FieldDescriptor}">
                         <TextBlock Text="{Binding DisplayName}" />                    
@@ -149,7 +151,7 @@
                 <Button Height="23" HorizontalAlignment="Left" Margin="8,121,0,0" Name="btnMoveDown" VerticalAlignment="Top" Width="23" Command="{x:Static src:QueryTool.MoveCriteriaDown}">
                     <Image SnapsToDevicePixels="True" Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/DownArrowSmall.png" Stretch="None" UseLayoutRounding="True" />
                 </Button>
-            </Grid>        
+            </Grid>            
         </Grid>
     </Grid>
 </UserControl>

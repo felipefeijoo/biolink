@@ -16,6 +16,7 @@ namespace BioLink.Client.Tools {
         private ControlHostWindow _refManager;
         private ControlHostWindow _journalManager;
         private ControlHostWindow _queryTool;
+        private ControlHostWindow _userManager;
 
         public const string TOOLS_PLUGIN_NAME = "Tools";
 
@@ -49,7 +50,10 @@ namespace BioLink.Client.Tools {
                 String.Format("{{'Name':'QueryTool', 'Header':'{0}'}}", "Query Tool")
             ));
 
-
+            contrib.Add(new MenuWorkspaceContribution(this, "UserManager", (obj, e) => { ShowUserManager(); },
+                String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
+                String.Format("{{'Name':'UserManager', 'Header':'{0}'}}", "Users and Groups...")
+            ));
 
             return contrib;
         }
@@ -118,8 +122,23 @@ namespace BioLink.Client.Tools {
 
             _queryTool.Show();
             _queryTool.Focus();
+        }
+
+        private void ShowUserManager() {
+            if (_userManager == null) {
+                _userManager = PluginManager.Instance.AddNonDockableContent(this, new UserManager(User, this), "Users and Groups", SizeToContent.Manual, true, (window) => {
+                    window.btnOk.IsDefault = false;
+                });
+                _userManager.Closed += new EventHandler((sender, e) => {
+                    _userManager = null;
+                });
+            }
+
+            _userManager.Show();
+            _userManager.Focus();
 
         }
+
 
 
 

@@ -54,15 +54,17 @@ namespace BioLink.Client.Extensibility {
         private List<DisplayColumnDefinition> GenerateDefaultColumns(DataMatrix data) {
             var list = new List<DisplayColumnDefinition>();
             foreach (MatrixColumn col in data.Columns) {
-                var colDef = new DisplayColumnDefinition { ColumnName = col.Name, DisplayName = col.Name };
-                list.Add(colDef);
+                if (!col.Name.StartsWith("hidden_", StringComparison.CurrentCultureIgnoreCase)) {
+                    var colDef = new DisplayColumnDefinition { ColumnName = col.Name, DisplayName = col.Name };
+                    list.Add(colDef);
+                }
             }
             return list;
         }
 
-        private void EditSite(int siteID) {            
-            PluginManager.Instance.EditLookupObject(LookupType.Site, siteID);
-        }
+        //private void EditSite(int siteID) {            
+        //    PluginManager.Instance.EditLookupObject(LookupType.Site, siteID);
+        //}
 
         void lvw_MouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e) {
 
@@ -70,16 +72,29 @@ namespace BioLink.Client.Extensibility {
             if (row != null) {
                 ContextMenuBuilder builder = new ContextMenuBuilder(null);
 
-                AddLookupItem(builder, "SiteID", LookupType.Site);
-                AddLookupItem(builder, "SiteVisitID", LookupType.SiteVisit);
-                AddLookupItem(builder, "MaterialID", LookupType.Material);
-                AddLookupItem(builder, "BiotaID", LookupType.Taxon);
+                AddLookupItem(builder, LookupType.Site, "SiteID", "intSiteID");
+                AddLookupItem(builder, LookupType.SiteVisit, "SiteVisitID", "intSiteVisitID");
+                AddLookupItem(builder, LookupType.Material, "MaterialID", "intMaterialID");
+                AddLookupItem(builder, LookupType.Taxon, "BiotaID", "intBiotaID");
 
-                if (Data.IndexOf("Lat") >= 0 && Data.IndexOf("Long") >= 0) {
+                string latColName = null;
+                string longColName = null;
+
+                foreach (MatrixColumn col in Data.Columns) {
+                    if (latColName == null && col.Name.Contains("Lat")) {
+                        latColName = col.Name;
+                    }
+
+                    if (longColName == null && col.Name.Contains("Long")) {
+                        longColName = col.Name;
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(longColName) && !string.IsNullOrEmpty(latColName)) {
                     if (builder.ContextMenu.HasItems) {
                         builder.Separator();
-                        builder.New("Plot selected rows on Map").Handler(() => { PlotSelected(); }).End();
-                        builder.New("Plot all rows on Map").Handler(() => { PlotAll(); }).End();
+                        builder.New("Plot selected rows on Map").Handler(() => { PlotSelected(longColName, latColName); }).End();
+                        builder.New("Plot all rows on Map").Handler(() => { PlotAll(longColName, latColName); }).End();
                     }
                 }
 
@@ -103,7 +118,7 @@ namespace BioLink.Client.Extensibility {
             return null;
         }
 
-        private void PlotSelected() {
+        private void PlotSelected(string longColName, string latColName) {
 
             var selectedRowIndexes = new int[lvw.SelectedItems.Count];
             if (lvw.SelectedItems.Count > 0) {
@@ -113,28 +128,48 @@ namespace BioLink.Client.Extensibility {
                     selectedRowIndexes[i++] = Data.Rows.IndexOf(row);
                 }                
             }
-            Plot(selectedRowIndexes);
+            Plot(selectedRowIndexes, longColName, latColName);
         }
 
-        private void PlotAll() {            
-            Plot();
+        private void PlotAll(string longColName, string latColName) {            
+            Plot(null, longColName, latColName);
         }
 
-        private void Plot(int[] selectedRowIndexes = null) {
+        private void Plot(int[] selectedRowIndexes = null, string longColName = "Long", string latColName = "Lat") {
             var map = GetMap();
             if (map != null) {
                 var set = new MatrixMapPointSet(_report.Name, Data, selectedRowIndexes);
+                set.LongitudeColumn = longColName;
+                set.LatitudeColumn = latColName;                
                 map.Show();
                 map.PlotPoints(set);
             }
         }
 
-        private void AddLookupItem(ContextMenuBuilder builder, String fieldName, LookupType lookupType) {
-            int index = Data.IndexOf(fieldName);
-            var row = lvw.SelectedItem as MatrixRow;
+        private void AddLookupItem(ContextMenuBuilder builder, LookupType lookupType, params String[] aliases) {
+
+            int index = -1;
+            foreach (string alias in aliases) {
+                var field = alias;
+
+                for (int i = 0; i < Data.Columns.Count; ++i) {
+                    var col = Data.Columns[i];
+                    if (col.Name.Contains(alias)) {
+                        index = i;
+                        break;
+                    }
+                }
+                
+                if (index >= 0) {
+                    break;
+                }
+            }
+
             if (index > -1) {
+                var row = lvw.SelectedItem as MatrixRow;
                 builder.New("Edit " + lookupType.ToString()).Handler(() => { PluginManager.Instance.EditLookupObject(lookupType, (int)row[index]); }).End();
             }
+
         }
 
         private void GridViewColumnHeaderClickedHandler(object sender, RoutedEventArgs e) {

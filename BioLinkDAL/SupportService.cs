@@ -1122,6 +1122,30 @@ namespace BioLink.Data {
         }
 
         #endregion
+
+        #region User Manager
+
+        public List<UserSearchResult> GetUsers() {
+            var mapper = new GenericMapperBuilder<UserSearchResult>().build();
+            return StoredProcToList<UserSearchResult>("spUserListWithIds", mapper);
+        }
+
+        public List<Group> GetGroups() {
+            var mapper = new GenericMapperBuilder<Group>().build();
+            return StoredProcToList<Group>("spGroupList", mapper);
+        }
+
+        public BiolinkUser GetUser(string username) {
+            var mapper = new GenericMapperBuilder<BiolinkUser>().build();
+            return StoredProcGetOne<BiolinkUser>("spUserGet", mapper, _P("vchrUserName", username));
+        }
+
+        public List<Permission> GetPermissions(int groupID) {
+            var mapper = new GenericMapperBuilder<Permission>().build();
+            return StoredProcToList("spPermissionList", mapper, _P("intGroupID", groupID));
+        }
+
+        #endregion
     }
 
     public class RefTypeMapping {

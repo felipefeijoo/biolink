@@ -159,8 +159,13 @@ namespace BioLink.Client.Maps {
             var results = new Dictionary<Int32, FeatureDataRow>();
 
             foreach (FeatureDataRow row in rows) {
-                if (row.Table.Columns.IndexOf(columnName) >= 0) {
-                    results[(int) row[columnName]] = row;                    
+                foreach (DataColumn col in row.Table.Columns) {
+                    if (col.ColumnName.Contains(columnName)) {
+                        int id = (int)row[col.ColumnName];
+                        if (id > 0) {
+                            results[id] = row;
+                        }
+                    }
                 }
             }
 
@@ -264,7 +269,7 @@ namespace BioLink.Client.Maps {
                 }
 
                 var materialIDs = FindIDs(rows, "MaterialID");
-                if (siteVisitIDs.Count > 0) {
+                if (materialIDs.Count > 0) {
                     BuildMenuItem(menu, "Edit Material...", () => {
                         EditObject(materialIDs, LookupType.Material);
                     });
