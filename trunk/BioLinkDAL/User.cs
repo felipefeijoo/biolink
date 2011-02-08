@@ -17,6 +17,8 @@ namespace BioLink.Data {
         private string _username;
         private string _connectionString;
 
+        private Dictionary<PermissionType, Permission> _permissions;
+
         public bool Authenticate(out String message) {
 
             SqlConnection connection = null;
@@ -24,8 +26,20 @@ namespace BioLink.Data {
                 Logger.Debug("Attemping to connect to {0} (Database {1}) with username '{2}'...", ConnectionProfile.Server, ConnectionProfile.Database, Username);
                 using (GetConnection()) {
                     message = "Ok";
+
+                    // Load permissions....
+                    var service = new SupportService(this);
+                    var user = service.GetUser(Username);
+                    if (user != null) {
+                        var permissions = service.GetPermissions(user.GroupID);
+                        _permissions = permissions.ToDictionary((p) => {
+                            return (PermissionType)p.PermissionID;
+                        });
+                    }
+
                     return true;
                 }
+
             } catch (SqlException sqlex) {
                 message = sqlex.Message;
                 Logger.Warn("SQL Exception: {0}", sqlex.Message);
@@ -87,8 +101,9 @@ namespace BioLink.Data {
                     conn = new SqlConnection(_connectionString);
                     try {
                         conn.Open();
-                    } catch (Exception) {
+                    } catch (Exception ex) {
                         _connectionString = null;
+                        throw ex;
                     }
                 }
                 return conn;
@@ -148,6 +163,14 @@ namespace BioLink.Data {
             return s.ToString();
         }
 
+        /// <summary>
+        /// New Mangle Password routine that uses SHA256 + Salt to create a hash of the user password to be used as the actual password.
+        /// This prevents the user from being able to use the password they selected to access the sql server database directly. Note that
+        /// the SA password is not mangled - it is always just passed through.
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
         public static string ManglePassword(string username, string password) {
             if (username.Equals("sa", StringComparison.CurrentCultureIgnoreCase)) {
                 // Retain the direct password for sa. Note that semi-colons disrupt the login connection string so mask them
@@ -162,7 +185,7 @@ namespace BioLink.Data {
         
         /// <summary>
         /// This function is dodgey as hell. It is supposed to mangle the password by using the original characters of the password and jumble them around
-        /// a bit, which in itself is a problem, but instead, due to a coding error (using instr instead of mid) it returns the same mangled password
+        /// a bit, which in itself is a problem because its reversable, but instead, due to a coding error (using instr instead of mid) it returns the same mangled password
         /// for each password of the same length. This is the mangle function using in the old biolink, however, so we have to use it...
         /// 
         ///  A better solution would be to simply take the SHA1 hash of the original password + a salt and use that as the mangled password, however
@@ -209,5 +232,47 @@ namespace BioLink.Data {
         #endregion
 
     }
+
+    public enum PermissionType {	
+        // User Manager --------------------------------------------------------
+		USERMANAGER_USER = 0xFF00,
+		USERMANAGER_GROUP = 0xFF01,	
+        // Sparc ---------------------------------------------------------------
+		SPARC_SITE = 0xFE00,
+		SPARC_TRAP = 0xFE01,
+		SPARC_SITEVISIT = 0xFE02,
+		SPARC_MATERIAL = 0xFE03,
+		SPARC_EXPLORER = 0xFE04,
+		SPARC_REGION = 0xFE05,
+		SPARC_SITEGROUP = 0xFE06,
+        // spIn ----------------------------------------------------------------
+		SPIN_EXPLORER = 0xFD00,
+		SPIN_TAXON = 0xFD01,
+        // SupportData ---------------------------------------------------------
+		SUPPORT_PHRASES = 0xFC00,
+		SUPPORT_PHRASECATEGORIES = 0xFC01,
+		SUPPORT_REFS = 0xFC02,
+		SUPPORT_JOURNALS = 0xFC03,
+		SUPPORT_CATEGORIES = 0xFC04,
+        // Import ---------------------------------------------------------
+		IMPORT_MATERIAL = 0xFB00,
+		IMPORT_REFERENCES = 0xFB01,
+		IMPORT_DELTA = 0xFB02
+	};
+
+    public enum PERMISSION_MASK {
+        OWNER = 512,
+        ALLOW = 256,
+        READ = 128,
+        WRITE = 64,
+        UPDATE = 4,
+        INSERT = 2,
+        DELETE = 1
+    };
+
+    public enum PERMISSION_TYPE {
+        RWDIU = 0,
+        ALLOWDISALLOW = 1
+    };
 
 }

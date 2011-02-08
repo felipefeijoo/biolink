@@ -89,12 +89,22 @@ namespace BioLink.Client.Extensibility {
                 _currentRow = -1;
                 _set = set;
                 _activeRows = activeRows;
-                _latIndex = _set._data.IndexOf(_set.LatitudeColumn);
-                _lonIndex = _set._data.IndexOf(_set.LongitudeColumn);
-                _siteIndex = _set._data.IndexOf(_set.SiteIDColumn);
-                _siteVisitIndex = _set._data.IndexOf(_set.SiteVisitIDColumn);
-                _materialIndex = _set._data.IndexOf(_set.MaterialIDColumn);
+                _latIndex = FindIndex(_set.LatitudeColumn);
+                _lonIndex = FindIndex(_set.LongitudeColumn);
+                _siteIndex = FindIndex(_set.SiteIDColumn);
+                _siteVisitIndex = FindIndex(_set.SiteVisitIDColumn);
+                _materialIndex = FindIndex(_set.MaterialIDColumn);
+            }
 
+            private int FindIndex(string colName) {
+                for (int i = 0; i < _set._data.Columns.Count; ++i) {
+                    var col = _set._data.Columns[i];
+                    if (col.Name.Contains(colName)) {
+                        return i;
+                    }
+                }
+
+                return -1;
             }
 
             public MapPoint Current {

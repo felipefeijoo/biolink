@@ -418,6 +418,44 @@ namespace BioLink.Client.Tools {
             AddCriteriaImpl();
         }
 
+        private void txtFilter_TypingPaused(string text) {
+            ApplyFilter(text);
+        }
+
+        private void ApplyFilter(string text) {
+
+            ListCollectionView dataView = CollectionViewSource.GetDefaultView(lvwFields.ItemsSource) as ListCollectionView;
+
+            if (String.IsNullOrEmpty(text)) {
+                dataView.Filter = null;
+                return;
+            }
+            
+            text = text.ToLower();
+            dataView.Filter = (obj) => {
+                var field = obj as FieldDescriptor;
+
+                if (field != null) {
+                    if (field.DisplayName.ToLower().Contains(text)) {
+                        return true;
+                    }
+
+                    if (field.FieldName.ToLower().Contains(text)) {
+                        return true;
+                    }
+
+                    if (field.TableName.ToLower().Contains(text)) {
+                        return true;
+                    }
+
+                    return false;
+                }
+                return true;
+            };
+
+            dataView.Refresh();
+        }
+
     }
 
     internal class CriteriaSortConverter : IValueConverter {
