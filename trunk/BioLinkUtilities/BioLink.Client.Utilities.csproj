@@ -87,7 +87,6 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="FileSystemScanner.cs" />
     <Compile Include="GeoUtils.cs" />
-    <Compile Include="GlobalExceptionHandler.cs" />
     <Compile Include="GraphicsUtils.cs" />
     <Compile Include="IChangeable.cs" />
     <Compile Include="ILazyPopulateControl.cs" />
@@ -96,7 +95,6 @@
       <DependentUpon>InputBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="IProgressMonitor.cs" />
-    <Compile Include="JobExecutor.cs" />
     <Compile Include="LegacySettings.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="OverrideCursor.cs" />

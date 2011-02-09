@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Windows;
 using BioLink.Client.Utilities;
+using BioLink.Client.Extensibility;
 
 namespace BioLinkApplication {
     /// <summary>

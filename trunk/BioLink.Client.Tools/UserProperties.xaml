@@ -35,10 +35,10 @@
             <ext:TextBox Grid.Row="1" Name="txtFullName" Height="23" Grid.Column="1" Text="{Binding FullName}"/>
 
             <Label Grid.Row="2" Content="Password:" HorizontalAlignment="Right" />
-            <PasswordBox Grid.Row="2" Grid.Column="1" Name="txtPassword" Height="23" Password="1234567890"/>
+            <PasswordBox Grid.Row="2" Grid.Column="1" Name="txtPassword" Height="23" Password=""/>
 
             <Label Grid.Row="3" Content="Confirm Password:" HorizontalAlignment="Right" />
-            <PasswordBox Grid.Row="3" Grid.Column="1" Name="txtConfirmPassword" Height="23" Password="1234567890"/>
+            <PasswordBox Grid.Row="3" Grid.Column="1" Name="txtConfirmPassword" Height="23" Password=""/>
 
             <Label Grid.Row="4" Content="Group:" HorizontalAlignment="Right" />
             <ComboBox Grid.Row="4" Grid.Column="1" Name="cmbGroup" Height="23" SelectedItem="{Binding Group}">
@@ -65,7 +65,7 @@
         </Grid>
         <Grid Grid.Row="1" Background="{x:Static SystemColors.ControlBrush}">
             <Button Content="_Cancel" Height="23" HorizontalAlignment="Right" Margin="0,9,6,0" Name="btnCancel" VerticalAlignment="Top" Width="75" IsCancel="True" Click="btnCancel_Click" />
-            <Button Content="_OK" Height="23" HorizontalAlignment="Right" IsCancel="False" Margin="0,9,87,0" Name="btnOk" VerticalAlignment="Top" Width="75" IsDefault="True" />
+            <Button Content="_OK" Height="23" HorizontalAlignment="Right" IsCancel="False" Margin="0,9,87,0" Name="btnOk" VerticalAlignment="Top" Width="75" IsDefault="True" Click="btnOk_Click" />
         </Grid>
     </Grid>
 </Window>

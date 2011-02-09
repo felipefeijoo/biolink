@@ -28,6 +28,7 @@ namespace BioLink.Data {
                     message = "Ok";
 
                     // Load permissions....
+                    Logger.Debug("Retrieving User permissions");
                     var service = new SupportService(this);
                     var user = service.GetUser(Username);
                     if (user != null) {
@@ -35,6 +36,10 @@ namespace BioLink.Data {
                         _permissions = permissions.ToDictionary((p) => {
                             return (PermissionType)p.PermissionID;
                         });
+                    }
+
+                    if (user.CanCreateUsers) {
+                        _permissions[PermissionType.USERMANAGER_USER] = new Permission { Mask1=199 };                            
                     }
 
                     return true;
@@ -54,6 +59,30 @@ namespace BioLink.Data {
             }
 
             return false;
+        }
+
+        public bool IsSysAdmin {
+            get { return _username.Equals("sa", StringComparison.CurrentCultureIgnoreCase); }
+        }
+
+        public bool HasPermission(PermissionType perm, PERMISSION_MASK mask) {
+
+            if (Username.Equals("sa", StringComparison.CurrentCultureIgnoreCase)) {
+                return true;
+            }
+
+            if (_permissions.ContainsKey(perm)) {
+                var val = _permissions[perm];
+                return (val.Mask1 & (int) mask) != 0;
+            }
+
+            return false;
+        }
+
+        public void CheckPermission(PermissionType perm, PERMISSION_MASK mask, string deniedMessage) {
+            if (!HasPermission(perm, mask)) {
+                throw new NoPermissionException(perm, mask, deniedMessage);
+            }
         }
 
         public void BeginTransaction() {
@@ -274,5 +303,18 @@ namespace BioLink.Data {
         RWDIU = 0,
         ALLOWDISALLOW = 1
     };
+
+    public class NoPermissionException : Exception {
+
+        public NoPermissionException(PermissionType perm, PERMISSION_MASK mask, string deniedMessage = "") : base(String.Format("You do not have permission to perform this operation: {0} :: {1}", perm.ToString(), mask.ToString())) {
+            this.RequestedPermission = perm;
+            this.RequestedMask = mask;
+            this.DeniedMessage = deniedMessage;
+        }
+
+        public PermissionType RequestedPermission { get; private set; }
+        public PERMISSION_MASK RequestedMask { get; private set; }
+        public string DeniedMessage { get; private set; }
+    }
 
 }

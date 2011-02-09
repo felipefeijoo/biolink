@@ -66,11 +66,64 @@ namespace BioLink.Client.Tools {
             }
         }
 
+        private void txtUserFilter_TypingPaused(string text) {
+            FilterUsers(text);
+        }
+
+        private void FilterUsers(string filter) {
+
+            ListCollectionView dataView = CollectionViewSource.GetDefaultView(lvwUsers.ItemsSource) as ListCollectionView;
+
+            if (String.IsNullOrEmpty(filter)) {
+                dataView.Filter = null;
+                return;
+            }
+
+            filter = filter.ToLower();
+            dataView.Filter = (obj) => {
+                var field = obj as UserSearchResultViewModel;
+
+                if (field != null) {
+
+                    if (field.Username.ToLower().Contains(filter)) {
+                        return true;
+                    }
+
+                    if (field.FullName.ToLower().Contains(filter)) {
+                        return true;
+                    }
+
+                    return false;
+                }
+                return true;
+            };
+
+            dataView.Refresh();
+
+        }
+
+        private void txtUserFilter_KeyUp(object sender, KeyEventArgs e) {
+            if (e.Key == Key.Down) {
+                lvwUsers.Focus();
+            }
+        }
+
+        private void btnNewUser_Click(object sender, RoutedEventArgs e) {
+            AddNewUser();
+        }
+
+        private void AddNewUser() {
+            var frm = new UserProperties(User, null);
+            frm.Owner = this.FindParentWindow();
+            frm.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            frm.ShowDialog();
+        }
+
     }
 
     public class GroupViewModel : GenericHierarchicalViewModelBase<Group> {
 
-        public GroupViewModel(Group model) : base(model, ()=>model.GroupID) { }
+        public GroupViewModel(Group model) : base(model, () => model.GroupID) { }
 
         public override BitmapSource Icon {
             get {
@@ -98,7 +151,7 @@ namespace BioLink.Client.Tools {
 
     public class UserSearchResultViewModel : GenericViewModelBase<UserSearchResult> {
 
-        public UserSearchResultViewModel(UserSearchResult model) : base(model, ()=>model.UserID ) { }
+        public UserSearchResultViewModel(UserSearchResult model) : base(model, () => model.UserID) { }
 
         public override BitmapSource Icon {
             get {
@@ -120,7 +173,7 @@ namespace BioLink.Client.Tools {
         public int GroupID {
             get { return Model.GroupID; }
             set { SetProperty(() => Model.GroupID, value); }
-        }        
+        }
 
         public string Username {
             get { return Model.Username; }
@@ -130,7 +183,7 @@ namespace BioLink.Client.Tools {
         public string Group {
             get { return Model.Group; }
             set { SetProperty(() => Model.Group, value); }
-        }        
+        }
 
         public string FullName {
             get { return Model.FullName; }

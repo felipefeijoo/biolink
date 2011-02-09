@@ -5,15 +5,12 @@ using System.Text;
 using System.Windows;
 
 namespace BioLink.Client.Utilities {
+
     public class ErrorMessage {
 
         public static void Show(string message, params object[] args) {
-            try {
-                MessageBox.Show(string.Format(message, args), "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                Logger.Warn("Showing error message: {0}", message);
-            } catch (Exception ex) {
-                GlobalExceptionHandler.Handle(ex);
-            }
+            MessageBox.Show(string.Format(message, args), "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            Logger.Warn("Showing error message: {0}", message);
         }
     }
 }

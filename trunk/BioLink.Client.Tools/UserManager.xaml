@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:src="clr-namespace:BioLink.Client.Tools"
              mc:Ignorable="d" 
-             d:DesignHeight="357" d:DesignWidth="752">
+             d:DesignHeight="451" d:DesignWidth="752" xmlns:my="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility">
              
     <Grid>
         <Grid.Resources>
@@ -19,7 +19,7 @@
         </Grid.RowDefinitions>
         <GroupBox x:Name="grpUsers" Header="Users" Grid.Row="0" Margin="6,0,6,0">
             <Grid Margin="0">
-                <ListView Margin="6,6,102,10" x:Name="lvwUsers">
+                <ListView Margin="6,35,102,10" x:Name="lvwUsers">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Width="80" Header="User Name" HeaderContainerStyle="{StaticResource hcs}">
@@ -40,15 +40,17 @@
                     </ListView.View>
 
                 </ListView>
-                <Button Content="_Properties..." Height="23" HorizontalAlignment="Right" Margin="0,6,6,0" Name="btnProperties" VerticalAlignment="Top" Width="90" Click="btnProperties_Click" />
-                <Button Content="_Delete..." Height="23" HorizontalAlignment="Right" Margin="0,35,6,0" Name="btnDelete" VerticalAlignment="Top" Width="90" />
-                <Button Content="_New User..." Height="23" HorizontalAlignment="Right" Margin="0,64,6,0" Name="btnNewUser" VerticalAlignment="Top" Width="90" />
+                <Button Content="_Properties..." Height="23" HorizontalAlignment="Right" Margin="0,35,6,0" Name="btnProperties" VerticalAlignment="Top" Width="90" Click="btnProperties_Click" />
+                <Button Content="_Delete..." Height="23" HorizontalAlignment="Right" Margin="0,64,6,0" Name="btnDelete" VerticalAlignment="Top" Width="90" />
+                <Button Content="_New User..." Height="23" HorizontalAlignment="Right" Margin="0,93,6,0" Name="btnNewUser" VerticalAlignment="Top" Width="90" Click="btnNewUser_Click" />
+                <Label Content="Filter:" Height="31" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" Width="48" />
+                <my:DelayedTriggerTextbox HorizontalAlignment="Left" Margin="60,7,0,0" Name="txtUserFilter" VerticalAlignment="Top" Width="186" TypingPaused="txtUserFilter_TypingPaused" KeyUp="txtUserFilter_KeyUp" />
             </Grid>
         </GroupBox>
 
         <GroupBox x:Name="grpGroups" Header="Groups" Grid.Row="1" Margin="6,0,6,6">
             <Grid>
-                <TreeView Name="tvwGroups" Margin="6,6,102,5">
+                <TreeView Name="tvwGroups" Margin="6,35,102,5">
                     <TreeView.Resources>
                         <HierarchicalDataTemplate DataType="{x:Type src:GroupViewModel}" ItemsSource="{Binding Path=Children}">
                             <StackPanel Orientation="Horizontal">
@@ -58,11 +60,13 @@
                         </HierarchicalDataTemplate>
                     </TreeView.Resources>
                 </TreeView>
-                <Button Content="Per_missions..." Height="23" HorizontalAlignment="Right" Margin="0,6,6,0" Name="btnPermissions" VerticalAlignment="Top" Width="90" />
-                <Button Content="_Rename..." Height="23" HorizontalAlignment="Right" Margin="0,35,6,0" Name="btnRename" VerticalAlignment="Top" Width="90" />
-                <Button Content="_Copy..." Height="23" HorizontalAlignment="Right" Margin="0,64,6,0" Name="btnCopy" VerticalAlignment="Top" Width="90" />
-                <Button Content="Delete G_roup" Height="23" HorizontalAlignment="Right" Margin="0,93,6,0" Name="btnDeleteGroup" VerticalAlignment="Top" Width="90" />
-                <Button Content="New _Group..." Height="23" HorizontalAlignment="Right" Margin="0,122,6,0" Name="btnNewGroup" VerticalAlignment="Top" Width="90" />
+                <Button Content="Per_missions..." Height="23" HorizontalAlignment="Right" Margin="0,35,6,0" Name="btnPermissions" VerticalAlignment="Top" Width="90" />
+                <Button Content="_Rename..." Height="23" HorizontalAlignment="Right" Margin="0,64,6,0" Name="btnRename" VerticalAlignment="Top" Width="90" />
+                <Button Content="_Copy..." Height="23" HorizontalAlignment="Right" Margin="0,93,6,0" Name="btnCopy" VerticalAlignment="Top" Width="90" />
+                <Button Content="Delete G_roup" Height="23" HorizontalAlignment="Right" Margin="0,122,6,0" Name="btnDeleteGroup" VerticalAlignment="Top" Width="90" />
+                <Button Content="New _Group..." Height="23" HorizontalAlignment="Right" Margin="0,151,6,0" Name="btnNewGroup" VerticalAlignment="Top" Width="90" />
+                <Label Content="Filter:" Height="31" HorizontalAlignment="Left" Margin="6,5,0,0" Name="label2" VerticalAlignment="Top" Width="48" />
+                <my:DelayedTriggerTextbox HorizontalAlignment="Left" Margin="60,6,0,0" Name="txtGroupFilter" VerticalAlignment="Top" Width="186" />
             </Grid>
         </GroupBox>
         

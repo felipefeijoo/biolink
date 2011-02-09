@@ -1142,7 +1142,48 @@ namespace BioLink.Data {
 
         public List<Permission> GetPermissions(int groupID) {
             var mapper = new GenericMapperBuilder<Permission>().build();
-            return StoredProcToList("spPermissionList", mapper, _P("intGroupID", groupID));
+            var list = StoredProcToList("spPermissionList", mapper, _P("intGroupID", groupID));
+            return list;
+        }
+
+        public bool HasBiotaPermission(int taxonID, PERMISSION_MASK mask) {
+            var ret = StoredProcReturnVal<int>("spUserHasBiotaPermission", _P("vchrUsername", User.Username), _P("intBiotaID", taxonID), _P("intRequiredPermissionMask", (int)mask));
+            // SP's return 0 when they succeed !
+            return ret == 0;
+        }
+
+        public void InsertUser(BiolinkUser user) {
+            StoredProcUpdate("spUserInsert",
+                _P("vchrUsername", user.UserName),
+                _P("vchrPassword", user.Password),
+                _P("vchrFullname", user.FullName),
+                _P("vchrDescription", user.Description),
+                _P("vchrNotes", user.Notes),
+                _P("intGroupID", user.GroupID),
+                _P("bitCanCreateUsers", user.CanCreateUsers)
+            );
+        }
+
+        public void UpdateUser(BiolinkUser user) {
+            StoredProcUpdate("spUserUpdate",
+                _P("vchrUsername", user.UserName),                
+                _P("vchrFullname", user.FullName),
+                _P("vchrDescription", user.Description),
+                _P("vchrNotes", user.Notes),
+                _P("intGroupID", user.GroupID),
+                _P("bitCanCreateUsers", user.CanCreateUsers)
+            );
+        }
+
+        public void UpdateUserPassword(string username, string password) {
+            StoredProcUpdate("spUserPasswordUpdate",
+                _P("vchrUsername", username),
+                _P("vchrPassword", password)
+            );
+        }
+
+        public void DeleteUser(string username) {
+            StoredProcUpdate("spUserDelete", _P("vchrUsername", username));
         }
 
         #endregion
