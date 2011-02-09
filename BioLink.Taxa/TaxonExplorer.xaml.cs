@@ -353,12 +353,50 @@ namespace BioLink.Client.Taxa {
                         return;
                     }
 
-                    ProcessTaxonDragDrop(src, dest);
-
-                    e.Handled = true;
+                    try {
+                        ProcessTaxonDragDrop(src, dest);
+                    } finally {
+                        e.Handled = true;
+                    }
                 }
             }
 
+        }
+
+        private bool CheckPermission(PERMISSION_MASK mask, TaxonViewModel target = null) {
+
+            // system administrator has full rights to all.
+            if (User.IsSysAdmin) {
+                return true;
+            }
+
+            // Ensure the permissions set at the user group level take precendence to the indivual taxon based permissions.
+            try {
+                if (mask != PERMISSION_MASK.OWNER) {
+                    User.CheckPermission(PermissionType.SPIN_TAXON, mask, "You do not have permission to move this item!");
+                }
+
+
+                if (target != null) {
+                    if (target.TaxaID.Value < 0) {
+                        // new items are automatically approved!
+                        return true;
+                    }
+                    var service = new SupportService(User);
+                    if (!service.HasBiotaPermission(target.TaxaID.Value, mask)) {
+                        throw new NoPermissionException(PermissionType.SPIN_TAXON, mask, "You do not have permission to move this item!");
+                    }
+                }
+                return true;
+            } catch (NoPermissionException npex) {
+                string txt = npex.Message;
+                if (!string.IsNullOrEmpty(npex.DeniedMessage)) {
+                    txt = npex.DeniedMessage;
+                }
+                string caption = string.Format("Permission Error [{0} {1}]", npex.RequestedPermission, npex.RequestedMask);
+                MessageBox.Show(txt, caption, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return false;
+            }
         }
 
         public void ProcessTaxonDragDrop(TaxonViewModel source, TaxonViewModel target) {
@@ -371,6 +409,10 @@ namespace BioLink.Client.Taxa {
                 // 4) The drop is valid, but requires the source to be converted into a valid child of the target
 
                 if (!IsUnlocked) {
+                    return;
+                }
+
+                if (!CheckPermission(PERMISSION_MASK.UPDATE, target)) {
                     return;
                 }
                 

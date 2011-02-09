@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Threading;
 
-namespace BioLink.Client.Utilities {
+namespace BioLink.Client.Extensibility {
 
     /// <summary>
     /// Facade over thread pool, just in case we want to take more control over the threading later
     /// </summary>
     public class JobExecutor {
 
-        public static void QueueJob(WaitCallback job, object state) {            
+        public static void QueueJob(WaitCallback job, object state) {
             ThreadPool.QueueUserWorkItem(job, state);
         }
 
@@ -19,7 +19,7 @@ namespace BioLink.Client.Utilities {
                 } catch (Exception ex) {
                     GlobalExceptionHandler.Handle(ex);
                 }
-            } );
+            });
         }
 
     }

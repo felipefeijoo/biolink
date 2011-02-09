@@ -23,14 +23,25 @@ namespace BioLink.Client.Tools {
     public partial class UserProperties : Window {
 
         private BiolinkUserViewModel _model;
+        private bool _isNew = false;
 
         public UserProperties(User currentUser, string username) {
             InitializeComponent();
             this.User = currentUser;
+
             Username = username;
 
             var service = new SupportService(currentUser);
-            _model = new BiolinkUserViewModel(service.GetUser(username));
+
+            if (string.IsNullOrEmpty(username)) {
+                _model = new BiolinkUserViewModel(new BiolinkUser());
+                _isNew = true;
+            } else {                
+                _model = new BiolinkUserViewModel(service.GetUser(username));
+                txtUsername.IsReadOnly = true;
+                btnOk.IsEnabled = false;
+                _model.DataChanged += new DataChangedHandler(_model_DataChanged);
+            }
             
             var groups = service.GetGroups().Select((m) => {
                 var vm = new GroupViewModel(m);
@@ -39,10 +50,6 @@ namespace BioLink.Client.Tools {
                 }
                 return vm;
             });
-
-            btnOk.IsEnabled = false;
-
-            _model.DataChanged += new DataChangedHandler(_model_DataChanged);
 
             cmbGroup.ItemsSource = groups;
 
@@ -66,6 +73,83 @@ namespace BioLink.Client.Tools {
             } else {
                 this.Close();
             }
+        }
+
+        private void btnOk_Click(object sender, RoutedEventArgs e) {
+            try {
+                if (ValidateUser(_model, _isNew)) {
+                    var service = new SupportService(User);
+                    if (_isNew) {
+                        service.InsertUser(_model.Model);
+                    } else {
+                        service.UpdateUser(_model.Model);
+                        if (!string.IsNullOrEmpty(txtPassword.Password)) {
+                            service.UpdateUserPassword(_model.UserName, txtPassword.Password);
+                        }
+                    }
+                    this.Close();
+                }
+            } catch (Exception ex) {
+                GlobalExceptionHandler.Handle(ex);
+            }
+        }
+
+        private bool ValidateUser(BiolinkUserViewModel model, bool isNew) {
+
+            if (model.GroupID == 0) {
+                ErrorMessage.Show("Please select a group before continuing");
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(model.UserName)) {
+                ErrorMessage.Show("You must supply a username");
+                return false;
+            }
+
+            if (isNew || !string.IsNullOrEmpty(txtPassword.Password)) {
+
+                if (string.IsNullOrEmpty(txtPassword.Password)) {
+                    ErrorMessage.Show("Please supply a password");
+                    return false;
+                }
+
+                if (!txtPassword.Password.Equals(txtConfirmPassword.Password)) {
+                    ErrorMessage.Show("The password and the password confirmation do not match!");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
+
+    public class InsertBiolinkUserAction : GenericDatabaseAction<BiolinkUser> {
+
+        public InsertBiolinkUserAction(BiolinkUser model) : base(model) { }
+
+        protected override void ProcessImpl(User user) {
+            var service = new SupportService(user);
+            service.InsertUser(Model);
+        }
+    }
+
+    public class UpdateBiolinkUserAction : GenericDatabaseAction<BiolinkUser> {
+
+        public UpdateBiolinkUserAction(BiolinkUser model) : base(model) { }
+
+        protected override void ProcessImpl(User user) {
+            var service = new SupportService(user);
+            service.UpdateUser(Model);                        
+        }
+    }
+
+    public class DeleteBiolinkUser : GenericDatabaseAction<BiolinkUser> {
+
+        public DeleteBiolinkUser(BiolinkUser model) : base(model) { }
+
+        protected override void ProcessImpl(User user) {
+            var service = new SupportService(user);
+            service.DeleteUser(Model.UserName);
         }
     }
 

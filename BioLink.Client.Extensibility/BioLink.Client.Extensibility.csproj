@@ -131,6 +131,7 @@
     <Compile Include="FontChooser\TypographicFeatureListItem.cs" />
     <Compile Include="FormattedLatLogVirtualColumn.cs" />
     <Compile Include="FrameworkExtensions.cs" />
+    <Compile Include="GlobalExceptionHandler.cs" />
     <Compile Include="HierarchicalSelector.xaml.cs">
       <DependentUpon>HierarchicalSelector.xaml</DependentUpon>
     </Compile>
@@ -143,6 +144,7 @@
     <Compile Include="IMapProvider.cs" />
     <Compile Include="IRegionSelector.cs" />
     <Compile Include="ItemsGroupBox.cs" />
+    <Compile Include="JobExecutor.cs" />
     <Compile Include="LatLongInput.xaml.cs">
       <DependentUpon>LatLongInput.xaml</DependentUpon>
     </Compile>

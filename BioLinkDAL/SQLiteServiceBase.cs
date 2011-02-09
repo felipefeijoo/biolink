@@ -44,25 +44,22 @@ namespace BioLink.Data {
         }
 
         protected void SelectReader(string sql, SqliteReaderDelegate action, params SQLiteParameter[] @params) {
-            try {
-                Logger.Debug("Executing SQLite SelectReader: {0}", sql);
-                using (new CodeTimer("SQLite SelectReader")) {
-                    Command((cmd) => {
-                        cmd.CommandText = sql;
-                        foreach (SQLiteParameter param in @params) {
-                            cmd.Parameters.Add(param);
-                        }
-                        using (var reader = cmd.ExecuteReader()) {
-                            while (reader.Read()) {
-                                if (action != null) {
-                                    action(reader);
-                                }
+
+            Logger.Debug("Executing SQLite SelectReader: {0}", sql);
+            using (new CodeTimer("SQLite SelectReader")) {
+                Command((cmd) => {
+                    cmd.CommandText = sql;
+                    foreach (SQLiteParameter param in @params) {
+                        cmd.Parameters.Add(param);
+                    }
+                    using (var reader = cmd.ExecuteReader()) {
+                        while (reader.Read()) {
+                            if (action != null) {
+                                action(reader);
                             }
                         }
-                    });
-                }
-            } catch (Exception ex) {
-                GlobalExceptionHandler.Handle(ex);
+                    }
+                });
             }
 
         }
@@ -121,8 +118,6 @@ namespace BioLink.Data {
                     action(cmd);
                 }
 
-            } catch (Exception ex) {
-                GlobalExceptionHandler.Handle(ex);
             } finally {
                 if (!_persistConnection && conn != null) {
                     conn.Dispose();
