@@ -510,6 +510,7 @@
     <Resource Include="images\SQL.png" />
     <Resource Include="images\Group.png" />
     <Resource Include="images\User.png" />
+    <Resource Include="images\Permissions.png" />
     <Content Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>

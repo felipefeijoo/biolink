@@ -33,7 +33,32 @@ namespace BioLink.Client.Tools {
             this.User = user;
             this.Owner = owner;
 
-            var service = new SupportService(user);
+            ReloadModel();
+
+            grpUsers.IsEnabled = User.HasPermission(PermissionType.USERMANAGER_USER, PERMISSION_MASK.READ);
+            grpUsers.Header = "Users " + User.MaskStr(user.PermissionMask(PermissionType.USERMANAGER_USER));
+    
+            grpGroups.IsEnabled = User.HasPermission(PermissionType.USERMANAGER_GROUP, PERMISSION_MASK.READ);
+            grpGroups.Header = "Groups " + User.MaskStr(user.PermissionMask(PermissionType.USERMANAGER_GROUP));
+    
+            btnDelete.IsEnabled = User.HasPermission(PermissionType.USERMANAGER_USER, PERMISSION_MASK.DELETE);
+
+            btnNewUser.IsEnabled = User.HasPermission(PermissionType.USERMANAGER_USER, PERMISSION_MASK.INSERT);
+            btnProperties.IsEnabled = User.HasPermission(PermissionType.USERMANAGER_USER, PERMISSION_MASK.READ);
+    
+            btnCopy.IsEnabled = User.HasPermission(PermissionType.USERMANAGER_GROUP, PERMISSION_MASK.INSERT);
+            btnDeleteGroup.IsEnabled = User.HasPermission( PermissionType.USERMANAGER_GROUP, PERMISSION_MASK.DELETE);
+            btnPermissions.IsEnabled = User.HasPermission(PermissionType.USERMANAGER_GROUP, PERMISSION_MASK.READ);
+            btnNewGroup.IsEnabled = User.HasPermission(PermissionType.USERMANAGER_GROUP, PERMISSION_MASK.INSERT);
+            btnRename.IsEnabled = User.HasPermission(PermissionType.USERMANAGER_GROUP, PERMISSION_MASK.UPDATE);
+
+        }
+
+        private void ReloadModel() {
+
+            FilterUsers("");
+
+            var service = new SupportService(User);
             var users = service.GetUsers();
             _users = new ObservableCollection<UserSearchResultViewModel>(users.Select((m) => {
                 return new UserSearchResultViewModel(m);
@@ -41,11 +66,38 @@ namespace BioLink.Client.Tools {
 
             var groups = service.GetGroups();
             _groups = new ObservableCollection<GroupViewModel>(groups.Select((m) => {
-                return new GroupViewModel(m);
+                var vm =  new GroupViewModel(m);                
+                vm.LazyLoadChildren +=new HierarchicalViewModelAction(vm_LazyLoadChildren);
+                vm.Children.Add(new ViewModelPlaceholder("Loading..."));
+                return vm;
             }));
 
             lvwUsers.ItemsSource = _users;
             tvwGroups.ItemsSource = _groups;
+        }
+
+        void vm_LazyLoadChildren(HierarchicalViewModelBase item) {
+            var groupNode = item as GroupViewModel;
+            if (groupNode != null) {
+                item.Children.Clear();
+                var service = new SupportService(User);
+                var permissions = service.GetPermissions(groupNode.GroupID);
+
+                var alreadyCreatedFlags = new Dictionary<string, bool>();
+
+                foreach (PermissionType perm in Enum.GetValues(typeof(PermissionType))) {
+                    String desc = PermissionGroups.GetDescriptionForPermission(perm);
+                    if (!alreadyCreatedFlags.ContainsKey(desc)) {                        
+                        item.Children.Insert(0, new PermissionGroupViewModel(desc));
+                        alreadyCreatedFlags[desc] = true;
+                    }
+                }
+
+            }
+
+        }
+
+        public void tvwGroup_MouseRightButtonDown(object sender, MouseButtonEventArgs e) {
         }
 
         public User User { get; private set; }
@@ -73,6 +125,10 @@ namespace BioLink.Client.Tools {
         private void FilterUsers(string filter) {
 
             ListCollectionView dataView = CollectionViewSource.GetDefaultView(lvwUsers.ItemsSource) as ListCollectionView;
+
+            if (dataView == null) {
+                return;
+            }
 
             if (String.IsNullOrEmpty(filter)) {
                 dataView.Filter = null;
@@ -117,8 +173,58 @@ namespace BioLink.Client.Tools {
             frm.Owner = this.FindParentWindow();
             frm.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             frm.ShowDialog();
+
+            ReloadModel();
+            string username = frm.txtUsername.Text;
+            var newItem = _users.First((m) => {
+                return m.Username.Equals(username);
+            });
+
+            lvwUsers.SelectedItem = newItem;
+
         }
 
+        private void btnDelete_Click(object sender, RoutedEventArgs e) {
+            DeleteSelectedUser();
+        }
+
+        private void DeleteSelectedUser() {
+            var selected = lvwUsers.SelectedItem as UserSearchResultViewModel;
+            if (selected != null) {
+                if (this.Question("Are you sure you wish to permanently delete the user '" + selected.Username + "'?", "Delete " + selected.Username)) {
+                    var service = new SupportService(User);
+                    service.DeleteUser(selected.Username);
+                    ReloadModel();
+                }
+            }
+        }
+
+    }
+
+    public class PermissionGroupViewModel : HierarchicalViewModelBase {
+
+        public PermissionGroupViewModel(string name) {
+            this.Name = name;
+        }
+
+        public override BitmapSource Icon {
+            get {
+                if (base.Icon == null) {
+                    return ImageCache.GetImage("pack://application:,,,/BioLink.Client.Extensibility;component/images/Permissions.png");
+                }
+                return base.Icon;
+            }
+            set {
+                base.Icon = value;
+            }
+        }
+
+        public override int? ObjectID {
+            get { return -1; }
+        }
+
+
+        public String Name { get; set; }
     }
 
     public class GroupViewModel : GenericHierarchicalViewModelBase<Group> {
