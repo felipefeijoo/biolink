@@ -121,6 +121,11 @@ namespace BioLink.Client.Tools {
 
             return true;
         }
+
+        private void txtPassword_PasswordChanged(object sender, RoutedEventArgs e) {
+            btnOk.IsEnabled = true;
+        }
+
     }
 
     public class InsertBiolinkUserAction : GenericDatabaseAction<BiolinkUser> {

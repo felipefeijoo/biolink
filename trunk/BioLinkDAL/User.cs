@@ -36,10 +36,10 @@ namespace BioLink.Data {
                         _permissions = permissions.ToDictionary((p) => {
                             return (PermissionType)p.PermissionID;
                         });
-                    }
 
-                    if (user.CanCreateUsers) {
-                        _permissions[PermissionType.USERMANAGER_USER] = new Permission { Mask1=199 };                            
+                        if (user.CanCreateUsers) {
+                            _permissions[PermissionType.USERMANAGER_USER] = new Permission { Mask1 = 199 };
+                        }
                     }
 
                     return true;
@@ -73,7 +73,7 @@ namespace BioLink.Data {
 
             if (_permissions.ContainsKey(perm)) {
                 var val = _permissions[perm];
-                return (val.Mask1 & (int) mask) != 0;
+                return (val.Mask1 & (int)mask) != 0;
             }
 
             return false;
@@ -174,7 +174,7 @@ namespace BioLink.Data {
             this.ConnectionProfile = profile;
         }
 
-        private string BuildConnectionString(bool oldMangleRoutine)  {
+        private string BuildConnectionString(bool oldMangleRoutine) {
             StringBuilder s = new StringBuilder();
             if (ConnectionProfile.IntegratedSecurity) {
                 s.Append(String.Format("Data Source={0};Initial Catalog={1};Integrated Security=SSPI;", ConnectionProfile.Server, ConnectionProfile.Database));
@@ -190,6 +190,58 @@ namespace BioLink.Data {
             }
 
             return s.ToString();
+        }
+
+        public string MaskStr(int mask) {
+            if (Username.Equals("sa", StringComparison.CurrentCultureIgnoreCase)) {
+                return "[All Rights - Sys Admin]";
+            }
+
+            if (mask == 0) {
+                return "[No Rights]";
+            }
+
+            StringBuilder sBuf = new StringBuilder("[");
+
+            if ((mask & (int)PERMISSION_MASK.READ) != 0) {
+                sBuf.Append("Read,");
+            }
+
+            if ((mask & (int)PERMISSION_MASK.WRITE) != 0) {
+                if ((mask & (int)PERMISSION_MASK.INSERT) != 0) {
+                    sBuf.Append("Insert,");
+                }
+                if ((mask & (int)PERMISSION_MASK.UPDATE) != 0) {
+                    sBuf.Append("Update,");
+                }
+                if ((mask & (int)PERMISSION_MASK.DELETE) != 0) {
+                    sBuf.Append("Delete,");
+                }
+            }
+
+            if (sBuf[sBuf.Length - 1] == ',') {
+                sBuf.Remove(sBuf.Length - 1, 1);
+            }
+            sBuf.Append("]");
+
+            var maskstr = sBuf.ToString();
+            if (maskstr.Equals("[read]", StringComparison.CurrentCultureIgnoreCase)) {
+                return "[Read Only]";
+            } else {
+                return sBuf.ToString();
+            }
+
+        }
+
+        public int PermissionMask(PermissionType PermissionID) {
+            if (Username.Equals("sa", StringComparison.CurrentCultureIgnoreCase)) {
+                return 0xFFFFFF;
+            }
+            if (_permissions.ContainsKey(PermissionID)) {
+                return _permissions[PermissionID].Mask1;
+            }
+
+            return 0;
         }
 
         /// <summary>
@@ -209,9 +261,9 @@ namespace BioLink.Data {
             var salt = "biolinksalt";
             string buf = String.Format("{0}{1}", password, salt);
             Encoding enc = Encoding.GetEncoding("UTF-8");
-            return Convert.ToBase64String(sha1.ComputeHash(enc.GetBytes(buf))); 
+            return Convert.ToBase64String(sha1.ComputeHash(enc.GetBytes(buf)));
         }
-        
+
         /// <summary>
         /// This function is dodgey as hell. It is supposed to mangle the password by using the original characters of the password and jumble them around
         /// a bit, which in itself is a problem because its reversable, but instead, due to a coding error (using instr instead of mid) it returns the same mangled password
@@ -225,7 +277,7 @@ namespace BioLink.Data {
         /// <param name="password"></param>
         /// <returns></returns>
         private string OldManglePassword(string UserID, string password) {
-            
+
             //'
             //' Since a nasty 'black-hat' has published the original mangle routine, we need to
             //' make it a little harder to crack.
@@ -262,32 +314,65 @@ namespace BioLink.Data {
 
     }
 
-    public enum PermissionType {	
+    public static class PermissionGroups {
+
+        private static Dictionary<byte, string> _groupDescriptions = new Dictionary<byte, string>();
+
+        static PermissionGroups() {
+            AddDescription(0xFF, "User Manager");
+            AddDescription(0xFE, "Specimens");
+            AddDescription(0xFD, "Taxa");
+            AddDescription(0xFC, "Support Data");
+            AddDescription(0xFB, "Import");
+        }
+
+        private static void AddDescription(byte prefix, string desc) {
+            _groupDescriptions[prefix] = desc;
+        }
+
+        public static Dictionary<byte, string> Descriptions {
+            get {
+                return _groupDescriptions;
+            }
+        }
+
+        public static string GetDescriptionForPermission(PermissionType perm) {
+            byte prefix = (byte) ((((int) perm) & 0xFF00) >> 8);
+            if (_groupDescriptions.ContainsKey(prefix)) {
+                return _groupDescriptions[prefix];
+            }
+
+            throw new Exception("Unrecognized permission prefix: " + prefix);
+        }
+
+    }
+
+    public enum PermissionType {
         // User Manager --------------------------------------------------------
-		USERMANAGER_USER = 0xFF00,
-		USERMANAGER_GROUP = 0xFF01,	
+        USERMANAGER_USER = 0xFF00,
+        USERMANAGER_GROUP = 0xFF01,
         // Sparc ---------------------------------------------------------------
-		SPARC_SITE = 0xFE00,
-		SPARC_TRAP = 0xFE01,
-		SPARC_SITEVISIT = 0xFE02,
-		SPARC_MATERIAL = 0xFE03,
-		SPARC_EXPLORER = 0xFE04,
-		SPARC_REGION = 0xFE05,
-		SPARC_SITEGROUP = 0xFE06,
+        SPARC_SITE = 0xFE00,
+        SPARC_TRAP = 0xFE01,
+        SPARC_SITEVISIT = 0xFE02,
+        SPARC_MATERIAL = 0xFE03,
+        SPARC_EXPLORER = 0xFE04,
+        SPARC_REGION = 0xFE05,
+        SPARC_SITEGROUP = 0xFE06,
         // spIn ----------------------------------------------------------------
-		SPIN_EXPLORER = 0xFD00,
-		SPIN_TAXON = 0xFD01,
+        SPIN_EXPLORER = 0xFD00,
+        SPIN_TAXON = 0xFD01,
         // SupportData ---------------------------------------------------------
-		SUPPORT_PHRASES = 0xFC00,
-		SUPPORT_PHRASECATEGORIES = 0xFC01,
-		SUPPORT_REFS = 0xFC02,
-		SUPPORT_JOURNALS = 0xFC03,
-		SUPPORT_CATEGORIES = 0xFC04,
+        SUPPORT_PHRASES = 0xFC00,
+        SUPPORT_PHRASECATEGORIES = 0xFC01,
+        SUPPORT_REFS = 0xFC02,
+        SUPPORT_JOURNALS = 0xFC03,
+        SUPPORT_CATEGORIES = 0xFC04,
         // Import ---------------------------------------------------------
-		IMPORT_MATERIAL = 0xFB00,
-		IMPORT_REFERENCES = 0xFB01,
-		IMPORT_DELTA = 0xFB02
-	};
+        IMPORT_MATERIAL = 0xFB00,
+        IMPORT_REFERENCES = 0xFB01,
+        IMPORT_DELTA = 0xFB02
+    };
 
     public enum PERMISSION_MASK {
         OWNER = 512,

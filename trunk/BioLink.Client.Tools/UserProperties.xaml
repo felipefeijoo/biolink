@@ -35,10 +35,10 @@
             <ext:TextBox Grid.Row="1" Name="txtFullName" Height="23" Grid.Column="1" Text="{Binding FullName}"/>
 
             <Label Grid.Row="2" Content="Password:" HorizontalAlignment="Right" />
-            <PasswordBox Grid.Row="2" Grid.Column="1" Name="txtPassword" Height="23" Password=""/>
+            <PasswordBox Grid.Row="2" Grid.Column="1" Name="txtPassword" Height="23" Password="" PasswordChanged="txtPassword_PasswordChanged"/>
 
             <Label Grid.Row="3" Content="Confirm Password:" HorizontalAlignment="Right" />
-            <PasswordBox Grid.Row="3" Grid.Column="1" Name="txtConfirmPassword" Height="23" Password=""/>
+            <PasswordBox Grid.Row="3" Grid.Column="1" Name="txtConfirmPassword" Height="23" Password="" PasswordChanged="txtPassword_PasswordChanged"/>
 
             <Label Grid.Row="4" Content="Group:" HorizontalAlignment="Right" />
             <ComboBox Grid.Row="4" Grid.Column="1" Name="cmbGroup" Height="23" SelectedItem="{Binding Group}">
