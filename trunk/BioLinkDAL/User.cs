@@ -192,8 +192,8 @@ namespace BioLink.Data {
             return s.ToString();
         }
 
-        public string MaskStr(int mask) {
-            if (Username.Equals("sa", StringComparison.CurrentCultureIgnoreCase)) {
+        public static string MaskStr(int mask, string username) {
+            if (!string.IsNullOrEmpty(username) && username.Equals("sa", StringComparison.CurrentCultureIgnoreCase)) {
                 return "[All Rights - Sys Admin]";
             }
 
@@ -202,6 +202,10 @@ namespace BioLink.Data {
             }
 
             StringBuilder sBuf = new StringBuilder("[");
+
+            if ((mask & (int)PERMISSION_MASK.ALLOW) != 0) {
+                sBuf.Append("Allowed,");
+            }
 
             if ((mask & (int)PERMISSION_MASK.READ) != 0) {
                 sBuf.Append("Read,");

@@ -511,6 +511,7 @@
     <Resource Include="images\Group.png" />
     <Resource Include="images\User.png" />
     <Resource Include="images\Permissions.png" />
+    <Resource Include="images\Permission.png" />
     <Content Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>
