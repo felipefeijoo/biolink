@@ -36,10 +36,10 @@ namespace BioLink.Client.Tools {
             ReloadModel();
 
             grpUsers.IsEnabled = User.HasPermission(PermissionType.USERMANAGER_USER, PERMISSION_MASK.READ);
-            grpUsers.Header = "Users " + User.MaskStr(user.PermissionMask(PermissionType.USERMANAGER_USER));
+            grpUsers.Header = "Users " + User.MaskStr(user.PermissionMask(PermissionType.USERMANAGER_USER), user.Username);
     
             grpGroups.IsEnabled = User.HasPermission(PermissionType.USERMANAGER_GROUP, PERMISSION_MASK.READ);
-            grpGroups.Header = "Groups " + User.MaskStr(user.PermissionMask(PermissionType.USERMANAGER_GROUP));
+            grpGroups.Header = "Groups " + User.MaskStr(user.PermissionMask(PermissionType.USERMANAGER_GROUP), user.Username);
     
             btnDelete.IsEnabled = User.HasPermission(PermissionType.USERMANAGER_USER, PERMISSION_MASK.DELETE);
 
@@ -83,14 +83,26 @@ namespace BioLink.Client.Tools {
                 var service = new SupportService(User);
                 var permissions = service.GetPermissions(groupNode.GroupID);
 
-                var alreadyCreatedFlags = new Dictionary<string, bool>();
+                var permGroupNodes = new Dictionary<string, PermissionGroupViewModel>();
 
                 foreach (PermissionType perm in Enum.GetValues(typeof(PermissionType))) {
                     String desc = PermissionGroups.GetDescriptionForPermission(perm);
-                    if (!alreadyCreatedFlags.ContainsKey(desc)) {                        
-                        item.Children.Insert(0, new PermissionGroupViewModel(desc));
-                        alreadyCreatedFlags[desc] = true;
+                    PermissionGroupViewModel permGroupNode = null;
+                    if (!permGroupNodes.ContainsKey(desc)) {
+                        permGroupNode = new PermissionGroupViewModel(desc);
+                        item.Children.Insert(0, permGroupNode);
+                        permGroupNodes[desc] = permGroupNode;
+                    } else {
+                        permGroupNode = permGroupNodes[desc];
                     }
+
+                    var permission = permissions.FirstOrDefault((p) => {
+                        return p.PermissionID == (int)perm;
+                    });
+
+                    var mask = permission == null ? 0 : permission.Mask1;
+
+                    permGroupNode.Children.Add(new PermissionViewModel(perm, mask));
                 }
 
             }
@@ -200,6 +212,46 @@ namespace BioLink.Client.Tools {
         }
 
     }
+
+    public class PermissionViewModel : HierarchicalViewModelBase {
+
+        public PermissionViewModel(PermissionType permType, int mask) {
+            this.Permission = permType;
+            this.Mask = mask;
+        }
+
+        public override string DisplayLabel {
+            get {
+                return Permission.ToString();
+            }
+        }
+
+        public override BitmapSource Icon {
+            get {
+                if (base.Icon == null) {
+                    return ImageCache.GetImage("pack://application:,,,/BioLink.Client.Extensibility;component/images/Permission.png");
+                }
+                return base.Icon;
+            }
+            set {
+                base.Icon = value;
+            }
+        }
+
+        public override int? ObjectID {
+            get { return -1; }
+        }
+
+        public String MaskLabel {
+            get { return User.MaskStr(Mask, null); }
+        }
+        
+        public PermissionType Permission { get; set; }
+
+        public int Mask { get; set; }
+
+    }
+
 
     public class PermissionGroupViewModel : HierarchicalViewModelBase {
 
