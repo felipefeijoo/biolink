@@ -1187,6 +1187,31 @@ namespace BioLink.Data {
             StoredProcUpdate("spUserDelete", _P("vchrUsername", username));
         }
 
+        public int InsertGroup(string groupName) {
+            var retval = ReturnParam("intNewGroupID");
+            StoredProcUpdate("spGroupInsert", _P("vchrGroupName", groupName), retval);
+            return (int)retval.Value;
+        }
+
+        public void RenameGroup(int groupID, string newName) {
+            StoredProcUpdate("spGroupUpdate",
+                _P("intGroupID", groupID),
+                _P("vchrGroupName", newName)
+            );
+        }
+
+        public void DeleteGroup(int groupID) {
+            StoredProcUpdate("spGroupDelete", _P("intGroupID", groupID));
+        }
+
+        public void CopyGroupPermissions(int sourceGroupID, int targetGroupID) {
+            StoredProcUpdate("spPermissionCopyGroup", _P("intFromGroupID", sourceGroupID), _P("intToGroupID", targetGroupID));
+        }
+
+        public void SetPermission(int groupID, int permissionID, int mask1, int mask2 = 0) {
+            StoredProcUpdate("spPermissionSet", _P("intGroupID", groupID), _P("intPermID", permissionID), _P("intPermMask1", mask1), _P("intPermMask2", mask2));
+        }
+
         #endregion
     }
 

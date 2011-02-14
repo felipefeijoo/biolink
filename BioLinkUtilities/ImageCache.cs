@@ -33,6 +33,9 @@ namespace BioLink.Client.Utilities {
         }
 
         public static BitmapSource ApplyOverlay(BitmapSource image, string overlayUri) {
+            if (image == null) {
+                return null;
+            }
             BitmapSource overlay = GetImage(overlayUri);
             int height = (int)image.Height;
             int width = (int)image.Width;

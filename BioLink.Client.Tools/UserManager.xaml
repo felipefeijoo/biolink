@@ -95,11 +95,11 @@
 
                     </TreeView.Resources>
                 </TreeView>
-                <Button Content="Per_missions..." Height="23" HorizontalAlignment="Right" Margin="0,6,6,0" Name="btnPermissions" VerticalAlignment="Top" Width="90" />
-                <Button Content="_Rename..." Height="23" HorizontalAlignment="Right" Margin="0,35,6,0" Name="btnRename" VerticalAlignment="Top" Width="90" />
-                <Button Content="_Copy..." Height="23" HorizontalAlignment="Right" Margin="0,64,6,0" Name="btnCopy" VerticalAlignment="Top" Width="90" />
-                <Button Content="Delete G_roup" Height="23" HorizontalAlignment="Right" Margin="0,93,6,0" Name="btnDeleteGroup" VerticalAlignment="Top" Width="90" />
-                <Button Content="New _Group..." Height="23" HorizontalAlignment="Right" Margin="0,122,6,0" Name="btnNewGroup" VerticalAlignment="Top" Width="90" />
+                <Button Content="Per_missions..." Height="23" HorizontalAlignment="Right" Margin="0,6,6,0" Name="btnPermissions" VerticalAlignment="Top" Width="90" Click="btnPermissions_Click" />
+                <Button Content="_Rename..." Height="23" HorizontalAlignment="Right" Margin="0,35,6,0" Name="btnRename" VerticalAlignment="Top" Width="90" Click="btnRename_Click" />
+                <Button Content="_Copy..." Height="23" HorizontalAlignment="Right" Margin="0,64,6,0" Name="btnCopy" VerticalAlignment="Top" Width="90" Click="btnCopy_Click" />
+                <Button Content="Delete G_roup" Height="23" HorizontalAlignment="Right" Margin="0,93,6,0" Name="btnDeleteGroup" VerticalAlignment="Top" Width="90" Click="btnDeleteGroup_Click" />
+                <Button Content="New _Group..." Height="23" HorizontalAlignment="Right" Margin="0,122,6,0" Name="btnNewGroup" VerticalAlignment="Top" Width="90" Click="btnNewGroup_Click" />
             </Grid>
         </GroupBox>
         

@@ -17,7 +17,7 @@ namespace BioLink.Data {
         private string _username;
         private string _connectionString;
 
-        private Dictionary<PermissionType, Permission> _permissions;
+        private Dictionary<PermissionMask, Permission> _permissions;
 
         public bool Authenticate(out String message) {
 
@@ -34,11 +34,11 @@ namespace BioLink.Data {
                     if (user != null) {
                         var permissions = service.GetPermissions(user.GroupID);
                         _permissions = permissions.ToDictionary((p) => {
-                            return (PermissionType)p.PermissionID;
+                            return (PermissionMask)p.PermissionID;
                         });
 
                         if (user.CanCreateUsers) {
-                            _permissions[PermissionType.USERMANAGER_USER] = new Permission { Mask1 = 199 };
+                            _permissions[PermissionMask.USERMANAGER_USER] = new Permission { Mask1 = 199 };
                         }
                     }
 
@@ -65,7 +65,7 @@ namespace BioLink.Data {
             get { return _username.Equals("sa", StringComparison.CurrentCultureIgnoreCase); }
         }
 
-        public bool HasPermission(PermissionType perm, PERMISSION_MASK mask) {
+        public bool HasPermission(PermissionMask perm, PERMISSION_MASK mask) {
 
             if (Username.Equals("sa", StringComparison.CurrentCultureIgnoreCase)) {
                 return true;
@@ -79,7 +79,7 @@ namespace BioLink.Data {
             return false;
         }
 
-        public void CheckPermission(PermissionType perm, PERMISSION_MASK mask, string deniedMessage) {
+        public void CheckPermission(PermissionMask perm, PERMISSION_MASK mask, string deniedMessage) {
             if (!HasPermission(perm, mask)) {
                 throw new NoPermissionException(perm, mask, deniedMessage);
             }
@@ -237,7 +237,7 @@ namespace BioLink.Data {
 
         }
 
-        public int PermissionMask(PermissionType PermissionID) {
+        public int GetPermissionMask(PermissionMask PermissionID) {
             if (Username.Equals("sa", StringComparison.CurrentCultureIgnoreCase)) {
                 return 0xFFFFFF;
             }
@@ -316,6 +316,17 @@ namespace BioLink.Data {
 
         #endregion
 
+        public static PERMISSION_TYPE GetPermissionType(PermissionMask mask) {
+
+            var boolTypes = new PermissionMask[] { PermissionMask.SPARC_EXPLORER,PermissionMask.SPIN_EXPLORER, PermissionMask.IMPORT_MATERIAL, PermissionMask.IMPORT_REFERENCES, PermissionMask.IMPORT_DELTA  };
+
+            if (boolTypes.Contains(mask)) {
+                return PERMISSION_TYPE.ALLOWDISALLOW;
+            }
+
+            return PERMISSION_TYPE.RWDIU;
+        }
+
     }
 
     public static class PermissionGroups {
@@ -340,7 +351,7 @@ namespace BioLink.Data {
             }
         }
 
-        public static string GetDescriptionForPermission(PermissionType perm) {
+        public static string GetDescriptionForPermission(PermissionMask perm) {
             byte prefix = (byte) ((((int) perm) & 0xFF00) >> 8);
             if (_groupDescriptions.ContainsKey(prefix)) {
                 return _groupDescriptions[prefix];
@@ -351,7 +362,7 @@ namespace BioLink.Data {
 
     }
 
-    public enum PermissionType {
+    public enum PermissionMask {
         // User Manager --------------------------------------------------------
         USERMANAGER_USER = 0xFF00,
         USERMANAGER_GROUP = 0xFF01,
@@ -395,13 +406,13 @@ namespace BioLink.Data {
 
     public class NoPermissionException : Exception {
 
-        public NoPermissionException(PermissionType perm, PERMISSION_MASK mask, string deniedMessage = "") : base(String.Format("You do not have permission to perform this operation: {0} :: {1}", perm.ToString(), mask.ToString())) {
+        public NoPermissionException(PermissionMask perm, PERMISSION_MASK mask, string deniedMessage = "") : base(String.Format("You do not have permission to perform this operation: {0} :: {1}", perm.ToString(), mask.ToString())) {
             this.RequestedPermission = perm;
             this.RequestedMask = mask;
             this.DeniedMessage = deniedMessage;
         }
 
-        public PermissionType RequestedPermission { get; private set; }
+        public PermissionMask RequestedPermission { get; private set; }
         public PERMISSION_MASK RequestedMask { get; private set; }
         public string DeniedMessage { get; private set; }
     }

@@ -373,7 +373,7 @@ namespace BioLink.Client.Taxa {
             // Ensure the permissions set at the user group level take precendence to the indivual taxon based permissions.
             try {
                 if (mask != PERMISSION_MASK.OWNER) {
-                    User.CheckPermission(PermissionType.SPIN_TAXON, mask, "You do not have permission to move this item!");
+                    User.CheckPermission(PermissionMask.SPIN_TAXON, mask, "You do not have permission to move this item!");
                 }
 
 
@@ -384,7 +384,7 @@ namespace BioLink.Client.Taxa {
                     }
                     var service = new SupportService(User);
                     if (!service.HasBiotaPermission(target.TaxaID.Value, mask)) {
-                        throw new NoPermissionException(PermissionType.SPIN_TAXON, mask, "You do not have permission to move this item!");
+                        throw new NoPermissionException(PermissionMask.SPIN_TAXON, mask, "You do not have permission to move this item!");
                     }
                 }
                 return true;
