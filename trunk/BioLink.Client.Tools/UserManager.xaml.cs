@@ -35,23 +35,42 @@ namespace BioLink.Client.Tools {
 
             ReloadModel();
 
-            grpUsers.IsEnabled = User.HasPermission(PermissionType.USERMANAGER_USER, PERMISSION_MASK.READ);
-            grpUsers.Header = "Users " + User.MaskStr(user.PermissionMask(PermissionType.USERMANAGER_USER), user.Username);
+            grpUsers.IsEnabled = User.HasPermission(PermissionMask.USERMANAGER_USER, PERMISSION_MASK.READ);
+            grpUsers.Header = "Users " + User.MaskStr(user.GetPermissionMask(PermissionMask.USERMANAGER_USER), user.Username);
     
-            grpGroups.IsEnabled = User.HasPermission(PermissionType.USERMANAGER_GROUP, PERMISSION_MASK.READ);
-            grpGroups.Header = "Groups " + User.MaskStr(user.PermissionMask(PermissionType.USERMANAGER_GROUP), user.Username);
+            grpGroups.IsEnabled = User.HasPermission(PermissionMask.USERMANAGER_GROUP, PERMISSION_MASK.READ);
+            grpGroups.Header = "Groups " + User.MaskStr(user.GetPermissionMask(PermissionMask.USERMANAGER_GROUP), user.Username);
     
-            btnDelete.IsEnabled = User.HasPermission(PermissionType.USERMANAGER_USER, PERMISSION_MASK.DELETE);
+            btnDelete.IsEnabled = User.HasPermission(PermissionMask.USERMANAGER_USER, PERMISSION_MASK.DELETE);
 
-            btnNewUser.IsEnabled = User.HasPermission(PermissionType.USERMANAGER_USER, PERMISSION_MASK.INSERT);
-            btnProperties.IsEnabled = User.HasPermission(PermissionType.USERMANAGER_USER, PERMISSION_MASK.READ);
+            btnNewUser.IsEnabled = User.HasPermission(PermissionMask.USERMANAGER_USER, PERMISSION_MASK.INSERT);
+            btnProperties.IsEnabled = User.HasPermission(PermissionMask.USERMANAGER_USER, PERMISSION_MASK.READ);
     
-            btnCopy.IsEnabled = User.HasPermission(PermissionType.USERMANAGER_GROUP, PERMISSION_MASK.INSERT);
-            btnDeleteGroup.IsEnabled = User.HasPermission( PermissionType.USERMANAGER_GROUP, PERMISSION_MASK.DELETE);
-            btnPermissions.IsEnabled = User.HasPermission(PermissionType.USERMANAGER_GROUP, PERMISSION_MASK.READ);
-            btnNewGroup.IsEnabled = User.HasPermission(PermissionType.USERMANAGER_GROUP, PERMISSION_MASK.INSERT);
-            btnRename.IsEnabled = User.HasPermission(PermissionType.USERMANAGER_GROUP, PERMISSION_MASK.UPDATE);
+            btnCopy.IsEnabled = User.HasPermission(PermissionMask.USERMANAGER_GROUP, PERMISSION_MASK.INSERT);
+            btnDeleteGroup.IsEnabled = User.HasPermission( PermissionMask.USERMANAGER_GROUP, PERMISSION_MASK.DELETE);
+            btnPermissions.IsEnabled = User.HasPermission(PermissionMask.USERMANAGER_GROUP, PERMISSION_MASK.READ);
+            btnNewGroup.IsEnabled = User.HasPermission(PermissionMask.USERMANAGER_GROUP, PERMISSION_MASK.INSERT);
+            btnRename.IsEnabled = User.HasPermission(PermissionMask.USERMANAGER_GROUP, PERMISSION_MASK.UPDATE);
 
+            tvwGroups.SelectedItemChanged += new RoutedPropertyChangedEventHandler<object>(tvwGroups_SelectedItemChanged);
+            tvwGroups.MouseDoubleClick += new MouseButtonEventHandler(tvwGroups_MouseDoubleClick);
+
+        }
+
+        void tvwGroups_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
+            var selected = tvwGroups.SelectedItem as PermissionViewModel;
+            if (selected != null) {
+                EditPermission(selected);
+            }
+        }
+
+        void tvwGroups_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e) {
+            var selected = tvwGroups.SelectedItem;
+            var isGroup = selected is GroupViewModel;
+            btnPermissions.IsEnabled = selected is PermissionViewModel;
+            btnRename.IsEnabled = isGroup;
+            btnCopy.IsEnabled = isGroup;
+            btnDeleteGroup.IsEnabled = isGroup;
         }
 
         private void ReloadModel() {
@@ -85,7 +104,7 @@ namespace BioLink.Client.Tools {
 
                 var permGroupNodes = new Dictionary<string, PermissionGroupViewModel>();
 
-                foreach (PermissionType perm in Enum.GetValues(typeof(PermissionType))) {
+                foreach (PermissionMask perm in Enum.GetValues(typeof(PermissionMask))) {
                     String desc = PermissionGroups.GetDescriptionForPermission(perm);
                     PermissionGroupViewModel permGroupNode = null;
                     if (!permGroupNodes.ContainsKey(desc)) {
@@ -102,7 +121,7 @@ namespace BioLink.Client.Tools {
 
                     var mask = permission == null ? 0 : permission.Mask1;
 
-                    permGroupNode.Children.Add(new PermissionViewModel(perm, mask));
+                    permGroupNode.Children.Add(new PermissionViewModel(groupNode.GroupID, perm, mask));
                 }
 
             }
@@ -211,13 +230,107 @@ namespace BioLink.Client.Tools {
             }
         }
 
+        private void btnNewGroup_Click(object sender, RoutedEventArgs e) {
+            AddNewGroup();
+        }
+
+        private void AddNewGroup() {
+            InputBox.Show(this.FindParentWindow(), "New group", "Enter the name of the new group", (newName) => {
+                var service = new SupportService(User);
+                service.InsertGroup(newName);
+                ReloadModel();
+                SelectGroup(newName);
+            });
+        }
+
+        private void SelectGroup(string name) {
+            var found = _groups.FirstOrDefault((vm) => {
+                return vm.GroupName.Equals(name);
+            });
+            if (found != null) {
+                found.IsSelected = true;                
+            }
+        }
+
+        private void btnDeleteGroup_Click(object sender, RoutedEventArgs e) {
+            DeleteSelectedGroup();
+        }
+
+        private void DeleteSelectedGroup() {
+
+            var selected = tvwGroups.SelectedItem as GroupViewModel;
+            if (selected != null) {
+                if (this.Question("Are you sure you wish to permanently delete group '" + selected.GroupName + "'", "Delete group '" + selected.GroupName + "'?")) {
+                    var service = new SupportService(User);
+                    service.DeleteGroup(selected.GroupID);
+                    ReloadModel();
+                }
+            }
+
+        }
+
+        private void btnRename_Click(object sender, RoutedEventArgs e) {
+            RenameSelectedGroup();
+        }
+
+        private void RenameSelectedGroup() {
+            var selected = tvwGroups.SelectedItem as GroupViewModel;
+            if (selected != null) {
+                InputBox.Show(this.FindParentWindow(), "Rename group '" + selected.GroupName + "'", "Enter the new name for this group", selected.GroupName, (newName) => {
+                    var service = new SupportService(User);
+                    service.RenameGroup(selected.GroupID, newName);
+                    ReloadModel();
+                    SelectGroup(newName);
+                });
+            }
+        }
+
+        private void btnCopy_Click(object sender, RoutedEventArgs e) {
+            CopySelectedGroup();
+        }
+
+        private void CopySelectedGroup() {
+            var selected = tvwGroups.SelectedItem as GroupViewModel;
+            if (selected != null) {
+                InputBox.Show(this.FindParentWindow(), "Copy group '" + selected.GroupName + "'", "Enter the new name for the new group", selected.GroupName, (newName) => {
+                    var service = new SupportService(User);
+                    // Create the new group
+                    var newGroupID = service.InsertGroup(newName);
+                    // and copy over the existing permissions...
+                    service.CopyGroupPermissions(selected.GroupID, newGroupID);
+                    // reload
+                    ReloadModel();
+                    SelectGroup(newName);
+                });
+            }
+        }
+
+        private void EditPermission(PermissionViewModel vm) {
+
+            if (vm == null) {
+                return;
+            }
+
+            var frm = new PermissionProperties(User, vm);
+            frm.Owner = this.FindParentWindow();
+            frm.ShowDialog();
+            // ReloadModel();
+        }
+
+        private void btnPermissions_Click(object sender, RoutedEventArgs e) {
+            EditPermission(tvwGroups.SelectedItem as PermissionViewModel);
+        }
+
     }
 
     public class PermissionViewModel : HierarchicalViewModelBase {
 
-        public PermissionViewModel(PermissionType permType, int mask) {
+        private int _mask;
+
+        public PermissionViewModel(int groupID, PermissionMask permType, int mask) {
+            this.GroupID = groupID;
             this.Permission = permType;
-            this.Mask = mask;
+            _mask = mask;
         }
 
         public override string DisplayLabel {
@@ -246,9 +359,17 @@ namespace BioLink.Client.Tools {
             get { return User.MaskStr(Mask, null); }
         }
         
-        public PermissionType Permission { get; set; }
+        public PermissionMask Permission { get; set; }
 
-        public int Mask { get; set; }
+        public int Mask {
+            get { return _mask; }
+            set { 
+                SetProperty("Mask", ref _mask, value);
+                RaisePropertyChanged("MaskLabel");
+            }
+        }
+
+        public int GroupID { get; set; }
 
     }
 

@@ -62,6 +62,9 @@
       <DependentUpon>JournalManager.xaml</DependentUpon>
     </Compile>
     <Compile Include="journals\JournalViewModel.cs" />
+    <Compile Include="PermissionProperties.xaml.cs">
+      <DependentUpon>PermissionProperties.xaml</DependentUpon>
+    </Compile>
     <Compile Include="phrases\PhraseDatabaseAction.cs" />
     <Compile Include="phrases\PhraseManager.xaml.cs">
       <DependentUpon>PhraseManager.xaml</DependentUpon>
@@ -147,6 +150,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="journals\JournalManager.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PermissionProperties.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
