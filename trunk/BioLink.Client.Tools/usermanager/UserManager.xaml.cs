@@ -339,7 +339,7 @@ namespace BioLink.Client.Tools {
             }
         }
 
-        public override BitmapSource Icon {
+        public override ImageSource Icon {
             get {
                 if (base.Icon == null) {
                     return ImageCache.GetImage("pack://application:,,,/BioLink.Client.Extensibility;component/images/Permission.png");
@@ -380,7 +380,7 @@ namespace BioLink.Client.Tools {
             this.Name = name;
         }
 
-        public override BitmapSource Icon {
+        public override ImageSource Icon {
             get {
                 if (base.Icon == null) {
                     return ImageCache.GetImage("pack://application:,,,/BioLink.Client.Extensibility;component/images/Permissions.png");
@@ -404,7 +404,7 @@ namespace BioLink.Client.Tools {
 
         public GroupViewModel(Group model) : base(model, () => model.GroupID) { }
 
-        public override BitmapSource Icon {
+        public override ImageSource Icon {
             get {
                 if (base.Icon == null) {
                     return ImageCache.GetImage("pack://application:,,,/BioLink.Client.Extensibility;component/images/Group.png");
@@ -432,7 +432,7 @@ namespace BioLink.Client.Tools {
 
         public UserSearchResultViewModel(UserSearchResult model) : base(model, () => model.UserID) { }
 
-        public override BitmapSource Icon {
+        public override ImageSource Icon {
             get {
                 if (base.Icon == null) {
                     return ImageCache.GetImage("pack://application:,,,/BioLink.Client.Extensibility;component/images/User.png");

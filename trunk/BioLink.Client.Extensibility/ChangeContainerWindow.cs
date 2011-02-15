@@ -161,6 +161,21 @@ namespace BioLink.Client.Extensibility {
             }
 #endif
 
+
+            // First validate each action...Actions can produce messages if they are not valid.
+            var messageList = new List<string>();
+            foreach (DatabaseAction action in _pendingChanges) {
+                var messages = action.Validate();
+                if (messages != null && messages.Count > 0) {
+                    messageList.AddRange(messages);
+                }
+            }
+
+            if (messageList.Count > 0) {
+                ErrorMessage.Show("One or more validation errors occured:\n\n{0}\n\nOperation aborted.", messageList.Join("\n\n"));
+                return;
+            }
+
             // It may be that this control is aggregated as part of a larger control. This means that, come save time, there
             // may already be a transaction pending. If so, don'note create a new one, just piggy back on the existing
             bool commitTrans = false;  // flag to let us know if we are responsible for the transaction...

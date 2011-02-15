@@ -23,16 +23,18 @@ namespace BioLink.Client.Taxa {
     /// </summary>
     public partial class TaxonDetails : DatabaseActionControl {
 
+        private Action<TaxonViewModel> _committedAction;
+
         #region designer constructor
         public TaxonDetails() {
             InitializeComponent();
         }
         #endregion
 
-        public TaxonDetails(TaxonViewModel taxon, User user) : base(user, "TaxonDetails::" + taxon.TaxaID.Value) {
-            InitializeComponent();           
-
-            tabControl.AddTabItem("General", new TaxonNameDetails(taxon.TaxaID, User));
+        public TaxonDetails(TaxonViewModel taxon, User user, Action<TaxonViewModel> committedAction) : base(user, "TaxonDetails::" + taxon.TaxaID.Value) {
+            InitializeComponent();
+            _committedAction = committedAction;
+            tabControl.AddTabItem("General", new TaxonNameDetails(taxon.TaxaID, User, committedAction));
 
             if (taxon.IsAvailableOrLiteratureName) {
                 TaxonRank rank = Service.GetTaxonRank(taxon.ElemType);
@@ -65,6 +67,14 @@ namespace BioLink.Client.Taxa {
 
             this.Taxon = taxon;
 
+            this.ChangesCommitted += new PendingChangesCommittedHandler(TaxonDetails_ChangesCommitted);
+
+        }
+
+        void TaxonDetails_ChangesCommitted(object sender) {
+            if (_committedAction != null) {
+                _committedAction(Taxon);
+            }
         }
 
         public override void Dispose() {

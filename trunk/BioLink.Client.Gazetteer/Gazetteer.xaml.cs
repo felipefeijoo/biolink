@@ -160,7 +160,7 @@ namespace BioLink.Client.Gazetteer {
                 lblFile.Content = _service.FileName;
                 btnOpen.Content = _owner.GetCaption("Gazetteer.btnOpen.change");
                 // now populate the Divisions combo box...
-                List<CodeLabelPair> divisions = _service.GetDivisions();
+                var divisions = _service.GetDivisions();
                 cmbDivision.ItemsSource = divisions;
                 cmbDivision.SelectedIndex = 0;
             } catch (Exception ex) {

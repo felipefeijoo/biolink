@@ -56,7 +56,7 @@ namespace BioLink.Client.Taxa {
             }
         }
 
-        private BitmapSource _image;
+        private ImageSource _image;
         private TaxonLabelGenerator _labelGenerator;        
 
         public TaxonViewModel(HierarchicalViewModelBase parent, Taxon taxon, TaxonLabelGenerator labelGenerator, bool isRoot = false)
@@ -67,14 +67,29 @@ namespace BioLink.Client.Taxa {
             this.DataChanged += new DataChangedHandler(TaxonViewModel_DataChanged);
             _labelGenerator = labelGenerator;
             this.IsRootNode = isRoot;
+            TaxonLabel = GenerateLabel();
+        }
+
+        private string GenerateLabel() {
+            if (_labelGenerator == null) {
+                return Epithet;
+            } else {
+                return _labelGenerator(this);
+            }
         }
 
         public bool IsRootNode { get; private set; }
 
-        void TaxonViewModel_DataChanged(ChangeableModelBase model) {
+        public void RegenerateLabel() {
             // Force the icon to be reconstructed, possibly now with a changed badge/overlay
             _image = null;
             RaisePropertyChanged("Icon");
+            // Regenerate the label
+            TaxonLabel = GenerateLabel();
+        }
+
+        void TaxonViewModel_DataChanged(ChangeableModelBase model) {
+            RegenerateLabel();
         }
 
         public Taxon Taxon { get; private set; }        
@@ -141,7 +156,10 @@ namespace BioLink.Client.Taxa {
 
         public bool? Unverified {
             get { return Taxon.Unverified; }
-            set { SetProperty(() => Taxon.Unverified, Taxon, value); }
+            set { 
+                SetProperty(() => Taxon.Unverified, Taxon, value);
+                RaisePropertyChanged("DisplayLabel");
+            }
         }
 
         public bool? AvailableName {
@@ -211,13 +229,20 @@ namespace BioLink.Client.Taxa {
 
         public override String DisplayLabel {
             get {
-                if (_labelGenerator != null) {
-                    return _labelGenerator(this);
-                } else {
-                    return Epithet;
-                }                                    
+                return GenerateLabel();
             }
         }
+
+        public string TaxonLabel {
+            get { return (string)GetValue(TaxonLabelProperty); }
+            set { SetValue(TaxonLabelProperty, value); }
+        }
+
+        public static readonly DependencyProperty TaxonLabelProperty = DependencyProperty.Register("TaxonLabel", typeof(string), typeof(TaxonViewModel), new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.Journal | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnTaxonLabelChanged)));
+
+        private static void OnTaxonLabelChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+        }
+
 
         public void BulkAddChildren(List<Taxon> taxa, TaxonLabelGenerator labelGenerator) {
 
@@ -232,7 +257,7 @@ namespace BioLink.Client.Taxa {
             
         }
 
-        private BitmapSource ConstructIcon() {
+        private ImageSource ConstructIcon() {
             // The top level container nodes don'note get icons...
             if (IsRootNode) {
                 return null;
@@ -241,7 +266,7 @@ namespace BioLink.Client.Taxa {
             return ConstructIcon(IsAvailableOrLiteratureName, ElemType, IsChanged);
         }
 
-        public static BitmapSource ConstructIcon(bool isAvailableOrLiteratureName, string elemType, bool isChanged) {
+        public static ImageSource ConstructIcon(bool isAvailableOrLiteratureName, string elemType, bool isChanged) {
 
 
             // This is used to construct image uri's, if required...
@@ -312,7 +337,7 @@ namespace BioLink.Client.Taxa {
             return baseIcon;
         }
 
-        public override BitmapSource Icon {
+        public override ImageSource Icon {
             get {
                 if (_image == null) {
                     _image = ConstructIcon();

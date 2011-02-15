@@ -84,7 +84,7 @@ namespace BioLink.Client.Taxa {
                 var pinnable = Explorer.Owner.CreatePinnableTaxon(Taxon.TaxaID.Value);
                 builder.New("_Pin to pin board").Handler(() => { PluginManager.Instance.PinObject(pinnable); });
                 builder.Separator();                
-                builder.New("_Edit Name...").Handler(() => { Explorer.EditTaxonName(Taxon.TaxaID); });
+                builder.New("_Edit Name...").Handler(() => { Explorer.EditTaxonName(Taxon); });
                 builder.New("_Edit Details...").Handler(() => { Explorer.ShowTaxonDetails(Taxon.TaxaID); }).End();
             }
 
@@ -201,7 +201,7 @@ namespace BioLink.Client.Taxa {
             menu.Items.Add(new Separator());
             menu.Items.Add(_builder.New("_Pin to pin board").Handler(() => { PluginManager.Instance.PinObject(new PinnableObject(TaxaPlugin.TAXA_PLUGIN_NAME, LookupType.Taxon, Taxon.TaxaID.Value)); }).MenuItem);
             menu.Items.Add(new Separator());
-            menu.Items.Add(_builder.New("_Edit Name...").Handler(() => { Explorer.EditTaxonName(Taxon.TaxaID); }).MenuItem);
+            menu.Items.Add(_builder.New("_Edit Name...").Handler(() => { Explorer.EditTaxonName(Taxon); }).MenuItem);
             menu.Items.Add(_builder.New("_Edit Details...").Handler(() => { Explorer.ShowTaxonDetails(Taxon.TaxaID); }).MenuItem);
 
             return menu;
@@ -240,7 +240,7 @@ namespace BioLink.Client.Taxa {
             builder.Separator();
             builder.New("_Pin to pin board").Handler(() => { PluginManager.Instance.PinObject(new PinnableObject(TaxaPlugin.TAXA_PLUGIN_NAME, LookupType.Taxon, Taxon.TaxaID.Value)); });
             builder.Separator();
-            builder.New("_Edit Name...").Handler(() => { Explorer.EditTaxonName(Taxon.TaxaID); });
+            builder.New("_Edit Name...").Handler(() => { Explorer.EditTaxonName(Taxon); });
             builder.New("_Edit Details...").Handler(() => { Explorer.ShowTaxonDetails(Taxon.TaxaID); }).End();
 
             return builder.ContextMenu;

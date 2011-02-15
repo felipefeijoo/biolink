@@ -45,11 +45,11 @@ namespace BioLink.Client.Extensibility {
 
     public class FavoriteViewModel<T> : GenericHierarchicalViewModelBase<T> where T : Favorite {
 
-        private BitmapSource _image;
+        private ImageSource _image;
 
         public FavoriteViewModel(T model) : base(model, ()=>model.FavoriteID) { }
 
-        public override BitmapSource Icon {
+        public override ImageSource Icon {
             get {
                 if (_image == null) {
                     if (IsGroup) {
