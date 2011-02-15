@@ -142,6 +142,7 @@
     <Compile Include="IChangeContainer.cs" />
     <Compile Include="IClosable.cs" />
     <Compile Include="IMapProvider.cs" />
+    <Compile Include="Import.cs" />
     <Compile Include="IRegionSelector.cs" />
     <Compile Include="ItemsGroupBox.cs" />
     <Compile Include="JobExecutor.cs" />

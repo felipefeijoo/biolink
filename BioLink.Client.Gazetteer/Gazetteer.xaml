@@ -24,15 +24,15 @@
         <my:DelayedTriggerTextbox Margin="34,41,245,0" Name="txtFind" VerticalAlignment="Top" TypingPaused="delayedTriggerTextbox1_TypingPaused" TextChanged="delayedTriggerTextbox1_TextChanged" KeyUp="delayedTriggerTextbox1_KeyUp" MinWidth="30" />
         <CheckBox Content="{StaticResource Gazetteer.chkLimit}" Height="18" HorizontalAlignment="Right" Margin="0,46,131,0" Name="chkLimit" VerticalAlignment="Top" Width="104" Checked="chkLimit_Checked" Unchecked="chkLimit_Unchecked" />
         <ComboBox Height="23" Margin="0,41,12,0" Name="cmbDivision" VerticalAlignment="Top" HorizontalAlignment="Right" Width="120" IsEnabled="False" SelectionChanged="cmbDivision_SelectionChanged" />
-
-        <ListBox Margin="12,76,12,195" Name="lstResults">
+        
+        <ListBox Margin="12,76,12,195" Name="lstResults">            
             <ListBox.Resources>
                 <DataTemplate DataType="{x:Type src:PlaceNameViewModel}">
-                    <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal">                        
                         <TextBlock Text="{Binding Path=DisplayLabel, Mode=OneWay}" VerticalAlignment="Center" />
                     </StackPanel>
                 </DataTemplate>
-            </ListBox.Resources>
+            </ListBox.Resources>            
         </ListBox>
         <Label Content="" Margin="12,0,12,169" Name="lblResults" Height="26" VerticalAlignment="Bottom" />
         <GroupBox Header="Calculation" Height="107" Margin="12,0,0,53" Name="groupBox1" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="132">

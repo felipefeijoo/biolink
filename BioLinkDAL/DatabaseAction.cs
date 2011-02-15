@@ -14,6 +14,10 @@ namespace BioLink.Data {
         }
 
         protected abstract void ProcessImpl(User user);
+
+        public virtual List<string> Validate() {
+            return null;
+        }
         
     }
 

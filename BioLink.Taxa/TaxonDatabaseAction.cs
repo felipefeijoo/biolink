@@ -5,6 +5,7 @@ using System.Text;
 using BioLink.Data;
 using BioLink.Data.Model;
 using BioLink.Client.Extensibility;
+using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Taxa {
 
@@ -38,6 +39,31 @@ namespace BioLink.Client.Taxa {
         }
 
         public Taxon Taxon { get; private set; }
+
+        public override List<string> Validate() {
+            var list = new List<string>();
+
+            if (string.IsNullOrEmpty(Taxon.Epithet)) {
+                list.Add("The name must not be blank");
+            } else {
+                if (Taxon.Epithet.Contains(" ") && !(Taxon.AvailableName.ValueOrFalse() || Taxon.LiteratureName.ValueOrFalse())) {
+                    list.Add("The name must be only one word.");
+                }
+            }
+
+            if (Taxon.Unverified.ValueOrFalse() || Taxon.LiteratureName.ValueOrFalse()) {
+                if (!string.IsNullOrEmpty(Taxon.YearOfPub)) {
+                    int year;
+                    if (Int32.TryParse(Taxon.YearOfPub, out year)) {
+                        if (year < 1700 || year > 4000) {
+                            list.Add("The year must be between the years 1700 and 4000");
+                        }
+                    }
+                }                
+            }
+
+            return list;
+        }
 
         protected override void ProcessImpl(User user) {
             var service = new TaxaService(user);

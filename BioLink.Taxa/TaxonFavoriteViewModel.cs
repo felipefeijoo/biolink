@@ -32,9 +32,9 @@ namespace BioLink.Client.Taxa {
             return "TaxonFavorite: " + DisplayLabel;
         }
 
-        private BitmapSource _image;
+        private ImageSource _image;
 
-        public override BitmapSource Icon {
+        public override ImageSource Icon {
             get {
                 if (_image == null) {
                     if (IsGroup) {                        

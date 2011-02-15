@@ -502,6 +502,10 @@ namespace BioLink.Client.Taxa {
             taxonFavoriteViewModel.IsRenaming = true;
         }
 
+        public ObservableCollection<HierarchicalViewModelBase> Model { 
+            get { return _model; } 
+        }
+
     }
 
 }

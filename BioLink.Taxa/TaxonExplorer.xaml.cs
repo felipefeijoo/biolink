@@ -167,17 +167,16 @@ namespace BioLink.Client.Taxa {
         }
 
         public void InitialiseTaxonExplorer() {
-            // Load the model on the background thread
-            ObservableCollection<HierarchicalViewModelBase> model = LoadTaxonViewModel();
-
-            // Now see if we can auto-expand from the last session...
-            if (model.Count > 0 && Config.GetGlobal<bool>("Taxa.RememberExpandedTaxa", true)) {
-                var expanded = Config.GetProfile<List<String>>(Owner.User, "Taxa.Explorer.ExpandedTaxa", null);
-                ExpandParentages(model[0], expanded);
-            }
-
-            // and set it on the the components own thread...
             this.InvokeIfRequired(() => {
+                // Load the model on the background thread
+                ObservableCollection<HierarchicalViewModelBase> model = LoadTaxonViewModel();
+
+                // Now see if we can auto-expand from the last session...
+                if (model.Count > 0 && Config.GetGlobal<bool>("Taxa.RememberExpandedTaxa", true)) {
+                    var expanded = Config.GetProfile<List<String>>(Owner.User, "Taxa.Explorer.ExpandedTaxa", null);
+                    ExpandParentages(model[0], expanded);
+                }
+                // and set it on the the components own thread...            
                 this.ExplorerModel = model;
             });
 
@@ -683,10 +682,46 @@ namespace BioLink.Client.Taxa {
             ShiftTaxon(taxon, (oldindex) => { return oldindex + 1; });
         }
 
+        private void RegenerateLabel(TaxonViewModel changedModel) {
+            FindInModels(vm => {
+                    if (vm is TaxonViewModel) {
+                        return (vm as TaxonViewModel).TaxaID.Value == changedModel.TaxaID.Value;
+                    } else if (vm is TaxonFavoriteViewModel) {
+                        return (vm as TaxonFavoriteViewModel).TaxaID == changedModel.TaxaID.Value;
+                    } else {
+                        return false;
+                    }                    
+                }, 
+                vm => {
+                    if (vm is TaxonViewModel) {
+                        var viewModel = vm as TaxonViewModel;
+                        viewModel.SuspendChangeMonitoring = true;
+                        viewModel.Unverified = changedModel.Unverified;
+                        viewModel.Epithet = changedModel.Epithet;
+                        viewModel.Author = changedModel.Author;
+                        viewModel.YearOfPub = changedModel.YearOfPub;
+                        viewModel.SuspendChangeMonitoring = false;
+                        viewModel.RegenerateLabel();
+                    } else if (vm is TaxonFavoriteViewModel) {
+                        var viewModel = vm as TaxonFavoriteViewModel;
+                        viewModel.SuspendChangeMonitoring = true;
+                        viewModel.Unverified = changedModel.Unverified.Value;
+                        viewModel.Epithet = changedModel.Epithet;                        
+                        viewModel.YearOfPub = changedModel.YearOfPub;
+                        viewModel.SuspendChangeMonitoring = false;
+                        viewModel.TaxaFullName = changedModel.TaxonLabel;
+                    }
+                }
+            );
+        }
+
         internal void ShowTaxonDetails(int? taxonId) {
             Taxon fullDetails = Service.GetTaxon(taxonId.Value);
             TaxonViewModel model = new TaxonViewModel(null, fullDetails, null);
-            TaxonDetails control = new TaxonDetails(model, User);
+            TaxonDetails control = new TaxonDetails(model, User, (changedModel) => {
+                RegenerateLabel(changedModel);
+            });
+
             TaxonRank taxonRank = Service.GetTaxonRank(model.ElemType);
 
             String title = String.Format("Taxon Detail: {0} ({1}) [{2}]", model.TaxaFullName, taxonRank.GetElementTypeLongName(model.Taxon), model.TaxaID);
@@ -1126,9 +1161,40 @@ namespace BioLink.Client.Taxa {
             PluginManager.Instance.AddDockableContent(this.Owner, results, report.Name);            
         }
 
-        internal void EditTaxonName(int? taxonId) {
-            TaxonNameDetails details = new TaxonNameDetails(taxonId, User);
+        internal void EditTaxonName(TaxonViewModel viewModel) {
+            TaxonNameDetails details = new TaxonNameDetails(viewModel.TaxaID, User, (nameDetails) => {
+                RegenerateLabel(nameDetails);
+
+            });
             PluginManager.Instance.AddNonDockableContent(this.Owner, details, "Taxon name details",SizeToContent.WidthAndHeight);
+        }
+
+        private List<HierarchicalViewModelBase> FindInModels(Predicate<HierarchicalViewModelBase> predicate, Action<HierarchicalViewModelBase> action = null) {
+
+            var candidates = new List<HierarchicalViewModelBase>();
+
+            var models = new System.Collections.IList[] { _explorerModel, _searchModel, favorites.Model };
+
+            foreach (System.Collections.IList model in models) {
+
+                if (model == null) {
+                    continue;
+                }
+
+                foreach (HierarchicalViewModelBase vm in model) {
+                    vm.Traverse((node) => {
+                        if (predicate(node)) {
+                            candidates.Add(node);
+                            if (action != null) {
+                                action(node);
+                            }
+                        }
+                    });
+                }
+
+            }
+
+            return candidates;
         }
 
         public void BringModelToView(TreeView tvw, HierarchicalViewModelBase item) {

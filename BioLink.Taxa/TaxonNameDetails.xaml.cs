@@ -5,6 +5,7 @@ using BioLink.Data.Model;
 using BioLink.Client.Extensibility;
 using BioLink.Client.Utilities;
 using System.Collections.Generic;
+using System;
 
 namespace BioLink.Client.Taxa {
     /// <summary>
@@ -15,6 +16,7 @@ namespace BioLink.Client.Taxa {
         private TaxonRank _rank;
         private TaxonNameViewModel _model;
         private List<Kingdom> _kingdomList;
+        private Action<TaxonNameViewModel> _successAction;
 
         #region DesignerConstructor
         public TaxonNameDetails() {
@@ -22,7 +24,8 @@ namespace BioLink.Client.Taxa {
         }
         #endregion
 
-        public TaxonNameDetails(int? taxonId, User user)  : base(user, "TaxonNameDetails::" + taxonId.Value) {
+        public TaxonNameDetails(int? taxonId, User user, Action<TaxonNameViewModel> successAction)  : base(user, "TaxonNameDetails::" + taxonId.Value) {
+            _successAction = successAction;
             var service = new TaxaService(user);
             Taxon taxon = service.GetTaxon(taxonId.Value);
             _rank = service.GetTaxonRank(taxon.ElemType);
@@ -61,6 +64,13 @@ namespace BioLink.Client.Taxa {
             }
 
             this.DataContext = _model;
+            this.ChangesCommitted += new PendingChangesCommittedHandler(TaxonNameDetails_ChangesCommitted);
+        }
+
+        void TaxonNameDetails_ChangesCommitted(object sender) {
+            if (_successAction != null) {
+                _successAction(_model);
+            }
         }
 
         void _model_DataChanged(ChangeableModelBase model) {
@@ -69,7 +79,7 @@ namespace BioLink.Client.Taxa {
 
     }
 
-    class TaxonNameViewModel : TaxonViewModel {
+    public class TaxonNameViewModel : TaxonViewModel {
 
         private Kingdom _kingdom;
         private TaxonRank _rank;

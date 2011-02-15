@@ -55,6 +55,12 @@ namespace BioLink.Client.Tools {
                 String.Format("{{'Name':'UserManager', 'Header':'{0}'}}", "Users and Groups...")
             ));
 
+            contrib.Add(new MenuWorkspaceContribution(this, "Import", (obj, e) => { ShowImport(); },
+                String.Format("{{'Name':'Tools', 'Header':'_Tools','InsertAfter':'UserManager'}}"),
+                String.Format("{{'Name':'Import', 'Header':'Import...'}}")
+            ));
+
+
             return contrib;
         }
 
@@ -136,11 +142,11 @@ namespace BioLink.Client.Tools {
 
             _userManager.Show();
             _userManager.Focus();
-
         }
 
-
-
+        private void ShowImport() {
+            MessageBox.Show("IMport");
+        }
 
         public override List<Command> GetCommandsForObject(ViewModelBase obj) {
             if (obj is ReferenceViewModel) {

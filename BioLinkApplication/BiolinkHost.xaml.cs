@@ -36,7 +36,7 @@ namespace BioLinkApplication {
                 progress.Hide();
                 String layout = Config.GetUser<string>(User, PREF_DOCK_LAYOUT, null);
                 if (!String.IsNullOrEmpty(layout)) {
-                    StringReader reader = new StringReader(layout);
+                    StringReader reader = new StringReader(layout);                    
                     dockManager.RestoreLayout(reader);
                 }
 

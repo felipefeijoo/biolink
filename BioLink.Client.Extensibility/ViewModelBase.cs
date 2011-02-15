@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.ComponentModel;
-using System.Windows.Media.Imaging;
+using System.Windows.Media;
 using System.Reflection;
 using BioLink.Client.Utilities;
 using BioLink.Data;
@@ -139,7 +139,7 @@ namespace BioLink.Client.Extensibility {
         private bool _selected;
         private bool _deleted;
         private bool _renaming;
-        private BitmapSource _icon;
+        private ImageSource _icon;
 
         public ViewModelBase() {            
             DataChanged += new DataChangedHandler(ViewModelBase_DataChanged);
@@ -165,7 +165,7 @@ namespace BioLink.Client.Extensibility {
             set { SetProperty("IsRenaming", ref _renaming, value); }
         }
 
-        public virtual BitmapSource Icon {
+        public virtual ImageSource Icon {
             get {                
                 if (_icon == null && RelativeImagePath != null) {
                     string assemblyName = this.GetType().Assembly.GetName().Name;
