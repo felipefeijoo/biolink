@@ -17,6 +17,7 @@ namespace BioLink.Client.Tools {
         private ControlHostWindow _journalManager;
         private ControlHostWindow _queryTool;
         private ControlHostWindow _userManager;
+        private ImportWizard _importWizard;
 
         public const string TOOLS_PLUGIN_NAME = "Tools";
 
@@ -74,6 +75,12 @@ namespace BioLink.Client.Tools {
                 _phraseManager.Close();
                 _phraseManager = null;
             }
+
+            if (_importWizard != null) {
+                _importWizard.Close();
+                _importWizard = null;
+            }
+
         }
 
         private void ShowPhraseManager() {
@@ -145,7 +152,18 @@ namespace BioLink.Client.Tools {
         }
 
         private void ShowImport() {
-            MessageBox.Show("IMport");
+            if (_importWizard == null) {
+                var context = new ImportWizardContext();
+
+                _importWizard = new ImportWizard(User, "Import Data", context, new ImportFilterSelection(), new ImportMappingPage(), new ImportPage());
+
+                _importWizard.Closed += new EventHandler((sender, e) => {
+                    _importWizard = null;
+                });
+            }
+
+            _importWizard.Show();
+            _importWizard.Focus();
         }
 
         public override List<Command> GetCommandsForObject(ViewModelBase obj) {
