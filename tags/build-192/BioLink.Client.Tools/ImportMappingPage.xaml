@@ -1,0 +1,51 @@
+﻿<src:WizardPage x:Class="BioLink.Client.Tools.ImportMappingPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:src="clr-namespace:BioLink.Client.Tools"
+             mc:Ignorable="d" 
+             d:DesignHeight="398" d:DesignWidth="740">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1.5*" />
+            <ColumnDefinition Width="50" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        
+        <ListView Margin="0,0,0,0">
+            <ListView.View>
+                <GridView>
+                    <GridView.Columns>
+                        <GridViewColumn Header="Source column (import)" Width="150"/>
+                        <GridViewColumn Header="Destination" Width="150" />
+                        <GridViewColumn Header="Default value" Width="100" />
+                    </GridView.Columns>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        
+        <Grid Grid.Column="1" Margin="0,0,6,0">
+            <Button Height="23" Margin="6,6,6,0" Name="btnMap" VerticalAlignment="Top">
+                <Button.Content>
+                    <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/RightArrowSmall.png" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
+                </Button.Content>
+            </Button>
+            <Button Height="23" Margin="6,35,6,0" Name="btnUnMap" VerticalAlignment="Top">
+                <Image SnapsToDevicePixels="True" Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/LeftArrowSmall.png" Stretch="None" UseLayoutRounding="True" />
+            </Button>
+            <Button Height="23" Margin="6,64,6,0" Name="button1" VerticalAlignment="Top">
+                <Image SnapsToDevicePixels="True" Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/DoubleRightArrowSmall.png" Stretch="None" UseLayoutRounding="True" />
+            </Button>
+            <Button Height="23" Margin="6,93,6,0" Name="button2" VerticalAlignment="Top" Content="Auto" />
+            
+        </Grid>
+
+        <GridSplitter Grid.Column="1" Width="6" ResizeBehavior="PreviousAndNext" />
+        
+        <Grid Grid.Column="2">
+            
+        </Grid>        
+
+    </Grid>
+</src:WizardPage>
