@@ -8,7 +8,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
-            <RowDefinition Height="38" />
+            <RowDefinition Height="36" />
         </Grid.RowDefinitions>
         
         <Grid Grid.Row="1" Background="{x:Static SystemColors.ControlBrush}">

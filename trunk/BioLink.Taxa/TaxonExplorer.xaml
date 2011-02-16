@@ -9,6 +9,7 @@
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"                
              mc:Ignorable="d" 
              d:DesignHeight="400" d:DesignWidth="442" SnapsToDevicePixels="True" UseLayoutRounding="True">
+    
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

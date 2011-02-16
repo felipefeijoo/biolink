@@ -51,9 +51,19 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ImportFilterSelection.xaml.cs">
+      <DependentUpon>ImportFilterSelection.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ImportMappingPage.xaml.cs">
+      <DependentUpon>ImportMappingPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ImportPage.xaml.cs">
+      <DependentUpon>ImportPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ImportWizard.xaml.cs">
       <DependentUpon>ImportWizard.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ImportWizardContext.cs" />
     <Compile Include="journals\JournalBrowsePage.xaml.cs">
       <DependentUpon>JournalBrowsePage.xaml</DependentUpon>
     </Compile>
@@ -144,6 +154,18 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="ImportFilterSelection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ImportMappingPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ImportPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ImportWizard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

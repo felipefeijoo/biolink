@@ -9,13 +9,14 @@ using BioLink.Client.Extensibility;
 using System.Linq.Expressions;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows;
 
 namespace BioLink.Client.Taxa {
 
     public class TaxonFavoriteViewModel : FavoriteViewModel<TaxonFavorite> {
 
-        public TaxonFavoriteViewModel(TaxonFavorite model)
-            : base(model) {
+        public TaxonFavoriteViewModel(TaxonFavorite model) : base(model) {
+            this.TaxonLabel = DisplayLabel;
         }
 
         public override string DisplayLabel {
@@ -117,6 +118,17 @@ namespace BioLink.Client.Taxa {
             get { return Model.NameStatus; }
             set { SetProperty(() => Model.NameStatus, value); }
         }
+
+        public string TaxonLabel {
+            get { return (string)GetValue(TaxonLabelProperty); }
+            set { SetValue(TaxonLabelProperty, value); }
+        }
+
+        public static readonly DependencyProperty TaxonLabelProperty = DependencyProperty.Register("TaxonLabel", typeof(string), typeof(TaxonFavoriteViewModel), new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.Journal | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnTaxonLabelChanged)));
+
+        private static void OnTaxonLabelChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+        }
+
 
     }
 

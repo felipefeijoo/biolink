@@ -8,11 +8,9 @@ using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Extensibility {
 
-    public abstract class TabularDataImporter<T> where T : ImportOptions {
+    public abstract class TabularDataImporter : IBioLinkExtension {
 
-        public abstract string Name { get; }
-
-        public abstract T GetOptions(Window parentWindow);
+        public abstract Object GetOptions(Window parentWindow);
 
         protected void ProgressStart(string message, bool indeterminate = false) {
             if (ProgressObserver != null) {
@@ -46,7 +44,7 @@ namespace BioLink.Client.Extensibility {
             return null;
         }
 
-        public void Import(T options) {
+        public void Import(Object options) {
 
             var rs = CreateRowSource(options);
             while (rs.MoveNext()) {
@@ -58,9 +56,20 @@ namespace BioLink.Client.Extensibility {
 
         }
 
-        protected abstract ImportRowSource CreateRowSource(T options);
+        protected abstract ImportRowSource CreateRowSource(Object options);
+
+        #region Properties
 
         public IProgressObserver ProgressObserver { get; set; }
+        public abstract string Name { get; }
+        public abstract string Description { get; }
+        public abstract BitmapSource Icon { get; }
+
+        #endregion
+
+
+        public void Dispose() {            
+        }
     }
 
     public interface ImportRowSource {
@@ -74,9 +83,6 @@ namespace BioLink.Client.Extensibility {
 
     public interface ImportRow {
         Object this[int index] { get; }
-    }
-
-    public abstract class ImportOptions {
     }
 
 }

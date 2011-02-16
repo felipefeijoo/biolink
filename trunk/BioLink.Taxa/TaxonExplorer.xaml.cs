@@ -709,7 +709,7 @@ namespace BioLink.Client.Taxa {
                         viewModel.Epithet = changedModel.Epithet;                        
                         viewModel.YearOfPub = changedModel.YearOfPub;
                         viewModel.SuspendChangeMonitoring = false;
-                        viewModel.TaxaFullName = changedModel.TaxonLabel;
+                        viewModel.TaxonLabel = changedModel.TaxonLabel;
                     }
                 }
             );
