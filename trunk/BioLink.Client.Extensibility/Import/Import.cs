@@ -48,15 +48,15 @@ namespace BioLink.Client.Extensibility {
 
             var rs = CreateRowSource(options);
             while (rs.MoveNext()) {
-                ImportRow(rs.CurrentRow);
+                ImportRow(rs);
             }
         }
 
-        private void ImportRow(ImportRow row) {
+        private void ImportRow(ImportRowSource row) {
 
         }
 
-        protected abstract ImportRowSource CreateRowSource(Object options);
+        public abstract ImportRowSource CreateRowSource(Object options);
 
         #region Properties
 
@@ -72,17 +72,18 @@ namespace BioLink.Client.Extensibility {
         }
     }
 
-    public interface ImportRowSource {
-        
-        bool MoveNext();
-        ImportRow CurrentRow { get; }
-        string this[int index] { get; }
-        int this[string columnname] { get; }
+    public interface ImportRowSource {        
+        bool MoveNext();        
+        string ColumnName(int index);
+        object this[int index] { get; }
+        int? ColumnCount { get; }
         int? RowCount { get; }
     }
 
-    public interface ImportRow {
-        Object this[int index] { get; }
+    public class ImportFieldMapping {
+        public String SourceColumn { get; set; }
+        public String TargetColumn { get; set; }
+        public object DefaultValue { get; set; }
     }
 
 }

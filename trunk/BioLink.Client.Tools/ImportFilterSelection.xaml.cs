@@ -29,9 +29,8 @@ namespace BioLink.Client.Tools {
             InitializeComponent();
 
             _model = PluginManager.Instance.GetExtensionsOfType<TabularDataImporter>();
-
             listBox.ItemsSource = _model;
-
+            listBox.SelectedIndex = 0;
         }
 
         public override string PageTitle {
@@ -41,7 +40,7 @@ namespace BioLink.Client.Tools {
         public override bool CanMoveNext() {
             return listBox.SelectedItem != null;
         }
-
+        
         public override bool OnPageExit(WizardDirection todirection) {
             var selected = listBox.SelectedItem as TabularDataImporter;
             if (selected != null) {
