@@ -27,18 +27,18 @@
         </ListView>
         
         <Grid Grid.Column="1" Margin="0,0,6,0">
-            <Button Height="23" Margin="6,6,6,0" Name="btnMap" VerticalAlignment="Top">
+            <Button Height="23" Margin="6,6,6,0" Name="btnMap" VerticalAlignment="Top" Command="{x:Static src:ImportMappingPage.MapField}">
                 <Button.Content>
-                    <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/RightArrowSmall.png" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
+                    <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/LeftArrowSmall.png" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
                 </Button.Content>
             </Button>
-            <Button Height="23" Margin="6,35,6,0" Name="btnUnMap" VerticalAlignment="Top">
-                <Image SnapsToDevicePixels="True" Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/LeftArrowSmall.png" Stretch="None" UseLayoutRounding="True" />
+            <Button Height="23" Margin="6,35,6,0" Name="btnUnMap" VerticalAlignment="Top" Command="{x:Static src:ImportMappingPage.UnmapField}">
+                <Image SnapsToDevicePixels="True" Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/RightArrowSmall.png" Stretch="None" UseLayoutRounding="True" />
             </Button>
-            <Button Height="23" Margin="6,64,6,0" Name="button1" VerticalAlignment="Top">
+            <Button Height="23" Margin="6,64,6,0" Name="btnUnmapAll" VerticalAlignment="Top" Command="{x:Static src:ImportMappingPage.UnmapAll}">
                 <Image SnapsToDevicePixels="True" Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/DoubleRightArrowSmall.png" Stretch="None" UseLayoutRounding="True" />
             </Button>
-            <Button Height="23" Margin="6,93,6,0" Name="button2" VerticalAlignment="Top" Content="Auto" />
+            <Button Height="23" Margin="6,93,6,0" Name="btnAuto" VerticalAlignment="Top" Content="Auto" Command="{x:Static src:ImportMappingPage.AutoMap}"/>
             
         </Grid>
 

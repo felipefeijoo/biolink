@@ -16,12 +16,12 @@ namespace BioLink.Client.Extensibility.Import {
 
         private CSVImporterOptions _options;
 
-        public override Object GetOptions(System.Windows.Window parentWindow) {
+        public override ImporterOptions GetOptions(System.Windows.Window parentWindow) {
            
             var frm = new CSVImportOptionsWindow(_options);
             frm.Owner = parentWindow;
             if (frm.ShowDialog().GetValueOrDefault(false)) {
-                _options = new CSVImporterOptions { Filename = frm.Filename, Delimiter = frm.Delimiter, FirstRowContainsNames = frm.IsFirstRowContainNames };
+                _options = new CSVImporterOptions { Filename = frm.Filename, Delimiter = frm.Delimiter, FirstRowContainsNames = frm.IsFirstRowContainNames, ColumnNames = frm.ColumnNames };
                 return _options;
             }
 
@@ -102,10 +102,13 @@ namespace BioLink.Client.Extensibility.Import {
 
     }
 
-    public class CSVImporterOptions {
+    public class CSVImporterOptions : ImporterOptions {
+
         public string Filename { get; set; }
         public string Delimiter { get; set; }
         public bool FirstRowContainsNames { get; set; }
+        public override List<string> ColumnNames { get; set; }
+
     }
 
     public class SQLiteReaderRowSource : ImportRowSource {
