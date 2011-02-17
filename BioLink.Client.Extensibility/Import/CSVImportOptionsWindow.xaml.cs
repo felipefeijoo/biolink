@@ -27,6 +27,8 @@ namespace BioLink.Client.Extensibility.Import {
 
         private String[] _delimiterOptions = new String[] { ",", ";", "|", "&#9;" };
 
+        private char _textQualifier = '\"';
+
         public CSVImportOptionsWindow(CSVImporterOptions options) {
             InitializeComponent();
 
@@ -36,6 +38,9 @@ namespace BioLink.Client.Extensibility.Import {
                 txtFilename.Text = options.Filename;
                 cmbDelimiter.Text = options.Delimiter;
                 chkFirstRowNames.IsChecked = options.FirstRowContainsNames;
+            } else {
+                cmbDelimiter.Text = ",";
+                chkFirstRowNames.IsChecked = true;
             }
         }
 
@@ -50,6 +55,8 @@ namespace BioLink.Client.Extensibility.Import {
             get { return HttpUtility.HtmlDecode(cmbDelimiter.Text as string); }
         }
 
+        public List<string> ColumnNames { get; private set; }
+
         public bool IsFirstRowContainNames {
             get { return chkFirstRowNames.IsChecked.GetValueOrDefault(false);  }
         }
@@ -62,9 +69,38 @@ namespace BioLink.Client.Extensibility.Import {
         }
 
         private bool Validate() {
+
+            if (string.IsNullOrWhiteSpace(txtFilename.Text)) {
+                ErrorMessage.Show("You must specify an input file!");
+                return false;
+            }
+
             if (!File.Exists(txtFilename.Text)) {
                 ErrorMessage.Show("File does not exist!");
                 return false;
+            }
+
+            // Extract Column Headers...
+            ColumnNames = new List<String>();
+
+            using (var parser = new GenericParserAdapter(Filename)) {
+                parser.ColumnDelimiter = Delimiter.ToCharArray()[0];
+                parser.FirstRowHasHeader = IsFirstRowContainNames;
+                parser.MaxRows = 2;
+                parser.TextQualifier = _textQualifier;
+
+                if (parser.Read()) {
+                    for (int i = 0; i < parser.ColumnCount; ++i) {
+                        if (IsFirstRowContainNames) {
+                            ColumnNames.Add(parser.GetColumnName(i));
+                        } else {
+                            ColumnNames.Add("Column" + i);
+                        }
+                    }
+                } else {
+                    ErrorMessage.Show("Failed to extract column names from data source!");
+                    return false;
+                }
             }
 
             return true;

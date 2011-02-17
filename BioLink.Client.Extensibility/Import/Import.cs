@@ -10,7 +10,7 @@ namespace BioLink.Client.Extensibility {
 
     public abstract class TabularDataImporter : IBioLinkExtension {
 
-        public abstract Object GetOptions(Window parentWindow);
+        public abstract ImporterOptions GetOptions(Window parentWindow);
 
         protected void ProgressStart(string message, bool indeterminate = false) {
             if (ProgressObserver != null) {
@@ -72,6 +72,13 @@ namespace BioLink.Client.Extensibility {
         }
     }
 
+    public abstract class ImporterOptions {
+
+        public abstract List<String> ColumnNames { get; set; }
+
+    }
+
+
     public interface ImportRowSource {        
         bool MoveNext();        
         string ColumnName(int index);
@@ -81,9 +88,32 @@ namespace BioLink.Client.Extensibility {
     }
 
     public class ImportFieldMapping {
+
         public String SourceColumn { get; set; }
         public String TargetColumn { get; set; }
         public object DefaultValue { get; set; }
+
+    }
+
+    public class ImportFieldMappingViewModel : GenericViewModelBase<ImportFieldMapping> {
+
+        public ImportFieldMappingViewModel(ImportFieldMapping model) : base(model, ()=>0) { }
+
+        public String SourceColumn {
+            get { return Model.SourceColumn; }
+            set { SetProperty(() => Model.SourceColumn, value); }
+        }
+
+        public String TargetColumn {
+            get { return Model.TargetColumn; }
+            set { SetProperty(() => Model.TargetColumn, value); }
+        }
+
+        public object DefaultValue {
+            get { return Model.DefaultValue; }
+            set { SetProperty(() => Model.DefaultValue, value); }
+        }
+
     }
 
 }

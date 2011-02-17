@@ -11,7 +11,9 @@ namespace BioLink.Client.Tools {
 
         public TabularDataImporter Importer { get; set; }
 
-        public Object ImporterOptions { get; set; }
+        public ImporterOptions ImporterOptions { get; set; }
+
+        public List<ImportFieldMapping> FieldMappings { get; set; }
 
     }
 }
