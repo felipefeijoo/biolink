@@ -12,13 +12,11 @@ namespace BioLink.Data {
 
         public String FileName { get; set; }
 
-        private SQLiteConnection _connection;
-        private bool _persistConnection;
+        private SQLiteConnection _connection;        
         private SQLiteTransaction _transaction;
 
         public SQLiteServiceBase(string filename, bool persistConnection = false) {
             this.FileName = filename;
-            this._persistConnection = persistConnection;
 
             if (!File.Exists(filename)) {
                 SQLiteConnection.CreateFile(filename);
@@ -37,7 +35,7 @@ namespace BioLink.Data {
         /// </summary>
         /// <returns></returns>
         protected SQLiteConnection getConnection() {
-            if (_persistConnection && _connection != null) {
+            if (_connection != null) {
                 return _connection;                
             }            
             return new SQLiteConnection(String.Format("Data Source={0}", FileName));            
@@ -65,7 +63,7 @@ namespace BioLink.Data {
         }
 
         public void BeginTransaction() {
-            if (!_persistConnection) {
+            if (_connection == null) {
                 throw new Exception("Cannot begin a transaction unless the connection is persistent!");
             }
 
@@ -77,12 +75,12 @@ namespace BioLink.Data {
         }
 
         public void RollbackTransaction() {
-            if (!_persistConnection) {
+            if (_connection == null) {
                 throw new Exception("Cannot rollback a transaction unless the connection is persistent!");
             }
 
             if (_transaction == null) {
-                throw new Exception("Cannot rollback because there is already no transaction outstanding!");
+                throw new Exception("Cannot rollback because there is no transaction outstanding!");
             }
 
             _transaction.Rollback();
@@ -91,12 +89,12 @@ namespace BioLink.Data {
         }
 
         public void CommitTransaction() {
-            if (!_persistConnection) {
+            if (_connection == null) {
                 throw new Exception("Cannot commit a transaction unless the connection is persistent!");
             }
 
             if (_transaction == null) {
-                throw new Exception("Cannot commit because there is already no transaction outstanding!");
+                throw new Exception("Cannot commit because there is no transaction outstanding!");
             }
 
             _transaction.Commit();
@@ -119,7 +117,7 @@ namespace BioLink.Data {
                 }
 
             } finally {
-                if (!_persistConnection && conn != null) {
+                if (_connection == null) {
                     conn.Dispose();
                 }
             }
@@ -128,7 +126,7 @@ namespace BioLink.Data {
         public bool IsNew { get; private set; }
 
         public void Dispose() {
-            if (_persistConnection && _connection != null) {
+            if (_connection != null) {
                 if (_transaction != null) {
                     _transaction.Rollback();
                     _transaction.Dispose();
