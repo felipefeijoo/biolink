@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:src="clr-namespace:BioLink.Client.Extensibility"
              mc:Ignorable="d" 
-             d:DesignHeight="70" d:DesignWidth="620">
+             d:DesignHeight="70" d:DesignWidth="620" Focusable="True">
     <UserControl.Resources>
         <src:PlainTextCommentConverter x:Key="commentConverter" />
     </UserControl.Resources>
@@ -24,7 +24,7 @@
                 <TextBlock Text="{Binding Name}" />
             </Label.Content>                
         </Label>
-        <src:PickListControl x:Name="txtValue" Grid.Column="1" Text="{Binding Value}" Height="23" Margin="0,13,0,0" VerticalAlignment="Top" />
+        <src:PickListControl x:Name="txtValue" Grid.Column="1" Text="{Binding Value}" Height="23" Margin="0,13,0,0" VerticalAlignment="Top" Focusable="True" />
         <Button x:Name="btnDelete" Grid.Column="2" Content="Delete" Height="23" Focusable="False" Margin="0,12,12,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="71" Click="btnDelete_Click" />
         
         <TextBlock x:Name="txtComments" Grid.Column="1" Height="30" Margin="0,40,0,0" VerticalAlignment="Top" FontStyle="Italic" Text="{Binding Comment, Converter={StaticResource commentConverter}}" TextTrimming="CharacterEllipsis" />

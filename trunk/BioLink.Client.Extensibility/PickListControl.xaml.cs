@@ -21,11 +21,11 @@ namespace BioLink.Client.Extensibility {
     /// </summary>
     public partial class PickListControl : UserControl {
 
-        #region DesignerConstructor
+        
         public PickListControl() {
             InitializeComponent();
+            GotFocus += new RoutedEventHandler(PickListControl_GotFocus);
         }
-        #endregion
 
         public PickListControl(User user, PickListType type, string phraseCategory, TraitCategoryType traitCategory) {
             InitializeComponent();
@@ -40,8 +40,9 @@ namespace BioLink.Client.Extensibility {
             GotFocus += new RoutedEventHandler(PickListControl_GotFocus);
         }
 
-        void PickListControl_GotFocus(object sender, RoutedEventArgs e) {
+        void PickListControl_GotFocus(object sender, RoutedEventArgs e) {            
             txt.Focus();
+            e.Handled = true;
         }
 
         public void BindUser(User user, PickListType pickListType, String categoryName, TraitCategoryType traitCategory) {
@@ -53,10 +54,6 @@ namespace BioLink.Client.Extensibility {
             if (pickListType == Extensibility.PickListType.MultimediaType) {
                 txt.IsReadOnly = true;
             }
-
-            txt.GotFocus += new RoutedEventHandler((source, e) => {
-                txt.SelectAll();
-            });
 
             this.Service = new SupportService(user);
         }
