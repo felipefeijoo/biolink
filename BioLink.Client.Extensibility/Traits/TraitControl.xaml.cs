@@ -93,6 +93,7 @@ namespace BioLink.Client.Extensibility {
 
         private void btnAddTrait_Click(object sender, RoutedEventArgs e) {
             AddNewTrait();
+            e.Handled = true;
         }
 
         private void AddNewTrait() {
@@ -121,8 +122,20 @@ namespace BioLink.Client.Extensibility {
                 _model.Add(viewModel);
                 RegisterUniquePendingChange(new UpdateTraitDatabaseAction(t, Owner));
                 ReloadTraitPanel();
-            }
 
+                SelectTrait(viewModel);
+            }
+            
+        }
+
+        private void SelectTrait(TraitViewModel vm) {
+            // find the trait editor for the selected trait...
+            foreach (TraitElementControl ctl in traitsPanel.Children) {
+                if (ctl.Model == vm) {
+                    ctl.txtValue.txt.Focus();
+                    break;
+                }
+            }
         }
 
         public void Populate() {

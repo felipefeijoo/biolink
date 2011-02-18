@@ -40,6 +40,10 @@ namespace BioLink.Client.Extensibility {
             Model.DataChanged += new DataChangedHandler((vm) => {
                 FireTraitChanged();
             });
+
+            this.GotKeyboardFocus += new KeyboardFocusChangedEventHandler((source, e) => {
+                // txtValue.Focus();
+            });
             
         }
 
