@@ -46,6 +46,9 @@ namespace BioLink.Data {
         }
 
         public List<SiteExplorerNode> FindNodesByName(string searchTerm, string limitations) {
+
+            searchTerm = searchTerm.Replace('*', '%');
+
             var mapper = new GenericMapperBuilder<SiteExplorerNode>().build();
             return StoredProcToList<SiteExplorerNode>("spSiteFindByName",
                 mapper,
