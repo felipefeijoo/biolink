@@ -42,7 +42,8 @@ namespace BioLink.Client.Extensibility {
             });
 
             this.GotKeyboardFocus += new KeyboardFocusChangedEventHandler((source, e) => {
-                // txtValue.Focus();
+                //txtValue.Focus();
+                //e.Handled = true;
             });
             
         }
