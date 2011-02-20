@@ -41,8 +41,8 @@ namespace BioLink.Client.Extensibility {
         }
 
         void PickListControl_GotFocus(object sender, RoutedEventArgs e) {            
-            //txt.Focus();
-            //e.Handled = true;
+            txt.Focus();
+            e.Handled = true;
         }
 
         public void BindUser(User user, PickListType pickListType, String categoryName, TraitCategoryType traitCategory) {
