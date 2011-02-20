@@ -353,6 +353,7 @@ namespace BioLink.Data {
                 } else {
                     strWorkingClause += "\r\n\t" + " " + trait + ")";
                 }
+                lngLevels++;
             }
 
 
