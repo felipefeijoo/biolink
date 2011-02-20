@@ -132,8 +132,14 @@ namespace BioLink.Client.Extensibility {
             // find the trait editor for the selected trait...
             foreach (TraitElementControl ctl in traitsPanel.Children) {
                 if (ctl.Model == vm) {
-                    ctl.txtValue.txt.Focus();
-                    break;
+                    if (!ctl.txtValue.IsLoaded) {
+                        ctl.txtValue.txt.Loaded += new RoutedEventHandler((source, e) => {
+                            Keyboard.Focus(ctl.txtValue.txt);
+                        });
+                    } else {
+                        Keyboard.Focus(ctl.txtValue.txt);
+                    }
+                    return;
                 }
             }
         }
