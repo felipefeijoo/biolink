@@ -89,6 +89,7 @@
     <Compile Include="Model\Group.cs" />
     <Compile Include="Model\Journal.cs" />
     <Compile Include="Model\Kingdom.cs" />
+    <Compile Include="Model\LookupResult.cs" />
     <Compile Include="Model\Material.cs" />
     <Compile Include="Model\MaterialIdentification.cs" />
     <Compile Include="Model\MaterialPart.cs" />

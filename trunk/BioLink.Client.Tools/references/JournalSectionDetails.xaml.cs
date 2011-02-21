@@ -25,10 +25,8 @@ namespace BioLink.Client.Tools {
 
         public JournalSectionDetails(User user) {
             InitializeComponent();
-            txtJournal.BindUser(user, Extensibility.LookupType.Journal);
+            txtJournal.BindUser(user, LookupType.Journal);
         }
-
-
 
     }
 }

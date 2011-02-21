@@ -20,6 +20,7 @@ namespace BioLink.Client.Extensibility {
     public partial class DateControl : UserControl {
 
         private bool _selfSet = false;
+        private KeyEventHandler _keyHandler;
 
         public DateControl() {
             InitializeComponent();
@@ -174,8 +175,6 @@ namespace BioLink.Client.Extensibility {
                 control.btnChooseDate.IsEnabled = !(bool)args.NewValue;
             }
         }
-
-        private KeyEventHandler _keyHandler;
 
         private void ToggleCalendar() {
             popup.IsOpen = !popup.IsOpen;

@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using BioLink.Client.Extensibility;
 using BioLink.Client.Utilities;
 using BioLink.Data.Model;
+using BioLink.Data;
 
 namespace BioLink.Client.Gazetteer {
     /// <summary>

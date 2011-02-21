@@ -286,9 +286,7 @@ namespace BioLink.Data {
 
         #endregion
 
-        public SupportService(User user)
-            : base(user) {
-        }
+        public SupportService(User user)  : base(user) { }
 
         #region Traits
 
@@ -1344,6 +1342,59 @@ namespace BioLink.Data {
 
 
         #endregion
+
+        #region LookUp
+
+        public List<LookupResult> LookupSearch(string filter, LookupType lookupType) {
+
+            filter = filter.Replace('*', '%');
+
+            string storedProc = null;
+            string paramName = "vchrFilter";
+            switch (lookupType) {
+                case LookupType.Taxon:
+                    storedProc = "spBiotaLookup";
+                    break;
+                case LookupType.Journal:
+                    storedProc = "spJournalLookup";
+                    break;
+                case LookupType.Material:
+                    storedProc = "spMaterialLookup";
+                    break;
+                case LookupType.Reference:
+                    storedProc = "spReferenceLookup";
+                    break;
+                case LookupType.Region:
+                    storedProc = "spRegionLookup";
+                    break;
+                case LookupType.Site:
+                    storedProc = "spSiteLookup";
+                    break;
+                case LookupType.SiteVisit:
+                    storedProc = "spSiteVisitLookup";
+                    break;
+                case LookupType.Unknown:
+                case LookupType.Trap:
+                case LookupType.PlaceName:
+                    break;
+            }
+
+            if (storedProc != null) {
+                var results = new List<LookupResult>();
+                StoredProcReaderForEach(storedProc, (reader) => {
+                    var model = new LookupResult();
+                    model.LookupType = lookupType;
+                    model.LookupObjectID = (int) reader[0];
+                    model.Label = (string) reader[1];
+                    results.Add(model);
+                }, _P(paramName, filter));
+                return results;
+
+            }
+            return null;
+        }
+
+        #endregion
     }
 
     public class RefTypeMapping {
@@ -1356,5 +1407,19 @@ namespace BioLink.Data {
         public string RefTypeCode { get; set; }
         public string RefTypeName { get; set; }
     }
+
+    public enum LookupType {
+        Unknown,
+        Taxon,
+        Region,
+        Material,
+        Site,
+        SiteVisit,
+        Trap,
+        Reference,
+        Journal,
+        PlaceName
+    }
+
 
 }

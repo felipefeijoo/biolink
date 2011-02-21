@@ -8,6 +8,7 @@ using BioLink.Client.Extensibility;
 using BioLink.Client.Utilities;
 using System.Windows.Input;
 using BioLink.Data.Model;
+using BioLink.Data;
 
 namespace BioLink.Client.Taxa {
 
