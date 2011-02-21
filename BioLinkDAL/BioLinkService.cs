@@ -305,6 +305,12 @@ namespace BioLink.Data {
             }
             return @default;
         }
+
+        protected string EscapeSearchTerm(string searchTerm) {
+            var escaped = searchTerm.Replace('*', '%');
+            escaped = escaped.Replace("[", "[[]");
+            return escaped;
+        }
      
         /// <summary>
         /// Holds user credentials, and is the conduit to gaining a Connection object
