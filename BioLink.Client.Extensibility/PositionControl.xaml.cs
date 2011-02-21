@@ -13,6 +13,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using BioLink.Client.Utilities;
 using BioLink.Data.Model;
+using BioLink.Data;
 
 namespace BioLink.Client.Extensibility {
     /// <summary>

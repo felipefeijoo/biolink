@@ -45,7 +45,7 @@ namespace BioLink.Client.Taxa {
 
             if (model != null) {
                 var list = new List<HierarchicalViewModelBase>(model.ConvertAll((m) => {
-                    return new TaxonViewModel(parent, m, null);
+                    return new TaxonViewModel(parent, m, _explorer.GenerateTaxonDisplayLabel);
                 }));
                 return list;
             }
@@ -57,7 +57,7 @@ namespace BioLink.Client.Taxa {
             var service = new TaxaService(User);
             var list = service.FindTaxa(searchTerm);
             return new List<HierarchicalViewModelBase>(list.ConvertAll((m) => {
-                return new TaxonViewModel(null, m, null);
+                return new TaxonViewModel(null, m, _explorer.GenerateTaxonDisplayLabel);
             }));
         }
 

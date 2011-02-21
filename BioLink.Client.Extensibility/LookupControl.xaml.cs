@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using BioLink.Data;
 using BioLink.Data.Model;
 using BioLink.Client.Utilities;
+using System.Collections.ObjectModel;
 
 namespace BioLink.Client.Extensibility {
     /// <summary>
@@ -21,7 +22,7 @@ namespace BioLink.Client.Extensibility {
     /// </summary>
     public partial class LookupControl : UserControl {
 
-        private bool _manualSet = false;
+        private bool _manualSet = false;        
 
         public LookupControl() {
             InitializeComponent();
@@ -36,6 +37,90 @@ namespace BioLink.Client.Extensibility {
             txt.PreviewDragOver += new DragEventHandler(txt_PreviewDragEnter);
 
             txt.Drop += new DragEventHandler(txt_Drop);
+
+            txt.PreviewLostKeyboardFocus += new KeyboardFocusChangedEventHandler(txt_PreviewLostKeyboardFocus);
+
+            txt.TextChanged += new TextChangedEventHandler((source, e) => {
+                ObjectID = null;
+                this.Text = txt.Text;
+            });
+
+            txt.PreviewKeyDown += new KeyEventHandler(txt_PreviewKeyDown);
+        }
+
+        private bool _validate = true;
+
+        void txt_PreviewKeyDown(object sender, KeyEventArgs e) {
+
+            if (e.Key == Key.Return ) {
+                DoFind(txt.Text);
+                e.Handled = true;
+            }
+
+            if (e.Key == Key.Space && (Keyboard.Modifiers & ModifierKeys.Control) > 0) {
+                e.Handled = true;
+                DoFind(txt.Text + "%");
+            }
+
+        }
+
+        private void DoFind(string filter) {
+            _validate = false;
+            var service = new SupportService(User);
+            var lookupResults = service.LookupSearch(filter, LookupType);
+            if (lookupResults != null && lookupResults.Count >= 1) {
+
+                GeneralTransform transform = txt.TransformToAncestor(this);
+                var rootPoint = txt.PointToScreen(transform.Transform(new Point(0, 0)));
+
+                var frm = new LookupResults(lookupResults);
+                frm.Owner = this.FindParentWindow();
+
+                    
+                frm.Top =  rootPoint.Y + txt.ActualHeight;
+                frm.Left = rootPoint.X;
+                frm.Width = txt.ActualWidth;
+                frm.Height = 250;
+
+                if (frm.ShowDialog().GetValueOrDefault(false)) {
+                    _manualSet = true;
+                    Text = frm.SelectedItem.Label;
+                    ObjectID = frm.SelectedItem.ObjectID;
+                    _manualSet = false;
+                }
+
+            }
+            _validate = true;            
+        }
+
+        void txt_PreviewLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e) {
+            if (_validate) {
+                if (!txt.IsReadOnly) {
+                    if (!ValidateLookup()) {
+                        e.Handled = true;
+                    }
+                }
+            }
+        }
+
+        private bool ValidateLookup() {
+            
+            if (string.IsNullOrWhiteSpace(txt.Text)) {
+                ObjectID = 0;
+                return true;
+            }
+            
+            var service = new SupportService(User);
+            var lookupResults = service.LookupSearch(txt.Text, LookupType);
+            if (lookupResults != null && lookupResults.Count >= 1) {
+                if (lookupResults.Count == 1) {
+                    var result = lookupResults[0];
+                    this.ObjectID = result.ObjectID;
+                    return result.Label.Equals(txt.Text);
+                } 
+            }
+            
+            return false;            
         }
 
         void txt_Drop(object sender, DragEventArgs e) {
@@ -45,8 +130,8 @@ namespace BioLink.Client.Extensibility {
                 if (plugin != null) {                    
                     var viewModel = plugin.CreatePinnableViewModel(pinnable);
                     _manualSet = true;
-                    this.ObjectID = pinnable.ObjectID;
                     this.Text = viewModel.DisplayLabel;
+                    this.ObjectID = pinnable.ObjectID;                    
                     _manualSet = false;
                 }
             }
@@ -68,6 +153,11 @@ namespace BioLink.Client.Extensibility {
         public void BindUser(User user, LookupType lookupType) {
             User = user;
             LookupType = lookupType;
+
+            if (lookupType == LookupType.Taxon) {
+                txt.IsReadOnly = false;
+            }
+
         }
 
         private void btnLookup_Click(object sender, RoutedEventArgs e) {
@@ -108,8 +198,8 @@ namespace BioLink.Client.Extensibility {
             if (t != null) {
                 PluginManager.Instance.StartSelect(t, (result) => {
                     _manualSet = true;
-                    this.ObjectID = result.ObjectID;
                     this.Text = result.Description;                    
+                    this.ObjectID = result.ObjectID;                    
                     this.InvokeIfRequired(() => {
                         txt.Focus();
                     });
@@ -199,24 +289,19 @@ namespace BioLink.Client.Extensibility {
 
         #endregion
 
+        private void btnAccept_Click(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void btnCanel_Click(object sender, RoutedEventArgs e) {
+
+        }
+
 
     }
 
     public delegate void ObjectIDChangedHandler(object source, int? objectID);
 
     public delegate void ObjectSelectedHandler(object source, SelectionResult result);
-
-    public enum LookupType {
-        Unknown,
-        Taxon,
-        Region,
-        Material,
-        Site,
-        SiteVisit,
-        Trap,
-        Reference,
-        Journal,
-        PlaceName
-    }
 
 }

@@ -25,6 +25,5 @@
                 <Image Source="images/Find.png" Height="16" Width="16" Stretch="None" SnapsToDevicePixels="True" />
             </Button.Content>
         </Button>
-
     </Grid>
 </UserControl>
