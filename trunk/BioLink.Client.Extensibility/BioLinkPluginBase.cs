@@ -110,5 +110,14 @@ namespace BioLink.Client.Extensibility {
         public virtual void EditObject(LookupType type, int objectID) {
         }
 
+        protected String BuildVersionString() {
+            var version = this.GetType().Assembly.GetName().Version;
+            return String.Format("{0}.{1}.{2}.{3}", version.Major, version.Minor, version.Build, version.Revision);
+        }
+
+        public PluginVersionInfo Version {
+            get { return new PluginVersionInfo { Name = this.Name, Version = BuildVersionString() }; }
+        }
+
     }
 }
