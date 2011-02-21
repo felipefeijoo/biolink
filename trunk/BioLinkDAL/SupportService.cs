@@ -529,7 +529,7 @@ namespace BioLink.Data {
         }
 
         public List<Multimedia> FindMultimediaByName(string name) {
-            string searchTerm = name.Replace("*", "%") + "%";
+            string searchTerm = EscapeSearchTerm(name) + "%";
             var mapper = new GenericMapperBuilder<Multimedia>().Map("Extension", "FileExtension").build();
             List<Multimedia> results = StoredProcToList("spMultimediaFindByName", mapper, _P("txtSearchTerm", searchTerm));
             return results;
@@ -1347,7 +1347,7 @@ namespace BioLink.Data {
 
         public List<LookupResult> LookupSearch(string filter, LookupType lookupType) {
 
-            filter = filter.Replace('*', '%');
+            filter = EscapeSearchTerm(filter);
 
             string storedProc = null;
             string paramName = "vchrFilter";

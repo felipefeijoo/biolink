@@ -31,8 +31,6 @@ namespace BioLink.Client.Extensibility {
                 txt.Focus();
             });
 
-            txt.IsReadOnly = true;
-
             txt.PreviewDragEnter += new DragEventHandler(txt_PreviewDragEnter);
             txt.PreviewDragOver += new DragEventHandler(txt_PreviewDragEnter);
 
@@ -41,7 +39,6 @@ namespace BioLink.Client.Extensibility {
             txt.PreviewLostKeyboardFocus += new KeyboardFocusChangedEventHandler(txt_PreviewLostKeyboardFocus);
 
             txt.TextChanged += new TextChangedEventHandler((source, e) => {
-                ObjectID = null;
                 this.Text = txt.Text;
             });
 
@@ -153,11 +150,6 @@ namespace BioLink.Client.Extensibility {
         public void BindUser(User user, LookupType lookupType) {
             User = user;
             LookupType = lookupType;
-
-            if (lookupType == LookupType.Taxon) {
-                txt.IsReadOnly = false;
-            }
-
         }
 
         private void btnLookup_Click(object sender, RoutedEventArgs e) {
@@ -296,7 +288,6 @@ namespace BioLink.Client.Extensibility {
         private void btnCanel_Click(object sender, RoutedEventArgs e) {
 
         }
-
 
     }
 
