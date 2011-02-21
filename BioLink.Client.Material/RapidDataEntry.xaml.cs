@@ -60,6 +60,22 @@ namespace BioLink.Client.Material {
 
         void RapidDataEntry_Loaded(object sender, RoutedEventArgs evt) {
 
+            // Load templates, if any...
+            int siteTemplateId = Config.GetProfile(User, CONFIG_SITE_TEMPLATE_ID, -1);
+            if (siteTemplateId >= 0) {
+                LoadSiteTemplate(siteTemplateId);
+            }
+
+            int siteVisitTemplateId = Config.GetProfile(User, CONFIG_SITEVISIT_TEMPLATE_ID, -1);
+            if (siteVisitTemplateId >= 0) {
+                LoadSiteVisitTemplate(siteVisitTemplateId);
+            }
+
+            int materialTemplateId = Config.GetProfile(User, CONFIG_MATERIAL_TEMPLATE_ID, -1);
+            if (materialTemplateId >= 0) {
+                LoadMaterialTemplate(materialTemplateId);
+            }
+
             _startLockMode = Config.GetUser(User, CONFIG_LOCKING_MODE, true);
             SetStartingLockMode(_startLockMode);
 
@@ -107,22 +123,6 @@ namespace BioLink.Client.Material {
             this.FindParentWindow().CommandBindings.Add(new CommandBinding(MoveNextCmd, ExecutedMoveNext, CanExecuteMoveNext));
             this.FindParentWindow().CommandBindings.Add(new CommandBinding(MovePreviousCmd, ExecutedMovePrevious, CanExecuteMovePrevious));
             this.FindParentWindow().CommandBindings.Add(new CommandBinding(UnlockAllCmd, ExecutedUnlockAll, CanExecuteUnlockAll));
-
-            // Load templates, if any...
-            int siteTemplateId = Config.GetProfile(User, CONFIG_SITE_TEMPLATE_ID, -1);
-            if (siteTemplateId >= 0) {
-                LoadSiteTemplate(siteTemplateId);
-            }
-
-            int siteVisitTemplateId = Config.GetProfile(User, CONFIG_SITEVISIT_TEMPLATE_ID, -1);
-            if (siteVisitTemplateId >= 0) {
-                LoadSiteVisitTemplate(siteVisitTemplateId);
-            }
-
-            int materialTemplateId = Config.GetProfile(User, CONFIG_MATERIAL_TEMPLATE_ID, -1);
-            if (materialTemplateId >= 0) {
-                LoadMaterialTemplate(materialTemplateId);
-            }
 
         }
 
@@ -408,8 +408,10 @@ namespace BioLink.Client.Material {
                     break;
                 case AutoFillMode.TemplateData:
                     copyFrom = _MaterialTemplate;
-                    copyFromAssociates = _MaterialTemplate.Associates.Select(vm => (vm as AssociateViewModel).Model);
-                    copyFromSubparts = _MaterialTemplate.SubParts.Select( vm => (vm as MaterialPartViewModel).Model);
+                    if (_MaterialTemplate != null) {
+                        copyFromAssociates = _MaterialTemplate.Associates.Select(vm => (vm as AssociateViewModel).Model);
+                        copyFromSubparts = _MaterialTemplate.SubParts.Select(vm => (vm as MaterialPartViewModel).Model);
+                    }
                     break;
             }
 
