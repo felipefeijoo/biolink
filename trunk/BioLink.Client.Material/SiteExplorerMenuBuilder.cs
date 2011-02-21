@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using BioLink.Client.Extensibility;
 using BioLink.Data.Model;
+using System.Collections.Generic;
 
 namespace BioLink.Client.Material {
 
@@ -69,7 +70,12 @@ namespace BioLink.Client.Material {
                                 throw new Exception("[Details] Unhandled site explorer element type: " + node.ElemType);
                         }
                     }).End();
-                    builder.New("Open in Rapid Data Entry...").Handler(() => { explorer.EditRDE(node); }).End();
+                    var rdeNodeTypes = new List<SiteExplorerNodeType>(new SiteExplorerNodeType[] { SiteExplorerNodeType.Material, SiteExplorerNodeType.Site, SiteExplorerNodeType.SiteVisit });
+                    if (node != null && rdeNodeTypes.Contains(node.NodeType)) {
+                        builder.New("Open in Rapid Data Entry...").Handler(() => { explorer.EditRDE(node); }).End();
+                    } else {
+                        builder.New("Rapid Data Entry...").Handler(() => { explorer.EditRDE(node); }).End();
+                    }
                 }
             }
 
@@ -158,7 +164,13 @@ namespace BioLink.Client.Material {
                     }
                 }).End();
 
-                builder.New("Open in Rapid Data Entry...").Handler(() => { explorer.EditRDE(node); }).End();
+                var rdeNodeTypes = new List<SiteExplorerNodeType>(new SiteExplorerNodeType[] { SiteExplorerNodeType.Material, SiteExplorerNodeType.Site, SiteExplorerNodeType.SiteVisit });
+                if (node != null && rdeNodeTypes.Contains(node.NodeType)) {
+                    builder.New("Open in Rapid Data Entry...").Handler(() => { explorer.EditRDE(node); }).End();
+                } else {
+                    builder.New("Rapid Data Entry...").Handler(() => { explorer.EditRDE(node); }).End();
+                }
+                
             }
 
             return builder.ContextMenu;
