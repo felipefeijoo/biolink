@@ -267,6 +267,17 @@ namespace BioLinkApplication {
         private void LogOut_Click(object sender, RoutedEventArgs e) {
             MainWindow.Instance.LogOut();
         }
+
+        private void About_Click(object sender, RoutedEventArgs e) {
+            ShowAbout();
+        }
+
+        private void ShowAbout() {
+            var frm = new About();
+            frm.Owner = this.FindParentWindow();
+            frm.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            frm.ShowDialog();
+        }
        
     }
 

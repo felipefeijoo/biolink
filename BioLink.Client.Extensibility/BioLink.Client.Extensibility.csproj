@@ -209,6 +209,7 @@
     </Compile>
     <Compile Include="PluginManager.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="PluginVersionInfo.cs" />
     <Compile Include="PositionControl.xaml.cs">
       <DependentUpon>PositionControl.xaml</DependentUpon>
     </Compile>

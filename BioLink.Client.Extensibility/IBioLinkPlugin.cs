@@ -32,6 +32,9 @@ namespace BioLink.Client.Extensibility {
         User User { get; }
         PluginManager PluginManager { get; }
         Window ParentWindow { get; }
+
+        PluginVersionInfo Version { get; }
+
     }
 
     public class SelectionResult {
