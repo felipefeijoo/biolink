@@ -14,11 +14,11 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         
-        <ListView Margin="0,0,0,0" x:Name="lvwMappings">
+        <ListView Margin="0,0,0,0" x:Name="lvwMappings" MouseRightButtonUp="lvwMappings_MouseRightButtonUp">
             <ListView.View>
                 <GridView>
                     <GridView.Columns>
-                        <GridViewColumn Header="Source column (import)" Width="150" DisplayMemberBinding="{Binding SourceColumn}" />
+                        <GridViewColumn Header="Source column (import)" Width="150" DisplayMemberBinding="{Binding DisplayLabel}" />
                         <GridViewColumn Header="Destination" Width="150" DisplayMemberBinding="{Binding TargetColumn}" />
                         <GridViewColumn Header="Default value" Width="100" DisplayMemberBinding="{Binding DefaultValue}" />
                     </GridView.Columns>

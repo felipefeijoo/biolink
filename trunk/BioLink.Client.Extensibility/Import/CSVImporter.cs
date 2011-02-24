@@ -9,6 +9,7 @@ using System.Data.SQLite;
 using GenericParsing;
 using BioLink.Data;
 using System.IO;
+using System.Web;
 
 namespace BioLink.Client.Extensibility.Import {
 
@@ -16,31 +17,29 @@ namespace BioLink.Client.Extensibility.Import {
 
         private CSVImporterOptions _options;
 
-        public override ImporterOptions GetOptions(System.Windows.Window parentWindow) {
+        public override bool GetOptions(System.Windows.Window parentWindow) {
            
             var frm = new CSVImportOptionsWindow(_options);
             frm.Owner = parentWindow;
             if (frm.ShowDialog().GetValueOrDefault(false)) {
                 _options = new CSVImporterOptions { Filename = frm.Filename, Delimiter = frm.Delimiter, FirstRowContainsNames = frm.IsFirstRowContainNames, ColumnNames = frm.ColumnNames };
-                return _options;
+                return true;
             }
 
-            return null;
+            return false;
         }
 
-        public override ImportRowSource CreateRowSource(Object options) {
+        public override ImportRowSource CreateRowSource() {
 
-            var csvOptions = options as CSVImporterOptions;
-
-            if (csvOptions == null) {
+            if (_options == null) {
                 throw new Exception("Null or incorrect options type received!");
             }
 
             SQLiteReaderRowSource rowsource = null;
 
-            using (var parser = new GenericParserAdapter(csvOptions.Filename)) {
-                parser.ColumnDelimiter = csvOptions.Delimiter[0];
-                parser.FirstRowHasHeader = csvOptions.FirstRowContainsNames;
+            using (var parser = new GenericParserAdapter(_options.Filename)) {
+                parser.ColumnDelimiter = _options.Delimiter[0];
+                parser.FirstRowHasHeader = _options.FirstRowContainsNames;
                 parser.TextQualifier = '\"';
                 parser.FirstRowSetsExpectedColumnCount = true;
 
@@ -53,7 +52,7 @@ namespace BioLink.Client.Extensibility.Import {
                 while (parser.Read()) {
                     if (rowCount == 0) {                        
                         for (int i = 0; i < parser.ColumnCount; ++i) {
-                            if (csvOptions.FirstRowContainsNames) {
+                            if (_options.FirstRowContainsNames) {
                                 columnNames.Add(parser.GetColumnName(i));
                             } else {
                                 columnNames.Add("Column" + i);
@@ -100,14 +99,30 @@ namespace BioLink.Client.Extensibility.Import {
             }
         }
 
+        protected override void WriteEntryPoint(EntryPoint ep) {
+            ep.AddParameter("Filename", _options.Filename);
+            ep.AddParameter("FirstRowHeaders", _options.FirstRowContainsNames.ToString());
+            ep.AddParameter("Delimiter", HttpUtility.HtmlEncode(_options.Delimiter));
+        }
+
+        protected override void ReadEntryPoint(EntryPoint ep) {
+            _options = new CSVImporterOptions();
+            _options.Filename = ep["Filename"];
+            _options.FirstRowContainsNames = Boolean.Parse(ep["FirstRowHeaders", "true"]);
+            _options.Delimiter = HttpUtility.HtmlDecode(ep["Delimiter"]);
+        }
+
+        public override List<string> GetColumnNames() {
+            return _options.ColumnNames;
+        }
     }
 
-    public class CSVImporterOptions : ImporterOptions {
+    public class CSVImporterOptions {
 
         public string Filename { get; set; }
         public string Delimiter { get; set; }
         public bool FirstRowContainsNames { get; set; }
-        public override List<string> ColumnNames { get; set; }
+        public List<string> ColumnNames { get; set; }
 
     }
 

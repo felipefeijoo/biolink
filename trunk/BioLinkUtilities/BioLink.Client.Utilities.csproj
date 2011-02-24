@@ -83,6 +83,7 @@
     <Compile Include="Command.cs" />
     <Compile Include="DateUtils.cs" />
     <Compile Include="Debug.cs" />
+    <Compile Include="EntryPoint.cs" />
     <Compile Include="ErrorMessage.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="FileSystemScanner.cs" />
@@ -91,6 +92,7 @@
     <Compile Include="IChangeable.cs" />
     <Compile Include="ILazyPopulateControl.cs" />
     <Compile Include="ImageCache.cs" />
+    <Compile Include="IniFile.cs" />
     <Compile Include="InputBox.xaml.cs">
       <DependentUpon>InputBox.xaml</DependentUpon>
     </Compile>

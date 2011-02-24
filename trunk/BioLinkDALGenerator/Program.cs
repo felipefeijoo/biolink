@@ -4,8 +4,11 @@ using System.Diagnostics;
 using System.Text;
 using System.Xml;
 using System.IO;
+using BioLink.Client.Utilities;
+
 
 namespace BioLinkDALGenerator {
+
     class Program {
 
         private string server = "biolinkdev-w7\\sqlexpress";
@@ -25,7 +28,26 @@ namespace BioLinkDALGenerator {
         }
 
         static void Main(string[] args) {
-            new Program().DoIt();
+            try {
+                new Program().TestIt();
+            } catch (Exception ex) {
+                Console.WriteLine(ex);
+            }
+
+            Console.ReadKey();
+
+        }
+
+        private void TestIt() {
+            IniFile f = new IniFile();
+            f.Load("c:/zz/test.ini");
+
+            Console.WriteLine(f.GetValue("UNO - Dallwitz", "HOST"));
+
+            var writer = new StringWriter();
+            f.Write(writer);
+
+            Console.WriteLine(writer.ToString());
         }
 
         private void DoIt() {

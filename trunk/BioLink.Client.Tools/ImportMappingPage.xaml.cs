@@ -24,6 +24,7 @@ namespace BioLink.Client.Tools {
     public partial class ImportMappingPage : WizardPage {
 
         private List<FieldDescriptor> _fields;
+        private ObservableCollection<ImportFieldMappingViewModel> _model;
 
         static ImportMappingPage() {
             MapField = new RoutedCommand("MapFieldCommand", typeof(ImportMappingPage));
@@ -52,28 +53,25 @@ namespace BioLink.Client.Tools {
             PropertyGroupDescription groupDescription = new PropertyGroupDescription("Category");
             myView.GroupDescriptions.Add(groupDescription);
             var model = new List<ImportFieldMapping>();
-            var columns = ImportContext.ImporterOptions.ColumnNames;
+            var columns = ImportContext.Importer.GetColumnNames();
             var existingMappings = ImportContext.FieldMappings;
-            foreach (string columnName in columns) {            
-                var mapping = new ImportFieldMapping { SourceColumn = columnName };
-                if (existingMappings != null) {
-                    var existing = existingMappings.Find((m) => {
-                        return m.SourceColumn == columnName;
-                    });
-                    if (existing != null) {
-                        mapping.TargetColumn = existing.TargetColumn;
-                        mapping.DefaultValue = existing.TargetColumn;
-                    }
-                }
-                model.Add(mapping);
-            }
-            ImportContext.FieldMappings = model;
 
-            var mappingModel = new ObservableCollection<ImportFieldMappingViewModel>(model.Select((m) => {
+            if (existingMappings != null && existingMappings.Count() > 0) {
+                foreach (ImportFieldMapping mapping in existingMappings) {
+                    model.Add(mapping);
+                }
+            } else {
+                foreach (string columnName in columns) {
+                    var mapping = new ImportFieldMapping { SourceColumn = columnName };
+                    model.Add(mapping);
+                }
+            }
+
+            _model = new ObservableCollection<ImportFieldMappingViewModel>(model.Select((m) => {
                 return new ImportFieldMappingViewModel(m);
             }));
 
-            lvwMappings.ItemsSource = mappingModel;
+            lvwMappings.ItemsSource = _model;
 
         }
 
@@ -88,7 +86,14 @@ namespace BioLink.Client.Tools {
         }
 
         private void lvwFields_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
+            MapSelectedField();
+        }
 
+        public override bool OnPageExit(WizardDirection todirection) {
+            ImportContext.FieldMappings = _model.Select((vm) => {
+                return vm.Model;
+            });
+            return true;
         }
 
         private void delayedTriggerTextbox1_TypingPaused(string text) {
@@ -130,8 +135,20 @@ namespace BioLink.Client.Tools {
             var field = lvwFields.SelectedItem as FieldDescriptor;
 
             if (mapping != null && field != null) {
-                mapping.TargetColumn = field.DisplayName;
-                mapping.DefaultValue = null; // Should we clear any default values?
+
+                // First check to see if this field has been mapped already...
+                var targetName = string.Format("{0}.{1}", field.Category, field.DisplayName);
+
+                var existing = _model.FirstOrDefault((candidate) => {
+                    return candidate.TargetColumn.Equals(targetName);
+                });
+
+                if (existing != null) {
+                    ErrorMessage.Show("The target field {0} has already been mapped to {1}. Fields can only be mapped to one import column.", existing.TargetColumn, existing.SourceColumn);
+                    return;
+                }
+
+                mapping.TargetColumn = targetName;
             }
         }
 
@@ -139,7 +156,9 @@ namespace BioLink.Client.Tools {
             var mapping = lvwMappings.SelectedItem as ImportFieldMappingViewModel;
             if (mapping != null) {
                 mapping.TargetColumn = "";
-                mapping.DefaultValue = null; 
+                if (!mapping.IsFixed) {
+                    mapping.DefaultValue = null;
+                }
             }
         }
 
@@ -148,14 +167,26 @@ namespace BioLink.Client.Tools {
 
                 foreach (ImportFieldMappingViewModel vm in lvwMappings.ItemsSource) {
                     vm.TargetColumn = "";
-                    vm.DefaultValue = null;
+                    if (!vm.IsFixed) {
+                        vm.DefaultValue = null;
+                    }
                 }
 
             }
         }
 
         private void DoAutoMap() {
-            MessageBox.Show("Automap!");
+            foreach (ImportFieldMappingViewModel mapping in _model) {
+                if (string.IsNullOrEmpty(mapping.TargetColumn)) {
+                    var candidate = _fields.Find((field) => {
+                        return field.DisplayName.Equals(mapping.SourceColumn, StringComparison.CurrentCultureIgnoreCase);
+                    });
+                    if (candidate != null) {
+                        mapping.TargetColumn = string.Format("{0}.{1}", candidate.Category, candidate.DisplayName);
+                        mapping.DefaultValue = null;
+                    }
+                }
+            }
         }
 
         public static RoutedCommand MapField { get; private set; }
@@ -230,8 +261,70 @@ namespace BioLink.Client.Tools {
             }
         }
 
+        private void lvwMappings_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            ShowSourceMenu();
+        }
 
+        private void ShowSourceMenu() {
 
+            var selected = lvwMappings.SelectedItem as ImportFieldMappingViewModel;
+            if (selected != null) {
+                var builder = new ContextMenuBuilder(null);
+                bool isFixed = selected.Model.IsFixed;
+                builder.New("_Add new fixed field...").Handler(() => { AddFixedField(); }).End();
+                builder.New("_Edit fixed field...").Handler(() => { EditFixedField(); }).Enabled(isFixed).End();
+                builder.New("_Delete fixed field").Handler(() => { DeleteFixedField(); }).Enabled(isFixed).End();
+                builder.Separator();
+                builder.New("_Set default value").Handler(() => { SetDefaultValue(); }).Enabled(!isFixed).End();
+                builder.New("_Clear default value").Handler(() => { ClearDefaultValue(); }).Enabled(!isFixed).End();
+
+                lvwMappings.ContextMenu = builder.ContextMenu;
+            }
+        }
+
+        private void AddFixedField() {
+
+            InputBox.Show(this.FindParentWindow(), "New fixed column", "Enter the value you wish to fix:", (val) => {
+                var mapping = new ImportFieldMapping { IsFixed = true, DefaultValue = val };
+                var vm = new ImportFieldMappingViewModel(mapping);                
+                _model.Add(vm);
+                lvwMappings.SelectedItem = vm;
+            });
+            
+        }
+
+        private void EditFixedField() {
+            var selected = lvwMappings.SelectedItem as ImportFieldMappingViewModel;
+            if (selected != null && selected.IsFixed) {
+                InputBox.Show(this.FindParentWindow(), "Edit fixed column", "Enter the value you wish to fix:", (string) selected.DefaultValue, (val) => {
+                    selected.DefaultValue = val;
+                });
+            }
+        }
+
+        private void DeleteFixedField() {
+            var selected = lvwMappings.SelectedItem as ImportFieldMappingViewModel;
+            if (selected != null && selected.IsFixed) {
+                _model.Remove(selected);
+            }
+        }
+
+        private void SetDefaultValue() {
+            var selected = lvwMappings.SelectedItem as ImportFieldMappingViewModel;
+            if (selected != null) {
+                InputBox.Show(this.FindParentWindow(), "Default for '" + selected.SourceColumn + "'", "Enter the default value for '" + selected.SourceColumn + "':", (def) => {
+                    selected.DefaultValue = def;
+                });
+            }
+        }
+
+        private void ClearDefaultValue() {
+            var selected = lvwMappings.SelectedItem as ImportFieldMappingViewModel;
+            if (selected != null) {
+                selected.DefaultValue = null;
+            }
+        }
 
     }
+
 }

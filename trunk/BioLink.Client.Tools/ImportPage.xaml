@@ -8,5 +8,6 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <Label Content="Import page..." />
+        <Button Content="Save template" Height="23" HorizontalAlignment="Right" Margin="0,0,12,12" Name="btnSaveTemplate" VerticalAlignment="Bottom" Width="116" Click="btnSaveTemplate_Click" />
     </Grid>
 </src:WizardPage>

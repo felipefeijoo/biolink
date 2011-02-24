@@ -10,7 +10,7 @@ namespace BioLink.Client.Extensibility {
 
     public abstract class TabularDataImporter : IBioLinkExtension {
 
-        public abstract ImporterOptions GetOptions(Window parentWindow);
+        public abstract bool GetOptions(Window parentWindow);
 
         protected void ProgressStart(string message, bool indeterminate = false) {
             if (ProgressObserver != null) {
@@ -44,9 +44,9 @@ namespace BioLink.Client.Extensibility {
             return null;
         }
 
-        public void Import(Object options) {
+        public void Import() {
 
-            var rs = CreateRowSource(options);
+            var rs = CreateRowSource();
             while (rs.MoveNext()) {
                 ImportRow(rs);
             }
@@ -56,7 +56,7 @@ namespace BioLink.Client.Extensibility {
 
         }
 
-        public abstract ImportRowSource CreateRowSource(Object options);
+        public abstract ImportRowSource CreateRowSource();
 
         #region Properties
 
@@ -70,14 +70,25 @@ namespace BioLink.Client.Extensibility {
 
         public void Dispose() {            
         }
+
+        public string CreateProfileString() {
+            var ep = new EntryPoint("ImportProfile");
+            WriteEntryPoint(ep);
+            return ep.ToString();
+        }
+
+        public void InitFromProfileString(string profileString) {
+            var ep = EntryPoint.Parse(profileString);
+            ReadEntryPoint(ep);
+        }
+
+        public abstract List<string> GetColumnNames();
+
+        protected abstract void WriteEntryPoint(EntryPoint ep);
+
+        protected abstract void ReadEntryPoint(EntryPoint ep);
+
     }
-
-    public abstract class ImporterOptions {
-
-        public abstract List<String> ColumnNames { get; set; }
-
-    }
-
 
     public interface ImportRowSource {        
         bool MoveNext();        
@@ -89,15 +100,26 @@ namespace BioLink.Client.Extensibility {
 
     public class ImportFieldMapping {
 
-        public String SourceColumn { get; set; }
-        public String TargetColumn { get; set; }
-        public object DefaultValue { get; set; }
+        public string SourceColumn { get; set; }
+        public string TargetColumn { get; set; }
+        public string DefaultValue { get; set; }
+        public bool IsFixed { get; set; }
 
     }
 
     public class ImportFieldMappingViewModel : GenericViewModelBase<ImportFieldMapping> {
 
         public ImportFieldMappingViewModel(ImportFieldMapping model) : base(model, ()=>0) { }
+
+        public override string DisplayLabel {
+            get {
+                if (IsFixed) {
+                    return string.Format("\"{0}\"", DefaultValue);
+                } else {
+                    return SourceColumn;
+                }
+            }
+        }
 
         public String SourceColumn {
             get { return Model.SourceColumn; }
@@ -112,6 +134,11 @@ namespace BioLink.Client.Extensibility {
         public object DefaultValue {
             get { return Model.DefaultValue; }
             set { SetProperty(() => Model.DefaultValue, value); }
+        }
+
+        public bool IsFixed {
+            get { return Model.IsFixed; }
+            set { SetProperty(() => Model.IsFixed, value); }
         }
 
     }

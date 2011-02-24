@@ -42,6 +42,13 @@ namespace BioLink.Client.Extensibility.Import {
                 cmbDelimiter.Text = ",";
                 chkFirstRowNames.IsChecked = true;
             }
+
+            this.Closed += new EventHandler(CSVImportOptionsWindow_Closed);
+        }
+
+        void CSVImportOptionsWindow_Closed(object sender, EventArgs e) {
+            this.previewGrid.DataContext = null;
+            this.previewGrid.ItemsSource = null;            
         }
 
         private void txtFilename_Loaded(object sender, RoutedEventArgs e) {
@@ -64,7 +71,7 @@ namespace BioLink.Client.Extensibility.Import {
         private void btnOK_Click(object sender, RoutedEventArgs e) {
             if (Validate()) {
                 this.DialogResult = true;
-                this.Hide();
+                this.Close();
             }
         }
 
@@ -83,23 +90,30 @@ namespace BioLink.Client.Extensibility.Import {
             // Extract Column Headers...
             ColumnNames = new List<String>();
 
-            using (var parser = new GenericParserAdapter(Filename)) {
-                parser.ColumnDelimiter = Delimiter.ToCharArray()[0];
-                parser.FirstRowHasHeader = IsFirstRowContainNames;
-                parser.MaxRows = 2;
-                parser.TextQualifier = _textQualifier;
+            GenericParser parser = null;
+            try {
+                using (parser = new GenericParserAdapter(Filename)) {
+                    parser.ColumnDelimiter = Delimiter.ToCharArray()[0];
+                    parser.FirstRowHasHeader = IsFirstRowContainNames;
+                    parser.MaxRows = 2;
+                    parser.TextQualifier = _textQualifier;
 
-                if (parser.Read()) {
-                    for (int i = 0; i < parser.ColumnCount; ++i) {
-                        if (IsFirstRowContainNames) {
-                            ColumnNames.Add(parser.GetColumnName(i));
-                        } else {
-                            ColumnNames.Add("Column" + i);
+                    if (parser.Read()) {
+                        for (int i = 0; i < parser.ColumnCount; ++i) {
+                            if (IsFirstRowContainNames) {
+                                ColumnNames.Add(parser.GetColumnName(i));
+                            } else {
+                                ColumnNames.Add("Column" + i);
+                            }
                         }
+                    } else {
+                        ErrorMessage.Show("Failed to extract column names from data source!");
+                        return false;
                     }
-                } else {
-                    ErrorMessage.Show("Failed to extract column names from data source!");
-                    return false;
+                }
+            } finally {
+                if (parser != null) {
+                    System.GC.SuppressFinalize(parser);
                 }
             }
 
@@ -112,15 +126,22 @@ namespace BioLink.Client.Extensibility.Import {
 
         private void Preview() {
 
-            using (var parser = new GenericParserAdapter(Filename)) {
-                parser.ColumnDelimiter = Delimiter.ToCharArray()[0];
-                parser.FirstRowHasHeader = IsFirstRowContainNames;
-                parser.MaxRows = 50;
-                parser.TextQualifier = '\"';
-                var ds = parser.GetDataSet();
-                previewGrid.AutoGenerateColumns = true;                
-
-                previewGrid.ItemsSource = ds.Tables[0].DefaultView;
+            GenericParserAdapter parser = null;
+            try {
+                using (parser = new GenericParserAdapter(Filename)) {
+                    parser.ColumnDelimiter = Delimiter.ToCharArray()[0];
+                    parser.FirstRowHasHeader = IsFirstRowContainNames;
+                    parser.MaxRows = 50;
+                    parser.TextQualifier = '\"';
+                    var ds = parser.GetDataSet();
+                    previewGrid.AutoGenerateColumns = true;
+                    previewGrid.ItemsSource = ds.Tables[0].DefaultView;
+                    System.GC.SuppressFinalize(parser);
+                }
+            } finally {
+                if (parser != null) {
+                    GC.SuppressFinalize(parser);
+                }
             }
         }
 
