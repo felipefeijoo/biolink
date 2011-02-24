@@ -20,7 +20,7 @@ namespace BioLink.Client.Extensibility {
                 dlg.Filter = Filter;
                 if (dlg.ShowDialog().GetValueOrDefault(false)) {
                     this.txt.Text = dlg.FileName;
-                }
+                }                
             } else {
                 var dlg = new SaveFileDialog();
                 dlg.Filter = Filter;

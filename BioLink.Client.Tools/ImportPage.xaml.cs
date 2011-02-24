@@ -30,5 +30,26 @@ namespace BioLink.Client.Tools {
                 return "Import data";
             }
         }
+
+        private void btnSaveTemplate_Click(object sender, RoutedEventArgs e) {
+            var inifile = new IniFile();
+            inifile.SetValue("Import", "ProfileStr", ImportContext.Importer.CreateProfileString());
+            inifile.SetValue("Import", "ImportFilter", ImportContext.Importer.Name);
+            inifile.SetValue("Import", "FieldCount", ImportContext.FieldMappings.Count());
+
+            int i = 0;
+            foreach (ImportFieldMapping mapping in ImportContext.FieldMappings) {
+                var ep = new EntryPoint(mapping.SourceColumn);
+                ep.AddParameter("Mapping", mapping.TargetColumn);
+                ep.AddParameter("Default", mapping.DefaultValue);
+                ep.AddParameter("IsFixed", mapping.IsFixed.ToString());
+
+                inifile.SetValue("Mappings", string.Format("Field{0}", i++), ep.ToString());
+            }
+
+            inifile.Save("c:\\zz\\test.bip");
+        }
+
+        protected ImportWizardContext ImportContext { get { return WizardContext as ImportWizardContext; } }
     }
 }
