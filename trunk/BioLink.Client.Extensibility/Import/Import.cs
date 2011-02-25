@@ -5,6 +5,8 @@ using System.Text;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using BioLink.Client.Utilities;
+using BioLink.Data;
+using BioLink.Client.Extensibility.Import;
 
 namespace BioLink.Client.Extensibility {
 

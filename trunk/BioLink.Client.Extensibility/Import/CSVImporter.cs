@@ -74,13 +74,10 @@ namespace BioLink.Client.Extensibility.Import {
                 service.CommitTransaction();
 
                 var reader = service.GetImportReader();
-                rowsource = new SQLiteReaderRowSource(reader, rowCount);
-                
+                rowsource = new SQLiteReaderRowSource(reader, rowCount);                
             }
 
-
-            return rowsource;
-            
+            return rowsource;            
         }
 
         public override string Name {
