@@ -108,7 +108,9 @@ namespace BioLink.Client.Material {
             optElevElevation.Checked += new RoutedEventHandler(UpdateElevation);
             optElevNotSpecified.Checked += new RoutedEventHandler(UpdateElevation);
 
-            UpdateMiniMap(model.PosY1, model.PosX1);
+            if (model.PosY1.HasValue && model.PosX1.HasValue) {
+                UpdateMiniMap(model.PosY1.Value, model.PosX1.Value);
+            }
 
             this.PreviewDragOver += new DragEventHandler(site_PreviewDragEnter);
             this.PreviewDragEnter += new DragEventHandler(site_PreviewDragEnter);

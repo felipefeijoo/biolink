@@ -23,6 +23,7 @@ namespace BioLink.Client.Tools {
     public partial class ImportPage : WizardPage, IProgressObserver {
 
         private ObservableCollection<ImportStatusMessage> _messages;
+        private ImportProcessor _importProcessor;
 
         public ImportPage() {
             InitializeComponent();
@@ -35,22 +36,31 @@ namespace BioLink.Client.Tools {
         }
 
         private void btnSaveTemplate_Click(object sender, RoutedEventArgs e) {
-            var inifile = new IniFile();
-            inifile.SetValue("Import", "ProfileStr", ImportContext.Importer.CreateProfileString());
-            inifile.SetValue("Import", "ImportFilter", ImportContext.Importer.Name);
-            inifile.SetValue("Import", "FieldCount", ImportContext.FieldMappings.Count());
+            SaveTemplate();
+        }
 
-            int i = 0;
-            foreach (ImportFieldMapping mapping in ImportContext.FieldMappings) {
-                var ep = new EntryPoint(mapping.SourceColumn);
-                ep.AddParameter("Mapping", mapping.TargetColumn);
-                ep.AddParameter("Default", mapping.DefaultValue);
-                ep.AddParameter("IsFixed", mapping.IsFixed.ToString());
+        private void SaveTemplate() {
 
-                inifile.SetValue("Mappings", string.Format("Field{0}", i++), ep.ToString());
+            var dlg = new Microsoft.Win32.SaveFileDialog();
+            dlg.Filter = "Template files (*.bip)|*.bip|All files (*.*)|*.*";
+            if (dlg.ShowDialog().GetValueOrDefault()) {
+                var inifile = new IniFile();
+                inifile.SetValue("Import", "ProfileStr", ImportContext.Importer.CreateProfileString());
+                inifile.SetValue("Import", "ImportFilter", ImportContext.Importer.Name);
+                inifile.SetValue("Import", "FieldCount", ImportContext.FieldMappings.Count());
+
+                int i = 0;
+                foreach (ImportFieldMapping mapping in ImportContext.FieldMappings) {
+                    var ep = new EntryPoint(mapping.SourceColumn);
+                    ep.AddParameter("Mapping", mapping.TargetColumn);
+                    ep.AddParameter("Default", mapping.DefaultValue);
+                    ep.AddParameter("IsFixed", mapping.IsFixed.ToString());
+
+                    inifile.SetValue("Mappings", string.Format("Field{0}", i++), ep.ToString());
+                }
+
+                inifile.Save(dlg.FileName);
             }
-
-            inifile.Save("c:\\zz\\test.bip");
         }
 
         protected ImportWizardContext ImportContext { get { return WizardContext as ImportWizardContext; } }
@@ -68,14 +78,25 @@ namespace BioLink.Client.Tools {
 
         private void StartImport() {
             _messages = new ObservableCollection<ImportStatusMessage>();
-            lvw.ItemsSource = _messages;
+
+            this.InvokeIfRequired(() => {
+                lvw.ItemsSource = _messages;
+            });
+
             StatusMsg("Import started");
+
+            _importProcessor = new ImportProcessor(ImportContext.Importer, ImportContext.FieldMappings, this, StatusMsg);
+            _importProcessor.Import();
+
+            StatusMsg("Import finished");
         }
 
         public void StatusMsg(string message) {
-            var msg = new ImportStatusMessage { Timestamp = DateTime.Now, Message = message };
-            _messages.Add(msg);
-            lvw.SelectedItem = msg;
+            this.InvokeIfRequired(() => {
+                var msg = new ImportStatusMessage { Timestamp = DateTime.Now, Message = message };
+                _messages.Add(msg);
+                lvw.SelectedItem = msg;
+            });
         }
 
 
@@ -107,104 +128,17 @@ namespace BioLink.Client.Tools {
                 lblStatus.Content = message;
             });            
         }
+
+        private void btnCancel_Click(object sender, RoutedEventArgs e) {
+            if (_importProcessor != null) {
+                _importProcessor.Cancelled = true;
+            }
+        }
     }
 
     class ImportStatusMessage {
         public DateTime Timestamp { get; set; }
         public string Message { get; set; }
-    }
-
-    class ImportProcessor {
-
-
-
-        public ImportProcessor(TabularDataImporter importer, List<ImportFieldMapping> mappings, IProgressObserver progress, Action<string> logFunc) {
-            this.Importer = importer;
-            this.Mappings = mappings;
-            this.Progress = progress;
-            this.LogFunc = logFunc;
-        }
-
-        public void Import() {
-
-            if (Progress != null) {
-                Progress.ProgressStart("Initialising...");
-            }
-
-            if (!InitImport()) {
-                return;
-            }
-
-            ProgressMsg("Importing rows - Stage 1", 0);
-            if (!DoStage1()) {
-                return;
-            }
-
-            ProgressMsg("Importing rows - Stage 2", 10);
-            int rowCount = 0;
-            while (RowSource.MoveNext()) {
-                rowCount++;
-                var percent = (double) ((double) RowSource.RowCount / (double) rowCount) * 90;
-
-                if (rowCount % 100 == 0) {
-                    ProgressMsg("Importing rows - Stage 2", percent + 10);
-                }
-
-                ImportCurrentRow();
-            }
-
-
-
-
-        }
-
-        private void ImportCurrentRow() {
-        }
-
-        private bool DoStage1() {
-
-            LogMsg("Stage 1 - preparing staging database");
-            LogMsg("Stage 1 - Preprocessing rows...");
-            this.RowSource = Importer.CreateRowSource();
-            LogMsg("Stage 1 Complete, {0} rows staged for import.", RowSource.RowCount);
-
-            return true;
-        }
-
-        private bool InitImport() {
-            LogMsg("Initializing...");
-
-            return true;
-        }
-
-        private void ProgressMsg(string message, double? percent = null) {
-            if (Progress != null) {
-                Progress.ProgressMessage(message, percent);
-            }
-        }
-
-        private void LogMsg(String format, params object[] args) {
-            if (LogFunc != null) {
-                if (args.Length > 0) {
-                    LogFunc(string.Format(format, args));
-                } else {
-                    LogFunc(format);
-                }
-            }
-        }
-
-        protected IProgressObserver Progress { get; private set; }
-
-        protected Action<string> LogFunc { get; private set; }
-
-        protected TabularDataImporter Importer { get; private set; }
-
-        protected List<ImportFieldMapping> Mappings { get; private set; }
-
-        protected ImportRowSource RowSource { get; private set; }
-
-        public bool Cancelled { get; set; }
-
     }
 
 }

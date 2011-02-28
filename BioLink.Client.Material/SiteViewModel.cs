@@ -67,22 +67,22 @@ namespace BioLink.Client.Material {
             set { SetProperty(() => Model.PosAreaType, value); }
         }
 
-        public double PosY1 {
+        public double? PosY1 {
             get { return Model.PosY1; }
             set { SetProperty(() => Model.PosY1, value); }
         }
 
-        public double PosX1 {
+        public double? PosX1 {
             get { return Model.PosX1; }
             set { SetProperty(() => Model.PosX1, value); }
         }
 
-        public double PosY2 {
+        public double? PosY2 {
             get { return Model.PosY2; }
             set { SetProperty(() => Model.PosY2, value); }
         }
 
-        public double PosX2 {
+        public double? PosX2 {
             get { return Model.PosX2; }
             set { SetProperty(() => Model.PosX2, value); }
         }

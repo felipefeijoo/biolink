@@ -69,6 +69,7 @@
     <Compile Include="ConfigurationStore.cs" />
     <Compile Include="FavoriteActions.cs" />
     <Compile Include="IgnoreFormattingChanges.cs" />
+    <Compile Include="ImportService.cs" />
     <Compile Include="MaterialService.cs" />
     <Compile Include="Model\Associate.cs" />
     <Compile Include="Model\AutoNumber.cs" />

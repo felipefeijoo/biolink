@@ -20,10 +20,10 @@ namespace BioLink.Data.Model {
         public string InformalLocal { get; set; }
         public int PosCoordinates { get; set; }
         public int PosAreaType { get; set; }
-        public double PosY1 { get; set; }
-        public double PosX1 { get; set; }
-        public double PosY2 { get; set; }
-        public double PosX2 { get; set; }
+        public double? PosY1 { get; set; }
+        public double? PosX1 { get; set; }
+        public double? PosY2 { get; set; }
+        public double? PosX2 { get; set; }
         public int PosXYDisplayFormat { get; set; }
         public string PosSource { get; set; }
         public string PosError { get; set; }
