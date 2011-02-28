@@ -85,12 +85,14 @@ namespace BioLink.Data {
             }
         }
 
-        public void BeginTransaction() {
+        public void BeginTransaction(SqlConnection connection = null) {
             if (_transaction != null) {
                 throw new Exception("A pending transaction already exists!");
             }
-
-            SqlConnection conn = GetConnection();
+            SqlConnection conn = connection;
+            if (conn == null) {
+                conn = GetConnection();
+            }
             _transaction = conn.BeginTransaction();
         }
 

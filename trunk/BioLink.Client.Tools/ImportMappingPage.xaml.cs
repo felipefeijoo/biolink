@@ -139,13 +139,15 @@ namespace BioLink.Client.Tools {
                 // First check to see if this field has been mapped already...
                 var targetName = string.Format("{0}.{1}", field.Category, field.DisplayName);
 
-                var existing = _model.FirstOrDefault((candidate) => {
-                    return candidate.TargetColumn.Equals(targetName);
-                });
+                if (!field.DisplayName.Equals("other", StringComparison.CurrentCultureIgnoreCase)) {
+                    var existing = _model.FirstOrDefault((candidate) => {
+                        return candidate.TargetColumn.Equals(targetName);
+                    });
 
-                if (existing != null) {
-                    ErrorMessage.Show("The target field {0} has already been mapped to {1}. Fields can only be mapped to one import column.", existing.TargetColumn, existing.SourceColumn);
-                    return;
+                    if (existing != null) {
+                        ErrorMessage.Show("The target field {0} has already been mapped to {1}. Fields can only be mapped to one import column.", existing.TargetColumn, existing.SourceColumn);
+                        return;
+                    }
                 }
 
                 mapping.TargetColumn = targetName;

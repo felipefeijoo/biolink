@@ -640,6 +640,24 @@ namespace BioLink.Client.Utilities {
             longitude = LongOrigin + longitude * RADS_TO_DEGREES;
         }
 
+        public static int GetEllipsoidIndex(string nameOrIndex) {
+
+            if (nameOrIndex.IsNumeric()) {
+                var idx = Int32.Parse(nameOrIndex);
+                if (idx <= 0 || idx >= ELLIPSOIDS.Length) {
+                    throw new Exception("Index is outside of the range of allowed ellipsoid indexes: " + nameOrIndex + " (valid range is 1-" + (ELLIPSOIDS.Length - 1));
+                } else {
+                    return idx;
+                }
+            }
+            foreach (Ellipsoid e in ELLIPSOIDS) {
+                if (e.Name.Equals(nameOrIndex, StringComparison.CurrentCultureIgnoreCase)) {
+                    return e.ID;
+                }
+            }
+            return -1;
+        }
+
         public static Ellipsoid[] ELLIPSOIDS = new Ellipsoid[] {
 	        new Ellipsoid( -1, "Placeholder", 0, 0),			
 	        new Ellipsoid( 1, "Airy", 6377563, 0.00667054),
