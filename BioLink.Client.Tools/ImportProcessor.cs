@@ -6,6 +6,7 @@ using BioLink.Client.Utilities;
 using BioLink.Client.Extensibility;
 using BioLink.Data;
 using BioLink.Data.Model;
+using Microsoft.VisualBasic;
 
 namespace BioLink.Client.Tools {
 
@@ -23,10 +24,14 @@ namespace BioLink.Client.Tools {
         public const int FIXED_DATE = 1;
         public const int CASUAL_DATE = 2;
 
+        private List<TaxonRankName> _ranks;
+
         private Dictionary<string, int> _fieldIndex = new Dictionary<string, int>();
 
         private CachedRegion _lastRegion;
         private CachedSite _lastSite;
+        private CachedSiteVisit _lastSiteVisit;
+        private TaxonCache _taxonCache = new TaxonCache();
 
         public ImportProcessor(TabularDataImporter importer, IEnumerable<ImportFieldMapping> mappings, IProgressObserver progress, Action<string> logFunc) {
             this.Importer = importer;
@@ -160,8 +165,18 @@ namespace BioLink.Client.Tools {
         private string Get(string field, string def = "") {
             var key = field.ToLower();
             if (_fieldIndex.ContainsKey(key)) {
-                Object value = RowSource[_fieldIndex[key]];
-                return value == null ? def : value.ToString();
+                var index = _fieldIndex[key];
+                var mapping = Mappings.ElementAt(index);
+                Object value = null;
+                if (!mapping.IsFixed) {
+                    value = RowSource[index];
+                } else {
+                    value = mapping.DefaultValue;
+                }
+
+                var defaultValue = string.IsNullOrWhiteSpace(mapping.DefaultValue) ? def : mapping.DefaultValue;
+
+                return value == null ? defaultValue : value.ToString();
             }
 
             return def;
@@ -274,6 +289,40 @@ namespace BioLink.Client.Tools {
             }
         }
 
+        private void Warning(string format, params object[] args) {
+            if (LogFunc != null) {
+                if (args.Length == 0) {
+                    LogFunc(format);
+                } else {
+                    LogFunc(string.Format(format, args));
+                }
+            }
+        }
+
+        private bool? GetBool(string field, bool? @default = null) {
+            var str = Get(field);
+            if (!string.IsNullOrWhiteSpace(str)) {
+                bool val = false;
+                if (Boolean.TryParse(str, out val)) {
+                    return val;
+                }
+                Warning("Expected a boolean value for field {0}, got {1}", field, str);
+            }
+            return @default;
+        }
+
+        private int? GetInt(string field, int? @default = null) {
+            var str = Get(field);
+            if (!string.IsNullOrWhiteSpace(str)) {
+                int val = 0;
+                if (Int32.TryParse(str, out val)) {
+                    return val;
+                }
+                Warning("Expected an int value for field {0}, got {1}", field, str);
+            }
+            return @default;
+        }
+
         private double? GetDouble(string field, double? @default = null) {
             var str = Get(field);
             if (!string.IsNullOrWhiteSpace(str)) {
@@ -281,6 +330,7 @@ namespace BioLink.Client.Tools {
                 if (double.TryParse(str, out val)) {
                     return val;
                 }
+                Warning("Expected a double value for field {0}, got {1}", field, str);
             }
             return @default;
         }
@@ -468,11 +518,201 @@ namespace BioLink.Client.Tools {
         }
 
         private int GetSiteVisitNumber(int siteId) {
-            return -1;
+            var iDateType = FIXED_DATE;
+            var strSiteVisitName = Get("SiteVisit.Visit Name");
+            var strCollector = Get("SiteVisit.Collector(s)");
+            var strDateStart = Get("SiteVisit.Start Date");
+            if (string.IsNullOrWhiteSpace(strDateStart)) {
+                strDateStart = "0";
+            }
+            var strDateEnd = Get("SiteVisit.End Date");
+            if (string.IsNullOrWhiteSpace(strDateEnd)) {
+                strDateEnd = "0";
+            }
+
+            var timeStart = GetInt("SiteVisit.Start Time", null);
+            var timeEnd = GetInt("SiteVisit.End Time");
+            var strCasualDate = Get("SiteVisit.Casual time");
+            var strFieldNumber = Get("SiteVisit.Field number");
+
+            if (strDateStart != "0") {
+                string errMsg;
+                if (DateUtils.IsValidBLDate(strDateStart, out errMsg)) {
+                    strDateStart.PadRight(8, '0');
+                } else {
+                    if (Information.IsDate(strDateStart)) {
+                        strDateStart = DateUtils.DateStrToBLDate(strDateStart);
+                        iDateType = FIXED_DATE;
+                    } else {
+                        iDateType = CASUAL_DATE;
+                    }
+                }
+            }
+
+            if (strDateEnd != "0") {
+                string errMsg;
+                if (DateUtils.IsValidBLDate(strDateEnd, out errMsg)) {
+                    strDateEnd.PadRight(8, '0');
+                } else {
+                    if (Information.IsDate(strDateEnd)) {
+                        strDateEnd = DateUtils.DateStrToBLDate(strDateEnd);
+                        iDateType = FIXED_DATE;
+                    } else {
+                        if (iDateType == FIXED_DATE) {
+                            throw new Exception("Invalid end date value - start date is in fixed format, end date is not");
+                        }                        
+                    }
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(strSiteVisitName)) {
+                if (strDateStart != "0") {
+                    if (iDateType == FIXED_DATE) {
+                        strSiteVisitName = strCollector + ", " + DateUtils.BLDateToStr(Int32.Parse(strDateStart));
+                    } else {
+                        strSiteVisitName = strCollector + ", " + strDateStart;
+                    }
+                } else {
+                    if (strDateEnd != "0") {
+                        if (iDateType == FIXED_DATE) {
+                            strSiteVisitName = strCollector + ", " + DateUtils.BLDateToStr(Int32.Parse(strDateEnd));
+                        } else {
+                            strSiteVisitName = strCollector + ", " + strDateEnd;
+                        }
+                    } else {
+                        strSiteVisitName = strCollector;
+                    }
+                }
+            }
+
+            if (_lastSiteVisit != null && _lastSiteVisit.Equals(siteId, strSiteVisitName, strCollector, strDateStart, strDateEnd, timeStart, timeEnd, strFieldNumber)) {
+                return _lastSiteVisit.SiteVisitID;
+            } else {
+                int? dateStart = null;
+                int? dateEnd = null;
+                if (strDateStart.IsNumeric()) {
+                    dateStart = Int32.Parse(strDateStart);
+                }
+                if (strDateEnd.IsNumeric()) {
+                    dateEnd = Int32.Parse(strDateEnd);
+                }
+
+                var visit = new SiteVisit {
+                    SiteVisitName = strSiteVisitName,
+                    SiteID = siteId,
+                    FieldNumber = strFieldNumber,
+                    Collector = strCollector,
+                    DateType = iDateType,
+                    DateStart = dateStart,
+                    DateEnd = dateEnd,
+                    TimeStart = timeStart,
+                    TimeEnd = timeEnd,
+                    CasualTime = strCasualDate
+                };
+
+                var siteVisitID = Service.ImportSiteVisit(visit);
+                _lastSiteVisit = new CachedSiteVisit { SiteVisitID = siteVisitID, SiteID = siteId, Collector = strCollector, FieldNumber = strFieldNumber, SiteVisitName = strSiteVisitName, DateEnd = strDateEnd, DateStart = strDateEnd, TimeEnd = timeEnd, TimeStart = timeStart };
+                return siteVisitID;
+            }
+        }
+
+        private string BuildDate(string date) {
+            if (string.IsNullOrWhiteSpace(date)) {
+                return "";
+            }
+
+            if (date.IsNumeric()) {
+                return DateUtils.BLDateToStr(Int32.Parse(date));
+            }
+
+            return "";
         }
 
         private int GetTaxonNumber() {
-            return -1;
+
+            var strLowestRank = LowestTaxonLevel();
+
+            var taxon = BuildTaxonCacheRecord();
+            int elementID = -1;
+            if (!_taxonCache.FindInCache(taxon, out elementID)) {
+                elementID = 0;
+                foreach (TaxonRankName name in _ranks) {
+                    elementID = AddElementID(elementID, name, strLowestRank);
+                }
+                taxon.TaxonID = elementID;
+                _taxonCache.AddToCache(taxon);
+            }
+
+            return elementID;
+        }
+
+        private int AddElementID(int parentID, TaxonRankName rank, string lowestRank) {
+            var strEpithet = Get("Taxon." + rank.LongName);
+            int elementID = 0;
+
+            if (!string.IsNullOrWhiteSpace(strEpithet)) {
+                string strAuthor, strYear, strKingdomType, strNameStatus;
+                bool unverified, changeCombination;
+                if (!GetAuthority(lowestRank, rank, out strAuthor, out strYear, out changeCombination, out unverified, out strKingdomType, out strNameStatus)) {
+                    return -1;
+                }
+
+                if (rank.LongName == "Kingdom") {
+                    parentID = 0;
+                }
+
+                elementID = Service.ImportTaxon(parentID, strEpithet, strAuthor, strYear, changeCombination, rank.Code, false, "", strKingdomType, 0, unverified, strNameStatus);
+
+            } else {
+                elementID = parentID;
+            }
+
+            return elementID;
+        }
+
+        private bool GetAuthority(string level, TaxonRankName rank, out string strAuthor, out string strYear, out bool changeCombination, out bool unverified, out string strKingdomType, out string strNameStatus) {
+            if (level == rank.LongName) {
+                unverified = GetBool("Taxon.Verified", true).Value;
+                strAuthor = Get("Taxon.Author");
+                strYear = Get("Taxon.Year");
+                changeCombination = GetBool("Taxon.Changed Combination", false).Value;
+                strKingdomType = Get("Taxon.KingdomType");
+                strNameStatus = Get("Taxon.Name Status");
+            } else {
+                unverified = false;
+                strAuthor = null;
+                strYear = null;
+                changeCombination = false;
+                strKingdomType = null;
+                strNameStatus = null;
+            }
+
+            return true;
+        }
+
+        private CachedTaxon BuildTaxonCacheRecord() {
+            var list = new List<TaxonRankValue>();
+            foreach (TaxonRankName rank in _ranks) {
+                list.Add(new TaxonRankValue(rank, Get("Taxon." + rank.LongName)));
+            }
+            return new CachedTaxon(list);
+        }
+
+        private bool DataHasRank(String rankname) {
+            var candidate = Get("Taxon." + rankname);
+            return !string.IsNullOrWhiteSpace(candidate);
+        }
+
+        private String LowestTaxonLevel() {
+
+            for (int i = _ranks.Count - 1; i >= 0; --i) {
+                var rank = _ranks[i];
+                if (DataHasRank(rank.LongName)) {
+                    return rank.LongName;
+                }
+            }
+
+            return null;
         }
 
         private void InsertCommonName(int taxonId) {
@@ -567,6 +807,11 @@ namespace BioLink.Client.Tools {
 
         private bool InitImport() {
             LogMsg("Initializing...");
+
+            LogMsg("Caching rank data...");
+            var taxonService = new TaxaService(User);
+            _ranks = taxonService.GetOrderedRanks();
+            LogMsg("Initialisation complete");
 
             return true;
         }

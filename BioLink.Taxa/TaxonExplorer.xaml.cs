@@ -63,11 +63,27 @@ namespace BioLink.Client.Taxa {
                 btnUp.Visibility = System.Windows.Visibility.Visible;
             }
 
+
+            tvwAllTaxa.PreviewKeyDown += new KeyEventHandler(TaxonExplorer_PreviewKeyDown);
+            tvwResults.PreviewKeyDown += new KeyEventHandler(TaxonExplorer_PreviewKeyDown);
+            
             btnLock.Checked += new RoutedEventHandler(btnLock_Checked);
 
             btnLock.Unchecked += new RoutedEventHandler(btnLock_Unchecked);
 
             favorites.BindUser(User, this);
+        }
+
+        void TaxonExplorer_PreviewKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key == Key.Delete && IsUnlocked) {
+                var tvw = sender as TreeView;
+                if (tvw != null) {
+                    var selected = tvw.SelectedItem as TaxonViewModel;
+                    if (selected != null) {
+                        DeleteTaxon(selected);
+                    }
+                }
+            }
         }
 
         void btnLock_Unchecked(object sender, RoutedEventArgs e) {

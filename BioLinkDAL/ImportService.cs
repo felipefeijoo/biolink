@@ -65,6 +65,37 @@ namespace BioLink.Data {
 
         }
 
+        public int ImportSiteVisit(SiteVisit siteVisit) {
+            return StoredProcReturnVal<int>("spSiteVisitImportGetID",
+                _P("vchrSiteVisitName", siteVisit.SiteVisitName),
+                _P("intSiteID", siteVisit.SiteID),
+                _P("vchrFieldNumber", siteVisit.FieldNumber),
+                _P("vchrCollector", siteVisit.Collector),
+                _P("tintDateType", siteVisit.DateType),
+                _P("intDateStart", siteVisit.DateStart),
+                _P("intDateEnd", siteVisit.DateEnd),
+                _P("intTimeStart", siteVisit.TimeStart),
+                _P("intTimeEnd", siteVisit.TimeEnd),
+                _P("vchrCasualTime", siteVisit.CasualTime));
+        }
+
+        public int ImportTaxon(int parentID, string epithet, string author, string yearOfPub, bool changedCombination, string elemType, bool unplaced, string rank, string kingdom, int order, bool unverified, string availnamestatus) {
+            return StoredProcReturnVal<int>("spBiotaImport",
+                _P("intParentID", parentID),
+                _P("vchrEpithet", epithet),
+                _P("vchrAuthor", author),
+                _P("vchrYearOfPub", yearOfPub),
+                _P("bitChgComb", changedCombination),
+                _P("chrElemType", elemType),
+                _P("bitUnplaced", unplaced),
+                _P("vchrRank", rank),
+                _P("chrKingdomType", kingdom),
+                _P("intOrder", order),
+                _P("bitUnverified", unverified),
+                _P("vchrAvailableNameStatus", availnamestatus)
+            );
+        }
+
 
     }
 }

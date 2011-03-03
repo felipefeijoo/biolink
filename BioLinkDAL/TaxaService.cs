@@ -65,6 +65,11 @@ namespace BioLink.Data {
             return GetTaxonRanks().ToDictionary((rank) => { return RankKey(rank); });
         }
 
+        public List<TaxonRankName> GetOrderedRanks() {
+            var mapper = new GenericMapperBuilder<TaxonRankName>().build();
+            return StoredProcToList<TaxonRankName>("spBiotaRankList", mapper);
+        }
+
         public DataValidationResult ValidateTaxonMove(Taxon source, Taxon dest) {
             var map = GetTaxonRankMap();
 

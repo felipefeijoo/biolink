@@ -21,6 +21,7 @@ namespace BioLink.Client.Extensibility.Import {
            
             var frm = new CSVImportOptionsWindow(_options);
             frm.Owner = parentWindow;
+            frm.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             if (frm.ShowDialog().GetValueOrDefault(false)) {
                 _options = new CSVImporterOptions { Filename = frm.Filename, Delimiter = frm.Delimiter, FirstRowContainsNames = frm.IsFirstRowContainNames, ColumnNames = frm.ColumnNames };
                 return true;
