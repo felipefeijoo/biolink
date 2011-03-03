@@ -7,10 +7,13 @@ using BioLink.Client.Extensibility;
 using BioLink.Data;
 using BioLink.Data.Model;
 using Microsoft.VisualBasic;
+using System.Text.RegularExpressions;
 
 namespace BioLink.Client.Tools {
 
     class ImportProcessor {
+
+        private Regex _TraitRegex = new Regex("^(.*)[.]Other$");
 
         public const int JUST_LOCALITY = 0;
         public const int OFFSET_LOCALITY = 1;
@@ -33,7 +36,7 @@ namespace BioLink.Client.Tools {
         private CachedSiteVisit _lastSiteVisit;
         private TaxonCache _taxonCache = new TaxonCache();
 
-        public ImportProcessor(TabularDataImporter importer, IEnumerable<ImportFieldMapping> mappings, IProgressObserver progress, Action<string> logFunc) {
+        public ImportProcessor(TabularDataImporter importer, IEnumerable<ImportFieldMapping> mappings, IProgressObserver progress, Action<ImportStatusLevel, string> logFunc) {
             this.Importer = importer;
             this.Mappings = mappings;
             this.Progress = progress;
@@ -160,6 +163,18 @@ namespace BioLink.Client.Tools {
         }
 
         private void InsertTraits(string category, int id) {
+            foreach (ImportFieldMapping mapping in Mappings) {
+                var match = _TraitRegex.Match(mapping.TargetColumn);
+                if (match.Success) {
+                    var candiateCategory = match.Groups[1].Value;
+                    if (!string.IsNullOrWhiteSpace(candiateCategory) && candiateCategory.Equals(category, StringComparison.CurrentCultureIgnoreCase)) {
+                        var value = Get(mapping.SourceColumn);
+                        if (!string.IsNullOrEmpty(value)) {
+                            Service.ImportTrait(category, id, mapping.SourceColumn, value);
+                        }
+                    }
+                }
+            }
         }
 
         private string Get(string field, string def = "") {
@@ -213,16 +228,55 @@ namespace BioLink.Client.Tools {
             }
         }
 
+        private Regex _DegDecMRegex = new Regex(@"^(\d+).*?([\d.]+)'*\s*(N|S|E|W|n|e|s|w)\s*$");
+        private Regex _DMSRegex = new Regex(@"^(\d+)[^\d]+(\d+)\s*""\s*(\d+)\s*'\s*(N|S|E|W|n|e|s|w)\s*$");
+
+        private double? GetCoordinate(string field, double? @default) {
+
+            var str = Get(field);
+            if (string.IsNullOrWhiteSpace(str)) {
+                return @default;
+            }
+
+            // First try decimal degrees...
+            if (str.IsNumeric()) {
+                return Double.Parse(str);
+            }
+
+            // next try Degrees*minutes'Seconds", where * can be anything
+
+            var matcher = _DMSRegex.Match(str);
+            if (matcher.Success) {
+                int degrees = Int32.Parse(matcher.Groups[1].Value);
+                int minutes = Int32.Parse(matcher.Groups[2].Value);
+                int seconds = Int32.Parse(matcher.Groups[3].Value);
+                string dir = matcher.Groups[4].Value;
+                return GeoUtils.DMSToDecDeg(degrees, minutes, seconds, dir);
+            }
+
+            matcher = _DegDecMRegex.Match(str);
+            if (matcher.Success) {
+                int degrees = Int32.Parse(matcher.Groups[1].Value);
+                double minutes = Double.Parse(matcher.Groups[2].Value);
+                string dir = matcher.Groups[3].Value;
+
+                return GeoUtils.DDecMDirToDecDeg(degrees, minutes, dir);
+            }
+
+            return @default;
+        }
+
         private int GetSiteNumber(int regionId) {
 
             var strLocal = Get("Site.Locality");
             var strOffSetDis = Get("Site.Distance from place");
             var strOffsetDir = Get("Site.Direction from place");
             var strInformal = Get("Site.Informal Locality");
-            double? x1 = GetDouble("Site.Longitude", null);
-            double? y1 = GetDouble("Site.Latitude", null);
-            double? x2 = GetDouble("Site.Longitude 2", null);
-            double? y2 = GetDouble("Site.Latitude 2", null);
+
+            double? x1 = GetCoordinate("Site.Longitude", null);
+            double? y1 = GetCoordinate("Site.Latitude", null);
+            double? x2 = GetCoordinate("Site.Longitude 2", null);
+            double? y2 = GetCoordinate("Site.Latitude 2", null);
 
             var iPosAreaType = GetPositionType();
             int iLocalType = 0; // TODO? Can we workout what this is supposed to be?
@@ -289,12 +343,22 @@ namespace BioLink.Client.Tools {
             }
         }
 
+        protected void Error(string format, params object[] args) {
+            if (LogFunc != null) {
+                if (args.Length == 0) {
+                    LogFunc(ImportStatusLevel.Error, format);
+                } else {
+                    LogFunc(ImportStatusLevel.Error, string.Format(format, args));
+                }
+            }
+        }
+
         private void Warning(string format, params object[] args) {
             if (LogFunc != null) {
                 if (args.Length == 0) {
-                    LogFunc(format);
+                    LogFunc(ImportStatusLevel.Warning, format);
                 } else {
-                    LogFunc(string.Format(format, args));
+                    LogFunc(ImportStatusLevel.Warning, string.Format(format, args));
                 }
             }
         }
@@ -394,8 +458,8 @@ namespace BioLink.Client.Tools {
         }
 
         private bool ValidateLatLong(bool twoPoints, out double? x1, out double? y1, out double? x2, out double? y2) {
-            var X = GetDouble("Site.Longitude", null);
-            var Y = GetDouble("Site.Latitude", null);
+            var X = GetCoordinate("Site.Longitude", null);
+            var Y = GetCoordinate("Site.Latitude", null);
 
             x1 = null;
             x2 = null;
@@ -406,8 +470,8 @@ namespace BioLink.Client.Tools {
                 x1 = X.Value;
                 y1 = Y.Value;
                 if (twoPoints) {
-                    x2 = GetDouble("Site.Longitude 2");
-                    y2 = GetDouble("Site.Latitude 2");
+                    x2 = GetCoordinate("Site.Longitude 2", null);
+                    y2 = GetCoordinate("Site.Latitude 2", null);
                 }
             } else {
                 double dblX, dblY;
@@ -617,6 +681,11 @@ namespace BioLink.Client.Tools {
         }
 
         private string BuildDate(string date) {
+
+            if (date.Length < 0) {
+                date = date.PadRight(8, '0');
+            }
+
             if (string.IsNullOrWhiteSpace(date)) {
                 return "";
             }
@@ -716,14 +785,137 @@ namespace BioLink.Client.Tools {
         }
 
         private void InsertCommonName(int taxonId) {
+            var sCommonName = Get("Taxon.Common Name");
+            if (!string.IsNullOrWhiteSpace(sCommonName)) {
+                Service.ImportCommonName(taxonId, sCommonName);
+            }
         }
 
         private int AddMaterial(int siteVisitId, int taxonId) {
-            return -1;
+            var sparcService = new MaterialService(User);
+
+            var sMaterialName = Get("Material.Material name");
+            var sAccessionNumber = Get("Material.Accession number");
+            var sRegistrationNumber = Get("Material.Registration number");
+            var sCollectorNumber = Get("Material.Collector number");
+            var sIDBy = Get("Material.Identified by");
+            var sIDOn = Get("Material.Identified on");
+
+            if (!string.IsNullOrWhiteSpace(sIDOn)) {
+                string message;
+                if (DateUtils.IsValidBLDate(sIDOn, out message)) {
+                    sIDOn = string.Format("{0:dd MMM yyyy}", DateUtils.MakeCompatibleBLDate(Int32.Parse(sIDOn)));
+                } else {
+                    if (!Information.IsDate(sIDOn)) {
+                        throw new Exception("'Identified on' value (" + sIDOn + ") is not a valid date time! " + message);
+                    }                    
+                }
+            }
+
+            var sIDRef = Get("Material.Identification reference");
+            var sIDRefPage = Get("Material.Identification reference page");
+            var sIDMethod = Get("Material.Identification method");
+            var sIDAccuracy = Get("Material.Identification accuracy");
+            var sIDNameQualifier = Get("Material.Name qualifier");
+            var sIDNotes = Get("Material.Identification notes");
+            var sInstitution = Get("Material.Institute");
+            var sCollectMethod = Get("Material.Collection method");
+            var sAbundance = Get("Material.Abundance");
+            var sMacroHabitat = Get("Material.Macrohabitat");
+            var sMicrohabitat = Get("Material.Microhabitat");
+            var sSource = Get("Material.Source");
+            var sSpecialLabel = Get("Material.Special label");
+    
+            var bCopyLabel = GetBool("bOriginalLabel", false);
+            var sDateStart = Get("SiteVisit.Start Date", "0");
+
+            string sOriginalLabel = "";
+
+            if (bCopyLabel.ValueOrFalse()) {
+                if (sDateStart != "0") {
+                    string message;
+                    if (DateUtils.IsValidBLDate(sDateStart, out message)) {
+                        sDateStart = BuildDate(sDateStart);
+                    }
+                }
+                sOriginalLabel = "Import derived: " + Get("Site.Locality") + "; " + Get("SiteVisit.Collector(s)") + "; " + sDateStart;
+            } else {
+                sOriginalLabel = Get("Material.Original label");
+            }
+
+            if (string.IsNullOrWhiteSpace(sMaterialName)) {
+                if (!string.IsNullOrWhiteSpace(sInstitution)) {
+                    if (!string.IsNullOrWhiteSpace(sAccessionNumber)) {
+                        sMaterialName = string.Format("{0}:{1}", sInstitution, sAccessionNumber);
+                    } else {
+                        if (!string.IsNullOrWhiteSpace(sRegistrationNumber)) {
+                            sMaterialName = string.Format("{0}:{1}", sInstitution, sRegistrationNumber);
+                        }
+                    }
+                } else {
+                    if (!string.IsNullOrWhiteSpace(sAccessionNumber)) {
+                        sMaterialName = sAccessionNumber;
+                    } else {
+                        if (!string.IsNullOrWhiteSpace(sRegistrationNumber)) {
+                            sMaterialName = sRegistrationNumber;
+                        }
+                    }
+                }
+            }
+            var material = new Material {
+                MaterialName = sMaterialName,
+                SiteVisitID = siteVisitId,
+                AccessionNumber = sAccessionNumber,
+                RegistrationNumber = sRegistrationNumber,
+                CollectorNumber = sCollectorNumber,
+                BiotaID = taxonId,
+                IdentifiedBy = sIDBy,
+                IdentificationDate = (string.IsNullOrWhiteSpace(sIDOn) ? null : new DateTime?(DateAndTime.DateValue(sIDOn))),
+                IdentificationReferenceID = (!string.IsNullOrWhiteSpace(sIDRef) && sIDRef.IsNumeric()) ? Int32.Parse(sIDRef) : 0,
+                IdentificationRefPage = sIDRefPage,
+                IdentificationMethod = sIDMethod,
+                IdentificationAccuracy = sIDAccuracy,
+                IdentificationNameQualification = sIDNameQualifier,
+                IdentificationNotes = sIDNotes,
+                Institution = sInstitution,
+                CollectionMethod = sCollectMethod,
+                Abundance = sAbundance,
+                MacroHabitat = sMacroHabitat,
+                MicroHabitat = sMicrohabitat,
+                Source = sSource,
+                SpecialLabel = sSpecialLabel,
+                OriginalLabel = sOriginalLabel
+            };
+
+            return Service.ImportMaterial(material);
         }
 
         private int AddMaterialPart(int materialId) {
-            return -1;
+
+            var numberOfSpecimens = GetInt("Material.Number of specimens");
+            if (numberOfSpecimens == 0) {
+                numberOfSpecimens = 1;
+            }
+
+            var part = new MaterialPart {
+                MaterialID = materialId,
+                PartName = Get("Material.Part name"), 
+                SampleType = Get("Material.Sample type"),
+                NoSpecimens = numberOfSpecimens,
+                NoSpecimensQual = Get("Material.Number of specimens qualifier"), 
+                Lifestage = Get("Material.Life stage"),
+                Gender =  Get("Material.Gender"), 
+                RegNo = Get("Material.Part registration number"),
+                Condition = Get("Material.Condition"), 
+                StorageSite = Get("Material.Storage site"),
+                StorageMethod = Get("Material.Storage method"), 
+                CurationStatus = Get("Material.Curation status"),
+                Notes = Get("Material.Notes")
+            };
+
+            var matService = new MaterialService(User);
+
+            return matService.InsertMaterialPart(part);
         }
 
         private ImportLevel GetLevel(IEnumerable<ImportFieldMapping> mappings) {
@@ -854,9 +1046,9 @@ namespace BioLink.Client.Tools {
         private void LogMsg(String format, params object[] args) {
             if (LogFunc != null) {
                 if (args.Length > 0) {
-                    LogFunc(string.Format(format, args));
+                    LogFunc(ImportStatusLevel.Info, string.Format(format, args));
                 } else {
-                    LogFunc(format);
+                    LogFunc(ImportStatusLevel.Info, format);
                 }
             }
         }
@@ -865,7 +1057,7 @@ namespace BioLink.Client.Tools {
 
         protected IProgressObserver Progress { get; private set; }
 
-        protected Action<string> LogFunc { get; private set; }
+        protected Action<ImportStatusLevel, string> LogFunc { get; private set; }
 
         protected TabularDataImporter Importer { get; private set; }
 

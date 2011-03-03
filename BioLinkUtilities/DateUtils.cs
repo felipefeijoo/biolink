@@ -14,7 +14,7 @@ namespace BioLink.Client.Utilities {
 
         private static Regex BLDateRegex = new Regex(@"^(\d\d\d\d)(\d\d)(\d\d)$");
 
-        public static string DateRomanMonth(long bldate) {
+        public static string DateRomanMonth(int bldate) {
             String datestr = bldate.ToString();
             Match m = BLDateRegex.Match(datestr);
             if (m.Success) {
@@ -32,7 +32,7 @@ namespace BioLink.Client.Utilities {
             return datestr;
         }
 
-        public static string BLDateToStr(long bldate) {
+        public static string BLDateToStr(int bldate) {
             String datestr = bldate.ToString();
             Match m = BLDateRegex.Match(datestr);
             if (m.Success) {
@@ -49,6 +49,11 @@ namespace BioLink.Client.Utilities {
             }
             return datestr;
 
+        }
+
+        public static DateTime MakeCompatibleBLDate(int bldate) {
+            var str = DateRomanMonth(bldate);
+            return DateTime.Parse(str);
         }
 
         public static string GetMonthName(int month, bool abbrev) {
