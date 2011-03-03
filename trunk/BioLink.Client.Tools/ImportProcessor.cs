@@ -156,8 +156,11 @@ namespace BioLink.Client.Tools {
                 User.CommitTransaction();
                 // TODO: If the import is successful we can remove the source row from the staging database...or we could simply mark the row as successfully imported, and do a purge at the end...
             } catch (Exception ex) {
+                Error("Error: {0}", ex.Message);
+                // Roll back the transaction....
                 User.RollbackTransaction();
-                // TODO: Mark the import row as failed
+                //  Mark the import row as failed
+                RowSource.CopyToErrorTable(ex.Message);
             } 
 
         }
@@ -350,18 +353,18 @@ namespace BioLink.Client.Tools {
                 } else {
                     LogFunc(ImportStatusLevel.Error, string.Format(format, args));
                 }
-            }
+            }            
         }
 
-        private void Warning(string format, params object[] args) {
-            if (LogFunc != null) {
-                if (args.Length == 0) {
-                    LogFunc(ImportStatusLevel.Warning, format);
-                } else {
-                    LogFunc(ImportStatusLevel.Warning, string.Format(format, args));
-                }
-            }
-        }
+        //private void Warning(string format, params object[] args) {
+        //    if (LogFunc != null) {
+        //        if (args.Length == 0) {
+        //            LogFunc(ImportStatusLevel.Warning, format);
+        //        } else {
+        //            LogFunc(ImportStatusLevel.Warning, string.Format(format, args));
+        //        }
+        //    }
+        //}
 
         private bool? GetBool(string field, bool? @default = null) {
             var str = Get(field);
@@ -370,7 +373,7 @@ namespace BioLink.Client.Tools {
                 if (Boolean.TryParse(str, out val)) {
                     return val;
                 }
-                Warning("Expected a boolean value for field {0}, got {1}", field, str);
+                throw new Exception(string.Format("Expected a boolean value for field {0}, got {1}", field, str));
             }
             return @default;
         }
@@ -382,7 +385,7 @@ namespace BioLink.Client.Tools {
                 if (Int32.TryParse(str, out val)) {
                     return val;
                 }
-                Warning("Expected an int value for field {0}, got {1}", field, str);
+                throw new Exception(string.Format("Expected an int value for field {0}, got {1}", field, str));
             }
             return @default;
         }
@@ -394,7 +397,7 @@ namespace BioLink.Client.Tools {
                 if (double.TryParse(str, out val)) {
                     return val;
                 }
-                Warning("Expected a double value for field {0}, got {1}", field, str);
+                throw new Exception(string.Format("Expected a double value for field {0}, got {1}", field, str));
             }
             return @default;
         }

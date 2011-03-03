@@ -36,7 +36,7 @@ namespace BioLink.Client.Extensibility.Import {
                 throw new Exception("Null or incorrect options type received!");
             }
 
-            SQLiteReaderRowSource rowsource = null;
+            ImportRowSource rowsource = null;
 
             using (var parser = new GenericParserAdapter(_options.Filename)) {
                 parser.ColumnDelimiter = _options.Delimiter[0];
@@ -74,8 +74,7 @@ namespace BioLink.Client.Extensibility.Import {
 
                 service.CommitTransaction();
 
-                var reader = service.GetImportReader();
-                rowsource = new SQLiteReaderRowSource(reader, rowCount);                
+                rowsource = new ImportRowSource(service, rowCount);                
             }
 
             return rowsource;            
@@ -121,94 +120,6 @@ namespace BioLink.Client.Extensibility.Import {
         public string Delimiter { get; set; }
         public bool FirstRowContainsNames { get; set; }
         public List<string> ColumnNames { get; set; }
-
-    }
-
-    public class SQLiteReaderRowSource : ImportRowSource {
-
-        public SQLiteReaderRowSource(SQLiteDataReader reader, int? rowcount) {
-            this.Reader = reader;
-            this.RowCount = rowcount;
-        }
-
-        public bool MoveNext() {
-            return Reader.Read();
-        }
-
-        public object this[int index] {
-            get { return Reader[index]; }
-        }
-
-        public object this[string columnname] {
-            get { return Reader[columnname]; }
-        }
-
-        public int? RowCount { get; private set; }
-
-        public int? ColumnCount {
-            get { return Reader.FieldCount; }
-        }
-
-        public string ColumnName(int index) {
-            return Reader.GetName(index);
-        }
-
-        protected SQLiteDataReader Reader { get; private set; }
-    }
-
-    public class ImportStagingService : SQLiteServiceBase, IDisposable {
-
-        public ImportStagingService(string filename) : base(filename, true) {
-        }
-
-        public void CreateImportTable(List<string> columnNames) {
-
-
-            Command((cmd) => {
-                cmd.CommandText = "DROP TABLE IF EXISTS [Import];";
-                cmd.ExecuteNonQuery();
-            });
-
-            var columnsSpec = new StringBuilder();
-            foreach (string col in columnNames) {
-                columnsSpec.AppendFormat("[{0}] TEXT,", col);
-            }
-            columnsSpec.Remove(columnsSpec.Length - 1, 1);
-
-            Command((cmd) => {
-                cmd.CommandText = String.Format("CREATE TABLE [Import] ({0})", columnsSpec.ToString());
-                cmd.ExecuteNonQuery();
-            });
-        }
-
-        public void InsertImportRow(List<string> values) {
-
-            var parmSpec = new StringBuilder();
-            for (int i = 0; i < values.Count; ++i) {
-                parmSpec.Append("@param" + i).Append(",");
-            }
-            parmSpec.Remove(parmSpec.Length - 1, 1);
-
-            Command((cmd) => {
-                cmd.CommandText = String.Format(@"INSERT INTO [Import] VALUES ({0})", parmSpec.ToString());
-                for (int i = 0; i < values.Count; ++i) {                    
-                    cmd.Parameters.Add(new SQLiteParameter("@param" + i, values[i]));
-                }                
-                cmd.ExecuteNonQuery();
-            });
-
-        }
-
-        public SQLiteDataReader GetImportReader() {
-            SQLiteDataReader reader = null;
-            Command((cmd) => {
-                cmd.CommandText = "SELECT * from Import";
-                reader = cmd.ExecuteReader();
-            });
-            return reader;
-        }
-
-
 
     }
 
