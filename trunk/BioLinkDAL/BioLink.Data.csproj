@@ -116,6 +116,7 @@
     <Compile Include="Model\SiteVisit.cs" />
     <Compile Include="Model\SpeciesAvailableName.cs" />
     <Compile Include="Model\TaxonDistribution.cs" />
+    <Compile Include="Model\TaxonRankName.cs" />
     <Compile Include="Model\TaxonRefLink.cs" />
     <Compile Include="Model\Trait.cs" />
     <Compile Include="Model\Trap.cs" />

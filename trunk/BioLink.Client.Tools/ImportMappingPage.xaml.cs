@@ -141,7 +141,7 @@ namespace BioLink.Client.Tools {
 
                 if (!field.DisplayName.Equals("other", StringComparison.CurrentCultureIgnoreCase)) {
                     var existing = _model.FirstOrDefault((candidate) => {
-                        return candidate.TargetColumn.Equals(targetName);
+                        return candidate.TargetColumn != null && candidate.TargetColumn.Equals(targetName);
                     });
 
                     if (existing != null) {

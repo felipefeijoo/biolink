@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using BioLink.Data.Model;
 
 namespace BioLink.Client.Tools {
 
@@ -55,6 +56,110 @@ namespace BioLink.Client.Tools {
             return true;
         }
 
+    }
+
+    public class CachedSiteVisit {
+
+        public int SiteVisitID { get; set; }
+
+        public int SiteID { get; set; }
+        public string SiteVisitName { get; set; }
+        public string Collector { get; set; }
+        public string DateStart { get; set; }
+        public string DateEnd { get; set; }
+        public int? TimeStart { get; set; }
+        public int? TimeEnd { get; set; }
+        public string FieldNumber { get; set; }
+
+        public bool Equals(int siteID, string sitevisitname, string collector, string dateStart, string dateEnd, int? timeStart, int? timeEnd, string fieldNumber) {
+            if (siteID != SiteID) { return false; }
+            if (sitevisitname != this.SiteVisitName) { return false; }
+            if (collector != this.Collector) { return false; }
+            if (dateStart != this.DateStart) { return false; }
+            if (dateEnd != this.DateEnd) { return false; }
+            if (timeStart != TimeStart) { return false; }
+            if (timeEnd != TimeEnd) { return false; }
+            if (fieldNumber != FieldNumber) { return false; }
+
+            return true;
+        }
+    }
+
+    public class TaxonRankValue {
+
+        public TaxonRankValue( TaxonRankName rank, string value) {
+            this.Rank = rank;
+            this.Value = value;
+        }
+
+        public string RankName { 
+            get { return Rank.LongName; } 
+        }
+
+        public TaxonRankName Rank { get; private set; }
+
+        public string Value { get; set; }
+
+    }
+
+    public class CachedTaxon {
+
+        public CachedTaxon(List<TaxonRankValue> rankValues) {
+            this.Ranks = rankValues;
+        }
+
+        public List<TaxonRankValue> Ranks { get; private set; }
+
+        public int TaxonID { get; set; }
+
+        public override bool Equals(object obj) {
+            var other = obj as CachedTaxon;
+            if (other != null) {                
+                foreach (TaxonRankValue val in Ranks) {
+                    var cmp = other.Ranks.Find((r) => {
+                        return r.RankName.Equals(val.RankName, StringComparison.CurrentCultureIgnoreCase);
+                    });
+                    if (cmp != null) {
+                        if (!cmp.Value.Equals(val.Value)) {
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode() {
+            return Ranks.GetHashCode();
+        }
+
+    }
+
+    public class TaxonCache {
+
+        private List<CachedTaxon> _cache = new List<CachedTaxon>();
+
+        public bool FindInCache(CachedTaxon search, out int taxonID) {
+
+            taxonID = -1;
+            foreach (CachedTaxon t in _cache) {
+                if (t.Equals(search)) {
+                    taxonID = t.TaxonID;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public void AddToCache(CachedTaxon taxon) {
+            _cache.Add(taxon);
+        }
 
     }
 }
