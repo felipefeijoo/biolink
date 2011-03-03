@@ -96,6 +96,29 @@ namespace BioLink.Data {
             );
         }
 
+        public void ImportTrait(string category, int intraCatID, string traitName, string traitValue, string comment = "") {
+            StoredProcUpdate("spTraitImport",
+                _P("vchrCategory", category),
+                _P("intIntraCatID", intraCatID),
+                _P("vchrTrait", traitName),
+                _P("vchrValue", traitValue),
+                _P("vchrComment", comment)
+            );
+        }
+
+        public int ImportMaterial(Material m) {
+            var matService = new MaterialService(User);
+            var materialID = matService.InsertMaterial(m.SiteVisitID);
+            matService.UpdateMaterial(m);
+            return materialID;
+        }
+
+        public void ImportCommonName(int taxonID, string commonName) {
+            StoredProcUpdate("spCommonNameImport",
+                _P("intBiotaID", taxonID),
+                _P("vchrCommonName", commonName)
+            );
+        }
 
     }
 }

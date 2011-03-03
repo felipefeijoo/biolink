@@ -83,17 +83,17 @@ namespace BioLink.Client.Tools {
                 lvw.ItemsSource = _messages;
             });
 
-            StatusMsg("Import started");
+            StatusMsg(ImportStatusLevel.Info, "Import started");
 
             _importProcessor = new ImportProcessor(ImportContext.Importer, ImportContext.FieldMappings, this, StatusMsg);
             _importProcessor.Import();
 
-            StatusMsg("Import finished");
+            StatusMsg(ImportStatusLevel.Info, "Import finished");
         }
 
-        public void StatusMsg(string message) {
+        public void StatusMsg(ImportStatusLevel level, string message) {
             this.InvokeIfRequired(() => {
-                var msg = new ImportStatusMessage { Timestamp = DateTime.Now, Message = message };
+                var msg = new ImportStatusMessage { Timestamp = DateTime.Now, Message = message, Level = level };
                 _messages.Add(msg);
                 lvw.SelectedItem = msg;
             });
@@ -136,9 +136,16 @@ namespace BioLink.Client.Tools {
         }
     }
 
+    public enum ImportStatusLevel {
+        Info,
+        Warning,
+        Error
+    }
+
     class ImportStatusMessage {
         public DateTime Timestamp { get; set; }
         public string Message { get; set; }
+        public ImportStatusLevel Level { get; set; }
     }
 
 }

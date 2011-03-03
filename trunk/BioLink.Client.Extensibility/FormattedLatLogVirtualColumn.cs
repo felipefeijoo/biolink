@@ -91,7 +91,7 @@ namespace BioLink.Client.Extensibility {
 
         }
 
-        private string FormatDate(long d, bool asRomanMonth = false) {
+        private string FormatDate(int d, bool asRomanMonth = false) {
             if (d == 0) {
                 return "";
             }
