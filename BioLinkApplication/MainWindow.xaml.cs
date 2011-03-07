@@ -45,6 +45,7 @@ namespace BioLinkApplication {
                     Logger.Debug("Disposing Host control");
                     _hostControl.Dispose();
                     Logger.Debug("Exiting.");
+
                     Environment.Exit(0);
                 } else {
                     return false;
@@ -53,6 +54,7 @@ namespace BioLinkApplication {
                 Logger.Debug("Host control is null. Exiting.");
                 Environment.Exit(0);
             }
+
             return false;
         }
 

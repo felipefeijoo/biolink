@@ -30,6 +30,14 @@ namespace BioLink.Data {
 
         }
 
+        public void Disconnect() {
+            if (_connection != null) {
+                _connection.Close();
+                _connection.Dispose();
+                _connection = null;
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -60,6 +68,31 @@ namespace BioLink.Data {
                 });
             }
 
+        }
+
+        protected T SelectScalar<T>(string sql) {
+            T result = default(T);
+            Command((cmd) => {
+                cmd.CommandText = sql;
+                result = (T) cmd.ExecuteScalar();                
+            });
+            return result;
+        }
+
+        protected SQLiteParameter _P(string name, object value) {
+            return new SQLiteParameter(name, value);
+        }
+
+        protected int ExecuteNonQuery(string sql, params SQLiteParameter[] parameters) {
+            int result = 0;
+            Command((cmd) => {
+                cmd.CommandText = sql;
+                foreach (SQLiteParameter p in parameters) {
+                    cmd.Parameters.Add(p);
+                }
+                result = cmd.ExecuteNonQuery();
+            });
+            return result;
         }
 
         public void BeginTransaction() {

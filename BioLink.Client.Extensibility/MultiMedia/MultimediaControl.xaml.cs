@@ -29,7 +29,7 @@ namespace BioLink.Client.Extensibility {
 
         private ObservableCollection<MultimediaLinkViewModel> _model;
 
-        private TempFileManager<int?> _tempFileManager;
+        private KeyedObjectTempFileManager<int?> _tempFileManager;
         private const int THUMB_SIZE= 100;
 
         #region designer constructor
@@ -46,7 +46,7 @@ namespace BioLink.Client.Extensibility {
 
             txtMultimediaType.BindUser(user, PickListType.MultimediaType, null, TraitCategoryType.Multimedia);
 
-            _tempFileManager = new TempFileManager<int?>((mmId) => {
+            _tempFileManager = new KeyedObjectTempFileManager<int?>((mmId) => {
                 if (mmId.HasValue) {
                     byte[] bytes = Service.GetMultimediaBytes(mmId.Value);
                     return new MemoryStream(bytes);

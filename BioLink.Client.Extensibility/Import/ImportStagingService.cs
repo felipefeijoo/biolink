@@ -4,43 +4,33 @@ using System.Linq;
 using System.Text;
 using System.Data.SQLite;
 using BioLink.Data;
+using BioLink.Client.Utilities;
+using System.Data;
 
 namespace BioLink.Client.Extensibility {
 
     public class ImportStagingService : SQLiteServiceBase, IDisposable {
 
+        public ImportStagingService() : base(TempFileManager.NewTempFilename(".sqlite"), true) { }
+
         public ImportStagingService(string filename) : base(filename, true) { }
 
         public void CreateImportTable(List<string> columnNames) {
 
-
-            Command((cmd) => {
-                cmd.CommandText = "DROP TABLE IF EXISTS [Import];";                
-                cmd.ExecuteNonQuery();
-            });
-
-            Command((cmd) => {
-                cmd.CommandText = "DROP TABLE IF EXISTS [Errors];";
-                cmd.ExecuteNonQuery();
-            });
+            ExecuteNonQuery("DROP TABLE IF EXISTS [Import];");
+            ExecuteNonQuery("DROP TABLE IF EXISTS [Errors];");
 
             var columnsSpec = new StringBuilder();
             foreach (string col in columnNames) {
                 columnsSpec.AppendFormat("[{0}] TEXT,", col);
             }
-            columnsSpec.Remove(columnsSpec.Length - 1, 1);            
+            columnsSpec.Remove(columnsSpec.Length - 1, 1);
 
-            Command((cmd) => {
-                cmd.CommandText = String.Format("CREATE TABLE [Import] ({0})", columnsSpec.ToString());
-                cmd.ExecuteNonQuery();
-            });
+            ExecuteNonQuery(String.Format("CREATE TABLE [Import] ({0})", columnsSpec.ToString()));
 
             columnsSpec.Append(", [ErrorMessage] TEXT");
 
-            Command((cmd) => {
-                cmd.CommandText = String.Format("CREATE TABLE [Errors] ({0})", columnsSpec.ToString());
-                cmd.ExecuteNonQuery();
-            });
+            ExecuteNonQuery(String.Format("CREATE TABLE [Errors] ({0})", columnsSpec.ToString()));
 
         }
 
@@ -63,13 +53,27 @@ namespace BioLink.Client.Extensibility {
         }
 
         public SQLiteDataReader GetImportReader() {
+            return GetTableReader("Import");
+        }
+
+        public SQLiteDataReader GetErrorReader(bool includeRowID = false) {
+            return GetTableReader("Errors", includeRowID);
+        }
+
+        protected SQLiteDataReader GetTableReader(string table, bool includeRowID = false) {
+
             SQLiteDataReader reader = null;
             Command((cmd) => {
-                cmd.CommandText = "SELECT * from Import";
+                if (includeRowID) {
+                    cmd.CommandText = "SELECT *, ROWID from " + table;
+                } else {
+                    cmd.CommandText = "SELECT * from " + table;
+                }
                 reader = cmd.ExecuteReader();
             });
             return reader;
         }
+
 
         public void CopyToErrorTable(ImportRowSource source, string message) {
 
@@ -80,7 +84,6 @@ namespace BioLink.Client.Extensibility {
 
             parmSpec.Remove(parmSpec.Length - 1, 1);
 
-
             Command((cmd) => {
                 cmd.CommandText = String.Format(@"INSERT INTO [Errors] VALUES ({0})", parmSpec.ToString());
                 for (int i = 0; i < source.ColumnCount; ++i) {                
@@ -89,6 +92,56 @@ namespace BioLink.Client.Extensibility {
                 cmd.Parameters.Add(new SQLiteParameter("@param" + source.ColumnCount, message));
                 cmd.ExecuteNonQuery();
             });
+        }
+
+
+        public void PurgeImportedRecords() {
+            ExecuteNonQuery("DROP TABLE IF EXISTS [Import];");
+        }
+
+        public Int64 GetErrorCount() {
+            return SelectScalar<Int64>("SELECT COUNT(*) from Errors");
+        }
+
+        public void SaveMappingInfo(TabularDataImporter Importer, IEnumerable<ImportFieldMapping> mappings) {
+            
+            ExecuteNonQuery("DROP TABLE IF EXISTS [Mappings];");
+
+            ExecuteNonQuery("CREATE TABLE [Mappings] (SourceColumn, TargetColumn, IsFixed, DefaultValue)");
+            foreach (ImportFieldMapping mapping in mappings) {
+                ExecuteNonQuery("INSERT INTO [Mappings] VALUES (@source, @target, @fixed, @default)", 
+                    _P("@source", mapping.SourceColumn),
+                    _P("@target", mapping.TargetColumn),
+                    _P("@fixed", mapping.IsFixed),
+                    _P("@default", mapping.DefaultValue)
+                );
+            }
+
+        }
+
+        public List<ImportFieldMapping> GetMappings() {
+            var list = new List<ImportFieldMapping>();
+            SelectReader("SELECT * from Mappings", (reader) => {
+                var mapping = new ImportFieldMapping { 
+                    TargetColumn = (string) reader["TargetColumn"], 
+                    SourceColumn = (string) reader["SourceColumn"],
+                    IsFixed = (Int64) reader["IsFixed"] != 0,
+                    DefaultValue = (string) reader["DefaultValue"]
+                };
+                list.Add(mapping);
+            });
+
+            return list;
+        }
+
+        internal DataSet GetErrorsDataSet() {
+            var conn = getConnection();
+            SQLiteCommand cmd = conn.CreateCommand();
+            cmd.CommandText = "Select *, ROWID from Errors";
+            var da = new SQLiteDataAdapter(cmd);
+            var ds = new DataSet();
+            da.Fill(ds, "Errors");
+            return ds;
         }
 
     }

@@ -150,10 +150,15 @@
     <Compile Include="Import\CSVImportOptionsWindow.xaml.cs">
       <DependentUpon>CSVImportOptionsWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Import\ErrorDatabaseImporter.cs" />
+    <Compile Include="Import\ErrorDatabaseImportOptionsWindow.xaml.cs">
+      <DependentUpon>ErrorDatabaseImportOptionsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Import\Import.cs" />
     <Compile Include="Import\CSVImporter.cs" />
     <Compile Include="Import\ImportStagingService.cs" />
     <Compile Include="Import\ImportRowSource.cs" />
+    <Compile Include="Import\ImportWizardContext.cs" />
     <Compile Include="IRegionSelector.cs" />
     <Compile Include="ItemsGroupBox.cs" />
     <Compile Include="JobExecutor.cs" />
@@ -351,6 +356,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Import\CSVImportOptionsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Import\ErrorDatabaseImportOptionsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -42,7 +42,7 @@ namespace BioLink.Client.Extensibility {
 
         protected SQLiteDataReader Reader { get; private set; }
 
-        protected ImportStagingService Service { get; private set; }
+        public ImportStagingService Service { get; private set; }
     
     }
 }

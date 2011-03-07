@@ -25,7 +25,7 @@
             <ListView.View>
                 <GridView>
                     <GridView.Columns>
-                        <GridViewColumn Header="Time" Width="120" HeaderContainerStyle="{StaticResource hcs}" DisplayMemberBinding="{Binding Timestamp}" />
+                        <GridViewColumn Header="Time" Width="150" HeaderContainerStyle="{StaticResource hcs}" DisplayMemberBinding="{Binding Timestamp}" />
                         <GridViewColumn Header="Message" Width="600" HeaderContainerStyle="{StaticResource hcs}" DisplayMemberBinding="{Binding Message}" />                        
                     </GridView.Columns>
                 </GridView>

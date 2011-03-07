@@ -85,7 +85,7 @@ namespace BioLink.Client.Tools {
 
             StatusMsg(ImportStatusLevel.Info, "Import started");
 
-            _importProcessor = new ImportProcessor(ImportContext.Importer, ImportContext.FieldMappings, this, StatusMsg);
+            _importProcessor = new ImportProcessor(this.FindParentWindow(), ImportContext.Importer, ImportContext.FieldMappings, this, StatusMsg);
             _importProcessor.Import();
 
             StatusMsg(ImportStatusLevel.Info, "Import finished");
