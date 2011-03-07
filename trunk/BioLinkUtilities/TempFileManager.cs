@@ -6,13 +6,63 @@ using System.IO;
 
 namespace BioLink.Client.Utilities {
 
-    public class TempFileManager<T> : IDisposable {
+    /// <summary>
+    /// Global Generic Temp file manager that simply tracks the temp file names as they are issued, and attempts to delete them when disposed.
+    /// </summary>
+    public class TempFileManager : IDisposable {
+
+        private static HashSet<string> _filenames = new HashSet<string>();
+
+        static TempFileManager() {
+        }
+
+        public static string NewTempFilename(string extension) {
+            if (!extension.StartsWith(".")) {
+                extension = "." + extension;
+            }
+            var filename = System.IO.Path.GetTempPath() + Guid.NewGuid().ToString() + extension;
+
+            _filenames.Add(filename);
+
+            return filename;
+        }
+
+        public static bool Detach(string filename) {
+            if (_filenames.Contains(filename)) {
+                Logger.Debug("Detaching file from temp file manager: {0}", filename);
+                _filenames.Remove(filename);
+                return true;
+            } else {
+                Logger.Debug("Attempt to detach file from temp file manager failed: {0}", filename);
+                return false;
+            }
+        }
+
+        public static void CleanUp() {
+            foreach (string path in _filenames) {
+                try {
+                    Logger.Debug("Deleting temp file {0}", path);
+                    File.Delete(path);
+                } catch (Exception ex) {
+                    Logger.Debug("Failed to delete {0} - {1}", path, ex.Message);
+                }
+            }
+            _filenames.Clear();
+        }
+
+        public void Dispose() {
+            CleanUp();
+        }
+
+    }
+
+    public class KeyedObjectTempFileManager<T> : IDisposable {
 
         private Dictionary<T, string> _tempFileMap = new Dictionary<T, string>();
 
         private Func<T, Stream> _contentGenerator;
 
-        public TempFileManager(Func<T, Stream> contentGenerator) {
+        public KeyedObjectTempFileManager(Func<T, Stream> contentGenerator = null) {
             _contentGenerator = contentGenerator;
         }
 

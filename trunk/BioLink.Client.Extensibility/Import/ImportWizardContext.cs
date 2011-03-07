@@ -5,7 +5,7 @@ using System.Text;
 using BioLink.Client.Extensibility;
 using BioLink.Client.Utilities;
 
-namespace BioLink.Client.Tools {
+namespace BioLink.Client.Extensibility {
 
     public class ImportWizardContext {
 

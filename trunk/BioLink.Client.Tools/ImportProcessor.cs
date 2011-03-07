@@ -8,6 +8,7 @@ using BioLink.Data;
 using BioLink.Data.Model;
 using Microsoft.VisualBasic;
 using System.Text.RegularExpressions;
+using System.Windows;
 
 namespace BioLink.Client.Tools {
 
@@ -36,7 +37,8 @@ namespace BioLink.Client.Tools {
         private CachedSiteVisit _lastSiteVisit;
         private TaxonCache _taxonCache = new TaxonCache();
 
-        public ImportProcessor(TabularDataImporter importer, IEnumerable<ImportFieldMapping> mappings, IProgressObserver progress, Action<ImportStatusLevel, string> logFunc) {
+        public ImportProcessor(Window parentWindow, TabularDataImporter importer, IEnumerable<ImportFieldMapping> mappings, IProgressObserver progress, Action<ImportStatusLevel, string> logFunc) {
+            this.ParentWindow = parentWindow;
             this.Importer = importer;
             this.Mappings = mappings;
             this.Progress = progress;
@@ -44,6 +46,8 @@ namespace BioLink.Client.Tools {
             this.User = PluginManager.Instance.User;
             this.Service = new ImportService(User);
         }
+
+        protected Window ParentWindow { get; set; }
 
         public void Import() {
 
@@ -86,6 +90,33 @@ namespace BioLink.Client.Tools {
             }
 
             ProgressMsg("Importing rows - Stage 2 Complete", 100);
+
+            LogMsg("Cleaning up staging database...");
+
+            
+
+            if (RowSource.Service.GetErrorCount() > 0) {
+
+                if (ParentWindow.Question("Errors were encountered during the import. Would you like to save the rejected rows so that they can be corrected and re-imported. Rejected rows can be corrected and re-imported by re-running the import wizard and selecting the 'Load error database' button?", "Save rejected rows?", System.Windows.MessageBoxImage.Exclamation)) {
+
+                    // Clean out just the imported records, leaving just the error rows...
+                    LogMsg("Purging successfully imported rows from staging database...");
+                    RowSource.Service.PurgeImportedRecords();
+                    LogMsg("Saving mapping information to staging database...");
+                    RowSource.Service.SaveMappingInfo(Importer, Mappings);
+                    LogMsg("Disconnecting from staging database...");
+                    RowSource.Service.Disconnect();
+
+                    var dlg = new Microsoft.Win32.SaveFileDialog();
+                    dlg.Filter =  "SQLite database files|*.sqlite|All files (*.*)|*.*";
+                    dlg.Title = "Save error database file";
+                    if (dlg.ShowDialog().ValueOrFalse()) {
+                        LogMsg("Copying staging database from {0} to {1}", RowSource.Service.FileName, dlg.FileName);
+                        System.IO.File.Copy(RowSource.Service.FileName, dlg.FileName);
+                    }
+                }
+
+            }
 
             connection.Close();
         }
@@ -1022,7 +1053,7 @@ namespace BioLink.Client.Tools {
                 string target = mapping.TargetColumn.ToLower();
                 int index = -1;
 
-                for (int i = 0; i < RowSource.RowCount - 1; ++i) {
+                for (int i = 0; i < RowSource.ColumnCount - 1; ++i) {
                     if (RowSource.ColumnName(i).Equals(mapping.SourceColumn, StringComparison.CurrentCultureIgnoreCase)) {
                         index = i;
                         break;

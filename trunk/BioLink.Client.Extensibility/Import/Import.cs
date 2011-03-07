@@ -12,7 +12,7 @@ namespace BioLink.Client.Extensibility {
 
     public abstract class TabularDataImporter : IBioLinkExtension {
 
-        public abstract bool GetOptions(Window parentWindow);
+        public abstract bool GetOptions(Window parentWindow, ImportWizardContext context);
 
         protected void ProgressStart(string message, bool indeterminate = false) {
             if (ProgressObserver != null) {
@@ -34,7 +34,7 @@ namespace BioLink.Client.Extensibility {
 
         protected string PromptForFilename(string extension, string filter) {
             Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
-            dlg.FileName = "Export"; // Default file name
+            dlg.FileName = "Import"; // Default file name
             dlg.DefaultExt = extension; // Default file extension
             dlg.OverwritePrompt = false;
             dlg.Filter = filter + "|All files (*.*)|*.*"; // Filter files by extension

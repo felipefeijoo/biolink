@@ -17,7 +17,7 @@ namespace BioLink.Client.Extensibility.Import {
 
         private CSVImporterOptions _options;
 
-        public override bool GetOptions(System.Windows.Window parentWindow) {
+        public override bool GetOptions(System.Windows.Window parentWindow, ImportWizardContext context) {
            
             var frm = new CSVImportOptionsWindow(_options);
             frm.Owner = parentWindow;
@@ -44,7 +44,7 @@ namespace BioLink.Client.Extensibility.Import {
                 parser.TextQualifier = '\"';
                 parser.FirstRowSetsExpectedColumnCount = true;
 
-                var service = new ImportStagingService("c:\\zz\\tmp.sqlite");
+                var service = new ImportStagingService();
                 var columnNames = new List<String>();
 
                 int rowCount = 0;

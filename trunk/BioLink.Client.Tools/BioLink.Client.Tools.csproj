@@ -70,7 +70,6 @@
     <Compile Include="ImportWizard.xaml.cs">
       <DependentUpon>ImportWizard.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ImportWizardContext.cs" />
     <Compile Include="journals\JournalBrowsePage.xaml.cs">
       <DependentUpon>JournalBrowsePage.xaml</DependentUpon>
     </Compile>

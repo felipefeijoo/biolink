@@ -45,9 +45,9 @@ namespace BioLink.Client.Tools {
         public override bool OnPageExit(WizardDirection todirection) {
             var selected = listBox.SelectedItem as TabularDataImporter;
             if (selected != null) {
-                if (selected.GetOptions(this.FindParentWindow())) {
-                    var c = WizardContext as ImportWizardContext;
-                    if (c != null) {
+                var c = WizardContext as ImportWizardContext;
+                if (c != null) {
+                    if (selected.GetOptions(this.FindParentWindow(), c)) {                    
                         c.Importer = selected;                        
                         return true;
                     }

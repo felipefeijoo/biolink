@@ -371,8 +371,12 @@ namespace BioLink.Client.Extensibility {
                     _extensions.Clear();
                     frm.StatusMessage("Cleaning up temporary files...");
                     DoEvents();
-                    Logger.Debug("Cleaning up temp files...");
+                    Logger.Debug("Cleaning up resource temp files...");
                     _resourceTempFiles.CleanUp();
+                    // Purge any temporary files that were created during the session
+                    Logger.Debug("Cleaning up generic temp files...");
+                    TempFileManager.CleanUp();
+
                 } finally {
                     frm.Close();    
                 }

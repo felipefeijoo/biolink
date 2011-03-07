@@ -58,9 +58,13 @@ namespace BioLink.Client.Utilities {
             return message;
         }
 
-        public static bool Question(this Control control, string question, string caption) {
-            Window parent = Window.GetWindow(control);
-            MessageBoxResult result = MessageBox.Show(parent, question, caption, MessageBoxButton.YesNo, MessageBoxImage.Question);
+        public static bool Question(this Control control, string question, string caption, MessageBoxImage icon = MessageBoxImage.Question) {
+
+            MessageBoxResult result = MessageBoxResult.No;
+            control.InvokeIfRequired(() => {
+                Window parent = Window.GetWindow(control);
+                result = MessageBox.Show(parent, question, caption, MessageBoxButton.YesNo, icon);
+            });
             return result == MessageBoxResult.Yes;
         }
 
