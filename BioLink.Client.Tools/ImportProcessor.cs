@@ -37,6 +37,9 @@ namespace BioLink.Client.Tools {
         private CachedSiteVisit _lastSiteVisit;
         private TaxonCache _taxonCache = new TaxonCache();
 
+        private int _errorCount;
+        private int _successCount;
+
         public ImportProcessor(Window parentWindow, TabularDataImporter importer, IEnumerable<ImportFieldMapping> mappings, IProgressObserver progress, Action<ImportStatusLevel, string> logFunc) {
             this.ParentWindow = parentWindow;
             this.Importer = importer;
@@ -91,13 +94,13 @@ namespace BioLink.Client.Tools {
 
             ProgressMsg("Importing rows - Stage 2 Complete", 100);
 
-            LogMsg("Cleaning up staging database...");
+            LogMsg("{0} Rows successfully imported, {1} rows failed with errors", _successCount, _errorCount);
 
-            
+            LogMsg("Cleaning up staging database...");
 
             if (RowSource.Service.GetErrorCount() > 0) {
 
-                if (ParentWindow.Question("Errors were encountered during the import. Would you like to save the rejected rows so that they can be corrected and re-imported. Rejected rows can be corrected and re-imported by re-running the import wizard and selecting the 'Load error database' button?", "Save rejected rows?", System.Windows.MessageBoxImage.Exclamation)) {
+                if (ParentWindow.Question("Errors were encountered during the import. Rejected rows can be corrected and re-imported by re-running the import wizard and selecting the 'Import Error Database' option. Would you like to save the rejected rows so that they can be corrected and re-imported?", "Save rejected rows?", System.Windows.MessageBoxImage.Exclamation)) {
 
                     // Clean out just the imported records, leaving just the error rows...
                     LogMsg("Purging successfully imported rows from staging database...");
@@ -112,7 +115,7 @@ namespace BioLink.Client.Tools {
                     dlg.Title = "Save error database file";
                     if (dlg.ShowDialog().ValueOrFalse()) {
                         LogMsg("Copying staging database from {0} to {1}", RowSource.Service.FileName, dlg.FileName);
-                        System.IO.File.Copy(RowSource.Service.FileName, dlg.FileName);
+                        System.IO.File.Copy(RowSource.Service.FileName, dlg.FileName, true);
                     }
                 }
 
@@ -185,13 +188,16 @@ namespace BioLink.Client.Tools {
 
                 // If we get here we can commit the transacton....
                 User.CommitTransaction();
-                // TODO: If the import is successful we can remove the source row from the staging database...or we could simply mark the row as successfully imported, and do a purge at the end...
+
+                _successCount++;
+                
             } catch (Exception ex) {
                 Error("Error: {0}", ex.Message);
                 // Roll back the transaction....
                 User.RollbackTransaction();
                 //  Mark the import row as failed
                 RowSource.CopyToErrorTable(ex.Message);
+                _errorCount++;
             } 
 
         }
@@ -1038,6 +1044,9 @@ namespace BioLink.Client.Tools {
             var taxonService = new TaxaService(User);
             _ranks = taxonService.GetOrderedRanks();
             LogMsg("Initialisation complete");
+
+            _errorCount = 0;
+            _successCount = 0;
 
             return true;
         }

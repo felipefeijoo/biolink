@@ -19,7 +19,7 @@
         </Grid.RowDefinitions>
         
         <Label Content="Press 'Start import' to begin the import." Height="28" HorizontalAlignment="Left" Name="lblInstructions" VerticalAlignment="Top" Width="688" />
-        <Label Content="&lt;Status&gt;" Height="28" HorizontalAlignment="Left" Margin="0,22,0,0" Name="lblStatus" VerticalAlignment="Top" Width="688" />
+        <Label Content="" Height="28" HorizontalAlignment="Left" Margin="0,22,0,0" Name="lblStatus" VerticalAlignment="Top" Width="688" />
         
         <ListView Grid.Row="1" Name="lvw">
             <ListView.View>
