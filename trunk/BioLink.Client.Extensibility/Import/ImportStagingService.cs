@@ -119,6 +119,13 @@ namespace BioLink.Client.Extensibility {
 
         }
 
+        public void UpdateErrorRowField(int rowID, string columnName, string newValue) {
+            ExecuteNonQuery("UPDATE Errors SET [" + columnName + "] = @newValue WHERE ROWID=@rowid",
+                _P("@newValue", newValue),
+                _P("@rowid", rowID)
+            );
+        }
+
         public List<ImportFieldMapping> GetMappings() {
             var list = new List<ImportFieldMapping>();
             SelectReader("SELECT * from Mappings", (reader) => {
@@ -134,7 +141,7 @@ namespace BioLink.Client.Extensibility {
             return list;
         }
 
-        internal DataSet GetErrorsDataSet() {
+        public DataSet GetErrorsDataSet() {
             var conn = getConnection();
             SQLiteCommand cmd = conn.CreateCommand();
             cmd.CommandText = "Select *, ROWID from Errors";

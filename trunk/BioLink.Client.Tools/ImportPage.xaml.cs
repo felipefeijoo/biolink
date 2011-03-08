@@ -96,6 +96,7 @@ namespace BioLink.Client.Tools {
                 var msg = new ImportStatusMessage { Timestamp = DateTime.Now, Message = message, Level = level };
                 _messages.Add(msg);
                 lvw.SelectedItem = msg;
+                lvw.ScrollIntoView(msg);
             });
         }
 

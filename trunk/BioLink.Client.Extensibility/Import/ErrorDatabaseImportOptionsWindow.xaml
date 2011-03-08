@@ -14,6 +14,25 @@
             <Button Content="_Cancel" Height="23" HorizontalAlignment="Right" Margin="0,7,6,0" Name="btnCancel" VerticalAlignment="Top" Width="75" IsCancel="True" />
             <Button Content="_OK" Height="23" HorizontalAlignment="Right" IsCancel="False" Margin="0,7,87,0" Name="btnOK" VerticalAlignment="Top" Width="75" IsDefault="True" Click="btnOK_Click" />
         </Grid>
-        <DataGrid AutoGenerateColumns="False" Margin="12,32,12,14" Name="dataGrid" />
+        <DataGrid AutoGenerateColumns="False" Margin="12,32,12,14" Name="dataGrid">
+            <DataGrid.RowHeaderTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Click="Button_Click" Tag="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type DataGridRow}}}">
+                            <Image Source="..\images\EditSmall.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None" />
+                         </Button>
+                    </StackPanel>
+                </DataTemplate>
+            </DataGrid.RowHeaderTemplate>
+            <DataGrid.RowDetailsTemplate>
+                
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal" Background="{x:Static SystemColors.InfoBrush}">
+                        <Image Source="..\images\error.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding ErrorMessage}" />
+                    </StackPanel>
+                </DataTemplate>
+            </DataGrid.RowDetailsTemplate>
+        </DataGrid>
     </Grid>
 </Window>

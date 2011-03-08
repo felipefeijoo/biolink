@@ -147,6 +147,9 @@
     <Compile Include="IChangeContainer.cs" />
     <Compile Include="IClosable.cs" />
     <Compile Include="IMapProvider.cs" />
+    <Compile Include="Import\CellEditorWindow.xaml.cs">
+      <DependentUpon>CellEditorWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Import\CSVImportOptionsWindow.xaml.cs">
       <DependentUpon>CSVImportOptionsWindow.xaml</DependentUpon>
     </Compile>
@@ -159,6 +162,9 @@
     <Compile Include="Import\ImportStagingService.cs" />
     <Compile Include="Import\ImportRowSource.cs" />
     <Compile Include="Import\ImportWizardContext.cs" />
+    <Compile Include="Import\RowEditorWindow.xaml.cs">
+      <DependentUpon>RowEditorWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="IRegionSelector.cs" />
     <Compile Include="ItemsGroupBox.cs" />
     <Compile Include="JobExecutor.cs" />
@@ -355,11 +361,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Import\CellEditorWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Import\CSVImportOptionsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Import\ErrorDatabaseImportOptionsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Import\RowEditorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -546,6 +560,8 @@
     <Resource Include="images\Permissions.png" />
     <Resource Include="images\Permission.png" />
     <Resource Include="images\DoubleRightArrowSmall.png" />
+    <Resource Include="images\error.png" />
+    <Resource Include="images\warning.png" />
     <Content Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>
