@@ -54,6 +54,8 @@ namespace BioLink.Client.Tools {
 
                     page.RequestMoveNext += new Action<WizardPage>(page_RequestMoveNext);
                     page.RequestMovePrevious += new Action<WizardPage>(page_RequestMovePrevious);
+                    page.RequestDisableNavigation += new Action<WizardPage>(page_RequestDisableNavigation);
+                    page.RequestEnableNavigation += new Action<WizardPage>(page_RequestEnableNavigation);
 
                     var lbl = new Label();
                     Grid.SetRow(lbl, idx++);
@@ -64,6 +66,14 @@ namespace BioLink.Client.Tools {
 
                 SetCurrentPage(0);
             }
+        }
+
+        void page_RequestEnableNavigation(WizardPage obj) {
+            gridButtons.IsEnabled = true;
+        }
+
+        void page_RequestDisableNavigation(WizardPage obj) {
+            gridButtons.IsEnabled = false;
         }
 
         void page_RequestMovePrevious(WizardPage obj) {
@@ -238,6 +248,18 @@ namespace BioLink.Client.Tools {
             }
         }
 
+        protected void RaiseRequestDisableNavigation() {
+            if (RequestDisableNavigation != null) {
+                RequestDisableNavigation(this);
+            }
+        }
+
+        protected void RaiseRequestEnableNavigation() {
+            if (RequestEnableNavigation != null) {
+                RequestEnableNavigation(this);
+            }
+        }
+
         protected User User { get; private set; }
 
         protected Object WizardContext { get; set; }
@@ -245,6 +267,10 @@ namespace BioLink.Client.Tools {
         public event Action<WizardPage> RequestMoveNext;
 
         public event Action<WizardPage> RequestMovePrevious;
+
+        public event Action<WizardPage> RequestDisableNavigation;
+
+        public event Action<WizardPage> RequestEnableNavigation;
 
     }
 

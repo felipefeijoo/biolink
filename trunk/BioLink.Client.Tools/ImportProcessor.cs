@@ -78,18 +78,36 @@ namespace BioLink.Client.Tools {
 
             int lastPercent = 0;
 
+            DateTime timeStarted = DateTime.Now;
+            DateTime lastCheck = timeStarted;
+
             while (RowSource.MoveNext() && !Cancelled) {
-                rowCount++;
+
+                ImportCurrentRow(rowCount++, connection);
+                
                 var dblPercent = (double)((double)rowCount / (double)RowSource.RowCount) * 90;
                 int percent = ((int)dblPercent) + 10 ;
 
-                if (percent != lastPercent) {
-                    var message = string.Format("Importing rows - Stage 2 ({0} of {1})", rowCount, RowSource.RowCount);
+                var timeSinceLastUpdate = DateTime.Now - lastCheck;
+                
+                if (percent != lastPercent || timeSinceLastUpdate.Seconds > 5) {
+                    
+                    var timeSinceStart = DateTime.Now - timeStarted;
+                    
+                    var avgMillisPerRow = (double)(timeSinceStart.TotalMilliseconds == 0 ? 1 : timeSinceStart.TotalMilliseconds) / (double) (rowCount == 0 ? 1 : rowCount);
+                    var rowsLeft = RowSource.RowCount - rowCount;
+                    var secondsLeft = (int) ((double) (rowsLeft * avgMillisPerRow) / 1000.0);
+
+                    lastCheck = DateAndTime.Now;
+
+                    TimeSpan ts = new TimeSpan(0, 0, secondsLeft);
+
+                    var message = string.Format("Importing rows - Stage 2 ({0} of {1}). {2} remaining.", rowCount, RowSource.RowCount, ts.ToString());
                     ProgressMsg(message, percent);
                     lastPercent = percent;
                 }
 
-                ImportCurrentRow(rowCount, connection);
+                
             }
 
             ProgressMsg("Importing rows - Stage 2 Complete", 100);
@@ -208,9 +226,19 @@ namespace BioLink.Client.Tools {
                 if (match.Success) {
                     var candiateCategory = match.Groups[1].Value;
                     if (!string.IsNullOrWhiteSpace(candiateCategory) && candiateCategory.Equals(category, StringComparison.CurrentCultureIgnoreCase)) {
-                        var value = Get(mapping.SourceColumn);
-                        if (!string.IsNullOrEmpty(value)) {
-                            Service.ImportTrait(category, id, mapping.SourceColumn, value);
+
+                        var valueObj = RowSource[mapping.SourceColumn];
+                        string strValue = null;
+                        if (valueObj != null) {                            
+                            strValue = valueObj.ToString();
+                        }
+
+                        if (string.IsNullOrWhiteSpace(strValue)) {
+                            strValue = mapping.DefaultValue;
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(strValue)) {
+                            Service.ImportTrait(category, id, mapping.SourceColumn, strValue);
                         }
                     }
                 }
@@ -320,12 +348,12 @@ namespace BioLink.Client.Tools {
                         elevUnits = elevResult.Units;
                         break;
                     case UnitRangeType.RangeNoUnits:
-                        elevUpper = elevResult.Upper;
-                        elevLower = elevResult.Lower;
+                        elevUpper = Math.Max(elevResult.Upper, elevResult.Lower);
+                        elevLower = Math.Min(elevResult.Upper, elevResult.Lower);;
                         break;
                     case UnitRangeType.RangeWithUnits:
-                        elevUpper = elevResult.Upper;
-                        elevLower = elevResult.Lower;
+                        elevUpper = Math.Max(elevResult.Upper, elevResult.Lower);
+                        elevLower = Math.Min(elevResult.Upper, elevResult.Lower);;
                         elevUnits = elevResult.Units;
                         break;
                 }
@@ -342,12 +370,12 @@ namespace BioLink.Client.Tools {
                         elevUnits = elevResult.Units;
                         break;
                     case UnitRangeType.RangeNoUnits:
-                        elevUpper = elevResult.Upper;
-                        elevLower = elevResult.Lower;
+                        elevUpper = Math.Max(elevResult.Upper, elevResult.Lower);
+                        elevLower = Math.Min(elevResult.Upper, elevResult.Lower);;
                         break;
                     case UnitRangeType.RangeWithUnits:
-                        elevUpper = elevResult.Upper;
-                        elevLower = elevResult.Lower;
+                        elevUpper = Math.Max(elevResult.Upper, elevResult.Lower);
+                        elevLower = Math.Min(elevResult.Upper, elevResult.Lower);;
                         elevUnits = elevResult.Units;
                         break;
                 }
@@ -364,10 +392,12 @@ namespace BioLink.Client.Tools {
                         elevUnits = depthResult.Units;
                         break;
                     case UnitRangeType.RangeNoUnits:
-                        elevDepth = Math.Max(depthResult.Upper, depthResult.Lower);                        
+                        elevUpper = Math.Min(depthResult.Upper, depthResult.Lower);
+                        elevLower = Math.Max(depthResult.Upper, depthResult.Lower);                        
                         break;
                     case UnitRangeType.RangeWithUnits:
-                        elevDepth = Math.Max(depthResult.Upper, depthResult.Lower);
+                        elevUpper = Math.Min(depthResult.Upper, depthResult.Lower);
+                        elevLower = Math.Max(depthResult.Upper, depthResult.Lower);                        
                         elevUnits = depthResult.Units;
                         break;
                 }
@@ -1046,6 +1076,10 @@ namespace BioLink.Client.Tools {
             _fieldIndex.Clear();
 
             foreach (ImportFieldMapping mapping in Mappings) {
+                
+                if (mapping.TargetColumn == null) {
+                    continue;
+                }
 
                 string target = mapping.TargetColumn.ToLower();
                 int index = -1;

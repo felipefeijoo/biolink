@@ -80,6 +80,7 @@ namespace BioLink.Client.Tools {
             _messages = new ObservableCollection<ImportStatusMessage>();
 
             this.InvokeIfRequired(() => {
+                RaiseRequestDisableNavigation();
                 lvw.ItemsSource = _messages;
             });
 
@@ -87,6 +88,10 @@ namespace BioLink.Client.Tools {
 
             _importProcessor = new ImportProcessor(this.FindParentWindow(), ImportContext.Importer, ImportContext.FieldMappings, this, StatusMsg);
             _importProcessor.Import();
+
+            this.InvokeIfRequired(() => {
+                RaiseRequestEnableNavigation();
+            });
 
             StatusMsg(ImportStatusLevel.Info, "Import finished");
         }
