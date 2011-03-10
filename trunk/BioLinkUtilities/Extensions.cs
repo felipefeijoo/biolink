@@ -73,8 +73,20 @@ namespace BioLink.Client.Utilities {
         }
 
         public static bool IsNumeric(this string value) {
+            double result;
+            return Double.TryParse(value, out result);
+        }
+
+        public static bool IsInteger(this string value) {
             int result;
             return Int32.TryParse(value, out result);
+        }
+
+        public static string Truncate(this string value, int length, string suffix = "...") {
+            if (value.Length > length) {
+                return value.Substring(0, length - suffix.Length) + suffix;
+            }
+            return value;
         }
 
         public static bool IsSubclassOfRawGeneric(this Type toCheck, Type generic) {

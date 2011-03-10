@@ -89,7 +89,7 @@ namespace BioLink.Client.Tools {
                     lastPercent = percent;
                 }
 
-                ImportCurrentRow(connection);
+                ImportCurrentRow(rowCount, connection);
             }
 
             ProgressMsg("Importing rows - Stage 2 Complete", 100);
@@ -124,7 +124,7 @@ namespace BioLink.Client.Tools {
             connection.Close();
         }
 
-        private void ImportCurrentRow(System.Data.SqlClient.SqlConnection connection) {
+        private void ImportCurrentRow(int rowId, System.Data.SqlClient.SqlConnection connection) {
 
             int regionNumber = -1;
             int siteNumber = -1;
@@ -192,7 +192,7 @@ namespace BioLink.Client.Tools {
                 _successCount++;
                 
             } catch (Exception ex) {
-                Error("Error: {0}", ex.Message);
+                Error("Error on Row {0}: {1}", rowId, ex.Message);
                 // Roll back the transaction....
                 User.RollbackTransaction();
                 //  Mark the import row as failed
@@ -228,12 +228,23 @@ namespace BioLink.Client.Tools {
                 } else {
                     value = mapping.DefaultValue;
                 }
-
                 var defaultValue = string.IsNullOrWhiteSpace(mapping.DefaultValue) ? def : mapping.DefaultValue;
-
-                return value == null ? defaultValue : value.ToString();
+                return value == null ? defaultValue : value.ToString();                
             }
 
+            return def;
+        }
+
+        public T GetConvert<T>(string field, T def = default(T), bool throwIfFail = true) {
+            var strValue = Get(field);
+            if (!string.IsNullOrWhiteSpace(strValue)) {
+                var result = Service.ValidateImportValue(field, strValue, throwIfFail);
+                if (result.IsValid) {
+                    return result.ConvertedValue == null ? def : (T)result.ConvertedValue;
+                } else {
+                    return def;
+                }
+            }
             return def;
         }
 
@@ -268,44 +279,6 @@ namespace BioLink.Client.Tools {
             }
         }
 
-        private Regex _DegDecMRegex = new Regex(@"^(\d+).*?([\d.]+)'*\s*(N|S|E|W|n|e|s|w)\s*$");
-        private Regex _DMSRegex = new Regex(@"^(\d+)[^\d]+(\d+)\s*""\s*(\d+)\s*'\s*(N|S|E|W|n|e|s|w)\s*$");
-
-        private double? GetCoordinate(string field, double? @default) {
-
-            var str = Get(field);
-            if (string.IsNullOrWhiteSpace(str)) {
-                return @default;
-            }
-
-            // First try decimal degrees...
-            if (str.IsNumeric()) {
-                return Double.Parse(str);
-            }
-
-            // next try Degrees*minutes'Seconds", where * can be anything
-
-            var matcher = _DMSRegex.Match(str);
-            if (matcher.Success) {
-                int degrees = Int32.Parse(matcher.Groups[1].Value);
-                int minutes = Int32.Parse(matcher.Groups[2].Value);
-                int seconds = Int32.Parse(matcher.Groups[3].Value);
-                string dir = matcher.Groups[4].Value;
-                return GeoUtils.DMSToDecDeg(degrees, minutes, seconds, dir);
-            }
-
-            matcher = _DegDecMRegex.Match(str);
-            if (matcher.Success) {
-                int degrees = Int32.Parse(matcher.Groups[1].Value);
-                double minutes = Double.Parse(matcher.Groups[2].Value);
-                string dir = matcher.Groups[3].Value;
-
-                return GeoUtils.DDecMDirToDecDeg(degrees, minutes, dir);
-            }
-
-            return @default;
-        }
-
         private int GetSiteNumber(int regionId) {
 
             var strLocal = Get("Site.Locality");
@@ -313,10 +286,10 @@ namespace BioLink.Client.Tools {
             var strOffsetDir = Get("Site.Direction from place");
             var strInformal = Get("Site.Informal Locality");
 
-            double? x1 = GetCoordinate("Site.Longitude", null);
-            double? y1 = GetCoordinate("Site.Latitude", null);
-            double? x2 = GetCoordinate("Site.Longitude 2", null);
-            double? y2 = GetCoordinate("Site.Latitude 2", null);
+            double? x1 = GetConvert<double?>("Site.Longitude", null);
+            double? y1 = GetConvert<double?>("Site.Latitude", null);
+            double? x2 = GetConvert<double?>("Site.Longitude 2", null);
+            double? y2 = GetConvert<double?>("Site.Latitude 2", null);
 
             var iPosAreaType = GetPositionType();
             int iLocalType = 0; // TODO? Can we workout what this is supposed to be?
@@ -330,6 +303,78 @@ namespace BioLink.Client.Tools {
             if (string.IsNullOrWhiteSpace(strName)) {
                 strName = strLocal;
             }
+
+            double? elevUpper = null;
+            double? elevLower = null;
+            double? elevDepth = null;
+            string elevUnits = null;
+
+            var elevResult = GetConvert<UnitRange>("Site.Elevation upper");
+            if (elevResult != null) {
+                switch (elevResult.RangeType) {
+                    case UnitRangeType.SingleValueNoUnits:
+                        elevUpper = elevResult.Upper;
+                        break;
+                    case UnitRangeType.SingleValueWithUnits:
+                        elevUpper = elevResult.Upper;
+                        elevUnits = elevResult.Units;
+                        break;
+                    case UnitRangeType.RangeNoUnits:
+                        elevUpper = elevResult.Upper;
+                        elevLower = elevResult.Lower;
+                        break;
+                    case UnitRangeType.RangeWithUnits:
+                        elevUpper = elevResult.Upper;
+                        elevLower = elevResult.Lower;
+                        elevUnits = elevResult.Units;
+                        break;
+                }
+            }
+
+            elevResult = GetConvert<UnitRange>("Site.Elevation lower");
+            if (elevResult != null) {
+                switch (elevResult.RangeType) {
+                    case UnitRangeType.SingleValueNoUnits:
+                        elevLower = elevResult.Upper;
+                        break;
+                    case UnitRangeType.SingleValueWithUnits:
+                        elevLower = elevResult.Upper;
+                        elevUnits = elevResult.Units;
+                        break;
+                    case UnitRangeType.RangeNoUnits:
+                        elevUpper = elevResult.Upper;
+                        elevLower = elevResult.Lower;
+                        break;
+                    case UnitRangeType.RangeWithUnits:
+                        elevUpper = elevResult.Upper;
+                        elevLower = elevResult.Lower;
+                        elevUnits = elevResult.Units;
+                        break;
+                }
+            }
+
+            var depthResult = GetConvert<UnitRange>("Site.Elevation depth");
+            if (depthResult != null) {
+                switch (depthResult.RangeType) {
+                    case UnitRangeType.SingleValueNoUnits:
+                        elevDepth = depthResult.Upper;
+                        break;
+                    case UnitRangeType.SingleValueWithUnits:
+                        elevDepth = depthResult.Upper;
+                        elevUnits = depthResult.Units;
+                        break;
+                    case UnitRangeType.RangeNoUnits:
+                        elevDepth = Math.Max(depthResult.Upper, depthResult.Lower);                        
+                        break;
+                    case UnitRangeType.RangeWithUnits:
+                        elevDepth = Math.Max(depthResult.Upper, depthResult.Lower);
+                        elevUnits = depthResult.Units;
+                        break;
+                }
+            }
+
+            // An explicit units mapping will override an implicit one inferred from a range, but if not, keep the inferred one, if any
+            elevUnits = Get("Site.Elevation units", elevUnits);
 
             if (_lastSite != null && _lastSite.Equals(strName, strLocal, strOffSetDis, strOffsetDir, strInformal, iCoordinateType, x1, y1, x2, y2)) {
                 return _lastSite.SiteID;
@@ -360,10 +405,10 @@ namespace BioLink.Client.Tools {
                     PosUTMMapName = Get("Site.UTM map name"),
                     PosUTMMapVer = Get("Site.UTM map version"),
                     ElevType= iElevationType,
-                    ElevUpper = GetDouble("Site.Elevation upper"),
-                    ElevLower = GetDouble("Site.Elevation lower"),
-                    ElevDepth= GetDouble("Site.Elevation depth"),
-                    ElevUnits = Get("Site.Elevation units"),
+                    ElevUpper = elevUpper,
+                    ElevLower = elevLower,
+                    ElevDepth= elevDepth,
+                    ElevUnits = elevUnits,
                     ElevSource = Get("Site.Elevation source"),
                     ElevError = Get("Site.Elevation error"),
                     GeoEra = Get("Site.Geological era"),
@@ -391,40 +436,6 @@ namespace BioLink.Client.Tools {
                     LogFunc(ImportStatusLevel.Error, string.Format(format, args));
                 }
             }            
-        }
-
-        //private void Warning(string format, params object[] args) {
-        //    if (LogFunc != null) {
-        //        if (args.Length == 0) {
-        //            LogFunc(ImportStatusLevel.Warning, format);
-        //        } else {
-        //            LogFunc(ImportStatusLevel.Warning, string.Format(format, args));
-        //        }
-        //    }
-        //}
-
-        private bool? GetBool(string field, bool? @default = null) {
-            var str = Get(field);
-            if (!string.IsNullOrWhiteSpace(str)) {
-                bool val = false;
-                if (Boolean.TryParse(str, out val)) {
-                    return val;
-                }
-                throw new Exception(string.Format("Expected a boolean value for field {0}, got {1}", field, str));
-            }
-            return @default;
-        }
-
-        private int? GetInt(string field, int? @default = null) {
-            var str = Get(field);
-            if (!string.IsNullOrWhiteSpace(str)) {
-                int val = 0;
-                if (Int32.TryParse(str, out val)) {
-                    return val;
-                }
-                throw new Exception(string.Format("Expected an int value for field {0}, got {1}", field, str));
-            }
-            return @default;
         }
 
         private double? GetDouble(string field, double? @default = null) {
@@ -498,8 +509,8 @@ namespace BioLink.Client.Tools {
         }
 
         private bool ValidateLatLong(bool twoPoints, out double? x1, out double? y1, out double? x2, out double? y2) {
-            var X = GetCoordinate("Site.Longitude", null);
-            var Y = GetCoordinate("Site.Latitude", null);
+            var X = GetConvert<double?>("Site.Longitude", null);
+            var Y = GetConvert<double?>("Site.Latitude", null);
 
             x1 = null;
             x2 = null;
@@ -510,8 +521,8 @@ namespace BioLink.Client.Tools {
                 x1 = X.Value;
                 y1 = Y.Value;
                 if (twoPoints) {
-                    x2 = GetCoordinate("Site.Longitude 2", null);
-                    y2 = GetCoordinate("Site.Latitude 2", null);
+                    x2 = GetConvert<double?>("Site.Longitude 2", null);
+                    y2 = GetConvert<double?>("Site.Latitude 2", null);
                 }
             } else {
                 double dblX, dblY;
@@ -549,9 +560,9 @@ namespace BioLink.Client.Tools {
                 throw new Exception("Easting and/or Northing data is not numeric!");
             }
 
-            var strZone = Get("Site.UTM zone number", "");
+            var strZone = Get("Site.UTM zone", "");
             if (string.IsNullOrWhiteSpace(strZone)) {
-                throw new Exception("A zone letter must be provided for UTM coordinates");
+                throw new Exception("A grid zone must be provided for UTM coordinates (UTM zone + latitude band letter)");
             }
     
             var ellipsoidName = Get("Site.UTM ellipsoid");
@@ -625,63 +636,48 @@ namespace BioLink.Client.Tools {
             var iDateType = FIXED_DATE;
             var strSiteVisitName = Get("SiteVisit.Visit Name");
             var strCollector = Get("SiteVisit.Collector(s)");
-            var strDateStart = Get("SiteVisit.Start Date");
-            if (string.IsNullOrWhiteSpace(strDateStart)) {
-                strDateStart = "0";
-            }
-            var strDateEnd = Get("SiteVisit.End Date");
-            if (string.IsNullOrWhiteSpace(strDateEnd)) {
-                strDateEnd = "0";
+
+            var strCasualDate = Get("SiteVisit.Casual time");
+
+            int? startDate = GetConvert<int?>("SiteVisit.Start Date", null, false);
+            if (!startDate.HasValue) {
+                iDateType = CASUAL_DATE;
+            } else {
+                strCasualDate = Get("SiteVisit.Start Date", strCasualDate);
             }
 
-            var timeStart = GetInt("SiteVisit.Start Time", null);
-            var timeEnd = GetInt("SiteVisit.End Time");
-            var strCasualDate = Get("SiteVisit.Casual time");
+            int? endDate = GetConvert<int?>("SiteVisit.End Date", null);
+            if (!endDate.HasValue) {
+                var sEndDate = Get("SiteVisit.End Date");
+                if (!string.IsNullOrWhiteSpace(sEndDate)) {
+                    if (iDateType == FIXED_DATE) {
+                        throw new Exception("Invalid end date value - start date is in fixed format, end date is not");
+                    } else {
+                        if (string.IsNullOrWhiteSpace(strCasualDate)) {
+                            strCasualDate = sEndDate;
+                        }
+                    }
+                }
+            }
+
+            var timeStart = GetConvert<int?>("SiteVisit.Start Time", null);
+            var timeEnd = GetConvert<int?>("SiteVisit.End Time");
+            
             var strFieldNumber = Get("SiteVisit.Field number");
 
-            if (strDateStart != "0") {
-                string errMsg;
-                if (DateUtils.IsValidBLDate(strDateStart, out errMsg)) {
-                    strDateStart.PadRight(8, '0');
-                } else {
-                    if (Information.IsDate(strDateStart)) {
-                        strDateStart = DateUtils.DateStrToBLDate(strDateStart);
-                        iDateType = FIXED_DATE;
-                    } else {
-                        iDateType = CASUAL_DATE;
-                    }
-                }
-            }
-
-            if (strDateEnd != "0") {
-                string errMsg;
-                if (DateUtils.IsValidBLDate(strDateEnd, out errMsg)) {
-                    strDateEnd.PadRight(8, '0');
-                } else {
-                    if (Information.IsDate(strDateEnd)) {
-                        strDateEnd = DateUtils.DateStrToBLDate(strDateEnd);
-                        iDateType = FIXED_DATE;
-                    } else {
-                        if (iDateType == FIXED_DATE) {
-                            throw new Exception("Invalid end date value - start date is in fixed format, end date is not");
-                        }                        
-                    }
-                }
-            }
-
             if (string.IsNullOrWhiteSpace(strSiteVisitName)) {
-                if (strDateStart != "0") {
+                if (startDate.HasValue && startDate.Value > 0) {
                     if (iDateType == FIXED_DATE) {
-                        strSiteVisitName = strCollector + ", " + DateUtils.BLDateToStr(Int32.Parse(strDateStart));
+                        strSiteVisitName = strCollector + ", " + DateUtils.BLDateToStr(startDate.Value);
                     } else {
-                        strSiteVisitName = strCollector + ", " + strDateStart;
+                        strSiteVisitName = strCollector + ", " + strCasualDate;
                     }
                 } else {
-                    if (strDateEnd != "0") {
+                    if (endDate.HasValue && endDate.Value > 0) {
                         if (iDateType == FIXED_DATE) {
-                            strSiteVisitName = strCollector + ", " + DateUtils.BLDateToStr(Int32.Parse(strDateEnd));
+                            strSiteVisitName = strCollector + ", " + DateUtils.BLDateToStr(endDate.Value);
                         } else {
-                            strSiteVisitName = strCollector + ", " + strDateEnd;
+                            strSiteVisitName = strCollector + ", " + strCasualDate;
                         }
                     } else {
                         strSiteVisitName = strCollector;
@@ -689,17 +685,9 @@ namespace BioLink.Client.Tools {
                 }
             }
 
-            if (_lastSiteVisit != null && _lastSiteVisit.Equals(siteId, strSiteVisitName, strCollector, strDateStart, strDateEnd, timeStart, timeEnd, strFieldNumber)) {
+            if (_lastSiteVisit != null && _lastSiteVisit.Equals(siteId, strSiteVisitName, strCollector, startDate, endDate, timeStart, timeEnd, strFieldNumber, strCasualDate)) {
                 return _lastSiteVisit.SiteVisitID;
             } else {
-                int? dateStart = null;
-                int? dateEnd = null;
-                if (strDateStart.IsNumeric()) {
-                    dateStart = Int32.Parse(strDateStart);
-                }
-                if (strDateEnd.IsNumeric()) {
-                    dateEnd = Int32.Parse(strDateEnd);
-                }
 
                 var visit = new SiteVisit {
                     SiteVisitName = strSiteVisitName,
@@ -707,15 +695,15 @@ namespace BioLink.Client.Tools {
                     FieldNumber = strFieldNumber,
                     Collector = strCollector,
                     DateType = iDateType,
-                    DateStart = dateStart,
-                    DateEnd = dateEnd,
+                    DateStart = startDate,
+                    DateEnd = endDate,
                     TimeStart = timeStart,
                     TimeEnd = timeEnd,
                     CasualTime = strCasualDate
                 };
 
                 var siteVisitID = Service.ImportSiteVisit(visit);
-                _lastSiteVisit = new CachedSiteVisit { SiteVisitID = siteVisitID, SiteID = siteId, Collector = strCollector, FieldNumber = strFieldNumber, SiteVisitName = strSiteVisitName, DateEnd = strDateEnd, DateStart = strDateEnd, TimeEnd = timeEnd, TimeStart = timeStart };
+                _lastSiteVisit = new CachedSiteVisit { SiteVisitID = siteVisitID, SiteID = siteId, Collector = strCollector, FieldNumber = strFieldNumber, SiteVisitName = strSiteVisitName, DateEnd = endDate, DateStart = startDate, TimeEnd = timeEnd, TimeStart = timeStart, CasualDate = strCasualDate };
                 return siteVisitID;
             }
         }
@@ -781,10 +769,10 @@ namespace BioLink.Client.Tools {
 
         private bool GetAuthority(string level, TaxonRankName rank, out string strAuthor, out string strYear, out bool changeCombination, out bool unverified, out string strKingdomType, out string strNameStatus) {
             if (level == rank.LongName) {
-                unverified = GetBool("Taxon.Verified", true).Value;
+                unverified = GetConvert<bool>("Taxon.Verified", true);
                 strAuthor = Get("Taxon.Author");
                 strYear = Get("Taxon.Year");
-                changeCombination = GetBool("Taxon.Changed Combination", false).Value;
+                changeCombination = GetConvert<bool>("Taxon.Changed Combination", false);
                 strKingdomType = Get("Taxon.KingdomType");
                 strNameStatus = Get("Taxon.Name Status");
             } else {
@@ -866,12 +854,12 @@ namespace BioLink.Client.Tools {
             var sSource = Get("Material.Source");
             var sSpecialLabel = Get("Material.Special label");
     
-            var bCopyLabel = GetBool("bOriginalLabel", false);
+            var bCreateLabel = GetConvert<bool>("Material.Create Label", false);
             var sDateStart = Get("SiteVisit.Start Date", "0");
 
             string sOriginalLabel = "";
 
-            if (bCopyLabel.ValueOrFalse()) {
+            if (bCreateLabel) {
                 if (sDateStart != "0") {
                     string message;
                     if (DateUtils.IsValidBLDate(sDateStart, out message)) {
@@ -932,8 +920,8 @@ namespace BioLink.Client.Tools {
 
         private int AddMaterialPart(int materialId) {
 
-            var numberOfSpecimens = GetInt("Material.Number of specimens");
-            if (numberOfSpecimens == 0) {
+            var numberOfSpecimens = GetConvert<int?>("Material.Number of specimens");
+            if (!numberOfSpecimens.HasValue || numberOfSpecimens.Value == 0) {
                 numberOfSpecimens = 1;
             }
 

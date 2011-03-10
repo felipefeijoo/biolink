@@ -35,7 +35,6 @@
 
         <Grid Grid.Row="2">
             <Button Content="_Load template..." Height="23" HorizontalAlignment="Right" Margin="0,6,6,0" Name="btnLoadTemplate" VerticalAlignment="Top" Width="130" Click="btnLoadTemplate_Click" />
-            <Button Content="Load _error database..." Height="23" HorizontalAlignment="Right" Margin="0,6,142,0" Name="button2" VerticalAlignment="Top" Width="130" />
         </Grid>
     </Grid>
 </src:WizardPage>

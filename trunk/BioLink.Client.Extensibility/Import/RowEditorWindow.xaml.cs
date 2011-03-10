@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using System.Data;
 using BioLink.Client.Utilities;
 using BioLink.Data;
+using System.ComponentModel;
 
 namespace BioLink.Client.Extensibility {
     /// <summary>
@@ -45,15 +46,24 @@ namespace BioLink.Client.Extensibility {
                 txt.SetValue(Grid.RowProperty, rowIndex);
                 txt.Height = 23;
                 var objValue = row[mapping.SourceColumn];
-                var txtValue = (objValue == null ? "" : objValue.ToString());
-                txt.Text = txtValue;
+                var strValue = (objValue == null ? "" : objValue.ToString());
+
+                var value = new FieldValue(mapping.TargetColumn, strValue);
+
+                var binding = new Binding("Value");
+                binding.Source = value;
+                binding.ValidatesOnDataErrors = true;
+
+                txt.SetBinding(TextBox.TextProperty, binding);
+
+                // txt.Text = strValue;
 
                 var fieldMapping = mapping; // need to keep a copy of this mapping so its captured in the closure
 
                 txt.TextChanged += new TextChangedEventHandler((source, e) => {
                     
                     var textbox = source as TextBox;                    
-                    if (textbox.Text != txtValue) {
+                    if (textbox.Text != strValue) {
                         _changeMap[fieldMapping.SourceColumn] = textbox.Text;
                     } else {
                         if (_changeMap.ContainsKey(fieldMapping.SourceColumn)) {
@@ -90,6 +100,31 @@ namespace BioLink.Client.Extensibility {
             this.Close();
         }
 
+    }
 
+    class FieldValue : IDataErrorInfo {
+
+        public FieldValue(string targetColumn, string value) {
+            this.Value = value;
+            this.TargetColumn = targetColumn;
+        }
+
+        public String Value { get; set; }
+        public String TargetColumn { get; private set; }
+
+        public string Error {
+            get { return null; }
+        }
+
+        public string this[string columnName] {
+            get {
+                var service = new ImportService(PluginManager.Instance.User);
+                var result = service.ValidateImportValue(TargetColumn, Value);
+                if (!result.IsValid) {
+                    return result.Message;
+                }
+                return null;
+            }
+        }
     }
 }

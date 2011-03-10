@@ -17,7 +17,7 @@ namespace BioLink.Data {
         public static List<FieldDescriptor> FieldDescriptors = new List<FieldDescriptor>();
         public static Dictionary<string, string> TableAliases = new Dictionary<string, string>();
         public static Dictionary<string, string> TableTraitKeyFields = new Dictionary<string, string>();
-        public static List<FieldDescriptor> ImportFieldDescriptors = new List<FieldDescriptor>();
+        
 
         #region Static Initializer
         static SupportService() {
@@ -186,102 +186,6 @@ namespace BioLink.Data {
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Notes", FieldName="txtNotes", TableName="tblMaterialPart", Category="MaterialPart", Description="Notes", Format="", UseInRDE=true, DataType="Text" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "On Loan", FieldName="tintOnLoan", TableName="tblMaterialPart", Category="MaterialPart", Description="= 1 if on loan", Format="", UseInRDE=true, DataType="Boolean" });
             // END FIELD DESCRIPTORS
-
-            // Import field descriptors
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Region", Category = "Region", Description = "Region the locality falls in" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Country", Category = "Region", Description = "Country the locality falls in" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "State/Province", Category = "Region", Description = "State/Province the locality falls in" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "County", Category = "Region", Description = "County the locality falls in" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Site Name", Category = "Site", Description = "Identifier (name or code) for this site/station assigned by the collector (need not be unique)" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Locality", Category = "Site", Description = "Place name and optional offset where the material was found" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Distance from place", Category = "Site", Description = "Distance (with units) from named place (e.g. 10km) (used in conjunction with vchrLocal and vchrDirFromPlace)." });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Direction from place", Category = "Site", Description = "Direction from named place (e.g. S) (used in conjunction with vchrLocal and vchrDistanceFromPlace)." });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Informal locality", Category = "Site", Description = "Description based on a non-named place or based on features which are only meaningful in a local context (e.g. 'near the small hill just south of the river crossing')" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Position area type", Category = "Site", Description = "Shape of the area defined by Coordinates (1 = Point/Circle, 2 = Line, 3 = Rectangle)" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Coordinate type", Category = "Site", Description = "Integer representing the coordinate data format, Latitude and longitude = 1, UTM = 2" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Latitude", Category = "Site", Description = "Latitude (in decimal degrees, positive = N, negative = S) of point, N or W end of Line, NW corner of Rectangle" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Longitude", Category = "Site", Description = "Longitude (in decimal degrees, positive = E, negative = W) of point, N or W end of Line, NW corner of Rectangle" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Latitude 2", Category = "Site", Description = "Latitude (in decimal degrees, positive = N, negative = S) of S or E end of Line, SE corner of Rectangle" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Longitude 2", Category = "Site", Description = "Longitude (in decimal degrees, positive = E, negative = W) of S or E end of Line, SE corner of Rectangle" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Position source", Category = "Site", Description = "Where or how the Latitude/Longitude coordinates were determined.  Can include sources such as map using label data, gazetteer using label data, GPS, collector, compiler." });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Position error", Category = "Site", Description = "Error associated with Lat/Long in meters (1sec = 25m, 5sec = 100m, 10sec = 200m, 30sec = 500m, 1min = 1km, 5min = 5km, 10min = 10km, 1deg = 60km, 5deg = 300km, 10deg = 600km)" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Generated by", Category = "Site", Description = "Name of person determining coordinates." });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Generated on", Category = "Site", Description = "Date the position data were generated" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Original position", Category = "Site", Description = "..." });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "UTM ellipsoid", Category = "Site", Description = "Ellipsoid defining northings and eastings" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "UTM zone number", Category = "Site", Description = "UTM zone number the coordinates are in" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "UTM source", Category = "Site", Description = "The projection used to convert between Latitude/Longitude and UTM/map grids." });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "UTM map projection", Category = "Site", Description = "Map projection of map or GPS used when determining Coordinates" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "UTM map name", Category = "Site", Description = "Name of map used to determine Coordinates" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "UTM map version", Category = "Site", Description = "Version or date of map used to determine Coordinates" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Elevation upper", Category = "Site", Description = "Capture or upper elevation (if elevation) or capture or upper water depth (if depth)." });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Elevation lower", Category = "Site", Description = "Lower elevation or lower water depth." });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Elevation depth", Category = "Site", Description = "Water Depth if different from Capture Depth" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Elevation units", Category = "Site", Description = "Units used for elevation (i.e. m, ft.)" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Elevation source", Category = "Site", Description = "Where or how the elevation or depth was determined.  Can include sources such as map using label data, digital elevation model using label data, GPS, altimeter, collector, compiler, field estimate." });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Elevation error", Category = "Site", Description = "Error associated with altitude/depth in meters" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological era", Category = "Site", Description = "Geologic Era" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological state", Category = "Site", Description = "..." });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological plate", Category = "Site", Description = "Plate Tectonic Name" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological formation", Category = "Site", Description = "Lithostratigraphic Formation" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological member", Category = "Site", Description = "Lithostratigraphic Member" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological bed", Category = "Site", Description = "Lithostratigraphic Bed" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological name", Category = "Site", Description = "Stratigraphy Name" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological age bottom", Category = "Site", Description = "Stratigraphy Bottom Age" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological age top", Category = "Site", Description = "Stratigraphy Top Age" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological notes", Category = "Site", Description = "..." });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Other", Category = "Site", Description = "Other user defined field" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Collector(s)", Category = "SiteVisit", Description = "Persons collecting the material" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Start Date", Category = "SiteVisit", Description = "Date the collection took place or began" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Start Time", Category = "SiteVisit", Description = "Optional Time the collection took place or began" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "End Date", Category = "SiteVisit", Description = "Optional date the collection concluded" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "End Time", Category = "SiteVisit", Description = "Optional time the collection concluded" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Visit Name", Category = "SiteVisit", Description = "Name given to site visit" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Field number", Category = "SiteVisit", Description = "Number assigned by collector(s) to material" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Casual Date", Category = "SiteVisit", Description = "A casual date for the site visit" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Other", Category = "SiteVisit", Description = "Other user defined field" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Material name", Category = "Material", Description = "Descriptive name given to material" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Accession number", Category = "Material", Description = "An identification number assigned by the collection for this material.  This number will normally uniquely identify the material." });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Registration number", Category = "Material", Description = "Code assigned by collection owner" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Collector number", Category = "Material", Description = "Code assigned by collector" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Identified by", Category = "Material", Description = "Person providing identification" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Identified on", Category = "Material", Description = "Date identification was made" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Identification reference", Category = "Material", Description = "The publication in which this identification appears" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Identification reference page", Category = "Material", Description = "The page number in the publication in which this identification appears" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Identification method", Category = "Material", Description = "The method used to make the identification" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Identification accuracy", Category = "Material", Description = "Likelihood that ID is correct: (0) unchecked by any authority, (1) compared with other named specimens, (2) determined by authority based on existing classification or named material, (3) determined by authority during revision, (4) part of type series" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Identification name qualifier", Category = "Material", Description = "An indication that the cited name is uncertain.  Includes cf (compare with), near, incorrect (current name is incorrect but true name is unknown), ? (questionable)" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Identification notes", Category = "Material", Description = "Assorted notes on this identification" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Institute", Category = "Material", Description = "Institute where material is held" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Collection method", Category = "Material", Description = "Method used to collect sample or origin of sample (e.g. pitfall, Malaise trap, reared, cultivated, from wild)" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Abundance", Category = "Material", Description = "Abundance or frequency of material" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Macrohabitat", Category = "Material", Description = "General description of habitat.  Can include vegetation, soil, landform, etc." });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Microhabitat", Category = "Material", Description = "Specific, small-scale habitat or situation of collection" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Source", Category = "Material", Description = "Source of this information (collection (specimen), electronic (specimen no longer available), literature (published record only), observation (unvouchered sighting), photograph (of existing specimen)" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Special label", Category = "Material", Description = "Special text to appear on printed labels" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Original label", Category = "Material", Description = "Verbatim text of label(s) that originally appeared with specimen(s)" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Part name", Category = "Material", Description = "The name of the subpart.  This should describe the subpart type, for example wings, genitalia, skin, bark." });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Sample type", Category = "Material", Description = "Type of material in this sample (e.g. bulk sample, individual specimen, dissection, subpart name or type)" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Number of specimens", Category = "Material", Description = "Number of individual specimens represented by the record." });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Number of specimens qualifier", Category = "Material", Description = "Qualification of intNoSpecimens.  Possible values include exactly, about, at least, at most" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Life stage", Category = "Material", Description = "The life stage (e.g. larvae, immature, adult) or age (e.g. 20 days, 2 years) of the specimen(s)" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Gender", Category = "Material", Description = "The gender or caste of the specimen(s)" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Part registration number", Category = "Material", Description = "..." });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Condition", Category = "Material", Description = "Condition of specimen (e.g. good, damaged, faded)" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Storage site", Category = "Material", Description = "The location within collection where specimen(s) is stored" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Storage Method", Category = "Material", Description = "Location or type of storage used for specimen(s); can also indicate preparation method (e.g. on slide, pin, card, point, etc)" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Curation status", Category = "Material", Description = "Current curation status of this material" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Notes", Category = "Material", Description = "Current curation status of this material" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Other", Category = "Material", Description = "Other user defined field" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "KingdomType", Category = "Taxon", Description = "Defaults are P for Plantae, A for Animalia" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Author", Category = "Taxon", Description = "Author of the name" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Year", Category = "Taxon", Description = "Year of publication of the name" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Changed Combination", Category = "Taxon", Description = "Indicates that the species epithet is in other than the original combination" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Verified", Category = "Taxon", Description = "Name needs checking, suspected of being no longer valid or is known to be unavailable, non zero = Verified, 0 = Unverified" });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Common Name", Category = "Taxon", Description = "Common name given to the taxa." });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Name Status", Category = "Taxon", Description = "The status of the available names." });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Other", Category = "Taxon", Description = "Other user defined field" });
-            // END Import Field Descriptors
 
         }
 
@@ -1306,41 +1210,6 @@ namespace BioLink.Data {
         public void SetPermission(int groupID, int permissionID, int mask1, int mask2 = 0) {
             StoredProcUpdate("spPermissionSet", _P("intGroupID", groupID), _P("intPermID", permissionID), _P("intPermMask1", mask1), _P("intPermMask2", mask2));
         }
-
-        #endregion
-
-        #region Import
-
-        public List<FieldDescriptor> GetImportFields() {
-            // Start off with the base list of static fields...
-            var list = new List<FieldDescriptor>(ImportFieldDescriptors);
-
-            var kingdomField = list.Find((fld) => {
-                return fld.DisplayName == "KingdomType";
-            });
-
-            // The old code put the ranks after the kingdomtype field, but before the other taxon fields...
-            int index = -1;
-            if (kingdomField != null) {
-                index = list.IndexOf(kingdomField) + 1;
-            }
-
-            // Add taxon ranks...            
-            StoredProcReaderForEach("spBiotaRankList", (reader) => {
-                string rank = reader[1].ToString();
-                if (!string.IsNullOrWhiteSpace(rank)) {
-                    var field = new FieldDescriptor { DisplayName = rank, Category = "Taxon", Description = "The taxonamic rank " + rank };
-                    if (index > 0) {
-                        list.Insert(index++, field);
-                    } else {
-                        list.Add(field);
-                    }
-                }
-            });
-
-            return list;
-        }
-
 
         #endregion
 

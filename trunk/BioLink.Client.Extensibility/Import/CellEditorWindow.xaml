@@ -6,6 +6,15 @@
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility"
              mc:Ignorable="d" 
              Height="208" Width="430" Title="Cell editor" WindowStartupLocation="CenterOwner">
+    <Window.Resources>
+        <Style TargetType="{x:Type ext:TextBox}">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="true">
+                    <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -34,7 +43,7 @@
             <TextBlock Height="23" Grid.Row="2" Grid.Column="1" Text="{Binding Path=CurrentValue}" />
 
             <Label Grid.Row="3" Grid.Column="0" Content="New value:" />
-            <ext:TextBox Height="23" Grid.Row="3" Grid.Column="1" Text="{Binding Path=NewValue, Mode=TwoWay}" x:Name="txtCurrentValue" />
+            <ext:TextBox Height="23" Grid.Row="3" Grid.Column="1" Text="{Binding Path=NewValue, Mode=TwoWay, ValidatesOnDataErrors=True}" x:Name="txtNewValue" />
 
         </Grid>
         
