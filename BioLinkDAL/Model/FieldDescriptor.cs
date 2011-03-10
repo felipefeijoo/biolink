@@ -16,7 +16,7 @@ namespace BioLink.Data.Model {
         public string Format { get; set; }
         public bool UseInRDE { get; set; }
         public string DataType { get; set; }
-        public Func<string, ConvertingValidatorResult, bool> Validator { get; set; }
+        public Func<string, ConvertingValidatorResult, bool> Validate { get; set; }
 
         public override string ToString() {
             return string.Format("{0} ({1}.{2})", DisplayName, TableName, FieldName);

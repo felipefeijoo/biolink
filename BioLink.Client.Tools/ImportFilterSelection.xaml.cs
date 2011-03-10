@@ -101,6 +101,8 @@ namespace BioLink.Client.Tools {
                 importer.InitFromProfileString(epStr);
                 ImportContext.Importer = importer;
 
+                listBox.SelectedItem = importer;
+
                 var mappings = new List<ImportFieldMapping>();
 
                 // Now the mappings...

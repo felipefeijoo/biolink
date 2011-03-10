@@ -35,7 +35,7 @@
             <Image x:Name="imgCurrentPage" Grid.Row="0" Grid.Column="0" Source="/BioLink.Client.Extensibility;component/images/RightArrowSmall.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" />
         </Grid>
         <Grid Grid.Row="0" Grid.Column="1" Margin="6" x:Name="gridContent" />
-        <Grid Grid.Row="1" Grid.ColumnSpan="2" Background="{x:Static SystemColors.ControlBrush}">
+        <Grid Grid.Row="1" Grid.ColumnSpan="2" Background="{x:Static SystemColors.ControlBrush}" Name="gridButtons">
             <Button Content="Cancel" Height="23" Margin="0,6,6,0" Name="btnCancel" VerticalAlignment="Top" HorizontalAlignment="Right" Width="75" IsCancel="True" Click="btnCancel_Click" />
             <Button Content="Next &gt;" Height="23" HorizontalAlignment="Right" Margin="0,6,100,0" Name="btnNext" VerticalAlignment="Top" Width="75" Command="{x:Static src:ImportWizard.MoveNext}" />
             <Button Content="&lt; Back" Height="23" HorizontalAlignment="Right" Margin="0,6,181,0" Name="btnPrevious" VerticalAlignment="Top" Width="75" Command="{x:Static src:ImportWizard.MovePrevious}" />
