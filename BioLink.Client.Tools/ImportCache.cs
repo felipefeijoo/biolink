@@ -65,13 +65,14 @@ namespace BioLink.Client.Tools {
         public int SiteID { get; set; }
         public string SiteVisitName { get; set; }
         public string Collector { get; set; }
-        public string DateStart { get; set; }
-        public string DateEnd { get; set; }
+        public int? DateStart { get; set; }
+        public int? DateEnd { get; set; }
         public int? TimeStart { get; set; }
         public int? TimeEnd { get; set; }
         public string FieldNumber { get; set; }
+        public string CasualDate { get; set; }
 
-        public bool Equals(int siteID, string sitevisitname, string collector, string dateStart, string dateEnd, int? timeStart, int? timeEnd, string fieldNumber) {
+        public bool Equals(int siteID, string sitevisitname, string collector, int? dateStart, int? dateEnd, int? timeStart, int? timeEnd, string fieldNumber, string casualDate) {
             if (siteID != SiteID) { return false; }
             if (sitevisitname != this.SiteVisitName) { return false; }
             if (collector != this.Collector) { return false; }
@@ -80,6 +81,7 @@ namespace BioLink.Client.Tools {
             if (timeStart != TimeStart) { return false; }
             if (timeEnd != TimeEnd) { return false; }
             if (fieldNumber != FieldNumber) { return false; }
+            if (casualDate != CasualDate) { return false; }
 
             return true;
         }

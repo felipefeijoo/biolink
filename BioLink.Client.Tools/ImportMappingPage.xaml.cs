@@ -45,7 +45,7 @@ namespace BioLink.Client.Tools {
         }
 
         public override void OnPageEnter(WizardDirection fromdirection) {
-            var service = new SupportService(User);
+            var service = new ImportService(User);
             _fields = service.GetImportFields();
             lvwFields.ItemsSource = _fields;
 
