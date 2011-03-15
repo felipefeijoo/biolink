@@ -171,6 +171,18 @@ namespace BioLink.Data {
                 _connection = null;
             }
         }
+
+        public T XIfNull<T>(object value, T @default) {
+            if (value == null) {
+                return @default;
+            }
+
+            if (DBNull.Value.Equals(value)) {
+                return @default;
+            }
+
+            return (T)value;
+        }
     }
 
     public delegate void SqliteCommandDelegate(SQLiteCommand command);
