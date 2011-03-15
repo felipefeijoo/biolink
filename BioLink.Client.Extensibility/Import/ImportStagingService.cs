@@ -130,10 +130,10 @@ namespace BioLink.Client.Extensibility {
             var list = new List<ImportFieldMapping>();
             SelectReader("SELECT * from Mappings", (reader) => {
                 var mapping = new ImportFieldMapping { 
-                    TargetColumn = (string) reader["TargetColumn"], 
-                    SourceColumn = (string) reader["SourceColumn"],
-                    IsFixed = (Int64) reader["IsFixed"] != 0,
-                    DefaultValue = (string) reader["DefaultValue"]
+                    TargetColumn = (string) XIfNull(reader["TargetColumn"],""), 
+                    SourceColumn = (string) XIfNull(reader["SourceColumn"], ""),
+                    IsFixed = (Int64) XIfNull(reader["IsFixed"], 0) != 0,
+                    DefaultValue = XIfNull(reader["DefaultValue"], "")
                 };
                 list.Add(mapping);
             });

@@ -110,7 +110,7 @@ namespace BioLink.Data {
                     if (where != "") { 
                         where += " AND ";
                     }
-                    where += trait.Substring( trait.IndexOf((char)1) + 1);
+                    where += trait.Substring(trait.IndexOf((char)1) + 1);
                 }
             }
 
@@ -349,7 +349,7 @@ namespace BioLink.Data {
             // Add the traits
             foreach (string trait in _traitClauses) {
                 if (trait.IndexOf((char)1) > 0) {
-                    strWorkingClause += "\r\n\t" + " " + trait.Substring(trait.IndexOf((char)1)) + ")";
+                    strWorkingClause += "\r\n\t" + " " + trait.Substring(0, trait.IndexOf((char)1)) + ")";
                 } else {
                     strWorkingClause += "\r\n\t" + " " + trait + ")";
                 }
@@ -370,7 +370,7 @@ namespace BioLink.Data {
             bool isTrait = IsTrait(c.Field, out traitID, out traitCatID, out traitTableName);
             if (isTrait) {
                 traitTableAlias = string.Format("T{0}", _traitClauses.Count + 1);
-                AddToTraitList(traitTableAlias, traitID, traitCatID, traitTableName, FleshCriteria(c.Criteria, "", traitTableName + ".vchrValue"));
+                AddToTraitList(traitTableAlias, traitID, traitCatID, traitTableName, FleshCriteria(c.Criteria, "", traitTableAlias + ".vchrValue"));
                 AddTable(traitTableName);
             } else {
                 AddTable(c.Field.TableName);
