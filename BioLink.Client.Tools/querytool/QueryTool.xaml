@@ -119,10 +119,10 @@
                     <DataGrid x:Name="criteriaGrid"  RowHeaderWidth="20" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="False" AutoGenerateColumns="False" VerticalContentAlignment="Center">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Field" Width="180" Binding="{Binding Field, Converter={StaticResource QueryFieldConverter}}" IsReadOnly="True" />
-                            <DataGridTextColumn Header="Criteria" Width="250" Binding="{Binding Criteria}"/>
-                            <DataGridCheckBoxColumn Header="Output" Binding="{Binding Output}" />
-                            <DataGridTextColumn Header="Alias" Width="100" Binding="{Binding Alias}"/>
-                            <DataGridComboBoxColumn Header="Sort" Width="100" TextBinding="{Binding Sort, Converter={StaticResource CriteriaSortConverter}}" x:Name="sortColumn" />
+                            <DataGridTextColumn Header="Criteria" Width="250" Binding="{Binding Criteria, UpdateSourceTrigger=PropertyChanged}"/>
+                            <DataGridCheckBoxColumn Header="Output" Binding="{Binding Output, UpdateSourceTrigger=PropertyChanged}" />
+                            <DataGridTextColumn Header="Alias" Width="100" Binding="{Binding Alias, UpdateSourceTrigger=PropertyChanged}"/>
+                            <DataGridComboBoxColumn Header="Sort" Width="100" TextBinding="{Binding Sort, Converter={StaticResource CriteriaSortConverter}, UpdateSourceTrigger=PropertyChanged}" x:Name="sortColumn" />
                         </DataGrid.Columns>                
                     </DataGrid>
                 </ScrollViewer>
