@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             Height="379" Width="670" SizeToContent="Manual">
+             Height="379" Width="670" SizeToContent="Manual" Title="Import errors">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -14,7 +14,7 @@
             <Button Content="_Cancel" Height="23" HorizontalAlignment="Right" Margin="0,7,6,0" Name="btnCancel" VerticalAlignment="Top" Width="75" IsCancel="True" />
             <Button Content="_OK" Height="23" HorizontalAlignment="Right" IsCancel="False" Margin="0,7,87,0" Name="btnOK" VerticalAlignment="Top" Width="75" IsDefault="True" Click="btnOK_Click" />
         </Grid>
-        <DataGrid AutoGenerateColumns="False" Margin="12,32,12,14" Name="dataGrid">
+        <DataGrid AutoGenerateColumns="False" Margin="12,46,12,14" Name="dataGrid">
             <DataGrid.RowHeaderTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
@@ -34,5 +34,6 @@
                 </DataTemplate>
             </DataGrid.RowDetailsTemplate>
         </DataGrid>
+        <Label Content="Correct the errors in each row before continuing" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" Name="label1" VerticalAlignment="Top" Width="624" />
     </Grid>
 </Window>

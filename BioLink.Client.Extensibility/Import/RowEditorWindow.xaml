@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility"
              mc:Ignorable="d" 
-             Height="450" Width="400" SizeToContent="Manual">
+             Height="450" Width="400" SizeToContent="Manual" Title="Import error editor">
     
     <Window.Resources>
         <Style TargetType="{x:Type ext:TextBox}">
