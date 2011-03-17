@@ -71,7 +71,7 @@ namespace BioLink.Client.Taxa {
 
             if (!Explorer.IsUnlocked) {
                 builder.Separator();                
-                builder.New("TaxonExplorer.menu.Refresh").Handler(() => Explorer.Refresh());
+                builder.New("TaxonExplorer.menu.Refresh").Handler(() => Explorer.Refresh()).End();
             }
 
             if (!Taxon.IsRootNode) {
