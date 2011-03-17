@@ -588,6 +588,8 @@ namespace BioLink.Client.Material {
                 }).End();
                 builder.Separator();
                 builder.AddMenuItem(SiteExplorerMenuBuilder.CreateTemplateItems(this));
+                builder.Separator();
+                builder.New("Refresh").Handler(() => { Refresh(); }).End();
                 tvw.ContextMenu = builder.ContextMenu;
             } else if (tvw.SelectedItem == unplacedNode) {
                 builder.New("Add Site _Group").Handler(() => {
@@ -615,6 +617,8 @@ namespace BioLink.Client.Material {
 
                 builder.Separator();
                 builder.AddMenuItem(SiteExplorerMenuBuilder.CreateTemplateItems(this));
+                builder.Separator();
+                builder.New("Refresh").Handler(() => { Refresh(); }).End();
                 tvw.ContextMenu = builder.ContextMenu;
 
             } else {

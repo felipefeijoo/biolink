@@ -219,6 +219,18 @@ namespace BioLink.Client.Utilities {
             return String.Format(format, bytes / divisor, units);
         }
 
+        /// <summary>
+        /// May potentially be able to improve what this does. For now just "start" it.
+        /// </summary>
+        /// <param name="filename"></param>
+        public static void ShellExecute(string filename) {
+            try {
+                System.Diagnostics.Process.Start(filename);
+            } catch (Exception ex) {
+                ErrorMessage.Show("Unable to launch file '{0}': {1}", filename, ex.Message);
+            }
+        }
+
     }
 }
 

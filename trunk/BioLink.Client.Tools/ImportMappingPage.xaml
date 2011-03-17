@@ -53,7 +53,7 @@
             
             <Grid Grid.Row="0" Background="{x:Static SystemColors.ControlBrush}">
                 <Label Content="Filter:" Height="28" HorizontalAlignment="Left" Margin="0" Name="label1" VerticalAlignment="Top" Width="58" />
-                <my:DelayedTriggerTextbox HorizontalAlignment="Left" Margin="64,4,0,0" Name="delayedTriggerTextbox1" VerticalAlignment="Top" Width="187" TypingPaused="delayedTriggerTextbox1_TypingPaused" />
+                <my:DelayedTriggerTextbox HorizontalAlignment="Left" Margin="64,4,0,0" Name="delayedTriggerTextbox1" VerticalAlignment="Top" Width="187" TypingPaused="delayedTriggerTextbox1_TypingPaused" PreviewKeyDown="delayedTriggerTextbox1_PreviewKeyDown" />
             </Grid>
 
             <ListView x:Name="lvwFields" Grid.Row="1" SelectionChanged="lvwFields_SelectionChanged"  MouseDoubleClick="lvwFields_MouseDoubleClick">

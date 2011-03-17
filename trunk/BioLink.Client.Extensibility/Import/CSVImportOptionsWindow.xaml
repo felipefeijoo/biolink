@@ -17,7 +17,7 @@
             <Label Content="Delimiting character:" Height="28" Margin="12,66,0,0" Name="label2" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120" />
             <ComboBox Height="23" HorizontalAlignment="Left" Margin="138,69,0,0" Name="cmbDelimiter" VerticalAlignment="Top" Width="67" IsEditable="True" />
             <CheckBox Content="First row contains column names  " Height="16" HorizontalAlignment="Right" Margin="0,71,12,0" Name="chkFirstRowNames" VerticalAlignment="Top" Width="238" HorizontalContentAlignment="Left" FlowDirection="RightToLeft" VerticalContentAlignment="Center" />
-            <Button Content="_View file" Height="23" HorizontalAlignment="Right" Margin="0,37,12,0" Name="btnViewFile" VerticalAlignment="Top" Width="75" />
+            <Button Content="_View file" Height="23" HorizontalAlignment="Right" Margin="0,37,12,0" Name="btnViewFile" VerticalAlignment="Top" Width="75" Click="btnViewFile_Click" />
         </Grid>
         <Grid Grid.Row="1">
             <GroupBox Header="Preview" Name="grpPreview" Margin="12,0,12,6">

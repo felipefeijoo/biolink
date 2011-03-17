@@ -115,6 +115,9 @@
       <DependentUpon>CSVExporterOptionsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Export\Excel2003Exporter.cs" />
+    <Compile Include="Import\ExcelImporterOptionsWindow.xaml.cs">
+      <DependentUpon>ExcelImporterOptionsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Export\ExportData.xaml.cs">
       <DependentUpon>ExportData.xaml</DependentUpon>
     </Compile>
@@ -157,6 +160,7 @@
     <Compile Include="Import\ErrorDatabaseImportOptionsWindow.xaml.cs">
       <DependentUpon>ErrorDatabaseImportOptionsWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Import\ExcelImporter.cs" />
     <Compile Include="Import\Import.cs" />
     <Compile Include="Import\CSVImporter.cs" />
     <Compile Include="Import\ImportStagingService.cs" />
@@ -342,6 +346,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Export\CSVExporterOptionsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Import\ExcelImporterOptionsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

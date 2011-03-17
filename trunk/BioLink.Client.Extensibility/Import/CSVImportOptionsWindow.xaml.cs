@@ -145,5 +145,9 @@ namespace BioLink.Client.Extensibility.Import {
             }
         }
 
+        private void btnViewFile_Click(object sender, RoutedEventArgs e) {
+            SystemUtils.ShellExecute(txtFilename.Text);
+        }
+
     }
 }

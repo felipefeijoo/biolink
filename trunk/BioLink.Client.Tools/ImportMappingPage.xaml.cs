@@ -42,6 +42,15 @@ namespace BioLink.Client.Tools {
             this.CommandBindings.Add(new CommandBinding(AutoMap, ExecutedAutoMap, CanExecuteAutoMap));
 
             InitializeComponent();
+
+            lvwFields.PreviewKeyDown += new KeyEventHandler(lvwFields_PreviewKeyDown);
+        }
+
+        void lvwFields_PreviewKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key == Key.Enter) {
+                MapSelectedField();
+                e.Handled = true;
+            }
         }
 
         public override void OnPageEnter(WizardDirection fromdirection) {
@@ -325,6 +334,18 @@ namespace BioLink.Client.Tools {
             if (selected != null) {
                 selected.DefaultValue = null;
             }
+        }
+
+        private void delayedTriggerTextbox1_PreviewKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key == Key.Down) {
+                lvwFields.SelectedIndex = 0;
+                if (lvwFields.SelectedItem != null) {
+                    ListViewItem item = lvwFields.ItemContainerGenerator.ContainerFromItem(lvwFields.SelectedItem) as ListViewItem;
+                    item.Focus();
+                }
+                e.Handled = true;
+            }
+
         }
 
     }
