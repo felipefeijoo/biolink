@@ -18,6 +18,7 @@ namespace BioLink.Client.Tools {
         private ControlHostWindow _queryTool;
         private ControlHostWindow _userManager;
         private ImportWizard _importWizard;
+        private ImportWizard _importReferencesWizard;
 
         public const string TOOLS_PLUGIN_NAME = "Tools";
 
@@ -58,9 +59,13 @@ namespace BioLink.Client.Tools {
 
             contrib.Add(new MenuWorkspaceContribution(this, "Import", (obj, e) => { ShowImport(); },
                 String.Format("{{'Name':'Tools', 'Header':'_Tools','InsertAfter':'UserManager'}}"),
-                String.Format("{{'Name':'Import', 'Header':'Import...'}}")
+                String.Format("{{'Name':'Import', 'Header':'Import'}}"), String.Format("{{'Name':'Import', 'Header':'_Taxa and Material records...'}}")
             ));
 
+            contrib.Add(new MenuWorkspaceContribution(this, "Import", (obj, e) => { ShowImportReferences(); },
+                String.Format("{{'Name':'Tools', 'Header':'_Tools','InsertAfter':'UserManager'}}"),
+                String.Format("{{'Name':'Import', 'Header':'Import'}}"), String.Format("{{'Name':'ImportReferences', 'Header':'_References'}}")
+            ));
 
             return contrib;
         }
@@ -78,6 +83,11 @@ namespace BioLink.Client.Tools {
 
             if (_importWizard != null) {
                 _importWizard.Close();
+                _importWizard = null;
+            }
+
+            if (_importReferencesWizard != null) {
+                _importReferencesWizard.Close();
                 _importWizard = null;
             }
 
@@ -155,7 +165,16 @@ namespace BioLink.Client.Tools {
             if (_importWizard == null) {
                 var context = new ImportWizardContext();
 
-                _importWizard = new ImportWizard(User, "Import Data", context, new ImportFilterSelection(), new ImportMappingPage(), new ImportPage());
+                Func<List<FieldDescriptor>> fieldSource = () => {
+                    var service = new ImportService(User);
+                    return service.GetImportFields();
+                };
+
+                Func<ImportProcessor> importProcessorFactory = () => {
+                    return new MaterialImportProcessor();
+                };
+
+                _importWizard = new ImportWizard(User, "Import Data", context, new ImportFilterSelection(), new ImportMappingPage(fieldSource), new ImportPage(importProcessorFactory));
 
                 _importWizard.Closed += new EventHandler((sender, e) => {
                     _importWizard = null;
@@ -165,6 +184,31 @@ namespace BioLink.Client.Tools {
             _importWizard.Show();
             _importWizard.Focus();
         }
+
+        private void ShowImportReferences() {
+            if (_importReferencesWizard == null) {
+                var context = new ImportWizardContext();
+
+                Func<List<FieldDescriptor>> fieldSource = () => {
+                    var service = new ImportService(User);
+                    return service.GetReferenceImportFields();
+                };
+
+                Func<ImportProcessor> importProcessorFactory = () => {
+                    return new ImportReferencesProcessor();
+                };
+
+                _importReferencesWizard = new ImportWizard(User, "Import References", context, new ImportFilterSelection(), new ImportMappingPage(fieldSource), new ImportPage(importProcessorFactory));
+
+                _importReferencesWizard.Closed += new EventHandler((sender, e) => {
+                    _importReferencesWizard = null;
+                });
+            }
+
+            _importReferencesWizard.Show();
+            _importReferencesWizard.Focus();
+        }
+
 
         public override List<Command> GetCommandsForObject(ViewModelBase obj) {
             if (obj is ReferenceViewModel) {

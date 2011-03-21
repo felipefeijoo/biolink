@@ -44,7 +44,7 @@
 
         <GridSplitter Grid.Column="1" Width="6" ResizeBehavior="PreviousAndNext" />
         
-        <Grid Grid.Column="2">
+        <Grid Grid.Column="2" Background="{x:Static SystemColors.ControlBrush}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30" />
                 <RowDefinition Height="*" />
@@ -56,7 +56,7 @@
                 <my:DelayedTriggerTextbox HorizontalAlignment="Left" Margin="64,4,0,0" Name="delayedTriggerTextbox1" VerticalAlignment="Top" Width="187" TypingPaused="delayedTriggerTextbox1_TypingPaused" PreviewKeyDown="delayedTriggerTextbox1_PreviewKeyDown" />
             </Grid>
 
-            <ListView x:Name="lvwFields" Grid.Row="1" SelectionChanged="lvwFields_SelectionChanged"  MouseDoubleClick="lvwFields_MouseDoubleClick">
+            <ListView x:Name="lvwFields" Grid.Row="1" SelectionChanged="lvwFields_SelectionChanged"  MouseDoubleClick="lvwFields_MouseDoubleClick" Margin="0,0,6,0">
                 <ListView.Resources>
                     <DataTemplate DataType="{x:Type model:FieldDescriptor}">
                         <TextBlock Text="{Binding DisplayName}" />

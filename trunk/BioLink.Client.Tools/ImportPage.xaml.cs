@@ -24,9 +24,12 @@ namespace BioLink.Client.Tools {
 
         private ObservableCollection<ImportStatusMessage> _messages;
         private ImportProcessor _importProcessor;
+        private Func<ImportProcessor> _importerFactory;
 
-        public ImportPage() {
+
+        public ImportPage(Func<ImportProcessor> importerFactory) {
             InitializeComponent();
+            _importerFactory = importerFactory;
         }
 
         public override string PageTitle {
@@ -86,8 +89,9 @@ namespace BioLink.Client.Tools {
 
             StatusMsg(ImportStatusLevel.Info, "Import started");
 
-            _importProcessor = new ImportProcessor(this.FindParentWindow(), ImportContext.Importer, ImportContext.FieldMappings, this, StatusMsg);
-            _importProcessor.Import();
+            _importProcessor = _importerFactory();
+
+            _importProcessor.Import(this.FindParentWindow(), ImportContext, this, StatusMsg);
 
             this.InvokeIfRequired(() => {
                 RaiseRequestEnableNavigation();

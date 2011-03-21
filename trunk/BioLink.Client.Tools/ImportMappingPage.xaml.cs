@@ -25,6 +25,7 @@ namespace BioLink.Client.Tools {
 
         private List<FieldDescriptor> _fields;
         private ObservableCollection<ImportFieldMappingViewModel> _model;
+        private Func<List<FieldDescriptor>> _fieldSource;
 
         static ImportMappingPage() {
             MapField = new RoutedCommand("MapFieldCommand", typeof(ImportMappingPage));
@@ -34,7 +35,10 @@ namespace BioLink.Client.Tools {
         }
 
 
-        public ImportMappingPage() {
+        public ImportMappingPage(Func<List<FieldDescriptor>> fieldSource) {
+
+            _fieldSource = fieldSource;
+
             // Command bindings...
             this.CommandBindings.Add(new CommandBinding(MapField, ExecutedMapField, CanExecuteMapField));
             this.CommandBindings.Add(new CommandBinding(UnmapField, ExecutedUnmapField, CanExecuteUnmapField));
@@ -54,8 +58,7 @@ namespace BioLink.Client.Tools {
         }
 
         public override void OnPageEnter(WizardDirection fromdirection) {
-            var service = new ImportService(User);
-            _fields = service.GetImportFields();
+            _fields = _fieldSource();
             lvwFields.ItemsSource = _fields;
 
             CollectionView myView = (CollectionView)CollectionViewSource.GetDefaultView(lvwFields.ItemsSource);

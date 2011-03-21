@@ -67,6 +67,7 @@
       <DependentUpon>ImportPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="ImportProcessor.cs" />
+    <Compile Include="ImportReferencesProcessor.cs" />
     <Compile Include="ImportWizard.xaml.cs">
       <DependentUpon>ImportWizard.xaml</DependentUpon>
     </Compile>
@@ -81,6 +82,7 @@
       <DependentUpon>JournalManager.xaml</DependentUpon>
     </Compile>
     <Compile Include="journals\JournalViewModel.cs" />
+    <Compile Include="MaterialImportProcessor.cs" />
     <Compile Include="usermanager\PermissionProperties.xaml.cs">
       <DependentUpon>PermissionProperties.xaml</DependentUpon>
     </Compile>
