@@ -41,4 +41,12 @@ namespace BioLink.Data.Model {
         }
 
     }
+
+    public class ReferenceImport : Reference {
+
+        public string JournalAbbrevName { get; set; }
+        public string JournalFullName { get; set; }
+        public string DateQual { get; set; }
+
+    }
 }

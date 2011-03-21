@@ -183,5 +183,9 @@ namespace BioLink.Client.Extensibility {
             Close();
         }
 
+        private void button1_Click(object sender, RoutedEventArgs e) {
+            SystemUtils.ShellExecute(txtFilename.Text);
+        }
+
     }
 }

@@ -5,6 +5,7 @@ using System.Text;
 using BioLink.Data.Model;
 using System.Text.RegularExpressions;
 using BioLink.Client.Utilities;
+using System.Data;
 
 namespace BioLink.Data {
 
@@ -22,7 +23,9 @@ namespace BioLink.Data {
 
         public static List<FieldDescriptor> ImportFieldDescriptors = new List<FieldDescriptor>();
 
-            static ImportService() {
+        public static List<FieldDescriptor> ImportReferencesDescriptors = new List<FieldDescriptor>();
+
+        static ImportService() {
 
             #region Import Field Descriptors
             // Import field descriptors
@@ -124,6 +127,34 @@ namespace BioLink.Data {
 
             #endregion
 
+            #region Import Reference Field Descriptors
+
+            ImportReferencesDescriptors.Add(new FieldDescriptor { Category = "References", DisplayName = "ReferenceCode", Description ="Code used to identify the reference", Validate = StringValidator});
+            ImportReferencesDescriptors.Add(new FieldDescriptor { Category = "References", DisplayName = "Author(s)", Description = "Authors of the reference", Validate = StringValidator });
+            ImportReferencesDescriptors.Add(new FieldDescriptor { Category = "References", DisplayName = "Year of publication", Description = "The year in which the reference was published", Validate = StringValidator });
+            ImportReferencesDescriptors.Add(new FieldDescriptor { Category = "References", DisplayName = "Article title", Description = "The title of the article", Validate = StringValidator });
+            ImportReferencesDescriptors.Add(new FieldDescriptor { Category = "References", DisplayName = "Book title", Description = "The title of the book where the article was sourced", Validate = StringValidator });
+            ImportReferencesDescriptors.Add(new FieldDescriptor { Category = "References", DisplayName = "Editor", Description = "The editor of the article", Validate = StringValidator });
+            ImportReferencesDescriptors.Add(new FieldDescriptor { Category = "References", DisplayName = "Actual publication date", Description = "Date the article was actually published", Validate = StringValidator });
+            ImportReferencesDescriptors.Add(new FieldDescriptor { Category = "References", DisplayName = "Journal name", Description = "The name of the journal from which the article was sourced", Validate = StringValidator });
+            ImportReferencesDescriptors.Add(new FieldDescriptor { Category = "References", DisplayName = "Journal Abbreviated Name", Description = "Abbreviated name of the journal", Validate = StringValidator });
+            ImportReferencesDescriptors.Add(new FieldDescriptor { Category = "References", DisplayName = "Part Number", Description = "Part Number of the journal", Validate = StringValidator });
+            ImportReferencesDescriptors.Add(new FieldDescriptor { Category = "References", DisplayName = "Series Number", Description = "Series number of the journal", Validate = StringValidator });
+            ImportReferencesDescriptors.Add(new FieldDescriptor { Category = "References", DisplayName = "Book Publisher", Description = "The publisher of the book", Validate = StringValidator });
+            ImportReferencesDescriptors.Add(new FieldDescriptor { Category = "References", DisplayName = "Book Place of publication", Description = "Place where the book was published", Validate = StringValidator });
+            ImportReferencesDescriptors.Add(new FieldDescriptor { Category = "References", DisplayName = "Volume", Description = "Volume number of the book", Validate = StringValidator });
+            ImportReferencesDescriptors.Add(new FieldDescriptor { Category = "References", DisplayName = "Pages", Description = "Page numbers of the article", Validate = StringValidator });
+            ImportReferencesDescriptors.Add(new FieldDescriptor { Category = "References", DisplayName = "Total pages", Description = "Total number of pages if reference is a book or journal section", Validate = StringValidator });
+            ImportReferencesDescriptors.Add(new FieldDescriptor { Category = "References", DisplayName = "Edition", Description = "Edition number of the book", Validate = StringValidator });
+            ImportReferencesDescriptors.Add(new FieldDescriptor { Category = "References", DisplayName = "ISBN", Description = "ISBN number of the book", Validate = StringValidator });
+            ImportReferencesDescriptors.Add(new FieldDescriptor { Category = "References", DisplayName = "ISSN", Description = "ISSN number of the book", Validate = StringValidator });
+            ImportReferencesDescriptors.Add(new FieldDescriptor { Category = "References", DisplayName = "Qualification", Description = "Any qualifier for the reference", Validate = StringValidator });
+            ImportReferencesDescriptors.Add(new FieldDescriptor { Category = "References", DisplayName = "Qualification-date", Description = "Date qualifier for the reference", Validate = StringValidator });
+            ImportReferencesDescriptors.Add(new FieldDescriptor { Category = "References", DisplayName = "Source", Description = "Where the referenced was sourced", Validate = StringValidator });
+            ImportReferencesDescriptors.Add(new FieldDescriptor { Category = "References", DisplayName = "Possession", Description = "The form of the reference that I possess (e.g. Photocopy, orginal, etc..)", Validate = StringValidator });
+            ImportReferencesDescriptors.Add(new FieldDescriptor { Category = "References", DisplayName = "Other", Description = "Any other field", Validate = StringValidator });
+
+            #endregion
         }
 
         public ImportService(User user) : base(user) { }
@@ -156,6 +187,48 @@ namespace BioLink.Data {
             });
 
             return list;
+        }
+
+        public List<FieldDescriptor> GetReferenceImportFields() {
+            var list = new List<FieldDescriptor>(ImportReferencesDescriptors);
+            return list;
+        }
+
+        public int ImportReference(ReferenceImport r) {
+            var retval = ReturnParam("NewRefID", SqlDbType.Int);
+            StoredProcUpdate("spReferenceInsert",
+                _P("vchrRefCode", r.RefCode),
+                _P("vchrAuthor", r.Author),
+                _P("vchrTitle", r.Title),
+                _P("vchrBookTitle", r.BookTitle),
+                _P("vchrEditor", r.Editor),
+                _P("vchrRefType", r.RefType),
+                _P("vchrYearOfPub", r.YearOfPub),
+                _P("vchrActualDate", r.ActualDate),
+                _P("vchrJournalAbbrevName", r.JournalAbbrevName),
+                _P("vchrJournalFullName", r.JournalFullName),
+                _P("vchrPartNo", r.PartNo),
+                _P("vchrSeries", r.Series),
+                _P("vchrPublisher", r.Publisher),
+                _P("vchrPlace", r.Place),
+                _P("vchrVolume", r.Volume),
+                _P("vchrPages", r.Pages),
+                _P("vchrTotalPages", r.TotalPages),
+                _P("vchrPossess", r.Possess),
+                _P("vchrSource", r.Source),
+                _P("vchrEdition", r.Edition),
+                _P("vchrISBN", r.ISBN),
+                _P("vchrISSN", r.ISSN),
+                _P("txtAbstract", r.Abstract),
+                _P("txtDateQual", r.DateQual),
+                _P("txtFullRTF", r.FullRTF),
+                _P("intStartPage", r.StartPage),
+                _P("intEndPage", r.EndPage),
+                retval
+            );
+
+            return (int)retval.Value;
+
         }
 
         public int ImportRegion(string name, int parentId, string rank) {
