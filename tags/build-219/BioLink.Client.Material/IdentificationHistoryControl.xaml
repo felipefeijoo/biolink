@@ -1,0 +1,77 @@
+﻿<ext:DatabaseActionControl x:Class="BioLink.Client.Material.IdentificationHistoryControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+             xmlns:mat="clr-namespace:BioLink.Client.Material"
+             mc:Ignorable="d" 
+             d:DesignHeight="307" d:DesignWidth="652" MinWidth="650" MinHeight="300">
+    <Grid>
+        <Grid.Resources>
+            <ext:HardDateConverter x:Key="hardDateConverter" />
+        </Grid.Resources>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200" MinWidth="180"/>
+            <ColumnDefinition Width="*" MinWidth="360"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+
+        <GridSplitter ResizeDirection="Columns" Grid.Row="0" Grid.Column="0" Width="8" />
+
+        <ListBox Grid.Column="0" Name="lst" Margin="0,0,8,0" MinWidth="180">
+            <ListBox.Resources>
+                <DataTemplate DataType="{x:Type mat:MaterialIdentificationViewModel}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding DisplayLabel,Mode=OneWay}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.Resources>
+        </ListBox>
+        <Grid Grid.Column="1" DataContext="{Binding ElementName=lst, Path=SelectedItem}" x:Name="detailGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="70"/>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="5" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="28"/>
+                <RowDefinition Height="28"/>
+                <RowDefinition Height="28"/>
+                <RowDefinition Height="28"/>
+                <RowDefinition Height="28"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            
+            <Label Content="Identification:" HorizontalAlignment="Left" Name="label16" />
+            <ext:TextBox Height="23" Grid.Row="0" Grid.ColumnSpan="3" Grid.Column="1" Name="txtIdentification" Text="{Binding Taxa}" />
+            <Label Grid.Row="1" Content="Identified By:" Name="label17" />
+            <ext:PickListControl Grid.Row="1" Grid.Column="1" Height="23" Name="txtIdentifiedBy" Text="{Binding IDBy}"/>
+            <Label Grid.Row="1" Grid.Column="2" Content="on date:" Name="label18"  />
+            <ext:DateControl Grid.Row="1" Grid.Column="3" Height="23" Name="dtIDDate" Date="{Binding IDDate, Converter={StaticResource hardDateConverter}}"/>
+            <Label Grid.Row="2" Content="Reference:" Name="label19" />
+            <ext:LookupControl Grid.Row="2" Grid.Column="1" Height="23" Name="txtReference" Text="{Binding RefCode}" ObjectID="{Binding IDRefID}"/>
+            <Label Grid.Row="2" Grid.Column="2" Content="Page:" Name="label20" />
+            <ext:TextBox Grid.Row="2" Grid.Column="3" Height="23" Name="txtPage" Text="{Binding IDRefPage}"/>
+            <Label Grid.Row="3" Content="Accuracy:" HorizontalAlignment="Left" Name="label21" />
+            <ext:PickListControl Grid.Row="3" Grid.Column="1" Height="23" Name="txtAccuracy"  Text="{Binding IDAccuracy}"/>            
+            <Label Grid.Row="3" Grid.Column="2" Content="Method:" Name="label22" />
+            <ext:PickListControl Grid.Row="3" Grid.Column="3" Height="23" Name="txtMethod" Text="{Binding IDMethod}"/>            
+            <Label Grid.Row="4" Content="Name Qual.:" Name="label23" />
+            <ext:PickListControl Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Height="23" Name="txtNameQual" Text="{Binding NameQual}"/>            
+            <Label Grid.Row="5" Content="Notes:" Name="label24" />
+            <ext:BindableRichTextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3"  Name="txtNotes" RTF="{Binding IDNotes}" Margin="0,5" />
+            
+        </Grid>
+        <Button Content="_Delete" Grid.Row="1" Height="23" HorizontalAlignment="Left" Margin="81,5,0,0" Name="btnDelete" VerticalAlignment="Top" Width="75" Click="btnDelete_Click" />
+        <Button Content="_Add new" Height="23" HorizontalAlignment="Left" Margin="0,5,0,0" Name="btnAdd" VerticalAlignment="Top" Width="75" Grid.Row="1" Click="btnAdd_Click" />
+
+    </Grid>
+</ext:DatabaseActionControl>
+
+    
