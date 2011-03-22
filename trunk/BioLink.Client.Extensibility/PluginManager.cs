@@ -202,8 +202,11 @@ namespace BioLink.Client.Extensibility {
         }
 
         public void RunReport(IBioLinkPlugin owner, IBioLinkReport report) {
-            ReportResults results = new ReportResults(report);
-            AddDockableContent(owner, results, report.Name);
+
+            if (report.DisplayOptions(User, ParentWindow)) {
+                ReportResults results = new ReportResults(report);
+                AddDockableContent(owner, results, report.Name);
+            }
         }
 
 
@@ -241,12 +244,12 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        public List<Command> SolicitCommandsForObject(ViewModelBase viewmodel) {
+        public List<Command> SolicitCommandsForObjects(List<ViewModelBase> selected) {
             var list = new List<Command>();
 
-            if (viewmodel != null) {
+            if (selected != null && selected.Count > 0) {
                 TraversePlugins((p) => {
-                    var l = p.GetCommandsForObject(viewmodel);
+                    var l = p.GetCommandsForSelected(selected);
                     if (l != null) {
                         list.AddRange(l);
                     }

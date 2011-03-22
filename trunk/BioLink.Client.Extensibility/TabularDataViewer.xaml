@@ -18,7 +18,7 @@
             <DockPanel Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type ToolBarPanel}}}">
                 <Button x:Name="btnExport" Click="btnExport_Click">
                     <Button.Content>
-                        <Image Source="images/export.png" Height="20" Width="20" />
+                        <Image Source="images/export.png" Height="20" Width="20" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None"/>
                     </Button.Content>
                 </Button>
                 <Separator />

@@ -21,7 +21,7 @@ namespace BioLink.Client.Extensibility {
         void InitializePlugin(User user, PluginManager pluginManager, Window parentWindow);        
         bool RequestShutdown();
         ViewModelBase CreatePinnableViewModel(PinnableObject pinnable);
-        List<Command> GetCommandsForObject(ViewModelBase obj);
+        List<Command> GetCommandsForSelected(List<ViewModelBase> selected);
         List<IWorkspaceContribution> GetContributions();
         bool CanSelect(Type t);
         void Select(Type t, Action<SelectionResult> success);

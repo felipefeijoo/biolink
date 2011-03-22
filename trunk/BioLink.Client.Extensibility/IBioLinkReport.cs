@@ -8,6 +8,7 @@ namespace BioLink.Client.Extensibility {
     public interface IBioLinkReport {
 
         string Name { get; }
+        bool DisplayOptions(User user, Window parentWindow);
         List<IReportViewerSource> Viewers { get; }
         DataMatrix ExtractReportData(IProgressObserver progress);
         List<DisplayColumnDefinition> DisplayColumns { get; }

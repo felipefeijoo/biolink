@@ -101,7 +101,9 @@ namespace BioLink.Client.Taxa {
 
         private MenuItem CreateReportMenuItems() {
             MenuItem reports = _builder.New("Reports").MenuItem;
-            var list = Explorer.Owner.GetReportsForTaxon(Taxon);
+            var taxa = new List<TaxonViewModel>();
+            taxa.Add(Taxon);
+            var list = Explorer.Owner.GetReportsForTaxon(taxa);
             foreach (IBioLinkReport report in list) {
                 IBioLinkReport reportToExecute = report;
                 reports.Items.Add(_builder.New(report.Name).Handler(() => { Explorer.RunReport(reportToExecute); }).MenuItem);

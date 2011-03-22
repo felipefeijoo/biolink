@@ -4,6 +4,7 @@ using BioLink.Client.Utilities;
 using BioLink.Data;
 
 namespace BioLink.Client.Taxa {
+
     public abstract class TaxonReportBase : IBioLinkReport {
 
         private List<IReportViewerSource> _viewers = new List<IReportViewerSource>();
@@ -51,6 +52,9 @@ namespace BioLink.Client.Taxa {
 
         public abstract DataMatrix ExtractReportData(IProgressObserver progress);
 
+        public virtual bool DisplayOptions(User user, System.Windows.Window parentWindow) {
+            return true;
+        }
 
     }
 }

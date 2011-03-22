@@ -167,9 +167,15 @@ namespace BioLink.Client.Material {
             return null;
         }
 
-        public override List<Command> GetCommandsForObject(ViewModelBase obj) {
+        public override List<Command> GetCommandsForSelected(List<ViewModelBase> selected) {
 
             var list = new List<Command>();
+
+            if (selected == null || selected.Count == 0) {
+                return list;
+            }
+
+            var obj = selected[0];
 
             if (obj is SiteExplorerNodeViewModel) {
                 var node = obj as SiteExplorerNodeViewModel;

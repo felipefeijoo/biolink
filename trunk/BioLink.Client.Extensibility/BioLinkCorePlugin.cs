@@ -49,7 +49,7 @@ namespace BioLink.Client.Extensibility {
             _pinboard.ContentControl.RefreshPinBoard();
         }
 
-        public override List<Command> GetCommandsForObject(ViewModelBase obj) {
+        public override List<Command> GetCommandsForSelected(List<ViewModelBase> selected) {
             return null;
         }
     }

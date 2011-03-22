@@ -250,6 +250,9 @@
       <DependentUpon>ReportResults.xaml</DependentUpon>
     </Compile>
     <Compile Include="ResourceTempFileManager.cs" />
+    <Compile Include="RTFReportViewer.xaml.cs">
+      <DependentUpon>RTFReportViewer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="rtf\BindableRichTextBox.cs" />
     <Compile Include="rtf\ReferencePreviewConverter.cs" />
     <Compile Include="rtf\RtfToPlainTextConverter.cs" />
@@ -461,6 +464,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="RTFReportViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ShutdownProgess.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -570,6 +577,7 @@
     <Resource Include="images\DoubleRightArrowSmall.png" />
     <Resource Include="images\error.png" />
     <Resource Include="images\warning.png" />
+    <Resource Include="images\Print.png" />
     <Content Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>
