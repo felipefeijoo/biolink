@@ -47,7 +47,7 @@ namespace BioLink.Client.Gazetteer {
             }
         }
 
-        public override List<Command> GetCommandsForObject(ViewModelBase obj) {
+        public override List<Command> GetCommandsForSelected(List<ViewModelBase> obj) {
             return null;
         }
 

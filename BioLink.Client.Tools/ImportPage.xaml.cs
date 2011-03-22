@@ -95,6 +95,7 @@ namespace BioLink.Client.Tools {
 
             this.InvokeIfRequired(() => {
                 RaiseRequestEnableNavigation();
+                RaiseWizardComplete();
             });
 
             StatusMsg(ImportStatusLevel.Info, "Import finished");

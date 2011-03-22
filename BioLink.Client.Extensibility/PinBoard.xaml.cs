@@ -137,7 +137,10 @@ namespace BioLink.Client.Extensibility {
 
             menu.Items.Add(builder.New("_Unpin").Handler(() => { Unpin(viewmodel); }).MenuItem);
 
-            var commands = PluginManager.Instance.SolicitCommandsForObject(viewmodel);
+            var list = new List<ViewModelBase>();
+            list.Add(viewmodel);
+            var commands = PluginManager.Instance.SolicitCommandsForObjects(list);
+
 
             if (commands != null && commands.Count > 0) {
                 menu.Items.Add(new Separator());

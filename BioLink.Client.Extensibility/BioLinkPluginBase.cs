@@ -76,7 +76,7 @@ namespace BioLink.Client.Extensibility {
 
         public abstract bool RequestShutdown();
 
-        public abstract List<Command> GetCommandsForObject(ViewModelBase obj);
+        public abstract List<Command> GetCommandsForSelected(List<ViewModelBase> selected);
         
         public virtual void Dispose() {            
         }

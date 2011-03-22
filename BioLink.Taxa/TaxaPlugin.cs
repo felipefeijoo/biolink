@@ -104,17 +104,22 @@ namespace BioLink.Client.Taxa {
             return null;            
         }
 
-        public override List<Command> GetCommandsForObject(ViewModelBase obj) {
+        public override List<Command> GetCommandsForSelected(List<ViewModelBase> selected) {
             var list = new List<Command>();
 
-            if (obj is TaxonViewModel) {
+            if (selected == null || selected.Count == 0) {
+                return list;
+            }
+
+            var obj = selected[0] as TaxonViewModel;
+            if (obj != null) {
 
                 var taxon = obj as TaxonViewModel;
 
                 
                 list.Add(new Command("Show in explorer", (dataobj) => { _explorer.ContentControl.ShowInExplorer(taxon.TaxaID); }));
 
-                var reports = GetReportsForTaxon(taxon);
+                var reports = GetReportsForTaxon(selected.ConvertAll((vm) => { return vm as TaxonViewModel; }));
                 if (reports.Count > 0) {
                     list.Add(new CommandSeparator());
                     foreach (IBioLinkReport loopreport in reports) {
@@ -132,11 +137,15 @@ namespace BioLink.Client.Taxa {
             return list;
         }
 
-        public List<IBioLinkReport> GetReportsForTaxon(TaxonViewModel taxon) {
+        public List<IBioLinkReport> GetReportsForTaxon(List<TaxonViewModel> taxa) {
             List<IBioLinkReport> list = new List<IBioLinkReport>();
 
-            list.Add(new TaxonStatisticsReport(User, taxon));
-            list.Add(new MaterialForTaxonReport(User, taxon));
+            
+            list.Add(new MaterialForTaxonReport(User, taxa[0]));
+            list.Add(new TypeListReport(User, taxa[0]));
+            list.Add(new TaxaAssociatesReport(User, taxa));
+            list.Add(new SiteForTaxaReport(User, taxa[0]));
+            list.Add(new TaxonStatisticsReport(User, taxa[0]));
 
             return list;
         }

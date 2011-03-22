@@ -49,7 +49,7 @@ namespace BioLink.Client.Maps {
         }
 
 
-        public override List<Command> GetCommandsForObject(ViewModelBase obj) {
+        public override List<Command> GetCommandsForSelected(List<ViewModelBase> selected) {
             return null;
         }
 

@@ -210,7 +210,14 @@ namespace BioLink.Client.Tools {
         }
 
 
-        public override List<Command> GetCommandsForObject(ViewModelBase obj) {
+        public override List<Command> GetCommandsForSelected(List<ViewModelBase> selected) {
+
+            if (selected == null || selected.Count == 0) {
+                return null;
+            }
+
+            var obj = selected[0];
+
             if (obj is ReferenceViewModel) {
                 var list = new List<Command>();
                 list.Add(new Command("Edit", (vm) => {

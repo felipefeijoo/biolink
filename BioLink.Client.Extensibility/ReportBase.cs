@@ -50,7 +50,9 @@ namespace BioLink.Client.Extensibility {
         #endregion
 
         public abstract DataMatrix ExtractReportData(IProgressObserver progress);
-
-
+        
+        public virtual bool DisplayOptions(User user, System.Windows.Window parentWindow) {
+            return true;
+        }
     }
 }

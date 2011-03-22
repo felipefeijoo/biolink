@@ -56,6 +56,7 @@ namespace BioLink.Client.Tools {
                     page.RequestMovePrevious += new Action<WizardPage>(page_RequestMovePrevious);
                     page.RequestDisableNavigation += new Action<WizardPage>(page_RequestDisableNavigation);
                     page.RequestEnableNavigation += new Action<WizardPage>(page_RequestEnableNavigation);
+                    page.WizardComplete += new Action<WizardPage>(page_WizardComplete);
 
                     var lbl = new Label();
                     Grid.SetRow(lbl, idx++);
@@ -66,6 +67,10 @@ namespace BioLink.Client.Tools {
 
                 SetCurrentPage(0);
             }
+        }
+
+        void page_WizardComplete(WizardPage obj) {
+            btnCancel.Content = "_Close";
         }
 
         void page_RequestEnableNavigation(WizardPage obj) {
@@ -96,6 +101,8 @@ namespace BioLink.Client.Tools {
                     gridContent.Children.Clear();
                     gridContent.Children.Add(_pages[pageIndex]);
                     Grid.SetRow(imgCurrentPage, pageIndex);
+
+                    btnCancel.Content = "_Cancel";
 
                     CurrentPage.OnPageEnter(todirection == WizardDirection.Previous ? WizardDirection.Next : WizardDirection.Previous);
                 }
@@ -260,6 +267,12 @@ namespace BioLink.Client.Tools {
             }
         }
 
+        protected void RaiseWizardComplete() {
+            if (WizardComplete != null) {
+                WizardComplete(this);
+            }
+        }
+
         protected User User { get; private set; }
 
         protected Object WizardContext { get; set; }
@@ -271,6 +284,8 @@ namespace BioLink.Client.Tools {
         public event Action<WizardPage> RequestDisableNavigation;
 
         public event Action<WizardPage> RequestEnableNavigation;
+
+        public event Action<WizardPage> WizardComplete;
 
     }
 

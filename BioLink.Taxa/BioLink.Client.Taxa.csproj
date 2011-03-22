@@ -73,7 +73,12 @@
     </Compile>
     <Compile Include="NameControls\SpeciesAvailableNameDatabaseAction.cs" />
     <Compile Include="NameControls\SpeciesAvailableNameViewModel.cs" />
+    <Compile Include="RegionBasedReportOptions.xaml.cs">
+      <DependentUpon>RegionBasedReportOptions.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SiteForTaxaReport.cs" />
     <Compile Include="StatisticsReport.cs" />
+    <Compile Include="TaxaAssociatesReport.cs" />
     <Compile Include="TaxonFavorites.xaml.cs">
       <DependentUpon>TaxonFavorites.xaml</DependentUpon>
     </Compile>
@@ -101,6 +106,7 @@
     <Compile Include="TaxonReportBase.cs" />
     <Compile Include="TaxonSelectorContentProvider.cs" />
     <Compile Include="TaxonViewModel.cs" />
+    <Compile Include="TypeListReport.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BioLink.Client.Extensibility\BioLink.Client.Extensibility.csproj">
@@ -134,6 +140,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="NameControls\SpeciesAvailableNameControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="RegionBasedReportOptions.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

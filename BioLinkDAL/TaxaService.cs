@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using BioLink.Data.Model;
+using BioLink.Client.Utilities;
+using System.Text;
 
 namespace BioLink.Data {
 
@@ -237,6 +239,15 @@ namespace BioLink.Data {
             return StoredProcDataMatrix("spMaterialListForTaxon", _P("intBiotaId", taxonId));
         }
 
+        public DataMatrix GetTaxonTypes(int taxonId) {
+            return StoredProcDataMatrix("spBiotaListTypes", _P("BiotaID", taxonId));
+        }
+
+        public DataMatrix GetAssociatesForTaxa(int regionID, params int[] taxonIds) {
+            var strTaxonIDS = taxonIds.Join(",");
+            return StoredProcDataMatrix("spAssociatesListForTaxon", _P("intPoliticalRegionID", regionID), _P("vchrBiotaID", strTaxonIDS));
+        }
+
         public List<Kingdom> GetKingdomList() {
             var mapper = new GenericMapper<Kingdom>();
             return StoredProcToList("spBiotaDefKingdomList", mapper);
@@ -458,6 +469,151 @@ namespace BioLink.Data {
 
         #endregion
 
+        public string GetBiotaRankElemType(int taxonID, string elemType) {
+            string result = null;
+            StoredProcReaderFirst("spReportMBiotaParentage", (reader) => {
+                result = reader[0] as string;
+            }, _P("intBiotaID", taxonID), _P("vchrFormat", "rankonly"), _P("vchrElemType", elemType), _P("vchrSeparator", ""));
+            return result;
+        }
+
+        public DataMatrix TaxaForSites(int siteOrRegionID, int taxonID, string itemType, string criteriaDisplayText, bool includeLocations) {
+
+            string strHEADER = @"{\rtf1\ansi\deff0\deflang1033 {\fonttbl {\f0\fswiss\fcharset0 SYSTEM;}{\f1\froman\fcharset0 TIMES NEW ROMAN;}}";
+            string strCOLOUR_TABLE = @"{\colortbl \red0\green0\blue0}";
+            string strPRE_TEXT = @"\paperw11895 \margr0\margl0\ATXph0 \plain \fs20 \f1 ";
+            string strPARA = @"\par ";
+            string vbCRLF = "\n";
+
+            StringBuilder sb = new StringBuilder(strHEADER);
+            sb.Append(vbCRLF).Append(strCOLOUR_TABLE).Append(vbCRLF).Append(strPRE_TEXT);
+            sb.Append(@"\pard\fs36\b Taxa for Site/Region Report\b0\pard\par\fs24 ");
+            sb.Append(criteriaDisplayText);
+            sb.AppendFormat(@"\pard\par\fs24 Produced: {0:f}", DateTime.Now);
+
+            int lngLastBiotaID = -1;
+            int lngLastRegionID = -1;
+            int lngLastSiteID = -1;
+
+            bool hasResults = false;
+            StoredProcReaderForEach("spReportTaxaForSites", (reader) => {
+                hasResults = true;
+                // If there is a change in taxa, print the header.
+                int biotaID = (Int32) reader["BiotaID"];
+                if (lngLastBiotaID != biotaID) {
+                    lngLastBiotaID = biotaID;
+                    lngLastRegionID = -1;
+                    lngLastSiteID = -1;
+                    sb.Append(strPARA).Append(strPARA).Append(@"\pard\sb20\fs28\b ");
+                    sb.Append(reader["BiotaFullName"]).Append(@"\b0");
+                    // extract the family and order
+                    string orderRank = GetBiotaRankElemType(lngLastBiotaID, "O");
+                    string familyRank = GetBiotaRankElemType(lngLastBiotaID, "F");
+
+                    if (!string.IsNullOrWhiteSpace(orderRank) && string.IsNullOrWhiteSpace(familyRank)) {
+                        sb.Append("  [").Append(orderRank).Append("]");
+                    } else if (!string.IsNullOrWhiteSpace(orderRank) && !string.IsNullOrWhiteSpace(familyRank)) {
+                        sb.Append("  [").Append(orderRank).Append(": ").Append(familyRank).Append("]");
+                    }
+                }
+
+                if (includeLocations) {
+                    // Add the region group
+                    int regionID = (Int32)reader["RegionID"];
+
+                    if (lngLastRegionID != regionID) {
+                        // Add the region
+                        lngLastRegionID = regionID;
+                        sb.Append(strPARA).Append(@"\pard\sb10\fs20\li600\b ").Append(reader["FullRegion"]).Append(@"\b0 ");
+                    }
+
+                    int siteID = (Int32)reader["SiteID"];
+                    if (lngLastSiteID != siteID) {
+                        lngLastSiteID = siteID;
+                        // Add the Site
+                        sb.Append(strPARA).Append(@"\pard\sb10\fs20\li1200 ");
+                        // Add the locality
+                        byte localType = (byte) reader["LocalType"];
+                        switch (localType) {
+                            case 0:
+                                sb.Append(reader["Local"] as string);
+                                break;
+                            case 1:
+                                sb.Append(reader["DistanceFromPlace"]).Append(" ").Append(reader["DirFromPlace"]).Append(" of ").Append(reader["Local"]);
+                                break;
+                            default:
+                                sb.Append(reader["Local"] as string);
+                                break;
+                        }
+
+                        // Add the long and lat.
+
+                        byte areaType = (byte) reader["AreaType"];
+                        double? lat = reader["Lat"] as double?;
+                        double? lon = reader["Long"] as double?;
+                        double? lat2 = reader["Lat2"] as double?;
+                        double? lon2 = reader["Long2"] as double?;
+
+                        if (!lat.HasValue || !lon.HasValue) {
+                            sb.Append("; No position data");
+                        } else {
+                            switch (areaType) {
+                                case 1:
+                                    sb.Append("; ");
+                                    sb.Append(GeoUtils.DecDegToDMS(lat.Value, CoordinateType.Latitude));
+                                    sb.Append(", ");
+                                    sb.Append(GeoUtils.DecDegToDMS(lon.Value, CoordinateType.Longitude));
+                                    break;
+                                case 2:
+                                    sb.Append("; Box: ");
+                                    sb.Append(GeoUtils.DecDegToDMS(lat.Value, CoordinateType.Latitude));
+                                    sb.Append(", ");
+                                    sb.Append(GeoUtils.DecDegToDMS(lon.Value, CoordinateType.Longitude));
+                                    sb.Append("; ");
+                                    if (!lat2.HasValue || !lon2.HasValue) {
+                                        sb.Append("; No position data for second coordinate");
+                                    } else {
+                                        sb.Append(GeoUtils.DecDegToDMS(lat2.Value, CoordinateType.Latitude));
+                                        sb.Append(", ");
+                                        sb.Append(GeoUtils.DecDegToDMS(lon2.Value, CoordinateType.Longitude));
+                                    }
+                                    break;
+                                case 3:
+                                    sb.Append("; Line: ");
+                                    sb.Append(GeoUtils.DecDegToDMS(lat.Value, CoordinateType.Latitude));
+                                    sb.Append(", ");
+                                    sb.Append(GeoUtils.DecDegToDMS(lon.Value, CoordinateType.Longitude));
+                                    sb.Append("; ");
+                                    if (!lat2.HasValue || !lon2.HasValue) {
+                                        sb.Append("; No position data for second coordinate");
+                                    } else {
+                                        sb.Append(GeoUtils.DecDegToDMS(lat2.Value, CoordinateType.Latitude));
+                                        sb.Append(", ");
+                                        sb.Append(GeoUtils.DecDegToDMS(lon2.Value, CoordinateType.Longitude));
+                                    }
+
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                        }
+                    }
+                }                
+            }, _P("vchrItemType", itemType), _P("intItemID", siteOrRegionID), _P("intBiotaID", taxonID));
+
+            if (!hasResults) {
+                sb.Append("No results.");
+            }
+    
+   
+            sb.Append("}");
+
+            DataMatrix m = new DataMatrix();
+            m.Columns.Add(new MatrixColumn { Name="RTF" });
+            m.AddRow()[0] = sb.ToString();
+            return m;
+        }
     }
 
     public class DataValidationResult {

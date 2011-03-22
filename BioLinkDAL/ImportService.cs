@@ -196,7 +196,7 @@ namespace BioLink.Data {
 
         public int ImportReference(ReferenceImport r) {
             var retval = ReturnParam("NewRefID", SqlDbType.Int);
-            StoredProcUpdate("spReferenceInsert",
+            StoredProcUpdate("spReferenceImport",
                 _P("vchrRefCode", r.RefCode),
                 _P("vchrAuthor", r.Author),
                 _P("vchrTitle", r.Title),
@@ -220,8 +220,7 @@ namespace BioLink.Data {
                 _P("vchrISBN", r.ISBN),
                 _P("vchrISSN", r.ISSN),
                 _P("txtAbstract", r.Abstract),
-                _P("txtDateQual", r.DateQual),
-                _P("txtFullRTF", r.FullRTF),
+                _P("txtDateQual", r.DateQual),                
                 _P("intStartPage", r.StartPage),
                 _P("intEndPage", r.EndPage),
                 retval
