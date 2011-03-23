@@ -3,11 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ext="clr-namespace:BioLink.Client.Extensibility"
+             xmlns:winforms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
              mc:Ignorable="d" 
              d:DesignHeight="333" d:DesignWidth="498">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="28" />
+            <RowDefinition Height="28" />            
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <ToolBar Grid.Row="0">
@@ -27,7 +29,9 @@
                     <Image Source="images/Copy.png" Height="20" Width="20" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None"/>
                 </Button.Content>
             </Button>
-        </ToolBar>
-        <RichTextBox Grid.Row="1" x:Name="txtRTF" IsReadOnly="True" VerticalScrollBarVisibility="Visible" />        
+        </ToolBar>        
+        <WindowsFormsHost Grid.Row="1" Name="windowsFormsHost1">
+            <ext:LegacyRichTextBox x:Name="rtf" />
+        </WindowsFormsHost>        
     </Grid>
 </UserControl>

@@ -58,7 +58,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="UIAutomationProvider" />
     <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
     <Reference Include="xunit, Version=1.6.1.1521, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\shared\lib\xunit.dll</HintPath>
@@ -174,6 +176,9 @@
     <Compile Include="JobExecutor.cs" />
     <Compile Include="LatLongInput.xaml.cs">
       <DependentUpon>LatLongInput.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LegacyRichTextBox.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="LookupControl.xaml.cs">
       <DependentUpon>LookupControl.xaml</DependentUpon>
