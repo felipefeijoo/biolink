@@ -327,4 +327,14 @@ namespace BioLink.Data {
 
     }
 
+    public static class DataExtensions {
+        public static T Get<T>(this SqlDataReader reader, string field, T defvalue = default(T)) {
+            var value = reader[field];
+            if (value == null || value == DBNull.Value) {
+                return defvalue;
+            }
+            return (T)value;
+        }
+    }
+
 }

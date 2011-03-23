@@ -477,16 +477,173 @@ namespace BioLink.Data {
             return result;
         }
 
+        public List<ChecklistData> GetChecklistData(int taxonID, int level, bool allChildren, bool userDefinedOrder, bool verifiedOnly, List<TaxonRankName> selectedRanks) {
+
+            var list = new List<ChecklistData>();
+
+            if (level == 0) {
+                StoredProcReaderFirst("spReportCheckList", (reader) => {
+                    string rankCode = ((string)reader["RankCode"]).Trim();
+                    if (selectedRanks.Find((name) => { return name.Code == rankCode; }) != null) {
+                        list.Add(new ChecklistData {
+                            BiotaID = reader.Get<int>("intBiotaID"),
+                            IndentLevel = 0,
+                            DisplayName = reader.Get("vchrFullName", ""),
+                            Author = reader.Get("vchrAuthor", ""),
+                            Type = reader.Get("chrElemType", ""),
+                            Rank = reader.Get("vchrRank", ""),
+                            Verified = !reader.Get<bool>("bitUnVerified"),
+                            Unplaced = reader.Get<bool>("bitUnplaced"),
+                            AvailableName = reader.Get<bool>("bitAvailableName"),
+                            LiteratureName = reader.Get<bool>("bitLiteratureName"),
+                            RankCategory = reader.Get("chrCategory", "")
+                        });
+                        }
+                }, _P("intBiotaID", taxonID), _P("bitLevel", false), _P("bitUserOrder", userDefinedOrder), _P("bitVerifiedOnly", false));
+            }
+
+            StoredProcReaderForEach("spReportCheckList", (reader) => {
+                string rankCode = ((string)reader["RankCode"]).Trim();
+                if (selectedRanks.Find((name) => { return name.Code == rankCode; }) != null) {
+                    list.Add(new ChecklistData {
+                        BiotaID = reader.Get<int>("intBiotaID"),
+                        IndentLevel = level + 1,
+                        DisplayName = reader.Get("vchrFullName", ""),
+                        Author = reader.Get("vchrAuthor", ""),
+                        Type = reader.Get("chrElemType", ""),
+                        Rank = reader.Get("vchrRank", ""),
+                        Verified = !reader.Get<bool>("bitUnVerified"),
+                        Unplaced = reader.Get<bool>("bitUnplaced"),
+                        AvailableName = reader.Get<bool>("bitAvailableName"),
+                        LiteratureName = reader.Get<bool>("bitLiteratureName"),
+                        RankCategory = reader.Get("chrCategory","")
+                    });
+                }
+                
+                if (allChildren) {
+                    var temp = GetChecklistData((int)reader["intBiotaID"], level + 1, allChildren, userDefinedOrder, verifiedOnly, selectedRanks);
+                    list.AddRange(temp);
+                }
+
+            }, _P("intBiotaID", taxonID), _P("bitLevel", true), _P("bitUserOrder", userDefinedOrder), _P("bitVerifiedOnly", verifiedOnly));
+
+
+            return list;
+        }
+
+        protected string RTF_HEADER = @"{\rtf1\ansi\deff0\deflang1033 {\fonttbl {\f0\fswiss\fcharset0 SYSTEM;}{\f1\froman\fcharset0 TIMES NEW ROMAN;}}";
+        protected string RTF_COLOUR_TABLE = @"{\colortbl \red0\green0\blue0}";
+        protected string RTF_PRE_TEXT = @"\paperw11895 \margr0\margl0\ATXph0 \plain \fs20 \f1 ";
+        protected string RTF_PARA = @"\par ";
+        protected string vbCRLF = "\n";
+
+        public DataMatrix ChecklistReport(int taxonID, string criteriaDisplayText, ChecklistReportExtent extent, bool availableNames, bool literatureNames, ChecklistReportRankDepth? depth, bool userDefinedOrder, bool verifiedOnly, List<TaxonRankName> selectedRanks) {
+
+            StringBuilder b = new StringBuilder();
+
+            var data = GetChecklistData(taxonID, 0, extent == ChecklistReportExtent.FullHierarchy, userDefinedOrder, verifiedOnly, selectedRanks);
+
+            // Process the list, generating the RTF...
+            // Create the Header inforrmation
+            b.Append(RTF_HEADER).Append(vbCRLF).Append(RTF_COLOUR_TABLE).Append(vbCRLF).Append(RTF_PRE_TEXT);    
+            // Create the title information
+            b.Append(@"\pard\fs36\b Taxon Checklist Report\b0\pard\par\fs22 ").Append(criteriaDisplayText).Append(@"\pard\par\fs16 Generated: ");
+            b.AppendFormat("{0:f}", DateTime.Now).Append(@"\par\par ");
+  
+            int i = 0;
+            foreach (ChecklistData item in data) {
+                ++i;
+                if (!availableNames && item.AvailableName || !literatureNames && item.LiteratureName) {
+                    // ignore this one
+                } else {
+                    b.AppendFormat(@"\par\pard\fs20\li{0} {1}", item.IndentLevel * 300, FormatChecklistRow(item, i, depth));                    
+                }
+            }
+
+            b.Append("}");
+
+            DataMatrix m = new DataMatrix();
+            m.Columns.Add(new MatrixColumn { Name = "RTF" });
+            m.AddRow()[0] = b.ToString();
+            return m;
+        }
+
+        private string FormatChecklistRow(ChecklistData item, int i, ChecklistReportRankDepth? depth) {
+            string result = "";
+            switch (item.Type.ToLower()) {
+                case "is":
+                    result = "incertae sedis ";
+                    break;
+                case "si":
+                    result = "Species inquirenda ";
+                    break;
+                default:
+                    switch (item.RankCategory.ToLower()) {
+                        case "g":
+                        case "s":
+                            if (item.Verified) {
+                                result = string.Format(@"\i {0} \i0 ", UnItalicize(item.DisplayName, "subsp.|var.|sub.var.|form |sub.form "));
+                            } else {
+                                result = item.DisplayName;
+                            }
+                            break;
+                        default:
+                            result = item.DisplayName;
+                            break;
+                    }
+
+                    // Add the rank if necessary...
+                    if (depth.HasValue) {
+                        switch (item.RankCategory.ToLower()) {
+                            case "h":
+                            case "f":
+                                result = item.Rank + " " + result;
+                                break;
+                            case "g":
+                                if (depth == ChecklistReportRankDepth.Subgenus) {
+                                    result = item.Rank + " " + result;
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    break;
+            }
+                
+            // Unitalicise the author/year component if applicable.
+            if (!string.IsNullOrWhiteSpace(item.Author)) {
+                int index = result.IndexOf(item.Author);
+                if (index >= 0) {
+                    result = result.Substring(0, index - 1) + "\\i0 " + result.Substring(index - 1);
+                }
+            }
+
+            return result;                
+        }
+
+        protected string UnItalicize(string pstrBase ,string pstrSubstrList ) {
+        //'
+        //' Unitalicize any of the sub striungs that appear in the base.
+        //'
+
+            string strWorking = pstrBase;
+            string[] strSubstr = pstrSubstrList.Split('|');
+            foreach (string s in strSubstr) {
+                int lngInstrPos = strWorking.IndexOf(s);
+                if (lngInstrPos >= 0) {
+                    strWorking =  strWorking.Substring(0, lngInstrPos - 1) + "\\i0 " + s + "\\i " +strWorking.Substring(lngInstrPos + s.Length);
+                }
+            }
+    
+            return strWorking;
+        }
+            
+
         public DataMatrix TaxaForSites(int siteOrRegionID, int taxonID, string itemType, string criteriaDisplayText, bool includeLocations) {
 
-            string strHEADER = @"{\rtf1\ansi\deff0\deflang1033 {\fonttbl {\f0\fswiss\fcharset0 SYSTEM;}{\f1\froman\fcharset0 TIMES NEW ROMAN;}}";
-            string strCOLOUR_TABLE = @"{\colortbl \red0\green0\blue0}";
-            string strPRE_TEXT = @"\paperw11895 \margr0\margl0\ATXph0 \plain \fs20 \f1 ";
-            string strPARA = @"\par ";
-            string vbCRLF = "\n";
-
-            StringBuilder sb = new StringBuilder(strHEADER);
-            sb.Append(vbCRLF).Append(strCOLOUR_TABLE).Append(vbCRLF).Append(strPRE_TEXT);
+            StringBuilder sb = new StringBuilder(RTF_HEADER);
+            sb.Append(vbCRLF).Append(RTF_COLOUR_TABLE).Append(vbCRLF).Append(RTF_PRE_TEXT);
             sb.Append(@"\pard\fs36\b Taxa for Site/Region Report\b0\pard\par\fs24 ");
             sb.Append(criteriaDisplayText);
             sb.AppendFormat(@"\pard\par\fs24 Produced: {0:f}", DateTime.Now);
@@ -504,7 +661,7 @@ namespace BioLink.Data {
                     lngLastBiotaID = biotaID;
                     lngLastRegionID = -1;
                     lngLastSiteID = -1;
-                    sb.Append(strPARA).Append(strPARA).Append(@"\pard\sb20\fs28\b ");
+                    sb.Append(RTF_PARA).Append(RTF_PARA).Append(@"\pard\sb20\fs28\b ");
                     sb.Append(reader["BiotaFullName"]).Append(@"\b0");
                     // extract the family and order
                     string orderRank = GetBiotaRankElemType(lngLastBiotaID, "O");
@@ -524,14 +681,14 @@ namespace BioLink.Data {
                     if (lngLastRegionID != regionID) {
                         // Add the region
                         lngLastRegionID = regionID;
-                        sb.Append(strPARA).Append(@"\pard\sb10\fs20\li600\b ").Append(reader["FullRegion"]).Append(@"\b0 ");
+                        sb.Append(RTF_PARA).Append(@"\pard\sb10\fs20\li600\b ").Append(reader["FullRegion"]).Append(@"\b0 ");
                     }
 
                     int siteID = (Int32)reader["SiteID"];
                     if (lngLastSiteID != siteID) {
                         lngLastSiteID = siteID;
                         // Add the Site
-                        sb.Append(strPARA).Append(@"\pard\sb10\fs20\li1200 ");
+                        sb.Append(RTF_PARA).Append(@"\pard\sb10\fs20\li1200 ");
                         // Add the locality
                         byte localType = (byte) reader["LocalType"];
                         switch (localType) {
@@ -625,6 +782,15 @@ namespace BioLink.Data {
 
         public bool Success { get; private set; }
         public string Message { get; private set; }
+    }
+
+    public enum ChecklistReportExtent {
+        FullHierarchy, NextLevelOnly
+    }
+
+    public enum ChecklistReportRankDepth {
+        Family,
+        Subgenus
     }
     
 }

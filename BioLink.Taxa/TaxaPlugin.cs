@@ -145,6 +145,7 @@ namespace BioLink.Client.Taxa {
             list.Add(new TypeListReport(User, taxa[0]));
             list.Add(new TaxaAssociatesReport(User, taxa));
             list.Add(new SiteForTaxaReport(User, taxa[0]));
+            list.Add(new ChecklistReport(User, taxa[0]));
             list.Add(new TaxonStatisticsReport(User, taxa[0]));
 
             return list;

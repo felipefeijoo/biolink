@@ -31,7 +31,7 @@ namespace BioLink.Client.Taxa {
         }
 
         public override string Name {
-            get { return "Sites for Taxon"; }
+            get { return string.Format("Sites for Taxon: {0}", Taxon.DisplayLabel); }
         }
 
         public override DataMatrix ExtractReportData(IProgressObserver progress) {

@@ -26,7 +26,7 @@ namespace BioLink.Client.Taxa {
         }
 
         public override string Name {
-            get { return "Associates for Taxa"; }
+            get { return string.Format("Associates for Taxa: {0}", Taxa.Count == 1 ? Taxa[0].DisplayLabel : "Multiple taxa"); }
         }
 
         public override bool DisplayOptions(User user, System.Windows.Window parentWindow) {

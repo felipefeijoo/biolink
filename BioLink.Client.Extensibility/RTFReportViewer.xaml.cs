@@ -44,30 +44,21 @@ namespace BioLink.Client.Extensibility {
         }
 
         public String RTF {
-            get {
-                var range = new TextRange(txtRTF.Document.ContentStart, txtRTF.Document.ContentEnd);
-                string rtf;
-
-                using (var stream = new MemoryStream()) {
-                    range.Save(stream, DataFormats.Rtf);
-                    stream.Seek(0, SeekOrigin.Begin);
-                    using (var reader = new StreamReader(stream)) {
-                        rtf = reader.ReadToEnd();
-                    }
-                }
-                return rtf;
+            get {                
+                return rtf.Rtf;
             }
         }
 
         private void btnPrint_Click(object sender, RoutedEventArgs e) {
-            PrintDialog dialog = new PrintDialog();
-            if (dialog.ShowDialog() == true) {
-                dialog.PrintDocument((((IDocumentPaginatorSource)txtRTF.Document).DocumentPaginator), ReportName);                
-            }
+            rtf.Print();
         }
 
+
         private void btnCopy_Click(object sender, RoutedEventArgs e) {
-            Clipboard.SetText(RTF, TextDataFormat.Rtf);
+            var data = new DataObject();
+            data.SetText(RTF, TextDataFormat.Rtf);
+            data.SetText(rtf.Text, TextDataFormat.Text);            
+            Clipboard.SetDataObject(data);
         }
 
         public String ReportName { get; set; }
@@ -80,13 +71,8 @@ namespace BioLink.Client.Extensibility {
 
         public FrameworkElement ConstructView(IBioLinkReport report, Data.DataMatrix reportData, Utilities.IProgressObserver progress) {
             var viewer = new RTFReportViewer();
-            viewer.ReportName = report.Name;
-            var doc = viewer.txtRTF.Document;
-            using (var stream = new MemoryStream((new UTF8Encoding()).GetBytes(reportData.Rows[0][0] as string))) {
-                var text = new TextRange(doc.ContentStart, doc.ContentEnd);
-                text.Load(stream, DataFormats.Rtf);
-            }
-
+            viewer.ReportName = report.Name;            
+            viewer.rtf.Rtf = reportData.Rows[0][0] as string;            
             return viewer;            
         }
     }
