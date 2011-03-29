@@ -81,11 +81,7 @@ namespace BioLink.Client.Extensibility {
 
         public bool RequestClose() {
             if (HasPendingChanges) {
-                if (this.Question("You have unsaved changes. Are you sure you want to discard those changes?", "Discard changes?")) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return this.DiscardChangesQuestion();
             }
             return true;
         }

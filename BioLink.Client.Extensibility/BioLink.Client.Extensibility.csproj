@@ -186,6 +186,8 @@
     <Compile Include="LookupResults.xaml.cs">
       <DependentUpon>LookupResults.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MapPointSetGenerator.cs" />
+    <Compile Include="MapSymbolGenerator.cs" />
     <Compile Include="MenuItemBuilder.cs" />
     <Compile Include="MultiMedia\DuplicateItemOptions.xaml.cs">
       <DependentUpon>DuplicateItemOptions.xaml</DependentUpon>
@@ -232,6 +234,9 @@
     <Compile Include="PluginManager.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="PluginVersionInfo.cs" />
+    <Compile Include="PointSetOptionsWindow.xaml.cs">
+      <DependentUpon>PointSetOptionsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="PositionControl.xaml.cs">
       <DependentUpon>PositionControl.xaml</DependentUpon>
     </Compile>
@@ -450,6 +455,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="PinBoard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PointSetOptionsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

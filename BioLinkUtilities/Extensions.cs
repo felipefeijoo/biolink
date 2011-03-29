@@ -68,6 +68,21 @@ namespace BioLink.Client.Utilities {
             return result == MessageBoxResult.Yes;
         }
 
+        public static bool DiscardChangesQuestion(this Control control, string question="You have unsaved changes. Are you sure you wish to discard those changes?") {
+            bool discard = false;
+            control.InvokeIfRequired(() => {
+                Window parent = Window.GetWindow(control);
+                var frm = new DiscardChangesWindow();
+                frm.Owner = parent;
+                frm.label1.Text = question;
+                frm.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                if (frm.ShowDialog() == true) {
+                    discard = true;
+                }
+            });
+            return discard;
+        }
+
         public static bool ValueOrFalse(this bool? value) {
             return value.GetValueOrDefault(false);
         }

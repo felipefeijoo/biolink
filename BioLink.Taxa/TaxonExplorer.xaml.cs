@@ -89,7 +89,7 @@ namespace BioLink.Client.Taxa {
         void btnLock_Unchecked(object sender, RoutedEventArgs e) {
             lblHeader.Visibility = Visibility.Hidden;
             if (AnyChanges()) {
-                if (this.Question(_R("TaxonExplorer.prompt.LockDiscardChanges"), _R("TaxonExplorer.prompt.ConfirmAction.Caption"))) {
+                if (this.DiscardChangesQuestion()) {
                     ReloadModel();
                 } else {
                     // Cancel the unlock
@@ -500,6 +500,7 @@ namespace BioLink.Client.Taxa {
             if (taxon != null) {
                 DataObject data = new DataObject("Taxon", taxon);
                 data.SetData(PinnableObject.DRAG_FORMAT_NAME, Owner.CreatePinnableTaxon(taxon.TaxaID.Value));
+                data.SetData(MapPointSetGenerator.DRAG_FORMAT_NAME, new DelegatingPointSetGenerator<Taxon>(GenerateSpecimenPointSetWithOptions, taxon.Taxon));
 
                 if (!IsUnlocked) {
                     lblHeader.Visibility = Visibility.Visible;
@@ -524,6 +525,8 @@ namespace BioLink.Client.Taxa {
 
             InvalidateVisual();
         }
+
+
 
         private DragDropAction PromptSourceTargetSame(TaxonDropContext context) {
             DragDropOptions form = new DragDropOptions(Owner);
@@ -604,6 +607,21 @@ namespace BioLink.Client.Taxa {
         }
 
         #endregion
+
+        protected MapPointSet GenerateSpecimenPointSetWithOptions(Taxon t) {
+            var frm = new PointSetOptionsWindow(t.TaxaFullName, new DelegatingPointSetGenerator<Taxon>(GenerateSpecimenPointSet, t));
+            frm.Owner = this.FindParentWindow();
+            if (frm.ShowDialog() == true) {
+                return frm.Points;
+            }
+            return null;
+        }
+
+        protected MapPointSet GenerateSpecimenPointSet(Taxon t) {
+            var data = Service.GetMaterialForTaxon(t.TaxaID.Value);            
+            var set = new MatrixMapPointSet(t.TaxaFullName, data, null);            
+            return set;
+        }
 
         private void txtFind_TypingPaused(string text) {
             DoFind(text);
@@ -747,7 +765,7 @@ namespace BioLink.Client.Taxa {
 
         internal void Refresh() {
             if (AnyChanges()) {
-                if (this.Question("You have unsaved changes. Refreshing will cause those changes to be discarded. Are you sure you want to discard unsaved changes?", "Discard unsaved changes?")) {
+                if (this.DiscardChangesQuestion("You have unsaved changes. Refreshing will cause those changes to be discarded. Are you sure you want to discard unsaved changes?")) {
                     ReloadModel();
                 }
             } else {

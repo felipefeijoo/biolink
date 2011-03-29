@@ -66,9 +66,11 @@ namespace BioLink.Client.Tools {
 
         private void btnCancel_Click(object sender, RoutedEventArgs e) {
             if (_model != null && _model.IsChanged) {
-                if (this.Question("You have unsaved changes. Are you sure you want to discard those changes?", "Discard changes?")) {
+                if (this.DiscardChangesQuestion()) {
                     this.DialogResult = false;
                     this.Close();
+                } else {
+                    e.Handled = true;
                 }
             } else {
                 this.Close();
@@ -87,6 +89,7 @@ namespace BioLink.Client.Tools {
                             service.UpdateUserPassword(_model.UserName, txtPassword.Password);
                         }
                     }
+                    this.DialogResult = true;
                     this.Close();
                 }
             } catch (Exception ex) {

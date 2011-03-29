@@ -24,6 +24,7 @@ using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
 using BioLink.Data;
 using BioLink.Data.Model;
+using System.Reflection;
 
 namespace BioLink.Client.Maps {
 
@@ -115,8 +116,53 @@ namespace BioLink.Client.Maps {
                     }
                 }
             });
+
+            mapBox.AllowDrop = true;
+
+            mapBox.DragOver += new System.Windows.Forms.DragEventHandler(mapBox_DragOver);
+            mapBox.DragDrop += new System.Windows.Forms.DragEventHandler(mapBox_DragDrop);
             
             Unloaded += new System.Windows.RoutedEventHandler(MapControl_Unloaded);
+
+        }
+
+        void mapBox_DragDrop(object sender, System.Windows.Forms.DragEventArgs e) {
+            var pointGenerator = GetDragData<IMapPointSetGenerator>(e, MapPointSetGenerator.DRAG_FORMAT_NAME);
+            if (pointGenerator != null) {
+                MapPointSet points = pointGenerator.GeneratePoints();
+                if (points != null) {
+                    PlotPoints(points);
+                }
+            }
+        }
+
+        /// <summary>
+        /// This abomination is required because dragging from a WPF control to a WinForms hosted control doesn't
+        /// work properly. This method uses reflection to grub around inside the inner data of the IDataObject and
+        /// pull out the requested data format.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="e"></param>
+        /// <param name="format"></param>
+        /// <returns></returns>
+        private T GetDragData<T>(System.Windows.Forms.DragEventArgs e, string format) where T : class {
+            FieldInfo info = e.Data.GetType().GetField("innerData", BindingFlags.NonPublic | BindingFlags.Instance);
+            object obj = info.GetValue(e.Data);
+            info = obj.GetType().GetField("innerData", BindingFlags.NonPublic | BindingFlags.Instance);
+            System.Windows.DataObject dataObj = info.GetValue(obj) as System.Windows.DataObject;
+            return dataObj.GetData(format) as T;
+        }
+
+        void mapBox_DragOver(object sender, System.Windows.Forms.DragEventArgs e) {
+
+
+            var pointGenerator = GetDragData<IMapPointSetGenerator>(e, MapPointSetGenerator.DRAG_FORMAT_NAME);
+
+            e.Effect = System.Windows.Forms.DragDropEffects.None;
+
+            if (pointGenerator != null) {
+                e.Effect = System.Windows.Forms.DragDropEffects.Link;
+            }
 
         }
 
