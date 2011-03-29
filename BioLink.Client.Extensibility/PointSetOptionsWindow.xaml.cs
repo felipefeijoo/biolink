@@ -21,34 +21,14 @@ namespace BioLink.Client.Extensibility {
     /// </summary>
     public partial class PointSetOptionsWindow : Window {
 
-        internal static List<PointShapeViewModel> _shapeModel = new List<PointShapeViewModel>();
+        
 
-        static PointSetOptionsWindow() {
-            _shapeModel.Add(new PointShapeViewModel(MapPointShape.Circle));
-            _shapeModel.Add(new PointShapeViewModel(MapPointShape.Square));
-            _shapeModel.Add(new PointShapeViewModel(MapPointShape.Triangle));
-        }
 
         public PointSetOptionsWindow(string caption, IMapPointSetGenerator generator) {
             InitializeComponent();
             this.Generator = generator;
             this.Caption = caption;
             this.Title = "Point options - " + caption;
-            this.Shape = MapPointShape.Circle;
-            ctlColor.SelectedColor = Colors.Red;
-            cmbShape.ItemsSource = _shapeModel;
-            cmbShape.SelectedIndex = 0;
-
-            cmbShape.SelectionChanged += new SelectionChangedEventHandler(cmbShape_SelectionChanged);
-            Loaded += new RoutedEventHandler(PointSetOptionsWindow_Loaded);
-        }
-
-        void cmbShape_SelectionChanged(object sender, SelectionChangedEventArgs e) {            
-            var vm = cmbShape.SelectedItem as PointShapeViewModel;
-            if (vm != null) {
-                this.Shape = vm.Shape;
-            }
-            this.UpdatePreview();
         }
 
         protected IMapPointSetGenerator Generator { get; private set; }
@@ -56,8 +36,6 @@ namespace BioLink.Client.Extensibility {
         protected string Caption { get; private set; }
 
         public MapPointSet Points { get; private set; }
-
-        public MapPointShape Shape { get; set; }
 
         private void btnOK_Click(object sender, RoutedEventArgs e) {
 
@@ -68,11 +46,10 @@ namespace BioLink.Client.Extensibility {
                 if (Generator != null) {
                     Points = Generator.GeneratePoints();
                     this.InvokeIfRequired(() => {
-                        Points.PointColor = ctlColor.SelectedColor;
-                        Points.PointShape = MapPointShape.Triangle;
-                        Points.Size = (int) sizeSlider.Value;
-                        Points.DrawOutline = chkDrawOutline.IsChecked.ValueOrFalse();
-                        Points.PointShape = Shape;
+                        Points.PointColor = shapeOptions.Color;
+                        Points.PointShape = shapeOptions.Shape;
+                        Points.Size = shapeOptions.Size;
+                        Points.DrawOutline = shapeOptions.DrawOutline;                        
                     });
                 }
                 this.InvokeIfRequired(() => {
@@ -84,68 +61,10 @@ namespace BioLink.Client.Extensibility {
             
         }
 
-        void PointSetOptionsWindow_Loaded(object sender, RoutedEventArgs e) {
-            UpdatePreview();
-        }
-
         private void btnCancel_Click(object sender, RoutedEventArgs e) {
             this.Close();
         }
 
-        private void ctlColor_SelectedColorChanged(Color obj) {
-            UpdatePreview();
-        }
-
-        private void UpdatePreview() {
-            if (IsLoaded) {
-                var image = MapSymbolGenerator.GetSymbol(Shape, (int)sizeSlider.Value, ctlColor.SelectedColor, chkDrawOutline.IsChecked.ValueOrFalse(), Colors.Black);
-                BitmapSource s = GraphicsUtils.SystemDrawingImageToBitmapSource(image);
-                imgPreview.Source = s;
-            }
-        }
-
-        private void chkDrawOutline_Checked(object sender, RoutedEventArgs e) {
-            UpdatePreview();
-        }
-
-        private void chkDrawOutline_Unchecked(object sender, RoutedEventArgs e) {
-            UpdatePreview();
-        }
-
-        private void slider1_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
-            UpdatePreview();
-        }
-
     }
 
-    public class PointShapeConverter : IValueConverter {
-
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
-            MapPointShape? s = (MapPointShape?)value;
-            var vm = PointSetOptionsWindow._shapeModel.Find((cand) => {
-                return cand.Shape == s;
-            });
-            return vm;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
-            var vm = value as PointShapeViewModel;
-            return vm.Shape;
-        }
-    }
-
-    public class PointShapeViewModel : ViewModelBase {
-
-        public PointShapeViewModel(MapPointShape shape) {
-            this.Shape = shape;
-            this.Icon = GraphicsUtils.SystemDrawingImageToBitmapSource(MapSymbolGenerator.GetSymbol(shape, 10, Colors.Black, true));
-        }
-
-        public MapPointShape Shape { get; set; }
-
-
-        public override int? ObjectID {
-            get { return 0; }
-        }
-    }
 }

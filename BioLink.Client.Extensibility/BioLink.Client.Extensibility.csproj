@@ -234,6 +234,9 @@
     <Compile Include="PluginManager.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="PluginVersionInfo.cs" />
+    <Compile Include="PointOptionsControl.xaml.cs">
+      <DependentUpon>PointOptionsControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="PointSetOptionsWindow.xaml.cs">
       <DependentUpon>PointSetOptionsWindow.xaml</DependentUpon>
     </Compile>
@@ -455,6 +458,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="PinBoard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PointOptionsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

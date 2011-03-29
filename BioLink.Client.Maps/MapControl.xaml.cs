@@ -644,6 +644,7 @@ namespace BioLink.Client.Maps {
             shapeFileLayer.SmoothingMode = SmoothingMode.AntiAlias;
 
             shapeFileLayer.Style.Symbol = MapSymbolGenerator.GetSymbolForPointSet(points);
+            
             addLayer(shapeFileLayer, null, false);
 
             if (points.DrawLabels) {
