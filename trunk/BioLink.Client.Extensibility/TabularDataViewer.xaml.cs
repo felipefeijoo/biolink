@@ -110,14 +110,6 @@ namespace BioLink.Client.Extensibility {
 
         }
 
-        private IMapProvider GetMap() {
-            var maps = PluginManager.Instance.GetExtensionsOfType<IMapProvider>();
-            if (maps != null && maps.Count > 0) {
-                return maps[0];
-            }
-            return null;
-        }
-
         private void PlotSelected(string longColName, string latColName) {
 
             var selectedRowIndexes = new int[lvw.SelectedItems.Count];
@@ -136,7 +128,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void Plot(int[] selectedRowIndexes = null, string longColName = "Long", string latColName = "Lat") {
-            var map = GetMap();
+            var map = PluginManager.Instance.GetMap();
             if (map != null) {
                 var set = new MatrixMapPointSet(_report.Name, Data, selectedRowIndexes);
                 set.LongitudeColumn = longColName;

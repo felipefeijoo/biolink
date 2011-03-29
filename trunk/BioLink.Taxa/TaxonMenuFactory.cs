@@ -74,10 +74,11 @@ namespace BioLink.Client.Taxa {
                 builder.New("TaxonExplorer.menu.Refresh").Handler(() => Explorer.Refresh()).End();
             }
 
-            if (!Taxon.IsRootNode) {
+            if (!Taxon.IsRootNode) {                
                 MenuItem reports = CreateReportMenuItems();
                 if (reports != null && reports.HasItems) {
                     builder.Separator();
+                    builder.New("Distribution _Map").Handler(() => { Explorer.DistributionMap(Taxon); }).End();
                     builder.AddMenuItem(reports);
                 }
 
@@ -193,11 +194,12 @@ namespace BioLink.Client.Taxa {
             ContextMenu menu = new ContextMenu();
 
             menu.Items.Add(_builder.New("TaxonExplorer.menu.ShowInContents").Handler(() => { Explorer.ShowInExplorer(Taxon.TaxaID); }).MenuItem);            
-            MenuItem reports = CreateReportMenuItems();
+            MenuItem reports = CreateReportMenuItems();            
             if (reports != null && reports.HasItems) {
                 if (menu.HasItems) {
                     menu.Items.Add(new Separator());
                 }
+                menu.Items.Add(_builder.New("Distribution _Map").Handler(() => { Explorer.DistributionMap(Taxon); }).MenuItem);
                 menu.Items.Add(reports);
             }
 
@@ -223,12 +225,12 @@ namespace BioLink.Client.Taxa {
             ContextMenuBuilder builder = new ContextMenuBuilder(FormatterFunc);
             builder.New("TaxonExplorer.menu.ShowInContents").Handler(() => { Explorer.ShowInExplorer(Taxon.TaxaID); });
 
-            MenuItem reports = CreateReportMenuItems();
+            MenuItem reports = CreateReportMenuItems();            
             if (reports != null && reports.HasItems) {
                 builder.Separator();
+                builder.New("Distribution _Map").Handler(() => { Explorer.DistributionMap(Taxon); }).End();
                 builder.AddMenuItem(reports);
-            }
-            
+            }            
 
             if (favoriteId != null && favoriteId.HasValue) {
                 builder.Separator();
