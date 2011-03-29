@@ -402,7 +402,7 @@ namespace BioLink.Client.Taxa {
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e) {
-            if (this.Question("You have unsaved changes. Are you sure you want to discard those changes?", "Discard changes?")) {
+            if (this.DiscardChangesQuestion()) {
                 ReloadFavorites();
             }
         }

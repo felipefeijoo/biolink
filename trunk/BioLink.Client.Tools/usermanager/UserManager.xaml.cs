@@ -55,6 +55,14 @@ namespace BioLink.Client.Tools {
             tvwGroups.SelectedItemChanged += new RoutedPropertyChangedEventHandler<object>(tvwGroups_SelectedItemChanged);
             tvwGroups.MouseDoubleClick += new MouseButtonEventHandler(tvwGroups_MouseDoubleClick);
 
+            lvwUsers.KeyUp += new KeyEventHandler(lvwUsers_KeyUp);
+
+        }
+
+        void lvwUsers_KeyUp(object sender, KeyEventArgs e) {
+            if (e.Key == Key.Enter) {
+                ShowSelectedProperties();
+            }
         }
 
         void tvwGroups_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
@@ -75,6 +83,7 @@ namespace BioLink.Client.Tools {
 
         private void ReloadModel() {
 
+            var oldFilter = txtUserFilter.Text;
             FilterUsers("");
 
             var service = new SupportService(User);
@@ -93,6 +102,11 @@ namespace BioLink.Client.Tools {
 
             lvwUsers.ItemsSource = _users;
             tvwGroups.ItemsSource = _groups;
+
+            if (!string.IsNullOrWhiteSpace(oldFilter)) {
+                FilterUsers(oldFilter);
+            }
+
         }
 
         void vm_LazyLoadChildren(HierarchicalViewModelBase item) {
@@ -145,7 +159,9 @@ namespace BioLink.Client.Tools {
                 var frm = new UserProperties(User, selected.Username);
                 frm.Owner = this.FindParentWindow();
                 frm.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                frm.ShowDialog();
+                if (frm.ShowDialog() == true) {
+                    ReloadModel();
+                }
             }
         }
 
@@ -319,6 +335,10 @@ namespace BioLink.Client.Tools {
 
         private void btnPermissions_Click(object sender, RoutedEventArgs e) {
             EditPermission(tvwGroups.SelectedItem as PermissionViewModel);
+        }
+
+        private void lvwUsers_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
+            ShowSelectedProperties();
         }
 
     }

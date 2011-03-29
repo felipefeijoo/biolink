@@ -882,7 +882,7 @@ namespace BioLink.Client.Material {
 
         internal void Refresh() {
             if (HasPendingChanges) {
-                if (this.Question("You have unsaved changes. Refreshing will cause those changes to be discarded. Are you sure you want to discard unsaved changes?", "Discard unsaved changes?")) {
+                if (this.DiscardChangesQuestion("You have unsaved changes. Refreshing will cause those changes to be discarded. Are you sure you want to discard unsaved changes?")) {
                     ReloadModel();
                 }
             } else {

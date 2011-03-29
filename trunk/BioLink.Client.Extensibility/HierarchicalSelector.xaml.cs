@@ -339,7 +339,7 @@ namespace BioLink.Client.Extensibility {
 
         private void ChangeContainer_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
             if (HasPendingChanges) {
-                if (!this.Question("You have unsaved changes. Are you sure you want to discard those changes?", "Discard changes?")) {
+                if (!this.DiscardChangesQuestion()) {
                     e.Cancel = true;
                 }
             }

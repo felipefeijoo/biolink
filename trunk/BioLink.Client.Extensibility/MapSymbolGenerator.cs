@@ -4,22 +4,31 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using BioLink.Client.Extensibility;
 
-namespace BioLink.Client.Maps {
+namespace BioLink.Client.Extensibility {
 
     public class MapSymbolGenerator {
 
         public static Image GetSymbolForPointSet(MapPointSet set) {
-            Color fillColor = Color.FromArgb(set.PointColor.A, set.PointColor.R, set.PointColor.G, set.PointColor.B);
-            Color outlineColor = Color.FromArgb(set.OutlineColor.A, set.OutlineColor.R, set.OutlineColor.G, set.OutlineColor.B);
-            switch (set.PointShape) {
+            return GetSymbol(set.PointShape, set.Size, set.PointColor, set.DrawOutline, set.OutlineColor);
+        }
+
+        public static Image GetSymbol(MapPointShape shape, int size, System.Windows.Media.Color fill, bool drawOutline, System.Windows.Media.Color outline = default(System.Windows.Media.Color)) {
+            Color fillColor = Color.FromArgb(fill.A, fill.R, fill.G, fill.B);
+
+            if (outline == default(System.Windows.Media.Color)) {
+                outline = System.Windows.Media.Colors.Black;
+            }
+
+            Color outlineColor = Color.FromArgb(outline.A, outline.R, outline.G, outline.B);
+
+            switch (shape) {
                 case MapPointShape.Circle:
-                    return Circle(set.Size, fillColor, set.DrawOutline, outlineColor);
+                    return Circle(size, fillColor, drawOutline, outlineColor);
                 case MapPointShape.Square:
-                    return Square(set.Size, fillColor, set.DrawOutline, outlineColor);
+                    return Square(size, fillColor, drawOutline, outlineColor);
                 case MapPointShape.Triangle:
-                    return Triangle(set.Size, fillColor, set.DrawOutline, outlineColor);
+                    return Triangle(size, fillColor, drawOutline, outlineColor);
             }
 
             return null;

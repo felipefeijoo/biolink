@@ -20,23 +20,23 @@
         <ToolBar Grid.Row="0" x:Name="toolbar">
             <Button x:Name="btnAddLayer" Click="btnAddLayer_Click">
                 <Button.Content>
-                    <Image Source="images/AddLayer.png" />
+                    <Image Source="images/AddLayer.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None"/>
                 </Button.Content>
             </Button>
             <Button x:Name="btnDeleteLayer" Click="btnDeleteLayer_Click">
                 <Button.Content>
-                    <Image Source="images/RemoveLayer.png" />
+                    <Image Source="images/RemoveLayer.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None"/>
                 </Button.Content>
             </Button>
             <Separator />
             <Button x:Name="btnLayerUp" Click="btnLayerUp_Click">
                 <Button.Content>
-                    <Image Source="images/LayerUp.png" />
+                    <Image Source="images/LayerUp.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None"/>
                 </Button.Content>
             </Button>
             <Button x:Name="btnLayerDown" Click="btnLayerDown_Click">
                 <Button.Content>
-                    <Image Source="images/LayerDown.png" />
+                    <Image Source="images/LayerDown.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None"/>
                 </Button.Content>
             </Button>
         </ToolBar>

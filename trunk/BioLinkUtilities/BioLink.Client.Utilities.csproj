@@ -84,6 +84,9 @@
     <Compile Include="Command.cs" />
     <Compile Include="DateUtils.cs" />
     <Compile Include="Debug.cs" />
+    <Compile Include="DiscardChangesWindow.xaml.cs">
+      <DependentUpon>DiscardChangesWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="EntryPoint.cs" />
     <Compile Include="ErrorMessage.cs" />
     <Compile Include="Extensions.cs" />
@@ -120,6 +123,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="DiscardChangesWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="InputBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

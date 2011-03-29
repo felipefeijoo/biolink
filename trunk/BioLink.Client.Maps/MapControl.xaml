@@ -58,7 +58,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <wfi:WindowsFormsHost  Background="Azure" Margin="0,0,0,0">
+            <wfi:WindowsFormsHost  Background="Azure" Margin="0,0,0,0" AllowDrop="True">
                 <maps:MapBox x:Name="mapBox" Click="map_Click" />
             </wfi:WindowsFormsHost>
         </Grid>

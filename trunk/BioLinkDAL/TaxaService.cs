@@ -624,7 +624,7 @@ namespace BioLink.Data {
 
         protected string UnItalicize(string pstrBase ,string pstrSubstrList ) {
         //'
-        //' Unitalicize any of the sub striungs that appear in the base.
+        //' Unitalicize any of the sub strings that appear in the base.
         //'
 
             string strWorking = pstrBase;
