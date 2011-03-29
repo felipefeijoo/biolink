@@ -201,6 +201,14 @@ namespace BioLink.Client.Extensibility {
             return form;
         }
 
+        public IMapProvider GetMap() {
+            var maps = GetExtensionsOfType<IMapProvider>();
+            if (maps != null && maps.Count > 0) {
+                return maps[0];
+            }
+            return null;
+        }
+
         public void RunReport(IBioLinkPlugin owner, IBioLinkReport report) {
 
             if (report.DisplayOptions(User, ParentWindow)) {

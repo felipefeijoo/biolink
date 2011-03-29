@@ -526,8 +526,6 @@ namespace BioLink.Client.Taxa {
             InvalidateVisual();
         }
 
-
-
         private DragDropAction PromptSourceTargetSame(TaxonDropContext context) {
             DragDropOptions form = new DragDropOptions(Owner);
             return form.ShowChooseMergeOrConvert(context);
@@ -621,6 +619,15 @@ namespace BioLink.Client.Taxa {
             var data = Service.GetMaterialForTaxon(t.TaxaID.Value);            
             var set = new MatrixMapPointSet(t.TaxaFullName, data, null);            
             return set;
+        }
+
+        public void DistributionMap(TaxonViewModel taxon) {
+            var map = PluginManager.Instance.GetMap();
+            if (map != null) {
+                var data = GenerateSpecimenPointSetWithOptions(taxon.Taxon);
+                map.Show();
+                map.PlotPoints(data);
+            }
         }
 
         private void txtFind_TypingPaused(string text) {
