@@ -28,8 +28,8 @@ namespace BioLink.Client.Material {
             List<IWorkspaceContribution> contrib = new List<IWorkspaceContribution>();
 
             contrib.Add(new MenuWorkspaceContribution(this, "ShowExplorer", (obj, e) => { PluginManager.EnsureVisible(this, "MaterialExplorer"); },
-                String.Format("{{'Name':'View', 'Header':'{0}','InsertAfter':'File'}}", _R("MATERIAL.Menu.View")),
-                String.Format("{{'Name':'ShowMaterialExplorer', 'Header':'{0}'}}", _R("MATERIAL.Menu.ShowExplorer"))
+                String.Format("{{'Name':'View', 'Header':'{0}','InsertAfter':'File'}}", _R("Material.Menu.View")),
+                String.Format("{{'Name':'ShowMaterialExplorer', 'Header':'{0}'}}", _R("Material.Menu.ShowExplorer"))
             ));
 
             contrib.Add(new MenuWorkspaceContribution(this, "ShowRDE", (obj, e) => { ShowRDE(); },
