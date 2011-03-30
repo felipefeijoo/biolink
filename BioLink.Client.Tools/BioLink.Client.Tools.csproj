@@ -56,6 +56,10 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdministrationComponent.cs" />
+    <Compile Include="AdministrationControl.xaml.cs">
+      <DependentUpon>AdministrationControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ImportCache.cs" />
     <Compile Include="ImportFilterSelection.xaml.cs">
       <DependentUpon>ImportFilterSelection.xaml</DependentUpon>
@@ -83,6 +87,9 @@
     </Compile>
     <Compile Include="journals\JournalViewModel.cs" />
     <Compile Include="MaterialImportProcessor.cs" />
+    <Compile Include="TraitTypesControl.xaml.cs">
+      <DependentUpon>TraitTypesControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="usermanager\PermissionProperties.xaml.cs">
       <DependentUpon>PermissionProperties.xaml</DependentUpon>
     </Compile>
@@ -162,6 +169,10 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="AdministrationControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ImportFilterSelection.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -187,6 +198,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="journals\JournalManager.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TraitTypesControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -959,7 +959,7 @@ namespace BioLink.Client.Material {
         internal void EditRDE(SiteExplorerNodeViewModel node) {
             RapidDataEntry control = null;
 
-            if (node != null && node.NodeType == SiteExplorerNodeType.Site || node.NodeType == SiteExplorerNodeType.SiteVisit || node.NodeType == SiteExplorerNodeType.Material) {
+            if (node != null && (node.NodeType == SiteExplorerNodeType.Site || node.NodeType == SiteExplorerNodeType.SiteVisit || node.NodeType == SiteExplorerNodeType.Material)) {
                 control = new RapidDataEntry(User, node.ElemID, node.NodeType);
             } else {
                 control = new RapidDataEntry(User, -1, SiteExplorerNodeType.Site);

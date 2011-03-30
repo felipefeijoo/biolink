@@ -54,4 +54,32 @@ namespace BioLink.Data.Model {
         }
     }
 
+    public class OneToManyTypeInfo : BioLinkDataObject {
+
+        public int ID { get; set; }
+        public string Type { get; set; }
+        public string Category { get; set; }
+
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return () => this.ID; }
+        }
+    }
+
+    public class TraitOwnerInfo : BioLinkDataObject {
+
+        public int TraitID { get; set; }
+        public int TraitTypeID { get; set; }
+        public string Category { get; set; }
+        public int OwnerID { get; set; }
+        public string Value { get; set; }
+        public string Comment { get; set; }
+        public string OwnerName { get; set; }
+        public string OwnerCall { get; set; }
+        public string EntryPoint { get; set; }
+
+        protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
+            get { return () => this.TraitID; }
+        }
+    }
+
 }

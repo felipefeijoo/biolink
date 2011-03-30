@@ -7,16 +7,12 @@ using System.Windows;
 using BioLink.Data;
 using BioLink.Data.Model;
 using BioLink.Client.Utilities;
+using System.Windows.Controls;
 
 namespace BioLink.Client.Tools {
 
     public class ToolsPlugin : BiolinkPluginBase {
 
-        private ControlHostWindow _phraseManager;
-        private ControlHostWindow _refManager;
-        private ControlHostWindow _journalManager;
-        private ControlHostWindow _queryTool;
-        private ControlHostWindow _userManager;
         private ImportWizard _importWizard;
         private ImportWizard _importReferencesWizard;
 
@@ -67,6 +63,12 @@ namespace BioLink.Client.Tools {
                 String.Format("{{'Name':'Import', 'Header':'Import'}}"), String.Format("{{'Name':'ImportReferences', 'Header':'_References'}}")
             ));
 
+            contrib.Add(new MenuWorkspaceContribution(this, "Administration", (obj, e) => { ShowAdminWindow(); },
+                String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
+                String.Format("{{'Name':'Administration', 'Header':'{0}'}}", "Administration...")
+            ));
+
+
             return contrib;
         }
 
@@ -76,10 +78,6 @@ namespace BioLink.Client.Tools {
 
         public override void Dispose() {
             base.Dispose();
-            if (_phraseManager != null) {
-                _phraseManager.Close();
-                _phraseManager = null;
-            }
 
             if (_importWizard != null) {
                 _importWizard.Close();
@@ -94,71 +92,29 @@ namespace BioLink.Client.Tools {
         }
 
         private void ShowPhraseManager() {
-            if (_phraseManager == null) {
-                _phraseManager = PluginManager.Instance.AddNonDockableContent(this, new PhraseManager(User), "Phrases", SizeToContent.Manual);
-                _phraseManager.Closed += new EventHandler((sender, e) => {                    
-                    _phraseManager = null;
-                });
-            }
-
-            _phraseManager.Show();
-            _phraseManager.Focus();
+            ShowSingleton("Phrases", () => new PhraseManager(User));
         }
 
-        private void ShowReferenceManager() {
-            if (_refManager == null) {
-                _refManager = PluginManager.Instance.AddNonDockableContent(this, new ReferenceManager(User, this), "Reference Manager", SizeToContent.Manual,true,(window)=> {
-                    window.btnOk.IsDefault = false;
-                });
-                _refManager.Closed += new EventHandler((sender, e) => {
-                    _refManager = null;
-                });
-            }
-
-            _refManager.Show();
-            _refManager.Focus();
+        private ControlHostWindow ShowReferenceManager() {
+            return ShowSingleton("Reference Manager", () => new ReferenceManager(User, this), SizeToContent.Manual, true,(window)=> {
+                window.btnOk.IsDefault = false;
+            });
         }
 
-        private void ShowJournalManager() {
-            if (_journalManager == null) {
-                _journalManager = PluginManager.Instance.AddNonDockableContent(this, new JournalManager(User, this), "Journal Manager", SizeToContent.Manual, true, (window) => {
-                    window.btnOk.IsDefault = false;
-                });
-                _journalManager.Closed += new EventHandler((sender, e) => {
-                    _journalManager = null;
-                });
-            }
-
-            _journalManager.Show();
-            _journalManager.Focus();
+        private ControlHostWindow ShowJournalManager() {
+            return ShowSingleton("Journal Manager", () => new JournalManager(User, this));
         }
 
         private void ShowQueryTool() {
-            if (_queryTool == null) {
-                _queryTool = PluginManager.Instance.AddNonDockableContent(this, new QueryTool(User, this), "Query Tool", SizeToContent.Manual, true, (window) => {
-                    window.btnOk.IsDefault = false;
-                });
-                _queryTool.Closed += new EventHandler((sender, e) => {
-                    _queryTool = null;
-                });
-            }
-
-            _queryTool.Show();
-            _queryTool.Focus();
+            ShowSingleton("Query Tool", () => new QueryTool(User, this));
         }
 
         private void ShowUserManager() {
-            if (_userManager == null) {
-                _userManager = PluginManager.Instance.AddNonDockableContent(this, new UserManager(User, this), "Users and Groups", SizeToContent.Manual, true, (window) => {
-                    window.btnOk.IsDefault = false;
-                });
-                _userManager.Closed += new EventHandler((sender, e) => {
-                    _userManager = null;
-                });
-            }
+            ShowSingleton("Users and Groups", () => new UserManager(User, this));
+        }
 
-            _userManager.Show();
-            _userManager.Focus();
+        private void ShowAdminWindow() {
+            ShowSingleton("Administration", () => new AdministrationControl(User));
         }
 
         private void ShowImport() {
@@ -246,11 +202,11 @@ namespace BioLink.Client.Tools {
 
         public override void Select(Type t, Action<SelectionResult> success) {
             if (typeof(ReferenceSearchResult).IsAssignableFrom(t)) {
-                ShowReferenceManager();
-                _refManager.BindSelectCallback(success);
+                var frm = ShowReferenceManager();
+                frm.BindSelectCallback(success);
             } else if (typeof(Journal).IsAssignableFrom(t)) {
-                ShowJournalManager();
-                _journalManager.BindSelectCallback(success);
+                var frm = ShowJournalManager();
+                frm.BindSelectCallback(success);
             } else {
                 throw new Exception("Unhandled Selection Type: " + t.Name);
             }
