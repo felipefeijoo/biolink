@@ -193,6 +193,16 @@ namespace BioLink.Data {
 
         public SupportService(User user)  : base(user) { }
 
+        public List<OneToManyTypeInfo> GetTypeInfo(string type) {
+            var mapper = new GenericMapperBuilder<OneToManyTypeInfo>().build();
+            return StoredProcToList("spTypeDataList", mapper, _P("vchrType", type));
+        }
+
+        public List<TraitOwnerInfo> GetTraitOwnerInfo(int traitTypeID) {
+            var mapper = new GenericMapperBuilder<TraitOwnerInfo>().build();
+            return StoredProcToList("spTraitOwnerList", mapper, _P("intTraitTypeID", traitTypeID));
+        }
+
         #region Traits
 
         public TraitCategory GetTraitCategory(string category) {

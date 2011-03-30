@@ -47,6 +47,16 @@ namespace BioLink.Client.Utilities {
             _parameters.Add(new KeyValuePair<string,string>(name, value));
         }
 
+        public bool HasParameter(string name) {
+            foreach (KeyValuePair<string, string> kvp in _parameters) {
+                if (kvp.Key.Equals(name)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public String Name {
             get { return _name; }
         }

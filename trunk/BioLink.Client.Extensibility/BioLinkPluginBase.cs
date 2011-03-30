@@ -10,6 +10,7 @@ using System.IO;
 using System.Windows.Resources;
 using BioLink.Client.Utilities;
 using BioLink.Data;
+using System.Windows.Controls;
 
 namespace BioLink.Client.Extensibility {
 
@@ -78,7 +79,15 @@ namespace BioLink.Client.Extensibility {
 
         public abstract List<Command> GetCommandsForSelected(List<ViewModelBase> selected);
         
-        public virtual void Dispose() {            
+        public virtual void Dispose() {
+            Logger.Debug("Disposing {0}", GetType().Name);
+            lock (_controlHosts) {
+                foreach (ControlHostWindow chw in _controlHosts.Values) {
+                    Logger.Debug("Closing singleton control host window: {0}", chw.Control.GetType().Name);
+                    chw.Close();
+                }
+                _controlHosts.Clear();
+            }            
         }
 
         public virtual ViewModelBase CreatePinnableViewModel(PinnableObject pinnable) {
@@ -118,6 +127,38 @@ namespace BioLink.Client.Extensibility {
         public PluginVersionInfo Version {
             get { return new PluginVersionInfo { Name = this.Name, Version = BuildVersionString() }; }
         }
+
+        private Dictionary<string, ControlHostWindow> _controlHosts = new Dictionary<string, ControlHostWindow>();
+
+        protected ControlHostWindow ShowSingleton(string title, Func<Control> controlFactory, SizeToContent sizeMode = SizeToContent.Manual, bool autoSavePosition = true, Action<ControlHostWindow> initFunc = null) {
+            
+            ControlHostWindow frm = null;
+            lock (_controlHosts) {
+                if (_controlHosts.ContainsKey(title)) {
+                    frm = _controlHosts[title];
+                } else {
+                    var control = controlFactory();
+                    if (control != null) {
+                        frm = PluginManager.Instance.AddNonDockableContent(this, control, title, sizeMode, autoSavePosition, initFunc);
+
+                        frm.Closed += new EventHandler((sender, e) => {
+                            frm = null;
+                            lock (_controlHosts) {
+                                _controlHosts.Remove(title);
+                            }
+                        });
+                    }
+                }
+            }
+
+            if (frm != null) {
+                frm.Show();
+                frm.Focus();
+            }
+
+            return frm;
+        }
+
 
     }
 }
