@@ -80,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BlockingQueue.cs" />
+    <Compile Include="ByteConverter.cs" />
     <Compile Include="CodeTimer.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="DateUtils.cs" />
