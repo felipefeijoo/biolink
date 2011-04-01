@@ -87,6 +87,9 @@
     </Compile>
     <Compile Include="journals\JournalViewModel.cs" />
     <Compile Include="MaterialImportProcessor.cs" />
+    <Compile Include="NameListAdminControl.xaml.cs">
+      <DependentUpon>NameListAdminControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TraitTypesControl.xaml.cs">
       <DependentUpon>TraitTypesControl.xaml</DependentUpon>
     </Compile>
@@ -198,6 +201,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="journals\JournalManager.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="NameListAdminControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

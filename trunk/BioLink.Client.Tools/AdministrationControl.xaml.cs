@@ -26,6 +26,8 @@ namespace BioLink.Client.Tools {
             this.User = user;            
             tabControl.AddTabItem("Trait types", new TraitTypesControl(user, "trait"));
             tabControl.AddTabItem("Note types", new TraitTypesControl(user, "note"));
+            tabControl.AddTabItem("Ref Link types", new NameListAdminControl(user, "ref"));
+            tabControl.AddTabItem("Multimedia Link types", new NameListAdminControl(user, "mm"));
         }
 
     }
