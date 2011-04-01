@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Linq.Expressions;
 using System.Reflection;
+using BioLink.Client.Utilities;
 
 namespace BioLink.Data.Model {
 
@@ -142,8 +143,9 @@ namespace BioLink.Data.Model {
         public int NoteID { get; set; }
         public int NoteTypeID { get; set; }
         public string Note { get; set; }
+        
         public string NoteLength {
-            get { return String.Format("{0} bytes", Note == null ? 0 : Note.Length); }
+            get { return ByteConverter.FormatBytes(Note == null ? 0 : Note.Length); }
         }
 
     }

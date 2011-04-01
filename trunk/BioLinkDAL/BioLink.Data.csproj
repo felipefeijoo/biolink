@@ -44,6 +44,7 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\shared\lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>

@@ -47,6 +47,10 @@ namespace BioLink.Client.Tools {
             lvwValues.SelectionChanged += new SelectionChangedEventHandler(lvwValues_SelectionChanged);
             lvwValues.MouseRightButtonUp += new MouseButtonEventHandler(lvwValues_MouseRightButtonUp);
             _type = type;
+            if (_type == "note") {
+                lblRTF.Content = "Note text:";
+            }
+
         }
 
         public override void Populate() {
@@ -100,6 +104,7 @@ namespace BioLink.Client.Tools {
                 if (ep.HasParameter(mapping.Key)) {
                     type = mapping.Value;                    
                     objectId = Int32.Parse(ep[mapping.Key]);
+                    break;
                 }
             }
 
@@ -117,6 +122,7 @@ namespace BioLink.Client.Tools {
                     action = new DeleteTraitFromOwnerAction(ownerInfo.ObjectID.Value);
                     break;
                 case "note":
+                    action = new DeleteNoteFromOwnerAction(ownerInfo.ObjectID.Value);
                     break;
                 default:
                     throw new NotImplementedException("Deleting type data for type: " + _type + " is currently unsupported!");
@@ -273,7 +279,7 @@ namespace BioLink.Client.Tools {
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);
-            service.UpdateTypeData("trait", Model.ID, Model.Description);
+            service.UpdateTypeData(Type, Model.ID, Model.Description);
         }
 
     }
@@ -284,7 +290,7 @@ namespace BioLink.Client.Tools {
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);
-            Model.ID = service.InsertTypeData("trait", Model.Category, Model.Description);
+            Model.ID = service.InsertTypeData(Type, Model.Category, Model.Description);
         }
 
     }
@@ -315,8 +321,27 @@ namespace BioLink.Client.Tools {
         protected int TraitID { get; private set; }
 
         public override string ToString() {
-            return string.Format("Delete Trait (traitID={0})", TraitID);
+            return string.Format("Delete Trait (TraitID={0})", TraitID);
         }
+    }
+
+    public class DeleteNoteFromOwnerAction : DatabaseAction {
+
+        public DeleteNoteFromOwnerAction(int noteID) {
+            this.NoteID = noteID;
+        }
+
+        protected override void ProcessImpl(User user) {
+            var service = new SupportService(user);
+            service.DeleteNote(NoteID);
+        }
+
+        protected int NoteID { get; private set; }
+
+        public override string ToString() {
+            return string.Format("Delete Note (NoteID={0})", NoteID);
+        }
+
     }
 
 
