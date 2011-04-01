@@ -23,8 +23,9 @@ namespace BioLink.Client.Tools {
 
         public AdministrationControl(User user) : base(user, "AdminControl") {
             InitializeComponent();
-            this.User = user;
-            tabControl.AddTabItem("Trait types", new TraitTypesControl(user));
+            this.User = user;            
+            tabControl.AddTabItem("Trait types", new TraitTypesControl(user, "trait"));
+            tabControl.AddTabItem("Note types", new TraitTypesControl(user, "note"));
         }
 
     }

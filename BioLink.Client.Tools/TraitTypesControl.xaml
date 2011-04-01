@@ -30,8 +30,16 @@
                 <ColumnDefinition Width="8" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <ListBox Grid.Column="0" x:Name="lstTraitTypes" DisplayMemberPath="Type" />
-            
+            <ListBox Grid.Column="0" x:Name="lstTypeData">
+                <ListBox.Resources>
+                    <DataTemplate DataType="{x:Type src:TypeDataViewModel}">
+                        <StackPanel Orientation="Horizontal">
+                            <ext:EditableTextBlock x:Name="txtTraitType" Text="{Binding Description, Mode=TwoWay}" IsInEditMode="{Binding Path=IsRenaming, Mode=TwoWay}" EditingComplete="txtTraitType_EditingComplete" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.Resources>
+            </ListBox>
+
             <GridSplitter Width="8" Grid.Column="1" ResizeDirection="Auto" ResizeBehavior="PreviousAndNext" />
             
             <Grid Grid.Column="2">
@@ -45,21 +53,21 @@
                         <GridView>
                             <GridView.Columns>
                                 <GridViewColumn Header="Owner" Width="300" HeaderContainerStyle="{StaticResource hcs}" DisplayMemberBinding="{Binding OwnerName}" />
-                                <GridViewColumn Header="Value" Width="300" HeaderContainerStyle="{StaticResource hcs}" DisplayMemberBinding="{Binding Value}"/>
+                                <GridViewColumn Header="Value" Width="300" HeaderContainerStyle="{StaticResource hcs}" DisplayMemberBinding="{Binding TypeDataValue}"/>
                             </GridView.Columns>
                         </GridView>
                     </ListView.View>
                 </ListView>
                 
                 <Label Grid.Row="1" Content="Comments:" />
-                <ext:BindableRichTextBox Grid.Row="1" Background="{x:Static SystemColors.ControlBrush}" IsReadOnly="True" Margin="0,23,0,0" VerticalScrollBarVisibility="Visible" RTF="{Binding Comment}" x:Name="txtComment"/>
+                <ext:BindableRichTextBox Grid.Row="1" Background="{x:Static SystemColors.ControlBrush}" IsReadOnly="True" Margin="0,23,0,0" VerticalScrollBarVisibility="Visible" RTF="{Binding RTF, Mode=OneWay}" x:Name="txtComment"/>
             </Grid>
             
         </Grid>
         
         <Grid Grid.Row="2">
-            <Button Content="_Add New" Height="23" HorizontalAlignment="Left" Margin="6,6,0,0" Name="btnAddNew" VerticalAlignment="Top" Width="75" />
-            <Button Content="_Delete" Height="23" HorizontalAlignment="Left" Margin="87,7,0,0" Name="btnDelete" VerticalAlignment="Top" Width="75" />
+            <Button Content="_Add New" Height="23" HorizontalAlignment="Left" Margin="6,6,0,0" Name="btnAddNew" VerticalAlignment="Top" Width="75" Click="btnAddNew_Click" />
+            <Button Content="_Delete" Height="23" HorizontalAlignment="Left" Margin="87,7,0,0" Name="btnDelete" VerticalAlignment="Top" Width="75" Click="btnDelete_Click" />
         </Grid>
 
     </Grid>

@@ -50,7 +50,6 @@ namespace BioLink.Client.Extensibility {
 
         protected override void ProcessImpl(User user) {
             SupportService service = new SupportService(user);
-            Trait.IntraCatID = Owner.ObjectID.Value;
             service.DeleteTrait(Trait.TraitID);
         }
 

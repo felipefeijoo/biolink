@@ -193,14 +193,33 @@ namespace BioLink.Data {
 
         public SupportService(User user)  : base(user) { }
 
-        public List<OneToManyTypeInfo> GetTypeInfo(string type) {
-            var mapper = new GenericMapperBuilder<OneToManyTypeInfo>().build();
+        public List<TypeData> GetTypeInfo(string type) {
+            var mapper = new GenericMapperBuilder<TypeData>().build();
             return StoredProcToList("spTypeDataList", mapper, _P("vchrType", type));
         }
 
         public List<TraitOwnerInfo> GetTraitOwnerInfo(int traitTypeID) {
             var mapper = new GenericMapperBuilder<TraitOwnerInfo>().build();
             return StoredProcToList("spTraitOwnerList", mapper, _P("intTraitTypeID", traitTypeID));
+        }
+
+        public List<NoteOwnerInfo> GetNoteOwnerInfo(int noteTypeID) {
+            var mapper = new GenericMapperBuilder<NoteOwnerInfo>().build();
+            return StoredProcToList("spNoteOwnerList", mapper, _P("intNoteTypeID", noteTypeID));
+        }
+
+        public void UpdateTypeData(string type, int id, string description) {
+            StoredProcUpdate("spTypeDataUpdate", _P("vchrType", type), _P("intID", id), _P("vchrDesc", description));
+        }
+
+        public int InsertTypeData(string type, string category, string description) {
+            var retval = ReturnParam("intNewTraitTypeID");
+            StoredProcUpdate("spTypeDataInsert", _P("vchrType", type), _P("vchrCategory", category), _P("vchrDesc", description), retval);
+            return (int) retval.Value;
+        }
+
+        public void DeleteTypeData(string type, int id) {
+            StoredProcUpdate("spTypeDataDelete", _P("vchrType", type), _P("intID", id));
         }
 
         #region Traits
