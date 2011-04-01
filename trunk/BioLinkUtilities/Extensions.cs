@@ -131,12 +131,17 @@ namespace BioLink.Client.Utilities {
             tab.Items.Add(tabItem);
 
             if (content is ILazyPopulateControl) {
-                tabItem.RequestBringIntoView += new RequestBringIntoViewEventHandler((s, e) => {
-                    var lazyLoadee = content as ILazyPopulateControl;
-                    if (!lazyLoadee.IsPopulated) {
-                        lazyLoadee.Populate();
-                    }
-                });
+                var lazyLoadee = content as ILazyPopulateControl;
+                if (tab.Items.Count == 1) {
+                    lazyLoadee.Populate();
+                } else {
+                    tabItem.RequestBringIntoView += new RequestBringIntoViewEventHandler((s, e) => {
+
+                        if (!lazyLoadee.IsPopulated) {
+                            lazyLoadee.Populate();
+                        }
+                    });
+                }
             }
 
             return tabItem;

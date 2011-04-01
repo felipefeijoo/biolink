@@ -24,8 +24,10 @@ namespace BioLink.Client.Tools {
     /// </summary>
     public partial class TraitTypesControl : AdministrationComponent {
 
-        private List<OneToManyTypeInfo> _typeData;
+        private List<TypeData> _typeData;
         private List<string> _categories;
+        private ObservableCollection<TypeDataViewModel> _currentCategoryModel;
+        private string _type;
 
         private KeyValuePair<string, LookupType>[] _typeMappings = new KeyValuePair<string, LookupType>[] {
             new KeyValuePair<string, LookupType>("MaterialID", LookupType.Material),
@@ -37,27 +39,58 @@ namespace BioLink.Client.Tools {
             new KeyValuePair<string, LookupType>("TrapID", LookupType.Trap)
         };
 
-        public TraitTypesControl(User user)  : base(user) {
+        public TraitTypesControl(User user, string type)  : base(user) {
             InitializeComponent();
             cmbCategory.SelectionChanged += new SelectionChangedEventHandler(cmbCategory_SelectionChanged);
-            lstTraitTypes.SelectionChanged += new SelectionChangedEventHandler(lstTraitTypes_SelectionChanged);
+            lstTypeData.SelectionChanged += new SelectionChangedEventHandler(lstTraitTypes_SelectionChanged);
+            lstTypeData.MouseRightButtonUp += new MouseButtonEventHandler(lstTraitTypes_MouseRightButtonUp);
             lvwValues.SelectionChanged += new SelectionChangedEventHandler(lvwValues_SelectionChanged);
             lvwValues.MouseRightButtonUp += new MouseButtonEventHandler(lvwValues_MouseRightButtonUp);
+            _type = type;
+        }
+
+        public override void Populate() {
+            _typeData = Service.GetTypeInfo(_type);
+            var map = new Dictionary<string, string>();
+            foreach (TypeData info in _typeData) {
+                if (!map.ContainsKey(info.Category)) {
+                    map[info.Category] = info.Category;
+                }
+            }
+            _categories = new List<string>(map.Values);
+            cmbCategory.ItemsSource = _categories;
+            cmbCategory.SelectedItem = _categories[0];
+
+            IsPopulated = true;
+        }
+
+        void lstTraitTypes_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            var selected = lstTypeData.SelectedItem as TypeDataViewModel;
+            if (selected != null) {
+                ContextMenuBuilder builder = new ContextMenuBuilder(null);
+                builder.New("Rename").Handler(() => { RenameTraitType(selected); }).End();
+                builder.Separator();
+                builder.New("Add new {0} type", _type).Handler(() => { AddNewTypeData(); }).End();
+                builder.Separator();
+                builder.New("Delete {0} type", _type).Handler(() => { DeleteTypeData(selected); }).End();                
+                lstTypeData.ContextMenu = builder.ContextMenu;
+            }
+            
         }
 
         void lvwValues_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
 
-            var selected = lvwValues.SelectedItem as TraitOwnerInfo;
+            var selected = lvwValues.SelectedItem as TypeDataOwnerInfo;
             if (selected != null) {
                 ContextMenuBuilder builder = new ContextMenuBuilder(null);
                 builder.New("Edit owner").Handler(() => { EditOwner(selected); }).End();
-                builder.New("Delete trait from owner").Handler(() => { DeleteTraitFromOwner(selected); }).End();
+                builder.New("Delete {0} from owner", _type).Handler(() => { DeleteTypeDataFromOwner(selected); }).End();
 
                 lvwValues.ContextMenu = builder.ContextMenu;
             }
         }
 
-        private void EditOwner(TraitOwnerInfo ownerInfo) {
+        private void EditOwner(TypeDataOwnerInfo ownerInfo) {
             var ep = EntryPoint.Parse(ownerInfo.EntryPoint);
 
             LookupType? type = null;
@@ -77,8 +110,25 @@ namespace BioLink.Client.Tools {
             }
         }
 
-        private void DeleteTraitFromOwner(TraitOwnerInfo ownerInfo) {
-            throw new NotImplementedException();
+        private void DeleteTypeDataFromOwner(TypeDataOwnerInfo ownerInfo) {
+            DatabaseAction action = null;
+            switch (_type) {
+                case "trait":
+                    action = new DeleteTraitFromOwnerAction(ownerInfo.ObjectID.Value);
+                    break;
+                case "note":
+                    break;
+                default:
+                    throw new NotImplementedException("Deleting type data for type: " + _type + " is currently unsupported!");
+            }
+
+            if (action != null) {
+                var model = lvwValues.ItemsSource as ObservableCollection<TypeDataOwnerInfo>;
+                if (model != null) {
+                    model.Remove(ownerInfo);
+                    RegisterPendingChange(action);
+                }
+            }
         }
 
         void lvwValues_SelectionChanged(object sender, SelectionChangedEventArgs e) {
@@ -87,18 +137,31 @@ namespace BioLink.Client.Tools {
 
         void lstTraitTypes_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             if (IsPopulated) {
-                var info = lstTraitTypes.SelectedItem as OneToManyTypeInfo;
+                var info = lstTypeData.SelectedItem as TypeDataViewModel;
                 if (info != null) {
+                    lvwValues.ItemsSource = null;
+
                     JobExecutor.QueueJob(() => {
                         lock (lvwValues) {
                             try {
                                 this.InvokeIfRequired(() => {
                                     lvwValues.Cursor = Cursors.Wait;
                                 });
-                                var list = Service.GetTraitOwnerInfo(info.ID);
-                                this.InvokeIfRequired(() => {
-                                    lvwValues.ItemsSource = new ObservableCollection<TraitOwnerInfo>(list);
-                                });
+
+                                List<TypeDataOwnerInfo> list = null;
+                                if (_type == "trait") {
+                                    list = new List<TypeDataOwnerInfo>(Service.GetTraitOwnerInfo(info.ID));
+                                } else if (_type == "note") {
+                                    list = new List<TypeDataOwnerInfo>(Service.GetNoteOwnerInfo(info.ID));
+                                } else {
+                                    throw new NotImplementedException();
+                                }
+
+                                if (list != null) {
+                                    this.InvokeIfRequired(() => {
+                                        lvwValues.ItemsSource = new ObservableCollection<TypeDataOwnerInfo>(list);
+                                    });
+                                }
                             } finally {
                                 this.InvokeIfRequired(() => {
                                     lvwValues.Cursor = Cursors.Arrow;
@@ -110,31 +173,151 @@ namespace BioLink.Client.Tools {
             }
         }
 
-        void cmbCategory_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            if (IsPopulated) {
-                string category = cmbCategory.SelectedItem as string;
-                if (category != null) {
-                    var types = new ObservableCollection<OneToManyTypeInfo>(_typeData.FindAll((info) => info.Category.Equals(category)));
-                    lstTraitTypes.ItemsSource = types;
-                }
-            }
+        void cmbCategory_SelectionChanged(object sender, SelectionChangedEventArgs e) {            
+            string category = cmbCategory.SelectedItem as string;
+            if (category != null) {
+                var list = _typeData.FindAll((info) => info.Category.Equals(category));
+                _currentCategoryModel = new ObservableCollection<TypeDataViewModel>(list.Select((m) => {
+                    var vm = new TypeDataViewModel(m);
+                    return vm;
+                }));
+                lstTypeData.ItemsSource = _currentCategoryModel;
+            }            
         }
 
-        public override void Populate() {
-            _typeData = Service.GetTypeInfo("trait");
-            var map = new Dictionary<string, string>();
-            foreach (OneToManyTypeInfo info in _typeData) {
-                if (!map.ContainsKey(info.Category)) {
-                    map[info.Category] = info.Category;
+        private void DeleteTypeData(TypeDataViewModel selected) {
+
+            if (selected != null) {
+                _currentCategoryModel.Remove(selected);
+                _typeData.Remove(selected.Model);
+                RegisterPendingChange(new DeleteTypeDataAction(selected.Model, _type));
+            }
+
+        }
+
+        private void RenameTraitType(TypeDataViewModel selected) {
+            selected.IsRenaming = true;
+        }
+
+        private void AddNewTypeData() {
+            var model = new TypeData();
+            model.Category = cmbCategory.SelectedItem as string;
+            model.Description = string.Format("<New {0} type>", _type);
+            model.ID = -1;
+            var viewModel = new TypeDataViewModel(model);
+            _currentCategoryModel.Add(viewModel);
+            lstTypeData.SelectedItem = viewModel;
+
+            lstTypeData.ScrollIntoView(viewModel);
+
+            viewModel.IsRenaming = true;
+            _typeData.Add(model);
+            RegisterPendingChange(new InsertTypeDataAction(model, _type));            
+        }
+
+        private void btnAddNew_Click(object sender, RoutedEventArgs e) {
+            AddNewTypeData();
+        }
+
+        private void btnDelete_Click(object sender, RoutedEventArgs e) {
+            var selected = lstTypeData.SelectedItem as TypeDataViewModel;
+            DeleteTypeData(selected);
+        }
+
+        private void txtTraitType_EditingComplete(object sender, string text) {
+            var selected = lstTypeData.SelectedItem as TypeDataViewModel;
+            if (selected != null) {
+                selected.Description = text;
+                if (selected.ID >= 0) {
+                    RegisterUniquePendingChange(new UpdateTypeDataAction(selected.Model, _type));
                 }
             }
-            _categories = new List<string>(map.Values);
-            _categories.Sort();
-
-            cmbCategory.ItemsSource = _categories;
-            cmbCategory.SelectedItem = _categories[0];
-
-            IsPopulated = true;
         }
     }
+
+    
+
+    public class TypeDataViewModel : GenericViewModelBase<TypeData> {
+
+        public TypeDataViewModel(TypeData model) : base(model, ()=>model.ID) { }
+
+        public int ID {
+            get { return Model.ID; }
+            set { SetProperty(() => Model.ID, value); }
+        }
+
+        public string Description {
+            get { return Model.Description; }
+            set { SetProperty(() => Model.Description, value); }
+        }
+
+        public string Category {
+            get { return Model.Category; }
+            set { SetProperty(() => Model.Category, value); }
+        }
+
+    }
+
+    public abstract class TypeDataAction : GenericDatabaseAction<TypeData> {
+        public TypeDataAction(TypeData model, string type) : base(model) {
+            this.Type = type;
+        }
+
+        protected string Type { get; private set; }
+
+    }
+
+    public class UpdateTypeDataAction : TypeDataAction {
+
+        public UpdateTypeDataAction(TypeData model, string type) : base(model, type) { }
+
+        protected override void ProcessImpl(User user) {
+            var service = new SupportService(user);
+            service.UpdateTypeData("trait", Model.ID, Model.Description);
+        }
+
+    }
+
+    public class InsertTypeDataAction : TypeDataAction {
+
+        public InsertTypeDataAction(TypeData model, string type) : base(model, type) { }
+
+        protected override void ProcessImpl(User user) {
+            var service = new SupportService(user);
+            Model.ID = service.InsertTypeData("trait", Model.Category, Model.Description);
+        }
+
+    }
+
+    public class DeleteTypeDataAction : TypeDataAction {
+
+        public DeleteTypeDataAction(TypeData model, string type) : base(model, type) { }
+
+        protected override void ProcessImpl(User user) {
+            var service = new SupportService(user);
+            if (Model.ID >= 0) {
+                service.DeleteTypeData(Type, Model.ID);
+            }
+        }
+    }
+
+    public class DeleteTraitFromOwnerAction : DatabaseAction {
+
+        public DeleteTraitFromOwnerAction(int traitID) {
+            this.TraitID = traitID;
+        }
+
+        protected override void ProcessImpl(User user) {
+            var service = new SupportService(user);
+            service.DeleteTrait(TraitID);
+        }
+
+        protected int TraitID { get; private set; }
+
+        public override string ToString() {
+            return string.Format("Delete Trait (traitID={0})", TraitID);
+        }
+    }
+
+
 }

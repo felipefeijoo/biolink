@@ -32,8 +32,7 @@ namespace BioLink.Data.Model {
                 if (IdentityExpression == null) {
                     return null;
                 } else {
-                    var destProp = (PropertyInfo)((MemberExpression)IdentityExpression.Body).Member;
-                    return (int)destProp.GetValue(this, null);
+                    return GetExpressionValue(IdentityExpression);
                 }
             }
         }
@@ -42,6 +41,16 @@ namespace BioLink.Data.Model {
         public void GetObjectData(SerializationInfo info, StreamingContext context) {
             throw new NotImplementedException();
         }
+
+        protected T GetExpressionValue<T>(Expression<Func<T>> expr, T @default = default(T)) {
+            if (expr == null) {
+                return @default;
+            } else {
+                var destProp = (PropertyInfo)((MemberExpression)expr.Body).Member;
+                return (T)destProp.GetValue(this, null);
+            }
+        }
+
     }
 
 
