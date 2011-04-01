@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="BioLink.Client.Extensibility.LatLongInput"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ext="clr-namespace:BioLink.Client.Extensibility"
+             mc:Ignorable="d" 
+             d:DesignHeight="45" d:DesignWidth="232">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="StringResources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid x:Name="grid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="18"></RowDefinition>
+            <RowDefinition Height="2"></RowDefinition>
+            <RowDefinition Height="23"></RowDefinition>            
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition ></ColumnDefinition>
+            <ColumnDefinition Width="15"></ColumnDefinition>
+            <ColumnDefinition ></ColumnDefinition>
+            <ColumnDefinition Width="15"></ColumnDefinition>
+            <ColumnDefinition ></ColumnDefinition>
+            <ColumnDefinition Width="15"></ColumnDefinition>
+            <ColumnDefinition Width="35"></ColumnDefinition>
+
+        </Grid.ColumnDefinitions>
+        <Label Grid.ColumnSpan="7" Content="Label" Name="lblAxis" HorizontalContentAlignment="Center" Padding="1" VerticalContentAlignment="Center" Background="DimGray" Foreground="White" FontWeight="Bold" FontSize="10" />
+        <ext:TextBox Grid.Row="2" x:Name="txtDegrees" AllowDrop="False" x:FieldModifier="public" />
+        <Label Grid.Column="1" Grid.Row="2" Content="{StaticResource LatLong.DegreeSeparator}" Name="lblDegreeSeparator" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Top" Padding="0" />
+        <ext:TextBox Grid.Column="2" Grid.Row="2" x:Name="txtMinutes" AllowDrop="False"  x:FieldModifier="public"/>
+        <Label Grid.Column="3" Grid.Row="2" Content="{StaticResource LatLong.MinuteSeparator}" Name="lblMinuteSeparator" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Top" Padding="0" />
+        <ext:TextBox Grid.Column="4" Grid.Row="2" x:Name="txtSeconds" AllowDrop="False"  x:FieldModifier="public"/>
+        <Label Grid.Column="5" Grid.Row="2" Content="{StaticResource LatLong.SecondSeparator}" Name="lblSecondSeparator" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Top" Padding="0" />
+        <ComboBox Grid.Column="6" Grid.Row="2" HorizontalAlignment="Right"  Name="cmbDirection" Width="35" x:FieldModifier="public" />
+    </Grid>
+</UserControl>
