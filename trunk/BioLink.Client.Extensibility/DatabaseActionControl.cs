@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 
 namespace BioLink.Client.Extensibility {
 
-    public class DatabaseActionControl : UserControl, IIdentifiableContent, IChangeContainerObserver {
+    public class DatabaseActionControl : UserControl, IIdentifiableContent, IChangeContainerObserver, IDisposable {
 
         #region Designer Constructor
         public DatabaseActionControl() : base() {

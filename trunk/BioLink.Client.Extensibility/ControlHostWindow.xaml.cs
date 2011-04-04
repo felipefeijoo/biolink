@@ -56,6 +56,15 @@ namespace BioLink.Client.Extensibility {
             });
 
             btnSelect.Click += new RoutedEventHandler(btnSelect_Click);
+
+            this.Closed += new EventHandler(ControlHostWindow_Closed);
+        }
+
+        void ControlHostWindow_Closed(object sender, EventArgs e) {
+            if (Control != null && Control is IDisposable) {
+                (Control as IDisposable).Dispose();
+                Control = null;
+            }
         }
 
         void btnSelect_Click(object sender, RoutedEventArgs e) {
