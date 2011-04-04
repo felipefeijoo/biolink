@@ -40,9 +40,9 @@ namespace BioLink.Client.Tools {
                 ContextMenuBuilder builder = new ContextMenuBuilder(null);
                 builder.New("Rename").Handler(() => { RenameTraitType(selected); }).End();
                 builder.Separator();
-                builder.New("Add new {0} type", Type).Handler(() => { AddNewTypeData(); }).End();
+                builder.New("Add new {0} type", TypeName).Handler(() => { AddNewTypeData(); }).End();
                 builder.Separator();
-                builder.New("Delete {0} type", Type).Handler(() => { DeleteTypeData(selected); }).End();
+                builder.New("Delete {0} type", TypeName).Handler(() => { DeleteTypeData(selected); }).End();
                 lstTypeData.ContextMenu = builder.ContextMenu;
             }
 
@@ -65,6 +65,17 @@ namespace BioLink.Client.Tools {
 
         protected String Type { get; private set; }
 
+        protected String TypeName {
+            get {
+                switch (Type) {
+                    case "mm":
+                        return "Multimedia Link";
+                    default:
+                        return Type;
+                }
+            }
+        }
+
         private void cmbCategory_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             string category = cmbCategory.SelectedItem as string;
             if (category != null) {
@@ -85,7 +96,7 @@ namespace BioLink.Client.Tools {
         private void AddNewTypeData() {
             var model = new TypeData();
             model.Category = cmbCategory.SelectedItem as string;
-            model.Description = string.Format("<New {0} type>", Type);
+            model.Description = string.Format("<New {0} type>", TypeName);
             model.ID = -1;
             var viewModel = new TypeDataViewModel(model);
             _currentCategoryModel.Add(viewModel);
