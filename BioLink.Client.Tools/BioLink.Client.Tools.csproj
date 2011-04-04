@@ -56,23 +56,23 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdministrationComponent.cs" />
-    <Compile Include="AdministrationControl.xaml.cs">
+    <Compile Include="administration\AdministrationComponent.cs" />
+    <Compile Include="administration\AdministrationControl.xaml.cs">
       <DependentUpon>AdministrationControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ImportCache.cs" />
-    <Compile Include="ImportFilterSelection.xaml.cs">
+    <Compile Include="import\ImportCache.cs" />
+    <Compile Include="import\ImportFilterSelection.xaml.cs">
       <DependentUpon>ImportFilterSelection.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ImportMappingPage.xaml.cs">
+    <Compile Include="import\ImportMappingPage.xaml.cs">
       <DependentUpon>ImportMappingPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ImportPage.xaml.cs">
+    <Compile Include="import\ImportPage.xaml.cs">
       <DependentUpon>ImportPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ImportProcessor.cs" />
-    <Compile Include="ImportReferencesProcessor.cs" />
-    <Compile Include="ImportWizard.xaml.cs">
+    <Compile Include="import\ImportProcessor.cs" />
+    <Compile Include="import\ImportReferencesProcessor.cs" />
+    <Compile Include="import\ImportWizard.xaml.cs">
       <DependentUpon>ImportWizard.xaml</DependentUpon>
     </Compile>
     <Compile Include="journals\JournalBrowsePage.xaml.cs">
@@ -86,12 +86,15 @@
       <DependentUpon>JournalManager.xaml</DependentUpon>
     </Compile>
     <Compile Include="journals\JournalViewModel.cs" />
-    <Compile Include="MaterialImportProcessor.cs" />
-    <Compile Include="NameListAdminControl.xaml.cs">
+    <Compile Include="import\MaterialImportProcessor.cs" />
+    <Compile Include="administration\NameListAdminControl.xaml.cs">
       <DependentUpon>NameListAdminControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="TraitTypesControl.xaml.cs">
+    <Compile Include="administration\TraitTypesControl.xaml.cs">
       <DependentUpon>TraitTypesControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MultimediaManager.xaml.cs">
+      <DependentUpon>MultimediaManager.xaml</DependentUpon>
     </Compile>
     <Compile Include="usermanager\PermissionProperties.xaml.cs">
       <DependentUpon>PermissionProperties.xaml</DependentUpon>
@@ -172,23 +175,23 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="AdministrationControl.xaml">
+    <Page Include="administration\AdministrationControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ImportFilterSelection.xaml">
+    <Page Include="import\ImportFilterSelection.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ImportMappingPage.xaml">
+    <Page Include="import\ImportMappingPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ImportPage.xaml">
+    <Page Include="import\ImportPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ImportWizard.xaml">
+    <Page Include="import\ImportWizard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -204,11 +207,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="NameListAdminControl.xaml">
+    <Page Include="administration\NameListAdminControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="TraitTypesControl.xaml">
+    <Page Include="administration\TraitTypesControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MultimediaManager.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
