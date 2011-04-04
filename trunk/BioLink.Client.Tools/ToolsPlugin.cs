@@ -68,6 +68,12 @@ namespace BioLink.Client.Tools {
                 String.Format("{{'Name':'Administration', 'Header':'{0}'}}", "Administration...")
             ));
 
+            contrib.Add(new MenuWorkspaceContribution(this, "MultimediaManager", (obj, e) => { ShowMultimediaManagerWindow(); },
+                String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
+                String.Format("{{'Name':'MultimediaManager', 'Header':'{0}'}}", "Multimedia Manager...")
+            ));
+
+
 
             return contrib;
         }
@@ -115,6 +121,10 @@ namespace BioLink.Client.Tools {
 
         private void ShowAdminWindow() {
             ShowSingleton("Administration", () => new AdministrationControl(User));
+        }
+
+        private void ShowMultimediaManagerWindow() {
+            ShowSingleton("MultimediaManager", () => new MultimediaManager(User));
         }
 
         private void ShowImport() {
