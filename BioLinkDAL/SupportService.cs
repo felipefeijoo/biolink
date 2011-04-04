@@ -462,6 +462,37 @@ namespace BioLink.Data {
             return result;
         }
 
+        public List<MultimediaLink> FindMultimedia(string extension, string category, string term) {
+
+            if (string.IsNullOrWhiteSpace(extension)) {
+                extension = "%";
+            }
+
+            if (string.IsNullOrWhiteSpace(category)) {
+                category = "%";
+            }
+
+            term = term.Replace("*", "%") + "%";
+
+            var mapper = new GenericMapperBuilder<MultimediaLink>().Map("FileExtension", "Extension").Override(new StringToIntConverteringMapping("MultimediaLinkID")).build();
+            List<MultimediaLink> ret = StoredProcToList("spMultimediaFind", mapper, 
+                _P("vchrExtensionCriteria", extension), 
+                _P("vchrCategoryCriteria", category),
+                _P("txtSearchTerm", term)
+            );
+            return ret;
+        }
+
+        public List<string> GetMultimediaExtensions() {
+            var list = new List<string>();
+
+            StoredProcReaderForEach("spMultimediaExtensions", (reader) => {
+                list.Add(reader[0] as string);
+            });
+
+            return list;
+        }
+
         public List<Multimedia> FindMultimediaByName(string name) {
             string searchTerm = EscapeSearchTerm(name) + "%";
             var mapper = new GenericMapperBuilder<Multimedia>().Map("Extension", "FileExtension").build();

@@ -5,6 +5,7 @@ using System.Text;
 using BioLink.Data.Model;
 using System.Windows.Media.Imaging;
 using System.Windows;
+using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Extensibility {
 
@@ -64,6 +65,11 @@ namespace BioLink.Client.Extensibility {
             get { return (BitmapSource) GetValue(ThumbnailProperty); }
             set { SetValue(ThumbnailProperty, value); }
         }
+
+        public string FileInfo {
+            get { return string.Format("{0} {1}", this.Extension, ByteConverter.FormatBytes(SizeInBytes)); }
+        }
+
 
     }
 }

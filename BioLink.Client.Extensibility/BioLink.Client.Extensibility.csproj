@@ -599,6 +599,7 @@
     <Resource Include="images\error.png" />
     <Resource Include="images\warning.png" />
     <Resource Include="images\Print.png" />
+    <Resource Include="images\Launch.png" />
     <Content Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>

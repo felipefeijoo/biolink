@@ -231,12 +231,11 @@ namespace BioLink.Data {
     }
 
     public class IntToBoolConvertingMapper : ConvertingMapper {
+        public IntToBoolConvertingMapper(string columnName) : base(columnName, (intval) => { return (int)intval != 0; }) { }
+    }
 
-        public IntToBoolConvertingMapper(string columnName)
-            : base(columnName, (intval) => {
-                return (int)intval != 0;
-            }) {
-        }
+    public class StringToIntConverteringMapping : ConvertingMapper {
+        public StringToIntConverteringMapping(string columnName) : base(columnName, (strval) => { return Int32.Parse((string) strval); }) { }
     }
 
 }

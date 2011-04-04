@@ -93,90 +93,11 @@ namespace BioLink.Client.Extensibility {
             IsPopulated = true;
         }
 
-        public static BitmapFrame Resize(BitmapFrame photo, int width, int height, BitmapScalingMode scalingMode) {
-            var group = new DrawingGroup();
-
-            RenderOptions.SetBitmapScalingMode(group, scalingMode);
-            group.Children.Add(new ImageDrawing(photo, new Rect(0, 0, width, height)));
-            var targetVisual = new DrawingVisual();
-            var targetContext = targetVisual.RenderOpen();
-            targetContext.DrawDrawing(group);
-            var target = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Default);
-            targetContext.Close();
-            target.Render(targetVisual);
-            var targetFrame = BitmapFrame.Create(target);
-            return targetFrame;
-        }
-
         private void GenerateThumbnail(MultimediaLinkViewModel item, int maxDimension) {
             string filename = _tempFileManager.GetContentFileName(item.MultimediaID, item.Extension);
             this.InvokeIfRequired(() => {
-                item.Thumbnail = GenerateThumbnail(filename, maxDimension);
+                item.Thumbnail = GraphicsUtils.GenerateThumbnail(filename, maxDimension);
             });
-        }
-
-        private BitmapSource GenerateThumbnail(string filename, int maxDimension) {
-            if (!String.IsNullOrEmpty(filename)) {
-                try {
-                    using (var fs = new FileStream(filename, FileMode.Open)) {
-                        var imageDecoder = BitmapDecoder.Create(fs, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
-                        var image = imageDecoder.Frames[0];
-
-                        int height = maxDimension;
-                        int width = maxDimension;
-
-                        if (image.Height > image.Width) {
-                            width = (int)(image.Width * ((double)maxDimension / image.Height));
-                        } else {
-                            height = (int)(image.Height * ((double)maxDimension / image.Width));
-                        }
-
-                        return Resize(image, width, height, BitmapScalingMode.HighQuality);
-                    }
-                } catch (Exception) {
-                    FileInfo finfo = new FileInfo(filename);
-                    return ExtractIconForExtension(finfo.Extension.Substring(1));
-                }
-            }
-
-            return null;
-        }
-
-        public BitmapSource ExtractIconForExtension(string ext) {
-            if (ext != null) {
-                Icon icon = SystemUtils.GetIconFromExtension(ext);
-                if (icon != null) {
-                    return FormatImage(icon);
-                }
-            }
-            return null;
-        }
-
-        private System.Windows.Media.Imaging.BitmapSource FormatImage(Bitmap bitmap) {
-
-            // allocate the memory for the bitmap            
-            IntPtr bmpPt = bitmap.GetHbitmap();
-
-            // create the bitmapSource
-            System.Windows.Media.Imaging.BitmapSource bitmapSource = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
-                bmpPt,
-                IntPtr.Zero,
-                Int32Rect.Empty,
-                System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
-
-            // freeze the bitmap to avoid hooking events to the bitmap
-            bitmapSource.Freeze();
-
-            // free memory
-            SystemUtils.DeleteObject(bmpPt);
-
-            return bitmapSource;
-        }
-
-        private System.Windows.Media.Imaging.BitmapSource FormatImage(Icon icon) {
-            //Create bitmap
-            var bmp = icon.ToBitmap();
-            return FormatImage(bmp);
         }
 
         public override void Dispose() {
@@ -237,14 +158,7 @@ namespace BioLink.Client.Extensibility {
                         }).MenuItem);
                     }
                 } else {
-                    menu.Items.Add(builder.New("Open").Handler(()=> {
-                        try {
-                            Process.Start(filename);
-                        } catch (Exception ex) {
-                            ErrorMessage.Show(ex.Message);
-                        }
-
-                    }).MenuItem);
+                    menu.Items.Add(builder.New("Open").Handler(()=> { SystemUtils.ShellExecute(filename); }).MenuItem);
                 }
 
                 menu.Items.Add(new Separator());
@@ -293,7 +207,7 @@ namespace BioLink.Client.Extensibility {
                                     model.Name = finfo.Name;
                                 }
                                 viewModel = new MultimediaLinkViewModel(model);
-                                viewModel.Thumbnail = GenerateThumbnail(filename, THUMB_SIZE);
+                                viewModel.Thumbnail = GraphicsUtils.GenerateThumbnail(filename, THUMB_SIZE);
                                 _tempFileManager.CopyToTempFile(viewModel.MultimediaID, filename);
                                 _model.Add(viewModel);
                                 RegisterPendingChange(new InsertMultimediaAction(model, _tempFileManager.GetContentFileName(viewModel.MultimediaID, finfo.Extension.Substring(1))));
@@ -402,7 +316,7 @@ namespace BioLink.Client.Extensibility {
             var model = Service.GetMultimedia(selected.MultimediaID);
             var detailsControl = new MultimediaDetails(model, User);
             IBioLinkPlugin plugin = PluginManager.Instance.GetPluginByName("Tools");
-            PluginManager.Instance.AddNonDockableContent(plugin, detailsControl, "Multimedia details", SizeToContent.Manual);
+            PluginManager.Instance.AddNonDockableContent(plugin, detailsControl, string.Format("Multimedia details [{0}]", model.MultimediaID), SizeToContent.Manual);
         }
 
         #region Properties
