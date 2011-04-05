@@ -500,6 +500,10 @@ namespace BioLink.Data {
             return results;
         }
 
+        public void DeleteMultimedia(int multimediaID) {
+            StoredProcUpdate("spMultimediaDelete", _P("intMultimediaID", multimediaID));
+        }
+
         #endregion
 
         #region Notes
@@ -1325,6 +1329,7 @@ namespace BioLink.Data {
         }
 
         #endregion
+
     }
 
     public class RefTypeMapping {

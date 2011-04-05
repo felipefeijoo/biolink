@@ -5,6 +5,8 @@ using System.Text;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
 using System.Drawing;
+using System.Diagnostics;
+using System.Windows.Controls;
 
 namespace BioLink.Client.Utilities {
 
@@ -231,6 +233,52 @@ namespace BioLink.Client.Utilities {
             }
         }
 
+        public static List<string> GetVerbs(string filename) {
+            var verbs = new List<string>();
+            ProcessStartInfo pinfo = new ProcessStartInfo(filename);
+            if (pinfo != null && pinfo.Verbs.Length > 0) {
+
+                foreach (string v in pinfo.Verbs) {
+                    verbs.Add(v);
+                }
+            }
+
+            return verbs;
+        }
+
+        public static List<MenuItem> GetVerbsAsMenuItems(string filename) {
+            var items = new List<MenuItem>();
+            ProcessStartInfo pinfo = new ProcessStartInfo(filename);
+            if (pinfo != null && pinfo.Verbs.Length > 0) {
+                foreach (string v in pinfo.Verbs) {
+                    string verb = v;
+                    string caption = "_" + verb.Substring(0, 1).ToUpper() + verb.Substring(1);
+                    var item = new MenuItem();
+                    item.Header = caption;
+                    item.Click +=new System.Windows.RoutedEventHandler((s,e) => {
+                        try {
+                            pinfo.Verb = verb;
+                            Process p = new Process();
+                            p.StartInfo = pinfo;
+                            p.Start();
+                        } catch (Exception ex) {
+                            ErrorMessage.Show(ex.Message);
+                        }
+                    });
+
+                    items.Add(item);
+                }
+            } else {
+                var item = new MenuItem();
+                item.Header = "_Open";
+                item.Click +=new System.Windows.RoutedEventHandler((s,e) => {
+                    SystemUtils.ShellExecute(filename);
+                });
+                items.Add(item);
+            }
+            return items;
+        }
+        
     }
 }
 

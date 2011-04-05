@@ -138,29 +138,12 @@ namespace BioLink.Client.Extensibility {
                 string filename = _tempFileManager.GetContentFileName(item.MultimediaID, item.Extension);
 
                 thumbList.ContextMenu = menu;
-                
-                ProcessStartInfo pinfo = new ProcessStartInfo(filename);
-                if (pinfo != null && pinfo.Verbs.Length > 0) {
 
-                    foreach (string v in pinfo.Verbs) {
-                        string verb = v;
-
-                        string caption = verb.Substring(0, 1).ToUpper() + verb.Substring(1);
-                        menu.Items.Add(builder.New(caption).Handler(() => {
-                            try {
-                                pinfo.Verb = verb;
-                                Process p = new Process();
-                                p.StartInfo = pinfo;
-                                p.Start();
-                            } catch (Exception ex) {
-                                ErrorMessage.Show(ex.Message);
-                            }
-                        }).MenuItem);
-                    }
-                } else {
-                    menu.Items.Add(builder.New("Open").Handler(()=> { SystemUtils.ShellExecute(filename); }).MenuItem);
+                var verbMenuItems = SystemUtils.GetVerbsAsMenuItems(filename);
+                foreach (MenuItem verbItem in verbMenuItems) {
+                    menu.Items.Add(verbItem);
                 }
-
+                
                 menu.Items.Add(new Separator());
                 menu.Items.Add(builder.New("Add multimedia").Handler(() => { AddMultimedia(); }).MenuItem);
                 menu.Items.Add(new Separator());
@@ -332,6 +315,38 @@ namespace BioLink.Client.Extensibility {
         public bool IsPopulated { get; private set; }
 
         #endregion
+
+        private void thumbList_DragOver(object sender, DragEventArgs e) {
+            var link = e.Data.GetData("MultimediaLink") as  MultimediaLink;
+            if (link != null) {
+                e.Effects = DragDropEffects.Link;
+            }
+        }
+
+        private void thumbList_Drop(object sender, DragEventArgs e) {
+            var link = e.Data.GetData("MultimediaLink") as  MultimediaLink;
+            if (link != null) {
+                // Link to existing multimedia
+                var model = new MultimediaLink();
+                model.MultimediaID = link.MultimediaID;
+                model.MultimediaLinkID = -1;
+                model.Name = link.Name;
+                model.Extension = link.Extension;
+                var viewModel = new MultimediaLinkViewModel(model);
+                GenerateThumbnail(viewModel, THUMB_SIZE);
+                _model.Add(viewModel);
+                RegisterPendingChange(new InsertMultimediaLinkAction(model, CategoryType, Owner));                    
+            }
+        }
+
+        private void btnLinkToExisting_Click(object sender, RoutedEventArgs e) {
+            var frm = new FindMultimediaDialog(User);
+            frm.Owner = this.FindParentWindow();
+            frm.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            if (frm.ShowDialog() == true) {
+
+            }
+        }
 
     }
 

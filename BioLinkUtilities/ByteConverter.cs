@@ -20,7 +20,7 @@ namespace BioLink.Client.Utilities {
             throw new NotImplementedException();
         }
 
-        public static string FormatBytes(int bytes) {
+        public static string FormatBytes(long bytes) {
             long max = (long)Math.Pow(SCALE, UNITS.Length - 1);
             foreach (string order in UNITS) {
                 if (bytes > max) {
