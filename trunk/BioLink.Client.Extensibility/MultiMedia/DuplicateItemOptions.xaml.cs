@@ -26,10 +26,15 @@ namespace BioLink.Client.Extensibility {
         }
         #endregion
 
-        public DuplicateItemOptions(Multimedia duplicate, int sizeInBytes) {
+        public DuplicateItemOptions(Multimedia duplicate, int sizeInBytes, Boolean managerMode = false) {
             InitializeComponent();
             this.DuplicateItem = duplicate;
             lblDescription.Content = "There already exists a multimedia item with the name and size ('" + duplicate.Name + "', " +  SystemUtils.ByteCountToSizeString(sizeInBytes) + ").";
+            if (managerMode) {
+                optContinue.IsChecked = true;
+                optLinkToExisting.IsEnabled = false;
+                optLinkToExisting.IsChecked = false;                
+            }
         }
 
         internal Multimedia DuplicateItem { get; private set; }

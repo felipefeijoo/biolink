@@ -294,6 +294,9 @@
   <ItemGroup>
     <Resource Include="images\Journal.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Speckle.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>

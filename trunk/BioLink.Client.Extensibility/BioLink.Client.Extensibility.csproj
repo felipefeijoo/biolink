@@ -117,6 +117,9 @@
       <DependentUpon>CSVExporterOptionsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Export\Excel2003Exporter.cs" />
+    <Compile Include="FindMultimediaDialog.xaml.cs">
+      <DependentUpon>FindMultimediaDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Import\ExcelImporterOptionsWindow.xaml.cs">
       <DependentUpon>ExcelImporterOptionsWindow.xaml</DependentUpon>
     </Compile>
@@ -274,6 +277,7 @@
     <Compile Include="ShutdownProgess.xaml.cs">
       <DependentUpon>ShutdownProgess.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SplitButton\SplitButton.cs" />
     <Compile Include="TabularDataViewer.xaml.cs">
       <DependentUpon>TabularDataViewer.xaml</DependentUpon>
     </Compile>
@@ -362,6 +366,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Export\CSVExporterOptionsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FindMultimediaDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -493,6 +501,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="SplitButton\SplitButtonStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="TabularDataViewer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -600,6 +612,7 @@
     <Resource Include="images\warning.png" />
     <Resource Include="images\Print.png" />
     <Resource Include="images\Launch.png" />
+    <Resource Include="images\Link.png" />
     <Content Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>

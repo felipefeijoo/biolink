@@ -18,13 +18,13 @@
         <ToolBar Grid.Row="0" Name="toolBar">
             <Button x:Name="btnAdd" Click="btnAdd_Click" ToolTip="Add a piece of multimedia">
                 <Button.Content>
-                    <Image Source="../images/AddNew.png" Stretch="None" />
+                    <Image Source="../images/AddNew.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True"/>
                 </Button.Content>
             </Button>
             
             <Button x:Name="btnDelete" Click="btnDelete_Click" ToolTip="Delete the selected piece of multimedia">
                 <Button.Content>
-                    <Image Source="../images/Delete.png" Stretch="None" />
+                    <Image Source="../images/Delete.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True"/>
                 </Button.Content>
             </Button>
             
@@ -32,13 +32,20 @@
 
             <Button x:Name="btnProperties" Click="btnProperties_Click" ToolTip="Edit multimedia details">
                 <Button.Content>
-                    <Image Source="../images/Properties.png" Stretch="None" />
+                    <Image Source="../images/Properties.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True"/>
                 </Button.Content>
             </Button>
 
+            <Button x:Name="btnLinkToExisting" Click="btnLinkToExisting_Click"  ToolTip="Link to existing multimedia">
+                <Button.Content>
+                    <Image Source="../images/Link.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True"/>
+                </Button.Content>
+            </Button>
+
+
         </ToolBar>
 
-        <ListBox Grid.Row="1" x:Name="thumbList" HorizontalContentAlignment="Center" MouseRightButtonUp="thumbList_MouseRightButtonUp" MouseDoubleClick="thumbList_MouseDoubleClick">
+        <ListBox Grid.Row="1" x:Name="thumbList" HorizontalContentAlignment="Center" MouseRightButtonUp="thumbList_MouseRightButtonUp" MouseDoubleClick="thumbList_MouseDoubleClick" AllowDrop="True" DragOver="thumbList_DragOver" Drop="thumbList_Drop">
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel IsItemsHost="True" Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ScrollContentPresenter}}}" />

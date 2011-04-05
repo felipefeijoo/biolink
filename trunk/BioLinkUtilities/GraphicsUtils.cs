@@ -109,7 +109,7 @@ namespace BioLink.Client.Utilities {
             if (!String.IsNullOrEmpty(filename)) {
                 try {
                     using (var fs = new FileStream(filename, FileMode.Open)) {
-                        var imageDecoder = BitmapDecoder.Create(fs, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
+                        var imageDecoder = BitmapDecoder.Create(fs, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
                         var image = imageDecoder.Frames[0];
                         return image;
                     }
