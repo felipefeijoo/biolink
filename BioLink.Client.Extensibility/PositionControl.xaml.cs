@@ -170,7 +170,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void LaunchGazetteer() {
-            PluginManager.Instance.StartSelect(typeof(PlaceName), (result) => {
+            PluginManager.Instance.StartSelect<PlaceName>((result) => {
                 var place = result.DataObject as PlaceName;
                 if (place != null) {
                     lat.Value = place.Latitude;

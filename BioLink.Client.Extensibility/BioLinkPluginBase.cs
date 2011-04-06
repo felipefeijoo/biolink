@@ -99,11 +99,11 @@ namespace BioLink.Client.Extensibility {
             get; set;
         }
 
-        public virtual bool CanSelect(Type t) {
+        public virtual bool CanSelect<T>() {
             return false;
         }
 
-        public virtual void Select(Type t, Action<SelectionResult> success) {
+        public virtual void Select<T>(Action<SelectionResult> success) {
             throw new NotImplementedException();
         }
 

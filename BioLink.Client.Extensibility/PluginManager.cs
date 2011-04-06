@@ -293,18 +293,18 @@ namespace BioLink.Client.Extensibility {
             core.RefreshPinBoard();            
         }
 
-        public bool StartSelect(Type datatype, Action<SelectionResult> successAction) {
+        public bool StartSelect<T>(Action<SelectionResult> successAction) {
 
             var list = new List<IBioLinkPlugin>();
 
             TraversePlugins((p) => {
-                if (p.CanSelect(datatype)) {
+                if (p.CanSelect<T>()) {
                     list.Add(p);
                 }
             });
 
             if (list.Count == 1) {
-                list[0].Select(datatype, successAction);
+                list[0].Select<T>(successAction);
                 return true;
             }
 

@@ -153,6 +153,7 @@ namespace BioLink.Client.Extensibility {
                 Cursor = Cursors.Wait;
                 if (_content != null) {
                     var list = _content.LoadModel(parent);
+
                     foreach (HierarchicalViewModelBase vm in list) {
                         vm.Children.Add(new ViewModelPlaceholder("Loading..."));
                         vm.LazyLoadChildren += new HierarchicalViewModelAction((p) => {

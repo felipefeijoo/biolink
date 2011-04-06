@@ -147,7 +147,7 @@ namespace BioLink.Client.Extensibility {
             e.Handled = true;            
         }
 
-        public void BindUser(User user, LookupType lookupType) {
+        public void BindUser(User user, LookupType lookupType) {            
             User = user;
             LookupType = lookupType;
         }
@@ -156,51 +156,53 @@ namespace BioLink.Client.Extensibility {
             LaunchLookup();
         }
 
+        private void GenericLookup<T>() {
+            PluginManager.Instance.StartSelect<T>((result) => {
+                _manualSet = true;
+                this.Text = result.Description;
+                this.ObjectID = result.ObjectID;
+                this.InvokeIfRequired(() => {
+                    txt.Focus();
+                });
+                if (ObjectSelected != null) {
+                    ObjectSelected(this, result);
+                }
+                _manualSet = false;
+            });
+
+        }
+
         private void LaunchLookup() {
-            Type t = null;
+            
             switch (LookupType) {
                 case LookupType.Reference:
-                    t = typeof(ReferenceSearchResult);
+                    GenericLookup<ReferenceSearchResult>();
                     break;
                 case LookupType.Region:
-                    t = typeof(Region);
+                    GenericLookup<Region>();
                     break;
                 case LookupType.Trap:
-                    t = typeof(Trap);
+                    GenericLookup<Trap>();
                     break;
                 case LookupType.Material:
-                    t = typeof(Material);
+                    GenericLookup<Material>();
                     break;
                 case LookupType.Site:
-                    t = typeof(Site);
+                    GenericLookup <Site>();
                     break;
                 case LookupType.SiteVisit:
-                    t = typeof(SiteVisit);
+                    GenericLookup<SiteVisit>();
                     break;
                 case LookupType.Taxon:
-                    t = typeof(Taxon);
+                    GenericLookup<Taxon>();
                     break;
                 case LookupType.Journal:
-                    t = typeof(Journal);
+                    GenericLookup<Journal>();
                     break;
                 default:
                     throw new Exception("Unhandled Lookup type: " + LookupType.ToString());
             }
 
-            if (t != null) {
-                PluginManager.Instance.StartSelect(t, (result) => {
-                    _manualSet = true;
-                    this.Text = result.Description;                    
-                    this.ObjectID = result.ObjectID;                    
-                    this.InvokeIfRequired(() => {
-                        txt.Focus();
-                    });
-                    if (ObjectSelected != null) {
-                        ObjectSelected(this, result);
-                    }
-                    _manualSet = false;
-                });
-            }
         }
 
         private void btnEdit_Click(object sender, RoutedEventArgs e) {
