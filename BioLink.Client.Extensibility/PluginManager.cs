@@ -293,7 +293,7 @@ namespace BioLink.Client.Extensibility {
             core.RefreshPinBoard();            
         }
 
-        public bool StartSelect<T>(Action<SelectionResult> successAction) {
+        public bool StartSelect<T>(Action<SelectionResult> successAction, LookupOptions options = LookupOptions.None) {
 
             var list = new List<IBioLinkPlugin>();
 
@@ -304,7 +304,7 @@ namespace BioLink.Client.Extensibility {
             });
 
             if (list.Count == 1) {
-                list[0].Select<T>(successAction);
+                list[0].Select<T>(options, successAction);
                 return true;
             }
 

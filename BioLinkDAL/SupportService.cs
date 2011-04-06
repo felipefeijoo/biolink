@@ -1356,5 +1356,9 @@ namespace BioLink.Data {
         PlaceName
     }
 
+    public enum LookupOptions {
+        None,
+        TaxonExcludeAvailableNames
+    }
 
 }

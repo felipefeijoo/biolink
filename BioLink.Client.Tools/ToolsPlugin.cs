@@ -211,7 +211,7 @@ namespace BioLink.Client.Tools {
             return typeof(ReferenceSearchResult).IsAssignableFrom(t) || typeof(Journal).IsAssignableFrom(t);
         }
 
-        public override void Select<T>(Action<SelectionResult> success) {
+        public override void Select<T>(LookupOptions options, Action<SelectionResult> success) {
             var t = typeof(T);
             if (typeof(ReferenceSearchResult).IsAssignableFrom(t)) {
                 var frm = ShowReferenceManager();

@@ -55,7 +55,7 @@ namespace BioLink.Client.Material {
             txtTrap.BindUser(User, LookupType.Trap);
 
             // Identification tab
-            txtIdentification.BindUser(User, LookupType.Taxon);
+            txtIdentification.BindUser(User, LookupType.Taxon, LookupOptions.TaxonExcludeAvailableNames);
             txtIdentification.ObjectIDChanged += new ObjectIDChangedHandler(txtIdentification_ObjectIDChanged);
             txtIdentifiedBy.BindUser(User, "tblMaterial", "vchrIDBy");
             txtReference.BindUser(User, LookupType.Reference);
