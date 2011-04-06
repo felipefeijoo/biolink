@@ -30,7 +30,7 @@ namespace BioLink.Client.Taxa {
         }
 
         public override bool DisplayOptions(User user, System.Windows.Window parentWindow) {
-            var frm = new RegionBasedReportOptions(user, Taxa);
+            var frm = new RegionBasedReportOptions(user, Taxa, "Associates for Taxa options");
             frm.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
             frm.Owner = parentWindow;
             if (frm.ShowDialog().ValueOrFalse()) {

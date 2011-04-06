@@ -61,6 +61,12 @@ namespace BioLink.Client.Extensibility {
             });
 
             txtCriteria.KeyUp +=new KeyEventHandler(txtCriteria_KeyUp);
+
+            this.Loaded += new RoutedEventHandler(FindMultimediaDialog_Loaded);
+        }
+
+        void FindMultimediaDialog_Loaded(object sender, RoutedEventArgs e) {
+            txtCriteria.Focus();
         }
 
         protected User User { get; private set; }
@@ -69,6 +75,12 @@ namespace BioLink.Client.Extensibility {
             if (e.Key == Key.Enter) {
                 DoFind();
             }
+
+            if (e.Key == Key.Down && lvw.Items.Count > 0) {
+                lvw.Focus();
+                lvw.SelectedIndex = 0;
+            }
+
         }
 
         private void Button_Click(object sender, RoutedEventArgs e) {
@@ -116,7 +128,20 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
+        private void btnCancel_Click(object sender, RoutedEventArgs e) {
+            this.DialogResult = false;
+            this.Close();
+        }
 
+        public MultimediaLinkViewModel SelectedMultimedia { get; private set; }
+
+        private void btnOK_Click(object sender, RoutedEventArgs e) {
+            SelectedMultimedia = lvw.SelectedItem as MultimediaLinkViewModel;
+            if (SelectedMultimedia != null) {
+                this.DialogResult = true;
+                this.Close();
+            }
+        }
 
     }
 }

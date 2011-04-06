@@ -25,7 +25,7 @@
         <ext:TextBox Height="23" Margin="105,112,12,0" Name="txtAuthor" VerticalAlignment="Top" Text="{Binding Author,Mode=TwoWay}"/>
         <Label Content="Year:" HorizontalAlignment="Left" Margin="12,144,0,0" Name="label3" Width="76" Height="28" VerticalAlignment="Top" />
         <ext:TextBox Height="23" Margin="105,146,0,0" Name="txtYear" VerticalAlignment="Top" Text="{Binding YearOfPub,Mode=TwoWay}" HorizontalAlignment="Left" Width="87" />
-        <CheckBox Content="Changed Combination" Height="16" Margin="226,149,0,0" Name="chkChangedCombination" VerticalAlignment="Top" IsChecked="{Binding IsChangedCombination,Mode=TwoWay}" HorizontalAlignment="Left" Width="142" />
+        <CheckBox Content="Changed Combination" Height="16" Margin="226,149,0,0" Name="chkChangedCombination" VerticalAlignment="Top" IsChecked="{Binding ChgComb,Mode=TwoWay}" HorizontalAlignment="Left" Width="142" />
         <CheckBox Content="Verified" Height="16" Margin="105,183,12,0" Name="chkVerified" VerticalAlignment="Top" IsChecked="{Binding IsVerified,Mode=TwoWay}"/>
         <ext:PickListControl Height="23" Margin="105,212,13,0" Name="txtNameStatus" VerticalAlignment="Top" Text="{Binding NameStatus,Mode=TwoWay}"/>
         <Label Content="Name Status:" Height="28" HorizontalAlignment="Left" Margin="12,211,0,0" Name="lblNameStatus" VerticalAlignment="Top" Width="87" />

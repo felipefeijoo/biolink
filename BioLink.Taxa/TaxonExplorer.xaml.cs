@@ -631,19 +631,26 @@ namespace BioLink.Client.Taxa {
         }
 
         private void txtFind_TypingPaused(string text) {
-            DoFind(text);
+            if (text.Length > 4) {
+                DoFind(text);
+            }
         }
 
         private void txtFind_KeyUp(object sender, KeyEventArgs e) {
             if (e.Key == Key.Down) {
-                if (tvwResults.IsVisible) {
-                    if (tvwResults.SelectedItem != null) {
+                if (tvwResults.IsVisible) {                    
+                    if (_searchModel != null && _searchModel.Count > 0) {
+                        _searchModel[0].IsSelected = true;
                         TreeViewItem item = tvwResults.ItemContainerGenerator.ContainerFromItem(tvwResults.SelectedItem) as TreeViewItem;
                         item.Focus();
-                    }
+                    }                    
                 } else {
                     tvwAllTaxa.Focus();
                 }
+            }
+
+            if (e.Key == Key.Enter) {
+                DoFind(txtFind.Text);
             }
         }
 

@@ -31,6 +31,9 @@ namespace BioLinkApplication {
             InitializeComponent();
             CodeTimer.DefaultStopAction += (name, elapsed) => { Logger.Debug("{0} took {1} milliseconds.", name, elapsed.TotalMilliseconds); };
             _instance = this;
+
+            var v = this.GetType().Assembly.GetName().Version;
+            Title = String.Format("BioLink {0}.{1}.{2}", v.Major, v.Minor, v.Revision);
             ShowLogin();
         }
 
@@ -78,6 +81,8 @@ namespace BioLinkApplication {
             _hostControl.User = (e as LoginSuccessfulEventArgs).User;
             this.User = _hostControl.User;
             contentGrid.Children.Add(_hostControl);
+
+            Title = String.Format("BioLink - {0}\\{1} ({2})", User.ConnectionProfile.Server, User.ConnectionProfile.Database, User.Username);
             _hostControl.StartUp();
         }
 

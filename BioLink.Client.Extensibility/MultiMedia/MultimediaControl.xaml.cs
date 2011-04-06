@@ -197,10 +197,10 @@ namespace BioLink.Client.Extensibility {
                                 RegisterPendingChange(new InsertMultimediaLinkAction(model, CategoryType, Owner));
                                 break;
                             case MultimediaDuplicateAction.UseExisting:
-                                // Link to existing multimedia
+                                // Link to existing multimedia                                
                                 model = new MultimediaLink();
                                 model.MultimediaID = duplicate.MultimediaID;
-                                model.MultimediaLinkID = -1;
+                                model.MultimediaLinkID = NewLinkID();
                                 model.Name = duplicate.Name;
                                 model.Extension = duplicate.FileExtension;
                                 viewModel = new MultimediaLinkViewModel(model);
@@ -214,7 +214,7 @@ namespace BioLink.Client.Extensibility {
                                 // Link to existing multimedia
                                 model = new MultimediaLink();
                                 model.MultimediaID = duplicate.MultimediaID;
-                                model.MultimediaLinkID = -1;
+                                model.MultimediaLinkID = NewLinkID();
                                 model.Name = duplicate.Name;
                                 model.Extension = duplicate.FileExtension;
                                 viewModel = new MultimediaLinkViewModel(model);
@@ -251,6 +251,16 @@ namespace BioLink.Client.Extensibility {
             return MultimediaDuplicateAction.NoDuplicate;
         }
 
+        private int NewLinkID() {
+            int newId = -1;
+            foreach (MultimediaLinkViewModel model in _model) {
+                if (model.MultimediaLinkID <= newId) {
+                    newId = model.MultimediaID - 1;
+                }
+            }
+            return newId;
+        }
+
         private int NextNewId() {
             int newId = -1;
             foreach (MultimediaLinkViewModel model in _model) {
@@ -271,6 +281,11 @@ namespace BioLink.Client.Extensibility {
                         ClearMatchingPendingChanges((action) => {
                             if (action is InsertMultimediaAction) {
                                 var candidate = action as InsertMultimediaAction;
+                                if (candidate.Model.MultimediaLinkID == selected.MultimediaLinkID) {
+                                    return true;
+                                }
+                            } else if (action is InsertMultimediaLinkAction) {
+                                var candidate = action as InsertMultimediaLinkAction;
                                 if (candidate.Model.MultimediaLinkID == selected.MultimediaLinkID) {
                                     return true;
                                 }
@@ -326,25 +341,32 @@ namespace BioLink.Client.Extensibility {
         private void thumbList_Drop(object sender, DragEventArgs e) {
             var link = e.Data.GetData("MultimediaLink") as  MultimediaLink;
             if (link != null) {
+                AddNewLinkFromExternalLink(link);
+            }
+        }
+
+        private void AddNewLinkFromExternalLink(MultimediaLink externalLink) {
+            if (externalLink != null) {
                 // Link to existing multimedia
                 var model = new MultimediaLink();
-                model.MultimediaID = link.MultimediaID;
-                model.MultimediaLinkID = -1;
-                model.Name = link.Name;
-                model.Extension = link.Extension;
+                model.MultimediaID = externalLink.MultimediaID;
+                model.MultimediaLinkID = NewLinkID();
+                model.Name = externalLink.Name;
+                model.Extension = externalLink.Extension;
                 var viewModel = new MultimediaLinkViewModel(model);
                 GenerateThumbnail(viewModel, THUMB_SIZE);
                 _model.Add(viewModel);
-                RegisterPendingChange(new InsertMultimediaLinkAction(model, CategoryType, Owner));                    
+                RegisterPendingChange(new InsertMultimediaLinkAction(model, CategoryType, Owner));
             }
+
         }
 
         private void btnLinkToExisting_Click(object sender, RoutedEventArgs e) {
             var frm = new FindMultimediaDialog(User);
             frm.Owner = this.FindParentWindow();
             frm.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            if (frm.ShowDialog() == true) {
-
+            if (frm.ShowDialog() == true) {                
+                AddNewLinkFromExternalLink(frm.SelectedMultimedia.Model);
             }
         }
 

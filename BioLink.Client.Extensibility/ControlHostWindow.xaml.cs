@@ -99,6 +99,8 @@ namespace BioLink.Client.Extensibility {
 
             if (HasPendingChanges) {
                 CommitPendingChanges();
+            } else {
+                btnApply.IsEnabled = false;
             }
 
         }
