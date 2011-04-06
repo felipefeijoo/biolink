@@ -44,9 +44,7 @@ namespace BioLink.Client.Extensibility {
             }
             this.SelectedAction = selectAction;
             LoadTopLevel();
-            Initialized += new EventHandler((s, e) => {
-                txtFind.Focus();
-            });
+            Loaded += new RoutedEventHandler(HierarchicalSelector_Loaded);
 
             this.ChangeRegistered += new PendingChangedRegisteredHandler(HierarchicalSelector_ChangeRegistered);
             this.ChangesCommitted += new PendingChangesCommittedHandler(HierarchicalSelector_ChangesCommitted);
@@ -64,8 +62,12 @@ namespace BioLink.Client.Extensibility {
             btnSelect.IsEnabled = false;
         }
 
+        void HierarchicalSelector_Loaded(object sender, RoutedEventArgs e) {
+            txtFind.Focus();            
+        }
+
         void tvw_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e) {
-            ValidateSelection();                        
+            ValidateSelection();
         }
 
         private void ValidateSelection() {
@@ -93,7 +95,7 @@ namespace BioLink.Client.Extensibility {
             return list;
         }
 
-        private string GetParentage(HierarchicalViewModelBase item) {            
+        private string GetParentage(HierarchicalViewModelBase item) {
             if (item != null) {
                 return GetParentage(item.Parent) + "/" + _content.GetElementIDForViewModel(item);
             }
@@ -102,7 +104,7 @@ namespace BioLink.Client.Extensibility {
 
         private void ProcessList(ObservableCollection<HierarchicalViewModelBase> model, List<string> list) {
             foreach (HierarchicalViewModelBase vm in model) {
-                if (vm.IsExpanded) {                    
+                if (vm.IsExpanded) {
                     list.Add(GetParentage(vm));
                     if (vm.Children != null && vm.Children.Count > 0) {
                         ProcessList(vm.Children, list);
@@ -128,13 +130,15 @@ namespace BioLink.Client.Extensibility {
 
 
         void HierarchicalSelector_ChangesCommitted(object sender) {
-            btnApply.IsEnabled = false;
-            // Save the current expanded hierarchy....
-            var expanded = GetExpandedParentages(_model);
-            // reload the model...
-            LoadTopLevel();
-            // expand out the saved expanded hierarchy
-            ExpandParentages(_model, expanded);
+            using (new OverrideCursor(Cursors.Wait)) {
+                btnApply.IsEnabled = false;
+                // Save the current expanded hierarchy....
+                var expanded = GetExpandedParentages(_model);
+                // reload the model...
+                LoadTopLevel();
+                // expand out the saved expanded hierarchy
+                ExpandParentages(_model, expanded);
+            }
         }
 
         void HierarchicalSelector_ChangeRegistered(object sender, object action) {
@@ -142,32 +146,31 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void LoadTopLevel() {
-            _model = LoadModel(null);
-            tvwExplorer.ItemsSource = _model;
+            using (new OverrideCursor(Cursors.Wait)) {
+                _model = LoadModel(null);
+                tvwExplorer.ItemsSource = _model;
+            }
         }
 
         private ObservableCollection<HierarchicalViewModelBase> LoadModel(HierarchicalViewModelBase parent) {
-            
-            var model = new ObservableCollection<HierarchicalViewModelBase>();
-            try {
-                Cursor = Cursors.Wait;
-                if (_content != null) {
-                    var list = _content.LoadModel(parent);
 
-                    foreach (HierarchicalViewModelBase vm in list) {
-                        vm.Children.Add(new ViewModelPlaceholder("Loading..."));
-                        vm.LazyLoadChildren += new HierarchicalViewModelAction((p) => {
+            var model = new ObservableCollection<HierarchicalViewModelBase>();
+            if (_content != null) {
+                var list = _content.LoadModel(parent);
+
+                foreach (HierarchicalViewModelBase vm in list) {
+                    vm.Children.Add(new ViewModelPlaceholder("Loading..."));
+                    vm.LazyLoadChildren += new HierarchicalViewModelAction((p) => {
+                        using (new OverrideCursor(Cursors.Wait)) {
                             p.Children.Clear();
                             var children = LoadModel(p);
                             foreach (HierarchicalViewModelBase child in children) {
                                 p.Children.Add(child);
                             }
-                        });
-                    }
-                    model = new ObservableCollection<HierarchicalViewModelBase>(list);
+                        }
+                    });
                 }
-            } finally {
-                Cursor = Cursors.Arrow;
+                model = new ObservableCollection<HierarchicalViewModelBase>(list);
             }
 
             return model;
@@ -223,23 +226,22 @@ namespace BioLink.Client.Extensibility {
             }
 
             if (text.Length > 1) {
-                try {
-                    Cursor = Cursors.Wait;
+                using (new OverrideCursor(Cursors.Wait)) {                    
                     var list = _content.Search(txtFind.Text);
                     var model = new ObservableCollection<HierarchicalViewModelBase>(list);
                     foreach (HierarchicalViewModelBase vm in list) {
                         vm.Children.Add(new ViewModelPlaceholder("Loading..."));
                         vm.LazyLoadChildren += new HierarchicalViewModelAction((p) => {
-                            p.Children.Clear();
-                            var children = LoadModel(p);
-                            foreach (HierarchicalViewModelBase child in children) {
-                                p.Children.Add(child);
+                            using (new OverrideCursor(Cursors.Wait)) {
+                                p.Children.Clear();
+                                var children = LoadModel(p);
+                                foreach (HierarchicalViewModelBase child in children) {
+                                    p.Children.Add(child);
+                                }
                             }
                         });
                     }
                     tvwSearchResults.ItemsSource = model;
-                } finally {
-                    Cursor = Cursors.Arrow;
                 }
             } else {
                 tvwSearchResults.ItemsSource = null;
@@ -251,7 +253,7 @@ namespace BioLink.Client.Extensibility {
             if (e.Key == Key.Down) {
                 if (tvwSearchResults.IsVisible) {
                     var searchModel = tvwSearchResults.ItemsSource as ObservableCollection<HierarchicalViewModelBase>;
-                    
+
                     if (searchModel != null && searchModel.Count > 0) {
                         searchModel[0].IsSelected = true;
                         TreeViewItem item = tvwSearchResults.ItemContainerGenerator.ContainerFromItem(searchModel[0]) as TreeViewItem;
@@ -341,13 +343,13 @@ namespace BioLink.Client.Extensibility {
         private void RenameItem(HierarchicalViewModelBase item) {
             if (item != null) {
                 // This starts the rename, and the change is registered when the edit is complete. See EditableTextBlock_EditingComplete
-                item.IsRenaming = true;                
+                item.IsRenaming = true;
             }
         }
 
         private void DeleteItem(HierarchicalViewModelBase item) {
             var action = _content.DeleteItem(item);
-            if (action != null) {                
+            if (action != null) {
                 RegisterPendingChange(action, this);
                 item.IsDeleted = true;
             }
@@ -396,7 +398,7 @@ namespace BioLink.Client.Extensibility {
         DatabaseAction RenameItem(HierarchicalViewModelBase selectedItem, string newName);
 
         DatabaseAction DeleteItem(HierarchicalViewModelBase selectedItem);
-        
+
 
         int? GetElementIDForViewModel(HierarchicalViewModelBase item);
 

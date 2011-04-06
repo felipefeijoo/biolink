@@ -64,7 +64,7 @@ namespace BioLink.Client.Gazetteer {
             return typeof(T).IsAssignableFrom(typeof(PlaceName));
         }
 
-        public override void Select<T>(Action<SelectionResult> success) {
+        public override void Select<T>(LookupOptions options, Action<SelectionResult> success) {
             PluginManager.EnsureVisible(this, "Gazetteer");
             var g = _gazetter.Content as Gazetteer;
             if (g != null) {

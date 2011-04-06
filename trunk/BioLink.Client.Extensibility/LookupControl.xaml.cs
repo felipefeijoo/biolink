@@ -56,45 +56,61 @@ namespace BioLink.Client.Extensibility {
 
             if (e.Key == Key.Space && (Keyboard.Modifiers & ModifierKeys.Control) > 0) {
                 e.Handled = true;
-                DoFind(txt.Text + "%");
+                DoFind(txt.Text);
             }
 
         }
 
-        private void DoFind(string filter) {
+        private bool DoFind(string filter) {
+
+            if (string.IsNullOrEmpty(filter)) {
+                return false;
+            }
+
             _validate = false;
+            filter = filter + "%";
             var service = new SupportService(User);
             var lookupResults = service.LookupSearch(filter, LookupType);
-            if (lookupResults != null && lookupResults.Count >= 1) {
+            _validate = true;
+            if (lookupResults != null) {
+                if (lookupResults.Count > 1) {
+                    GeneralTransform transform = txt.TransformToAncestor(this);
+                    var rootPoint = txt.PointToScreen(transform.Transform(new Point(0, 0)));
 
-                GeneralTransform transform = txt.TransformToAncestor(this);
-                var rootPoint = txt.PointToScreen(transform.Transform(new Point(0, 0)));
+                    var frm = new LookupResults(lookupResults);
+                    frm.Owner = this.FindParentWindow();
 
-                var frm = new LookupResults(lookupResults);
-                frm.Owner = this.FindParentWindow();
 
-                    
-                frm.Top =  rootPoint.Y + txt.ActualHeight;
-                frm.Left = rootPoint.X;
-                frm.Width = txt.ActualWidth;
-                frm.Height = 250;
+                    frm.Top = rootPoint.Y + txt.ActualHeight;
+                    frm.Left = rootPoint.X;
+                    frm.Width = txt.ActualWidth;
+                    frm.Height = 250;
 
-                if (frm.ShowDialog().GetValueOrDefault(false)) {
+                    if (frm.ShowDialog().GetValueOrDefault(false)) {
+                        _manualSet = true;
+                        Text = frm.SelectedItem.Label;
+                        ObjectID = frm.SelectedItem.ObjectID;
+                        _manualSet = false;
+                        return true;
+                    }
+                } else if (lookupResults.Count == 1) {
                     _manualSet = true;
-                    Text = frm.SelectedItem.Label;
-                    ObjectID = frm.SelectedItem.ObjectID;
+                    Text = lookupResults[0].Label;
+                    ObjectID = lookupResults[0].ObjectID;
                     _manualSet = false;
+                    return true;
                 }
-
             }
-            _validate = true;            
+            return false;
         }
 
         void txt_PreviewLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e) {
             if (_validate) {
                 if (!txt.IsReadOnly) {
-                    if (!ValidateLookup()) {
-                        e.Handled = true;
+                    if (!ValidateLookup()) {                                                
+                        if (!DoFind(txt.Text)) {
+                            e.Handled = true;
+                        }
                     }
                 }
             }
@@ -147,9 +163,10 @@ namespace BioLink.Client.Extensibility {
             e.Handled = true;            
         }
 
-        public void BindUser(User user, LookupType lookupType) {            
+        public void BindUser(User user, LookupType lookupType, LookupOptions options = LookupOptions.None) {
             User = user;
             LookupType = lookupType;
+            LookupOptions = options;
         }
 
         private void btnLookup_Click(object sender, RoutedEventArgs e) {
@@ -168,7 +185,7 @@ namespace BioLink.Client.Extensibility {
                     ObjectSelected(this, result);
                 }
                 _manualSet = false;
-            });
+            }, LookupOptions);
 
         }
 
@@ -270,6 +287,8 @@ namespace BioLink.Client.Extensibility {
         public User User { get; private set; }
 
         public LookupType LookupType { get; private set; }
+
+        public LookupOptions LookupOptions { get; private set; }
 
         #endregion
 

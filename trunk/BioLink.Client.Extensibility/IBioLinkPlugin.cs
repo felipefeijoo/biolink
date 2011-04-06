@@ -24,7 +24,7 @@ namespace BioLink.Client.Extensibility {
         List<Command> GetCommandsForSelected(List<ViewModelBase> selected);
         List<IWorkspaceContribution> GetContributions();
         bool CanSelect<T>();
-        void Select<T>(Action<SelectionResult> success);
+        void Select<T>(LookupOptions options, Action<SelectionResult> success);
 
         bool CanEditObjectType(LookupType type);
         void EditObject(LookupType type, int objectID);

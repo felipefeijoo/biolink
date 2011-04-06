@@ -160,11 +160,11 @@ namespace BioLink.Client.Taxa {
             return typeof(Taxon).IsAssignableFrom(t);
         }
 
-        public override void Select<T>(Action<SelectionResult> success) {
+        public override void Select<T>(LookupOptions options, Action<SelectionResult> success) {
             var t = typeof(T);
             IHierarchicalSelectorContentProvider selectionContent = null;
             if (typeof(Taxon).IsAssignableFrom(t)) {
-                selectionContent = new TaxonSelectorContentProvider(User, _explorer.Content as TaxonExplorer);
+                selectionContent = new TaxonSelectorContentProvider(User, _explorer.Content as TaxonExplorer, options);
             } else {
                 throw new Exception("Unhandled Selection Type: " + t.Name);
             }

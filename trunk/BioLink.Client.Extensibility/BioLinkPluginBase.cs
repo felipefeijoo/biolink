@@ -103,7 +103,7 @@ namespace BioLink.Client.Extensibility {
             return false;
         }
 
-        public virtual void Select<T>(Action<SelectionResult> success) {
+        public virtual void Select<T>(LookupOptions options, Action<SelectionResult> success) {
             throw new NotImplementedException();
         }
 

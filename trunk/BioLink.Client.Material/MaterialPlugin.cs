@@ -74,7 +74,7 @@ namespace BioLink.Client.Material {
             return typeof(Region).IsAssignableFrom(t) || typeof(Trap).IsAssignableFrom(t) || typeof(BioLink.Data.Model.Material).IsAssignableFrom(t);
         }
 
-        public override void Select<T>(Action<SelectionResult> success) {
+        public override void Select<T>(LookupOptions options, Action<SelectionResult> success) {
             var t = typeof(T);
             RegionSelectorContentProvider selectionContent = null;
             if (typeof(Region).IsAssignableFrom(t)) {

@@ -12,10 +12,12 @@ namespace BioLink.Client.Taxa {
     public class TaxonSelectorContentProvider : IHierarchicalSelectorContentProvider {
 
         private TaxonExplorer _explorer;
+        private LookupOptions _options;
 
-        public TaxonSelectorContentProvider(User user, TaxonExplorer explorer) {
+        public TaxonSelectorContentProvider(User user, TaxonExplorer explorer, LookupOptions options) {
             this.User = user;
             _explorer = explorer;
+            _options = options;
         }
 
         public string Caption {
@@ -44,9 +46,14 @@ namespace BioLink.Client.Taxa {
             }
 
             if (model != null) {
-                var list = new List<HierarchicalViewModelBase>(model.ConvertAll((m) => {
+
+                var temp = model.Where((taxon) => {
+                    return _options == LookupOptions.TaxonExcludeAvailableNames ? !taxon.AvailableName.ValueOrFalse() : true;
+                }).Select((m) => {
                     return new TaxonViewModel(parent, m, _explorer.GenerateTaxonDisplayLabel);
-                }));
+                });
+
+                var list = new List<HierarchicalViewModelBase>(temp);
                 return list;
             }
 
@@ -55,8 +62,12 @@ namespace BioLink.Client.Taxa {
 
         public List<HierarchicalViewModelBase> Search(string searchTerm) {
             var service = new TaxaService(User);
-            var list = service.FindTaxa(searchTerm);
-            return new List<HierarchicalViewModelBase>(list.ConvertAll((m) => {
+
+            var list = service.FindTaxa(searchTerm).Where((taxon) => {
+                return _options == LookupOptions.TaxonExcludeAvailableNames ? !taxon.AvailableName.ValueOrFalse() : true;
+            });
+
+            return new List<HierarchicalViewModelBase>(list.Select((m) => {
                 return new TaxonViewModel(null, m, _explorer.GenerateTaxonDisplayLabel);
             }));
         }
