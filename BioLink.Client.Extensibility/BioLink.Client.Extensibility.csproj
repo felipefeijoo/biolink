@@ -613,6 +613,7 @@
     <Resource Include="images\Print.png" />
     <Resource Include="images\Launch.png" />
     <Resource Include="images\Link.png" />
+    <Resource Include="images\Speckle.png" />
     <Content Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>

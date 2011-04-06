@@ -660,11 +660,15 @@ namespace BioLink.Client.Taxa {
             TaxonMenuFactory factory = new TaxonMenuFactory(taxon, this, _R);
 
             ContextMenu menu = null;
-            if (source is ListBox) {
-                menu = factory.BuildFindResultsMenu();
-            } else if (source is TreeView) {
-                menu = factory.BuildExplorerMenu();
+            if (source is TreeView) {
+                var tvw = source as TreeView;
+                if (tvw == tvwAllTaxa) {
+                    menu = factory.BuildExplorerMenu();
+                } else if (tvw == tvwResults) {
+                    menu = factory.BuildFindResultsMenu();
+                } 
             }
+
             if (menu != null && menu.HasItems) {
                 source.ContextMenu = menu;
             }
