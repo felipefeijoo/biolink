@@ -177,22 +177,22 @@ namespace BioLink.Client.Extensibility {
             
             switch (Mode) {
                 case LatLongMode.DecimalDegrees:
-                    newValue = Double.Parse(txtDegrees.Text);
+                    newValue = SafeParseDouble(txtDegrees.Text);
                     break;
                 case LatLongMode.DegreesDecimalMinutes:
                     var deg = SafeParse(txtDegrees.Text);
-                    var minutes = Double.Parse(txtMinutes.Text);
+                    var minutes = SafeParseDouble(txtMinutes.Text);
                     newValue = GeoUtils.DDecMToDecDeg(deg, minutes);
                     break;
                 case LatLongMode.DegreesDecimalMinutesDirection:
                     deg = SafeParse(txtDegrees.Text);
-                    minutes = Double.Parse(txtMinutes.Text);
+                    minutes = SafeParseDouble(txtMinutes.Text);
                     newValue = GeoUtils.DDecMDirToDecDeg(deg, minutes, cmbDirection.Text);
                     break;
                 case LatLongMode.DegreesMinutesSeconds:
                     deg = SafeParse(txtDegrees.Text);
                     int min = SafeParse(txtMinutes.Text);
-                    int seconds = SafeParse(txtSeconds.Text);
+                    double seconds = SafeParseDouble(txtSeconds.Text);
                     newValue = GeoUtils.DMSToDecDeg(deg, min, seconds, cmbDirection.SelectedItem as string);
                     break;
                 default:
@@ -206,6 +206,15 @@ namespace BioLink.Client.Extensibility {
         private int SafeParse(string text) {
             int result ;
             if (Int32.TryParse(text, out result)) {
+                return result;
+            } else {
+                return 0;
+            }
+        }
+
+        private double SafeParseDouble(string text) {
+            double result;
+            if (Double.TryParse(text, out result)) {
                 return result;
             } else {
                 return 0;

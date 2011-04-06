@@ -442,11 +442,11 @@ namespace BioLink.Client.Utilities {
             }
         }
 
-        public static double DMSToDecDeg(int degrees, int minutes, int seconds, string direction) {
+        public static double DMSToDecDeg(int degrees, int minutes, double seconds, string direction) {
             if (direction == null) {
                 direction = "N";
             }
-            var decdeg = (double)degrees + ((double)minutes / 60.0) + ((double)seconds / 3600.0);
+            var decdeg = (double)degrees + ((double)minutes / 60.0) + (seconds / 3600.0);
             var sign = (double)("sw".Contains(direction.ToLower()) ? -1 : 1);
             return decdeg * sign;
         }
