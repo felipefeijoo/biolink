@@ -23,7 +23,7 @@ namespace BioLink.Client.Taxa {
     /// </summary>
     public partial class RegionBasedReportOptions : Window {
 
-        public RegionBasedReportOptions(User user, List<TaxonViewModel> taxa) {
+        public RegionBasedReportOptions(User user, List<TaxonViewModel> taxa, string title) {
             InitializeComponent();
             Taxa = taxa;
             if (taxa == null || taxa.Count == 0) {
@@ -37,6 +37,8 @@ namespace BioLink.Client.Taxa {
             }
             txtRegion.BindUser(user, LookupType.Region);
             txtRegion.Text = "All";
+
+            this.Title = title;
         }
 
         protected List<TaxonViewModel> Taxa { get; private set; }

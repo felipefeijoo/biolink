@@ -170,12 +170,20 @@ namespace BioLink.Client.Extensibility {
                 }
             }
 
+
             bool hideButtons = !(content is DatabaseActionControl);
             ControlHostWindow form = new ControlHostWindow(User, content, sizeToContent, hideButtons);
             form.Owner = ParentWindow;
             form.Title = title;
             form.Name = "HostFor_" + content.GetType().Name;
             form.SizeToContent = sizeToContent;
+
+            if (content is IIconHolder) {
+                var icon = (content as IIconHolder).Icon;
+                if (icon != null) {
+                    form.Icon = icon;
+                }
+            }
 
             if (autoSavePosition) {
 

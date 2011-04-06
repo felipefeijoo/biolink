@@ -147,21 +147,28 @@ namespace BioLink.Client.Extensibility {
         }
 
         private ObservableCollection<HierarchicalViewModelBase> LoadModel(HierarchicalViewModelBase parent) {
+            
             var model = new ObservableCollection<HierarchicalViewModelBase>();
-            if (_content != null) {
-                var list = _content.LoadModel(parent);
-                foreach (HierarchicalViewModelBase vm in list) {
-                    vm.Children.Add(new ViewModelPlaceholder("Loading..."));
-                    vm.LazyLoadChildren += new HierarchicalViewModelAction((p) => {
-                        p.Children.Clear();
-                        var children = LoadModel(p);
-                        foreach (HierarchicalViewModelBase child in children) {
-                            p.Children.Add(child);
-                        }
-                    });
+            try {
+                Cursor = Cursors.Wait;
+                if (_content != null) {
+                    var list = _content.LoadModel(parent);
+                    foreach (HierarchicalViewModelBase vm in list) {
+                        vm.Children.Add(new ViewModelPlaceholder("Loading..."));
+                        vm.LazyLoadChildren += new HierarchicalViewModelAction((p) => {
+                            p.Children.Clear();
+                            var children = LoadModel(p);
+                            foreach (HierarchicalViewModelBase child in children) {
+                                p.Children.Add(child);
+                            }
+                        });
+                    }
+                    model = new ObservableCollection<HierarchicalViewModelBase>(list);
                 }
-                model = new ObservableCollection<HierarchicalViewModelBase>(list);
+            } finally {
+                Cursor = Cursors.Arrow;
             }
+
             return model;
         }
 
@@ -195,6 +202,12 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void txtFind_TypingPaused(string text) {
+            if (text.Length > 4) {
+                DoFind(text);
+            }
+        }
+
+        private void DoFind(string text) {
 
             if (_content == null) {
                 return;
@@ -209,19 +222,24 @@ namespace BioLink.Client.Extensibility {
             }
 
             if (text.Length > 1) {
-                var list = _content.Search(txtFind.Text);
-                var model = new ObservableCollection<HierarchicalViewModelBase>(list);
-                foreach (HierarchicalViewModelBase vm in list) {
-                    vm.Children.Add(new ViewModelPlaceholder("Loading..."));
-                    vm.LazyLoadChildren += new HierarchicalViewModelAction((p) => {
-                        p.Children.Clear();
-                        var children = LoadModel(p);
-                        foreach (HierarchicalViewModelBase child in children) {
-                            p.Children.Add(child);
-                        }
-                    });
+                try {
+                    Cursor = Cursors.Wait;
+                    var list = _content.Search(txtFind.Text);
+                    var model = new ObservableCollection<HierarchicalViewModelBase>(list);
+                    foreach (HierarchicalViewModelBase vm in list) {
+                        vm.Children.Add(new ViewModelPlaceholder("Loading..."));
+                        vm.LazyLoadChildren += new HierarchicalViewModelAction((p) => {
+                            p.Children.Clear();
+                            var children = LoadModel(p);
+                            foreach (HierarchicalViewModelBase child in children) {
+                                p.Children.Add(child);
+                            }
+                        });
+                    }
+                    tvwSearchResults.ItemsSource = model;
+                } finally {
+                    Cursor = Cursors.Arrow;
                 }
-                tvwSearchResults.ItemsSource = model;
             } else {
                 tvwSearchResults.ItemsSource = null;
             }
@@ -231,15 +249,22 @@ namespace BioLink.Client.Extensibility {
         private void txtFind_KeyUp(object sender, KeyEventArgs e) {
             if (e.Key == Key.Down) {
                 if (tvwSearchResults.IsVisible) {
+                    var searchModel = tvwSearchResults.ItemsSource as ObservableCollection<HierarchicalViewModelBase>;
                     
-                    if (tvwSearchResults.SelectedItem != null) {
-                        TreeViewItem item = tvwSearchResults.ItemContainerGenerator.ContainerFromItem(tvwSearchResults.SelectedItem) as TreeViewItem;
+                    if (searchModel != null && searchModel.Count > 0) {
+                        searchModel[0].IsSelected = true;
+                        TreeViewItem item = tvwSearchResults.ItemContainerGenerator.ContainerFromItem(searchModel[0]) as TreeViewItem;
                         item.Focus();
                     }
                 } else {
                     tvwExplorer.Focus();
                 }
             }
+
+            if (e.Key == Key.Enter) {
+                DoFind(txtFind.Text);
+            }
+
         }
 
         private void btnSelect_Click(object sender, RoutedEventArgs e) {

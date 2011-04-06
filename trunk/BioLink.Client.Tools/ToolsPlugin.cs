@@ -124,7 +124,7 @@ namespace BioLink.Client.Tools {
         }
 
         private void ShowMultimediaManagerWindow() {
-            ShowSingleton("MultimediaManager", () => new MultimediaManager(User));
+            ShowSingleton("Multimedia Manager", () => new MultimediaManager(User));
         }
 
         private void ShowImport() {

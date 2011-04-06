@@ -140,7 +140,6 @@ namespace BioLink.Client.Extensibility {
                     var control = controlFactory();
                     if (control != null) {
                         frm = PluginManager.Instance.AddNonDockableContent(this, control, title, sizeMode, autoSavePosition, initFunc);
-
                         frm.Closed += new EventHandler((sender, e) => {
                             frm = null;
                             lock (_controlHosts) {

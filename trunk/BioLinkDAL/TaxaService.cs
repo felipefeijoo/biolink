@@ -39,6 +39,9 @@ namespace BioLink.Data {
 
         public List<TaxonSearchResult> FindTaxa(string searchTerm) {
             List<TaxonSearchResult> taxa = new List<TaxonSearchResult>();
+
+            searchTerm = searchTerm.Replace("*", "%");  /// * are wildcards, replace them with the SQL wildcard
+
             StoredProcReaderForEach("spBiotaFind", (reader) => {
                 taxa.Add(TaxonMapper.MapTaxonSearchResult(reader));
             }, new SqlParameter("vchrLimitations", ""), new SqlParameter("vchrTaxaToFind", searchTerm + "%"));

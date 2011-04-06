@@ -117,7 +117,8 @@
       <DependentUpon>CSVExporterOptionsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Export\Excel2003Exporter.cs" />
-    <Compile Include="FindMultimediaDialog.xaml.cs">
+    <Compile Include="IIconHolder.cs" />
+    <Compile Include="MultiMedia\FindMultimediaDialog.xaml.cs">
       <DependentUpon>FindMultimediaDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Import\ExcelImporterOptionsWindow.xaml.cs">
@@ -369,7 +370,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="FindMultimediaDialog.xaml">
+    <Page Include="MultiMedia\FindMultimediaDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -614,6 +615,7 @@
     <Resource Include="images\Launch.png" />
     <Resource Include="images\Link.png" />
     <Resource Include="images\Speckle.png" />
+    <Resource Include="images\Biolink.ico" />
     <Content Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>

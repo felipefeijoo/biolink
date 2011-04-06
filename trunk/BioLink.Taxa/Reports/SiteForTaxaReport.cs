@@ -18,7 +18,7 @@ namespace BioLink.Client.Taxa {
         public override bool DisplayOptions(User user, System.Windows.Window parentWindow) {
             var taxa = new List<TaxonViewModel>();
             taxa.Add(Taxon);
-            var frm = new RegionBasedReportOptions(user, taxa);
+            var frm = new RegionBasedReportOptions(user, taxa, "Site for Taxa options");
             frm.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
             frm.Owner = parentWindow;
             if (frm.ShowDialog().ValueOrFalse()) {

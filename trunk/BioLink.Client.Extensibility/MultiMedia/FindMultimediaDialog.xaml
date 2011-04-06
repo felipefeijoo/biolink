@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility"
              mc:Ignorable="d" 
-             d:DesignHeight="375" d:DesignWidth="304" SizeToContent="WidthAndHeight">
+             Height="450" Width="400" SizeToContent="Manual" Title="Find existing multimedia" Icon="/BioLink.Client.Extensibility;component/images/Find.png">
     <Grid>
         <Grid.Resources>
             <Style x:Key="hcs" TargetType="{x:Type GridViewColumnHeader}">
@@ -18,7 +18,7 @@
             <RowDefinition Height="28" />
             <RowDefinition Height="*" />
             <RowDefinition Height="120" />
-            <RowDefinition Height="28" />
+            <RowDefinition Height="36" />            
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -47,10 +47,19 @@
         </ListView>
 
         <Grid Grid.Row="4" Grid.ColumnSpan="2" x:Name="gridInfo">
+            <Grid.Background>
+                <ImageBrush ImageSource="/BioLink.Client.Extensibility;component/images/Speckle.png" Stretch="Fill" TileMode="Tile" Viewport="0,0,16.0022331811163,16.0022331811163" ViewportUnits="Absolute" />
+            </Grid.Background>
             <Image x:Name="imgPreview" SnapsToDevicePixels="True" Stretch="Uniform" UseLayoutRounding="True" StretchDirection="DownOnly" />
         </Grid>
         
-        <Label x:Name="lblImageInfo" Grid.Row="5" Grid.ColumnSpan="2" Background="{x:Static SystemColors.ControlBrush}"/>
+        
+        
+        <Grid Grid.Row="5" Grid.ColumnSpan="2" Background="{x:Static SystemColors.ControlBrush}">
+            <Label x:Name="lblImageInfo" Margin="0,0,168,0" />
+            <Button Content="_Cancel" Height="23" HorizontalAlignment="Right" Margin="0,6,6,0" Name="btnCancel" VerticalAlignment="Top" Width="75" IsCancel="True" Click="btnCancel_Click" />
+            <Button Content="_OK" Height="23" HorizontalAlignment="Right" IsCancel="False" Margin="0,6,87,0" Name="btnOK" VerticalAlignment="Top" Width="75" IsDefault="True" Click="btnOK_Click" />
+        </Grid>
 
     </Grid>
 </Window>

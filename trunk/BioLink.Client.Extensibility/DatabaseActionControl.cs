@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 
 namespace BioLink.Client.Extensibility {
 
-    public class DatabaseActionControl : UserControl, IIdentifiableContent, IChangeContainerObserver, IDisposable {
+    public class DatabaseActionControl : UserControl, IIdentifiableContent, IChangeContainerObserver, IDisposable, IIconHolder {
 
         #region Designer Constructor
         public DatabaseActionControl() : base() {
@@ -144,6 +144,10 @@ namespace BioLink.Client.Extensibility {
 
         public event PendingChangesCommittedHandler ChangesCommitted;
 
+
+        public virtual System.Windows.Media.ImageSource Icon {
+            get { return null; }
+        }
     }
 
     public interface IIdentifiableContent {
