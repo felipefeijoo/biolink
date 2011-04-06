@@ -60,11 +60,11 @@ namespace BioLink.Client.Gazetteer {
             return null;
         }
 
-        public override bool CanSelect(Type t) {
-            return t.IsAssignableFrom(typeof(PlaceName));
+        public override bool CanSelect<T>() {
+            return typeof(T).IsAssignableFrom(typeof(PlaceName));
         }
 
-        public override void Select(Type t, Action<SelectionResult> success) {
+        public override void Select<T>(Action<SelectionResult> success) {
             PluginManager.EnsureVisible(this, "Gazetteer");
             var g = _gazetter.Content as Gazetteer;
             if (g != null) {

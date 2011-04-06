@@ -69,11 +69,13 @@ namespace BioLink.Client.Material {
             }
         }
 
-        public override bool CanSelect(Type t) {
+        public override bool CanSelect<T>() {
+            var t = typeof(T);
             return typeof(Region).IsAssignableFrom(t) || typeof(Trap).IsAssignableFrom(t) || typeof(BioLink.Data.Model.Material).IsAssignableFrom(t);
         }
 
-        public override void Select(Type t, Action<SelectionResult> success) {
+        public override void Select<T>(Action<SelectionResult> success) {
+            var t = typeof(T);
             RegionSelectorContentProvider selectionContent = null;
             if (typeof(Region).IsAssignableFrom(t)) {
                 selectionContent = new RegionSelectorContentProvider(User, SiteExplorerNodeType.Region, (n) => { return n.ElemType != "Region"; }, "Region");

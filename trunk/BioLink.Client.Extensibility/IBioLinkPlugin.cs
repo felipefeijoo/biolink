@@ -23,8 +23,8 @@ namespace BioLink.Client.Extensibility {
         ViewModelBase CreatePinnableViewModel(PinnableObject pinnable);
         List<Command> GetCommandsForSelected(List<ViewModelBase> selected);
         List<IWorkspaceContribution> GetContributions();
-        bool CanSelect(Type t);
-        void Select(Type t, Action<SelectionResult> success);
+        bool CanSelect<T>();
+        void Select<T>(Action<SelectionResult> success);
 
         bool CanEditObjectType(LookupType type);
         void EditObject(LookupType type, int objectID);
@@ -38,7 +38,7 @@ namespace BioLink.Client.Extensibility {
     }
 
     public class SelectionResult {
-        public object DataObject { get; set; }
+        public Object DataObject { get; set; }
         public int? ObjectID { get; set; }
         public string Description { get; set; }
     }

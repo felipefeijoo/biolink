@@ -360,7 +360,7 @@ namespace BioLink.Client.Material {
         }
 
         private void LaunchGazetteer(LatLongInput lat, LatLongInput lon, bool updateLocality) {
-            PluginManager.Instance.StartSelect(typeof(PlaceName), (result) => {
+            PluginManager.Instance.StartSelect<PlaceName>((result) => {
                 var place = result.DataObject as PlaceName;
                 if (place != null) {
                     lat.Value = place.Latitude;

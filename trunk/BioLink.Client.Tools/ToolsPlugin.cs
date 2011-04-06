@@ -206,11 +206,13 @@ namespace BioLink.Client.Tools {
             return null;
         }
 
-        public override bool CanSelect(Type t) {
+        public override bool CanSelect<T>() {
+            var t = typeof(T);
             return typeof(ReferenceSearchResult).IsAssignableFrom(t) || typeof(Journal).IsAssignableFrom(t);
         }
 
-        public override void Select(Type t, Action<SelectionResult> success) {
+        public override void Select<T>(Action<SelectionResult> success) {
+            var t = typeof(T);
             if (typeof(ReferenceSearchResult).IsAssignableFrom(t)) {
                 var frm = ShowReferenceManager();
                 frm.BindSelectCallback(success);

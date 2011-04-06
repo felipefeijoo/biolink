@@ -155,11 +155,13 @@ namespace BioLink.Client.Taxa {
             return new PinnableObject(TAXA_PLUGIN_NAME, LookupType.Taxon, taxonID);
         }
 
-        public override bool CanSelect(Type t) {
+        public override bool CanSelect<T>() {
+            var t = typeof(T);
             return typeof(Taxon).IsAssignableFrom(t);
         }
 
-        public override void Select(Type t, Action<SelectionResult> success) {
+        public override void Select<T>(Action<SelectionResult> success) {
+            var t = typeof(T);
             IHierarchicalSelectorContentProvider selectionContent = null;
             if (typeof(Taxon).IsAssignableFrom(t)) {
                 selectionContent = new TaxonSelectorContentProvider(User, _explorer.Content as TaxonExplorer);
