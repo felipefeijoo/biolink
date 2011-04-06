@@ -1,0 +1,82 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib" 
+                    x:Name="ControlStringResources">
+
+    <system:String x:Key="LatLong.lblAxis.Latitude">Latitude</system:String>
+    <system:String x:Key="LatLong.lblAxis.Longitude">Longitude</system:String>
+    <system:String x:Key="LatLong.DegreeSeparator">&#176;</system:String>
+    <system:String x:Key="LatLong.MinuteSeparator">'</system:String>
+    <system:String x:Key="LatLong.SecondSeparator">"</system:String>    
+
+    <system:String x:Key="ReportResults.Error.CSS">
+        * {	font-family: Calibri, Tahoma, Verdana, sans-serif; }
+        h1 { color: red; }
+    </system:String>
+
+    <system:String x:Key="ReportResults.Loading.Template">
+        <![CDATA[
+        
+        <html>
+            <head>
+                <style type="text/css">
+                    * {{ font-family: Calibri, Tahoma, Verdana, sans-serif; }}                
+                </style>        
+            </head>
+            <body>
+            <table border="0" cellpadding="0" cellspacing="0" height="100%" width="100%">
+              <tbody>
+                <tr>
+                  <td align="center" bgcolor="#ffffff" valign="middle">
+                  <table bgcolor="#ffffff" border="0" cellpadding="1" cellspacing="0" height="100" width="500">
+                    <tbody>
+                      <tr>
+                        <td>
+                        <div style="position: relative; top: 0px; left: 0px; width: 100%; height: 100%;">
+                          <center>
+                            <img src="{1}">
+                            <p>
+                                Running report <b>{0}</b>
+                            </p>                                                    
+                          </center>
+                        </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            </body>
+        </html>        
+        ]]>
+    </system:String>
+
+    <system:String x:Key="ReportResults.Error.Template">
+        <![CDATA[
+        
+            <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+            <html>
+                <head>
+                    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+                    <title>Report Error - {0}</title>
+                    <style type="text/css">
+                        * {{ font-family: Calibri, Tahoma, Verdana, sans-serif; }}
+                        h1 {{ color: red; }}
+                    </style>
+                </head>
+                <body>
+	                <h1>{0}</h1>
+	                {1}
+                    <hr />
+                    {2}
+                </body>        
+            </html>        
+        
+        ]]>
+    </system:String>
+
+    <system:String x:Key="ReportResults.Error.Title">An error occurred whilst running report '{0}'</system:String>
+
+</ResourceDictionary>
