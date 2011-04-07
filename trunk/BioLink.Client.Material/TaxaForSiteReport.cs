@@ -42,7 +42,7 @@ namespace BioLink.Client.Material {
 
         public override DataMatrix ExtractReportData(IProgressObserver progress) {
             var service = new MaterialService(User);
-            var filterText = string.Format("Taxon: {0},  {1}: {2}", TaxonID.HasValue ? TaxonName : "All taxon", ElemType, SiteRegionName);
+            var filterText = string.Format("Taxon: {0},  {1}: {2}", TaxonID.HasValue && TaxonID.Value > 0 ? TaxonName : "All taxon", ElemType, SiteRegionName);
             return service.GetTaxaForSites(true, ElemType, SiteRegionID.Value, TaxonID.GetValueOrDefault(-1), filterText);
         }
 
