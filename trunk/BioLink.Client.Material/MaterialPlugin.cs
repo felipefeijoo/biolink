@@ -71,18 +71,24 @@ namespace BioLink.Client.Material {
 
         public override bool CanSelect<T>() {
             var t = typeof(T);
-            return typeof(Region).IsAssignableFrom(t) || typeof(Trap).IsAssignableFrom(t) || typeof(BioLink.Data.Model.Material).IsAssignableFrom(t);
+            return typeof(Region).IsAssignableFrom(t) || typeof(Trap).IsAssignableFrom(t) || typeof(BioLink.Data.Model.Material).IsAssignableFrom(t) || typeof(SiteExplorerNode).IsAssignableFrom(t);
         }
 
         public override void Select<T>(LookupOptions options, Action<SelectionResult> success) {
             var t = typeof(T);
             RegionSelectorContentProvider selectionContent = null;
             if (typeof(Region).IsAssignableFrom(t)) {
-                selectionContent = new RegionSelectorContentProvider(User, SiteExplorerNodeType.Region, (n) => { return n.ElemType != "Region"; }, "Region");
+                selectionContent = new RegionSelectorContentProvider(User, (n) => { return n.ElemType != "Region"; }, "Region", SiteExplorerNodeType.Region);
+            } else if (typeof(Site).IsAssignableFrom(t)) {
+                selectionContent = new RegionSelectorContentProvider(User, (n) => { return n.ElemType != "Site"; }, "Site", SiteExplorerNodeType.Site);
             } else if (typeof(Trap).IsAssignableFrom(t)) {
-                selectionContent = new RegionSelectorContentProvider(User, SiteExplorerNodeType.Trap, (n) => { return n.ElemType == "Material" || n.ElemType == "SiteVisit"; }, "Trap");
+                selectionContent = new RegionSelectorContentProvider(User, (n) => { return n.ElemType == "Material" || n.ElemType == "SiteVisit"; }, "Trap", SiteExplorerNodeType.Trap);
             } else if (typeof(Data.Model.Material).IsAssignableFrom(t)) {
-                selectionContent = new RegionSelectorContentProvider(User, SiteExplorerNodeType.Material, (n) => { return false; }, "");
+                selectionContent = new RegionSelectorContentProvider(User, (n) => { return false; }, "", SiteExplorerNodeType.Material);
+            } else if (typeof(SiteExplorerNode).IsAssignableFrom(t)) {
+                selectionContent = new RegionSelectorContentProvider(User, (n) => { 
+                    return n.ElemType != "Region" && n.ElemType != "Site" && n.ElemType != "SiteGroup"; 
+                }, "", SiteExplorerNodeType.Region, SiteExplorerNodeType.Site);
             } else {                
                 throw new Exception("Unhandled Selection Type: " + t.Name);
             }
@@ -109,6 +115,10 @@ namespace BioLink.Client.Material {
             switch (node.NodeType) {
                 case SiteExplorerNodeType.Trap:
                     list.Add(new MaterialForTrapReport(User, node));
+                    break;
+                case SiteExplorerNodeType.Site:
+                case SiteExplorerNodeType.Region:
+                    list.Add(new TaxaForSiteReport(User, node.Model));
                     break;
             }
 
@@ -234,9 +244,9 @@ namespace BioLink.Client.Material {
 
     internal class RegionSelectorContentProvider : IHierarchicalSelectorContentProvider {
 
-        public RegionSelectorContentProvider(User user, SiteExplorerNodeType targetType, Predicate<SiteExplorerNode> filter, string searchLimit) {
+        public RegionSelectorContentProvider(User user, Predicate<SiteExplorerNode> filter, string searchLimit, params SiteExplorerNodeType[] targetTypes) {
             this.User = user;
-            this.TargetType = targetType;
+            this.TargetTypes = targetTypes;
             this.Filter = filter;
             this.SearchLimitation = searchLimit;
         }
@@ -276,8 +286,13 @@ namespace BioLink.Client.Material {
 
         public List<HierarchicalViewModelBase> Search(string searchTerm) {
             var service = new MaterialService(User);
-            var results = service.FindNodesByName(searchTerm, SearchLimitation);            
-            var converted = results.ConvertAll((node) => {
+            var results = service.FindNodesByName(searchTerm, SearchLimitation);
+
+            if (Filter != null) {
+                results = results.Where((n) => !Filter(n)).ToList();
+            }
+
+            var converted = results.ConvertAll((node) => {                
                 return new SiteExplorerNodeViewModel(node);
             });
             return new List<HierarchicalViewModelBase>(converted);            
@@ -289,8 +304,13 @@ namespace BioLink.Client.Material {
                 return false;
             }
 
-            return item.NodeType == TargetType;
+            foreach (SiteExplorerNodeType nodeType in TargetTypes) {
+                if (item.NodeType == nodeType) {
+                    return true;
+                }
+            }
 
+            return false;
         }
 
 
@@ -303,7 +323,8 @@ namespace BioLink.Client.Material {
 
             result.ObjectID = item.ElemID;
             result.Description = item.Name;
-            result.DataObject = item;
+            result.DataObject = item.Model;
+            result.LookupType = MaterialExplorer.GetLookupTypeFromNodeType(item.NodeType);
 
             return result;
         }
@@ -324,7 +345,7 @@ namespace BioLink.Client.Material {
             get { return true; }
         }        
 
-        public SiteExplorerNodeType TargetType { get; private set; }
+        public SiteExplorerNodeType[] TargetTypes { get; private set; }
 
         public Predicate<SiteExplorerNode> Filter { get; private set; }
 

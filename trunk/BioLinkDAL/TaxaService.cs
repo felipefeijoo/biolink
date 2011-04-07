@@ -534,12 +534,6 @@ namespace BioLink.Data {
             return list;
         }
 
-        protected string RTF_HEADER = @"{\rtf1\ansi\deff0\deflang1033 {\fonttbl {\f0\fswiss\fcharset0 SYSTEM;}{\f1\froman\fcharset0 TIMES NEW ROMAN;}}";
-        protected string RTF_COLOUR_TABLE = @"{\colortbl \red0\green0\blue0}";
-        protected string RTF_PRE_TEXT = @"\paperw11895 \margr0\margl0\ATXph0 \plain \fs20 \f1 ";
-        protected string RTF_PARA = @"\par ";
-        protected string vbCRLF = "\n";
-
         public DataMatrix ChecklistReport(int taxonID, string criteriaDisplayText, ChecklistReportExtent extent, bool availableNames, bool literatureNames, ChecklistReportRankDepth? depth, bool userDefinedOrder, bool verifiedOnly, List<TaxonRankName> selectedRanks) {
 
             StringBuilder b = new StringBuilder();
@@ -548,10 +542,10 @@ namespace BioLink.Data {
 
             // Process the list, generating the RTF...
             // Create the Header inforrmation
-            b.Append(RTF_HEADER).Append(vbCRLF).Append(RTF_COLOUR_TABLE).Append(vbCRLF).Append(RTF_PRE_TEXT);    
+            b.Append(ReportConstants.RTF_HEADER).Append(ReportConstants.vbCRLF).Append(ReportConstants.RTF_COLOUR_TABLE).Append(ReportConstants.vbCRLF).Append(ReportConstants.RTF_PRE_TEXT);    
             // Create the title information
             b.Append(@"\pard\fs36\b Taxon Checklist Report\b0\pard\par\fs22 ").Append(criteriaDisplayText).Append(@"\pard\par\fs16 Generated: ");
-            b.AppendFormat("{0:f}", DateTime.Now).Append(@"\par\par ");
+            b.Append(ReportConstants.ReportDateString()).Append(@"\par\par ");
   
             int i = 0;
             foreach (ChecklistData item in data) {
@@ -645,11 +639,11 @@ namespace BioLink.Data {
 
         public DataMatrix TaxaForSites(int siteOrRegionID, int taxonID, string itemType, string criteriaDisplayText, bool includeLocations) {
 
-            StringBuilder sb = new StringBuilder(RTF_HEADER);
-            sb.Append(vbCRLF).Append(RTF_COLOUR_TABLE).Append(vbCRLF).Append(RTF_PRE_TEXT);
+            StringBuilder sb = new StringBuilder(ReportConstants.RTF_HEADER);
+            sb.Append(ReportConstants.vbCRLF).Append(ReportConstants.RTF_COLOUR_TABLE).Append(ReportConstants.vbCRLF).Append(ReportConstants.RTF_PRE_TEXT);
             sb.Append(@"\pard\fs36\b Taxa for Site/Region Report\b0\pard\par\fs24 ");
             sb.Append(criteriaDisplayText);
-            sb.AppendFormat(@"\pard\par\fs24 Produced: {0:f}", DateTime.Now);
+            sb.AppendFormat(@"\pard\par\fs24 Produced: {0}", ReportConstants.ReportDateString());
 
             int lngLastBiotaID = -1;
             int lngLastRegionID = -1;
@@ -664,7 +658,7 @@ namespace BioLink.Data {
                     lngLastBiotaID = biotaID;
                     lngLastRegionID = -1;
                     lngLastSiteID = -1;
-                    sb.Append(RTF_PARA).Append(RTF_PARA).Append(@"\pard\sb20\fs28\b ");
+                    sb.Append(ReportConstants.RTF_PARA).Append(ReportConstants.RTF_PARA).Append(@"\pard\sb20\fs28\b ");
                     sb.Append(reader["BiotaFullName"]).Append(@"\b0");
                     // extract the family and order
                     string orderRank = GetBiotaRankElemType(lngLastBiotaID, "O");
@@ -684,14 +678,14 @@ namespace BioLink.Data {
                     if (lngLastRegionID != regionID) {
                         // Add the region
                         lngLastRegionID = regionID;
-                        sb.Append(RTF_PARA).Append(@"\pard\sb10\fs20\li600\b ").Append(reader["FullRegion"]).Append(@"\b0 ");
+                        sb.Append(ReportConstants.RTF_PARA).Append(@"\pard\sb10\fs20\li600\b ").Append(reader["FullRegion"]).Append(@"\b0 ");
                     }
 
                     int siteID = (Int32)reader["SiteID"];
                     if (lngLastSiteID != siteID) {
                         lngLastSiteID = siteID;
                         // Add the Site
-                        sb.Append(RTF_PARA).Append(@"\pard\sb10\fs20\li1200 ");
+                        sb.Append(ReportConstants.RTF_PARA).Append(@"\pard\sb10\fs20\li1200 ");
                         // Add the locality
                         byte localType = (byte) reader["LocalType"];
                         switch (localType) {

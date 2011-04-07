@@ -41,6 +41,7 @@ namespace BioLink.Client.Extensibility {
         public Object DataObject { get; set; }
         public int? ObjectID { get; set; }
         public string Description { get; set; }
+        public LookupType LookupType { get; set; }
     }
 
     /// <summary>

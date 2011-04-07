@@ -43,6 +43,8 @@ namespace BioLink.Client.Extensibility {
             });
 
             txt.PreviewKeyDown += new KeyEventHandler(txt_PreviewKeyDown);
+
+            txtWatermark.DataContext = this;
         }
 
         private bool _validate = true;
@@ -90,6 +92,7 @@ namespace BioLink.Client.Extensibility {
                         _manualSet = true;
                         Text = frm.SelectedItem.Label;
                         ObjectID = frm.SelectedItem.ObjectID;
+                        SelectedObject = frm.SelectedItem;
                         _manualSet = false;
                         return true;
                     }
@@ -97,6 +100,7 @@ namespace BioLink.Client.Extensibility {
                     _manualSet = true;
                     Text = lookupResults[0].Label;
                     ObjectID = lookupResults[0].ObjectID;
+                    SelectedObject = lookupResults[0];
                     _manualSet = false;
                     return true;
                 }
@@ -173,11 +177,16 @@ namespace BioLink.Client.Extensibility {
             LaunchLookup();
         }
 
+        public LookupResult SelectedObject { get; private set; }
+
         private void GenericLookup<T>() {
             PluginManager.Instance.StartSelect<T>((result) => {
                 _manualSet = true;
                 this.Text = result.Description;
                 this.ObjectID = result.ObjectID;
+                if (ObjectID.HasValue) {
+                    this.SelectedObject = new LookupResult { LookupObjectID = result.ObjectID.Value, Label = result.Description, LookupType = result.LookupType };
+                }
                 this.InvokeIfRequired(() => {
                     txt.Focus();
                 });
@@ -216,6 +225,9 @@ namespace BioLink.Client.Extensibility {
                 case LookupType.Journal:
                     GenericLookup<Journal>();
                     break;
+                case LookupType.SiteOrRegion:
+                    GenericLookup<SiteExplorerNode>();
+                    break;
                 default:
                     throw new Exception("Unhandled Lookup type: " + LookupType.ToString());
             }
@@ -248,6 +260,17 @@ namespace BioLink.Client.Extensibility {
             get { return (string)GetValue(TextProperty); }
             set { SetValue(TextProperty, value); }
         }
+
+        public static readonly DependencyProperty WatermarkTextProperty = DependencyProperty.Register("WatermarkText", typeof(string), typeof(LookupControl), new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnWatermarkTextChanged)));
+
+        private static void OnWatermarkTextChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+        }
+
+        public String WatermarkText {
+            get { return (string)GetValue(WatermarkTextProperty); }
+            set { SetValue(WatermarkTextProperty, value); }
+        }
+
 
         public static readonly DependencyProperty ObjectIDProperty = DependencyProperty.Register("ObjectID", typeof(int?), typeof(LookupControl), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnObjectIDChanged)));
 

@@ -124,6 +124,7 @@
     <Compile Include="Model\Trap.cs" />
     <Compile Include="Model\UserSearchResult.cs" />
     <Compile Include="QuerySQLGenerator.cs" />
+    <Compile Include="ReportConstants.cs" />
     <Compile Include="SupportService.cs" />
     <Compile Include="Model\Taxon.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

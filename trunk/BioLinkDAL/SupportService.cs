@@ -1279,33 +1279,42 @@ namespace BioLink.Data {
 
         #region LookUp
 
+        class LookupProcedureBinding {
+            public String ProcName;
+            public LookupType LookupType;
+        }
+
         public List<LookupResult> LookupSearch(string filter, LookupType lookupType) {
 
             filter = EscapeSearchTerm(filter);
 
-            string storedProc = null;
+            List<LookupProcedureBinding> storedProcs = new List<LookupProcedureBinding>();
             string paramName = "vchrFilter";
             switch (lookupType) {
                 case LookupType.Taxon:
-                    storedProc = "spBiotaLookup";
+                    storedProcs.Add(new LookupProcedureBinding {ProcName = "spBiotaLookup", LookupType=lookupType});
                     break;
                 case LookupType.Journal:
-                    storedProc = "spJournalLookup";
+                    storedProcs.Add(new LookupProcedureBinding {ProcName = "spJournalLookup", LookupType=lookupType});
                     break;
                 case LookupType.Material:
-                    storedProc = "spMaterialLookup";
+                    storedProcs.Add(new LookupProcedureBinding {ProcName = "spMaterialLookup", LookupType=lookupType});
                     break;
                 case LookupType.Reference:
-                    storedProc = "spReferenceLookup";
+                    storedProcs.Add(new LookupProcedureBinding {ProcName = "spReferenceLookup", LookupType=lookupType});
                     break;
                 case LookupType.Region:
-                    storedProc = "spRegionLookup";
+                    storedProcs.Add(new LookupProcedureBinding {ProcName = "spRegionLookup", LookupType=lookupType});
                     break;
                 case LookupType.Site:
-                    storedProc = "spSiteLookup";
+                    storedProcs.Add(new LookupProcedureBinding {ProcName = "spSiteLookup", LookupType=lookupType});
                     break;
                 case LookupType.SiteVisit:
-                    storedProc = "spSiteVisitLookup";
+                    storedProcs.Add(new LookupProcedureBinding {ProcName = "spSiteVisitLookup", LookupType=lookupType});
+                    break;
+                case LookupType.SiteOrRegion:
+                    storedProcs.Add(new LookupProcedureBinding {ProcName = "spSiteLookup", LookupType=LookupType.Site });
+                    storedProcs.Add(new LookupProcedureBinding { ProcName = "spRegionLookup", LookupType = LookupType.Region });
                     break;
                 case LookupType.Unknown:
                 case LookupType.Trap:
@@ -1313,17 +1322,18 @@ namespace BioLink.Data {
                     break;
             }
 
-            if (storedProc != null) {
+            if (storedProcs != null && storedProcs.Count > 0) {
                 var results = new List<LookupResult>();
-                StoredProcReaderForEach(storedProc, (reader) => {
-                    var model = new LookupResult();
-                    model.LookupType = lookupType;
-                    model.LookupObjectID = (int) reader[0];
-                    model.Label = (string) reader[1];
-                    results.Add(model);
-                }, _P(paramName, filter));
+                foreach (LookupProcedureBinding binding in storedProcs) {
+                    StoredProcReaderForEach(binding.ProcName, (reader) => {
+                        var model = new LookupResult();
+                        model.LookupType = binding.LookupType;
+                        model.LookupObjectID = (int)reader[0];
+                        model.Label = (string)reader[1];
+                        results.Add(model);
+                    }, _P(paramName, filter));
+                }
                 return results;
-
             }
             return null;
         }
@@ -1353,7 +1363,8 @@ namespace BioLink.Data {
         Trap,
         Reference,
         Journal,
-        PlaceName
+        PlaceName,
+        SiteOrRegion
     }
 
     public enum LookupOptions {

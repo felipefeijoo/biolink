@@ -99,6 +99,10 @@
     <Compile Include="SiteVisitRDEControl.xaml.cs">
       <DependentUpon>SiteVisitRDEControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="TaxaForSiteReport.cs" />
+    <Compile Include="TaxaForSiteReportOptions.xaml.cs">
+      <DependentUpon>TaxaForSiteReportOptions.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TypeDataConverter.cs" />
     <Compile Include="MaterialPartsControl.xaml.cs">
       <DependentUpon>MaterialPartsControl.xaml</DependentUpon>
@@ -228,6 +232,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="SiteVisitRDEControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TaxaForSiteReportOptions.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
