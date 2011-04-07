@@ -25,23 +25,28 @@ namespace BioLink.Client.Material {
         public TaxaForSiteReportOptions(User user, SiteExplorerNode node) {
             InitializeComponent();
             this.User = user;            
-            txtRegion.BindUser(user, LookupType.SiteOrRegion);
-            txtRegion.ObjectID = node.ObjectID;
-            txtRegion.Text = node.Name;
-            this.SiteRegionID = node.ElemID;
-            this.SiteRegionElemType = node.ElemType;
-            this.SiteRegionName = node.Name;
 
-            txtTaxon.BindUser(user, LookupType.Taxon);            
+            txtRegion.BindUser(user, LookupType.SiteOrRegion);
+            txtRegion.PreSelect(node.ObjectID, node.Name, MaterialExplorer.GetLookupTypeFromElemType(node.ElemType));
+
+            txtRegion.WatermarkText = "You must select a site or region";
+            txtTaxon.BindUser(user, LookupType.Taxon);
+            txtTaxon.WatermarkText = "All taxa";
         }
 
         protected User User { get; private set; }
 
-        public int? SiteRegionID { get; private set; }
+        public int? SiteRegionID {
+            get { return txtRegion.ObjectID; }
+        }
 
-        public string SiteRegionName { get; private set; }
+        public string SiteRegionName {
+            get { return txtRegion.Text; } 
+        }
 
-        public string SiteRegionElemType { get; private set; }
+        public string SiteRegionElemType { 
+            get { return (txtRegion.SelectedObject != null ? txtRegion.SelectedObject.LookupType.ToString() : null); }
+        }
         
 
         public int? TaxonID { 
@@ -61,11 +66,6 @@ namespace BioLink.Client.Material {
 
         private void button1_Click(object sender, RoutedEventArgs e) {
             if (Validate()) {
-                if (txtRegion.SelectedObject != null) {
-                    this.SiteRegionID = txtRegion.SelectedObject.LookupObjectID;
-                    this.SiteRegionName = txtRegion.Text;
-                    this.SiteRegionElemType = txtRegion.SelectedObject.LookupType.ToString();
-                }                
                 this.DialogResult = true;
                 this.Close();
             }
@@ -73,7 +73,7 @@ namespace BioLink.Client.Material {
 
         private bool Validate() {
 
-            if (!txtRegion.ObjectID.HasValue) {
+            if (txtRegion.SelectedObject == null) {
                 ErrorMessage.Show("You must select a valid site or region!");
                 return false;
             }

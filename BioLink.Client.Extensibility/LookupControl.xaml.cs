@@ -297,11 +297,8 @@ namespace BioLink.Client.Extensibility {
             var control = (LookupControl)obj;
             if (control != null) {
                 control.btnLookup.IsEnabled = !(bool)args.NewValue;
-                // TODO: when filtering in the textbox is enabled, need to disable it when read only...
-                // control.txt.IsEnabled = !(bool)args.NewValue;
             }
         }
-
 
         #endregion
 
@@ -325,14 +322,15 @@ namespace BioLink.Client.Extensibility {
 
         #endregion
 
-        private void btnAccept_Click(object sender, RoutedEventArgs e) {
-
+        public void PreSelect(int? objectID, string text, Data.LookupType lookupType) {
+            this.ObjectID = objectID;
+            this.Text = text;
+            if (objectID.HasValue) {
+                this.SelectedObject = new LookupResult { Label = text, LookupObjectID = objectID.Value, LookupType = lookupType };
+            } else {
+                this.SelectedObject = null;
+            }
         }
-
-        private void btnCanel_Click(object sender, RoutedEventArgs e) {
-
-        }
-
     }
 
     public delegate void ObjectIDChangedHandler(object source, int? objectID);

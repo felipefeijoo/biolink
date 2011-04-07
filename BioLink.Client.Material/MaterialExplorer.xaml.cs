@@ -890,6 +890,11 @@ namespace BioLink.Client.Material {
             }
         }
 
+        public static LookupType GetLookupTypeFromElemType(string elemType) {            
+            var nodeType = (SiteExplorerNodeType) Enum.Parse(typeof(SiteExplorerNodeType), elemType);
+            return GetLookupTypeFromNodeType(nodeType);
+        }
+
         public static LookupType GetLookupTypeFromNodeType(SiteExplorerNodeType nodeType) {
             switch (nodeType) {
                 case SiteExplorerNodeType.Material:
