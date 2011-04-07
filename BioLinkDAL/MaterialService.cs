@@ -20,6 +20,141 @@ namespace BioLink.Data {
             return StoredProcDataMatrix("spMaterialListForTrap", _P("intTrapID", trapID));
         }
 
+        public DataMatrix GetTaxaForSites(bool includeLocations, string itemType, int itemID, int biotaID, string criteriaText) {
+
+            var taxonService = new TaxaService(User);
+            var rtf = new StringBuilder();
+
+            // Create the Header inforrmation
+            rtf.Append(ReportConstants.RTF_HEADER).Append(ReportConstants.vbCRLF).Append(ReportConstants.RTF_COLOUR_TABLE).Append(ReportConstants.vbCRLF);
+            rtf.Append(ReportConstants.RTF_PRE_TEXT);
+
+            // Create the title information
+            rtf.Append(@"\pard\fs36\b Taxa for Site/Region Report\b0\pard\par\fs24 ").Append(criteriaText);
+            rtf.Append(@"\pard\par\fs24 Produced: ").Append(ReportConstants.ReportDateString());
+    
+    
+            // extract the parentage string from the database.
+            // Loop through the recordset and build the report output.
+            int lngLastBiotaID = -1;
+            int lngLastRegionID = -1;
+            int lngLastSiteID = -1;
+            string strOrderRank = "";
+            string strFamilyRank = "";
+
+            StoredProcReaderForEach("spReportTaxaForSites", (reader) => {
+                // If there is a change in taxa, print the header.
+                int currentBiotaID = (int) reader["BiotaID"];
+                if (lngLastBiotaID != currentBiotaID) {
+                    lngLastBiotaID = currentBiotaID;
+                    lngLastRegionID = -1;
+                    lngLastSiteID = -1;
+                    rtf.Append(ReportConstants.RTF_PARA).Append(ReportConstants.RTF_PARA).Append(@"\pard\sb20\fs28\b ");
+                    rtf.Append( (string) reader["BiotaFullName"]).Append(@"\b0");
+                
+                    // extract the family and order
+                    strOrderRank = taxonService.GetBiotaRankElemType(currentBiotaID, "O");                    
+                    strFamilyRank = taxonService.GetBiotaRankElemType(currentBiotaID, "F");
+                    
+                    if (!string.IsNullOrWhiteSpace(strOrderRank) && string.IsNullOrWhiteSpace(strFamilyRank)) {
+                        rtf.Append("  [").Append(strOrderRank).Append("]");
+                    } else if ((!string.IsNullOrWhiteSpace(strOrderRank) || (!string.IsNullOrWhiteSpace(strFamilyRank)))) {
+                        rtf.Append("  [").Append(strOrderRank).Append(": ").Append(strFamilyRank).Append("]");
+                    }
+                }
+
+                if (includeLocations) {
+                    // Add the region group
+                    int currentRegionID = (int) reader["RegionID"];
+                    if (lngLastRegionID != currentRegionID) {
+                        // Add the region
+                        lngLastRegionID = currentRegionID;
+                        rtf.Append(ReportConstants.RTF_PARA).Append(@"\pard\sb10\fs20\li600 ");
+                        rtf.Append((string) reader["FullRegion"]);
+                    }
+
+                    int currentSiteID = (int) reader["SiteID"];
+    
+                    if (lngLastSiteID != currentSiteID) {
+                        lngLastSiteID = currentSiteID;
+                        // Add the Site
+                        rtf.Append(ReportConstants.RTF_PARA).Append(@"\pard\sb10\fs20\li1200 ");
+                        // Add the locality
+                        int localType = (byte) reader["LocalType"];
+                        switch (localType) {
+                            case 0:
+                                rtf.Append((string) reader["Local"]);
+                                break;                            
+                            case 1:
+                                rtf.Append((string) reader["DistanceFromPlace"]).Append(" ");
+                                rtf.Append((string) reader["DirFromPlace"]).Append(" of ").Append((string) reader["Local"]);
+                                break;
+                            default:
+                                rtf.Append((string) reader["Local"]);
+                                break;
+                        }
+                    
+                       // Add the long and lat.
+                        int areaType = (byte) reader["AreaType"];
+
+                        double? lat = reader.Get<double?>("Lat");
+                        double? lon = reader.Get<double?>("Long");
+                        
+                        double? lat2 = reader.Get<double?>("Lat2");
+                        double? lon2 = reader.Get<double?>("Long2");
+    
+                        switch (areaType) {
+                            case 1:   // Point
+
+                                if (!lat.HasValue || !lon.HasValue) {                            
+                                    rtf.Append("; No position data");
+                                } else {
+                                    rtf.AppendFormat("; {0}, {1}", GeoUtils.DecDegToDMS(lat.Value, CoordinateType.Latitude), GeoUtils.DecDegToDMS(lon.Value, CoordinateType.Longitude));
+                                }
+                                break;
+                            case 2:  // Box
+                                if (!lat.HasValue || !lon.HasValue || !lat2.HasValue || !lon2.HasValue) {                            
+                                    rtf.Append("; No position data");
+                                } else {
+                                    rtf.AppendFormat("; Box: {0}, {1}; {2}, {3}", 
+                                        GeoUtils.DecDegToDMS(lat.Value, CoordinateType.Latitude),
+                                        GeoUtils.DecDegToDMS(lon.Value, CoordinateType.Longitude),
+                                        GeoUtils.DecDegToDMS(lat2.Value, CoordinateType.Latitude),
+                                        GeoUtils.DecDegToDMS(lon2.Value, CoordinateType.Longitude));                                    
+                                }
+                                break;
+                            case 3: // Line
+                                if (!lat.HasValue || !lon.HasValue || !lat2.HasValue || !lon2.HasValue) {                            
+                                    rtf.Append("; No position data");
+                                } else {
+                                    rtf.AppendFormat("; Line: {0}, {1}; {2}, {3}", 
+                                        GeoUtils.DecDegToDMS(lat.Value, CoordinateType.Latitude),
+                                        GeoUtils.DecDegToDMS(lon.Value, CoordinateType.Longitude),
+                                        GeoUtils.DecDegToDMS(lat2.Value, CoordinateType.Latitude),
+                                        GeoUtils.DecDegToDMS(lon2.Value, CoordinateType.Longitude));                                    
+                                }
+                                break;
+                            default:
+                                // ignore
+                                break;
+                        }
+                            
+                    }
+                }
+
+            }, _P("vchrItemType", itemType), _P("intItemID", itemID), _P("intBiotaID", biotaID)); 
+    
+
+    
+            rtf.Append(" }");
+
+            var results = new DataMatrix();
+            results.Columns.Add(new MatrixColumn { Name = "RTF" });
+            results.AddRow()[0] = rtf.ToString();
+
+            return results;
+        }
+
         #endregion
 
         #region Site Explorer

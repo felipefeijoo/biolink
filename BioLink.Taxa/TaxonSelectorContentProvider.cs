@@ -84,6 +84,7 @@ namespace BioLink.Client.Taxa {
                 result.DataObject = taxon;
                 result.ObjectID = taxon.TaxaID;
                 result.Description = taxon.TaxaFullName;
+                result.LookupType = LookupType.Taxon;
                 return result;
             }
             return null;

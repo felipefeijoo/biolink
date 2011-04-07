@@ -36,7 +36,7 @@ namespace BioLink.Client.Taxa {
                 txtTaxa.Text = taxa[0].TaxaFullName;                     
             }
             txtRegion.BindUser(user, LookupType.Region);
-            txtRegion.Text = "All";
+            txtRegion.WatermarkText = "All Regions";
 
             this.Title = title;
         }
@@ -44,8 +44,8 @@ namespace BioLink.Client.Taxa {
         protected List<TaxonViewModel> Taxa { get; private set; }
 
         private void button1_Click(object sender, RoutedEventArgs e) {
-            if (!txtRegion.ObjectID.HasValue && !txtRegion.Text.Equals("All", StringComparison.CurrentCultureIgnoreCase)) {
-                ErrorMessage.Show("You must select a region!");
+            if (!txtRegion.ObjectID.HasValue && !string.IsNullOrWhiteSpace(txtRegion.Text)) {
+                ErrorMessage.Show("You must select a valid region!");
                 return;
             }
 

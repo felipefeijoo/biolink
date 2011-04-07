@@ -890,7 +890,7 @@ namespace BioLink.Client.Material {
             }
         }
 
-        private LookupType GetLookupTypeFromNodeType(SiteExplorerNodeType nodeType) {
+        public static LookupType GetLookupTypeFromNodeType(SiteExplorerNodeType nodeType) {
             switch (nodeType) {
                 case SiteExplorerNodeType.Material:
                     return LookupType.Material;
