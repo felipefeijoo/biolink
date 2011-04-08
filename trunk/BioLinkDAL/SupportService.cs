@@ -1340,6 +1340,56 @@ namespace BioLink.Data {
 
         #endregion
 
+        #region Reports
+
+        public DataMatrix GetUserStatisticsReport(string username, string startDate, string enddate) {
+            var rtf = new RTFReportBuilder();
+
+            rtf.AppendFullHeader();
+
+            rtf.Append(@"\pard\fs36\b Data Entry Statistics Report\b0\pard\par\fs24 ");
+            rtf.Append("Start Date: {0}   End Date: {1}    User ID: {2}", startDate, enddate, string.IsNullOrWhiteSpace(username) ? "All users" : username);
+            rtf.Append(@"\pard\par\fs24 Produced: ").AppendCurrentDate();
+
+            bool anyData = false;
+
+            string strLastUser = "";
+            string strLastTable = "";
+
+            StoredProcReaderForEach("spReportUserStatsInPeriod", (reader) => {
+                anyData = true;
+                // If there is a change in the user, print the header.
+                string currentUser = reader.Get<string>("User");
+                if (strLastUser != currentUser) {
+                    strLastUser = currentUser;
+                    rtf.Par().Append(@"\par\pard\sb20\fs30\b ").Append(currentUser);
+                    strLastTable = "";
+                }
+            
+                // Add the region group
+                string currentTable = reader.Get<string>("Table");
+                if (strLastTable != currentTable) {
+                    strLastTable = currentTable;
+                    // Add the region
+                    rtf.Par().Append(@"\pard\sb10\fs24\li300\b ").Append(currentTable);                
+                }
+            
+                // Add the Type and associated count
+                rtf.Par().Append(@"\li600\b0 ").Append(reader.Get<string>("Type")).Append(" : ").Append(reader.Get<int>("Count"));
+
+            }, _P("vchrUser", username), _P("vchrDateStart", startDate), _P("vchrDateEnd", enddate));
+
+            if (!anyData) {
+                rtf.Par().Append("No results.");
+            }
+
+            rtf.Par().Append(" }");
+
+            return rtf.GetAsMatrix();
+        }
+
+        #endregion
+
     }
 
     public class RefTypeMapping {

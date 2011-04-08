@@ -28,29 +28,10 @@ namespace BioLink.Client.Tools {
 
         public override List<IWorkspaceContribution> GetContributions() {
             List<IWorkspaceContribution> contrib = new List<IWorkspaceContribution>();
-            contrib.Add(new MenuWorkspaceContribution(this, "Phrases", (obj, e) => { ShowPhraseManager(); },
-                String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
-                String.Format("{{'Name':'Phrases', 'Header':'{0}'}}", _R("Tools.Menu.Phrases"))
-            ));
-
-            contrib.Add(new MenuWorkspaceContribution(this, "ReferenceManager", (obj, e) => { ShowReferenceManager(); },
-                String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
-                String.Format("{{'Name':'ReferenceManager', 'Header':'{0}'}}", _R("Tools.Menu.ReferenceManager"))
-            ));
-
-            contrib.Add(new MenuWorkspaceContribution(this, "JournalManager", (obj, e) => { ShowJournalManager(); },
-                String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
-                String.Format("{{'Name':'JournalManager', 'Header':'{0}'}}", _R("Tools.Menu.JournalManager"))
-            ));
 
             contrib.Add(new MenuWorkspaceContribution(this, "QueryTool", (obj, e) => { ShowQueryTool(); },
                 String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
                 String.Format("{{'Name':'QueryTool', 'Header':'{0}'}}", "Query Tool")
-            ));
-
-            contrib.Add(new MenuWorkspaceContribution(this, "UserManager", (obj, e) => { ShowUserManager(); },
-                String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
-                String.Format("{{'Name':'UserManager', 'Header':'{0}'}}", "Users and Groups...")
             ));
 
             contrib.Add(new MenuWorkspaceContribution(this, "Import", (obj, e) => { ShowImport(); },
@@ -63,17 +44,51 @@ namespace BioLink.Client.Tools {
                 String.Format("{{'Name':'Import', 'Header':'Import'}}"), String.Format("{{'Name':'ImportReferences', 'Header':'_References'}}")
             ));
 
-            contrib.Add(new MenuWorkspaceContribution(this, "Administration", (obj, e) => { ShowAdminWindow(); },
+            // Reports...
+
+            contrib.Add(new MenuWorkspaceContribution(this, "UserStatsReport", (obj, e) => { ShowUserStatsReport(); },
                 String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
-                String.Format("{{'Name':'Administration', 'Header':'{0}'}}", "Administration...")
+                "{'Name':'Reports', 'Header':'_Reports'}",
+                "{'Name':'UserStatsReport', 'Header' : 'Data Entry _Statistics by User Report'}"                
+            ));
+
+            // Settings...
+
+            contrib.Add(new MenuWorkspaceContribution(this, "Phrases", (obj, e) => { ShowPhraseManager(); },
+                String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
+                "{'Name':'Settings', 'Header':'_Settings'}",
+                String.Format("{{'Name':'Phrases', 'Header':'{0}'}}", _R("Tools.Menu.Phrases"))
+            ));
+
+            contrib.Add(new MenuWorkspaceContribution(this, "ReferenceManager", (obj, e) => { ShowReferenceManager(); },
+                String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
+                "{'Name':'Settings', 'Header':'_Settings'}",
+                String.Format("{{'Name':'ReferenceManager', 'Header':'{0}'}}", _R("Tools.Menu.ReferenceManager"))
+            ));
+
+            contrib.Add(new MenuWorkspaceContribution(this, "JournalManager", (obj, e) => { ShowJournalManager(); },
+                String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
+                "{'Name':'Settings', 'Header':'_Settings'}",
+                String.Format("{{'Name':'JournalManager', 'Header':'{0}'}}", _R("Tools.Menu.JournalManager"))
+            ));
+
+            contrib.Add(new MenuWorkspaceContribution(this, "UserManager", (obj, e) => { ShowUserManager(); },
+                String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
+                "{'Name':'Settings', 'Header':'_Settings'}",
+                String.Format("{{'Name':'UserManager', 'Header':'{0}'}}", "Users and Groups...")
             ));
 
             contrib.Add(new MenuWorkspaceContribution(this, "MultimediaManager", (obj, e) => { ShowMultimediaManagerWindow(); },
                 String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
+                "{'Name':'Settings', 'Header':'_Settings'}",
                 String.Format("{{'Name':'MultimediaManager', 'Header':'{0}'}}", "Multimedia Manager...")
             ));
 
-
+            contrib.Add(new MenuWorkspaceContribution(this, "Administration", (obj, e) => { ShowAdminWindow(); },
+                String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
+                "{'Name':'Settings', 'Header':'_Settings'}",
+                String.Format("{{'Name':'Administration', 'Header':'{0}'}}", "Administration...")
+            ));
 
             return contrib;
         }
@@ -175,6 +190,9 @@ namespace BioLink.Client.Tools {
             _importReferencesWizard.Focus();
         }
 
+        private void ShowUserStatsReport() {
+            PluginManager.Instance.RunReport(this, new UserStatsReport(User));
+        }
 
         public override List<Command> GetCommandsForSelected(List<ViewModelBase> selected) {
 

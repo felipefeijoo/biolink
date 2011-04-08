@@ -536,16 +536,16 @@ namespace BioLink.Data {
 
         public DataMatrix ChecklistReport(int taxonID, string criteriaDisplayText, ChecklistReportExtent extent, bool availableNames, bool literatureNames, ChecklistReportRankDepth? depth, bool userDefinedOrder, bool verifiedOnly, List<TaxonRankName> selectedRanks) {
 
-            StringBuilder b = new StringBuilder();
+            var b = new RTFReportBuilder();
 
             var data = GetChecklistData(taxonID, 0, extent == ChecklistReportExtent.FullHierarchy, userDefinedOrder, verifiedOnly, selectedRanks);
 
             // Process the list, generating the RTF...
             // Create the Header inforrmation
-            b.Append(ReportConstants.RTF_HEADER).Append(ReportConstants.vbCRLF).Append(ReportConstants.RTF_COLOUR_TABLE).Append(ReportConstants.vbCRLF).Append(ReportConstants.RTF_PRE_TEXT);    
+            b.AppendFullHeader();
             // Create the title information
             b.Append(@"\pard\fs36\b Taxon Checklist Report\b0\pard\par\fs22 ").Append(criteriaDisplayText).Append(@"\pard\par\fs16 Generated: ");
-            b.Append(ReportConstants.ReportDateString()).Append(@"\par\par ");
+            b.AppendCurrentDate().Par().Par();
   
             int i = 0;
             foreach (ChecklistData item in data) {
@@ -553,16 +553,13 @@ namespace BioLink.Data {
                 if (!availableNames && item.AvailableName || !literatureNames && item.LiteratureName) {
                     // ignore this one
                 } else {
-                    b.AppendFormat(@"\par\pard\fs20\li{0} {1}", item.IndentLevel * 300, FormatChecklistRow(item, i, depth));                    
+                    b.Append(@"\par\pard\fs20\li{0} {1}", item.IndentLevel * 300, FormatChecklistRow(item, i, depth));
                 }
             }
 
             b.Append("}");
 
-            DataMatrix m = new DataMatrix();
-            m.Columns.Add(new MatrixColumn { Name = "RTF" });
-            m.AddRow()[0] = b.ToString();
-            return m;
+            return b.GetAsMatrix();
         }
 
         private string FormatChecklistRow(ChecklistData item, int i, ChecklistReportRankDepth? depth) {
@@ -639,11 +636,11 @@ namespace BioLink.Data {
 
         public DataMatrix TaxaForSites(int siteOrRegionID, int taxonID, string itemType, string criteriaDisplayText, bool includeLocations) {
 
-            StringBuilder sb = new StringBuilder(ReportConstants.RTF_HEADER);
-            sb.Append(ReportConstants.vbCRLF).Append(ReportConstants.RTF_COLOUR_TABLE).Append(ReportConstants.vbCRLF).Append(ReportConstants.RTF_PRE_TEXT);
+            var sb = new RTFReportBuilder();
+            sb.AppendFullHeader();            
             sb.Append(@"\pard\fs36\b Taxa for Site/Region Report\b0\pard\par\fs24 ");
             sb.Append(criteriaDisplayText);
-            sb.AppendFormat(@"\pard\par\fs24 Produced: {0}", ReportConstants.ReportDateString());
+            sb.Append(@"\pard\par\fs24 Produced: ").AppendCurrentDate();
 
             int lngLastBiotaID = -1;
             int lngLastRegionID = -1;
@@ -658,8 +655,8 @@ namespace BioLink.Data {
                     lngLastBiotaID = biotaID;
                     lngLastRegionID = -1;
                     lngLastSiteID = -1;
-                    sb.Append(ReportConstants.RTF_PARA).Append(ReportConstants.RTF_PARA).Append(@"\pard\sb20\fs28\b ");
-                    sb.Append(reader["BiotaFullName"]).Append(@"\b0");
+                    sb.Par().Par().Append(@"\pard\sb20\fs28\b ");
+                    sb.Append((string) reader["BiotaFullName"]).Append(@"\b0");
                     // extract the family and order
                     string orderRank = GetBiotaRankElemType(lngLastBiotaID, "O");
                     string familyRank = GetBiotaRankElemType(lngLastBiotaID, "F");
@@ -678,14 +675,14 @@ namespace BioLink.Data {
                     if (lngLastRegionID != regionID) {
                         // Add the region
                         lngLastRegionID = regionID;
-                        sb.Append(ReportConstants.RTF_PARA).Append(@"\pard\sb10\fs20\li600\b ").Append(reader["FullRegion"]).Append(@"\b0 ");
+                        sb.Par().Append(@"\pard\sb10\fs20\li600\b ").Append((string) reader["FullRegion"]).Append(@"\b0 ");
                     }
 
                     int siteID = (Int32)reader["SiteID"];
                     if (lngLastSiteID != siteID) {
                         lngLastSiteID = siteID;
                         // Add the Site
-                        sb.Append(ReportConstants.RTF_PARA).Append(@"\pard\sb10\fs20\li1200 ");
+                        sb.Par().Append(@"\pard\sb10\fs20\li1200 ");
                         // Add the locality
                         byte localType = (byte) reader["LocalType"];
                         switch (localType) {
@@ -763,10 +760,7 @@ namespace BioLink.Data {
    
             sb.Append("}");
 
-            DataMatrix m = new DataMatrix();
-            m.Columns.Add(new MatrixColumn { Name="RTF" });
-            m.AddRow()[0] = sb.ToString();
-            return m;
+            return sb.GetAsMatrix();
         }
     }
 
