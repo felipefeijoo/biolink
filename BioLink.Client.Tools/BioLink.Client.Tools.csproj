@@ -93,8 +93,14 @@
     <Compile Include="administration\TraitTypesControl.xaml.cs">
       <DependentUpon>TraitTypesControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ModellingTool.xaml.cs">
+      <DependentUpon>ModellingTool.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MultimediaManager.xaml.cs">
       <DependentUpon>MultimediaManager.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PointSetsControl.xaml.cs">
+      <DependentUpon>PointSetsControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="usermanager\PermissionProperties.xaml.cs">
       <DependentUpon>PermissionProperties.xaml</DependentUpon>
@@ -153,8 +159,8 @@
     <Compile Include="usermanager\UserProperties.xaml.cs">
       <DependentUpon>UserProperties.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserStatsReport.cs" />
-    <Compile Include="UserStatsReportOptions.xaml.cs">
+    <Compile Include="Reports\UserStatsReport.cs" />
+    <Compile Include="Reports\UserStatsReportOptions.xaml.cs">
       <DependentUpon>UserStatsReportOptions.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
@@ -219,7 +225,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ModellingTool.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MultimediaManager.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PointSetsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -287,7 +301,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UserStatsReportOptions.xaml">
+    <Page Include="Reports\UserStatsReportOptions.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
