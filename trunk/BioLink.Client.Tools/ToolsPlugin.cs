@@ -44,6 +44,11 @@ namespace BioLink.Client.Tools {
                 String.Format("{{'Name':'Import', 'Header':'Import'}}"), String.Format("{{'Name':'ImportReferences', 'Header':'_References'}}")
             ));
 
+            contrib.Add(new MenuWorkspaceContribution(this, "Modelling", (obj, e) => { ShowModelling(); },
+                String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
+                String.Format("{{'Name':'Modelling', 'Header':'{0}'}}", "_Modelling")
+            ));
+
             // Reports...
 
             contrib.Add(new MenuWorkspaceContribution(this, "UserStatsReport", (obj, e) => { ShowUserStatsReport(); },
@@ -128,6 +133,10 @@ namespace BioLink.Client.Tools {
 
         private void ShowQueryTool() {
             ShowSingleton("Query Tool", () => new QueryTool(User, this));
+        }
+
+        private void ShowModelling() {
+            ShowSingleton("Predicted Distribution Modelling", () => new ModellingTool(User, this));
         }
 
         private void ShowUserManager() {
