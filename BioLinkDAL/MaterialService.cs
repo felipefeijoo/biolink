@@ -23,15 +23,14 @@ namespace BioLink.Data {
         public DataMatrix GetTaxaForSites(bool includeLocations, string itemType, int itemID, int biotaID, string criteriaText) {
 
             var taxonService = new TaxaService(User);
-            var rtf = new StringBuilder();
+            var rtf = new RTFReportBuilder();
 
             // Create the Header inforrmation
-            rtf.Append(ReportConstants.RTF_HEADER).Append(ReportConstants.vbCRLF).Append(ReportConstants.RTF_COLOUR_TABLE).Append(ReportConstants.vbCRLF);
-            rtf.Append(ReportConstants.RTF_PRE_TEXT);
+            rtf.AppendFullHeader();
 
             // Create the title information
             rtf.Append(@"\pard\fs36\b Taxa for Site/Region Report\b0\pard\par\fs24 ").Append(criteriaText);
-            rtf.Append(@"\pard\par\fs24 Produced: ").Append(ReportConstants.ReportDateString());
+            rtf.Append(@"\pard\par\fs24 Produced: ").AppendCurrentDate();
     
     
             // extract the parentage string from the database.
@@ -49,7 +48,7 @@ namespace BioLink.Data {
                     lngLastBiotaID = currentBiotaID;
                     lngLastRegionID = -1;
                     lngLastSiteID = -1;
-                    rtf.Append(ReportConstants.RTF_PARA).Append(ReportConstants.RTF_PARA).Append(@"\pard\sb20\fs28\b ");
+                    rtf.Par().Par().Append(@"\pard\sb20\fs28\b ");
                     rtf.Append( (string) reader["BiotaFullName"]).Append(@"\b0");
                 
                     // extract the family and order
@@ -69,7 +68,7 @@ namespace BioLink.Data {
                     if (lngLastRegionID != currentRegionID) {
                         // Add the region
                         lngLastRegionID = currentRegionID;
-                        rtf.Append(ReportConstants.RTF_PARA).Append(@"\pard\sb10\fs20\li600 ");
+                        rtf.Par().Append(@"\pard\sb10\fs20\li600 ");
                         rtf.Append((string) reader["FullRegion"]);
                     }
 
@@ -78,7 +77,7 @@ namespace BioLink.Data {
                     if (lngLastSiteID != currentSiteID) {
                         lngLastSiteID = currentSiteID;
                         // Add the Site
-                        rtf.Append(ReportConstants.RTF_PARA).Append(@"\pard\sb10\fs20\li1200 ");
+                        rtf.Par().Append(@"\pard\sb10\fs20\li1200 ");
                         // Add the locality
                         int localType = (byte) reader["LocalType"];
                         switch (localType) {
@@ -109,14 +108,14 @@ namespace BioLink.Data {
                                 if (!lat.HasValue || !lon.HasValue) {                            
                                     rtf.Append("; No position data");
                                 } else {
-                                    rtf.AppendFormat("; {0}, {1}", GeoUtils.DecDegToDMS(lat.Value, CoordinateType.Latitude), GeoUtils.DecDegToDMS(lon.Value, CoordinateType.Longitude));
+                                    rtf.Append("; {0}, {1}", GeoUtils.DecDegToDMS(lat.Value, CoordinateType.Latitude), GeoUtils.DecDegToDMS(lon.Value, CoordinateType.Longitude));
                                 }
                                 break;
                             case 2:  // Box
                                 if (!lat.HasValue || !lon.HasValue || !lat2.HasValue || !lon2.HasValue) {                            
                                     rtf.Append("; No position data");
                                 } else {
-                                    rtf.AppendFormat("; Box: {0}, {1}; {2}, {3}", 
+                                    rtf.Append("; Box: {0}, {1}; {2}, {3}", 
                                         GeoUtils.DecDegToDMS(lat.Value, CoordinateType.Latitude),
                                         GeoUtils.DecDegToDMS(lon.Value, CoordinateType.Longitude),
                                         GeoUtils.DecDegToDMS(lat2.Value, CoordinateType.Latitude),
@@ -127,7 +126,7 @@ namespace BioLink.Data {
                                 if (!lat.HasValue || !lon.HasValue || !lat2.HasValue || !lon2.HasValue) {                            
                                     rtf.Append("; No position data");
                                 } else {
-                                    rtf.AppendFormat("; Line: {0}, {1}; {2}, {3}", 
+                                    rtf.Append("; Line: {0}, {1}; {2}, {3}", 
                                         GeoUtils.DecDegToDMS(lat.Value, CoordinateType.Latitude),
                                         GeoUtils.DecDegToDMS(lon.Value, CoordinateType.Longitude),
                                         GeoUtils.DecDegToDMS(lat2.Value, CoordinateType.Latitude),
@@ -148,11 +147,7 @@ namespace BioLink.Data {
     
             rtf.Append(" }");
 
-            var results = new DataMatrix();
-            results.Columns.Add(new MatrixColumn { Name = "RTF" });
-            results.AddRow()[0] = rtf.ToString();
-
-            return results;
+            return rtf.GetAsMatrix();
         }
 
         #endregion

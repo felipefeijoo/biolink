@@ -153,6 +153,10 @@
     <Compile Include="usermanager\UserProperties.xaml.cs">
       <DependentUpon>UserProperties.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserStatsReport.cs" />
+    <Compile Include="UserStatsReportOptions.xaml.cs">
+      <DependentUpon>UserStatsReportOptions.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BioLink.Client.Extensibility\BioLink.Client.Extensibility.csproj">
@@ -280,6 +284,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="usermanager\UserProperties.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserStatsReportOptions.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
