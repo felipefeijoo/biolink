@@ -6,6 +6,12 @@
              xmlns:tools="clr-namespace:BioLink.Client.Tools"
              mc:Ignorable="d" d:DesignHeight="328" d:DesignWidth="543">
     <Grid>
+        <Grid.Resources>
+            <Style x:Key="hcs" TargetType="{x:Type GridViewColumnHeader}">
+                <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
+            </Style>
+        </Grid.Resources>
+
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="36" />
@@ -14,10 +20,34 @@
         <TabControl Margin="6">
             <TabItem x:Name="tabPoints" Header="_Points">
                 <GroupBox Header="Training Points">
-                    <tools:PointSetsControl x:Name="pointSets" />
+                    <tools:PointSetsControl x:Name="pointSets" Margin="6" />
                 </GroupBox>
             </TabItem>
-            <TabItem x:Name="tabLayers" Header="Data _Layers">                
+            <TabItem x:Name="tabLayers" Header="Data _Layers">
+                <GroupBox Header="Environmental Layers">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="36" />
+                        </Grid.RowDefinitions>
+                        
+                        <ListBox Name="lstLayers" Margin="6">
+                            <ListBox.Resources>
+                                <DataTemplate DataType="{x:Type tools:EnvironmentalLayerViewModel}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="{Binding Path=Icon, Mode=TwoWay}" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None" Margin="2"/>
+                                        <TextBlock Text="{Binding Path=Name, Mode=OneWay}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.Resources>
+                        </ListBox>
+                        
+                        <Grid Grid.Row="1" Background="{x:Static SystemColors.ControlBrush}">
+                            <Button Content="_Add" Height="23" HorizontalAlignment="Right" Margin="0,6,6,0" Name="btnAdd" VerticalAlignment="Top" Width="75" Click="btnAdd_Click" />
+                            <Button Content="_Remove" Height="23" HorizontalAlignment="Right" Margin="0,6,87,0" Name="btnRemove" VerticalAlignment="Top" Width="75" />
+                        </Grid>
+                    </Grid>
+                </GroupBox>
             </TabItem>
             <TabItem x:Name="tabSingle" Header="_Single model">                
             </TabItem>

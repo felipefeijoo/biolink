@@ -60,6 +60,11 @@
     <Compile Include="administration\AdministrationControl.xaml.cs">
       <DependentUpon>AdministrationControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EditPointWindow.xaml.cs">
+      <DependentUpon>EditPointWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="EnvironmentalLayer.cs" />
+    <Compile Include="EnvironmentalLayerViewModel.cs" />
     <Compile Include="import\ImportCache.cs" />
     <Compile Include="import\ImportFilterSelection.xaml.cs">
       <DependentUpon>ImportFilterSelection.xaml</DependentUpon>
@@ -98,6 +103,9 @@
     </Compile>
     <Compile Include="MultimediaManager.xaml.cs">
       <DependentUpon>MultimediaManager.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PointSetDisplayOptionsWindow.xaml.cs">
+      <DependentUpon>PointSetDisplayOptionsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="PointSetsControl.xaml.cs">
       <DependentUpon>PointSetsControl.xaml</DependentUpon>
@@ -189,6 +197,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="EditPointWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="import\ImportFilterSelection.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -230,6 +242,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MultimediaManager.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PointSetDisplayOptionsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -318,6 +334,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="images\Speckle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\GridLayer.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -15,17 +15,30 @@ using BioLink.Client.Extensibility;
 using BioLink.Client.Utilities;
 using BioLink.Data;
 using BioLink.Data.Model;
+using Microsoft.Win32;
+using System.Collections.ObjectModel;
 
 namespace BioLink.Client.Tools {
     /// <summary>
     /// Interaction logic for ModellingTool.xaml
     /// </summary>
-    public partial class ModellingTool : UserControl {
+    public partial class ModellingTool : UserControl, IDisposable {
+
+        private ObservableCollection<EnvironmentalLayerViewModel> _layerModel;
 
         public ModellingTool(User user, ToolsPlugin owner) {
             InitializeComponent();
             this.User = user;
             this.Owner = owner;
+            _layerModel = new ObservableCollection<EnvironmentalLayerViewModel>();
+            lstLayers.ItemsSource = _layerModel;
+
+            List<String> filelist = Config.GetUser(owner.User, "Modelling.EnvironmentalLayers", new List<string>());
+            if (filelist != null && filelist.Count > 0) {
+                foreach (string filename in filelist) {
+                    AddLayerFile(filename);
+                }
+            }
         }
 
         protected User User { get; private set; }
@@ -34,6 +47,33 @@ namespace BioLink.Client.Tools {
 
         private void btnCancel_Click(object sender, RoutedEventArgs e) {
             this.FindParentWindow().Close();
+        }
+
+        private void btnAdd_Click(object sender, RoutedEventArgs e) {
+            AddFile();
+        }
+
+        private void AddFile() {
+            var frm = new OpenFileDialog();
+            frm.Filter = "GRD files (*.grd)|*.grd|All files (*.*)|*.*";
+            if (frm.ShowDialog(this.FindParentWindow()) == true) {
+                AddLayerFile(frm.FileName);
+            }
+        }
+
+        private void AddLayerFile(string filename) {
+            GRDGridLayer layer = new GRDGridLayer(filename);
+            var viewModel = new EnvironmentalLayerViewModel(layer);
+            _layerModel.Add(viewModel);
+        }
+
+        public void Dispose() {
+            if (_layerModel != null) {
+                var filelist = _layerModel.Select((vm) => {
+                    return vm.Name;
+                });
+                Config.SetUser(Owner.User, "Modelling.EnvironmentalLayers", filelist);
+            }
         }
     }
 }

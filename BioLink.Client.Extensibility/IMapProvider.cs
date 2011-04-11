@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Media;
 using BioLink.Data;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 namespace BioLink.Client.Extensibility {
 
@@ -18,7 +20,7 @@ namespace BioLink.Client.Extensibility {
         void ClearPoints();
     }
 
-    public abstract class MapPointSet : IEnumerable<MapPoint> {
+    public abstract class MapPointSet : IEnumerable<MapPoint>, INotifyCollectionChanged {
 
         public MapPointSet(string name) {
             this.Name = name;
@@ -43,6 +45,18 @@ namespace BioLink.Client.Extensibility {
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
             return GetEnumerator();
         }
+
+        public abstract void RemoveAt(int index);
+        public abstract void Append(MapPoint point);
+
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+        protected void RaiseCollectionChanged(NotifyCollectionChangedEventArgs e) {
+            if (this.CollectionChanged != null) {
+                CollectionChanged(this, e);
+            }
+        }
+
     }
 
     public class MatrixMapPointSet : MapPointSet {
@@ -96,17 +110,6 @@ namespace BioLink.Client.Extensibility {
                 _materialIndex = FindIndex(_set.MaterialIDColumn);
             }
 
-            private int FindIndex(string colName) {
-                for (int i = 0; i < _set._data.Columns.Count; ++i) {
-                    var col = _set._data.Columns[i];
-                    if (col.Name.Contains(colName)) {
-                        return i;
-                    }
-                }
-
-                return -1;
-            }
-
             public MapPoint Current {
                 get {
                     int realIndex = _currentRow;
@@ -157,17 +160,64 @@ namespace BioLink.Client.Extensibility {
             public void Reset() {
                 _currentRow = -1;
             }
+
+            private int FindIndex(string colName) {
+                for (int i = 0; i < _set._data.Columns.Count; ++i) {
+                    var col = _set._data.Columns[i];
+                    if (col.Name.Contains(colName)) {
+                        return i;
+                    }
+                }
+                return -1;
+            }
+
+        }
+
+        public override void RemoveAt(int index) {
+            _data.RemoveRow(index);
+            RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+        }
+
+        private int FindIndex(string colName) {
+            for (int i = 0; i < _data.Columns.Count; ++i) {
+                var col = _data.Columns[i];
+                if (col.Name.Contains(colName)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        public override void Append(MapPoint point) {
+
+            int latIndex = FindIndex(LatitudeColumn);
+            int lonIndex = FindIndex(LongitudeColumn);
+            int siteIndex = FindIndex(SiteIDColumn);
+            int siteVisitIndex = FindIndex(SiteVisitIDColumn);
+            int materialIndex = FindIndex(MaterialIDColumn);
+
+            var row = _data.AddRow();
+
+            row[latIndex] = point.Latitude;
+            row[lonIndex] = point.Longitude;
+            row[siteIndex] = point.SiteID;
+            row[siteVisitIndex] = point.SiteVisitID;
+            row[materialIndex] = point.MaterialID;
+
+            RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
     }
 
-
-
     public class ListMapPointSet : MapPointSet, IList<MapPoint> {
 
-        private List<MapPoint> _impl = new List<MapPoint>();
+        private ObservableCollection<MapPoint> _impl = new ObservableCollection<MapPoint>();
 
-        public ListMapPointSet(string name)
-            : base(name) {
+        public ListMapPointSet(string name) : base(name) {
+            _impl.CollectionChanged += new NotifyCollectionChangedEventHandler(_impl_CollectionChanged);
+        }
+
+        void _impl_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            RaiseCollectionChanged(e);
         }
 
         public int IndexOf(MapPoint item) {
@@ -178,7 +228,7 @@ namespace BioLink.Client.Extensibility {
             _impl.Insert(index, item);
         }
 
-        public void RemoveAt(int index) {
+        public override void RemoveAt(int index) {
             _impl.RemoveAt(index);
         }
 
@@ -227,6 +277,9 @@ namespace BioLink.Client.Extensibility {
             return _impl.GetEnumerator();
         }
 
+        public override void Append(MapPoint point) {
+            _impl.Add(point);
+        }
     }
 
     public enum MapPointShape {

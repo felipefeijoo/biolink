@@ -207,6 +207,75 @@ namespace BioLink.Client.Tools {
             PlotSelected();
         }
 
+        private void Button_Click_6(object sender, RoutedEventArgs e) {
+            EditPointSetOptions();
+        }
+
+        private void EditPointSetOptions() {
+            var selected = GetSelectedPointSet();
+            if (selected != null) {
+                var frm = new PointSetDisplayOptionsWindow(selected);
+                frm.Owner = this.FindParentWindow();
+                frm.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                if (frm.ShowDialog() == true) {
+                    // Nothing to do?
+                }
+            }
+        }
+
+        private void Button_Click_7(object sender, RoutedEventArgs e) {
+            EditSelectedPoint();
+        }
+
+        private void EditSelectedPoint() {
+            var selected = GetSelectedPoint();
+            if (selected != null) {
+                var frm = new EditPointWindow(selected);
+                frm.Owner = this.FindParentWindow();
+                frm.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                if (frm.ShowDialog() == true) {
+                    // nothing to do?
+                }
+            }
+        }
+
+        private PointViewModel GetSelectedPoint() {
+            return tvw.SelectedItem as PointViewModel;
+        }
+
+        private void Button_Click_8(object sender, RoutedEventArgs e) {
+            RemoveSelectedPoint();
+        }
+
+        private void RemoveSelectedPoint() {
+            var selected = GetSelectedPoint();
+            var pointSet = GetSelectedPointSet();
+            if (selected != null && pointSet != null) {
+                pointSet.RemovePoint(selected);
+            }
+        }
+
+        private void Button_Click_9(object sender, RoutedEventArgs e) {
+            AddNewPoint();
+        }
+
+        private void AddNewPoint() {
+            var pointSet = GetSelectedPointSet();
+            if (pointSet != null) {
+                var newPoint = new MapPoint();
+                var viewModel = new PointViewModel(newPoint);
+                var frm = new EditPointWindow(viewModel);
+                frm.Owner = this.FindParentWindow();
+                frm.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                if (frm.ShowDialog() == true) {
+                    pointSet.Children.Add(viewModel);
+                    pointSet.AppendPoint(viewModel);
+                    viewModel.Parent = pointSet;
+                    viewModel.IsSelected = true;                    
+                }
+            }
+        }
+
     }
 
     public class PointViewModel : GenericHierarchicalViewModelBase<MapPoint> {
@@ -237,6 +306,7 @@ namespace BioLink.Client.Tools {
     }
 
     public class PointSetViewModel : GenericHierarchicalViewModelBase<MapPointSet> {
+
         public PointSetViewModel(MapPointSet model) : base(model, () => 0) { }
 
         public String Name {
@@ -258,12 +328,49 @@ namespace BioLink.Client.Tools {
             }
         }
 
-        //public Color PointColor { get; set; }
-        //public MapPointShape PointShape { get; set; }
-        //public bool DrawOutline { get; set; }
-        //public Color OutlineColor { get; set; }
-        //public int Size { get; set; }
+        public Color PointColor {
+            get { return Model.PointColor; }
+            set { SetProperty(() => Model.PointColor, value); }
+        }
+
+        public MapPointShape PointShape {
+            get { return Model.PointShape; }
+            set { SetProperty(() => Model.PointShape, value); }
+        }
+
+        public bool DrawOutline {
+            get { return Model.DrawOutline; }
+            set { SetProperty(() => Model.DrawOutline, value); }
+        }
+
+        public Color OutlineColor {
+            get { return Model.OutlineColor; }
+            set { SetProperty(() => Model.OutlineColor, value); }
+        }
+
+        public int Size {
+            get { return Model.Size; }
+            set { SetProperty(() => Model.Size, value); }
+        }
+
         //public bool DrawLabels { get; set; }
+
+
+        internal void RemovePoint(PointViewModel selected) {
+            if (selected != null) {
+                var index = selected.Parent.Children.IndexOf(selected);
+                if (index >= 0) {
+                    selected.Parent.Children.RemoveAt(index);
+                    Model.RemoveAt(index);
+                }
+            }
+        }
+
+        internal void AppendPoint(PointViewModel newPoint) {
+            if (newPoint != null) {
+                Model.Append(newPoint.Model);
+            }
+        }
 
     }
 }

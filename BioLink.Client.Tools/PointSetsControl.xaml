@@ -64,14 +64,15 @@
                     <Setter Property="Margin" Value="0,0,0,2"/>
                 </Style>
             </StackPanel.Resources>
-            <Button Content="_Add point" />
-            <Button Content="_Edit point" />
-            <Button Content="_Remove point" />
+            <Button Content="_Add point" Click="Button_Click_9" />
+            <Button Content="_Edit point" Click="Button_Click_7" />
+            <Button Content="_Remove point" Click="Button_Click_8" />
             <Grid Height="10" />            
             <Button Content="Remove _point set" Click="Button_Click_2" />
             <Button Content="_Plot point set" Click="Button_Click_5" />
             <Button Content="_Load point file" Click="Button_Click_4" />            
             <Button Content="_Export point set" Click="Button_Click_3" />
+            <Button Content="Point set _options" Click="Button_Click_6" />
             <Grid Height="10" />
             <Button Content="_Plot all points" Click="Button_Click" />
             <Button Content="_Clear all points" Click="Button_Click_1" />
