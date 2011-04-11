@@ -61,6 +61,12 @@ namespace BioLink.Data {
             }
             return false;
         }
+
+        public void RemoveRow(int rowIndex) {
+            if (Rows != null) {
+                Rows.RemoveAt(rowIndex);
+            }
+        }
     }
 
     public class MatrixRow {

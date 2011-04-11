@@ -100,14 +100,17 @@ namespace BioLink.Client.Extensibility {
 
         public int Size {
             get { return (int)sizeSlider.Value; }
+            set { sizeSlider.Value = value; }
         }
 
         public Color Color {
             get { return ctlColor.SelectedColor; }
+            set { ctlColor.SelectedColor = value; }
         }
 
         public bool DrawOutline {
             get { return chkDrawOutline.IsChecked.ValueOrFalse(); }
+            set { chkDrawOutline.IsChecked = value; }                 
         }
 
         protected IMapPointSetGenerator Generator { get; private set; }
