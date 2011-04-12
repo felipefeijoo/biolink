@@ -74,11 +74,17 @@ namespace BioLink.Client.Tools {
 
         public EnvironmentalLayerRange GetRangeForPoints(IEnumerable<MapPoint> points, double percentile) {
 
+            var values = new PointValueList();
+
             foreach (MapPoint p in points) {
                 var value = GetValueAt(p.Latitude, p.Longitude, NoValueMarker);
+                if (value == NoValueMarker) {
+                } else {                    
+                    values.AddValue(value);
+                }
             }
 
-            return null;
+            return new EnvironmentalLayerRange { Max = values.GetUpper(percentile), Min = values.GetLower(percentile), Percentile = percentile };
         }
 
         public void SetAllCells(double value) {
@@ -100,8 +106,8 @@ namespace BioLink.Client.Tools {
 
         public string Name { get; protected set; }
 
-        protected int Width { get; set; }
-        protected int Height { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
         protected double Latitude0 { get; set; }
         protected double Longitude0 { get; set; }
         protected double DeltaLatitude { get; set; }
@@ -156,6 +162,99 @@ namespace BioLink.Client.Tools {
 
             return data;
         }
+    }
+
+    class PointValueList {
+        
+        private LLNode _first;
+
+        public PointValueList() {
+            Count = 0;
+            _first = null;
+        }
+
+        public bool AddValue(double value) {
+
+            var newNode = new LLNode(value);
+            if (_first == null) {
+                _first = newNode;
+                Count = 1;
+                return true;
+            }
+
+            if (value < _first.Value) {
+                newNode.Next = _first;
+                _first = newNode;
+                Count++;
+                return true;
+            }
+
+            var temp = _first;
+            var prev = temp;
+            while (temp != null && value > temp.Value) {
+                prev = temp;
+                temp = temp.Next;
+            }
+            newNode.Next = prev.Next;
+            prev.Next = newNode;
+
+            Count++;
+
+            return true;
+        }
+
+        public double GetLower(double percentile) {
+            int index = (int) ((double) (Count + 1) * percentile);
+            var p = _first;
+            int i = 0;
+
+            while (p != null && (i++ < index - 1)) {
+                p = p.Next;
+            }
+
+            if (p != null) {
+                return p.Value;
+            }
+
+            return 0;            
+        }
+
+        public double GetUpper(double percentile) {
+            int index = (int) (((double) (Count + 1) * (1-percentile)) - 1);
+            var p = _first;
+            int i = 0;
+            double last = 0;
+
+            while (p != null && (i++ < index)) {
+                last = p.Value;
+                p = p.Next;
+            }
+
+            if (p != null) {
+                return p.Value;
+            } 
+
+            return last;
+        }
+
+        public int Count { get; private set; }
+
+    }
+
+    class LLNode {
+
+        public LLNode() {
+            Next = null;
+            Value = 0;
+        }
+
+        public LLNode(double value) {
+            Next = null;
+            Value = value;
+        }
+
+        public LLNode Next { get; set; }
+        public double Value { get; set; }
     }
 
     public class EnvironmentalLayerRange {

@@ -98,6 +98,7 @@
     <Compile Include="administration\TraitTypesControl.xaml.cs">
       <DependentUpon>TraitTypesControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="LayerImageGenerator.cs" />
     <Compile Include="ModellingTool.xaml.cs">
       <DependentUpon>ModellingTool.xaml</DependentUpon>
     </Compile>
