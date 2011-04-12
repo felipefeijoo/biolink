@@ -111,21 +111,34 @@ namespace BioLink.Client.Extensibility {
             
             picklist.Owner = this.FindParentWindow();
             if (picklist.ShowDialog().ValueOrFalse()) {
-                Trait t = new Trait();
-                t.TraitID = -1;
-                t.Value = "<New Trait Value>";
-                t.Category = TraitCategory.ToString();
-                t.IntraCatID = Owner.ObjectID.Value;
-                t.Name = picklist.SelectedValue as string;
 
-                TraitViewModel viewModel = new TraitViewModel(t);
-                _model.Add(viewModel);
-                RegisterUniquePendingChange(new UpdateTraitDatabaseAction(t, Owner));
-                ReloadTraitPanel();
+                var existing = FindTraitByName(picklist.SelectedValue as string);
+                if (existing == null) {
+                    Trait t = new Trait();
+                    t.TraitID = -1;
+                    t.Value = "<New Trait Value>";
+                    t.Category = TraitCategory.ToString();
+                    t.IntraCatID = Owner.ObjectID.Value;
+                    t.Name = picklist.SelectedValue as string;
 
-                SelectTrait(viewModel);
+                    TraitViewModel viewModel = new TraitViewModel(t);
+                    _model.Add(viewModel);
+                    RegisterUniquePendingChange(new UpdateTraitDatabaseAction(t, Owner));
+                    ReloadTraitPanel();
+
+                    SelectTrait(viewModel);
+                } else {
+                    SelectTrait(existing);
+                }
             }
             
+        }
+
+        private TraitViewModel FindTraitByName(string name) {
+            var existing = _model.FirstOrDefault((tm) => {
+                return tm.Name.Equals(name);
+            });
+            return existing;
         }
 
         private void SelectTrait(TraitViewModel vm) {
