@@ -89,32 +89,35 @@ namespace BioLink.Client.Extensibility {
                 int i = 0;
 
                 foreach (Type type in extensionTypes) {
-                    Logger.Debug("Instantiating type {0}", type.FullName);
+                    try {
+                        Logger.Debug("Instantiating type {0}", type.FullName);
 
-                    IBioLinkExtension extension = InstantiateExtension(type);
+                        IBioLinkExtension extension = InstantiateExtension(type);
 
-                    if (extension != null) {
-                        if (extension is IBioLinkPlugin) {
+                        if (extension != null) {
+                            if (extension is IBioLinkPlugin) {
 
-                            IBioLinkPlugin plugin = extension as IBioLinkPlugin;
-                            Logger.Debug("Initializing Plugin {0}...", plugin.Name);
-                            plugin.InitializePlugin(User, this, this.ParentWindow);
+                                IBioLinkPlugin plugin = extension as IBioLinkPlugin;
+                                Logger.Debug("Initializing Plugin {0}...", plugin.Name);
+                                plugin.InitializePlugin(User, this, this.ParentWindow);
 
-                            Logger.Debug("Integrating Plugin...", plugin.Name);
-                            // Allow the consumer to process this plugin...
-                            if (pluginAction != null) {
-                                pluginAction(plugin);
+                                Logger.Debug("Integrating Plugin...", plugin.Name);
+                                // Allow the consumer to process this plugin...
+                                if (pluginAction != null) {
+                                    pluginAction(plugin);
+                                }
                             }
+
+                            _extensions.Add(extension);
+
+                            double percentComplete = ((double)++i / (double)extensionTypes.Count) * 100.0;
+                            NotifyProgress(extension.Name, percentComplete, ProgressEventType.Update);
                         }
 
-                        _extensions.Add(extension);
-
-                        double percentComplete = ((double)++i / (double)extensionTypes.Count) * 100.0;
-                        NotifyProgress(extension.Name, percentComplete, ProgressEventType.Update);
-                    } 
-                    
-                    DoEvents();
-
+                        DoEvents();
+                    } catch (Exception ex) {
+                        GlobalExceptionHandler.Handle(ex);
+                    }
                 }
 
                 // Fire an event signalling plugin loading is complete, and all plugins have been initialized

@@ -102,8 +102,8 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>mkdir "$(SolutionDir)\BiolinkApplication\bin\Debug\Plugins"
-copy "$(TargetPath)" "$(SolutionDir)\BiolinkApplication\bin\Debug\Plugins"</PostBuildEvent>
+    <PostBuildEvent>mkdir "$(SolutionDir)\BiolinkApplication\bin\Debug"
+copy "$(TargetPath)" "$(SolutionDir)\BiolinkApplication\bin\Debug"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
