@@ -95,6 +95,14 @@ namespace BioLink.Client.Maps {
                 (_map.Control as MapControl).HideDistanceAnchor(true);
             }
         }
+
+
+        public void AddRasterLayer(string filename) {
+            if (_map != null && _map.IsVisible) {
+                (_map.Control as MapControl).AddRasterLayer(filename);
+            }
+
+        }
     }
 
 }

@@ -2,19 +2,51 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace BioLink.Client.Tools {
-    public class LayerImageGenerator {
 
-        //public ImageSource GetImageForLayer(GridLayer layer, Color lowcolor, Color highcolor, Color novaluecolor, int intervals = 256) {
-        //    //var palette = CreateGradientPalette(lowcolor, highcolor, novaluecolor, intervals);
-        //    //var bmp = new WriteableBitmap(layer.Width, layer.Height, 96, 96, PixelFormats.Rgb24)
-        //    //return null;
-        //}
+    public static class LayerImageGenerator {
 
-        public Color[] CreateGradientPalette(Color lowcolor, Color highcolor, Color noValueColor, int intervals = 256) {
+        public static BitmapSource GetImageForLayer(GridLayer layer, Color lowcolor, Color highcolor, Color novaluecolor, double cutoff = 0, int intervals = 256) {
+            var palette = CreateGradientPalette(lowcolor, highcolor, novaluecolor, intervals);
+            var bmp = new WriteableBitmap(layer.Width, layer.Height, 96, 96, PixelFormats.Indexed8, palette);
+
+            var range = layer.GetRange();
+
+            if (cutoff == 0) {
+                cutoff = range.Min;
+            }
+
+            double dx = Math.Abs(range.Max - cutoff) / (intervals - 1);
+            byte[] array = new byte[layer.Width * layer.Height];
+            byte index = 0;
+            for (int y = 0; y < layer.Height; y++) {
+                for (int x = 0; x < layer.Width; x++) {
+                    var value = layer.GetCellValue(x, y);
+                    if (value == layer.NoValueMarker) {
+                        index = 0;
+                    } else {
+                        if (value >= cutoff || cutoff == 0) {
+                            index = (byte) (((value - cutoff) / dx) + 1);
+                        } else {
+                            index = 0;
+                        }
+                    }
+                    array[(((layer.Height - 1) - y) * layer.Width) + x] = index;
+                }
+            }
+
+            Int32Rect r= new Int32Rect(0, 0, layer.Width, layer.Height);
+
+            bmp.WritePixels(r, array, layer.Width, 0, 0);
+
+            return bmp;
+        }
+
+        public static BitmapPalette CreateGradientPalette(Color lowcolor, Color highcolor, Color noValueColor, int intervals = 256) {
             var palette = new Color[intervals];
             var r1 = lowcolor.R;
             var g1 = lowcolor.G;
@@ -41,7 +73,8 @@ namespace BioLink.Client.Tools {
 
             palette[0] = noValueColor;
 
-            return palette;                
+            return new BitmapPalette(palette);
         }
+
     }
 }

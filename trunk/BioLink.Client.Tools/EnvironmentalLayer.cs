@@ -10,7 +10,7 @@ namespace BioLink.Client.Tools {
 
     public interface IEnvironmentalLayer {
         double GetValueAt(double latitude, double longitude, double @default=0.0);
-        EnvironmentalLayerRange GetRange(double percentile);
+        EnvironmentalLayerRange GetRange(double? percentile = null);
         EnvironmentalLayerRange GetRangeForPoints(IEnumerable<MapPoint> points, double percentile);
         string Name { get; }
     }
@@ -39,11 +39,15 @@ namespace BioLink.Client.Tools {
 
 	        if ((lngX < 0) || (lngY < 0)) return novalue;
 
-            double val = _data[lngY, lngX];
+            double val = _data[lngX, lngY];
 	        return (val  == NoValueMarker ? novalue : val);
         }
 
-        public EnvironmentalLayerRange GetRange(double percentile) {
+        public double GetCellValue(int x, int y) {
+            return _data[x, y];
+        }
+
+        public EnvironmentalLayerRange GetRange(double? percentile = null) {
             double? min = null;
             double? max = null;
             
@@ -63,8 +67,10 @@ namespace BioLink.Client.Tools {
             });
             // Now work out the percentile....
             if (max.HasValue && min.HasValue) {
-                var val = (max.Value - min.Value) * percentile;
-
+                double val = 0;
+                if (percentile.HasValue) {
+                    val = (max.Value - min.Value) * percentile.Value;
+                }
                 var range = new EnvironmentalLayerRange { Max = max.Value - val, Min = min.Value - val, Percentile = percentile };
                 return range;
             }
@@ -94,9 +100,9 @@ namespace BioLink.Client.Tools {
         }
 
         protected void TraverseCells(Action<int, int, double> action) {
-            for (int row = 0; row < Height; row++) {
-                for (int col = 0; col < Width; col++) {
-                    action(row, col, _data[row, col]);                    
+            for (int y = 0; y < Height; y++) {
+                for (int x = 0; x < Width; x++) {
+                    action(x, y, _data[x, y]);
                 }
             }
         }
@@ -108,11 +114,11 @@ namespace BioLink.Client.Tools {
 
         public int Width { get; set; }
         public int Height { get; set; }
-        protected double Latitude0 { get; set; }
-        protected double Longitude0 { get; set; }
-        protected double DeltaLatitude { get; set; }
-        protected double DeltaLongitude { get; set; }
-        protected double NoValueMarker { get; set; }
+        public double Latitude0 { get; set; }
+        public double Longitude0 { get; set; }
+        public double DeltaLatitude { get; set; }
+        public double DeltaLongitude { get; set; }
+        public double NoValueMarker { get; set; }
         protected Int32 Flags { get; set; }
 
         #endregion
@@ -260,7 +266,7 @@ namespace BioLink.Client.Tools {
     public class EnvironmentalLayerRange {
         public double Max { get; set; }
         public double Min { get; set; }        
-        public double Percentile { get; set; }
+        public double? Percentile { get; set; }
 
         public double Range {
             get { return Max - Min; }
