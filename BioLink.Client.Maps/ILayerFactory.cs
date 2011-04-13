@@ -13,7 +13,8 @@ namespace BioLink.Client.Maps {
         private static Dictionary<string, ILayerFactory> _layerFactoryCatalog = new Dictionary<string, ILayerFactory>();
 
         static LayerFileLoader() {
-            _layerFactoryCatalog[".shp"] = new ShapeFileLayerFactory();            
+            _layerFactoryCatalog[".shp"] = new ShapeFileLayerFactory();
+            _layerFactoryCatalog[".png"] = new RasterFileLayerFactory();
         }
 
         public static ILayer LoadLayer(string filename) {
@@ -52,6 +53,13 @@ namespace BioLink.Client.Maps {
             return shapeFileLayer;
         }
 
+    }
+
+    public class RasterFileLayerFactory : ILayerFactory {
+
+        public ILayer Create(string layerName, string connectionInfo) {
+            return new GdalRasterLayer(layerName, connectionInfo);
+        }
     }
 
 }

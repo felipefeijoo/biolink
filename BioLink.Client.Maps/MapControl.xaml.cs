@@ -964,6 +964,10 @@ namespace BioLink.Client.Maps {
             }
         }
 
+
+        internal void AddRasterLayer(string filename) {
+            AddLayer(filename);
+        }
     }
 
     public enum MapMode {

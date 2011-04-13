@@ -74,9 +74,11 @@ Section -Main SEC0000
 	
     File /x *.vshost.exe ..\BioLinkApplication\bin\Debug\*.exe
     File ..\BioLinkApplication\bin\Debug\*.dll
-    File /x *.vshost.exe.config ..\BioLinkApplication\bin\Debug\*.config	
-	File ..\shared\lib\*.dll   
-    File ..\BioLinkApplication\bin\Debug\Plugins\*.dll
+    File /x *.vshost.exe.config ..\BioLinkApplication\bin\Debug\*.config
+	File ..\shared\lib\*.dll
+    File ..\BioLinkApplication\bin\Debug\Plugins\*.dll	
+	SetOutPath $INSTDIR\fwtools	
+	File ..\shared\fwtools\*.*
        
     WriteRegStr HKLM "${REGKEY}\Components" Main 1
 	

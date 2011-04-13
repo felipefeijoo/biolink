@@ -17,6 +17,7 @@ using BioLink.Data;
 using BioLink.Data.Model;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
+using System.IO;
 
 namespace BioLink.Client.Tools {
     /// <summary>
@@ -74,6 +75,21 @@ namespace BioLink.Client.Tools {
                 });
                 Config.SetUser(Owner.User, "Modelling.EnvironmentalLayers", filelist);
             }
+        }
+
+        private void button1_Click(object sender, RoutedEventArgs e) {
+            var image  = LayerImageGenerator.GetImageForLayer((GridLayer) _layerModel[1].Model, Colors.White, Colors.Red, Colors.Blue);
+            img.Source = image;
+
+            BitmapEncoder encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(image));
+            using (FileStream fs = new FileStream("c:/zz/tempraster.png", FileMode.OpenOrCreate, FileAccess.Write)) {
+                encoder.Save(fs);
+            }
+
+            var map = PluginManager.Instance.GetMap();
+            map.Show();
+            map.AddRasterLayer("c:/zz/tempraster.png");
         }
     }
 }
