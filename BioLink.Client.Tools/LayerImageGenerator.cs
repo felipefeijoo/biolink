@@ -5,6 +5,8 @@ using System.Text;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using BioLink.Client.Utilities;
+using System.IO;
 
 namespace BioLink.Client.Tools {
 
@@ -44,6 +46,42 @@ namespace BioLink.Client.Tools {
             bmp.WritePixels(r, array, layer.Width, 0, 0);
 
             return bmp;
+        }
+
+        public static string GenerateTemporaryImageFile(GridLayer layer, Color lowcolor, Color highcolor, Color novaluecolor, double cutoff = 0, int intervals = 256) {
+            var image = LayerImageGenerator.GetImageForLayer(layer, lowcolor, highcolor, novaluecolor, cutoff, intervals);
+
+            BitmapEncoder encoder = new BmpBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(image));
+            var filename = TempFileManager.NewTempFilename("bmp");
+            using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.Write)) {
+                encoder.Save(fs);
+            }
+
+            var worldFilename = filename + "w";
+            TempFileManager.Attach(worldFilename);
+
+            CreateWorldFile(layer, worldFilename);
+
+            return filename;
+        }
+
+        public static void CreateWorldFile(GridLayer layer, string filename) {
+
+            double lat0;
+
+            lat0 = layer.Latitude0 + (layer.DeltaLatitude * layer.Height);
+
+            using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.Write)) {
+                using (var writer = new StreamWriter(fs)) {
+                    writer.WriteLine("{0}", layer.DeltaLongitude);
+                    writer.WriteLine("0");
+                    writer.WriteLine("0");
+                    writer.WriteLine("{0}", -layer.DeltaLatitude);
+                    writer.WriteLine("{0}", layer.Longitude0);
+                    writer.WriteLine("{0}", lat0);
+                }
+            }
         }
 
         public static BitmapPalette CreateGradientPalette(Color lowcolor, Color highcolor, Color noValueColor, int intervals = 256) {
