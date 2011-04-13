@@ -54,6 +54,10 @@ namespace BioLink.Client.Utilities {
             CleanUp();
         }
 
+
+        public static void Attach(string projFilename) {
+            _filenames.Add(projFilename);
+        }
     }
 
     public class KeyedObjectTempFileManager<T> : IDisposable {

@@ -78,7 +78,21 @@ namespace BioLink.Client.Maps {
         }
     }
 
-    public class VectorLayerViewModel : ViewModelBase {
+
+
+    public class RasterLayerViewModel : LayerViewModel {
+        
+
+        public RasterLayerViewModel(MyGdalRasterLayer model) : base(model) { }
+
+        public string Name {
+            get { return Model.LayerName; }
+        }
+
+
+    }
+
+    public class VectorLayerViewModel : LayerViewModel {
 
         private System.Drawing.Pen _Line;
         private bool _drawOutline;
@@ -86,8 +100,7 @@ namespace BioLink.Client.Maps {
         private System.Drawing.Color _fillColor;
         private HatchStyle? _hatchStyle;
 
-        public VectorLayerViewModel(VectorLayer model) {
-            Model = model;
+        public VectorLayerViewModel(VectorLayer model) : base(model) {            
             ConnectionID = model.DataSource.ConnectionID;
 
             _fillColor = GraphicsUtils.GetColorFromBrush(model.Style.Fill);
@@ -126,12 +139,6 @@ namespace BioLink.Client.Maps {
         public System.Drawing.Image Symbol {
             get { return _symbol; }
             set { SetProperty("Symbol", ref _symbol, value); }
-        }
-
-        public ILayer Model { get; private set; }
-
-        public override int? ObjectID {
-            get { return null; }
         }
 
     }

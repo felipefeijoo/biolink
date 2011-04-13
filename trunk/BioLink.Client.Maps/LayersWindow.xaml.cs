@@ -33,15 +33,17 @@ namespace BioLink.Client.Maps {
         #endregion
 
         private MapControl _mapControl;
-        private ObservableCollection<VectorLayerViewModel> _model;
+        private ObservableCollection<LayerViewModel> _model;
 
         public LayersWindow(MapControl mapControl) {
             InitializeComponent();
             _mapControl = mapControl;            
-            _model = new ObservableCollection<VectorLayerViewModel>();
+            _model = new ObservableCollection<LayerViewModel>();
             foreach (ILayer layer in mapControl.mapBox.Map.Layers) {
                 if (layer is VectorLayer) {
                     _model.Insert(0, new VectorLayerViewModel(layer as VectorLayer));
+                } else if (layer is MyGdalRasterLayer) {
+                    _model.Insert(0, new RasterLayerViewModel(layer as MyGdalRasterLayer));
                 }
             }
 
@@ -55,18 +57,19 @@ namespace BioLink.Client.Maps {
         public System.Drawing.Color MapBackColor { get; set; }
 
         private void lstLayers_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            var selected = lstLayers.SelectedItem as VectorLayerViewModel;
+            var selected = lstLayers.SelectedItem as LayerViewModel;
             grpLayer.IsEnabled = (selected != null);
-            if (selected != null) {
-                if (selected.Symbol != null) {
-                    var info = selected.Symbol.Tag as SymbolInfo;
+            if (selected != null && selected is VectorLayerViewModel) {
+                var vector = selected as VectorLayerViewModel;
+                if (vector.Symbol != null) {
+                    var info = vector.Tag as SymbolInfo;
                     var control = new PointOptionsControl(info);                    
                     control.ValuesChanged += new Action<PointOptionsControl>((ctl) => {
-                        selected.Symbol = MapSymbolGenerator.GetSymbol(ctl);
+                        vector.Symbol = MapSymbolGenerator.GetSymbol(ctl);
                     });
                     grpLayer.Content = control;
                 } else {                    
-                    grpLayer.Content = new VectorOptionsControl(selected);
+                    grpLayer.Content = new VectorOptionsControl(vector);
                 }
             } else {
                 grpLayer.Content = null;
@@ -91,14 +94,14 @@ namespace BioLink.Client.Maps {
                     if (layer is VectorLayer) {
                         var vl = layer as VectorLayer;
                         if (vl.Style.Symbol != null) {
-                            vl.Style.Symbol = m.Symbol;
+                            vl.Style.Symbol = (m as VectorLayerViewModel).Symbol;
                         } else {
-                            vl.Style.Fill = m.FillBrush();
-                            vl.Style.EnableOutline = m.DrawOutline;
+                            vl.Style.Fill = (m as VectorLayerViewModel).FillBrush();
+                            vl.Style.EnableOutline = (m as VectorLayerViewModel).DrawOutline;
                         }
                     }
-                } else {                    
-                    throw new Exception("Could not load layer " + m.ConnectionID + "!");
+                } else {
+                    throw new Exception("Could not load layer " + (m as VectorLayerViewModel).ConnectionID + "!");
                 }
             }
 
@@ -127,14 +130,14 @@ namespace BioLink.Client.Maps {
         }
 
         private void RemoveSelectedLayer() {
-            var vm = lstLayers.SelectedItem as VectorLayerViewModel;
+            var vm = lstLayers.SelectedItem as LayerViewModel;
             if (vm != null) {
                 _model.Remove(vm);
             }
         }
 
         private void MoveLayerUp() {
-            var vm = lstLayers.SelectedItem as VectorLayerViewModel;
+            var vm = lstLayers.SelectedItem as LayerViewModel;
             if (vm != null) {
                 int index = _model.IndexOf(vm);
                 if (_model.IndexOf(vm) > 0) {
@@ -146,7 +149,7 @@ namespace BioLink.Client.Maps {
         }
 
         private void MoveLayerDown() {
-            var vm = lstLayers.SelectedItem as VectorLayerViewModel;
+            var vm = lstLayers.SelectedItem as LayerViewModel;
             if (vm != null) {
                 int index = _model.IndexOf(vm);
                 if (_model.IndexOf(vm) < _model.Count - 1) {

@@ -78,18 +78,19 @@ namespace BioLink.Client.Tools {
         }
 
         private void button1_Click(object sender, RoutedEventArgs e) {
-            var image  = LayerImageGenerator.GetImageForLayer((GridLayer) _layerModel[1].Model, Colors.White, Colors.Red, Colors.Blue);
-            img.Source = image;
 
-            BitmapEncoder encoder = new PngBitmapEncoder();
-            encoder.Frames.Add(BitmapFrame.Create(image));
-            using (FileStream fs = new FileStream("c:/zz/tempraster.png", FileMode.OpenOrCreate, FileAccess.Write)) {
-                encoder.Save(fs);
+
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e) {
+            var selected = lstLayers.SelectedItem as EnvironmentalLayerViewModel;
+            if (selected != null && selected.Model is GridLayer) {
+                var grid = selected.Model as GridLayer;
+                var filename = LayerImageGenerator.GenerateTemporaryImageFile(grid, Colors.White, Colors.Black, Colors.Transparent);
+                var map = PluginManager.Instance.GetMap();
+                map.Show();
+                map.AddRasterLayer(filename);
             }
-
-            var map = PluginManager.Instance.GetMap();
-            map.Show();
-            map.AddRasterLayer("c:/zz/tempraster.png");
         }
     }
 }
