@@ -120,7 +120,7 @@ Section /o -un.Main UNSEC0000
     Delete /REBOOTOK $INSTDIR\*.dll
     Delete /REBOOTOK $INSTDIR\*.exe
     Delete /REBOOTOK $INSTDIR\*.config
-    RMDir /REBOOTOK /r $INSTDIR\Plugins
+    RMDir /REBOOTOK /r $INSTDIR\fwtools
     
     DeleteRegValue HKLM "${REGKEY}\Components" Main
 SectionEnd
