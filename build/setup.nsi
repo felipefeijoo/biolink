@@ -88,7 +88,7 @@ Section -post SEC0001
     SetOutPath $INSTDIR
     WriteUninstaller $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application    
-    SetOutPath $INSTDIR\
+    SetOutPath $INSTDIR
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk" $INSTDIR\uninstall.exe
     CreateShortCut "$SMPROGRAMS\$StartMenuGroup\BioLink.lnk" $INSTDIR\BiolinkApplication.exe
     !insertmacro MUI_STARTMENU_WRITE_END
