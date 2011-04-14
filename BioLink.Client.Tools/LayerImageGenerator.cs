@@ -37,7 +37,7 @@ namespace BioLink.Client.Tools {
                             index = 0;
                         }
                     }
-                    array[(((layer.Height - 1) - y) * layer.Width) + x] = index;
+                    array[(y * layer.Width) + x] = index;
                 }
             }
 

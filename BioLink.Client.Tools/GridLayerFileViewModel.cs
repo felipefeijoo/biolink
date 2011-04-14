@@ -9,17 +9,21 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Tools {
 
-    public class EnvironmentalLayerViewModel : GenericViewModelBase<IEnvironmentalLayer> {
+    public class GridLayerFileViewModel : ViewModelBase {
 
-        public EnvironmentalLayerViewModel(IEnvironmentalLayer layer) : base(layer, ()=> 0) { }
+        public GridLayerFileViewModel(string filename) {
+            this.Name = filename;
+        }
 
         protected override string RelativeImagePath {
             get { return @"images\GridLayer.png"; }
         }
 
-        public string Name {
-            get { return Model.Name; }
-        }
+        public string Name { get; private set; }
 
+
+        public override int? ObjectID {
+            get { return null; }
+        }
     }
 }

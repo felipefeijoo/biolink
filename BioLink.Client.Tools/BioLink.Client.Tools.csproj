@@ -63,11 +63,12 @@
     <Compile Include="administration\AdministrationControl.xaml.cs">
       <DependentUpon>AdministrationControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DistributionModel.cs" />
     <Compile Include="EditPointWindow.xaml.cs">
       <DependentUpon>EditPointWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="EnvironmentalLayer.cs" />
-    <Compile Include="EnvironmentalLayerViewModel.cs" />
+    <Compile Include="GridLayerFileViewModel.cs" />
     <Compile Include="import\ImportCache.cs" />
     <Compile Include="import\ImportFilterSelection.xaml.cs">
       <DependentUpon>ImportFilterSelection.xaml</DependentUpon>
@@ -113,6 +114,9 @@
     </Compile>
     <Compile Include="PointSetsControl.xaml.cs">
       <DependentUpon>PointSetsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SingleModelOptionsControl.xaml.cs">
+      <DependentUpon>SingleModelOptionsControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="usermanager\PermissionProperties.xaml.cs">
       <DependentUpon>PermissionProperties.xaml</DependentUpon>
@@ -254,6 +258,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="PointSetsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SingleModelOptionsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

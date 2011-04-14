@@ -8,23 +8,63 @@ using System.IO;
 
 namespace BioLink.Client.Tools {
 
-    public interface IEnvironmentalLayer {
-        double GetValueAt(double latitude, double longitude, double @default=0.0);
-        EnvironmentalLayerRange GetRange(double? percentile = null);
-        EnvironmentalLayerRange GetRangeForPoints(IEnumerable<MapPoint> points, double percentile);
-        string Name { get; }
-    }
+    public class GridLayer {
 
-    public abstract class GridLayer : IEnvironmentalLayer {
+        private static Int32 GRD_MAGIC = 0xCAFA;
 
         private double[,] _data = null;
 
-        protected GridLayer(string filename) {
-            _data = LoadImpl(filename);
+        public GridLayer(int width, int height) {
+            Width = width;
+            Height = height;
+            _data = new double[Width, Height];
+        }
+
+        public GridLayer(string filename) {
+            _data = LoadFromGRDFile(filename);
             this.Name = filename;
         }
 
-        protected abstract double[,] LoadImpl(string filename);
+        protected double[,]  LoadFromGRDFile(string filename) {
+
+            double[,] data = null;
+
+            using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read)) {
+                // Buffer the file in a memory stream for performance....
+                byte[] buffer = new byte[fs.Length];
+                fs.Read(buffer, 0, (int)fs.Length);
+                using (var stream = new MemoryStream(buffer)) {
+                    using (BinaryReader reader = new BinaryReader(stream)) {
+                        Int32 magic = reader.ReadInt32();
+                        if (magic != GRD_MAGIC) {
+                            throw new Exception("Bad magic number in GRD file!");
+                        }
+                        Int32 headsize = reader.ReadInt32();
+                        Width = reader.ReadInt32();
+                        Height = reader.ReadInt32();
+                        Longitude0 = reader.ReadDouble();
+                        Latitude0 = reader.ReadDouble();
+                        DeltaLongitude = reader.ReadDouble();
+                        DeltaLatitude = reader.ReadDouble();
+                        NoValueMarker = reader.ReadSingle();
+                        Flags = reader.ReadInt32();
+
+                        // Allocate an array for the data...
+                        data = new double[Width, Height];
+                        for (int row = 0; row < Height; row++) {
+                            for (int col = 0; col < Width; col++) {
+                                // For some reason the raster data is upside down, so fill from the bottom up (maybe a north/south issue?)
+                                data[col, (Height - 1) - row] = reader.ReadSingle();
+                            }
+                        }
+                    }
+                }
+            }
+
+            return data;
+        }
+
+        
 
         public double GetValueAt(double latitude, double longitude, double novalue = 0.0) {
 	        int lngX, lngY;
@@ -45,6 +85,10 @@ namespace BioLink.Client.Tools {
 
         public double GetCellValue(int x, int y) {
             return _data[x, y];
+        }
+
+        public void SetCellValue(int x, int y, double value) {
+            _data[x, y] = value;
         }
 
         public EnvironmentalLayerRange GetRange(double? percentile = null) {
@@ -99,12 +143,24 @@ namespace BioLink.Client.Tools {
             });
         }
 
-        protected void TraverseCells(Action<int, int, double> action) {
+        public void TraverseCells(Action<int, int, double> action) {
             for (int y = 0; y < Height; y++) {
                 for (int x = 0; x < Width; x++) {
                     action(x, y, _data[x, y]);
                 }
             }
+        }
+
+        public bool MatchesResolution(GridLayer other) {
+
+            if (this.Width != other.Width) return false;
+            if (Height != other.Height) return false;
+            if (Latitude0 != other.Latitude0) return false;
+            if (Longitude0 != other.Longitude0) return false;
+            if (DeltaLatitude != other.DeltaLatitude) return false;
+            if (DeltaLongitude != other.DeltaLongitude) return false;
+
+            return true;
         }
 
 
@@ -119,55 +175,10 @@ namespace BioLink.Client.Tools {
         public double DeltaLatitude { get; set; }
         public double DeltaLongitude { get; set; }
         public double NoValueMarker { get; set; }
-        protected Int32 Flags { get; set; }
+        public Int32 Flags { get; set; }
 
         #endregion
 
-    }
-
-    public class GRDGridLayer : GridLayer {
-
-        private static Int32 GRD_MAGIC = 0xCAFA;
-
-        public GRDGridLayer(string filename) : base(filename) { }
-
-        protected override double[,] LoadImpl(string filename) {
-
-            double[,] data = null;
-
-            using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read)) {
-                // Buffer the file in a memory stream for performance....
-                byte[] buffer = new byte[fs.Length];
-                fs.Read(buffer, 0, (int) fs.Length);
-                using (var stream = new MemoryStream(buffer)) {
-                    using (BinaryReader reader = new BinaryReader(stream)) {
-                        Int32 magic = reader.ReadInt32();
-                        if (magic != GRD_MAGIC) {
-                            throw new Exception("Bad magic number in GRD file!");
-                        }
-                        Int32 headsize = reader.ReadInt32();
-                        Width = reader.ReadInt32();
-                        Height = reader.ReadInt32();
-                        Longitude0 = reader.ReadDouble();
-                        Latitude0 = reader.ReadDouble();
-                        DeltaLongitude = reader.ReadDouble();
-                        DeltaLatitude = reader.ReadDouble();
-                        NoValueMarker = reader.ReadSingle();
-                        Flags = reader.ReadInt32();
-
-                        // Allocate an array for the data...
-                        data = new double[Width, Height];
-                        for (int row = 0; row < Height; row++) {
-                            for (int col = 0; col < Width; col++) {
-                                data[col, row] = reader.ReadSingle();
-                            }
-                        }
-                    }
-                }
-            }
-
-            return data;
-        }
     }
 
     class PointValueList {
