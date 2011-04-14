@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:tools="clr-namespace:BioLink.Client.Tools"
-             mc:Ignorable="d" d:DesignHeight="328" d:DesignWidth="543">
+             mc:Ignorable="d" d:DesignHeight="413" d:DesignWidth="551">
     <Grid>
         <Grid.Resources>
             <Style x:Key="hcs" TargetType="{x:Type GridViewColumnHeader}">
@@ -38,7 +38,7 @@
                             </Grid.ColumnDefinitions>
                             <ListBox Name="lstLayers" Margin="6">
                                 <ListBox.Resources>
-                                    <DataTemplate DataType="{x:Type tools:EnvironmentalLayerViewModel}">
+                                    <DataTemplate DataType="{x:Type tools:GridLayerFileViewModel}">
                                         <StackPanel Orientation="Horizontal">
                                             <Image Source="{Binding Path=Icon, Mode=TwoWay}" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None" Margin="2"/>
                                             <TextBlock Text="{Binding Path=Name, Mode=OneWay}" />
@@ -65,9 +65,19 @@
                 </GroupBox>
             </TabItem>
             <TabItem x:Name="tabSingle" Header="_Single model">
-                <Grid>
-                    <Button Content="Button" Height="23" Name="button1" Width="75" Click="button1_Click" Margin="6,6,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" />
-                    <Image Margin="6,35,6,6" x:Name="img" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True" />
+                <Grid x:Name="gridSingle">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="100" />
+                    </Grid.RowDefinitions>                    
+                    <GroupBox Grid.Row="1" Header="Run Model">
+                        <Grid>
+                            <Button Content="_Start" Height="23" Name="btnStart" Width="75" HorizontalAlignment="Left" Margin="6,6,0,0" VerticalAlignment="Top" Click="btnStart_Click" />
+                            <Button Content="Sto_p" Height="23" HorizontalAlignment="Left" Margin="87,6,0,0" Name="btnStop" VerticalAlignment="Top" Width="75" IsEnabled="False" />
+                            <ProgressBar Height="24" Margin="6,47,6,0" Name="progressBar" VerticalAlignment="Top" />
+                            <Label Height="28" Margin="6,24,6,0" Name="lblProgress" VerticalAlignment="Top" />
+                        </Grid>
+                    </GroupBox>
                 </Grid>
             </TabItem>
             <TabItem x:Name="tabRichness" Header="Predicted Species _Richness">

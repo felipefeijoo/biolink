@@ -20,6 +20,13 @@ namespace BioLink.Client.Utilities {
             }
         }
 
+        public static void ForEachIndex<T>(this IEnumerable<T> enumeration, Action<T, int> action) {
+            int index = 0;
+            foreach (T item in enumeration) {
+                action(item, index++);
+            }
+        }
+
         public static void BackgroundInvoke(this DispatcherObject control, Action action) {
             control.Dispatcher.Invoke(DispatcherPriority.Background, action);
         }

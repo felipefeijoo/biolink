@@ -276,6 +276,10 @@ namespace BioLink.Client.Tools {
             }
         }
 
+        public IEnumerable<MapPointSet> PointSets {
+            get { return _model.Select(vm => vm.Model); }
+        }
+
     }
 
     public class PointViewModel : GenericHierarchicalViewModelBase<MapPoint> {
