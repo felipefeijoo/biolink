@@ -1,0 +1,219 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using BioLink.Client.Extensibility;
+using BioLink.Client.Utilities;
+
+
+namespace BioLink.Client.Tools {
+
+    public abstract class DistributionModel : IBioLinkExtension {
+
+        public DistributionModel() {
+        }
+
+        public GridLayer RunModel(IEnumerable<GridLayer> layers, IEnumerable<MapPointSet> pointSets) {
+            GridLayer target = null;
+            var list = new List<GridLayer>();
+            if (layers.Count() > 0) {
+                // The first layer sets the size and resolution of the resulting grid. Subsequent grid layers of different dimensions must be interpolated to fit this size...
+                var first = layers.ElementAt(0);
+                target = new GridLayer(first.Width, first.Height) { DeltaLatitude = first.DeltaLatitude, DeltaLongitude = first.DeltaLongitude, Flags = first.Flags, Latitude0 = first.Latitude0, Longitude0 = first.Longitude0, NoValueMarker = first.NoValueMarker };
+                list.Add(first);
+                for (int i = 1; i < layers.Count(); ++i) {
+                    var layer = layers.ElementAt(i);
+                    if (!first.MatchesResolution(layer)) {
+                        var newlayer = new GridLayer(first.Width, first.Height) { DeltaLatitude = first.DeltaLatitude, DeltaLongitude = first.DeltaLongitude, Flags = first.Flags, Latitude0 = first.Latitude0, Longitude0 = first.Longitude0, NoValueMarker = first.NoValueMarker };
+                        for (int y = 0; y < first.Height; ++y) {
+                            double lat = first.Latitude0 + (y * first.DeltaLatitude);		// Work out Lat. of this cell.
+                            for (int x = 0; x < first.Width; ++x) {
+                                double lon = first.Longitude0 + (x * first.DeltaLongitude); // Work out Long. of this cell.
+                                newlayer.SetCellValue(x,y, layer.GetValueAt(lat, lon, first.NoValueMarker));
+                            }
+                        }
+                        list.Add(newlayer);
+
+                    } else {
+                        list.Add(layer);
+                    }
+                }
+
+                // now get the points ready...
+                var points = new ModelPointSet();
+                foreach (MapPointSet set in pointSets) {
+                    foreach (MapPoint p in set) {	                
+	                    double fudge = (double) ( first.DeltaLatitude / 2.0 );
+
+	                    var x = Math.Abs( (int) ((p.Longitude - ( first.Longitude0 - fudge) ) / first.DeltaLongitude));
+	                    var y = Math.Abs( (int) ((p.Latitude - ( first.Latitude0 - fudge) ) / first.DeltaLatitude));
+
+                        if (!points.ContainsCell(x, y)) {
+                            points.AddPoint(new ModelPoint { X = p.Longitude, Y = p.Latitude, CellX = x, CellY = y });
+                        }
+                        
+                    }
+                }
+
+                RunModelImpl(target, layers, points);
+            }
+
+            return target;
+        }
+
+        protected abstract void RunModelImpl(GridLayer targetLayer, IEnumerable<GridLayer> layers, ModelPointSet points);
+
+        public void Dispose() { }
+
+        public abstract string Name { get; }
+    }
+
+    public class GowerMetricDistributionModel : DistributionModel {
+
+        protected override void RunModelImpl(GridLayer targetLayer, IEnumerable<GridLayer> layers, ModelPointSet points) {
+
+            // Preprocess points...
+            layers.ForEachIndex((layer, i) => {
+                foreach (ModelPoint p in points.Points) {
+                    if (p.UsePoint) {
+                        var value = layer.GetValueAt(p.Y, p.X, targetLayer.NoValueMarker);
+                        p.SetValueForLayer(i, value);
+                        if (value == layer.NoValueMarker) {
+                            p.UsePoint = false;
+                        }
+                    }
+                }
+            });
+
+            double[] range = new double[layers.Count()];
+            // Find ranges;
+            layers.ForEachIndex((layer, layerIndex) => {
+                bool rangeSet = false;
+                double min = 0;
+                double max = 0;
+
+                points.Points.ForEach((p) => {
+                    if (p.UsePoint) {
+                        var value = p.GetValueForLayer(layerIndex).Value;
+                        if (!rangeSet) {
+                            min = value;
+                            max = value;
+                            rangeSet = true;
+                        } else {
+                            if (value < min) {
+                                min = value;
+                            } else if (value > max) {
+                                max = value;
+                            }
+                        }
+                    }
+                });
+
+                var tmp = Math.Abs(max - min);
+                range[layerIndex] = tmp == 0 ? 1 : tmp;                
+            });
+
+            targetLayer.TraverseCells((x, y, value) => {
+
+
+                var fMinDist = targetLayer.NoValueMarker;
+                var minSet = false;
+                points.Points.ForEach((p) => {
+                    double fdist = 0;
+                    
+                    if (p.UsePoint) {
+                        layers.ForEachIndex((layer, layerIndex) => {
+                            var fVal = p.GetValueForLayer(layerIndex).Value;
+                            var fCellVal = layer.GetCellValue(x, y);
+                            if (fCellVal == layer.NoValueMarker) {
+                                fMinDist = targetLayer.NoValueMarker;
+                                targetLayer.SetCellValue(x, y, fMinDist);
+                                return;
+                            }
+                            fdist = fdist + (Math.Abs(fCellVal - fVal) / range[layerIndex]);                                
+                        });
+
+                        fdist = fdist / layers.Count();
+                        if (!minSet) {
+                            fMinDist = fdist;
+                            minSet = true;
+                        } else {
+                            if (fdist < fMinDist) {
+                                fMinDist = fdist;
+                            }
+                        }
+                    }
+                });
+
+                fMinDist = (1 - fMinDist) * 100;
+
+                targetLayer.SetCellValue(x, y, fMinDist);
+            });
+        }
+
+        public override string Name {
+            get { return "Gower Metric (DOMAIN)"; }
+        }
+
+    }
+
+    public class BoxCarDistributionModel : DistributionModel {
+
+        protected override void RunModelImpl(GridLayer targetLayer, IEnumerable<GridLayer> layers, ModelPointSet points) {
+            throw new NotImplementedException();
+        }
+
+        public override string Name {
+            get { return "Boxcar (BIOCLIM)"; }
+        }
+
+    }
+
+
+    public class ModelPoint {
+
+        public ModelPoint() {
+            UsePoint = true;
+        }
+
+        private Dictionary<int, double> _values = new Dictionary<int,double>();
+
+        public double X { get; set; }
+        public double Y { get; set; }
+        public int CellX { get; set; }
+        public int CellY { get; set; }
+        public bool UsePoint { get; set; }
+
+        public void SetValueForLayer(int index, double value) {
+            _values[index] = value;
+        }
+
+        public double? GetValueForLayer(int index) {
+            if (_values.ContainsKey(index)) {
+                return _values[index];
+            }
+
+            return null;
+        }
+    }
+
+    public class ModelPointSet {
+
+        private List<ModelPoint> _points = new List<ModelPoint>();
+
+        public void AddPoint(ModelPoint p) {
+            _points.Add(p);            
+        }
+
+        public IEnumerable<ModelPoint> Points {
+            get { return _points;  }
+        }
+
+        public bool ContainsCell(int x, int y) {
+            return _points.FirstOrDefault((p) => { return (p.CellX == x) && (p.CellY == y); }) != null;
+        }
+
+    }
+
+
+}
