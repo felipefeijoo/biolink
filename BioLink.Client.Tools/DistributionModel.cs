@@ -42,14 +42,19 @@ namespace BioLink.Client.Tools {
                 // now get the points ready...
                 var points = new ModelPointSet();
                 foreach (MapPointSet set in pointSets) {
-                    foreach (MapPoint p in set) {	                
+                    foreach (MapPoint p in set) {
+
+                        if (p.Latitude == 0 && p.Longitude == 0) {
+                            continue;
+                        }
+
 	                    double fudge = (double) ( first.DeltaLatitude / 2.0 );
 
 	                    var x = Math.Abs( (int) ((p.Longitude - ( first.Longitude0 - fudge) ) / first.DeltaLongitude));
 	                    var y = Math.Abs( (int) ((p.Latitude - ( first.Latitude0 - fudge) ) / first.DeltaLatitude));
 
                         if (!points.ContainsCell(x, y)) {
-                            points.AddPoint(new ModelPoint { X = p.Longitude, Y = p.Latitude, CellX = x, CellY = y });
+                            points.AddPoint(new ModelPoint(layers.Count()) { X = p.Longitude, Y = p.Latitude, CellX = x, CellY = y });
                         }
                         
                     }
@@ -72,16 +77,16 @@ namespace BioLink.Client.Tools {
 
         protected override void RunModelImpl(GridLayer targetLayer, IEnumerable<GridLayer> layers, ModelPointSet points) {
 
+            int layerCount = layers.Count();
+
+            double noValue = targetLayer.NoValueMarker;
+
             // Preprocess points...
             layers.ForEachIndex((layer, i) => {
-                foreach (ModelPoint p in points.Points) {
-                    if (p.UsePoint) {
-                        var value = layer.GetValueAt(p.Y, p.X, targetLayer.NoValueMarker);
-                        p.SetValueForLayer(i, value);
-                        if (value == layer.NoValueMarker) {
-                            p.UsePoint = false;
-                        }
-                    }
+                foreach (ModelPoint p in points.Points) {                    
+                    var value = layer.GetValueAt(p.Y, p.X, noValue);
+                    p.SetValueForLayer(i, value);
+                    p.UsePoint = value != noValue;
                 }
             });
 
@@ -94,7 +99,7 @@ namespace BioLink.Client.Tools {
 
                 points.Points.ForEach((p) => {
                     if (p.UsePoint) {
-                        var value = p.GetValueForLayer(layerIndex).Value;
+                        var value = p.GetValueForLayer(layerIndex);
                         if (!rangeSet) {
                             min = value;
                             max = value;
@@ -113,42 +118,48 @@ namespace BioLink.Client.Tools {
                 range[layerIndex] = tmp == 0 ? 1 : tmp;                
             });
 
-            targetLayer.TraverseCells((x, y, value) => {
+            int height = targetLayer.Height;
+            int width = targetLayer.Width;
 
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    var fMinDist = noValue;
+                    var minSet = false;
 
-                var fMinDist = targetLayer.NoValueMarker;
-                var minSet = false;
-                points.Points.ForEach((p) => {
-                    double fdist = 0;
-                    
-                    if (p.UsePoint) {
-                        layers.ForEachIndex((layer, layerIndex) => {
-                            var fVal = p.GetValueForLayer(layerIndex).Value;
-                            var fCellVal = layer.GetCellValue(x, y);
-                            if (fCellVal == layer.NoValueMarker) {
-                                fMinDist = targetLayer.NoValueMarker;
-                                targetLayer.SetCellValue(x, y, fMinDist);
-                                return;
-                            }
-                            fdist = fdist + (Math.Abs(fCellVal - fVal) / range[layerIndex]);                                
-                        });
+                    foreach (ModelPoint p in points.Points) {
+                        double fdist = 0;
 
-                        fdist = fdist / layers.Count();
-                        if (!minSet) {
-                            fMinDist = fdist;
-                            minSet = true;
-                        } else {
-                            if (fdist < fMinDist) {
+                        if (p.UsePoint) {
+                            for (int layerIndex = 0; layerIndex < layerCount; layerIndex++) {
+
+                                var layer = layers.ElementAt(layerIndex);
+
+                                var fVal = p.GetValueForLayer(layerIndex);
+                                var fCellVal = layer.GetCellValue(x, y);
+                                if (fCellVal == noValue) {                                    
+                                    fMinDist = noValue;                                    
+                                    goto SetPoint;                                    
+                                }
+                                fdist = fdist + (Math.Abs(fCellVal - fVal) / range[layerIndex]);
+                            };
+
+                            fdist = fdist / layers.Count();
+                            if (!minSet) {
                                 fMinDist = fdist;
+                                minSet = true;
+                            } else {
+                                if (fdist < fMinDist) {
+                                    fMinDist = fdist;
+                                }
                             }
                         }
                     }
-                });
 
-                fMinDist = (1 - fMinDist) * 100;
-
-                targetLayer.SetCellValue(x, y, fMinDist);
-            });
+                    fMinDist = (1.0 - fMinDist) * 100.0;
+                SetPoint:
+                    targetLayer.SetCellValue(x, y, fMinDist);
+                }
+            }
         }
 
         public override string Name {
@@ -172,11 +183,12 @@ namespace BioLink.Client.Tools {
 
     public class ModelPoint {
 
-        public ModelPoint() {
-            UsePoint = true;
-        }
+        private double[] _layerValues;
 
-        private Dictionary<int, double> _values = new Dictionary<int,double>();
+        public ModelPoint(int layerCount) {
+            UsePoint = true;
+            _layerValues = new double[layerCount];
+        }
 
         public double X { get; set; }
         public double Y { get; set; }
@@ -185,15 +197,11 @@ namespace BioLink.Client.Tools {
         public bool UsePoint { get; set; }
 
         public void SetValueForLayer(int index, double value) {
-            _values[index] = value;
+            _layerValues[index] = value;
         }
 
-        public double? GetValueForLayer(int index) {
-            if (_values.ContainsKey(index)) {
-                return _values[index];
-            }
-
-            return null;
+        public double GetValueForLayer(int index) {
+                return _layerValues[index];
         }
     }
 

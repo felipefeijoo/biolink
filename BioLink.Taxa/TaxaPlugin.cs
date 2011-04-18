@@ -186,6 +186,18 @@ namespace BioLink.Client.Taxa {
                 (_explorer.Content as TaxonExplorer).ShowTaxonDetails(objectID);
             }
         }
+
+        public override T GetAdaptorForPinnable<T>(PinnableObject pinnable) {
+            if (pinnable.LookupType == LookupType.Taxon) {
+                if (typeof(T) == typeof(IMapPointSetGenerator)) {
+                    var taxon = Service.GetTaxon(pinnable.ObjectID);
+                    object generator = new DelegatingPointSetGenerator<Taxon>(_explorer.ContentControl.GenerateSpecimenPointSetWithOptions, taxon);
+                    return (T) generator;
+                }
+            }
+
+            return base.GetAdaptorForPinnable<T>(pinnable);
+        }
     }
 
     public delegate void TaxonViewModelAction(TaxonViewModel taxon);

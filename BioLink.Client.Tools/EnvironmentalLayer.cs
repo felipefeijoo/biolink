@@ -25,6 +25,29 @@ namespace BioLink.Client.Tools {
             this.Name = filename;
         }
 
+        internal void SaveToGRDFile(string filename) {
+            using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.Write)) {
+                using (var writer = new BinaryWriter(fs, Encoding.ASCII)) {                    
+                    writer.Write((Int32) GRD_MAGIC);
+                    writer.Write((Int32)0x38); // header size
+                    writer.Write(Width);
+                    writer.Write(Height);
+                    writer.Write(Longitude0);
+                    writer.Write(Latitude0);
+                    writer.Write(DeltaLongitude);
+                    writer.Write(DeltaLatitude);
+                    writer.Write(NoValueMarker);
+                    writer.Write(Flags);
+                    for (int row = 0; row < Height; row++) {
+                        for (int col = 0; col < Width; col++) {
+                            writer.Write((float) _data[col, row]);
+                        }
+                    }
+                }
+            }
+
+        }
+
         protected double[,]  LoadFromGRDFile(string filename) {
 
             double[,] data = null;
@@ -53,8 +76,7 @@ namespace BioLink.Client.Tools {
                         data = new double[Width, Height];
                         for (int row = 0; row < Height; row++) {
                             for (int col = 0; col < Width; col++) {
-                                // For some reason the raster data is upside down, so fill from the bottom up (maybe a north/south issue?)
-                                data[col, (Height - 1) - row] = reader.ReadSingle();
+                                data[col, row] = reader.ReadSingle();
                             }
                         }
                     }
@@ -71,7 +93,7 @@ namespace BioLink.Client.Tools {
 	        double fudge = (double) ( DeltaLatitude / 2.0 );
 
 	        lngX = (int) ((longitude - ( Longitude0 - fudge) ) / DeltaLongitude);
-	        lngY = (int) ((latitude - ( Latitude0) ) / DeltaLatitude);
+	        lngY = (int) ((latitude - Latitude0) / DeltaLatitude);
 
             if ((lngX >= Width) || (lngY >= Height)) {
                 return novalue;

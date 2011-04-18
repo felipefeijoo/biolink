@@ -53,7 +53,7 @@
             <ext:CustomColorPicker Grid.Row="4" Grid.Column="3" x:Name="ctlHighColor" Width="40" HorizontalAlignment="Left" VerticalAlignment="Center" SelectedColor="Red" />
 
             <Label Grid.Row="5" Grid.Column="2" Content="No Value colour:" />
-            <ext:CustomColorPicker Grid.Row="5" Grid.Column="3" x:Name="ctlNoValColor" Width="40" HorizontalAlignment="Left" VerticalAlignment="Center" SelectedColor="Transparent" />
+            <ext:CustomColorPicker Grid.Row="5" Grid.Column="3" x:Name="ctlNoValColor" Width="40" HorizontalAlignment="Left" VerticalAlignment="Center" SelectedColor="White" />
 
         </Grid>
         

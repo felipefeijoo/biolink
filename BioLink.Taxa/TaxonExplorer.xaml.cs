@@ -500,7 +500,7 @@ namespace BioLink.Client.Taxa {
             if (taxon != null) {
                 DataObject data = new DataObject("Taxon", taxon);
                 data.SetData(PinnableObject.DRAG_FORMAT_NAME, Owner.CreatePinnableTaxon(taxon.TaxaID.Value));
-                data.SetData(MapPointSetGenerator.DRAG_FORMAT_NAME, new DelegatingPointSetGenerator<Taxon>(GenerateSpecimenPointSetWithOptions, taxon.Taxon));
+//                 data.SetData(MapPointSetGenerator.DRAG_FORMAT_NAME, new DelegatingPointSetGenerator<Taxon>(GenerateSpecimenPointSetWithOptions, taxon.Taxon));
 
                 if (!IsUnlocked) {
                     lblHeader.Visibility = Visibility.Visible;
@@ -606,8 +606,8 @@ namespace BioLink.Client.Taxa {
 
         #endregion
 
-        protected MapPointSet GenerateSpecimenPointSetWithOptions(Taxon t) {
-            var frm = new PointSetOptionsWindow(t.TaxaFullName, new DelegatingPointSetGenerator<Taxon>(GenerateSpecimenPointSet, t));
+        internal MapPointSet GenerateSpecimenPointSetWithOptions(Taxon taxon) {            
+            var frm = new PointSetOptionsWindow(taxon.TaxaFullName, new DelegatingPointSetGenerator<Taxon>(GenerateSpecimenPointSet, taxon));
             frm.Owner = this.FindParentWindow();
             if (frm.ShowDialog() == true) {
                 return frm.Points;
