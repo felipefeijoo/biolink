@@ -26,9 +26,7 @@ namespace BioLink.Client.Tools {
             var models = PluginManager.Instance.GetExtensionsOfType<DistributionModel>();
             cmbModelType.ItemsSource = models;
             cmbModelType.SelectedIndex = 0;
-
-            txtFilename.Text = TempFileManager.NewTempFilename("grd");
-
+            txtFilename.Text = TempFileManager.NewTempFilename("grd", "model");
         }
     }
 }

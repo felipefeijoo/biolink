@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
 using System.Collections;
+using System.Text.RegularExpressions;
 
 namespace BioLink.Client.Utilities {
 
@@ -195,6 +196,60 @@ namespace BioLink.Client.Utilities {
             return sb.ToString();
         }
 
+        public static int ReadRegexInt(this StreamReader reader, string pattern) {
+            return ReadRegex<int>(reader, pattern, (str) => {
+                return Int32.Parse(str);
+            });
+        }
+
+        public static double ReadRegexDouble(this StreamReader reader, string pattern) {
+            return ReadRegex<double>(reader, pattern, (str) => {
+                return Double.Parse(str);
+            });
+        }
+
+        public static T ReadRegex<T>(this StreamReader reader, string pattern, Func<string, T> convert) {
+            var str = ReadRegex(reader, pattern);
+            if (str != null) {
+                return convert(str);
+            }
+            throw new Exception(string.Format("Failed to read data in expected format: {0}", pattern));
+        }
+
+        public static double ReadDouble(this StreamReader reader) {
+            var valid = "0123456789.-";
+            int ch;
+            var b = new StringBuilder();
+            while ((ch = reader.Read()) >= 0 && valid.IndexOf((char) ch) >= 0) {
+                b.Append((char)ch);
+            }
+            if (ch == 10) {
+                reader.Read();
+                return ReadDouble(reader);
+            }
+            double ret = 0;
+            if (double.TryParse(b.ToString(), out ret)) {
+                return ret;
+            }
+            throw new Exception("Failed to read double from stream!");
+        }
+
+        public static string ReadRegex(this StreamReader reader, string pattern) {
+
+            var line = reader.ReadLine();
+            if (line == null) {
+                return null;
+            }
+
+            var regex = new Regex(pattern);
+            var m = regex.Match(line);
+            if (m.Success) {
+                return m.Groups[1].Value;
+            }
+
+            // failure
+            return null;
+        }
 
     }
 

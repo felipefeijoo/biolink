@@ -5,6 +5,7 @@ using System.Text;
 using BioLink.Client.Extensibility;
 using BioLink.Client.Utilities;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace BioLink.Client.Tools {
 
@@ -18,14 +19,68 @@ namespace BioLink.Client.Tools {
             Width = width;
             Height = height;
             _data = new double[Width, Height];
+            this.Name = "model";
         }
 
         public GridLayer(string filename) {
-            _data = LoadFromGRDFile(filename);
-            this.Name = filename;
+            var f = new FileInfo(filename);
+            if (f.Exists) {
+                if (f.Extension.Equals(".grd", StringComparison.CurrentCultureIgnoreCase)) {
+                    LoadFromGRDFile(filename);
+                } else if (f.Extension.Equals(".asc", StringComparison.CurrentCultureIgnoreCase)) {
+                    LoadFromASCIIFile(filename);
+                } else {
+                    throw new Exception("Unrecognized file extension!");
+                }
+                this.Name = filename;
+            } else {
+                throw new Exception("Could not open file: " + filename);
+            }
         }
 
-        internal void SaveToGRDFile(string filename) {
+        public void SaveToASCIIFile(string filename) {
+            using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.Write)) {
+                using (var writer = new StreamWriter(fs, Encoding.ASCII)) {
+                    writer.Write("ncols {0}\n", Width);
+                    writer.Write("nrows {0}\n", Height);
+                    writer.Write("xllcorner {0:#.######}\n", Longitude0);
+                    writer.Write("yllcorner {0:#.######}\n", Latitude0);
+                    writer.Write("cellsize {0:#.######}\n", DeltaLatitude);
+                    writer.Write("NODATA_value {0:#.######}\n", NoValueMarker);
+
+                    for (int lngRow = (Height - 1); lngRow >= 0; --lngRow) {
+                        for (int lngCol = 0; lngCol < Width; ++lngCol) {
+                            writer.Write("{0:#.######} ", _data[lngCol, lngRow]);
+                        }
+                        writer.Write("\n");
+                    }
+                }
+            }
+        }
+
+        public void LoadFromASCIIFile(string filename) {
+            using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read)) {
+                using (var reader = new StreamReader(fs)) {
+                    Width = reader.ReadRegexInt(@"^ncols\s+(\d+)\s*$");
+                    Height = reader.ReadRegexInt(@"^nrows\s+(\d+)\s*$");
+                    Longitude0 = reader.ReadRegexDouble(@"^xllcorner\s+([-\d.]+)\s*$");
+                    Latitude0 = reader.ReadRegexDouble(@"^yllcorner\s+([-\d.]+)\s*$");
+                    DeltaLatitude = reader.ReadRegexDouble(@"^cellsize\s+([-\d.]+)\s*$");
+                    NoValueMarker = reader.ReadRegexDouble(@"^NODATA_value\s+([-\d.]+)\s*$");
+                    DeltaLongitude = DeltaLatitude;
+
+                    _data = new double[Width, Height];
+                    for (int y = Height - 1; y >= 0; --y) {
+                        for (int x = 0; x < Width; ++x) {
+                             _data[x,y] = reader.ReadDouble();
+                        }
+                    }
+                }
+            }
+        }
+
+
+        public void SaveToGRDFile(string filename) {
             using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.Write)) {
                 using (var writer = new BinaryWriter(fs, Encoding.ASCII)) {                    
                     writer.Write((Int32) GRD_MAGIC);
@@ -45,10 +100,9 @@ namespace BioLink.Client.Tools {
                     }
                 }
             }
-
         }
 
-        protected double[,]  LoadFromGRDFile(string filename) {
+        protected void LoadFromGRDFile(string filename) {
 
             double[,] data = null;
 
@@ -83,7 +137,7 @@ namespace BioLink.Client.Tools {
                 }
             }
 
-            return data;
+            _data = data;
         }
 
         
@@ -200,7 +254,6 @@ namespace BioLink.Client.Tools {
         public Int32 Flags { get; set; }
 
         #endregion
-
     }
 
     class PointValueList {

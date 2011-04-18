@@ -32,11 +32,11 @@
                         </Grid.RowDefinitions>
                         
                         <Grid>
-                            <Grid.ColumnDefinitions> 
+                            <!--<Grid.ColumnDefinitions> 
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="120" />
-                            </Grid.ColumnDefinitions>
-                            <ListBox Name="lstLayers" Margin="6">
+                            </Grid.ColumnDefinitions>-->
+                            <ListBox Name="lstLayers" Margin="6" MouseRightButtonUp="lstLayers_MouseRightButtonUp">
                                 <ListBox.Resources>
                                     <DataTemplate DataType="{x:Type tools:GridLayerFileViewModel}">
                                         <StackPanel Orientation="Horizontal">
@@ -47,14 +47,14 @@
                                 </ListBox.Resources>
                             </ListBox>
 
-                            <StackPanel Grid.Column="1" Orientation="Vertical" Margin="6">
+                            <!--<StackPanel Grid.Column="1" Orientation="Vertical" Margin="6">
                                 <StackPanel.Resources>
                                     <Style TargetType="{x:Type Button}">
                                         <Setter Property="Margin" Value="0,0,0,2"/>
                                     </Style>
                                 </StackPanel.Resources>
                                 <Button Content="_View in map..." Click="Button_Click" />
-                            </StackPanel>
+                            </StackPanel>-->
                         </Grid>
 
                         <Grid Grid.Row="1" Background="{x:Static SystemColors.ControlBrush}">

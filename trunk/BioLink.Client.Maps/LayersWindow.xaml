@@ -48,7 +48,7 @@
             </Grid.ColumnDefinitions>    
             <ListBox Grid.Column="0" Name="lstLayers" Margin="5" SelectionChanged="lstLayers_SelectionChanged">
                 <ListBox.Resources>
-                    <DataTemplate DataType="{x:Type src:VectorLayerViewModel}">
+                    <DataTemplate DataType="{x:Type src:LayerViewModel}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{Binding Name}" />
                         </StackPanel>

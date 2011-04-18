@@ -69,6 +69,9 @@
     </Compile>
     <Compile Include="EnvironmentalLayer.cs" />
     <Compile Include="GridLayerFileViewModel.cs" />
+    <Compile Include="GridLayerProperties.xaml.cs">
+      <DependentUpon>GridLayerProperties.xaml</DependentUpon>
+    </Compile>
     <Compile Include="import\ImportCache.cs" />
     <Compile Include="import\ImportFilterSelection.xaml.cs">
       <DependentUpon>ImportFilterSelection.xaml</DependentUpon>
@@ -206,6 +209,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="EditPointWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GridLayerProperties.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

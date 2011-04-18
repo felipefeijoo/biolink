@@ -16,14 +16,20 @@ namespace BioLink.Client.Utilities {
         static TempFileManager() {
         }
 
-        public static string NewTempFilename(string extension) {
+        public static string NewTempFilename(string extension, string prefix = "") {
             if (!extension.StartsWith(".")) {
                 extension = "." + extension;
             }
-            var filename = System.IO.Path.GetTempPath() + Guid.NewGuid().ToString() + extension;
+
+            Func<string> generateUniqueName = () => {
+                var guid = Guid.NewGuid().ToString();
+                return string.Format("{0}{1}-{2}{3}", System.IO.Path.GetTempPath(), prefix, guid.Substring(guid.LastIndexOf("-") + 1), extension);
+            };            
+            string filename;
+            while (File.Exists(filename = generateUniqueName())) { 
+            }
 
             _filenames.Add(filename);
-
             return filename;
         }
 
