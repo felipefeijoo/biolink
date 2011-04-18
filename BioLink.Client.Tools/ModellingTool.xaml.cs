@@ -23,7 +23,7 @@ namespace BioLink.Client.Tools {
     /// <summary>
     /// Interaction logic for ModellingTool.xaml
     /// </summary>
-    public partial class ModellingTool : UserControl, IDisposable {
+    public partial class ModellingTool : UserControl, IDisposable, IProgressObserver {
 
         private ObservableCollection<GridLayerFileViewModel> _layerFilenames;
         private SingleModelOptionsControl _singleModelOptions;
@@ -59,7 +59,7 @@ namespace BioLink.Client.Tools {
 
         private void AddFile() {
             var frm = new OpenFileDialog();
-            frm.Filter = "GRD files (*.grd)|*.grd|All files (*.*)|*.*";
+            frm.Filter = "GRD files (*.grd)|*.grd|ASCII Grid files (*.asc)|*.asc|All files (*.*)|*.*";
             frm.Multiselect = true;
             if (frm.ShowDialog(this.FindParentWindow()) == true) {
                 foreach (string filename in frm.FileNames) {
@@ -98,7 +98,13 @@ namespace BioLink.Client.Tools {
             double cutoff = double.Parse(_singleModelOptions.txtCutOff.Text);
             int intervals = Int32.Parse(_singleModelOptions.txtIntervals.Text);
 
-            var filename = LayerImageGenerator.GenerateTemporaryImageFile(grid, _singleModelOptions.ctlLowColor.SelectedColor, _singleModelOptions.ctlHighColor.SelectedColor, _singleModelOptions.ctlNoValColor.SelectedColor, cutoff, intervals);
+            
+            var prefix = grid.Name;
+            FileInfo f = new FileInfo(grid.Name);
+            if (f.Exists) {
+                prefix = f.Name.Substring(0, f.Name.LastIndexOf("."));
+            }
+            var filename = LayerImageGenerator.GenerateTemporaryImageFile(grid, prefix, _singleModelOptions.ctlLowColor.SelectedColor, _singleModelOptions.ctlHighColor.SelectedColor, _singleModelOptions.ctlNoValColor.SelectedColor, cutoff, intervals);
             var map = PluginManager.Instance.GetMap();
             map.Show();
             map.AddRasterLayer(filename);
@@ -133,6 +139,9 @@ namespace BioLink.Client.Tools {
 
             var model = _singleModelOptions.cmbModelType.SelectedItem as DistributionModel;
             if (model != null) {
+
+                model.ProgressObserver = this;
+
                 btnStart.IsEnabled = false;
                 btnStop.IsEnabled = true;
 
@@ -140,7 +149,7 @@ namespace BioLink.Client.Tools {
                     try {
 
                         var layers = _layerFilenames.Select((mm) => {
-                            ProgressMessage("Loading grid layer {0}", mm.Name);
+                            ProgressMessage(string.Format("Loading grid layer {0}", mm.Name));
                             return new GridLayer(mm.Name);
                         }).ToList();
 
@@ -175,11 +184,6 @@ namespace BioLink.Client.Tools {
             }
         }
 
-        private void ProgressMessage(string format, params object[] args) {
-            lblProgress.InvokeIfRequired(() => {
-                lblProgress.Content = string.Format(format, args);
-            });
-        }
 
         private void btnRemove_Click(object sender, RoutedEventArgs e) {
             RemoveSelectedFile();
@@ -190,6 +194,92 @@ namespace BioLink.Client.Tools {
             if (selected != null) {
                 _layerFilenames.Remove(selected);
             }
+        }
+
+        private void lstLayers_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            ShowGridContextMenu();
+        }
+
+        private void ShowGridContextMenu() {
+
+            var selected = lstLayers.SelectedItem as GridLayerFileViewModel;
+
+            if (selected != null) {
+                var builder = new ContextMenuBuilder(null);
+                
+                builder.New("Save as _GRD file").Handler(() => { SaveAsGRDFile(new GridLayer(selected.Name)); }).End();
+                builder.New("Save as _ASCII Grid file").Handler(() => { SaveAsASCIIFile(new GridLayer(selected.Name)); }).End();
+                builder.Separator();
+                builder.New("Show in _map").Handler(() => { ShowGridLayerInMap(new GridLayer(selected.Name)); }).End();
+                builder.Separator();
+                builder.New("Layer _properties").Handler(() => { ShowGridLayerProperties(new GridLayer(selected.Name)); }).End();
+
+
+                lstLayers.ContextMenu = builder.ContextMenu;
+            }
+        }
+
+        private void ShowGridLayerProperties(GridLayer layer) {
+            var frm = new GridLayerProperties(layer);
+            frm.Owner = this.FindParentWindow();
+            frm.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            frm.ShowDialog();
+        }
+
+        private void SaveAsGRDFile(GridLayer grid) {
+            if (grid == null) {
+                return;
+            }
+
+            var dlg = new SaveFileDialog();
+            dlg.Filter = "GRD Files (*.grd)|*.grd|All files (*.*)|*.*";
+            if (dlg.ShowDialog(this.FindParentWindow()) == true) {
+                grid.SaveToGRDFile(dlg.FileName);
+            }
+        }
+
+        private void SaveAsASCIIFile(GridLayer grid) {
+            if (grid == null) {
+                return;
+            }
+
+            var dlg = new SaveFileDialog();
+            dlg.Filter = "ASC Files (*.asc)|*.asc|All files (*.*)|*.*";
+            if (dlg.ShowDialog(this.FindParentWindow()) == true) {
+                grid.SaveToASCIIFile(dlg.FileName);
+            }
+
+        }
+
+
+
+        public void ProgressStart(string message, bool indeterminate = false) {
+            progressBar.InvokeIfRequired(() => {
+                progressBar.IsIndeterminate = indeterminate;
+                if (!indeterminate) {
+                    progressBar.Minimum = 0;
+                    progressBar.Maximum = 100;
+                    progressBar.Value = 0;
+                }
+            });
+             
+            ProgressMessage(message);
+        }
+
+        public void ProgressMessage(string message, double? percentComplete = null) {
+            lblProgress.InvokeIfRequired(() => {
+                lblProgress.Content = message;
+                if (percentComplete.HasValue) {
+                    progressBar.Value = percentComplete.Value;
+                }
+            });
+        }
+
+        public void ProgressEnd(string message) {
+            progressBar.InvokeIfRequired(() => {
+                ProgressMessage(message);
+                progressBar.Value = 0;
+            });
         }
     }
 }

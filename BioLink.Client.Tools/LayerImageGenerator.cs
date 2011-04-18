@@ -48,12 +48,12 @@ namespace BioLink.Client.Tools {
             return bmp;
         }
 
-        public static string GenerateTemporaryImageFile(GridLayer layer, Color lowcolor, Color highcolor, Color novaluecolor, double cutoff = 0, int intervals = 256) {
+        public static string GenerateTemporaryImageFile(GridLayer layer, string filenamePrefix, Color lowcolor, Color highcolor, Color novaluecolor, double cutoff = 0, int intervals = 256) {
             var image = LayerImageGenerator.GetImageForLayer(layer, lowcolor, highcolor, novaluecolor, cutoff, intervals);
 
             BitmapEncoder encoder = new BmpBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(image));
-            var filename = TempFileManager.NewTempFilename("bmp");
+            var filename = TempFileManager.NewTempFilename("bmp", filenamePrefix);
             using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.Write)) {
                 encoder.Save(fs);
             }

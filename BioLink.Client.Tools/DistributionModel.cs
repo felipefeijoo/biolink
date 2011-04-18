@@ -17,6 +17,7 @@ namespace BioLink.Client.Tools {
             GridLayer target = null;
             var list = new List<GridLayer>();
             if (layers.Count() > 0) {
+                ProgressMessage("Initializing Model...");
                 // The first layer sets the size and resolution of the resulting grid. Subsequent grid layers of different dimensions must be interpolated to fit this size...
                 var first = layers.ElementAt(0);
                 target = new GridLayer(first.Width, first.Height) { DeltaLatitude = first.DeltaLatitude, DeltaLongitude = first.DeltaLongitude, Flags = first.Flags, Latitude0 = first.Latitude0, Longitude0 = first.Longitude0, NoValueMarker = first.NoValueMarker };
@@ -24,6 +25,7 @@ namespace BioLink.Client.Tools {
                 for (int i = 1; i < layers.Count(); ++i) {
                     var layer = layers.ElementAt(i);
                     if (!first.MatchesResolution(layer)) {
+                        ProgressMessage("Resizing layer {0}...", layer.Name);
                         var newlayer = new GridLayer(first.Width, first.Height) { DeltaLatitude = first.DeltaLatitude, DeltaLongitude = first.DeltaLongitude, Flags = first.Flags, Latitude0 = first.Latitude0, Longitude0 = first.Longitude0, NoValueMarker = first.NoValueMarker };
                         for (int y = 0; y < first.Height; ++y) {
                             double lat = first.Latitude0 + (y * first.DeltaLatitude);		// Work out Lat. of this cell.
@@ -41,6 +43,7 @@ namespace BioLink.Client.Tools {
 
                 // now get the points ready...
                 var points = new ModelPointSet();
+                ProgressMessage("Preparing points...");
                 foreach (MapPointSet set in pointSets) {
                     foreach (MapPoint p in set) {
 
@@ -60,10 +63,25 @@ namespace BioLink.Client.Tools {
                     }
                 }
 
+                if (ProgressObserver != null) {
+                    ProgressObserver.ProgressStart("Running model", false);
+                }
+
                 RunModelImpl(target, layers, points);
+
+                if (ProgressObserver != null) {
+                    ProgressObserver.ProgressEnd("Model complete");
+                }
+
             }
 
             return target;
+        }
+
+        protected void ProgressMessage(string format, params object[] args) {
+            if (ProgressObserver != null) {
+                ProgressObserver.ProgressMessage(string.Format(format, args));
+            }
         }
 
         protected abstract void RunModelImpl(GridLayer targetLayer, IEnumerable<GridLayer> layers, ModelPointSet points);
@@ -71,6 +89,8 @@ namespace BioLink.Client.Tools {
         public void Dispose() { }
 
         public abstract string Name { get; }
+
+        public IProgressObserver ProgressObserver { get; set; }
     }
 
     public class GowerMetricDistributionModel : DistributionModel {
@@ -158,6 +178,13 @@ namespace BioLink.Client.Tools {
                     fMinDist = (1.0 - fMinDist) * 100.0;
                 SetPoint:
                     targetLayer.SetCellValue(x, y, fMinDist);
+                }
+
+                if (y % 20 == 0) {
+                    var percent = ((double)y / (double)height) * 100;
+                    if (ProgressObserver != null) {
+                        ProgressObserver.ProgressMessage("Running Model...", percent);
+                    }
                 }
             }
         }
