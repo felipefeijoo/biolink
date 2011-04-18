@@ -60,8 +60,11 @@ namespace BioLink.Client.Tools {
         private void AddFile() {
             var frm = new OpenFileDialog();
             frm.Filter = "GRD files (*.grd)|*.grd|All files (*.*)|*.*";
+            frm.Multiselect = true;
             if (frm.ShowDialog(this.FindParentWindow()) == true) {
-                AddLayerFile(frm.FileName);
+                foreach (string filename in frm.FileNames) {
+                    AddLayerFile(filename);
+                }
             }
         }
 
@@ -92,7 +95,10 @@ namespace BioLink.Client.Tools {
         }
 
         private void ShowGridLayerInMap(GridLayer grid) {
-            var filename = LayerImageGenerator.GenerateTemporaryImageFile(grid, Colors.White, Colors.Black, Colors.Transparent);
+            double cutoff = double.Parse(_singleModelOptions.txtCutOff.Text);
+            int intervals = Int32.Parse(_singleModelOptions.txtIntervals.Text);
+
+            var filename = LayerImageGenerator.GenerateTemporaryImageFile(grid, _singleModelOptions.ctlLowColor.SelectedColor, _singleModelOptions.ctlHighColor.SelectedColor, _singleModelOptions.ctlNoValColor.SelectedColor, cutoff, intervals);
             var map = PluginManager.Instance.GetMap();
             map.Show();
             map.AddRasterLayer(filename);
@@ -143,10 +149,17 @@ namespace BioLink.Client.Tools {
                         var result = model.RunModel(layers, points);
 
                         this.InvokeIfRequired(() => {
+
+                            ProgressMessage("Saving file...");
+                            result.SaveToGRDFile(_singleModelOptions.txtFilename.Text);
+
                             if (_singleModelOptions.chkGenerateImage.IsChecked == true) {
+                                ProgressMessage("Preparing map...");
                                 ShowGridLayerInMap(result);
                             }
                         });
+
+                        
 
                         ProgressMessage("Model complete.");
                     } catch (Exception ex) {
@@ -166,6 +179,17 @@ namespace BioLink.Client.Tools {
             lblProgress.InvokeIfRequired(() => {
                 lblProgress.Content = string.Format(format, args);
             });
+        }
+
+        private void btnRemove_Click(object sender, RoutedEventArgs e) {
+            RemoveSelectedFile();
+        }
+
+        private void RemoveSelectedFile() {
+            var selected = lstLayers.SelectedItem as GridLayerFileViewModel;
+            if (selected != null) {
+                _layerFilenames.Remove(selected);
+            }
         }
     }
 }

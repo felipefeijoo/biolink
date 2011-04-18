@@ -27,7 +27,7 @@ namespace BioLink.Client.Tools {
             byte index = 0;
             for (int y = 0; y < layer.Height; y++) {
                 for (int x = 0; x < layer.Width; x++) {
-                    var value = layer.GetCellValue(x, y);
+                    var value = layer.GetCellValue(x, (layer.Height - 1) - y);
                     if (value == layer.NoValueMarker) {
                         index = 0;
                     } else {
@@ -102,7 +102,7 @@ namespace BioLink.Client.Tools {
             float b = b1;
 
 
-            for (int i = 1; i <= intervals && i <= 255; ++i) {
+            for (int i = 1; i < intervals && i < 256; ++i) {
                 palette[i] = Color.FromRgb((byte) r, (byte) g, (byte) b);
                 r += deltaR;
                 g += deltaG;

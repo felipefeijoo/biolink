@@ -59,7 +59,7 @@
 
                         <Grid Grid.Row="1" Background="{x:Static SystemColors.ControlBrush}">
                             <Button Content="_Add" Height="23" HorizontalAlignment="Right" Margin="0,6,6,0" Name="btnAdd" VerticalAlignment="Top" Width="75" Click="btnAdd_Click" />
-                            <Button Content="_Remove" Height="23" HorizontalAlignment="Right" Margin="0,6,87,0" Name="btnRemove" VerticalAlignment="Top" Width="75" />
+                            <Button Content="_Remove" Height="23" HorizontalAlignment="Right" Margin="0,6,87,0" Name="btnRemove" VerticalAlignment="Top" Width="75" Click="btnRemove_Click" />
                         </Grid>
                     </Grid>
                 </GroupBox>

@@ -126,8 +126,18 @@ namespace BioLink.Client.Maps {
 
         }
 
+        private IMapPointSetGenerator GetPointGenerator(System.Windows.Forms.DragEventArgs e) {
+            var pinnable = GetDragData<PinnableObject>(e, PinnableObject.DRAG_FORMAT_NAME);
+
+            if (pinnable != null) {
+                return PluginManager.Instance.FindAdaptorForPinnable<IMapPointSetGenerator>(pinnable);
+            }
+            return null;
+        }
+
+
         void mapBox_DragDrop(object sender, System.Windows.Forms.DragEventArgs e) {
-            var pointGenerator = GetDragData<IMapPointSetGenerator>(e, MapPointSetGenerator.DRAG_FORMAT_NAME);
+            var pointGenerator = GetPointGenerator(e);
             if (pointGenerator != null) {
                 MapPointSet points = pointGenerator.GeneratePoints();
                 if (points != null) {
@@ -156,7 +166,7 @@ namespace BioLink.Client.Maps {
         void mapBox_DragOver(object sender, System.Windows.Forms.DragEventArgs e) {
 
 
-            var pointGenerator = GetDragData<IMapPointSetGenerator>(e, MapPointSetGenerator.DRAG_FORMAT_NAME);
+            var pointGenerator = GetPointGenerator(e);
 
             e.Effect = System.Windows.Forms.DragDropEffects.None;
 

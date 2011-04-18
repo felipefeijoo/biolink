@@ -475,6 +475,23 @@ namespace BioLink.Client.Extensibility {
 
         public delegate void CloseDockableContentDelegate(FrameworkElement content);
 
+
+        public T FindAdaptorForPinnable<T>(PinnableObject pinnable) {
+            List<T> candidates = new List<T>();
+
+            TraversePlugins((plugin) => {
+                var candidate = plugin.GetAdaptorForPinnable<T>(pinnable);
+                if (candidate != null) {
+                    candidates.Add(candidate);
+                }
+            });
+
+            if (candidates.Count > 0) {
+                return candidates[0];
+            }
+
+            return default(T);
+        }
     }
 
 }

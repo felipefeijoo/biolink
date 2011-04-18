@@ -23,6 +23,9 @@ namespace BioLink.Client.Extensibility {
         ViewModelBase CreatePinnableViewModel(PinnableObject pinnable);
         List<Command> GetCommandsForSelected(List<ViewModelBase> selected);
         List<IWorkspaceContribution> GetContributions();
+
+        T GetAdaptorForPinnable<T>(PinnableObject pinnable);
+
         bool CanSelect<T>();
         void Select<T>(LookupOptions options, Action<SelectionResult> success);
 

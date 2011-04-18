@@ -39,11 +39,16 @@ namespace BioLink.Client.Tools {
         }
 
         void tvw_Drop(object sender, DragEventArgs e) {
-            var pointGenerator = e.Data.GetData(MapPointSetGenerator.DRAG_FORMAT_NAME) as IMapPointSetGenerator;
-            if (pointGenerator != null) {
-                MapPointSet points = pointGenerator.GeneratePoints();
-                if (points != null) {
-                    AddPointSet(points);
+            var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;
+            e.Effects = DragDropEffects.None;
+
+            if (pinnable != null) {
+                var pointGenerator = PluginManager.Instance.FindAdaptorForPinnable<IMapPointSetGenerator>(pinnable);
+                if (pointGenerator != null) {
+                    MapPointSet points = pointGenerator.GeneratePoints();
+                    if (points != null) {
+                        AddPointSet(points);
+                    }
                 }
             }
         }
@@ -59,13 +64,16 @@ namespace BioLink.Client.Tools {
         }
 
         void tvw_DragOver(object sender, DragEventArgs e) {
-            var pointGenerator = e.Data.GetData(MapPointSetGenerator.DRAG_FORMAT_NAME) as IMapPointSetGenerator;
-
+            var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;
             e.Effects = DragDropEffects.None;
+            
+            if (pinnable != null) {
+                var pointGenerator = PluginManager.Instance.FindAdaptorForPinnable<IMapPointSetGenerator>(pinnable);
+                if (pointGenerator != null) {
+                    e.Effects = DragDropEffects.Copy;
+                }            
+            }
 
-            if (pointGenerator != null) {
-                e.Effects = DragDropEffects.Copy;
-            }            
         }
 
         private void elemName_EditingComplete(object sender, string text) {

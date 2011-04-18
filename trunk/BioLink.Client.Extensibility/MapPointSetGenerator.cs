@@ -5,12 +5,11 @@ using System.Text;
 
 namespace BioLink.Client.Extensibility {
 
-    public abstract class MapPointSetGenerator : IMapPointSetGenerator {
-        public const String DRAG_FORMAT_NAME = "MapPointSetGenerator";
+    //public abstract class MapPointSetGenerator : IMapPointSetGenerator {
 
-        public abstract MapPointSet GeneratePoints();
+    //    public abstract MapPointSet GeneratePoints();
 
-    }
+    //}
 
     public interface IMapPointSetGenerator {
 
