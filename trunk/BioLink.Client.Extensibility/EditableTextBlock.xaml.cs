@@ -90,6 +90,20 @@ namespace BioLink.Client.Extensibility {
                 tb.oldText = tb.Text;
             }
         }
+
+        private static String GetControlText(EditableTextBlock control) {
+            TextBox txtBox = FindVisualChild<TextBox>(control);
+            if (txtBox != null) {
+                return txtBox.Text;
+            }
+
+            TextBlock txt = FindVisualChild<TextBlock>(control);
+            if (txt != null) {
+                return txt.Text;
+            }
+
+            return null;
+        }
         
         private static void OnTextChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
             if (args.OldValue != null) {
@@ -97,6 +111,7 @@ namespace BioLink.Client.Extensibility {
                 if (control.IsInEditMode) {
                     RoutedPropertyChangedEventArgs<string> e = new RoutedPropertyChangedEventArgs<string>((string)args.OldValue, (string)args.NewValue, TextChangedEvent);
                     control.OnTextChanged(e);
+                    control._pendingChanges = true;
                 } else {
                     (control as EditableTextBlock).Text = args.NewValue as string;
 
@@ -172,34 +187,43 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
+        private bool _pendingChanges = false;
+
         // Invoked when we exit edit mode.
-        void TextBox_LostFocus(object sender, RoutedEventArgs e) {
-            this.IsInEditMode = false;
+        void TextBox_LostFocus(object sender, RoutedEventArgs e) {            
             if (_cancelled) {
                 if (EditingCancelled != null) {
                     EditingCancelled(this, oldText);
                 }
             } else {
+                RaiseEditingComplete();
+            }
+            this.IsInEditMode = false;
+        }
+
+        private void RaiseEditingComplete() {
+            if (_pendingChanges) {
                 if (EditingComplete != null) {
                     EditingComplete(this, Text);
                 }
             }
+            _pendingChanges = false;
         }
 
         // Invoked when the user edits the annotation.
         void TextBox_KeyDown(object sender, KeyEventArgs e) {
             if (e.Key == Key.Enter) {
-                this.IsInEditMode = false;
+                RaiseEditingComplete();
+                this.IsInEditMode = false;                                
                 e.Handled = true;
             } else if (e.Key == Key.Escape) {
                 this.IsInEditMode = false;
                 Text = oldText;
                 e.Handled = true;
                 _cancelled = true;
+                _pendingChanges = false;
             }
-        }
-
-        
+        }      
 
         public event EditingCancelledHandler EditingCancelled;
 
