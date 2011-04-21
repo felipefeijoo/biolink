@@ -768,17 +768,25 @@ namespace BioLink.Client.Taxa {
         }
 
         internal void ShowTaxonDetails(int? taxonId) {
-            Taxon fullDetails = Service.GetTaxon(taxonId.Value);
-            TaxonViewModel model = new TaxonViewModel(null, fullDetails, null);
-            TaxonDetails control = new TaxonDetails(model, User, (changedModel) => {
-                RegenerateLabel(changedModel);
-            });
+            if (taxonId.HasValue) {
 
-            TaxonRank taxonRank = Service.GetTaxonRank(model.ElemType);
+                if (taxonId.Value < 0) {
+                    ErrorMessage.Show("You must save your changes before proceeding");
+                    return;
+                }
 
-            String title = String.Format("Taxon Detail: {0} ({1}) [{2}]", model.TaxaFullName, taxonRank.GetElementTypeLongName(model.Taxon), model.TaxaID);
+                Taxon fullDetails = Service.GetTaxon(taxonId.Value);
+                TaxonViewModel model = new TaxonViewModel(null, fullDetails, null);
+                TaxonDetails control = new TaxonDetails(model, User, (changedModel) => {
+                    RegenerateLabel(changedModel);
+                });
 
-            PluginManager.Instance.AddNonDockableContent(Owner, control, title, SizeToContent.Manual);
+                TaxonRank taxonRank = Service.GetTaxonRank(model.ElemType);
+
+                String title = String.Format("Taxon Detail: {0} ({1}) [{2}]", model.TaxaFullName, taxonRank.GetElementTypeLongName(model.Taxon), model.TaxaID);
+
+                PluginManager.Instance.AddNonDockableContent(Owner, control, title, SizeToContent.Manual);
+            }
         }
 
         internal void Refresh() {
@@ -1213,6 +1221,12 @@ namespace BioLink.Client.Taxa {
         }
 
         internal void EditTaxonName(TaxonViewModel viewModel) {
+
+            if (viewModel.TaxaID.Value < 0) {
+                ErrorMessage.Show("You must save your changes before proceeding");
+                return;
+            }
+
             TaxonNameDetails details = new TaxonNameDetails(viewModel.TaxaID, User, (nameDetails) => {
                 RegenerateLabel(nameDetails);
 

@@ -191,25 +191,44 @@ namespace BioLink.Client.Taxa {
         }
 
         internal ContextMenu BuildFindResultsMenu() {
-            ContextMenu menu = new ContextMenu();
+            var builder = new ContextMenuBuilder(FormatterFunc);
 
-            menu.Items.Add(_builder.New("TaxonExplorer.menu.ShowInContents").Handler(() => { Explorer.ShowInExplorer(Taxon.TaxaID); }).MenuItem);            
-            MenuItem reports = CreateReportMenuItems();            
-            if (reports != null && reports.HasItems) {
-                if (menu.HasItems) {
-                    menu.Items.Add(new Separator());
+            builder.New("TaxonExplorer.menu.ShowInContents").Handler(() => { Explorer.ShowInExplorer(Taxon.TaxaID); }).End();
+
+            builder.Separator();
+
+            if (Explorer.IsUnlocked) {                
+                if (!Taxon.IsRootNode) {
+                    builder.New("TaxonExplorer.menu.Delete", Taxon.DisplayLabel).Handler(() => { Explorer.DeleteTaxon(Taxon); });
+                    builder.New("TaxonExplorer.menu.Rename", Taxon.DisplayLabel).Handler(() => { Explorer.RenameTaxon(Taxon); });
                 }
-                menu.Items.Add(_builder.New("Distribution _Map").Handler(() => { Explorer.DistributionMap(Taxon); }).MenuItem);
-                menu.Items.Add(reports);
+
+                MenuItem addMenu = BuildAddMenuItems();
+                if (addMenu != null && addMenu.Items.Count > 0) {
+                    builder.Separator();
+                    builder.AddMenuItem(addMenu);
+                }
+
+            } else {
+                builder.New("TaxonExplorer.menu.Unlock").Handler(() => { Explorer.btnLock.IsChecked = true; });
             }
 
-            menu.Items.Add(new Separator());
-            menu.Items.Add(_builder.New("_Pin to pin board").Handler(() => { PluginManager.Instance.PinObject(new PinnableObject(TaxaPlugin.TAXA_PLUGIN_NAME, LookupType.Taxon, Taxon.TaxaID.Value)); }).MenuItem);
-            menu.Items.Add(new Separator());
-            menu.Items.Add(_builder.New("_Edit Name...").Handler(() => { Explorer.EditTaxonName(Taxon); }).MenuItem);
-            menu.Items.Add(_builder.New("_Edit Details...").Handler(() => { Explorer.ShowTaxonDetails(Taxon.TaxaID); }).MenuItem);
+            MenuItem reports = CreateReportMenuItems();            
+            if (reports != null && reports.HasItems) {
+                if (builder.HasItems) {
+                    builder.Separator();
+                }
+                builder.New("Distribution _Map").Handler(() => { Explorer.DistributionMap(Taxon); }).End();
+                builder.AddMenuItem(reports);
+            }
 
-            return menu;
+            builder.Separator();
+            builder.New("_Pin to pin board").Handler(() => { PluginManager.Instance.PinObject(new PinnableObject(TaxaPlugin.TAXA_PLUGIN_NAME, LookupType.Taxon, Taxon.TaxaID.Value)); }).End();
+            builder.Separator();
+            builder.New("_Edit Name...").Handler(() => { Explorer.EditTaxonName(Taxon); }).End();
+            builder.New("_Edit Details...").Handler(() => { Explorer.ShowTaxonDetails(Taxon.TaxaID); }).End();
+
+            return builder.ContextMenu;
         }
 
         internal ContextMenu BuildFavoritesMenu(HierarchicalViewModelBase node) {
