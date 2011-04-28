@@ -139,7 +139,7 @@ namespace BioLink.Client.Maps {
         void mapBox_DragDrop(object sender, System.Windows.Forms.DragEventArgs e) {
             var pointGenerator = GetPointGenerator(e);
             if (pointGenerator != null) {
-                MapPointSet points = pointGenerator.GeneratePoints();
+                MapPointSet points = pointGenerator.GeneratePoints(true);
                 if (points != null) {
                     PlotPoints(points);
                 }
@@ -482,7 +482,7 @@ namespace BioLink.Client.Maps {
             selectLayer.Style.Outline = new System.Drawing.Pen(System.Drawing.SystemColors.Highlight, 1);
             selectLayer.Style.EnableOutline = true;
 
-            addLayer(selectLayer, null, false);
+            addLayer(selectLayer, false);
 
             mapBox.Refresh();
         }
@@ -591,6 +591,9 @@ namespace BioLink.Client.Maps {
             ILayer layer = mapBox.Map.GetLayerByName(name);
             if (layer != null) {
                 mapBox.Map.Layers.Remove(layer);
+                if (layer is IDisposable) {
+                    (layer as IDisposable).Dispose();
+                }
             }
         }
 
@@ -622,7 +625,7 @@ namespace BioLink.Client.Maps {
             VectorLayer shapeFileLayer = new VectorLayer("_distanceAnchor", new SharpMap.Data.Providers.GeometryProvider(p));
             shapeFileLayer.Style.Symbol = MapSymbolGenerator.Triangle(10, System.Drawing.Color.Blue, true, System.Drawing.Color.Black);
             _distanceAnchor = p;
-            addLayer(shapeFileLayer, null, false);
+            addLayer(shapeFileLayer, false);
         }
 
         public void PlotPoints(MapPointSet points) {
@@ -655,7 +658,7 @@ namespace BioLink.Client.Maps {
 
             shapeFileLayer.Style.Symbol = MapSymbolGenerator.GetSymbolForPointSet(points);
             
-            addLayer(shapeFileLayer, null, false);
+            addLayer(shapeFileLayer, false);
 
             if (points.DrawLabels) {
                 var labelLayer = new SharpMap.Layers.LabelLayer(labelLayerName);
@@ -674,7 +677,7 @@ namespace BioLink.Client.Maps {
                 //labelLayer.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
                 //labelLayer.SmoothingMode = SmoothingMode.AntiAlias;
 
-                addLayer(labelLayer, null, false);
+                addLayer(labelLayer, false);
             }
         }
 
@@ -702,14 +705,14 @@ namespace BioLink.Client.Maps {
         private ILayer AddLayer(string filename) {
             ILayer layer = LayerFileLoader.LoadLayer(filename);
             if (layer != null) {
-                addLayer(layer, filename);
+                addLayer(layer);
             } else {
                 throw new Exception("Could not load layer file '" + filename + "'");
             }
             return layer;
         }
 
-        private void addLayer(ILayer layer, String filename, bool zoomToExtent = true) {
+        private void addLayer(ILayer layer, bool zoomToExtent = true) {
             mapBox.Map.Layers.Add(layer);
 
             if (zoomToExtent) {
@@ -976,8 +979,11 @@ namespace BioLink.Client.Maps {
 
 
         internal void AddRasterLayer(string filename) {
+            string layername = System.IO.Path.GetFileNameWithoutExtension(filename);
+            RemoveLayerByName(layername);            
             AddLayer(filename);
         }
+
     }
 
     public enum MapMode {

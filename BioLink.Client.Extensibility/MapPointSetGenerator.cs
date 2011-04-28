@@ -13,23 +13,23 @@ namespace BioLink.Client.Extensibility {
 
     public interface IMapPointSetGenerator {
 
-        MapPointSet GeneratePoints();
+        MapPointSet GeneratePoints(bool showOptions);
 
     }
 
     public class DelegatingPointSetGenerator<T> : IMapPointSetGenerator where T : class {
 
-        private Func<T, MapPointSet> _delegate;
+        private Func<bool, T, MapPointSet> _delegate;
         private T _arg;
 
-        public DelegatingPointSetGenerator(Func<T, MapPointSet> @delegate, T arg) {
+        public DelegatingPointSetGenerator(Func<bool, T, MapPointSet> @delegate, T arg) {
             _delegate = @delegate;
             _arg = arg;
         }
 
-        public MapPointSet GeneratePoints() {
+        public MapPointSet GeneratePoints(bool showOptions) {
             if (_delegate != null) {
-                return _delegate(_arg);
+                return _delegate(showOptions, _arg);
             }
             return null;
         }

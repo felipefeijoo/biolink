@@ -278,7 +278,16 @@ namespace BioLink.Client.Utilities {
             }
             return items;
         }
-        
+
+        public static string ChangeExtension(string filename, string newExtension) {            
+            int index = filename.LastIndexOf(".");
+            if (index > 0) {
+                return string.Format("{0}.{1}", filename.Substring(0, index), newExtension);
+            }
+
+            return string.Format("{0}.{1}", filename, newExtension);            
+        }
+
     }
 }
 

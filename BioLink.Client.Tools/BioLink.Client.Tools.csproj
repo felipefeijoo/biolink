@@ -63,11 +63,13 @@
     <Compile Include="administration\AdministrationControl.xaml.cs">
       <DependentUpon>AdministrationControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="BoxCarDistributionModel.cs" />
     <Compile Include="DistributionModel.cs" />
     <Compile Include="EditPointWindow.xaml.cs">
       <DependentUpon>EditPointWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="EnvironmentalLayer.cs" />
+    <Compile Include="GowerMetricModel.cs" />
     <Compile Include="GridLayerFileViewModel.cs" />
     <Compile Include="GridLayerProperties.xaml.cs">
       <DependentUpon>GridLayerProperties.xaml</DependentUpon>
@@ -109,6 +111,7 @@
     <Compile Include="ModellingTool.xaml.cs">
       <DependentUpon>ModellingTool.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ModelPoint.cs" />
     <Compile Include="MultimediaManager.xaml.cs">
       <DependentUpon>MultimediaManager.xaml</DependentUpon>
     </Compile>

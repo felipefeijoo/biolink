@@ -48,21 +48,24 @@ namespace BioLink.Client.Tools {
             return bmp;
         }
 
-        public static string GenerateTemporaryImageFile(GridLayer layer, string filenamePrefix, Color lowcolor, Color highcolor, Color novaluecolor, double cutoff = 0, int intervals = 256) {
+        public static void CreateImageFileFromGrid(GridLayer layer, string filename, Color lowcolor, Color highcolor, Color novaluecolor, double cutoff = 0, int intervals = 256) {
             var image = LayerImageGenerator.GetImageForLayer(layer, lowcolor, highcolor, novaluecolor, cutoff, intervals);
 
             BitmapEncoder encoder = new BmpBitmapEncoder();
-            encoder.Frames.Add(BitmapFrame.Create(image));
-            var filename = TempFileManager.NewTempFilename("bmp", filenamePrefix);
+            encoder.Frames.Add(BitmapFrame.Create(image));            
             using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.Write)) {
                 encoder.Save(fs);
             }
 
             var worldFilename = filename + "w";
-            TempFileManager.Attach(worldFilename);
-
             CreateWorldFile(layer, worldFilename);
+        }
 
+        public static string GenerateTemporaryImageFile(GridLayer layer, string filenamePrefix, Color lowcolor, Color highcolor, Color novaluecolor, double cutoff = 0, int intervals = 256) {
+            var filename = TempFileManager.NewTempFilename("bmp", filenamePrefix);
+            CreateImageFileFromGrid(layer, filename, lowcolor, highcolor, novaluecolor, cutoff, intervals);
+            var image = LayerImageGenerator.GetImageForLayer(layer, lowcolor, highcolor, novaluecolor, cutoff, intervals);
+            TempFileManager.Attach(filename + "w");
             return filename;
         }
 
@@ -85,7 +88,7 @@ namespace BioLink.Client.Tools {
         }
 
         public static BitmapPalette CreateGradientPalette(Color lowcolor, Color highcolor, Color noValueColor, int intervals = 256) {
-            var palette = new Color[intervals];
+            var palette = new Color[intervals+1];
             var r1 = lowcolor.R;
             var g1 = lowcolor.G;
             var b1 = lowcolor.B;
@@ -102,7 +105,7 @@ namespace BioLink.Client.Tools {
             float b = b1;
 
 
-            for (int i = 1; i < intervals && i < 256; ++i) {
+            for (int i = 1; i <= intervals && i < 256; ++i) {
                 palette[i] = Color.FromRgb((byte) r, (byte) g, (byte) b);
                 r += deltaR;
                 g += deltaG;

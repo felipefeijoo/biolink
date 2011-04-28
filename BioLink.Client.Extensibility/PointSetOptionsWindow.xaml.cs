@@ -21,17 +21,14 @@ namespace BioLink.Client.Extensibility {
     /// </summary>
     public partial class PointSetOptionsWindow : Window {
 
-        
-
-
-        public PointSetOptionsWindow(string caption, IMapPointSetGenerator generator) {
+        public PointSetOptionsWindow(string caption, Func<MapPointSet> generator) {
             InitializeComponent();
             this.Generator = generator;
             this.Caption = caption;
             this.Title = "Point options - " + caption;
         }
 
-        protected IMapPointSetGenerator Generator { get; private set; }
+        protected Func<MapPointSet> Generator { get; private set; }
 
         protected string Caption { get; private set; }
 
@@ -44,7 +41,7 @@ namespace BioLink.Client.Extensibility {
             lblStatus.Content = "Generating points...";
             JobExecutor.QueueJob(() => {
                 if (Generator != null) {
-                    Points = Generator.GeneratePoints();
+                    Points = Generator();
                     this.InvokeIfRequired(() => {
                         Points.PointColor = shapeOptions.Color;
                         Points.PointShape = shapeOptions.Shape;

@@ -45,9 +45,11 @@ namespace BioLink.Client.Tools {
             if (pinnable != null) {
                 var pointGenerator = PluginManager.Instance.FindAdaptorForPinnable<IMapPointSetGenerator>(pinnable);
                 if (pointGenerator != null) {
-                    MapPointSet points = pointGenerator.GeneratePoints();
-                    if (points != null) {
-                        AddPointSet(points);
+                    using (new OverrideCursor(Cursors.Wait)) {
+                        MapPointSet points = pointGenerator.GeneratePoints(false);
+                        if (points != null) {
+                            AddPointSet(points);
+                        }
                     }
                 }
             }
