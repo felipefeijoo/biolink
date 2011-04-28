@@ -81,6 +81,41 @@
                 </Grid>
             </TabItem>
             <TabItem x:Name="tabRichness" Header="Predicted Species _Richness">
+                <Grid x:Name="grdRichness">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="150" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    
+                    <Grid Grid.Row="1">
+                        <GroupBox Header="Progress">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="36"/>
+                                    <RowDefinition Height="28" />
+                                    <RowDefinition Height="*" />                                    
+                                </Grid.RowDefinitions>
+                                <Button Content="_Start" Height="23" HorizontalAlignment="Left" Margin="6,6,0,0" Name="btnStartRichness" VerticalAlignment="Top" Width="75" Click="btnStartRichness_Click" />
+                                <Button Content="_Stop" Height="23" HorizontalAlignment="Left" Margin="87,6,0,0" Name="btnStopRichness" VerticalAlignment="Top" Width="75" IsEnabled="False" />
+                                
+                                <ProgressBar x:Name="progressRichness" Grid.Row="1" Margin="6,2,6,2" />
+                                
+                                <ListView Grid.Row="2" Name="lvwRichness">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridView.Columns>
+                                                <GridViewColumn Header="Point set" Width="250" HeaderContainerStyle="{StaticResource hcs}" DisplayMemberBinding="{Binding Path=Name}" />                                                
+                                                <GridViewColumn Header="Status" Width="80" HeaderContainerStyle="{StaticResource hcs}" DisplayMemberBinding="{Binding Path=Status}" />
+                                                <GridViewColumn Header="Grid filename" Width="300" HeaderContainerStyle="{StaticResource hcs}" DisplayMemberBinding="{Binding Path=Filename}"/>
+                                            </GridView.Columns>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                                <Label Height="28" Margin="168,5,6,0" Name="lblRichnessStatus" VerticalAlignment="Top" />
+                            </Grid>
+                        </GroupBox>
+                    </Grid>
+                </Grid>                
             </TabItem>
 
         </TabControl>
@@ -90,3 +125,4 @@
         </Grid>
     </Grid>
 </UserControl>
+    

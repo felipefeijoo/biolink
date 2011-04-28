@@ -27,6 +27,7 @@ namespace BioLink.Client.Tools {
 
         private ObservableCollection<GridLayerFileViewModel> _layerFilenames;
         private SingleModelOptionsControl _singleModelOptions;
+        private SpeciesRichnessOptions _richnessOptions;
 
         public ModellingTool(User user, ToolsPlugin owner) {
             InitializeComponent();
@@ -43,6 +44,7 @@ namespace BioLink.Client.Tools {
             }
 
             gridSingle.Children.Add(_singleModelOptions = new SingleModelOptionsControl());
+            grdRichness.Children.Add(_richnessOptions = new SpeciesRichnessOptions());
         }
 
         protected User User { get; private set; }
@@ -68,7 +70,7 @@ namespace BioLink.Client.Tools {
             }
         }
 
-        private void AddLayerFile(string filename) {            
+        private void AddLayerFile(string filename) {
             var viewModel = new GridLayerFileViewModel(filename);
             _layerFilenames.Add(viewModel);
         }
@@ -97,7 +99,7 @@ namespace BioLink.Client.Tools {
         private void ShowGridLayerInMap(GridLayer grid, string filename = null) {
             double cutoff = _singleModelOptions.CutOff;
             int intervals = _singleModelOptions.Intervals;
-            
+
             var prefix = grid.Name;
             FileInfo f = new FileInfo(grid.Name);
             if (f.Exists) {
@@ -179,7 +181,7 @@ namespace BioLink.Client.Tools {
                                 TempFileManager.Attach(imageFilename);
                                 ShowGridLayerInMap(result, imageFilename);
                             }
-                        });                        
+                        });
                         ProgressMessage("Model complete.");
                     } catch (Exception ex) {
                         MessageBox.Show(ex.ToString());
@@ -217,7 +219,7 @@ namespace BioLink.Client.Tools {
 
             if (selected != null) {
                 var builder = new ContextMenuBuilder(null);
-                
+
                 builder.New("Save as _GRD file").Handler(() => { SaveAsGRDFile(new GridLayer(selected.Name)); }).End();
                 builder.New("Save as _ASCII Grid file").Handler(() => { SaveAsASCIIFile(new GridLayer(selected.Name)); }).End();
                 builder.Separator();
@@ -271,7 +273,7 @@ namespace BioLink.Client.Tools {
                     progressBar.Value = 0;
                 }
             });
-             
+
             ProgressMessage(message);
         }
 
@@ -296,5 +298,274 @@ namespace BioLink.Client.Tools {
                 _currentModel.CancelModel();
             }
         }
+
+        private void btnStartRichness_Click(object sender, RoutedEventArgs e) {
+            StartSpeciesRichness();
+        }
+
+        private void StartSpeciesRichness() {
+
+            btnStartRichness.IsEnabled = false;
+            btnStopRichness.IsEnabled = true;
+
+            var pointsModel = pointSets.PointSets.Select((m) => {
+                var vm = new SpeciesRichnessPointSetViewModel(m);
+                vm.Status = "Pending";
+                return vm;
+            });
+
+            lvwRichness.ItemsSource = new ObservableCollection<SpeciesRichnessPointSetViewModel>(pointsModel);
+
+            var processor = new SpeciesRichnessProcessor(_richnessOptions.SelectedModel, pointSets.PointSets, _layerFilenames.Select(m => m.Name));
+            processor.ProgressObserver = new SpeciesRichnessProgressAdapter(this);
+            processor.PointSetModelStarted += new Action<MapPointSet>(processor_PointSetModelStarted);
+            processor.PointSetModelCompleted += new Action<MapPointSet>(processor_PointSetModelCompleted);
+            processor.PointSetModelProgress += new Action<MapPointSet, string, double?>(processor_PointSetModelProgress);
+
+            JobExecutor.QueueJob(() => {
+                try {                    
+                    var result = processor.RunSpeciesRichness();
+                    if (result != null) {
+                        ShowGridLayerInMap(result);
+                    }
+                } finally {
+                    this.InvokeIfRequired(() => {
+                        btnStartRichness.IsEnabled = true;
+                        btnStopRichness.IsEnabled = false;
+                    });
+                }
+            });
+        }
+
+        void processor_PointSetModelProgress(MapPointSet pointSet, string message, double? percent) {
+            var vm = ViewModelForModel(pointSet);
+            if (vm != null) {
+                lvwRichness.InvokeIfRequired(() => {
+                    if (percent.HasValue) {
+                        vm.Status = string.Format("Running ({0}%)...", (int)percent.Value);
+                    } else {
+                        vm.Status = string.Format("Running...");
+                    }
+                });
+            }
+        }
+
+        void processor_PointSetModelCompleted(MapPointSet obj) {
+            var vm = ViewModelForModel(obj);
+            if (vm != null) {
+                lvwRichness.InvokeIfRequired(() => {
+                    vm.Status = string.Format("Done.");
+                });
+            }
+        }
+
+        private SpeciesRichnessPointSetViewModel ViewModelForModel(MapPointSet model) {
+            var viewmodels = lvwRichness.ItemsSource as ObservableCollection<SpeciesRichnessPointSetViewModel>;
+            if (viewmodels != null) {
+                var selected = viewmodels.FirstOrDefault((m) => {
+                    return m.Name == model.Name;
+                });
+                return selected;
+            }
+            return null;
+        }
+
+        void processor_PointSetModelStarted(MapPointSet obj) {
+            lvwRichness.InvokeIfRequired(() => {
+                var vm = ViewModelForModel(obj);
+                if (vm != null) {
+                    vm.Status = "Running...";
+                }
+            });
+        }
+
+        class SpeciesRichnessProgressAdapter : IProgressObserver {
+
+            public SpeciesRichnessProgressAdapter(ModellingTool tool) {
+                this.ModellingTool = tool;
+            }
+
+            public void ProgressStart(string message, bool indeterminate = false) {
+                ModellingTool.InvokeIfRequired(() => {
+                    ModellingTool.progressRichness.Maximum = 100;
+                    ModellingTool.progressRichness.Minimum = 0;
+                    ModellingTool.progressRichness.Value = 0;
+                    ModellingTool.progressRichness.IsIndeterminate = indeterminate;
+                    ModellingTool.lblRichnessStatus.Content = message;
+                });
+            }
+
+            public void ProgressMessage(string message, double? percentComplete = null) {
+                ModellingTool.InvokeIfRequired(() => {
+                    ModellingTool.lblRichnessStatus.Content = message;
+                    if (percentComplete.HasValue) {
+                        ModellingTool.progressRichness.Value = percentComplete.Value;
+                    }
+                });
+
+            }
+
+            public void ProgressEnd(string message) {
+                ModellingTool.InvokeIfRequired(() => {
+                    ModellingTool.lblRichnessStatus.Content = message;
+                    ModellingTool.progressRichness.Value = 0;
+                });
+            }
+
+            private ModellingTool ModellingTool { get; set; }
+        }
+
     }
+
+    class SpeciesRichnessProcessor : IProgressObserver {
+
+        public SpeciesRichnessProcessor(DistributionModel model, IEnumerable<MapPointSet> pointSets, IEnumerable<string> layerFiles) {
+            this.Model = model;
+            this.MapPointSets = pointSets;
+            this.LayerFiles = layerFiles;
+        }
+
+        protected MapPointSet _currentPointSet;
+
+        public GridLayer RunSpeciesRichness() {
+            // First load each of the layers...
+
+            IsCancelled = false;
+
+            var layers = new List<GridLayer>();
+
+            foreach (string filename in LayerFiles) {
+                ProgressMessage("Loading environmental layer {0}...", filename);
+                layers.Add(new GridLayer(filename));
+            }
+
+            // Now for each point set, run the model...
+            var resultLayers = new List<GridLayer>();
+
+            Model.ProgressObserver = this;
+
+            if (ProgressObserver != null) {
+                ProgressObserver.ProgressMessage("Running models...");
+            }
+
+            int setIndex = 0;
+            foreach (MapPointSet pointset in MapPointSets) {
+
+                _currentPointSet = pointset;
+
+                var percent = ((double)setIndex / (double) MapPointSets.Count()) * 100.0;
+
+                if (ProgressObserver != null) {
+                    ProgressObserver.ProgressMessage("Running model on pointset " + pointset.Name, percent);
+                }
+
+                FireStartPointSet(pointset);
+
+                var list = new List<MapPointSet>();
+                list.Add(pointset);
+                var modelLayer = Model.RunModel(layers, list);
+                if (modelLayer != null) {
+                    resultLayers.Add(modelLayer);
+                }
+
+                if (IsCancelled) {
+                    return null;
+                }
+
+                FireEndPointSet(pointset);
+
+                setIndex++;
+            }
+
+            GridLayer targetLayer = null;
+
+            return targetLayer;
+        }
+
+        public void Cancel() {
+            if (Model != null) {
+                Model.CancelModel();
+            }
+
+            IsCancelled = true;
+        }
+
+        protected void ProgressMessage(string format, params object[] args) {
+            if (ProgressObserver != null) {
+                ProgressObserver.ProgressMessage(string.Format(format, args));
+            }
+        }
+
+        public IProgressObserver ProgressObserver { get; set; }
+
+        public DistributionModel Model { get; private set; }
+
+        public IEnumerable<MapPointSet> MapPointSets { get; private set; }
+
+        public IEnumerable<string> LayerFiles { get; private set; }
+
+        public bool IsCancelled { get; set; }
+
+        public void ProgressStart(string message, bool indeterminate = false) {
+            // FireStartPointSet(CurrentPointSet);
+        }
+
+        public void ProgressMessage(string message, double? percentComplete = null) {
+            FirePointSetProgressMessage(_currentPointSet, message, percentComplete);
+        }
+
+        public void ProgressEnd(string message) {
+            // FireEndPointSet(CurrentPointSet);
+        }
+
+        private void FireEndPointSet(MapPointSet pointset) {
+            if (PointSetModelStarted != null) {
+                PointSetModelStarted(pointset);
+            }
+        }
+
+        private void FirePointSetProgressMessage(MapPointSet points, string message, double? percentComplete) {
+            if (PointSetModelProgress != null) {
+                PointSetModelProgress(points, message, percentComplete);
+            }
+        }
+
+        private void FireStartPointSet(MapPointSet pointset) {
+            if (PointSetModelCompleted != null) {
+                PointSetModelCompleted(pointset);
+            }
+        }
+
+        public event Action<MapPointSet> PointSetModelStarted;
+
+        public event Action<MapPointSet, string, double?> PointSetModelProgress;
+
+        public event Action<MapPointSet> PointSetModelCompleted;
+
+    }
+
+    class SpeciesRichnessPointSetViewModel : GenericViewModelBase<MapPointSet> {
+
+        private string _status;
+        private string _filename;
+
+        public SpeciesRichnessPointSetViewModel(MapPointSet model) : base(model, null) { }
+
+        public string Status {
+            get { return _status; }
+            set { SetProperty("Status", ref _status, value); }
+        }
+
+        public string Filename {
+            get { return _filename; }
+            set { SetProperty("Filename", ref _filename, value); }
+        }
+
+        public String Name {
+            get { return Model.Name; }
+            set { SetProperty(() => Model.Name, value); }
+        }
+
+    }
+
 }

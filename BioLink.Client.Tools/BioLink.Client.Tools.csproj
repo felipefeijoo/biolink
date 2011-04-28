@@ -124,6 +124,9 @@
     <Compile Include="SingleModelOptionsControl.xaml.cs">
       <DependentUpon>SingleModelOptionsControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SpeciesRichnessOptions.xaml.cs">
+      <DependentUpon>SpeciesRichnessOptions.xaml</DependentUpon>
+    </Compile>
     <Compile Include="usermanager\PermissionProperties.xaml.cs">
       <DependentUpon>PermissionProperties.xaml</DependentUpon>
     </Compile>
@@ -272,6 +275,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="SingleModelOptionsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SpeciesRichnessOptions.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
