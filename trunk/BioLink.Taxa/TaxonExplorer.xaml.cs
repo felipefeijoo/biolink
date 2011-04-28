@@ -606,17 +606,27 @@ namespace BioLink.Client.Taxa {
 
         #endregion
 
-        internal MapPointSet GenerateSpecimenPointSetWithOptions(Taxon taxon) {            
-            var frm = new PointSetOptionsWindow(taxon.TaxaFullName, new DelegatingPointSetGenerator<Taxon>(GenerateSpecimenPointSet, taxon));
-            frm.Owner = this.FindParentWindow();
-            if (frm.ShowDialog() == true) {
-                return frm.Points;
+        internal MapPointSet GenerateSpecimenPoints(bool showOptions, Taxon taxon) {
+            if (showOptions) {
+                var frm = new PointSetOptionsWindow(taxon.TaxaFullName, TaxonPointFunctionFactory(taxon));
+                frm.Owner = this.FindParentWindow();
+                if (frm.ShowDialog() == true) {
+                    return frm.Points;
+                }
+            } else {
+                return ExtractSpecimenPointSet(taxon);
             }
             return null;
         }
 
-        protected MapPointSet GenerateSpecimenPointSet(Taxon t) {
-            var data = Service.GetMaterialForTaxon(t.TaxaID.Value);            
+        protected Func<MapPointSet> TaxonPointFunctionFactory(Taxon t) {
+            return () => {
+                return ExtractSpecimenPointSet(t);
+            };
+        }
+
+        protected MapPointSet ExtractSpecimenPointSet(Taxon t) {
+            var data = Service.GetMaterialForTaxon(t.TaxaID.Value);
             var set = new MatrixMapPointSet(t.TaxaFullName, data, null);            
             return set;
         }
@@ -624,7 +634,7 @@ namespace BioLink.Client.Taxa {
         public void DistributionMap(TaxonViewModel taxon) {
             var map = PluginManager.Instance.GetMap();
             if (map != null) {
-                var data = GenerateSpecimenPointSetWithOptions(taxon.Taxon);
+                var data = GenerateSpecimenPoints(true, taxon.Taxon);
                 map.Show();
                 map.PlotPoints(data);
             }

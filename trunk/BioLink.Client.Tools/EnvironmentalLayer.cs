@@ -91,8 +91,8 @@ namespace BioLink.Client.Tools {
                     writer.Write(Latitude0);
                     writer.Write(DeltaLongitude);
                     writer.Write(DeltaLatitude);
-                    writer.Write(NoValueMarker);
-                    writer.Write(Flags);
+                    writer.Write((float) NoValueMarker);
+                    writer.Write((Int32) Flags);
                     for (int row = 0; row < Height; row++) {
                         for (int col = 0; col < Width; col++) {
                             writer.Write((float) _data[col, row]);
@@ -198,12 +198,12 @@ namespace BioLink.Client.Tools {
             return null;
         }
 
-        public EnvironmentalLayerRange GetRangeForPoints(IEnumerable<MapPoint> points, double percentile) {
+        public EnvironmentalLayerRange GetRangeForPoints(IEnumerable<ModelPoint> points, double percentile) {
 
             var values = new PointValueList();
 
-            foreach (MapPoint p in points) {
-                var value = GetValueAt(p.Latitude, p.Longitude, NoValueMarker);
+            foreach (ModelPoint p in points) {
+                var value = GetValueAt(p.Y, p.X, NoValueMarker);
                 if (value == NoValueMarker) {
                 } else {                    
                     values.AddValue(value);
@@ -296,7 +296,7 @@ namespace BioLink.Client.Tools {
         }
 
         public double GetLower(double percentile) {
-            int index = (int) ((double) (Count + 1) * percentile);
+            int index = (int) Math.Round((double)(Count + 1) * percentile, MidpointRounding.AwayFromZero);
             var p = _first;
             int i = 0;
 
@@ -312,7 +312,7 @@ namespace BioLink.Client.Tools {
         }
 
         public double GetUpper(double percentile) {
-            int index = (int) (((double) (Count + 1) * (1-percentile)) - 1);
+            int index = (int) Math.Round(((double) (Count + 1) * (1-percentile)), MidpointRounding.AwayFromZero) - 1;
             var p = _first;
             int i = 0;
             double last = 0;

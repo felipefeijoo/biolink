@@ -27,6 +27,36 @@ namespace BioLink.Client.Tools {
             cmbModelType.ItemsSource = models;
             cmbModelType.SelectedIndex = 0;
             txtFilename.Text = TempFileManager.NewTempFilename("grd", "model");
+
+            cmbModelType.SelectionChanged += new SelectionChangedEventHandler(cmbModelType_SelectionChanged);
+        }
+
+        void cmbModelType_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            var selected = cmbModelType.SelectedItem as DistributionModel;
+            if (selected != null) {
+                txtCutOff.IsEnabled = !selected.PresetCutOff.HasValue;
+                txtIntervals.IsEnabled = !selected.PresetIntervals.HasValue;
+            }
+        }
+
+        public int Intervals {
+            get {
+                var selected = cmbModelType.SelectedItem as DistributionModel;
+                if (selected != null && selected.PresetIntervals.HasValue) {
+                    return selected.PresetIntervals.Value;                    
+                }
+                return Int32.Parse(txtIntervals.Text);
+            }
+        }
+
+        public double CutOff {
+            get {
+                var selected = cmbModelType.SelectedItem as DistributionModel;
+                if (selected != null && selected.PresetCutOff.HasValue) {
+                    return selected.PresetCutOff.Value;
+                }
+                return Double.Parse(txtCutOff.Text);
+            }
         }
     }
 }

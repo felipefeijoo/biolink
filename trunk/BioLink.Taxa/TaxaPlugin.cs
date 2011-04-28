@@ -191,7 +191,7 @@ namespace BioLink.Client.Taxa {
             if (pinnable.LookupType == LookupType.Taxon) {
                 if (typeof(T) == typeof(IMapPointSetGenerator)) {
                     var taxon = Service.GetTaxon(pinnable.ObjectID);
-                    object generator = new DelegatingPointSetGenerator<Taxon>(_explorer.ContentControl.GenerateSpecimenPointSetWithOptions, taxon);
+                    object generator = new DelegatingPointSetGenerator<Taxon>(_explorer.ContentControl.GenerateSpecimenPoints, taxon);
                     return (T) generator;
                 }
             }

@@ -94,17 +94,21 @@ namespace BioLink.Client.Tools {
             }
         }
 
-        private void ShowGridLayerInMap(GridLayer grid) {
-            double cutoff = double.Parse(_singleModelOptions.txtCutOff.Text);
-            int intervals = Int32.Parse(_singleModelOptions.txtIntervals.Text);
-
+        private void ShowGridLayerInMap(GridLayer grid, string filename = null) {
+            double cutoff = _singleModelOptions.CutOff;
+            int intervals = _singleModelOptions.Intervals;
             
             var prefix = grid.Name;
             FileInfo f = new FileInfo(grid.Name);
             if (f.Exists) {
                 prefix = f.Name.Substring(0, f.Name.LastIndexOf("."));
             }
-            var filename = LayerImageGenerator.GenerateTemporaryImageFile(grid, prefix, _singleModelOptions.ctlLowColor.SelectedColor, _singleModelOptions.ctlHighColor.SelectedColor, _singleModelOptions.ctlNoValColor.SelectedColor, cutoff, intervals);
+            if (filename == null) {
+                filename = LayerImageGenerator.GenerateTemporaryImageFile(grid, prefix, _singleModelOptions.ctlLowColor.SelectedColor, _singleModelOptions.ctlHighColor.SelectedColor, _singleModelOptions.ctlNoValColor.SelectedColor, cutoff, intervals);
+            } else {
+                LayerImageGenerator.CreateImageFileFromGrid(grid, filename, _singleModelOptions.ctlLowColor.SelectedColor, _singleModelOptions.ctlHighColor.SelectedColor, _singleModelOptions.ctlNoValColor.SelectedColor, cutoff, intervals);
+            }
+
             var map = PluginManager.Instance.GetMap();
             map.Show();
             map.AddRasterLayer(filename);
@@ -113,6 +117,8 @@ namespace BioLink.Client.Tools {
         private void btnStart_Click(object sender, RoutedEventArgs e) {
             StartSingleModel();
         }
+
+        private DistributionModel _currentModel;
 
         private void StartSingleModel() {
 
@@ -137,10 +143,10 @@ namespace BioLink.Client.Tools {
                 return;
             }
 
-            var model = _singleModelOptions.cmbModelType.SelectedItem as DistributionModel;
-            if (model != null) {
+            _currentModel = _singleModelOptions.cmbModelType.SelectedItem as DistributionModel;
+            if (_currentModel != null) {
 
-                model.ProgressObserver = this;
+                _currentModel.ProgressObserver = this;
 
                 btnStart.IsEnabled = false;
                 btnStop.IsEnabled = true;
@@ -155,7 +161,12 @@ namespace BioLink.Client.Tools {
 
                         ProgressMessage("Running model...");
 
-                        var result = model.RunModel(layers, points);
+                        var result = _currentModel.RunModel(layers, points);
+
+                        if (_currentModel.IsCancelled) {
+                            MessageBox.Show("Model cancelled", "Model cancelled", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
 
                         this.InvokeIfRequired(() => {
 
@@ -164,12 +175,11 @@ namespace BioLink.Client.Tools {
 
                             if (_singleModelOptions.chkGenerateImage.IsChecked == true) {
                                 ProgressMessage("Preparing map...");
-                                ShowGridLayerInMap(result);
+                                string imageFilename = SystemUtils.ChangeExtension(_singleModelOptions.txtFilename.Text, "bmp");
+                                TempFileManager.Attach(imageFilename);
+                                ShowGridLayerInMap(result, imageFilename);
                             }
-                        });
-
-                        
-
+                        });                        
                         ProgressMessage("Model complete.");
                     } catch (Exception ex) {
                         MessageBox.Show(ex.ToString());
@@ -178,6 +188,7 @@ namespace BioLink.Client.Tools {
                             btnStart.IsEnabled = true;
                             btnStop.IsEnabled = false;
                         });
+                        _currentModel = null;
                     }
                 });
 
@@ -251,8 +262,6 @@ namespace BioLink.Client.Tools {
 
         }
 
-
-
         public void ProgressStart(string message, bool indeterminate = false) {
             progressBar.InvokeIfRequired(() => {
                 progressBar.IsIndeterminate = indeterminate;
@@ -280,6 +289,12 @@ namespace BioLink.Client.Tools {
                 ProgressMessage(message);
                 progressBar.Value = 0;
             });
+        }
+
+        private void btnStop_Click(object sender, RoutedEventArgs e) {
+            if (_currentModel != null) {
+                _currentModel.CancelModel();
+            }
         }
     }
 }

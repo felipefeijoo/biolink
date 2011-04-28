@@ -73,7 +73,7 @@
                     <GroupBox Grid.Row="1" Header="Run Model">
                         <Grid>
                             <Button Content="_Start" Height="23" Name="btnStart" Width="75" HorizontalAlignment="Left" Margin="6,6,0,0" VerticalAlignment="Top" Click="btnStart_Click" />
-                            <Button Content="Sto_p" Height="23" HorizontalAlignment="Left" Margin="87,6,0,0" Name="btnStop" VerticalAlignment="Top" Width="75" IsEnabled="False" />
+                            <Button Content="Sto_p" Height="23" HorizontalAlignment="Left" Margin="87,6,0,0" Name="btnStop" VerticalAlignment="Top" Width="75" IsEnabled="False" Click="btnStop_Click" />
                             <ProgressBar Height="24" Margin="6,47,6,0" Name="progressBar" VerticalAlignment="Top" />
                             <Label Height="28" Margin="6,24,6,0" Name="lblProgress" VerticalAlignment="Top" />
                         </Grid>
