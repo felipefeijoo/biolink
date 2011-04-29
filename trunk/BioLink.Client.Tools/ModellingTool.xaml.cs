@@ -92,28 +92,30 @@ namespace BioLink.Client.Tools {
         private void Button_Click(object sender, RoutedEventArgs e) {
             var selected = lstLayers.SelectedItem as GridLayerFileViewModel;
             if (selected != null) {
-                ShowGridLayerInMap(new GridLayer(selected.Name));
+                double cutoff = _singleModelOptions.CutOff;
+                int intervals = _singleModelOptions.Intervals;
+                ShowGridLayerInMap(new GridLayer(selected.Name), intervals, cutoff);
             }
         }
 
-        private void ShowGridLayerInMap(GridLayer grid, string filename = null) {
-            double cutoff = _singleModelOptions.CutOff;
-            int intervals = _singleModelOptions.Intervals;
+        private void ShowGridLayerInMap(GridLayer grid, int intervals, double cutoff, string filename = null) {
 
-            var prefix = grid.Name;
-            FileInfo f = new FileInfo(grid.Name);
-            if (f.Exists) {
-                prefix = f.Name.Substring(0, f.Name.LastIndexOf("."));
-            }
-            if (filename == null) {
-                filename = LayerImageGenerator.GenerateTemporaryImageFile(grid, prefix, _singleModelOptions.ctlLowColor.SelectedColor, _singleModelOptions.ctlHighColor.SelectedColor, _singleModelOptions.ctlNoValColor.SelectedColor, cutoff, intervals);
-            } else {
-                LayerImageGenerator.CreateImageFileFromGrid(grid, filename, _singleModelOptions.ctlLowColor.SelectedColor, _singleModelOptions.ctlHighColor.SelectedColor, _singleModelOptions.ctlNoValColor.SelectedColor, cutoff, intervals);
-            }
+            this.InvokeIfRequired(() => {
+                var prefix = grid.Name;
+                FileInfo f = new FileInfo(grid.Name);
+                if (f.Exists) {
+                    prefix = f.Name.Substring(0, f.Name.LastIndexOf("."));
+                }
+                if (filename == null) {
+                    filename = LayerImageGenerator.GenerateTemporaryImageFile(grid, prefix, _singleModelOptions.ctlLowColor.SelectedColor, _singleModelOptions.ctlHighColor.SelectedColor, _singleModelOptions.ctlNoValColor.SelectedColor, cutoff, intervals);
+                } else {
+                    LayerImageGenerator.CreateImageFileFromGrid(grid, filename, _singleModelOptions.ctlLowColor.SelectedColor, _singleModelOptions.ctlHighColor.SelectedColor, _singleModelOptions.ctlNoValColor.SelectedColor, cutoff, intervals);
+                }
 
-            var map = PluginManager.Instance.GetMap();
-            map.Show();
-            map.AddRasterLayer(filename);
+                var map = PluginManager.Instance.GetMap();
+                map.Show();
+                map.AddRasterLayer(filename);
+            });
         }
 
         private void btnStart_Click(object sender, RoutedEventArgs e) {
@@ -179,7 +181,9 @@ namespace BioLink.Client.Tools {
                                 ProgressMessage("Preparing map...");
                                 string imageFilename = SystemUtils.ChangeExtension(_singleModelOptions.txtFilename.Text, "bmp");
                                 TempFileManager.Attach(imageFilename);
-                                ShowGridLayerInMap(result, imageFilename);
+                                double cutoff = _singleModelOptions.CutOff;
+                                int intervals = _singleModelOptions.Intervals;
+                                ShowGridLayerInMap(result, intervals, cutoff, imageFilename);
                             }
                         });
                         ProgressMessage("Model complete.");
@@ -223,7 +227,7 @@ namespace BioLink.Client.Tools {
                 builder.New("Save as _GRD file").Handler(() => { SaveAsGRDFile(new GridLayer(selected.Name)); }).End();
                 builder.New("Save as _ASCII Grid file").Handler(() => { SaveAsASCIIFile(new GridLayer(selected.Name)); }).End();
                 builder.Separator();
-                builder.New("Show in _map").Handler(() => { ShowGridLayerInMap(new GridLayer(selected.Name)); }).End();
+                builder.New("Show in _map").Handler(() => { ShowGridLayerInMap(new GridLayer(selected.Name), _singleModelOptions.Intervals, _singleModelOptions.CutOff); }).End();
                 builder.Separator();
                 builder.New("Layer _properties").Handler(() => { ShowGridLayerProperties(new GridLayer(selected.Name)); }).End();
 
@@ -316,7 +320,9 @@ namespace BioLink.Client.Tools {
 
             lvwRichness.ItemsSource = new ObservableCollection<SpeciesRichnessPointSetViewModel>(pointsModel);
 
-            var processor = new SpeciesRichnessProcessor(_richnessOptions.SelectedModel, pointSets.PointSets, _layerFilenames.Select(m => m.Name));
+            var cutOff = _richnessOptions.CutOff;
+
+            var processor = new SpeciesRichnessProcessor(_richnessOptions.SelectedModel, pointSets.PointSets, _layerFilenames.Select(m => m.Name), cutOff);
             processor.ProgressObserver = new SpeciesRichnessProgressAdapter(this);
             processor.PointSetModelStarted += new Action<MapPointSet>(processor_PointSetModelStarted);
             processor.PointSetModelCompleted += new Action<MapPointSet>(processor_PointSetModelCompleted);
@@ -326,7 +332,8 @@ namespace BioLink.Client.Tools {
                 try {                    
                     var result = processor.RunSpeciesRichness();
                     if (result != null) {
-                        ShowGridLayerInMap(result);
+                        var range = result.GetRange();
+                        ShowGridLayerInMap(result, (int) range.Range, 0);
                     }
                 } finally {
                     this.InvokeIfRequired(() => {
@@ -342,9 +349,9 @@ namespace BioLink.Client.Tools {
             if (vm != null) {
                 lvwRichness.InvokeIfRequired(() => {
                     if (percent.HasValue) {
-                        vm.Status = string.Format("Running ({0}%)...", (int)percent.Value);
+                        vm.Status = string.Format("{0}%", (int)percent.Value);
                     } else {
-                        vm.Status = string.Format("Running...");
+                        vm.Status = string.Format("-");
                     }
                 });
             }
@@ -419,10 +426,11 @@ namespace BioLink.Client.Tools {
 
     class SpeciesRichnessProcessor : IProgressObserver {
 
-        public SpeciesRichnessProcessor(DistributionModel model, IEnumerable<MapPointSet> pointSets, IEnumerable<string> layerFiles) {
+        public SpeciesRichnessProcessor(DistributionModel model, IEnumerable<MapPointSet> pointSets, IEnumerable<string> layerFiles, double cutOff) {
             this.Model = model;
             this.MapPointSets = pointSets;
             this.LayerFiles = layerFiles;
+            this.CutOff = cutOff;
         }
 
         protected MapPointSet _currentPointSet;
@@ -447,6 +455,8 @@ namespace BioLink.Client.Tools {
             if (ProgressObserver != null) {
                 ProgressObserver.ProgressMessage("Running models...");
             }
+
+            var first = layers[0];
 
             int setIndex = 0;
             foreach (MapPointSet pointset in MapPointSets) {
@@ -477,9 +487,27 @@ namespace BioLink.Client.Tools {
                 setIndex++;
             }
 
-            GridLayer targetLayer = null;
+            var target = new GridLayer(first.Width, first.Height) { DeltaLatitude = first.DeltaLatitude, DeltaLongitude = first.DeltaLongitude, Flags = first.Flags, Latitude0 = first.Latitude0, Longitude0 = first.Longitude0, NoValueMarker = first.NoValueMarker };            
+            target.SetAllCells(0);
+            foreach (GridLayer result in resultLayers) {
+                for (int y = 0; y < target.Height; ++y) {
+                    var lat = target.Latitude0 + (y * target.DeltaLatitude);		// Work out Lat. of this cell.
+                    for (int x = 0; x < target.Width; ++x) {
+                        var lon = target.Longitude0 + (x * target.DeltaLongitude); // Work out Long. of this cell.
+                        var fVal = result.GetValueAt(lat, lon, result.NoValueMarker);
+                        if (fVal == result.NoValueMarker) {
+                            target.SetCellValue(x, y, target.NoValueMarker);
+                        } else {
+                            if (fVal > CutOff) {
+                                var currentVal = target.GetCellValue(x, y);
+                                target.SetCellValue(x, y, currentVal + 1);
+                            }
+                        }
+                    }
+                }
+            }
 
-            return targetLayer;
+            return target;
         }
 
         public void Cancel() {
@@ -504,10 +532,11 @@ namespace BioLink.Client.Tools {
 
         public IEnumerable<string> LayerFiles { get; private set; }
 
+        public double CutOff { get; private set; }
+
         public bool IsCancelled { get; set; }
 
         public void ProgressStart(string message, bool indeterminate = false) {
-            // FireStartPointSet(CurrentPointSet);
         }
 
         public void ProgressMessage(string message, double? percentComplete = null) {
@@ -515,12 +544,11 @@ namespace BioLink.Client.Tools {
         }
 
         public void ProgressEnd(string message) {
-            // FireEndPointSet(CurrentPointSet);
         }
 
         private void FireEndPointSet(MapPointSet pointset) {
-            if (PointSetModelStarted != null) {
-                PointSetModelStarted(pointset);
+            if (PointSetModelCompleted != null) {
+                PointSetModelCompleted(pointset);
             }
         }
 
@@ -531,8 +559,8 @@ namespace BioLink.Client.Tools {
         }
 
         private void FireStartPointSet(MapPointSet pointset) {
-            if (PointSetModelCompleted != null) {
-                PointSetModelCompleted(pointset);
+            if (PointSetModelStarted != null) {
+                PointSetModelStarted(pointset);
             }
         }
 
