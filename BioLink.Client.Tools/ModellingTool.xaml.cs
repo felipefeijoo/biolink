@@ -44,7 +44,7 @@ namespace BioLink.Client.Tools {
             }
 
             gridSingle.Children.Add(_singleModelOptions = new SingleModelOptionsControl());
-            grdRichness.Children.Add(_richnessOptions = new SpeciesRichnessOptions());
+            grdRichness.Children.Add(_richnessOptions = new SpeciesRichnessOptions());            
         }
 
         protected User User { get; private set; }
