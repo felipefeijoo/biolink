@@ -71,6 +71,7 @@
     <Compile Include="FavoriteActions.cs" />
     <Compile Include="IgnoreFormattingChanges.cs" />
     <Compile Include="ImportService.cs" />
+    <Compile Include="XMLIOExportOptions.cs" />
     <Compile Include="MaterialService.cs" />
     <Compile Include="Model\Associate.cs" />
     <Compile Include="Model\AutoNumber.cs" />
@@ -132,6 +133,7 @@
     <Compile Include="TaxaService.cs" />
     <Compile Include="Model\TaxonRank.cs" />
     <Compile Include="User.cs" />
+    <Compile Include="XMLIOService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BioLinkUtilities\BioLink.Client.Utilities.csproj">

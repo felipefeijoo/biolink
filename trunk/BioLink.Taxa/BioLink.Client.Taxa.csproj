@@ -111,6 +111,9 @@
     <Compile Include="TaxonSelectorContentProvider.cs" />
     <Compile Include="TaxonViewModel.cs" />
     <Compile Include="TypeListReport.cs" />
+    <Compile Include="XMLExportOptions.xaml.cs">
+      <DependentUpon>XMLExportOptions.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BioLink.Client.Extensibility\BioLink.Client.Extensibility.csproj">
@@ -160,6 +163,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="TaxonNameDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="XMLExportOptions.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

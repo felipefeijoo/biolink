@@ -631,6 +631,16 @@ namespace BioLink.Client.Taxa {
             return set;
         }
 
+        public void XMLIOExport(params int[] taxaIds) {
+            var list = new List<int>(taxaIds);
+            var frm = new XMLExportOptions(User, list);
+            frm.Owner = this.FindParentWindow();
+            frm.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            if (frm.ShowDialog() == true) {
+                // ???
+            }
+        }
+
         public void DistributionMap(TaxonViewModel taxon) {
             var map = PluginManager.Instance.GetMap();
             if (map != null) {

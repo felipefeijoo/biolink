@@ -83,8 +83,11 @@ namespace BioLink.Client.Taxa {
                 }
 
                 builder.Separator();
+                builder.New("Export (XML)").Handler(() => { Explorer.XMLIOExport(Taxon.TaxaID.Value); }).End();
+
+                builder.Separator();
                 var pinnable = Explorer.Owner.CreatePinnableTaxon(Taxon.TaxaID.Value);
-                builder.New("_Pin to pin board").Handler(() => { PluginManager.Instance.PinObject(pinnable); });
+                builder.New("_Pin to pin board").Handler(() => { PluginManager.Instance.PinObject(pinnable); }).End();
                 builder.Separator();                
                 builder.New("_Edit Name...").Handler(() => { Explorer.EditTaxonName(Taxon); });
                 builder.New("_Edit Details...").Handler(() => { Explorer.ShowTaxonDetails(Taxon.TaxaID); }).End();
