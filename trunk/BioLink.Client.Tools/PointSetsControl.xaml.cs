@@ -34,8 +34,44 @@ namespace BioLink.Client.Tools {
             tvw.DragOver += new DragEventHandler(tvw_DragOver);
             tvw.Drop += new DragEventHandler(tvw_Drop);
 
+            tvw.MouseRightButtonUp += new MouseButtonEventHandler(tvw_MouseRightButtonUp);
+
             _model = new ObservableCollection<PointSetViewModel>();
             tvw.ItemsSource = _model;
+        }
+
+        void tvw_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            var builder = new ContextMenuBuilder(null);
+
+            var pointSet = tvw.SelectedItem as PointSetViewModel;
+
+            if (pointSet != null) {
+                builder.New("Add point").Handler(() => { AddNewPoint(); }).End();
+                builder.Separator();
+                builder.New("Remove point set").Handler(() => { RemoveSelectedPointSet(); }).End();
+                builder.New("Load point file").Handler(()=> { LoadPointFile(); }).End();
+                builder.New("Save point file").Handler(()=> { ExportSelected(); }).End();
+                builder.Separator();
+                builder.New("Plot points").Handler(()=> { PlotPointSet(pointSet.Model); }).End();
+                builder.Separator();
+                builder.New("Clear all points").Handler(()=> { ClearPoints(); }).End();
+                builder.Separator();
+                builder.New("Point options").Handler(()=> { EditPointSetOptions(); }).End();                    
+
+                tvw.ContextMenu = builder.ContextMenu;
+                return;
+            } 
+
+            var point = tvw.SelectedItem as PointViewModel;
+            if (point != null) {
+                builder.New("Add point").Handler(() => { AddNewPoint(); }).End();
+                builder.New("Edit point").Handler(() => { EditSelectedPoint(); }).End();
+                builder.Separator();
+                builder.New("Delete point").Handler(() => { RemoveSelectedPoint(); }).End();
+                tvw.ContextMenu = builder.ContextMenu;
+                return;
+            }
+
         }
 
         void tvw_Drop(object sender, DragEventArgs e) {
