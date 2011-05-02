@@ -14,9 +14,9 @@
                 <Label Content="Output file:" Height="28" HorizontalAlignment="Left" Margin="6,40,0,0" Name="label2" VerticalAlignment="Top" Width="83" />
                 <ComboBox Height="23" Margin="89,40,6,0" Name="cmbModel" VerticalAlignment="Top" />
                 <Label Content="Low:" Height="28" HorizontalAlignment="Left" Margin="41,74,0,0" Name="label3" VerticalAlignment="Top" Width="48" />
-                <ext:CustomColorPicker HorizontalAlignment="Left" Margin="89,74,0,0" Name="ctlLowValueColor" VerticalAlignment="Top" SelectedColor="White" />
+                <ext:CustomColorPicker HorizontalAlignment="Left" Margin="89,74,0,0" Name="ctlLowValueColor" VerticalAlignment="Top" SelectedColor="Red" />
                 <Label Content="High:" Height="28" HorizontalAlignment="Left" Margin="131,74,0,0" Name="label4" VerticalAlignment="Top" Width="48" />
-                <ext:CustomColorPicker HorizontalAlignment="Left" Margin="179,74,0,0" Name="ctlHighValueColor" VerticalAlignment="Top" SelectedColor="Red" />
+                <ext:CustomColorPicker HorizontalAlignment="Left" Margin="179,74,0,0" Name="ctlHighValueColor" VerticalAlignment="Top" SelectedColor="White" />
                 <Label Content="No value:" Height="28" HorizontalAlignment="Left" Margin="221,74,0,0" Name="label5" VerticalAlignment="Top" Width="60" />
                 <ext:CustomColorPicker HorizontalAlignment="Left" Margin="287,74,0,0" Name="ctlNoValueColor" VerticalAlignment="Top" SelectedColor="White" />
                 <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="406,74,0,0" Name="txtCutOff" VerticalAlignment="Top" Width="41" Text="80" />
