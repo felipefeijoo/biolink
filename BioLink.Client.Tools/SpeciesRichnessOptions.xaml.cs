@@ -18,7 +18,7 @@ namespace BioLink.Client.Tools {
     /// <summary>
     /// Interaction logic for SpeciesRichnessOptions.xaml
     /// </summary>
-    public partial class SpeciesRichnessOptions : UserControl {
+    public partial class SpeciesRichnessOptions : UserControl, IGridLayerBitmapOptions {
         public SpeciesRichnessOptions() {
             InitializeComponent();
             var models = PluginManager.Instance.GetExtensionsOfType<DistributionModel>();

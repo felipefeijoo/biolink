@@ -100,7 +100,7 @@
                                 
                                 <ProgressBar x:Name="progressRichness" Grid.Row="1" Margin="6,2,6,2" />
                                 
-                                <ListView Grid.Row="2" Name="lvwRichness">
+                                <ListView Grid.Row="2" Name="lvwRichness" Margin="6">
                                     <ListView.View>
                                         <GridView>
                                             <GridView.Columns>

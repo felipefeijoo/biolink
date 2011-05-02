@@ -19,7 +19,7 @@ namespace BioLink.Client.Tools {
     /// <summary>
     /// Interaction logic for SingleModelOptionsControl.xaml
     /// </summary>
-    public partial class SingleModelOptionsControl : UserControl {
+    public partial class SingleModelOptionsControl : UserControl, IGridLayerBitmapOptions {
         public SingleModelOptionsControl() {
             InitializeComponent();
 
@@ -58,5 +58,24 @@ namespace BioLink.Client.Tools {
                 return Double.Parse(txtCutOff.Text);
             }
         }
+
+        public Color HighColor {
+            get { return ctlHighColor.SelectedColor; }
+        }
+
+        public Color LowColor {
+            get { return ctlLowColor.SelectedColor; }
+        }
+
+        public Color NoValueColor {
+            get { return ctlNoValColor.SelectedColor; }
+        }
     }
+
+    public interface IGridLayerBitmapOptions {
+        Color HighColor { get; }
+        Color LowColor { get; }
+        Color NoValueColor { get; }
+    }
+
 }

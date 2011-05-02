@@ -94,11 +94,11 @@ namespace BioLink.Client.Tools {
             if (selected != null) {
                 double cutoff = _singleModelOptions.CutOff;
                 int intervals = _singleModelOptions.Intervals;
-                ShowGridLayerInMap(new GridLayer(selected.Name), intervals, cutoff);
+                ShowGridLayerInMap(new GridLayer(selected.Name), intervals, cutoff, _singleModelOptions);
             }
         }
 
-        private void ShowGridLayerInMap(GridLayer grid, int intervals, double cutoff, string filename = null) {
+        private void ShowGridLayerInMap(GridLayer grid, int intervals, double cutoff, IGridLayerBitmapOptions options, string filename = null) {
 
             this.InvokeIfRequired(() => {
                 var prefix = grid.Name;
@@ -107,9 +107,9 @@ namespace BioLink.Client.Tools {
                     prefix = f.Name.Substring(0, f.Name.LastIndexOf("."));
                 }
                 if (filename == null) {
-                    filename = LayerImageGenerator.GenerateTemporaryImageFile(grid, prefix, _singleModelOptions.ctlLowColor.SelectedColor, _singleModelOptions.ctlHighColor.SelectedColor, _singleModelOptions.ctlNoValColor.SelectedColor, cutoff, intervals);
+                    filename = LayerImageGenerator.GenerateTemporaryImageFile(grid, prefix, options.LowColor, options.HighColor, options.NoValueColor, cutoff, intervals);
                 } else {
-                    LayerImageGenerator.CreateImageFileFromGrid(grid, filename, _singleModelOptions.ctlLowColor.SelectedColor, _singleModelOptions.ctlHighColor.SelectedColor, _singleModelOptions.ctlNoValColor.SelectedColor, cutoff, intervals);
+                    LayerImageGenerator.CreateImageFileFromGrid(grid, filename, options.LowColor, options.HighColor, options.NoValueColor, cutoff, intervals);
                 }
 
                 var map = PluginManager.Instance.GetMap();
@@ -183,7 +183,7 @@ namespace BioLink.Client.Tools {
                                 TempFileManager.Attach(imageFilename);
                                 double cutoff = _singleModelOptions.CutOff;
                                 int intervals = _singleModelOptions.Intervals;
-                                ShowGridLayerInMap(result, intervals, cutoff, imageFilename);
+                                ShowGridLayerInMap(result, intervals, cutoff, _singleModelOptions, imageFilename);
                             }
                         });
                         ProgressMessage("Model complete.");
@@ -227,7 +227,7 @@ namespace BioLink.Client.Tools {
                 builder.New("Save as _GRD file").Handler(() => { SaveAsGRDFile(new GridLayer(selected.Name)); }).End();
                 builder.New("Save as _ASCII Grid file").Handler(() => { SaveAsASCIIFile(new GridLayer(selected.Name)); }).End();
                 builder.Separator();
-                builder.New("Show in _map").Handler(() => { ShowGridLayerInMap(new GridLayer(selected.Name), _singleModelOptions.Intervals, _singleModelOptions.CutOff); }).End();
+                builder.New("Show in _map").Handler(() => { ShowGridLayerInMap(new GridLayer(selected.Name), _singleModelOptions.Intervals, _singleModelOptions.CutOff, _singleModelOptions); }).End();
                 builder.Separator();
                 builder.New("Layer _properties").Handler(() => { ShowGridLayerProperties(new GridLayer(selected.Name)); }).End();
 
@@ -331,9 +331,13 @@ namespace BioLink.Client.Tools {
             JobExecutor.QueueJob(() => {
                 try {                    
                     var result = processor.RunSpeciesRichness();
-                    if (result != null) {
-                        var range = result.GetRange();
-                        ShowGridLayerInMap(result, (int) range.Range, 0);
+                    if (result != null) {                        
+                        this.InvokeIfRequired(() => {
+                            var range = result.GetRange();
+                            var imageFilename = SystemUtils.ChangeExtension(_richnessOptions.txtFilename.Text, "bmp");
+                            ShowGridLayerInMap(result, (int) range.Range, 0, _richnessOptions, imageFilename);
+                            result.SaveToGRDFile(_richnessOptions.txtFilename.Text);
+                        });
                     }
                 } finally {
                     this.InvokeIfRequired(() => {
