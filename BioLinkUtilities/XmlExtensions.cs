@@ -11,6 +11,7 @@ namespace BioLink.Client.Utilities {
         public static XmlElement AddNamedValue(this XmlElement parent, string name, string value) {
             var elem = parent.OwnerDocument.CreateElement(name);
             elem.InnerText = value;
+            parent.AppendChild(elem);
             return elem;
         }
 

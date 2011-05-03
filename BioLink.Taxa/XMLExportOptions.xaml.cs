@@ -27,6 +27,10 @@ namespace BioLink.Client.Taxa {
         public XMLExportOptions(User user, List<int> taxonIds) {
             InitializeComponent();
             TaxonIDs = taxonIds;
+            this.User = user;
+
+            txtFilename.Text = Config.GetUser(User, "XMLIOExport.LastExportFile", "");
+            
         }
 
         private void btnClose_Click(object sender, RoutedEventArgs e) {
@@ -76,6 +80,9 @@ namespace BioLink.Client.Taxa {
         private void StartExport() {
 
             _isCancelled = false;
+
+            // save the file off in prefs for later...
+            Config.SetUser(User, "XMLIOExport.LastExportFile", txtFilename.Text);
 
             if (string.IsNullOrEmpty(txtFilename.Text)) {
                 ErrorMessage.Show("You must select a destination file before you can continue");

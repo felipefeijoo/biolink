@@ -291,6 +291,17 @@ namespace BioLink.Data {
             return result;
         }
 
+        public string GetKingdomName(string kingdomCode) {
+            switch (kingdomCode.ToLower()) {
+                case "a":
+                    return "Animalia";
+                case "p":
+                    return "Plantae";
+                default:
+                    throw new Exception("Unrecognized kingdom code: " + kingdomCode);
+            }
+        }
+
         #region Names
 
         public void InsertOrUpdateAvailableName(AvailableName name) {
