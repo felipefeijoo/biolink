@@ -48,6 +48,10 @@ namespace BioLink.Data {
         public XmlElement JournalRoot { get; private set; }
         public XmlElement UnplacedTaxaRoot { get; private set; }
 
+
+        internal void Save(string filename) {
+            _xmlDoc.Save(filename);
+        }
     }
 
     
