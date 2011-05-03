@@ -22,6 +22,8 @@ namespace BioLink.Client.Taxa {
     /// </summary>
     public partial class XMLExportOptions : Window, IProgressObserver {
 
+        private bool _isCancelled;
+
         public XMLExportOptions(User user, List<int> taxonIds) {
             InitializeComponent();
             TaxonIDs = taxonIds;
@@ -73,6 +75,13 @@ namespace BioLink.Client.Taxa {
 
         private void StartExport() {
 
+            _isCancelled = false;
+
+            if (string.IsNullOrEmpty(txtFilename.Text)) {
+                ErrorMessage.Show("You must select a destination file before you can continue");
+                return;
+            }
+
             btnStart.IsEnabled = false;
             btnCancel.IsEnabled = true;
 
@@ -80,10 +89,13 @@ namespace BioLink.Client.Taxa {
 
             var service = new XMLIOService(User);
             JobExecutor.QueueJob(() => {
-                service.ExportXML(TaxonIDs, options, this);
+                service.ExportXML(TaxonIDs, options, this, IsCancelled);
             });
 
+        }
 
+        internal bool IsCancelled() {
+            return _isCancelled;
         }
 
         public void ProgressStart(string message, bool indeterminate = false) {
@@ -114,6 +126,10 @@ namespace BioLink.Client.Taxa {
                 progressBar.IsIndeterminate = false;
             });
 
+        }
+
+        private void btnCancel_Click(object sender, RoutedEventArgs e) {
+            _isCancelled = true;
         }
     }
 

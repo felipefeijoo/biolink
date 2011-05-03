@@ -165,6 +165,32 @@ namespace BioLink.Data {
             return t;
         }
 
+        public TaxonStatistics GetTaxonStatistics(int taxonId) {
+            var map = new Dictionary<string, int>();
+            int total = 0;
+            StoredProcReaderForEach("spBiotaStatistics", (reader) => {
+                int count = (int)reader["Count"];
+                map[reader["Category"] as string] = count;
+                total += count;
+
+            }, _P("intBiotaID", taxonId));
+
+            var stats = new TaxonStatistics();
+            
+            stats.Sites = (map.ContainsKey("Sites") ? map["Sites"] : 0);
+            stats.SiteVisits = (map.ContainsKey("Site Visits") ? map["Site Visits"] : 0);
+            stats.Material = (map.ContainsKey("Material") ? map["Material"] : 0);
+            stats.Specimens = (map.ContainsKey("Specimens") ? map["Specimens"] : 0);
+            stats.Multimedia = (map.ContainsKey("Multimedia Items") ? map["Multimedia Items"] : 0);
+            stats.TypeSpecimens = (map.ContainsKey("Type Specimens") ? map["Type Specimens"] : 0);
+            stats.Notes = (map.ContainsKey("Notes") ? map["Notes"] : 0);
+            stats.References = (map.ContainsKey("References") ? map["References"] : 0);
+
+            stats.TotalItems = total;
+
+            return stats;
+        }
+
         public void UpdateTaxon(Taxon taxon) {
             StoredProcUpdate("spBiotaUpdate", 
                 _P("intBiotaID", taxon.TaxaID), 

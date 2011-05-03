@@ -111,6 +111,7 @@
     <Compile Include="SystemUtils.cs" />
     <Compile Include="TempFileManager.cs" />
     <Compile Include="tests\FileSystemTraverserTests.cs" />
+    <Compile Include="XmlExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="tests\testData\empty1.txt">
