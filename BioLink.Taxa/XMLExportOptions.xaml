@@ -12,7 +12,7 @@
         </Grid.RowDefinitions>
         
         <TextBlock Text="You have selected to export one or more taxon. Please select how you wish to export this data." Height="51" Name="label1" VerticalAlignment="Top" TextWrapping="WrapWithOverflow" Margin="12,12,12,0" />
-        <Label Content="Please select a destination file:" Height="28" Margin="12,69,12,0" Name="label2" VerticalAlignment="Top" />
+        <TextBlock Text="Please select a destination file:" Height="28" Margin="12,69,12,0" Name="label2" VerticalAlignment="Top" />
         <my:FilenameTextBox Margin="12,94,12,0" Name="txtFilename" VerticalAlignment="Top" />
         
         <Grid Margin="12,123,12,0" Height="122" VerticalAlignment="Top">
@@ -39,9 +39,9 @@
         <Grid Grid.Row="1" Background="{x:Static SystemColors.ControlBrush}">
             <Button Content="_Close" Height="23" HorizontalAlignment="Right" Margin="0,6,6,0" Name="btnClose" VerticalAlignment="Top" Width="75" Click="btnClose_Click" />
             <Button Content="_Start export" Height="23" HorizontalAlignment="Right" Margin="0,6,87,0" Name="btnStart" VerticalAlignment="Top" Width="90" Click="btnStart_Click" />
-            <Button Content="C_ancel export" Height="23" HorizontalAlignment="Right" Margin="0,6,183,0" Name="btnCancel" VerticalAlignment="Top" Width="90" IsEnabled="False" />
+            <Button Content="C_ancel export" Height="23" HorizontalAlignment="Right" Margin="0,6,183,0" Name="btnCancel" VerticalAlignment="Top" Width="90" IsEnabled="False" Click="btnCancel_Click" />
         </Grid>
-        <ProgressBar Height="24" HorizontalAlignment="Left" Margin="12,0,0,6" Name="progressBar" VerticalAlignment="Bottom" Width="470" />
+        <ProgressBar Height="24" Margin="12,0,12,6" Name="progressBar" VerticalAlignment="Bottom" />
         <Label Height="28" Margin="12,0,12,28" Name="lblProgress" VerticalAlignment="Bottom" />
     </Grid>
     
