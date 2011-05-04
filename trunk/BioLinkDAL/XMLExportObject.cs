@@ -29,6 +29,10 @@ namespace BioLink.Data {
             UnplacedTaxaRoot = CreateNode(TaxaRoot, "UNPLACEDTAXA");
         }
 
+        public XmlDocument XMLDocument { 
+            get { return _xmlDoc; } 
+        }
+
         public XmlElement CreateNode(XmlNode parent, string tag) {
             var element = _xmlDoc.CreateElement(tag);
             parent.AppendChild(element);

@@ -766,6 +766,15 @@ namespace BioLink.Data {
             );
         }
 
+        public int? GetReferenceIDFromRefCode(string refCode) {
+            int? ret = null;
+            StoredProcReaderFirst("spReferenceGetIDForCode", (reader) => {
+                ret = (int) reader["intRefID"];
+            }, _P("vchrRefCode", refCode));
+
+            return ret;
+        }
+
         #endregion
 
         #region AutoNumbers
