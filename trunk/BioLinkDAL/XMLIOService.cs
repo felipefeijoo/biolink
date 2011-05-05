@@ -269,17 +269,17 @@ namespace BioLink.Data {
                 CreateNamedNode(taxonNode, "vchrWhoCreated", taxon.WhoCreated);
 
                 // CommonNames
-                // AddCommonNames(taxonNode, taxon);
+                AddCommonNames(taxonNode, taxon);
                 // References
                 AddReferences(taxonNode, taxon.TaxaID.Value, "Taxon");
                 // Distribution
-                //AddTaxonDistribution TaxonNode, TaxonID
+                AddTaxonDistribution(taxonNode, taxon);
                 // Multimedia
                 AddMultimedia(taxonNode, taxon.TaxaID.Value, "Taxon");
                 // Morphology
                 //AddMorphology TaxonNode, TaxonID, "Taxon"
                 // Associates
-                //AddTaxonAssociates TaxonNode, TaxonID
+                AddTaxonAssociates(taxonNode, taxon);
                 // Traits
                 AddTraits(taxonNode, taxon.TaxaID.Value, "Taxon");
                 // Keywords
@@ -315,6 +315,156 @@ namespace BioLink.Data {
             }
 
             return taxonNode;
+        }
+
+        private void AddTaxonAssociates(XmlElement ParentNode, Taxon taxon) {
+            var associates = SupportService.GetAssociates("Taxon", taxon.TaxaID.Value);    
+            Log("Adding Taxon Associates (TaxonID={0})", taxon.TaxaID.Value);    
+            var XMLAssoc = _xmlDoc.CreateNode(ParentNode, "ASSOCIATES");
+            AddAssociates(XMLAssoc, associates);            
+        }
+
+        private void AddAssociates(XmlElement XMLAssoc, List<Associate> associates) {
+            foreach (Associate assoc in associates) {
+                if (IsCancelled) {
+                    break;
+                }
+        var XMLAssocItem = _xmlDoc.CreateNode(XMLAssoc, "ASSOCIATEITEM");
+        var assocGuid = assoc.AssocGUID.ToString();        
+        XMLAssocItem.AddAttribute("ID", assocGuid);
+        
+        // also add to the general associates area if not already there
+        var lngAssociateRecID = assoc.AssociateID;
+        var guid = _associateList.GUIDForID(assoc.AssociateID);
+        if (string.IsNullOrWhiteSpace(guid)) {
+            Log("Adding Associate (AssociateID={0})", assoc.AssociateID);
+            var XMLAssocParent = _xmlDoc.AssociateRoot;
+            var XMLAssocNode = _xmlDoc.CreateNode(XMLAssocParent, "ASSOCIATE");
+            XMLAssocNode.AddAttribute("ID", assoc.AssocGUID.ToString());
+            
+            _associateList.Add(guid, lngAssociateRecID);
+
+            int lngFromCatID, lngToCatID, lngFromID, lngToID;
+            string strFromCategory;
+            string strToCategory;
+            
+            if (assoc.Direction.Equals("FromTo", StringComparison.CurrentCultureIgnoreCase)) {
+                lngFromCatID = assoc.FromCatID;
+                lngToCatID = assoc.ToCatID.GetValueOrDefault(-1);
+                lngFromID = assoc.FromIntraCatID;
+                lngToID = assoc.ToIntraCatID.GetValueOrDefault(-1);
+                strFromCategory = assoc.FromCategory;
+                strToCategory = assoc.ToCategory;
+            } else {            
+                lngFromCatID = assoc.ToCatID.GetValueOrDefault(-1);
+                lngToCatID = assoc.FromCatID;
+                lngFromID = assoc.ToIntraCatID.GetValueOrDefault(-1);   // GetRowProperty(vAssoc, i, "intToIntraCatID", -1)
+                lngToID =  assoc.FromIntraCatID; // GetRowProperty(vAssoc, i, "intFromIntraCatID", -1)
+                strFromCategory = assoc.ToCategory; // GetRowProperty(vAssoc, i, "ToCategory", "")
+                strToCategory = assoc.FromCategory; //GetRowProperty(vAssoc, i, "FromCategory", "")
+            }
+            CreateNamedNode(XMLAssocNode, "FROMCATEGORYID", lngFromCatID);
+
+            switch (strFromCategory) {
+                case "Taxon":
+                    CreateNamedNode(XMLAssocNode, "FROMINTRACATID", AddToUnplacedList(lngFromID));
+                    break;
+                case "Material":
+                    if (AddMaterialItem(lngFromID, guid.ToString()) != null) {
+                        CreateNamedNode(XMLAssocNode, "FROMINTRACATID", guid.ToString());
+                    }
+                    break;
+                default:                
+                    CreateNamedNode(XMLAssocNode, "ASSOCDESCRIPTION", assoc.AssocDescription);
+                    break;
+            }
+
+            CreateNamedNode(XMLAssocNode, "TOCATEGORYID", lngToCatID);
+
+            switch (strToCategory) {
+                case "Taxon":
+                    CreateNamedNode(XMLAssocNode, "TOINTRACATID", AddToUnplacedList(lngToID));
+                    break;
+                case "Material":
+                    if (AddMaterialItem(lngToID, guid.ToString()) != null) {
+                        CreateNamedNode(XMLAssocNode, "TOINTRACATID", guid.ToString());
+                    }
+                    break;
+                default:                
+                    CreateNamedNode(XMLAssocNode, "ASSOCDESCRIPTION", assoc.AssocDescription);
+                    break;
+            }
+            
+            CreateNamedNode(XMLAssocNode, "RELATIONFROMTO", assoc.RelationFromTo);
+            CreateNamedNode(XMLAssocNode, "RELATIONTOFROM", assoc.RelationToFrom);
+            var lngRegionID = assoc.PoliticalRegionID;
+            var strRegionGUID = assoc.RegionGUID.ToString();
+            if (lngRegionID > 0) {
+                AddRegionItem(lngRegionID, strRegionGUID);
+            }
+
+            CreateNamedNode(XMLAssocNode, "REGIONID", strRegionGUID);
+            CreateNamedNode(XMLAssocNode, "SOURCE", assoc.Source);
+            CreateNamedNode(XMLAssocNode, "REFID", AddReferenceItem(assoc.RefID));
+            CreateNamedNode(XMLAssocNode, "REFPAGE", assoc.RefPage);
+            CreateNamedNode(XMLAssocNode, "UNCERTAIN", assoc.Uncertain);
+            CreateNamedNode(XMLAssocNode, "NOTES", assoc.Notes);
+        }
+            }
+        }
+
+        private void AddRegionItem(int lngRegionID, string strRegionGUID) {
+            throw new NotImplementedException();
+        }
+
+        private bool AddMaterialItem(int lngFromID, string guid) {
+            throw new NotImplementedException();
+        }
+
+        private string AddToUnplacedList(int lngFromID) {
+            throw new NotImplementedException();
+        }
+
+        private void AddTaxonDistribution(XmlElement ParentNode, Taxon taxon) {
+
+            var dist = TaxaService.GetDistribution(taxon.TaxaID);
+            var strDesc = TaxaService.GetDistributionQualification(taxon.TaxaID.Value);
+    
+            Log("Adding Taxon Distribution (TaxonID={0})", taxon.TaxaID.Value);
+            var XMLDist = _xmlDoc.CreateNode(ParentNode, "DISTRIBUTION");
+            _xmlDoc.CreateNode(XMLDist, "DESCRIPTION").InnerText = strDesc;
+
+            foreach (TaxonDistribution d in dist) {            
+                if (IsCancelled) {
+                    break;
+                }
+
+                var XMLDistItem = _xmlDoc.CreateNode(XMLDist, "DISTRIBUTIONITEM");
+                XMLDistItem.AddAttribute("ID", d.GUID.ToString());
+                CreateNamedNode(XMLDistItem, "bitIntroduced", d.Introduced);
+                CreateNamedNode(XMLDistItem, "bitUncertain", d.Uncertain);
+                CreateNamedNode(XMLDistItem, "bitThroughoutRegion", d.ThroughoutRegion);
+                CreateNamedNode(XMLDistItem, "txtQual", d.Qual);
+                var XMLNode = CreateNamedNode(XMLDistItem, "txtDistRegionFullPath", d.DistRegionFullPath);
+                XMLNode.AddAttribute("PATHSEPARATOR", "\\");
+            }
+        }
+
+        private void AddCommonNames(XmlElement taxonNode, Taxon taxon) {
+          Log("Adding Commmon Names (TaxonID={0})", taxon.TaxaID.Value);
+
+          var commonNames = TaxaService.GetCommonNames(taxon.TaxaID.Value);
+
+        var XMLNameList = _xmlDoc.CreateNode(taxonNode, "COMMONNAMELIST");
+            foreach (CommonName name in commonNames) {
+            var XMLName = _xmlDoc.CreateNode(XMLNameList, "COMMONNAME");
+                XMLName.AddAttribute("ID", name.GUID.ToString());
+                CreateNamedNode(XMLName, "vchrCommonName", name.Name);
+                CreateNamedNode(XMLName, "intRefID", AddReferenceItem(name.RefID));
+                CreateNamedNode(XMLName, "vchrRefPage", name.RefPage);
+                CreateNamedNode(XMLName, "txtNotes", ExpandNotes(name.Notes));
+                CreateNamedNode(XMLName, "vchrRefCode", name.RefCode);
+            }  
         }
 
         private void AddReferences(XmlElement ParentNode, int itemId, string category) {
