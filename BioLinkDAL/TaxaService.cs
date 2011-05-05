@@ -486,6 +486,16 @@ namespace BioLink.Data {
             return StoredProcToList("spBiotaDistGet", mapper, _P("intBiotaID", TaxonID.Value));
         }
 
+        public string GetDistributionQualification(int taxonId) {
+            string result = null;
+
+            StoredProcReaderFirst("spBiotaGetDistQual", (reader) => {
+                result = reader[0] as string;
+            }, _P("intBiotaID", taxonId));
+
+            return result;
+        }
+
         public void UpdateDistributionQualification(int? TaxonID, string distQual) {
             StoredProcUpdate("spBiotaUpdateDistQual", _P("intBiotaID", TaxonID.Value), _P("txtDistQual", distQual));
         }
