@@ -97,6 +97,10 @@ namespace BioLink.Client.Taxa {
             var service = new XMLIOService(User);
             JobExecutor.QueueJob(() => {
                 service.ExportXML(TaxonIDs, options, this, IsCancelled);
+                this.InvokeIfRequired(() => {
+                    btnStart.IsEnabled = true;
+                    btnCancel.IsEnabled = false;
+                });
             });
 
         }

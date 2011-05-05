@@ -5,7 +5,6 @@ using System.Text;
 using BioLink.Client.Utilities;
 using System.IO;
 using System.Xml;
-using System.Xml.XPath;
 using BioLink.Data.Model;
 
 namespace BioLink.Data {
@@ -35,12 +34,12 @@ namespace BioLink.Data {
 
         public List<XMLIOMultimediaLink> GetExportMultimediaLinks(string category, int intraCatId) {
             var mapper = new GenericMapperBuilder<XMLIOMultimediaLink>().build();
-            return StoredProcToList("spXMLExportMulimediaList", mapper, _P("vchrCategory", category), _P("intIntraCatID", intraCatId));
+            return StoredProcToList("spXMLExportMultimediaList", mapper, _P("vchrCategory", category), _P("intIntraCatID", intraCatId));
         }
 
         public XMLIOMultimedia GetMultimedia(int mediaId) {
 
-            var mapper = new GenericMapperBuilder<XMLIOMultimedia>().Override(new BinaryConvertingMapper("imgMultimedia")).build();
+            var mapper = new GenericMapperBuilder<XMLIOMultimedia>().build();
             XMLIOMultimedia ret = null;
             StoredProcReaderFirst("spXMLExportMultimediaGet", (reader) => {
                 ret = mapper.Map(reader);
@@ -61,7 +60,9 @@ namespace BioLink.Data {
     }
 
     class BinaryConvertingMapper : ConvertingMapper {
-        public BinaryConvertingMapper(string columnName) : base(columnName, (x) => { return ((System.Data.SqlTypes.SqlBinary)x).Value; }) { }
+        public BinaryConvertingMapper(string columnName) : base(columnName, (x) => { 
+            return ((System.Data.SqlTypes.SqlBinary)x).Value; }
+        ) { }
     }
 
     class XMLExporter {
@@ -106,6 +107,7 @@ namespace BioLink.Data {
 
         private XMLExportObject _xmlDoc;
         private int _itemTotal;
+        private int _itemCount;
 
         private TaxaService TaxaService { get; set; }
         private SupportService SupportService { get; set; }
@@ -208,6 +210,14 @@ namespace BioLink.Data {
             return newParent;
         }
 
+        private void ProgressTick() {
+            _itemCount++;
+            var percent = ((double)_itemCount / (double)_itemTotal) * 100.0;
+            if (ProgressObserver != null) {
+                ProgressObserver.ProgressMessage("Exporting data...", percent);
+            }
+        }
+
         private XmlElement AddTaxonElement(XmlElement parent, Taxon taxon, bool recurseChildren) {
 
             if (IsCancelled) {
@@ -223,6 +233,9 @@ namespace BioLink.Data {
                 }
 
             } else {
+
+                ProgressTick();
+
                 guid = taxon.GUID.Value.ToString();
                 taxonNode = _xmlDoc.CreateNode(parent, "TAXON");
                 taxonNode.AddAttribute("ID", guid);
@@ -237,7 +250,7 @@ namespace BioLink.Data {
                 // Rank and Kingom are special!
                 var taxaService = new TaxaService(User);
                 var rank = taxaService.GetTaxonRank(taxon.ElemType);
-                var kingdomLong = taxaService.GetKingdomName(taxon.KingdomCode);
+                var kingdomLong = string.IsNullOrWhiteSpace(taxon.KingdomCode) ? "" : taxaService.GetKingdomName(taxon.KingdomCode);
 
                 CreateNamedNode(taxonNode, "RankLong", rank == null ? "" : rank.LongName);
                 CreateNamedNode(taxonNode, "KingdomLong", kingdomLong);
@@ -258,21 +271,21 @@ namespace BioLink.Data {
                 // CommonNames
                 // AddCommonNames(taxonNode, taxon);
                 // References
-                //AddReferences TaxonNode, TaxonID, "Taxon"
+                AddReferences(taxonNode, taxon.TaxaID.Value, "Taxon");
                 // Distribution
                 //AddTaxonDistribution TaxonNode, TaxonID
                 // Multimedia
-                //AddMultimedia TaxonNode, TaxonID, "Taxon"
+                AddMultimedia(taxonNode, taxon.TaxaID.Value, "Taxon");
                 // Morphology
                 //AddMorphology TaxonNode, TaxonID, "Taxon"
                 // Associates
                 //AddTaxonAssociates TaxonNode, TaxonID
                 // Traits
-                //AddTraits TaxonNode, TaxonID, "Taxon"
+                AddTraits(taxonNode, taxon.TaxaID.Value, "Taxon");
                 // Keywords
                 //AddKeywords TaxonNode, TaxonID, "Taxon"
                 // Notes
-                //AddNotes TaxonNode, TaxonID, "Taxon"
+                AddNotes(taxonNode, taxon.TaxaID.Value, "Taxon");
                 // Storage Locations
                 //AddStorageLocations TaxonNode, TaxonID
 
@@ -287,10 +300,10 @@ namespace BioLink.Data {
                 }
             }
 
-            if (Options.ExportChildTaxa && !IsCancelled) {
+            if (recurseChildren && !IsCancelled) {
 
                 var childIds = new XMLIOService(User).GetTaxaIdsForParent(taxon.TaxaID.Value);
-                
+
                 foreach (int childId in childIds) {
                     if (IsCancelled) {
                         break;
@@ -302,6 +315,34 @@ namespace BioLink.Data {
             }
 
             return taxonNode;
+        }
+
+        private void AddReferences(XmlElement ParentNode, int itemId, string category) {
+            var refLinks = SupportService.GetReferenceLinks(category, itemId);
+            Log("Adding References ({0}, ID={1})", category, itemId);
+            var XMLRefParent = _xmlDoc.CreateNode(ParentNode, "REFERENCES");
+
+            foreach (RefLink link in refLinks) {
+                if (IsCancelled) {
+                    break;
+                }
+
+                var lngRefID = link.RefID;
+                var strRefGUID = AddReferenceItem(lngRefID);
+                if (!string.IsNullOrWhiteSpace(strRefGUID)) {
+                    var XMLRef = _xmlDoc.CreateNode(XMLRefParent, "REFERENCELINK");
+                    XMLRef.AddAttribute("ID", link.GUID.ToString());
+
+                    CreateNamedNode(XMLRef, "intRefID", strRefGUID);
+                    CreateNamedNode(XMLRef, "RefLink", link.RefLinkID);
+                    CreateNamedNode(XMLRef, "vchrRefPage", link.RefPage);
+                    CreateNamedNode(XMLRef, "txtRefQual", ExpandNotes(link.RefQual));
+                    CreateNamedNode(XMLRef, "intOrder", link.Order);
+                    CreateNamedNode(XMLRef, "bitUseInReport", link.UseInReport);
+                } else {
+                    Log("Failed to locate Reference Item {0} for {1}. ID={2} -  RefLink not exported.", lngRefID, category, itemId);
+                }
+            }
         }
 
         private void AddAvailableNameData(XmlElement taxonNode, Taxon taxon, TaxonRank rank) {
@@ -343,9 +384,9 @@ namespace BioLink.Data {
         }
 
         private string AddReferenceItem(int? refId) {
-            if (refId.HasValue) {
+            if (refId.HasValue && refId.Value > 0) {
                 var guid = _referenceList.GUIDForID(refId.Value);
-                if (!string.IsNullOrEmpty(guid)) {
+                if (string.IsNullOrEmpty(guid)) {
                     var r = SupportService.GetReference(refId.Value);
                     if (r != null) {
                         Log("Adding Reference (RefID={0})", refId);
@@ -406,27 +447,31 @@ namespace BioLink.Data {
             if (journalId < 0) {
                 return "";
             }
-        
+
             var guid = _journalList.GUIDForID(journalId);
             if (string.IsNullOrEmpty(guid)) {
                 var journal = SupportService.GetJournal(journalId);
-                Log("Adding Journal Item (JournalID={0})", journalId );
-                var XMLJournal = _xmlDoc.CreateNode(_xmlDoc.JournalRoot, "JOURNAL");
-                guid = journal.GUID.ToString();
-                XMLJournal.AddAttribute("ID", guid);
-                CreateNamedNode(XMLJournal, "vchrAbbrevName", journal.AbbrevName);
-                CreateNamedNode(XMLJournal, "vchrAbbrevName2", journal.AbbrevName2);
-                CreateNamedNode(XMLJournal, "vchrAlias", journal.Alias);
-                CreateNamedNode(XMLJournal, "vchrFullName", journal.FullName);
-                CreateNamedNode(XMLJournal, "txtNotes", ExpandNotes(journal.Notes));
-                CreateNamedNode(XMLJournal, "dtDateCreated", FormatDate(journal.DateCreated));
-                CreateNamedNode(XMLJournal, "vchrWhoCreated", journal.WhoCreated);
-        
-                AddTraits(XMLJournal, journalId, "Journal");
-                AddNotes(XMLJournal, journalId, "Journal");        
-                _journalList.Add(guid, journalId);
+                if (journal != null) {
+                    Log("Adding Journal Item (JournalID={0})", journalId);
+                    var XMLJournal = _xmlDoc.CreateNode(_xmlDoc.JournalRoot, "JOURNAL");
+                    guid = journal.GUID.ToString();
+                    XMLJournal.AddAttribute("ID", guid);
+                    CreateNamedNode(XMLJournal, "vchrAbbrevName", journal.AbbrevName);
+                    CreateNamedNode(XMLJournal, "vchrAbbrevName2", journal.AbbrevName2);
+                    CreateNamedNode(XMLJournal, "vchrAlias", journal.Alias);
+                    CreateNamedNode(XMLJournal, "vchrFullName", journal.FullName);
+                    CreateNamedNode(XMLJournal, "txtNotes", ExpandNotes(journal.Notes));
+                    CreateNamedNode(XMLJournal, "dtDateCreated", FormatDate(journal.DateCreated));
+                    CreateNamedNode(XMLJournal, "vchrWhoCreated", journal.WhoCreated);
+
+                    AddTraits(XMLJournal, journalId, "Journal");
+                    AddNotes(XMLJournal, journalId, "Journal");
+                    _journalList.Add(guid, journalId);
+                } else {
+                    Log("Failed to retrieve journal details (Journal ID={0}).", journalId);
+                }
             }
-    
+
             return guid;
         }
 
@@ -462,42 +507,56 @@ namespace BioLink.Data {
             var guid = _multimediaList.GUIDForID(MediaID);
             if (string.IsNullOrEmpty(guid)) {
                 var mm = new XMLIOService(User).GetMultimedia(MediaID);
-                Log("Adding Multimedia Item (MediaID={0})", MediaID);
-                var XMLMM = _xmlDoc.CreateNode(_xmlDoc.MultimediaRoot, "MULTIMEDIAITEM");
-                guid = mm.GUID.ToString();
-                XMLMM.AddAttribute("ID", guid);
-                XMLMM.AddAttribute("ENCODING", "UUENCODE");
-                var strFilename = mm.Name;
-                var strExtension = mm.FileExtension;
-                CreateNamedNode(XMLMM, "vchrName", strFilename);
-                CreateNamedNode(XMLMM, "vchrNumber", mm.Number);
-                CreateNamedNode(XMLMM, "vchrArtist", mm.Artist);
-                CreateNamedNode(XMLMM, "vchrDateRecorded", mm.DateRecorded);
-                CreateNamedNode(XMLMM, "vchrOwner", mm.Owner);
-                CreateNamedNode(XMLMM, "vchrFileExtension", strExtension);
-                CreateNamedNode(XMLMM, "intSizeInBytes", mm.SizeInBytes);
-                CreateNamedNode(XMLMM, "txtCopyright", mm.Copyright);
-                CreateNamedNode(XMLMM, "dtDateCreated", FormatDate(mm.DateCreated));
-                CreateNamedNode(XMLMM, "vchrWhoCreated", mm.WhoCreated);
+                if (mm != null) {
+                    Log("Adding Multimedia Item (MediaID={0})", MediaID);
+                    var XMLMM = _xmlDoc.CreateNode(_xmlDoc.MultimediaRoot, "MULTIMEDIAITEM");
+                    guid = mm.GUID.ToString();
+                    XMLMM.AddAttribute("ID", guid);
+                    XMLMM.AddAttribute("ENCODING", "BASE64");
+                    var strFilename = mm.Name;
+                    var strExtension = mm.FileExtension;
+                    CreateNamedNode(XMLMM, "vchrName", strFilename);
+                    CreateNamedNode(XMLMM, "vchrNumber", mm.Number);
+                    CreateNamedNode(XMLMM, "vchrArtist", mm.Artist);
+                    CreateNamedNode(XMLMM, "vchrDateRecorded", mm.DateRecorded);
+                    CreateNamedNode(XMLMM, "vchrOwner", mm.Owner);
+                    CreateNamedNode(XMLMM, "vchrFileExtension", strExtension);
+                    CreateNamedNode(XMLMM, "intSizeInBytes", mm.SizeInBytes);
+                    CreateNamedNode(XMLMM, "txtCopyright", mm.Copyright);
+                    CreateNamedNode(XMLMM, "dtDateCreated", FormatDate(mm.DateCreated));
+                    CreateNamedNode(XMLMM, "vchrWhoCreated", mm.WhoCreated);
 
-                Log("UUEncoding image data for multimedia {0}", MediaID);
+                    Log("Base64 Encoding image data for multimedia {0}", MediaID);
+                    var XMLData = _xmlDoc.XMLDocument.CreateCDataSection(Convert.ToBase64String(mm.Multimedia));
+                    XMLMM.AppendChild(XMLData);
 
-                using (var imgStream = new MemoryStream(mm.Multimedia)) {
-                    using (var outputStream = new MemoryStream()) {
-                        UUCodec.UUEncode(imgStream, outputStream);
-                        outputStream.Position = 0;
-                        var reader = new StreamReader(outputStream);
-                        var imageData = reader.ReadToEnd();
-                        var XMLData = _xmlDoc.XMLDocument.CreateCDataSection(imageData);
-                        XMLMM.AppendChild(XMLData);
+                    //using (var imgStream = new MemoryStream(mm.Multimedia)) {
+                    //    using (var outputStream = new MemoryStream()) {
+                    //        try {
+                                
+                    //            UUCodec.UUEncode(imgStream, outputStream);
+                    //            outputStream.Position = 0;
+                    //            var reader = new StreamReader(outputStream);
+                    //            var imageData = reader.ReadToEnd();
 
-                    }
+                    //            if (imageData.Contains("]]>")) {
+                    //                imageData = imageData.Replace("]]>", "]]&gt;");
+                    //            }
+                    //            var XMLData = _xmlDoc.XMLDocument.CreateCDataSection(imageData);
+                    //            XMLMM.AppendChild(XMLData);
+                    //        } catch (Exception ex) {
+                    //            Log("Exception encoding Multimedia Item {0}: {1}", MediaID, ex.Message);
+                    //        }
+                    //    }
+                    //}
+
+                    AddTraits(XMLMM, MediaID, "Multimedia");
+                    AddNotes(XMLMM, MediaID, "Multimedia");
+
+                    _multimediaList.Add(guid, MediaID);
+                } else {
+                    Log("Failed to export multimedia for item {0} - no media found.", MediaID);
                 }
-
-                AddTraits(XMLMM, MediaID, "Multimedia");
-                AddNotes(XMLMM, MediaID, "Multimedia");
-
-                _multimediaList.Add(guid, MediaID);
             }
             return guid;
         }
@@ -605,48 +664,89 @@ namespace BioLink.Data {
         }
 
         private void AddGANData(XmlElement taxonNode, Taxon taxon) {
-            throw new NotImplementedException();
+            Log("Genus Available Name (TaxonID={0})", taxon.TaxaID.Value);
+            var gan = TaxaService.GetGenusAvailableName(taxon.TaxaID.Value);
+            if (gan != null) {
+                var XMLNode = _xmlDoc.CreateNode(taxonNode, "GAN");
+                XMLNode.AddAttribute("ID", gan.GUID.ToString());
+                CreateNamedNode(XMLNode, "intRefID", AddReferenceItem(gan.RefID));
+                CreateNamedNode(XMLNode, "vchrRefPage", gan.RefPage);
+                CreateNamedNode(XMLNode, "txtRefQual", gan.RefQual);
+                CreateNamedNode(XMLNode, "sintDesignation", DesignationStr(gan.Designation));
+                CreateNamedNode(XMLNode, "vchrTSFixationMethod", gan.TSFixationMethod);
+                CreateNamedNode(XMLNode, "vchrTypeSpecies", gan.TypeSpecies);
+                CreateNamedNode(XMLNode, "vchrRefCode", gan.RefCode);
+
+                var isData = TaxaService.GetGenusAvailableNameIncludedSpecies(taxon.TaxaID.Value);
+
+                foreach (GANIncludedSpecies ganis in isData) {
+                    var XMLISNode = _xmlDoc.CreateNode(XMLNode, "INCLUDEDSPECIES");
+                    XMLISNode.SetAttribute("ID", ganis.GUID.ToString());
+                }
+            } else {
+                Log("No Genus Available Name data for taxon {0} (ID {1})", taxon.TaxaFullName, taxon.TaxaID.Value);
+            }
+        }
+
+        private string DesignationStr(int Designation) {
+
+            switch (Designation) {
+                case 0:
+                    return "Designated (Type Species)";
+                case 1:
+                    return "None Required";
+                case 2:
+                    return "Not Designated (With Included Species)";
+                case 3:
+                    return "Not Designated (Without Included Species)";
+                default:
+                    return "Unknown Designation";
+            }
         }
 
         private void AddSANData(XmlElement taxonNode, Taxon taxon) {
             Log("Species Available Name (TaxonID={0})", taxon.TaxaID.Value);
 
             var san = TaxaService.GetSpeciesAvailableName(taxon.TaxaID.Value);
-            var typeData = TaxaService.GetSANTypeData(taxon.TaxaID.Value);
-            // var typeDataTypes = TaxaService.GetSANTypeDataTypes(taxon.TaxaID.Value);
 
-            var XMLNode = _xmlDoc.CreateNode(taxonNode, "SAN");
+            if (san != null) {
+                var typeData = TaxaService.GetSANTypeData(taxon.TaxaID.Value);
+                // var typeDataTypes = TaxaService.GetSANTypeDataTypes(taxon.TaxaID.Value);
 
-            XMLNode.AddAttribute("ID", san.GUID.ToString());
-            CreateNamedNode(XMLNode, "intRefID", AddReferenceItem(san.RefID));
-            CreateNamedNode(XMLNode, "vchrRefPage", san.RefPage);
-            CreateNamedNode(XMLNode, "txtRefQual", san.RefQual);
-            CreateNamedNode(XMLNode, "vchrPrimaryType", san.PrimaryType);
-            CreateNamedNode(XMLNode, "vchrSecondaryType", san.SecondaryType);
-            CreateNamedNode(XMLNode, "bitPrimaryTypeProbable", san.PrimaryTypeProbable);
-            CreateNamedNode(XMLNode, "bitSecondaryTypeProbable", san.SecondaryTypeProbable);
-            CreateNamedNode(XMLNode, "vchrRefCode", san.RefCode);
+                var XMLNode = _xmlDoc.CreateNode(taxonNode, "SAN");
 
-            foreach (SANTypeData type in typeData) {
-                var XMLTypeNode = _xmlDoc.CreateNode(XMLNode, "SANTYPE");
+                XMLNode.AddAttribute("ID", san.GUID.ToString());
+                CreateNamedNode(XMLNode, "intRefID", AddReferenceItem(san.RefID));
+                CreateNamedNode(XMLNode, "vchrRefPage", san.RefPage);
+                CreateNamedNode(XMLNode, "txtRefQual", san.RefQual);
+                CreateNamedNode(XMLNode, "vchrPrimaryType", san.PrimaryType);
+                CreateNamedNode(XMLNode, "vchrSecondaryType", san.SecondaryType);
+                CreateNamedNode(XMLNode, "bitPrimaryTypeProbable", san.PrimaryTypeProbable);
+                CreateNamedNode(XMLNode, "bitSecondaryTypeProbable", san.SecondaryTypeProbable);
+                CreateNamedNode(XMLNode, "vchrRefCode", san.RefCode);
 
-                XMLTypeNode.AddAttribute("ID", type.GUID.ToString());
-                CreateNamedNode(XMLTypeNode, "vchrType", type.Type);
-                CreateNamedNode(XMLTypeNode, "vchrMuseum", type.Museum);
-                CreateNamedNode(XMLTypeNode, "vchrAccessionNum", type.AccessionNumber);
-                CreateNamedNode(XMLTypeNode, "vchrMaterial", type.MaterialName);
-                CreateNamedNode(XMLTypeNode, "vchrLocality", type.Locality);
-                CreateNamedNode(XMLTypeNode, "bitIDConfirmed", type.IDConfirmed);
-                if (Options.ExportMaterial) { // if I am exporting material then                
-                    var lngMaterialID = type.MaterialID;
-                    var strMaterialGUID = "";
-                    if (lngMaterialID > 0) {
-                        var XMLMaterialNode = AddMaterialItem(lngMaterialID, out strMaterialGUID);
+                foreach (SANTypeData type in typeData) {
+                    var XMLTypeNode = _xmlDoc.CreateNode(XMLNode, "SANTYPE");
+
+                    XMLTypeNode.AddAttribute("ID", type.GUID.ToString());
+                    CreateNamedNode(XMLTypeNode, "vchrType", type.Type);
+                    CreateNamedNode(XMLTypeNode, "vchrMuseum", type.Museum);
+                    CreateNamedNode(XMLTypeNode, "vchrAccessionNum", type.AccessionNumber);
+                    CreateNamedNode(XMLTypeNode, "vchrMaterial", type.MaterialName);
+                    CreateNamedNode(XMLTypeNode, "vchrLocality", type.Locality);
+                    CreateNamedNode(XMLTypeNode, "bitIDConfirmed", type.IDConfirmed);
+                    if (Options.ExportMaterial) { // if I am exporting material then                
+                        var lngMaterialID = type.MaterialID;
+                        var strMaterialGUID = "";
+                        if (lngMaterialID > 0) {
+                            var XMLMaterialNode = AddMaterialItem(lngMaterialID, out strMaterialGUID);
+                        }
+                        CreateNamedNode(XMLTypeNode, "intMaterialID", strMaterialGUID);
                     }
-                    CreateNamedNode(XMLTypeNode, "intMaterialID", strMaterialGUID);
                 }
+            } else {
+                Log("No Species Available Name data found for {0} (ID {1})", taxon.TaxaFullName, taxon.TaxaID.Value);
             }
-    
         }
 
         private XmlElement AddMaterialItem(int? lngMaterialID, out string strMaterialGUID) {
@@ -677,6 +777,10 @@ namespace BioLink.Data {
         private string LookupXMLName(string category, string field) {
             var collection = GetCollectionForCategory(category);
             if (collection != null) {
+                if (!collection.ContainsKey(field)) {
+                    Log("XML Name not found!");
+                    return field;
+                }
                 return collection[field].XMLName;
             }
 
@@ -816,6 +920,7 @@ namespace BioLink.Data {
             _taxonALNMappings.Add("REFID", "intRefID", false);
             _taxonALNMappings.Add("REFPAGE", "vchrRefPage");
             _taxonALNMappings.Add("REFQUAL", "txtRefQual");
+            _taxonALNMappings.Add("REFCODE", "vchrRefCode");
             // Taxon Genus Available Name (GAN)
             _taxonGANMappings = new FieldToNameMappings();
             _taxonGANMappings.Add("REFID", "intRefID", false);
@@ -824,6 +929,7 @@ namespace BioLink.Data {
             _taxonGANMappings.Add("DESIGNATION", "sintDesignation", false);
             _taxonGANMappings.Add("FIXATIONMETHOD", "vchrTSFixationMethod");
             _taxonGANMappings.Add("TYPESPECIES", "vchrTypeSpecies");
+            _taxonGANMappings.Add("REFCODE", "vchrRefCode");
             // Taxon Species Available Name (SAN)
             _taxonSANMappings = new FieldToNameMappings();
             _taxonSANMappings.Add("REFID", "intRefID", false);
@@ -833,6 +939,7 @@ namespace BioLink.Data {
             _taxonSANMappings.Add("PRIMARYTYPEPROBABLE", "bitPrimaryTypeProbable");
             _taxonSANMappings.Add("SECONDARYTYPE", "vchrSecondaryType");
             _taxonSANMappings.Add("SECONDARYTYPEPROBABLE", "bitSecondaryTypeProbable");
+            _taxonSANMappings.Add("REFCODE", "vchrRefCode");
             // Taxon Species Available Name Type Data (SAN Type)
             _taxonSANTypeDataMappings = new FieldToNameMappings();
             _taxonSANTypeDataMappings.Add("TYPE", "vchrType");
@@ -1096,6 +1203,7 @@ namespace BioLink.Data {
             }
 
             _logWriter.WriteLine(string.Format("[{0:d/M/yyyy HH:mm:ss}] {1}", DateTime.Now, message));
+            _logWriter.Flush();
         }
 
         protected User User { get; private set; }
