@@ -114,6 +114,9 @@
     <Compile Include="XMLExportOptions.xaml.cs">
       <DependentUpon>XMLExportOptions.xaml</DependentUpon>
     </Compile>
+    <Compile Include="XMLIOImportOptions.xaml.cs">
+      <DependentUpon>XMLIOImportOptions.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BioLink.Client.Extensibility\BioLink.Client.Extensibility.csproj">
@@ -167,6 +170,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="XMLExportOptions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="XMLIOImportOptions.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -10,21 +10,11 @@ using BioLink.Data.Model;
 
 namespace BioLink.Data {
 
-    public class XMLIOExporter {
+    public abstract class XMLIOBase {
 
+        protected Func<bool> _isCancelled;
         private TextWriter _logWriter = null;
 
-        private GUIDToIDCache _taxonList;
-        private GUIDToIDCache _referenceList;
-        private GUIDToIDCache _journalList;
-        private GUIDToIDCache _multimediaList;
-        private GUIDToIDCache _associateList;
-        private GUIDToIDCache _unplacedTaxon;
-        private GUIDToIDCache _regionList;
-        private GUIDToIDCache _siteList;
-        private GUIDToIDCache _siteVisitList;
-        private GUIDToIDCache _materialList;
-        private Func<bool> _isCancelled;
         private FieldToNameMappings _taxonMappings;
         private FieldToNameMappings _taxonALNMappings;
         private FieldToNameMappings _taxonGANMappings;
@@ -50,6 +40,406 @@ namespace BioLink.Data {
         private FieldToNameMappings _regionMappings;
         private FieldToNameMappings _trapMappings;
 
+        protected void InitLog(string logFile) {
+            _logWriter = new StreamWriter(logFile, false);
+        }
+
+        protected void FinalizeLog() {
+            if (_logWriter != null) {
+                _logWriter.Close();
+                _logWriter.Dispose();
+            }
+        }
+
+        protected void InitMappings() {
+
+            Log("Initializing field mappings...");
+
+            // Taxon
+            _taxonMappings = new FieldToNameMappings();
+
+            _taxonMappings.Add("NAME", "vchrFullName");
+            _taxonMappings.Add("EPITHET", "vchrEpithet");
+            _taxonMappings.Add("PUBLICATIONYEAR", "vchrYearOfPub");
+            _taxonMappings.Add("AUTHOR", "vchrAuthor");
+            _taxonMappings.Add("NAMEQUALIFIER", "vchrNameQualifier");
+            _taxonMappings.Add("ELEMENTTYPE", "chrElemType");
+            _taxonMappings.Add("RANK", "RankLong", false);
+            _taxonMappings.Add("KINGDOM", "KingdomLong", false);
+            _taxonMappings.Add("ORDER", "intOrder");
+            _taxonMappings.Add("ISCHANGEDCOMBINATION", "bitChangedComb");
+            _taxonMappings.Add("ISUNPLACED", "bitUnplaced");
+            _taxonMappings.Add("ISUNVERIFIED", "bitUnverified");
+            _taxonMappings.Add("ISAVAILABLENAME", "bitAvailableName");
+            _taxonMappings.Add("ISLITERATURENAME", "bitLiteratureName");
+            _taxonMappings.Add("DISTRIBUTIONQUALIFICATION", "txtDistQual");
+            _taxonMappings.Add("DATECREATED", "dtDateCreated");
+            _taxonMappings.Add("WHOCREATED", "vchrWhoCreated");
+            // Taxon Literature Available Name (ALN)
+            _taxonALNMappings = new FieldToNameMappings();
+            _taxonALNMappings.Add("REFID", "intRefID", false);
+            _taxonALNMappings.Add("REFPAGE", "vchrRefPage");
+            _taxonALNMappings.Add("REFQUAL", "txtRefQual");
+            _taxonALNMappings.Add("REFCODE", "vchrRefCode");
+            // Taxon Genus Available Name (GAN)
+            _taxonGANMappings = new FieldToNameMappings();
+            _taxonGANMappings.Add("REFID", "intRefID", false);
+            _taxonGANMappings.Add("REFPAGE", "vchrRefPage");
+            _taxonGANMappings.Add("REFQUAL", "txtRefQual");
+            _taxonGANMappings.Add("DESIGNATION", "sintDesignation", false);
+            _taxonGANMappings.Add("FIXATIONMETHOD", "vchrTSFixationMethod");
+            _taxonGANMappings.Add("TYPESPECIES", "vchrTypeSpecies");
+            _taxonGANMappings.Add("REFCODE", "vchrRefCode");
+            // Taxon Species Available Name (SAN)
+            _taxonSANMappings = new FieldToNameMappings();
+            _taxonSANMappings.Add("REFID", "intRefID", false);
+            _taxonSANMappings.Add("REFPAGE", "vchrRefPage");
+            _taxonSANMappings.Add("REFQUAL", "txtRefQual");
+            _taxonSANMappings.Add("PRIMARYTYPE", "vchrPrimaryType");
+            _taxonSANMappings.Add("PRIMARYTYPEPROBABLE", "bitPrimaryTypeProbable");
+            _taxonSANMappings.Add("SECONDARYTYPE", "vchrSecondaryType");
+            _taxonSANMappings.Add("SECONDARYTYPEPROBABLE", "bitSecondaryTypeProbable");
+            _taxonSANMappings.Add("REFCODE", "vchrRefCode");
+            // Taxon Species Available Name Type Data (SAN Type)
+            _taxonSANTypeDataMappings = new FieldToNameMappings();
+            _taxonSANTypeDataMappings.Add("TYPE", "vchrType");
+            _taxonSANTypeDataMappings.Add("INSTITUTION", "vchrMuseum");
+            _taxonSANTypeDataMappings.Add("ACCESSIONNUMBER", "vchrAccessionNum");
+            _taxonSANTypeDataMappings.Add("MATERIAL", "vchrMaterial");
+            _taxonSANTypeDataMappings.Add("LOCALITY", "vchrLocality");
+            _taxonSANTypeDataMappings.Add("IDCONFIRMED", "bitIDConfirmed");
+            _taxonSANTypeDataMappings.Add("MATERIALID", "intMaterialID", false);
+            // Common Names
+            _commonNameMappings = new FieldToNameMappings();
+            _commonNameMappings.Add("NAME", "vchrCommonName");
+            _commonNameMappings.Add("REFID", "intRefID");
+            _commonNameMappings.Add("REFPAGE", "vchrRefPage");
+            _commonNameMappings.Add("NOTES", "txtNotes");
+            _commonNameMappings.Add("REFCODE", "vchrRefCode", false);
+            // Reference
+            _referenceMappings = new FieldToNameMappings();
+            _referenceMappings.Add("REFCODE", "vchrRefCode");
+            _referenceMappings.Add("AUTHOR", "vchrAuthor");
+            _referenceMappings.Add("TITLE", "vchrTitle");
+            _referenceMappings.Add("BOOKTITLE", "vchrBookTitle");
+            _referenceMappings.Add("EDITOR", "vchrEditor");
+            _referenceMappings.Add("REFTYPE", "vchrRefType");
+            _referenceMappings.Add("PUBLICATIONYEAR", "vchrYearOfPub");
+            _referenceMappings.Add("ACTUALDATE", "vchrActualDate");
+            _referenceMappings.Add("PARTNUMBER", "vchrPartNo");
+            _referenceMappings.Add("SERIES", "vchrSeries");
+            _referenceMappings.Add("PUBLISHER", "vchrPublisher");
+            _referenceMappings.Add("PLACE", "vchrPlace");
+            _referenceMappings.Add("VOLUME", "vchrVolume");
+            _referenceMappings.Add("PAGES", "vchrPages");
+            _referenceMappings.Add("TOTALPAGES", "vchrTotalPages");
+            _referenceMappings.Add("POSSESS", "vchrPossess");
+            _referenceMappings.Add("SOURCE", "vchrSource");
+            _referenceMappings.Add("EDITION", "vchrEdition");
+            _referenceMappings.Add("ISBN", "vchrISBN");
+            _referenceMappings.Add("ISSN", "vchrISSN");
+            _referenceMappings.Add("ABSTRACT", "txtAbstract");
+            _referenceMappings.Add("FULLTEXT", "txtFullText");
+            _referenceMappings.Add("STARTPAGE", "intStartPage");
+            _referenceMappings.Add("ENDPAGE", "intEndPage");
+            _referenceMappings.Add("JOURNALNAME", "vchrJournalName", false);
+            _referenceMappings.Add("JOURNALID", "intJournalID");
+            _referenceMappings.Add("DATECREATED", "dtDateCreated");
+            _referenceMappings.Add("WHOCREATED", "vchrWhoCreated");
+            // Multimedia Item
+            _multimediaMappings = new FieldToNameMappings();
+            _multimediaMappings.Add("NAME", "vchrName");
+            _multimediaMappings.Add("EXTENSION", "vchrFileExtension");
+            _multimediaMappings.Add("NUMBER", "vchrNumber");
+            _multimediaMappings.Add("ARTIST", "vchrArtist");
+            _multimediaMappings.Add("DATERECORDED", "vchrDateRecorded");
+            _multimediaMappings.Add("OWNER", "vchrOwner");
+            _multimediaMappings.Add("COPYRIGHT", "txtCopyright");
+            _multimediaMappings.Add("SIZEINBYTES", "intSizeInBytes");
+            _multimediaMappings.Add("DATECREATED", "dtDateCreated");
+            _multimediaMappings.Add("WHOCREATED", "vchrWhoCreated");
+            // Journal Items
+            _journalMappings = new FieldToNameMappings();
+            _journalMappings.Add("ABBREVNAME", "vchrAbbrevName");
+            _journalMappings.Add("ALTABBREVNAME", "vchrAbbrevName2");
+            _journalMappings.Add("ALIAS", "vchrAlias");
+            _journalMappings.Add("FULLNAME", "vchrFullName");
+            _journalMappings.Add("JOURNALNOTES", "txtNotes");
+            _journalMappings.Add("DATECREATED", "dtDateCreated");
+            _journalMappings.Add("WHOCREATED", "vchrWhoCreated");
+            // RefLinks
+            _refLinkMappings = new FieldToNameMappings();
+            _refLinkMappings.Add("REFID", "intRefID");
+            _refLinkMappings.Add("REFLINKTYPE", "RefLink", false);
+            _refLinkMappings.Add("REFPAGE", "vchrRefPage");
+            _refLinkMappings.Add("REFQUAL", "txtRefQual");
+            _refLinkMappings.Add("ORDER", "intOrder");
+            _refLinkMappings.Add("USEINREPORTS", "bitUseInReport");
+            // Taxon distribution
+            _distributionMappings = new FieldToNameMappings();
+            _distributionMappings.Add("INTRODUCED", "bitIntroduced");
+            _distributionMappings.Add("UNCERTAIN", "bitUncertain");
+            _distributionMappings.Add("THROUGHOUTREGION", "bitThroughoutRegion");
+            _distributionMappings.Add("QUALIFICATION", "txtQual");
+            _distributionMappings.Add("FULLPATH", "txtDistRegionFullPath", false);
+            // Multimedia Link
+            _multimediaLinkMappings = new FieldToNameMappings();
+            _multimediaLinkMappings.Add("MULTIMEDIAID", "intMultimediaID", false);
+            _multimediaLinkMappings.Add("MULTIMEDIATYPE", "MultimediaType", false);
+            _multimediaLinkMappings.Add("CAPTION", "vchrCaption");
+            _multimediaLinkMappings.Add("USEINREPORTS", "bitUseInReport");
+            // Notes Mappings
+            _notesMappings = new FieldToNameMappings();
+            _notesMappings.Add("NOTETYPE", "NoteType", false);
+            _notesMappings.Add("NOTE", "txtNote");
+            _notesMappings.Add("AUTHOR", "vchrAuthor");
+            _notesMappings.Add("COMMENTS", "txtComments");
+            _notesMappings.Add("USEINREPORTS", "bitUseInReports");
+            _notesMappings.Add("REFID", "RefID", false);
+            _notesMappings.Add("REFPAGES", "vchrRefPages");
+            // Keyword Mappings
+            _keywordMappings = new FieldToNameMappings();
+            _keywordMappings.Add("TYPE", "Keyword", false);
+            _keywordMappings.Add("VALUE", "vchrValue");
+            _keywordMappings.Add("USEINREPORTS", "bitUseInReport");
+            _keywordMappings.Add("QUALIFICATION", "txtValueQual");
+            // Storage Location Mappings
+            _storageLocationMappings = new FieldToNameMappings();
+            _storageLocationMappings.Add("STORAGELOCATION", "StorageLocation", false);
+            _storageLocationMappings.Add("FULLPATH", "StoragePath", false);
+            _storageLocationMappings.Add("NOTES", "txtNotes");
+            // Material Mappings
+            _materialMappings = new FieldToNameMappings();
+            _materialMappings.Add("NAME", "vchrMaterialName");
+            _materialMappings.Add("ACCESIONNUMBER", "vchrAccessionNo");
+            _materialMappings.Add("REGISTRATIONNUMBER", "vchrRegNo");
+            _materialMappings.Add("COLLECTORNUMBER", "vchrCollectorNo");
+            _materialMappings.Add("IDENTIFIEDBY", "vchrIDBy");
+            _materialMappings.Add("TAXONID", "intBiotaID");
+            _materialMappings.Add("IDENTIFIEDDATE", "dtIDDate");
+            _materialMappings.Add("REFID", "intIDRefID");
+            _materialMappings.Add("TRAPID", "intTrapID");
+            _materialMappings.Add("REFPAGE", "vchrIDRefPage");
+            _materialMappings.Add("IDENTIFICATIONMETHOD", "vchrIDMethod");
+            _materialMappings.Add("IDENTIFICATIONACCURACY", "vchrIDAccuracy");
+            _materialMappings.Add("NAMEQUALIFICATION", "vchrIDNameQual");
+            _materialMappings.Add("IDENTIFICATIONNOTES", "vchrIDNotes");
+            _materialMappings.Add("INSTITUTION", "vchrInstitution");
+            _materialMappings.Add("COLLECTIONMETHOD", "vchrCollectionMethod");
+            _materialMappings.Add("ABUNDANCE", "vchrAbundance");
+            _materialMappings.Add("MACROHABITAT", "vchrMacroHabitat");
+            _materialMappings.Add("MICROHABITAT", "vchrMicroHabitat");
+            _materialMappings.Add("SOURCE", "vchrSource");
+            _materialMappings.Add("SPECIALLABEL", "vchrSpecialLabel");
+            _materialMappings.Add("ORIGINALLABEL", "vchrOriginalLabel");
+            _materialMappings.Add("DATECREATED", "dtDateCreated");
+            _materialMappings.Add("WHOCREATED", "vchrWhoCreated");
+            // IDHistory Mappings
+            _IDHistoryMappings = new FieldToNameMappings();
+            _IDHistoryMappings.Add("TAXON", "vchrTaxa");
+            _IDHistoryMappings.Add("IDENTIFIEDBY", "vchr);IDBy");
+            _IDHistoryMappings.Add("DATEIDENTIFIED", "dtIDDate");
+            _IDHistoryMappings.Add("REFID", "intIDRefID");
+            _IDHistoryMappings.Add("REFPAGE", "vchrIDRefPage");
+            _IDHistoryMappings.Add("METHOD", "vchrIDMethod");
+            _IDHistoryMappings.Add("ACCURACY", "vchrIDAccuracy");
+            _IDHistoryMappings.Add("NAMEQUALIFICATION", "vchrNameQual");
+            _IDHistoryMappings.Add("NOTES", "txtIDNotes");
+            // Subpart Mappings
+            _subPartMappings = new FieldToNameMappings();
+            _subPartMappings.Add("NAME", "vchrPartName");
+            _subPartMappings.Add("SAMPLETYPE", "vchrSampleType");
+            _subPartMappings.Add("NUMBEROFSPECIMENS", "intNoSpecimens");
+            _subPartMappings.Add("NUMBEROFSPECIMENSQUALIFCATION", "vchrNoSpecimensQual");
+            _subPartMappings.Add("LIFESTAGE", "vchrLifeStage");
+            _subPartMappings.Add("GENDER", "vchrGender");
+            _subPartMappings.Add("REGISTRATIONNUMBER", "vchrRegNo");
+            _subPartMappings.Add("CONDITION", "vchrCondition");
+            _subPartMappings.Add("STORAGESITE", "vchrStorageSite");
+            _subPartMappings.Add("STORAGEMETHOD", "vchrStorageMethod");
+            _subPartMappings.Add("CURATIONSTATUS", "vchrCurationStatus");
+            _subPartMappings.Add("NUMBEROFUNITS", "vchrNoOfUnits");
+            _subPartMappings.Add("NOTES", "txtNotes");
+            // Associate Mappings
+            _associateMappings = new FieldToNameMappings();
+            _associateMappings.Add("FROMCATEGORYID", "intFromCatID");
+            _associateMappings.Add("FROMINTRACATID", "intFromIntraCatID");
+            _associateMappings.Add("TOCATEGORYID", "intToCatID");
+            _associateMappings.Add("TOINTRACATID", "intToIntraCatID");
+            _associateMappings.Add("ASSOCDESCRIPTION", "txtAssocDescription");
+            _associateMappings.Add("RELATIONFROMTO", "vchrRelationFromTo");
+            _associateMappings.Add("RELATIONTOFROM", "vchrRelationToFrom");
+            _associateMappings.Add("REGIONID", "intPoliticalRegionID");
+            _associateMappings.Add("SOURCE", "vchrSource");
+            _associateMappings.Add("REFID", "intRefID");
+            _associateMappings.Add("REFPAGE", "vchrRefPage");
+            _associateMappings.Add("UNCERTAIN", "bitUncertain");
+            _associateMappings.Add("NOTES", "txtNotes");
+            // Curation Event mappings
+            _curationEventMappings = new FieldToNameMappings();
+            _curationEventMappings.Add("SUBPARTNAME", "vchrSubpartName");
+            _curationEventMappings.Add("WHO", "vchrWho");
+            _curationEventMappings.Add("DATE", "dtWhen");
+            _curationEventMappings.Add("EVENTTYPE", "vchrEventType");
+            _curationEventMappings.Add("DESCRIPTION", "txtEventDesc");
+            // SiteVisit Mappings
+            _siteVisitMappings = new FieldToNameMappings();
+            _siteVisitMappings.Add("NAME", "vchrSiteVisitName");
+            _siteVisitMappings.Add("FIELDNUMBER", "vchrFieldNumber");
+            _siteVisitMappings.Add("COLLECTOR", "vchrCollector");
+            _siteVisitMappings.Add("DATESTART", "intDateStart", false);
+            _siteVisitMappings.Add("DATEEND", "intDateEnd", false);
+            _siteVisitMappings.Add("TIMESTART", "intTimeStart", false);
+            _siteVisitMappings.Add("TIMEEND", "intTimeEnd", false);
+            _siteVisitMappings.Add("CASUALTIME", "vchrCasualTime");
+            _siteVisitMappings.Add("DATECREATED", "dtDateCreated");
+            _siteVisitMappings.Add("WHOCREATED", "vchrWhoCreated");
+            // Site Mappings
+            _siteMappings = new FieldToNameMappings();
+            _siteMappings.Add("NAME", "vchrSiteName");
+            _siteMappings.Add("LOCALITYTYPE", "tintLocalType", false);
+            _siteMappings.Add("LOCALITY", "vchrLocal");
+            _siteMappings.Add("DISTANCEFROMPLACE", "vchrDistanceFromPlace");
+            _siteMappings.Add("DIRECTIONFROMPLACE", "vchrDirFromPlace");
+            _siteMappings.Add("INFORMALLOCALITY", "vchrInformalLocal");
+            _siteMappings.Add("COORDINATETYPE", "tintPosCoordinates", false);
+            _siteMappings.Add("POSITIONGEOMETRY", "tintPosAreaType", false);
+            _siteMappings.Add("X1", "fltPosX1");
+            _siteMappings.Add("Y1", "fltPosY1");
+            _siteMappings.Add("X2", "fltPosX2");
+            _siteMappings.Add("Y2", "fltPosY2");
+            _siteMappings.Add("POSITIONSOURCE", "vchrPosSource");
+            _siteMappings.Add("POSITIONERROR", "vchrPosError");
+            _siteMappings.Add("POSITIONWHO", "vchrPosWho");
+            _siteMappings.Add("POSITIONDATE", "vchrPosDate");
+            _siteMappings.Add("POSITIONORIGINAL", "vchrPosOriginal");
+            _siteMappings.Add("POSITIONUTMSOURCE", "vchrPosUTMSource");
+            _siteMappings.Add("POSITIONUTMPROJECTION", "vchrPosUTMMapProj");
+            _siteMappings.Add("POSITIONUTMMAPNAME", "vchrPosUTMMapName");
+            _siteMappings.Add("POSITIONUTMMAPVERSION", "vchrPosUTMMapVer");
+            _siteMappings.Add("ELEVATIONTYPE", "tintElevType", false);
+            _siteMappings.Add("ELEVATIONUPPER", "fltElevUpper");
+            _siteMappings.Add("ELEVATIONLOWER", "fltElevLower");
+            _siteMappings.Add("ELEVATIONDEPTH", "fltElevDepth");
+            _siteMappings.Add("ELEVATIONUNITS", "vchrElevUnits");
+            _siteMappings.Add("ELEVATIONSOURCE", "vchrElevSource");
+            _siteMappings.Add("ELEVATIONERROR", "vchrElevError");
+            _siteMappings.Add("GEOLOGYERA", "vchrGeoEra");
+            _siteMappings.Add("GEOLOGYSTATE", "vchrGeoState");
+            _siteMappings.Add("GEOLOGYPLATE", "vchrGeoPlate");
+            _siteMappings.Add("GEOLOGYFORMATION", "vchrGeoFormation");
+            _siteMappings.Add("GEOLOGYMEMBER", "vchrGeoMember");
+            _siteMappings.Add("GEOLOGYBED", "vchrGeoBed");
+            _siteMappings.Add("GEOLOGYNAME", "vchrGeoName");
+            _siteMappings.Add("GEOLOGYAGEBOTTOM", "vchrGeoAgeBottom");
+            _siteMappings.Add("GEOLOGYAGETOP", "vchrGeoAgeTop");
+            _siteMappings.Add("GEOLOGYNOTES", "vchrGeoNotes");
+            _siteMappings.Add("DATECREATED", "dtDateCreated");
+            _siteMappings.Add("WHOCREATED", "vchrWhoCreated");
+            // Region Mappings
+            _regionMappings = new FieldToNameMappings();
+            _regionMappings.Add("NAME", "vchrName");
+            _regionMappings.Add("RANK", "vchrRank");
+            _regionMappings.Add("DATECREATED", "dtDateCreated");
+            _regionMappings.Add("WHOCREATED", "vchrWhoCreated");
+            // Trap Mappings
+            _trapMappings = new FieldToNameMappings();
+            _trapMappings.Add("NAME", "vchrTrapName");
+            _trapMappings.Add("TYPE", "vchrTrapType");
+            _trapMappings.Add("DESCRIPTION", "vchrDescription");
+            _trapMappings.Add("DATECREATED", "dtDateCreated");
+            _trapMappings.Add("WHOCREATED", "vchrWhoCreated");
+
+        }
+
+        protected void Log(string format, params object[] args) {
+            if (_logWriter == null) {
+                return;
+            }
+
+            var message = format;
+            if (args.Length > 0) {
+                message = string.Format(format, args);
+            }
+
+            _logWriter.WriteLine(string.Format("[{0:d/M/yyyy HH:mm:ss}] {1}", DateTime.Now, message));
+            _logWriter.Flush();
+        }
+
+        protected FieldToNameMappings GetCollectionForCategory(string category) {
+            switch (category.ToLower()) {
+                case "taxon":
+                    return _taxonMappings;
+                case "aln":
+                    return _taxonALNMappings;
+                case "gan":
+                    return _taxonGANMappings;
+                case "san":
+                    return _taxonSANMappings;
+                case "santype":
+                    return _taxonSANTypeDataMappings;
+                case "commonname":
+                    return _commonNameMappings;
+                case "reference":
+                    return _referenceMappings;
+                case "multimediaitem":
+                    return _multimediaMappings;
+                case "journal":
+                    return _journalMappings;
+                case "multimedialink":
+                    return _multimediaLinkMappings;
+                case "referencelink":
+                    return _refLinkMappings;
+                case "distributionitem":
+                    return _distributionMappings;
+                case "noteitem":
+                    return _notesMappings;
+                case "keyworditem":
+                    return _keywordMappings;
+                case "storagelocation":
+                    return _storageLocationMappings;
+                case "material":
+                    return _materialMappings;
+                case "identification":
+                    return _IDHistoryMappings;
+                case "subpart":
+                    return _subPartMappings;
+                case "associate":
+                    return _associateMappings;
+                case "sitevisit":
+                    return _siteVisitMappings;
+                case "site":
+                    return _siteMappings;
+                case "region":
+                    return _regionMappings;
+                case "trap":
+                    return _trapMappings;
+                case "curationevent":
+                    return _curationEventMappings;
+                default:
+                    return null;
+            }
+
+        }
+
+
+        protected User User { get; set; }
+
+    }
+
+    public class XMLIOExporter : XMLIOBase {
+
+        private GUIDToIDCache _taxonList;
+        private GUIDToIDCache _referenceList;
+        private GUIDToIDCache _journalList;
+        private GUIDToIDCache _multimediaList;
+        private GUIDToIDCache _associateList;
+        private GUIDToIDCache _unplacedTaxon;
+        private GUIDToIDCache _regionList;
+        private GUIDToIDCache _siteList;
+        private GUIDToIDCache _siteVisitList;
+        private GUIDToIDCache _materialList;
+
         private XMLExportObject _xmlDoc;
         private int _itemTotal;
         private int _itemCount;
@@ -68,7 +458,7 @@ namespace BioLink.Data {
 
             if (options.KeepLogFile) {
                 string logfile = SystemUtils.ChangeExtension(options.Filename, "log");
-                _logWriter = new StreamWriter(logfile, false);
+                InitLog(logfile);
             }
 
         }
@@ -86,10 +476,7 @@ namespace BioLink.Data {
                 _xmlDoc.Save(Options.Filename);
 
             } finally {
-                if (_logWriter != null) {
-                    _logWriter.Close();
-                    _logWriter.Dispose();
-                }
+                FinalizeLog();
             }
         }
 
@@ -1401,62 +1788,6 @@ namespace BioLink.Data {
             throw new Exception("Unrecognized category: " + category);
         }
 
-        private FieldToNameMappings GetCollectionForCategory(string category) {
-            switch (category.ToLower()) {
-                case "taxon":
-                    return _taxonMappings;
-                case "aln":
-                    return _taxonALNMappings;
-                case "gan":
-                    return _taxonGANMappings;
-                case "san":
-                    return _taxonSANMappings;
-                case "santype":
-                    return _taxonSANTypeDataMappings;
-                case "commonname":
-                    return _commonNameMappings;
-                case "reference":
-                    return _referenceMappings;
-                case "multimediaitem":
-                    return _multimediaMappings;
-                case "journal":
-                    return _journalMappings;
-                case "multimedialink":
-                    return _multimediaLinkMappings;
-                case "referencelink":
-                    return _refLinkMappings;
-                case "distributionitem":
-                    return _distributionMappings;
-                case "noteitem":
-                    return _notesMappings;
-                case "keyworditem":
-                    return _keywordMappings;
-                case "storagelocation":
-                    return _storageLocationMappings;
-                case "material":
-                    return _materialMappings;
-                case "identification":
-                    return _IDHistoryMappings;
-                case "subpart":
-                    return _subPartMappings;
-                case "associate":
-                    return _associateMappings;
-                case "sitevisit":
-                    return _siteVisitMappings;
-                case "site":
-                    return _siteMappings;
-                case "region":
-                    return _regionMappings;
-                case "trap":
-                    return _trapMappings;
-                case "curationevent":
-                    return _curationEventMappings;
-                default:
-                    return null;
-            }
-
-        }
-
         private int GetItemCount(int taxonId) {
 
             var stats = TaxaService.GetTaxonStatistics(taxonId);
@@ -1507,322 +1838,6 @@ namespace BioLink.Data {
             _xmlDoc = new XMLExportObject();
         }
 
-        protected void InitMappings() {
-
-            Log("Initializing field mappings...");
-
-            // Taxon
-            _taxonMappings = new FieldToNameMappings();
-
-            _taxonMappings.Add("NAME", "vchrFullName");
-            _taxonMappings.Add("EPITHET", "vchrEpithet");
-            _taxonMappings.Add("PUBLICATIONYEAR", "vchrYearOfPub");
-            _taxonMappings.Add("AUTHOR", "vchrAuthor");
-            _taxonMappings.Add("NAMEQUALIFIER", "vchrNameQualifier");
-            _taxonMappings.Add("ELEMENTTYPE", "chrElemType");
-            _taxonMappings.Add("RANK", "RankLong", false);
-            _taxonMappings.Add("KINGDOM", "KingdomLong", false);
-            _taxonMappings.Add("ORDER", "intOrder");
-            _taxonMappings.Add("ISCHANGEDCOMBINATION", "bitChangedComb");
-            _taxonMappings.Add("ISUNPLACED", "bitUnplaced");
-            _taxonMappings.Add("ISUNVERIFIED", "bitUnverified");
-            _taxonMappings.Add("ISAVAILABLENAME", "bitAvailableName");
-            _taxonMappings.Add("ISLITERATURENAME", "bitLiteratureName");
-            _taxonMappings.Add("DISTRIBUTIONQUALIFICATION", "txtDistQual");
-            _taxonMappings.Add("DATECREATED", "dtDateCreated");
-            _taxonMappings.Add("WHOCREATED", "vchrWhoCreated");
-            // Taxon Literature Available Name (ALN)
-            _taxonALNMappings = new FieldToNameMappings();
-            _taxonALNMappings.Add("REFID", "intRefID", false);
-            _taxonALNMappings.Add("REFPAGE", "vchrRefPage");
-            _taxonALNMappings.Add("REFQUAL", "txtRefQual");
-            _taxonALNMappings.Add("REFCODE", "vchrRefCode");
-            // Taxon Genus Available Name (GAN)
-            _taxonGANMappings = new FieldToNameMappings();
-            _taxonGANMappings.Add("REFID", "intRefID", false);
-            _taxonGANMappings.Add("REFPAGE", "vchrRefPage");
-            _taxonGANMappings.Add("REFQUAL", "txtRefQual");
-            _taxonGANMappings.Add("DESIGNATION", "sintDesignation", false);
-            _taxonGANMappings.Add("FIXATIONMETHOD", "vchrTSFixationMethod");
-            _taxonGANMappings.Add("TYPESPECIES", "vchrTypeSpecies");
-            _taxonGANMappings.Add("REFCODE", "vchrRefCode");
-            // Taxon Species Available Name (SAN)
-            _taxonSANMappings = new FieldToNameMappings();
-            _taxonSANMappings.Add("REFID", "intRefID", false);
-            _taxonSANMappings.Add("REFPAGE", "vchrRefPage");
-            _taxonSANMappings.Add("REFQUAL", "txtRefQual");
-            _taxonSANMappings.Add("PRIMARYTYPE", "vchrPrimaryType");
-            _taxonSANMappings.Add("PRIMARYTYPEPROBABLE", "bitPrimaryTypeProbable");
-            _taxonSANMappings.Add("SECONDARYTYPE", "vchrSecondaryType");
-            _taxonSANMappings.Add("SECONDARYTYPEPROBABLE", "bitSecondaryTypeProbable");
-            _taxonSANMappings.Add("REFCODE", "vchrRefCode");
-            // Taxon Species Available Name Type Data (SAN Type)
-            _taxonSANTypeDataMappings = new FieldToNameMappings();
-            _taxonSANTypeDataMappings.Add("TYPE", "vchrType");
-            _taxonSANTypeDataMappings.Add("INSTITUTION", "vchrMuseum");
-            _taxonSANTypeDataMappings.Add("ACCESSIONNUMBER", "vchrAccessionNum");
-            _taxonSANTypeDataMappings.Add("MATERIAL", "vchrMaterial");
-            _taxonSANTypeDataMappings.Add("LOCALITY", "vchrLocality");
-            _taxonSANTypeDataMappings.Add("IDCONFIRMED", "bitIDConfirmed");
-            _taxonSANTypeDataMappings.Add("MATERIALID", "intMaterialID", false);
-            // Common Names
-            _commonNameMappings = new FieldToNameMappings();
-            _commonNameMappings.Add("NAME", "vchrCommonName");
-            _commonNameMappings.Add("REFID", "intRefID");
-            _commonNameMappings.Add("REFPAGE", "vchrRefPage");
-            _commonNameMappings.Add("NOTES", "txtNotes");
-            _commonNameMappings.Add("REFCODE", "vchrRefCode", false);
-            // Reference
-            _referenceMappings = new FieldToNameMappings();
-            _referenceMappings.Add("REFCODE", "vchrRefCode");
-            _referenceMappings.Add("AUTHOR", "vchrAuthor");
-            _referenceMappings.Add("TITLE", "vchrTitle");
-            _referenceMappings.Add("BOOKTITLE", "vchrBookTitle");
-            _referenceMappings.Add("EDITOR", "vchrEditor");
-            _referenceMappings.Add("REFTYPE", "vchrRefType");
-            _referenceMappings.Add("PUBLICATIONYEAR", "vchrYearOfPub");
-            _referenceMappings.Add("ACTUALDATE", "vchrActualDate");
-            _referenceMappings.Add("PARTNUMBER", "vchrPartNo");
-            _referenceMappings.Add("SERIES", "vchrSeries");
-            _referenceMappings.Add("PUBLISHER", "vchrPublisher");
-            _referenceMappings.Add("PLACE", "vchrPlace");
-            _referenceMappings.Add("VOLUME", "vchrVolume");
-            _referenceMappings.Add("PAGES", "vchrPages");
-            _referenceMappings.Add("TOTALPAGES", "vchrTotalPages");
-            _referenceMappings.Add("POSSESS", "vchrPossess");
-            _referenceMappings.Add("SOURCE", "vchrSource");
-            _referenceMappings.Add("EDITION", "vchrEdition");
-            _referenceMappings.Add("ISBN", "vchrISBN");
-            _referenceMappings.Add("ISSN", "vchrISSN");
-            _referenceMappings.Add("ABSTRACT", "txtAbstract");
-            _referenceMappings.Add("FULLTEXT", "txtFullText");
-            _referenceMappings.Add("STARTPAGE", "intStartPage");
-            _referenceMappings.Add("ENDPAGE", "intEndPage");
-            _referenceMappings.Add("JOURNALNAME", "vchrJournalName", false);
-            _referenceMappings.Add("JOURNALID", "intJournalID");
-            _referenceMappings.Add("DATECREATED", "dtDateCreated");
-            _referenceMappings.Add("WHOCREATED", "vchrWhoCreated");
-            // Multimedia Item
-            _multimediaMappings = new FieldToNameMappings();
-            _multimediaMappings.Add("NAME", "vchrName");
-            _multimediaMappings.Add("EXTENSION", "vchrFileExtension");
-            _multimediaMappings.Add("NUMBER", "vchrNumber");
-            _multimediaMappings.Add("ARTIST", "vchrArtist");
-            _multimediaMappings.Add("DATERECORDED", "vchrDateRecorded");
-            _multimediaMappings.Add("OWNER", "vchrOwner");
-            _multimediaMappings.Add("COPYRIGHT", "txtCopyright");
-            _multimediaMappings.Add("SIZEINBYTES", "intSizeInBytes");
-            _multimediaMappings.Add("DATECREATED", "dtDateCreated");
-            _multimediaMappings.Add("WHOCREATED", "vchrWhoCreated");
-            // Journal Items
-            _journalMappings = new FieldToNameMappings();
-            _journalMappings.Add("ABBREVNAME", "vchrAbbrevName");
-            _journalMappings.Add("ALTABBREVNAME", "vchrAbbrevName2");
-            _journalMappings.Add("ALIAS", "vchrAlias");
-            _journalMappings.Add("FULLNAME", "vchrFullName");
-            _journalMappings.Add("JOURNALNOTES", "txtNotes");
-            _journalMappings.Add("DATECREATED", "dtDateCreated");
-            _journalMappings.Add("WHOCREATED", "vchrWhoCreated");
-            // RefLinks
-            _refLinkMappings = new FieldToNameMappings();
-            _refLinkMappings.Add("REFID", "intRefID");
-            _refLinkMappings.Add("REFLINKTYPE", "RefLink", false);
-            _refLinkMappings.Add("REFPAGE", "vchrRefPage");
-            _refLinkMappings.Add("REFQUAL", "txtRefQual");
-            _refLinkMappings.Add("ORDER", "intOrder");
-            _refLinkMappings.Add("USEINREPORTS", "bitUseInReport");
-            // Taxon distribution
-            _distributionMappings = new FieldToNameMappings();
-            _distributionMappings.Add("INTRODUCED", "bitIntroduced");
-            _distributionMappings.Add("UNCERTAIN", "bitUncertain");
-            _distributionMappings.Add("THROUGHOUTREGION", "bitThroughoutRegion");
-            _distributionMappings.Add("QUALIFICATION", "txtQual");
-            _distributionMappings.Add("FULLPATH", "txtDistRegionFullPath", false);
-            // Multimedia Link
-            _multimediaLinkMappings = new FieldToNameMappings();
-            _multimediaLinkMappings.Add("MULTIMEDIAID", "intMultimediaID", false);
-            _multimediaLinkMappings.Add("MULTIMEDIATYPE", "MultimediaType", false);
-            _multimediaLinkMappings.Add("CAPTION", "vchrCaption");
-            _multimediaLinkMappings.Add("USEINREPORTS", "bitUseInReport");
-            // Notes Mappings
-            _notesMappings = new FieldToNameMappings();
-            _notesMappings.Add("NOTETYPE", "NoteType", false);
-            _notesMappings.Add("NOTE", "txtNote");
-            _notesMappings.Add("AUTHOR", "vchrAuthor");
-            _notesMappings.Add("COMMENTS", "txtComments");
-            _notesMappings.Add("USEINREPORTS", "bitUseInReports");
-            _notesMappings.Add("REFID", "RefID", false);
-            _notesMappings.Add("REFPAGES", "vchrRefPages");
-            // Keyword Mappings
-            _keywordMappings = new FieldToNameMappings();
-            _keywordMappings.Add("TYPE", "Keyword", false);
-            _keywordMappings.Add("VALUE", "vchrValue");
-            _keywordMappings.Add("USEINREPORTS", "bitUseInReport");
-            _keywordMappings.Add("QUALIFICATION", "txtValueQual");
-            // Storage Location Mappings
-            _storageLocationMappings = new FieldToNameMappings();
-            _storageLocationMappings.Add("STORAGELOCATION", "StorageLocation", false);
-            _storageLocationMappings.Add("FULLPATH", "StoragePath", false);
-            _storageLocationMappings.Add("NOTES", "txtNotes");
-            // Material Mappings
-            _materialMappings = new FieldToNameMappings();
-            _materialMappings.Add("NAME", "vchrMaterialName");
-            _materialMappings.Add("ACCESIONNUMBER", "vchrAccessionNo");
-            _materialMappings.Add("REGISTRATIONNUMBER", "vchrRegNo");
-            _materialMappings.Add("COLLECTORNUMBER", "vchrCollectorNo");
-            _materialMappings.Add("IDENTIFIEDBY", "vchrIDBy");
-            _materialMappings.Add("TAXONID", "intBiotaID");
-            _materialMappings.Add("IDENTIFIEDDATE", "dtIDDate");
-            _materialMappings.Add("REFID", "intIDRefID");
-            _materialMappings.Add("TRAPID", "intTrapID");
-            _materialMappings.Add("REFPAGE", "vchrIDRefPage");
-            _materialMappings.Add("IDENTIFICATIONMETHOD", "vchrIDMethod");
-            _materialMappings.Add("IDENTIFICATIONACCURACY", "vchrIDAccuracy");
-            _materialMappings.Add("NAMEQUALIFICATION", "vchrIDNameQual");
-            _materialMappings.Add("IDENTIFICATIONNOTES", "vchrIDNotes");
-            _materialMappings.Add("INSTITUTION", "vchrInstitution");
-            _materialMappings.Add("COLLECTIONMETHOD", "vchrCollectionMethod");
-            _materialMappings.Add("ABUNDANCE", "vchrAbundance");
-            _materialMappings.Add("MACROHABITAT", "vchrMacroHabitat");
-            _materialMappings.Add("MICROHABITAT", "vchrMicroHabitat");
-            _materialMappings.Add("SOURCE", "vchrSource");
-            _materialMappings.Add("SPECIALLABEL", "vchrSpecialLabel");
-            _materialMappings.Add("ORIGINALLABEL", "vchrOriginalLabel");
-            _materialMappings.Add("DATECREATED", "dtDateCreated");
-            _materialMappings.Add("WHOCREATED", "vchrWhoCreated");
-            // IDHistory Mappings
-            _IDHistoryMappings = new FieldToNameMappings();
-            _IDHistoryMappings.Add("TAXON", "vchrTaxa");
-            _IDHistoryMappings.Add("IDENTIFIEDBY", "vchr);IDBy");
-            _IDHistoryMappings.Add("DATEIDENTIFIED", "dtIDDate");
-            _IDHistoryMappings.Add("REFID", "intIDRefID");
-            _IDHistoryMappings.Add("REFPAGE", "vchrIDRefPage");
-            _IDHistoryMappings.Add("METHOD", "vchrIDMethod");
-            _IDHistoryMappings.Add("ACCURACY", "vchrIDAccuracy");
-            _IDHistoryMappings.Add("NAMEQUALIFICATION", "vchrNameQual");
-            _IDHistoryMappings.Add("NOTES", "txtIDNotes");
-            // Subpart Mappings
-            _subPartMappings = new FieldToNameMappings();
-            _subPartMappings.Add("NAME", "vchrPartName");
-            _subPartMappings.Add("SAMPLETYPE", "vchrSampleType");
-            _subPartMappings.Add("NUMBEROFSPECIMENS", "intNoSpecimens");
-            _subPartMappings.Add("NUMBEROFSPECIMENSQUALIFCATION", "vchrNoSpecimensQual");
-            _subPartMappings.Add("LIFESTAGE", "vchrLifeStage");
-            _subPartMappings.Add("GENDER", "vchrGender");
-            _subPartMappings.Add("REGISTRATIONNUMBER", "vchrRegNo");
-            _subPartMappings.Add("CONDITION", "vchrCondition");
-            _subPartMappings.Add("STORAGESITE", "vchrStorageSite");
-            _subPartMappings.Add("STORAGEMETHOD", "vchrStorageMethod");
-            _subPartMappings.Add("CURATIONSTATUS", "vchrCurationStatus");
-            _subPartMappings.Add("NUMBEROFUNITS", "vchrNoOfUnits");
-            _subPartMappings.Add("NOTES", "txtNotes");
-            // Associate Mappings
-            _associateMappings = new FieldToNameMappings();
-            _associateMappings.Add("FROMCATEGORYID", "intFromCatID");
-            _associateMappings.Add("FROMINTRACATID", "intFromIntraCatID");
-            _associateMappings.Add("TOCATEGORYID", "intToCatID");
-            _associateMappings.Add("TOINTRACATID", "intToIntraCatID");
-            _associateMappings.Add("ASSOCDESCRIPTION", "txtAssocDescription");
-            _associateMappings.Add("RELATIONFROMTO", "vchrRelationFromTo");
-            _associateMappings.Add("RELATIONTOFROM", "vchrRelationToFrom");
-            _associateMappings.Add("REGIONID", "intPoliticalRegionID");
-            _associateMappings.Add("SOURCE", "vchrSource");
-            _associateMappings.Add("REFID", "intRefID");
-            _associateMappings.Add("REFPAGE", "vchrRefPage");
-            _associateMappings.Add("UNCERTAIN", "bitUncertain");
-            _associateMappings.Add("NOTES", "txtNotes");
-            // Curation Event mappings
-            _curationEventMappings = new FieldToNameMappings();
-            _curationEventMappings.Add("SUBPARTNAME", "vchrSubpartName");
-            _curationEventMappings.Add("WHO", "vchrWho");
-            _curationEventMappings.Add("DATE", "dtWhen");
-            _curationEventMappings.Add("EVENTTYPE", "vchrEventType");
-            _curationEventMappings.Add("DESCRIPTION", "txtEventDesc");
-            // SiteVisit Mappings
-            _siteVisitMappings = new FieldToNameMappings();
-            _siteVisitMappings.Add("NAME", "vchrSiteVisitName");
-            _siteVisitMappings.Add("FIELDNUMBER", "vchrFieldNumber");
-            _siteVisitMappings.Add("COLLECTOR", "vchrCollector");
-            _siteVisitMappings.Add("DATESTART", "intDateStart", false);
-            _siteVisitMappings.Add("DATEEND", "intDateEnd", false);
-            _siteVisitMappings.Add("TIMESTART", "intTimeStart", false);
-            _siteVisitMappings.Add("TIMEEND", "intTimeEnd", false);
-            _siteVisitMappings.Add("CASUALTIME", "vchrCasualTime");
-            _siteVisitMappings.Add("DATECREATED", "dtDateCreated");
-            _siteVisitMappings.Add("WHOCREATED", "vchrWhoCreated");
-            // Site Mappings
-            _siteMappings = new FieldToNameMappings();
-            _siteMappings.Add("NAME", "vchrSiteName");
-            _siteMappings.Add("LOCALITYTYPE", "tintLocalType", false);
-            _siteMappings.Add("LOCALITY", "vchrLocal");
-            _siteMappings.Add("DISTANCEFROMPLACE", "vchrDistanceFromPlace");
-            _siteMappings.Add("DIRECTIONFROMPLACE", "vchrDirFromPlace");
-            _siteMappings.Add("INFORMALLOCALITY", "vchrInformalLocal");
-            _siteMappings.Add("COORDINATETYPE", "tintPosCoordinates", false);
-            _siteMappings.Add("POSITIONGEOMETRY", "tintPosAreaType", false);
-            _siteMappings.Add("X1", "fltPosX1");
-            _siteMappings.Add("Y1", "fltPosY1");
-            _siteMappings.Add("X2", "fltPosX2");
-            _siteMappings.Add("Y2", "fltPosY2");
-            _siteMappings.Add("POSITIONSOURCE", "vchrPosSource");
-            _siteMappings.Add("POSITIONERROR", "vchrPosError");
-            _siteMappings.Add("POSITIONWHO", "vchrPosWho");
-            _siteMappings.Add("POSITIONDATE", "vchrPosDate");
-            _siteMappings.Add("POSITIONORIGINAL", "vchrPosOriginal");
-            _siteMappings.Add("POSITIONUTMSOURCE", "vchrPosUTMSource");
-            _siteMappings.Add("POSITIONUTMPROJECTION", "vchrPosUTMMapProj");
-            _siteMappings.Add("POSITIONUTMMAPNAME", "vchrPosUTMMapName");
-            _siteMappings.Add("POSITIONUTMMAPVERSION", "vchrPosUTMMapVer");
-            _siteMappings.Add("ELEVATIONTYPE", "tintElevType", false);
-            _siteMappings.Add("ELEVATIONUPPER", "fltElevUpper");
-            _siteMappings.Add("ELEVATIONLOWER", "fltElevLower");
-            _siteMappings.Add("ELEVATIONDEPTH", "fltElevDepth");
-            _siteMappings.Add("ELEVATIONUNITS", "vchrElevUnits");
-            _siteMappings.Add("ELEVATIONSOURCE", "vchrElevSource");
-            _siteMappings.Add("ELEVATIONERROR", "vchrElevError");
-            _siteMappings.Add("GEOLOGYERA", "vchrGeoEra");
-            _siteMappings.Add("GEOLOGYSTATE", "vchrGeoState");
-            _siteMappings.Add("GEOLOGYPLATE", "vchrGeoPlate");
-            _siteMappings.Add("GEOLOGYFORMATION", "vchrGeoFormation");
-            _siteMappings.Add("GEOLOGYMEMBER", "vchrGeoMember");
-            _siteMappings.Add("GEOLOGYBED", "vchrGeoBed");
-            _siteMappings.Add("GEOLOGYNAME", "vchrGeoName");
-            _siteMappings.Add("GEOLOGYAGEBOTTOM", "vchrGeoAgeBottom");
-            _siteMappings.Add("GEOLOGYAGETOP", "vchrGeoAgeTop");
-            _siteMappings.Add("GEOLOGYNOTES", "vchrGeoNotes");
-            _siteMappings.Add("DATECREATED", "dtDateCreated");
-            _siteMappings.Add("WHOCREATED", "vchrWhoCreated");
-            // Region Mappings
-            _regionMappings = new FieldToNameMappings();
-            _regionMappings.Add("NAME", "vchrName");
-            _regionMappings.Add("RANK", "vchrRank");
-            _regionMappings.Add("DATECREATED", "dtDateCreated");
-            _regionMappings.Add("WHOCREATED", "vchrWhoCreated");
-            // Trap Mappings
-            _trapMappings = new FieldToNameMappings();
-            _trapMappings.Add("NAME", "vchrTrapName");
-            _trapMappings.Add("TYPE", "vchrTrapType");
-            _trapMappings.Add("DESCRIPTION", "vchrDescription");
-            _trapMappings.Add("DATECREATED", "dtDateCreated");
-            _trapMappings.Add("WHOCREATED", "vchrWhoCreated");
-
-        }
-
-        protected void Log(string format, params object[] args) {
-            if (_logWriter == null) {
-                return;
-            }
-
-            var message = format;
-            if (args.Length > 0) {
-                message = string.Format(format, args);
-            }
-
-            _logWriter.WriteLine(string.Format("[{0:d/M/yyyy HH:mm:ss}] {1}", DateTime.Now, message));
-            _logWriter.Flush();
-        }
-
-        protected User User { get; private set; }
         protected XMLIOExportOptions Options { get; private set; }
         protected IProgressObserver ProgressObserver { get; private set; }
         protected List<int> TaxonIDs { get; private set; }
@@ -1843,7 +1858,27 @@ namespace BioLink.Data {
         }
     }
 
-    class FieldToNameMappings : Dictionary<string, NameMapping> {
+    class NameToIDCache : Dictionary<string, int> {
+        public bool NameInCache(string name, out int id) {
+            return TryGetValue(name, out id);
+        }
+
+        public bool IdInCache(int id, out string name) {
+            if (ContainsValue(id)) {
+                foreach (string key in Keys) {
+                    if (this[key] == id) {
+                        name = key;
+                        return true;
+                    }
+                }
+            }
+            name = null;
+            return false;
+        }
+
+    }
+
+    public class FieldToNameMappings : Dictionary<string, NameMapping> {
 
         public void Add(string name, string field, bool isInsertable = true) {
             var mapping = new NameMapping { XMLName = name, FieldName = field, IsInsertable = isInsertable };
@@ -1852,7 +1887,7 @@ namespace BioLink.Data {
 
     }
 
-    class NameMapping {
+    public class NameMapping {
         public string XMLName { get; set; }
         public string FieldName { get; set; }
         public bool IsInsertable { get; set; }
