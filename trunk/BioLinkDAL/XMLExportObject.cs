@@ -33,13 +33,16 @@ namespace BioLink.Data {
             get { return _xmlDoc; } 
         }
 
-        public XmlElement CreateNode(XmlNode parent, string tag) {
+        public XmlElement CreateNode(XmlNode parent, string tag, string id = null) {
             var element = _xmlDoc.CreateElement(tag);
             parent.AppendChild(element);
+            if (id != null) {
+                element.AddAttribute("ID", id);
+            }
             return element;
         }
 
-        public XmlElement GetElementByGUID(string itemType, string guid) {
+        public XmlElement GetElementByGUID(string guid, string itemType) {
             return _xmlDoc.SelectSingleNode(string.Format("//{0}[@ID='{1}']", itemType, guid)) as XmlElement;
         }
 
