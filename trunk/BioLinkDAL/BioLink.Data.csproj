@@ -71,6 +71,7 @@
     <Compile Include="FavoriteActions.cs" />
     <Compile Include="IgnoreFormattingChanges.cs" />
     <Compile Include="ImportService.cs" />
+    <Compile Include="IXMLImportProgressObserver.cs" />
     <Compile Include="Model\StorageLocation.cs" />
     <Compile Include="Model\TaxonStatistics.cs" />
     <Compile Include="Model\XMLIOMaterial.cs" />
@@ -143,6 +144,7 @@
     <Compile Include="TaxaService.cs" />
     <Compile Include="Model\TaxonRank.cs" />
     <Compile Include="User.cs" />
+    <Compile Include="XMLIOImporter.cs" />
     <Compile Include="XMLIOService.cs" />
   </ItemGroup>
   <ItemGroup>

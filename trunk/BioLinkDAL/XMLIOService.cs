@@ -32,6 +32,10 @@ namespace BioLink.Data {
 
         }
 
+        public void ImportXML(string filename, IXMLImportProgressObserver observer, Func<bool> isCancelledCallback) {
+
+        }
+
         public List<XMLIOMultimediaLink> GetExportMultimediaLinks(string category, int intraCatId) {
             var mapper = new GenericMapperBuilder<XMLIOMultimediaLink>().build();
             return StoredProcToList("spXMLExportMultimediaList", mapper, _P("vchrCategory", category), _P("intIntraCatID", intraCatId));
