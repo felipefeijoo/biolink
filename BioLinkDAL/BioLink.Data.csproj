@@ -71,9 +71,16 @@
     <Compile Include="FavoriteActions.cs" />
     <Compile Include="IgnoreFormattingChanges.cs" />
     <Compile Include="ImportService.cs" />
+    <Compile Include="Model\StorageLocation.cs" />
     <Compile Include="Model\TaxonStatistics.cs" />
+    <Compile Include="Model\XMLIOMaterial.cs" />
+    <Compile Include="Model\XMLIOMaterialID.cs" />
     <Compile Include="Model\XMLIOMultimediaLink.cs" />
+    <Compile Include="Model\XMLIORegion.cs" />
+    <Compile Include="Model\XMLIOSite.cs" />
+    <Compile Include="Model\XMLIOSiteVisit.cs" />
     <Compile Include="XMLExportObject.cs" />
+    <Compile Include="XMLIOExporter.cs" />
     <Compile Include="XMLIOExportOptions.cs" />
     <Compile Include="MaterialService.cs" />
     <Compile Include="Model\Associate.cs" />

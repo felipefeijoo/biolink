@@ -230,6 +230,10 @@ namespace BioLink.Data {
         }
     }
 
+    public class ByteToBoolConvertingMapper : ConvertingMapper {
+        public ByteToBoolConvertingMapper(string columnName) : base(columnName, (byteval) => { return (byte)byteval != 0; }) { }
+    }
+
     public class IntToBoolConvertingMapper : ConvertingMapper {
         public IntToBoolConvertingMapper(string columnName) : base(columnName, (intval) => { return (int)intval != 0; }) { }
     }
