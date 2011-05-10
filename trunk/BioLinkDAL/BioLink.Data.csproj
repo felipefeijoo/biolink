@@ -77,9 +77,11 @@
     <Compile Include="Model\XMLIOMaterial.cs" />
     <Compile Include="Model\XMLIOMaterialID.cs" />
     <Compile Include="Model\XMLIOMultimediaLink.cs" />
+    <Compile Include="Model\XMLIONote.cs" />
     <Compile Include="Model\XMLIORegion.cs" />
     <Compile Include="Model\XMLIOSite.cs" />
     <Compile Include="Model\XMLIOSiteVisit.cs" />
+    <Compile Include="Model\XMLIOTrait.cs" />
     <Compile Include="XMLExportObject.cs" />
     <Compile Include="XMLIOExporter.cs" />
     <Compile Include="XMLIOExportOptions.cs" />

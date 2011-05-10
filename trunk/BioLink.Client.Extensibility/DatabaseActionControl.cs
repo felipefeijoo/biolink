@@ -79,12 +79,13 @@ namespace BioLink.Client.Extensibility {
             return null;
         }
 
-        private void WithChangeContainer(Action<IChangeContainer> action) {
+        private bool WithChangeContainer(Action<IChangeContainer> action) {
             var container = FindChangeContainer();
             if (container != null) {
                 action(container);
+                return true;
             } else {
-                throw new Exception("Parent window could not be found, or it is not an IChangeContainer");
+                return false;
             }
         }
 

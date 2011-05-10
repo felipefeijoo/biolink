@@ -14,7 +14,8 @@ namespace BioLink.Client.Taxa {
         public const string TAXA_PLUGIN_NAME = "Taxa";
 
         private ExplorerWorkspaceContribution<TaxonExplorer> _explorer;
-        private TaxaService _taxaService;        
+        private TaxaService _taxaService;
+        private XMLIOImportOptions _xmlImportOptions;
 
         public TaxaPlugin() {
         }
@@ -39,6 +40,11 @@ namespace BioLink.Client.Taxa {
                 String.Format("{{'Name':'ShowTaxaExplorer', 'Header':'{0}'}}", _R("Taxa.Menu.ShowExplorer"))
             ));
 
+            contrib.Add(new MenuWorkspaceContribution(this, "ShowXMLImport", (obj, e) => { ShowXMLImport(); },
+                "{'Name':'Tools', 'Header':'Tools','InsertAfter':'View'}",
+                "{'Name':'ShowXMLImport', 'Header':'XML Import'}"));
+
+
             _explorer = new ExplorerWorkspaceContribution<TaxonExplorer>(this, "TaxonExplorer", new TaxonExplorer(this), _R("TaxonExplorer.Title"),
                 (explorer) => {
                     explorer.InitialiseTaxonExplorer();
@@ -47,6 +53,16 @@ namespace BioLink.Client.Taxa {
             contrib.Add(_explorer);
 
             return contrib;            
+        }
+
+        private void ShowXMLImport() {
+            if (_xmlImportOptions == null) {
+                _xmlImportOptions = new XMLIOImportOptions();
+                _xmlImportOptions.Owner = PluginManager.Instance.ParentWindow;
+                _xmlImportOptions.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            }
+
+            _xmlImportOptions.Show();
         }
 
         public override bool RequestShutdown() {
