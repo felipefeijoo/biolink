@@ -40,6 +40,14 @@ namespace BioLink.Data {
         private FieldToNameMappings _regionMappings;
         private FieldToNameMappings _trapMappings;
 
+        protected XMLIOBase(User user) {
+            this.User = user;
+            this.TaxaService = new TaxaService(User);
+            this.SupportService = new SupportService(User);
+            this.XMLIOService = new XMLIOService(User);
+            this.MaterialService = new MaterialService(User);
+        }
+
         protected void InitLog(string logFile) {
             _logWriter = new StreamWriter(logFile, false);
         }
@@ -422,8 +430,21 @@ namespace BioLink.Data {
 
         }
 
+        public bool LookupFieldName(string ObjectType, string XMLName, out string FieldName) {    
+            var pCollection = GetCollectionForCategory(ObjectType);    
+            if (pCollection == null) {
+                FieldName = "";
+                return false;
+            }
+
+            return pCollection.XMLNameToFieldName(XMLName, out FieldName, true);
+        }
 
         protected User User { get; set; }
+        protected TaxaService TaxaService { get; private set; }
+        protected SupportService SupportService { get; private set; }
+        protected MaterialService MaterialService { get; private set; }
+        protected XMLIOService XMLIOService { get; private set; }
 
     }
 
@@ -444,13 +465,7 @@ namespace BioLink.Data {
         private int _itemTotal;
         private int _itemCount;
 
-        private TaxaService TaxaService { get; set; }
-        private SupportService SupportService { get; set; }
-        private MaterialService MaterialService { get; set; }
-        private XMLIOService XMLIOService { get; set; }
-
-        public XMLIOExporter(User user, List<int> taxonIds, XMLIOExportOptions options, IProgressObserver progress, Func<bool> isCancelledCallback) {
-            this.User = user;
+        public XMLIOExporter(User user, List<int> taxonIds, XMLIOExportOptions options, IProgressObserver progress, Func<bool> isCancelledCallback) : base(user) {
             this.TaxonIDs = taxonIds;
             this.Options = options;
             this.ProgressObserver = progress;
@@ -1806,11 +1821,6 @@ namespace BioLink.Data {
 
         private void Init() {
 
-            this.TaxaService = new TaxaService(User);
-            this.SupportService = new SupportService(User);
-            this.XMLIOService = new XMLIOService(User);
-            this.MaterialService = new MaterialService(User);
-
             Log("Export XML started (User {0}, Database {1} on {2})", User.Username, User.ConnectionProfile.Database, User.ConnectionProfile.Server);
             Log("Destination file: {0}", Options.Filename);
             Log("Taxon IDS: {0}", TaxonIDs.Join(","));
@@ -1856,6 +1866,14 @@ namespace BioLink.Data {
             }
             return null;
         }
+
+        internal int IDfromGUID(string guid) {
+            if (ContainsKey(guid)) {
+                return this[guid];
+            }
+
+            return -1;
+        }
     }
 
     class NameToIDCache : Dictionary<string, int> {
@@ -1885,6 +1903,27 @@ namespace BioLink.Data {
             Add(field, mapping);
         }
 
+
+        internal bool XMLNameToFieldName(string XMLName, out string FieldName, bool FailIfNotInsertable = true) {
+            foreach (NameMapping m in this.Values) {
+                if (m.XMLName.Equals(XMLName, StringComparison.CurrentCultureIgnoreCase)) {
+                    if (FailIfNotInsertable) {
+                        if (m.IsInsertable) {
+                            FieldName = m.FieldName;
+                            return true;
+                        } else {
+                            FieldName = "";
+                            return false;
+                        }
+                    } else {
+                        FieldName = m.FieldName;
+                            return true;
+                    }
+                } 
+            }
+            FieldName = "";
+            return false;
+        }
     }
 
     public class NameMapping {

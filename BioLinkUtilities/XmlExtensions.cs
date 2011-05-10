@@ -25,5 +25,22 @@ namespace BioLink.Client.Utilities {
             return attr;
         }
 
+        public static string GetAttributeValue(this XmlElement element, string attrName, string @default = "") {
+            if (element.HasAttribute(attrName)) {
+                return element.Attributes[attrName].Value;
+            }
+
+            return @default;
+        }
+
+        public static string GetCData(this XmlElement element) {
+            foreach (XmlNode child in element.ChildNodes) {
+                if (child is XmlCDataSection) {
+                    return (child as XmlCDataSection).Value;
+                }
+            }
+            return null;
+        }
+
     }
 }

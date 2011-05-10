@@ -82,8 +82,6 @@ namespace BioLink.Data {
             return StoredProcToList("spMaterialIDListForTaxon", mapper, _P("intBiotaID", biotaId));
         }
 
-
-
         public List<int> GetTaxaIdsForParent(int parentId) {
             var ret = new List<int>();
             StoredProcReaderForEach("spBiotaList", (reader) => {
@@ -92,6 +90,45 @@ namespace BioLink.Data {
             return ret;
         }
 
+        #region Import
+
+        public int ImportMultimedia(string guid, byte[] imageData, string insertClause, string updateClause) {
+            var mediaId = StoredProcUpdate("spXMLImportMultimedia", _P("txtInsertClause", insertClause), _P("txtUpdateClause", updateClause));
+            var service = new SupportService(User);
+            service.UpdateMultimediaBytes(mediaId, imageData);
+            return mediaId;
+        }
+
+        public void InsertTraits(IEnumerable<XMLIOTrait> traits) {
+            foreach (XMLIOTrait trait in traits) {
+                StoredProcUpdate("spXMLImportTrait",
+                    _P("intCategoryID", trait.CategoryID),
+                    _P("intTraitTypeID", trait.TraitTypeID),
+                    _P("intIntraCatID", trait.IntraCatID),
+                    _P("vchrValue", trait.Value));
+            }
+        }
+
+        #endregion
+
+
+        public int GetTraitTypeID(int lngCategoryID, string strTraitName) {
+            return StoredProcReturnVal<int>("spXMLImportTraitTypeGet", _P("intCategoryID", lngCategoryID), _P("vchrTraitType", strTraitName));
+        }
+
+        public int GetTraitCategoryID(string category) {
+            return StoredProcReturnVal<int>("spXMLImportCategoryGet", _P("vchrCategory", category));
+        }
+
+        public int NoteGetTypeID(int categoryID, string noteType) {
+            return StoredProcReturnVal<int>("spXMLImportNoteTypeGet", _P("intCategoryID", categoryID), _P("vchrNoteType", noteType));
+        }
+
+        public void InsertNotes(List<XMLIONote> notes) {
+            foreach (XMLIONote note in notes) {
+                StoredProcUpdate("spXMLImportNote", _P("GUID", note.GUID), _P("txtInsertClause", note.InsertClause), _P("txtUpdateClause", note.UpdateClause));
+            }
+        }
     }
 
     class BinaryConvertingMapper : ConvertingMapper {
