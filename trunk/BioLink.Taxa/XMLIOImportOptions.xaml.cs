@@ -49,6 +49,7 @@ namespace BioLink.Client.Taxa {
             JobExecutor.QueueJob(() => {
                 this.InvokeIfRequired(() => {
                     btnStart.IsEnabled = false;
+                    btnCancel.IsEnabled = false;
                     btnStop.IsEnabled = true;
                 });
 
@@ -60,6 +61,7 @@ namespace BioLink.Client.Taxa {
                 } finally {
                     this.InvokeIfRequired(() => {
                         btnStart.IsEnabled = true;
+                        btnCancel.IsEnabled = true;
                         btnStop.IsEnabled = false;
                     });
                 }
@@ -102,30 +104,52 @@ namespace BioLink.Client.Taxa {
                 }
             }
         }
+
+        private void btnCancel_Click(object sender, RoutedEventArgs e) {
+            this.Close();
+        }
     }
 
-    class ProgressItemViewModel : GenericViewModelBase<XMLImportProgressItem> {
-        public ProgressItemViewModel(XMLImportProgressItem model)
-            : base(model, null) {
+    class ProgressItemViewModel : ViewModelBase {
+
+        private string _Name;
+        private int _Total;
+        private int _Completed;
+
+        public ProgressItemViewModel(XMLImportProgressItem model) {
+            _Name = model.Name;
+            _Total = model.Total;
+            _Completed = model.Completed;
+            
         }
 
         public string Name {
-            get { return Model.Name; }
-            set { SetProperty(() => Model.Name, value); }
+            get { return _Name; }
+            set { SetProperty("Name", ref _Name, value); }
         }
 
         public int Total {
-            get { return Model.Total; }
-            set { SetProperty(() => Model.Total, value); }
+            get { return _Total; }
+            set { SetProperty("Total", ref _Total, value); }
         }
 
         public int Completed {
-            get { return Model.Completed; }
-            set { SetProperty(() => Model.Completed, value); }
+            get { return _Completed; }
+            set { 
+                SetProperty("Completed", ref _Completed, value);
+                RaisePropertyChanged("PercentStr");
+            }
         }
 
-        public string PercentStr {
-            get { return  string.Format("{0}%", Total == 0 ? 0 :  (int)((double)Completed / (double)Total) * 100.0); }
+        public string PercentStr {            
+            get {     
+                int percent = (Total == 0 ? 0 :  (int) (((double)Completed / (double)Total) * 100.0));
+                return string.Format("{0}%", percent); 
+            }
+        }
+
+        public override int? ObjectID {
+            get { return null; }
         }
 
     }

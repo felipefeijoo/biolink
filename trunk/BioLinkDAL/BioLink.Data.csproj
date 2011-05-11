@@ -74,10 +74,14 @@
     <Compile Include="IXMLImportProgressObserver.cs" />
     <Compile Include="Model\StorageLocation.cs" />
     <Compile Include="Model\TaxonStatistics.cs" />
+    <Compile Include="Model\XMLImportJournal.cs" />
+    <Compile Include="Model\XMLImportMultimedia.cs" />
+    <Compile Include="Model\XMLImportMultimediaLink.cs" />
+    <Compile Include="Model\XMLImportReference.cs" />
     <Compile Include="Model\XMLIOMaterial.cs" />
     <Compile Include="Model\XMLIOMaterialID.cs" />
     <Compile Include="Model\XMLIOMultimediaLink.cs" />
-    <Compile Include="Model\XMLIONote.cs" />
+    <Compile Include="Model\XMLImportNote.cs" />
     <Compile Include="Model\XMLIORegion.cs" />
     <Compile Include="Model\XMLIOSite.cs" />
     <Compile Include="Model\XMLIOSiteVisit.cs" />

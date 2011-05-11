@@ -59,6 +59,17 @@ namespace BioLink.Data {
             }
         }
 
+        protected bool IsCancelled {
+            get {
+                if (_isCancelled != null) {
+                    return _isCancelled();
+                }
+
+                return false;
+            }
+        }
+
+
         protected void InitMappings() {
 
             Log("Initializing field mappings...");
@@ -1807,16 +1818,6 @@ namespace BioLink.Data {
 
             var stats = TaxaService.GetTaxonStatistics(taxonId);
             return stats.TotalItems + 1; // the taxon itself counts as one
-        }
-
-        private bool IsCancelled {
-            get {
-                if (_isCancelled != null) {
-                    return _isCancelled();
-                }
-
-                return false;
-            }
         }
 
         private void Init() {

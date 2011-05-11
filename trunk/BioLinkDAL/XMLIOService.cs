@@ -6,6 +6,7 @@ using BioLink.Client.Utilities;
 using System.IO;
 using System.Xml;
 using BioLink.Data.Model;
+using System.Data.SqlClient;
 
 namespace BioLink.Data {
 
@@ -92,29 +93,18 @@ namespace BioLink.Data {
 
         #region Import
 
-        public int ImportMultimedia(string guid, byte[] imageData, string insertClause, string updateClause) {
-            int mediaId = -1;
+        public bool ImportMultimedia(XMLImportMultimedia media) {
+            media.ID = -1;
             StoredProcReaderFirst("spXMLImportMultimedia", (reader) => {
-                if (!reader.IsDBNull(0)) {
-                    var obj = reader[0];
-                    if (obj != null) {
-                        if (typeof(Int32).IsAssignableFrom(obj.GetType())) {
-                            mediaId = (Int32)reader[0];
-                        } else if (typeof(decimal).IsAssignableFrom(obj.GetType())) {
-                            mediaId = (int)(decimal)reader[0];
-                        } else {
-                            Logger.Debug("Failed to import multimedia: {0}. Stored proc did not return a recognizable media id: {1}", obj.GetType());
-                        }
-                    }
-                }
-            }, _P("GUID", guid), _P("txtInsertClause", insertClause), _P("txtUpdateClause", updateClause));
-            if (mediaId > 0) {
+                media.ID = reader.GetIdentityValue();
+            }, _P("GUID", media.GUID), _P("txtInsertClause", media.InsertClause), _P("txtUpdateClause", media.UpdateClause));
+            if (media.ID > 0) {
                 var service = new SupportService(User);
-                service.UpdateMultimediaBytes(mediaId, imageData);
+                service.UpdateMultimediaBytes(media.ID, media.ImageData);
             } else {
-                Logger.Debug("Failed to import multimedia: {0}. Stored proc did not return a recognizable media id", guid);
+                Logger.Debug("Failed to import multimedia: {0}. Stored proc did not return a recognizable media id", media.GUID);
             }
-            return mediaId;
+            return media.ID >= 0;
         }
 
         public void InsertTraits(IEnumerable<XMLIOTrait> traits) {
@@ -142,10 +132,55 @@ namespace BioLink.Data {
             return StoredProcReturnVal<int>("spXMLImportNoteTypeGet", _P("intCategoryID", categoryID), _P("vchrNoteType", noteType));
         }
 
-        public void InsertNotes(List<XMLIONote> notes) {
-            foreach (XMLIONote note in notes) {
+        public void InsertNotes(List<XMLImportNote> notes) {
+            foreach (XMLImportNote note in notes) {
                 StoredProcUpdate("spXMLImportNote", _P("GUID", note.GUID), _P("txtInsertClause", note.InsertClause), _P("txtUpdateClause", note.UpdateClause));
             }
+        }
+
+        public bool ImportJournal(XMLImportJournal journal) {
+            return ImportObject(journal, "spXMLImportJournal", _P("GUID", journal.GUID), _P("vchrFullName", journal.FullName));
+        }
+
+        public bool ImportReference(XMLImportReference reference) {
+            return ImportObject(reference, "spXMLImportReference",
+                _P("GUID", reference.GUID),
+                _P("vchrRefCode", reference.Code),
+                _P("vchrAuthor", reference.Author),
+                _P("vchrYearOfPub", reference.Year));
+        }
+
+        public bool ImportMultimediaLink(List<XMLImportMultimediaLink> items) {
+            bool ok = true;
+            foreach (XMLImportMultimediaLink item in items) {
+                ImportObject(item, "spXMLImportMultimediaLink", _P("GUID", item.GUID));
+                if (item.ID < 0) {
+                    ok = false;
+                }
+            }
+            return ok;
+        }
+
+        protected bool ImportObject(XMLImportObject obj, string storedProc, params SqlParameter[] @params) {
+            obj.ID = -1;            
+            Array.Resize(ref @params, @params.Length + 2);
+            @params[@params.Length-2] = _P("txtInsertClause", obj.InsertClause);
+            @params[@params.Length-1] = _P("txtUpdateClause", obj.UpdateClause);
+
+            StoredProcReaderFirst(storedProc, (reader) => {
+                obj.ID = reader.GetIdentityValue();
+            }, @params);
+
+            return obj.ID >= 0;
+        }
+
+
+        public int GetMultimediaTypeID(int lngCategoryID, string strMMType) {
+            int result = -1;
+            StoredProcReaderFirst("spXMLImportMultimediaTypeGet", (reader) => {
+                result = (int)reader[0];
+            }, _P("intCategoryID", lngCategoryID), _P("vchrMultimediaType", strMMType));
+            return result;
         }
     }
 
@@ -153,6 +188,25 @@ namespace BioLink.Data {
         public BinaryConvertingMapper(string columnName) : base(columnName, (x) => { 
             return ((System.Data.SqlTypes.SqlBinary)x).Value; }
         ) { }
+    }
+
+    public static class ReaderExtensions {
+
+        public static int GetIdentityValue(this SqlDataReader reader, int ordinal = 0, int @default = -1) {            
+            if (ordinal >= 0) {
+                if (!reader.IsDBNull(ordinal)) {
+                    var obj = reader[ordinal];
+                    if (obj != null) {
+                        if (typeof(Int32).IsAssignableFrom(obj.GetType())) {
+                            return (Int32)reader[0];
+                        } else if (typeof(decimal).IsAssignableFrom(obj.GetType())) {
+                            return (int)(decimal)reader[0];
+                        }
+                    }
+                }                
+            }
+            return @default;
+        }
     }
 
 }
