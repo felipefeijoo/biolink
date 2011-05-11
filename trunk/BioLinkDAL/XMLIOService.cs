@@ -93,9 +93,27 @@ namespace BioLink.Data {
         #region Import
 
         public int ImportMultimedia(string guid, byte[] imageData, string insertClause, string updateClause) {
-            var mediaId = StoredProcUpdate("spXMLImportMultimedia", _P("txtInsertClause", insertClause), _P("txtUpdateClause", updateClause));
-            var service = new SupportService(User);
-            service.UpdateMultimediaBytes(mediaId, imageData);
+            int mediaId = -1;
+            StoredProcReaderFirst("spXMLImportMultimedia", (reader) => {
+                if (!reader.IsDBNull(0)) {
+                    var obj = reader[0];
+                    if (obj != null) {
+                        if (typeof(Int32).IsAssignableFrom(obj.GetType())) {
+                            mediaId = (Int32)reader[0];
+                        } else if (typeof(decimal).IsAssignableFrom(obj.GetType())) {
+                            mediaId = (int)(decimal)reader[0];
+                        } else {
+                            Logger.Debug("Failed to import multimedia: {0}. Stored proc did not return a recognizable media id: {1}", obj.GetType());
+                        }
+                    }
+                }
+            }, _P("GUID", guid), _P("txtInsertClause", insertClause), _P("txtUpdateClause", updateClause));
+            if (mediaId > 0) {
+                var service = new SupportService(User);
+                service.UpdateMultimediaBytes(mediaId, imageData);
+            } else {
+                Logger.Debug("Failed to import multimedia: {0}. Stored proc did not return a recognizable media id", guid);
+            }
             return mediaId;
         }
 

@@ -24,9 +24,9 @@ namespace BioLink.Client.Utilities {
             Func<string> generateUniqueName = () => {
                 var guid = Guid.NewGuid().ToString();
                 return string.Format("{0}{1}-{2}{3}", System.IO.Path.GetTempPath(), prefix, guid.Substring(guid.LastIndexOf("-") + 1), extension);
-            };            
+            };
             string filename;
-            while (File.Exists(filename = generateUniqueName())) { 
+            while (File.Exists(filename = generateUniqueName())) {
             }
 
             _filenames.Add(filename);
@@ -78,11 +78,11 @@ namespace BioLink.Client.Utilities {
 
         public void CopyToTempFile(T key, string filename) {
             if (File.Exists(filename)) {
-                FileInfo finfo = new FileInfo(filename);                
+                FileInfo finfo = new FileInfo(filename);
                 var extension = finfo.Extension.Substring(1);
                 var tempfile = NewFilename(extension);
                 finfo.CopyTo(tempfile);
-                _tempFileMap[key] = tempfile;                
+                _tempFileMap[key] = tempfile;
             }
         }
 
@@ -100,23 +100,25 @@ namespace BioLink.Client.Utilities {
             }
 
             String tempFile = NewFilename(extension);
-            using (Stream contentStream = _contentGenerator(key)) {                
-                FileInfo file = new FileInfo(tempFile);
-                Logger.Debug("Creating temp file {0} from stream (key={1})", tempFile, key);
-                using (Stream dest = file.OpenWrite()) {
-                    byte[] buffer = new byte[4096];
-                    int bytes;
-                    while ((bytes = contentStream.Read(buffer, 0, buffer.Length)) > 0) {
-                        dest.Write(buffer, 0, bytes);
+            using (Stream contentStream = _contentGenerator(key)) {
+                if (contentStream != null) {
+                    FileInfo file = new FileInfo(tempFile);
+                    Logger.Debug("Creating temp file {0} from stream (key={1})", tempFile, key);
+                    using (Stream dest = file.OpenWrite()) {
+                        byte[] buffer = new byte[4096];
+                        int bytes;
+                        while ((bytes = contentStream.Read(buffer, 0, buffer.Length)) > 0) {
+                            dest.Write(buffer, 0, bytes);
+                        }
                     }
                 }
             }
-            
+
             _tempFileMap[key] = tempFile;
-            return tempFile;            
+            return tempFile;
         }
 
-        private string NewFilename(String ext) {            
+        private string NewFilename(String ext) {
             if (!ext.StartsWith(".")) {
                 ext = "." + ext;
             }

@@ -18,6 +18,7 @@ using BioLink.Data.Model;
 using System.IO;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
+using System.Windows.Controls.Primitives;
 
 namespace BioLink.Client.Tools {
 
@@ -33,7 +34,8 @@ namespace BioLink.Client.Tools {
         private bool _IsDragging;
         private Point _startPoint;
 
-        public MultimediaManager(User user) : base(user, "MultimediaManager") {
+        public MultimediaManager(User user)
+            : base(user, "MultimediaManager") {
             InitializeComponent();
 
             var service = new SupportService(user);
@@ -57,7 +59,9 @@ namespace BioLink.Client.Tools {
             _tempFileManager = new KeyedObjectTempFileManager<int?>((mmId) => {
                 if (mmId.HasValue) {
                     byte[] bytes = service.GetMultimediaBytes(mmId.Value);
-                    return new MemoryStream(bytes);
+                    if (bytes != null) {
+                        return new MemoryStream(bytes);
+                    }
                 }
                 return null;
             });
@@ -68,6 +72,14 @@ namespace BioLink.Client.Tools {
 
             lvw.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(lvw_PreviewMouseLeftButtonDown);
             lvw.PreviewMouseMove += new MouseEventHandler(lvw_PreviewMouseMove);
+
+            lvw.KeyUp += new KeyEventHandler(lvw_KeyUp);
+        }
+
+        void lvw_KeyUp(object sender, KeyEventArgs e) {
+            if (e.Key == Key.Delete) {
+                DeleteSelected();
+            }
         }
 
         void lvw_PreviewMouseMove(object sender, MouseEventArgs e) {
@@ -75,7 +87,36 @@ namespace BioLink.Client.Tools {
         }
 
         void lvw_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+            if (IsMouseOverScrollbar) {
+                _startPoint = default(Point);
+                return;
+            }
+
             _startPoint = e.GetPosition(lvw);
+        }
+
+        bool IsMouseOverScrollbar {
+            get {
+                Point ptMouse = MouseUtilities.GetMousePosition(lvw);
+                HitTestResult res = VisualTreeHelper.HitTest(lvw, ptMouse);
+                if (res == null) {
+                    return false;
+                }
+
+                DependencyObject depObj = res.VisualHit;
+                while (depObj != null) {
+                    if (depObj is ScrollBar) {
+                        return true;
+                    }
+
+                    if (depObj is Visual || depObj is System.Windows.Media.Media3D.Visual3D) {
+                        depObj = VisualTreeHelper.GetParent(depObj);
+                    } else {
+                        depObj = LogicalTreeHelper.GetParent(depObj);
+                    }
+                }
+                return false;
+            }
         }
 
         private void CommonPreviewMouseMove(MouseEventArgs e, ListView listView) {
@@ -84,7 +125,7 @@ namespace BioLink.Client.Tools {
                 return;
             }
 
-            if (e.LeftButton == MouseButtonState.Pressed && !_IsDragging) {
+            if (e.LeftButton == MouseButtonState.Pressed && !_IsDragging && !IsMouseOverScrollbar) {
                 Point position = e.GetPosition(listView);
                 if (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance) {
                     if (listView.SelectedItem != null) {
@@ -173,7 +214,7 @@ namespace BioLink.Client.Tools {
                                 model.MultimediaLinkID = -1;
                                 model.Name = duplicate.Name;
                                 model.Extension = duplicate.FileExtension;
-                                viewModel = new MultimediaLinkViewModel(model);                                
+                                viewModel = new MultimediaLinkViewModel(model);
                                 _model.Add(viewModel);
                                 _tempFileManager.CopyToTempFile(viewModel.MultimediaID, filename);
                                 RegisterPendingChange(new UpdateMultimediaBytesAction(model, filename));
@@ -215,14 +256,40 @@ namespace BioLink.Client.Tools {
             return newId;
         }
 
+        private void DeleteMultimedia(System.Collections.IList multimedia) {            
+            if (multimedia != null && multimedia.Count > 0) {
+                if (multimedia.Count == 1) {
+                    DeleteSingleMultimedia(multimedia[0] as MultimediaLinkViewModel);
+                } else {
+                    if (this.Question(string.Format("Are you sure you wish to permanently delete these {0} multimedia items?", multimedia.Count), "Delete multiple multimedia items?")) {
+                        var candidateList = new List<MultimediaLinkViewModel>();
 
-        private void DeleteMultimedia(MultimediaLinkViewModel selected) {
+                        foreach (MultimediaLinkViewModel item in multimedia) {
+                            candidateList.Add(item);
+                        }
+
+                        foreach (MultimediaLinkViewModel item in candidateList) {
+                            _model.Remove(item);
+                            RegisterUniquePendingChange(new DeleteMultimedia(item.MultimediaID));
+                        }
+                    }
+                }
+            }
+        }
+
+
+        private void DeleteSingleMultimedia(MultimediaLinkViewModel selected) {
             if (selected == null) {
                 return;
             }
 
             if (this.Question(string.Format("Are you sure you wish to permanently delete '{0}'?", selected.Name), "Delete multimedia?")) {
+                var index = _model.IndexOf(selected);
                 _model.Remove(selected);
+                if (index >= 0) {
+                    _model[index].IsSelected = true;
+                }
+
                 RegisterUniquePendingChange(new DeleteMultimedia(selected.MultimediaID));
             }
         }
@@ -262,7 +329,7 @@ namespace BioLink.Client.Tools {
             }
             builder.Separator();
             builder.New("_Add new...").Handler(() => { AddNew(); }).End();
-            builder.New("_Delete").Handler(() => { DeleteMultimedia(selected); }).End();
+            builder.New("_Delete").Handler(() => { DeleteSelected(); }).End();
 
             lvw.ContextMenu = builder.ContextMenu;
         }
@@ -291,7 +358,7 @@ namespace BioLink.Client.Tools {
         }
 
         private void lvw_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            var selected = lvw.SelectedItem as MultimediaLinkViewModel;           
+            var selected = lvw.SelectedItem as MultimediaLinkViewModel;
             DisplayMultimedia(selected);
         }
 
@@ -299,19 +366,29 @@ namespace BioLink.Client.Tools {
 
             if (selected != null) {
                 JobExecutor.QueueJob(() => {
-                    string filename = _tempFileManager.GetContentFileName(selected.MultimediaID, selected.Extension);
-                    var image = GraphicsUtils.LoadImageFromFile(filename);
-                    imgPreview.InvokeIfRequired(() => {
-                        imgPreview.Stretch = Stretch.Uniform;
-                        imgPreview.StretchDirection = StretchDirection.DownOnly;
-                        imgPreview.Source = image;
-                        gridInfo.DataContext = image;
-                        FileInfo f = new FileInfo(filename);
-                        lblImageInfo.Content = string.Format("{0}x{1}  {2} DPI  {3}", image.PixelWidth, image.PixelHeight, image.DpiX, ByteConverter.FormatBytes(f.Length));
-                        lblFilename.Content = string.Format("Filename: {0}", filename);
-                    });
 
-                    
+                    if (selected.SizeInBytes > 0) {
+                        string filename = _tempFileManager.GetContentFileName(selected.MultimediaID, selected.Extension);
+
+                        var image = GraphicsUtils.LoadImageFromFile(filename);
+                        imgPreview.InvokeIfRequired(() => {
+                            imgPreview.Stretch = Stretch.Uniform;
+                            imgPreview.StretchDirection = StretchDirection.DownOnly;
+                            imgPreview.Source = image;
+                            gridInfo.DataContext = image;
+                            FileInfo f = new FileInfo(filename);
+                            lblImageInfo.Content = string.Format("{0}x{1}  {2} DPI  {3}", image.PixelWidth, image.PixelHeight, image.DpiX, ByteConverter.FormatBytes(f.Length));
+                            lblFilename.Content = string.Format("Filename: {0}", filename);
+                        });
+                    } else {
+                        imgPreview.InvokeIfRequired(() => {
+                            imgPreview.Source = null;
+                            lblImageInfo.Content = "No image";
+                            lblFilename.Content = "";
+                        });
+                    }
+
+
                 });
             } else {
                 imgPreview.Source = null;
@@ -352,6 +429,14 @@ namespace BioLink.Client.Tools {
 
         private void btnAddNew_Click(object sender, RoutedEventArgs e) {
             AddNew();
+        }
+
+        private void btnDelete_Click(object sender, RoutedEventArgs e) {
+            DeleteSelected();
+        }
+
+        private void DeleteSelected() {
+            DeleteMultimedia(lvw.SelectedItems);
         }
 
     }

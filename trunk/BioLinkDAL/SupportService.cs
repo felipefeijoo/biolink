@@ -324,8 +324,10 @@ namespace BioLink.Data {
         public byte[] GetMultimediaBytes(int mediaId) {
             byte[] ret = null;
             StoredProcReaderFirst("spMultimediaGetOne", (reader) => {
-                var x = reader.GetSqlBinary(0);
-                ret = x.Value;
+                if (!reader.IsDBNull(0)) {
+                    var x = reader.GetSqlBinary(0);
+                    ret = x.Value;
+                }
             }, _P("intMultimediaID", mediaId));
             return ret;
         }

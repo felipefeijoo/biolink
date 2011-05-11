@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="342" d:DesignWidth="473" SizeToContent="WidthAndHeight" xmlns:my="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility" Title="XML Import">
+             Height="350" Width="500" SizeToContent="Manual" xmlns:my="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility" Title="XML Import">
     <Grid>
         <Grid.Resources>
             <Style x:Key="hcs" TargetType="{x:Type GridViewColumnHeader}">
