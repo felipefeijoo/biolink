@@ -45,7 +45,7 @@ namespace BioLink.Client.Utilities {
 
         public static System.Drawing.Brush CreateBrush(System.Drawing.Color color, System.Drawing.Drawing2D.HatchStyle? hatchStyle) {
             if (hatchStyle != null && hatchStyle.HasValue) {
-                return new System.Drawing.Drawing2D.HatchBrush(hatchStyle.Value, color, System.Drawing.Color.FromArgb(0,0,0,0));
+                return new System.Drawing.Drawing2D.HatchBrush(hatchStyle.Value, color, System.Drawing.Color.FromArgb(0, 0, 0, 0));
             } else {
                 return new System.Drawing.SolidBrush(color);
             }
@@ -114,13 +114,25 @@ namespace BioLink.Client.Utilities {
                         return image;
                     }
                 } catch (Exception) {
-                    FileInfo finfo = new FileInfo(filename);
-                    return GraphicsUtils.ExtractIconForExtension(finfo.Extension.Substring(1));
+                    return GetIconForFilePath(filename);
                 }
             }
 
             return null;
 
+        }
+
+        public static BitmapSource GetIconForFilePath(string path) {
+            
+            try {
+                var result = Icon.ExtractAssociatedIcon(path);
+                if (result != null) {
+                    return SystemDrawingIconToBitmapSource(result);
+                }
+            } catch (Exception) {
+            }
+
+            return null;
         }
 
         public static BitmapSource GenerateThumbnail(string filename, int maxDimension) {

@@ -49,7 +49,9 @@ namespace BioLink.Client.Extensibility {
             _tempFileManager = new KeyedObjectTempFileManager<int?>((mmId) => {
                 if (mmId.HasValue) {
                     byte[] bytes = Service.GetMultimediaBytes(mmId.Value);
-                    return new MemoryStream(bytes);
+                    if (bytes != null) {
+                        return new MemoryStream(bytes);
+                    }
                 }
                 return null;
             });

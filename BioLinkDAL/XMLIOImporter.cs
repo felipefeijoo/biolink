@@ -193,7 +193,7 @@ namespace BioLink.Data {
            
             var traits = new List<XMLIOTrait>();
             string strFieldName;
-            foreach (XmlElement xmlNode in XMLNode.ChildNodes) {
+            foreach (XmlNode xmlNode in XMLNode.ChildNodes) {
                 if (xmlNode is XmlElement) {
                     var XMLChild = xmlNode as XmlElement;
                     if (!pCollection.XMLNameToFieldName(XMLChild.Name, out strFieldName)) {
@@ -302,7 +302,6 @@ namespace BioLink.Data {
 
             int lngID;
             bool bDoCheck = false;
-            Value = null;
 
             switch (ObjectType.ToLower()) {
                 case "reference":

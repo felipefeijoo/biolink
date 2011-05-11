@@ -42,6 +42,7 @@ namespace BioLink.Client.Taxa {
 
             contrib.Add(new MenuWorkspaceContribution(this, "ShowXMLImport", (obj, e) => { ShowXMLImport(); },
                 "{'Name':'Tools', 'Header':'Tools','InsertAfter':'View'}",
+                "{'Name':'Import', 'Header':'Import'}",
                 "{'Name':'ShowXMLImport', 'Header':'XML Import'}"));
 
 

@@ -95,7 +95,7 @@ namespace BioLink.Client.Utilities {
 
         public static Icon ExtractIconFromFile(string fileAndParam) {
             try {
-                EmbeddedIconInfo embeddedIcon = getEmbeddedIconInfo(fileAndParam);
+                EmbeddedIconInfo embeddedIcon = GetEmbeddedIconInfo(fileAndParam);
                 IntPtr lIcon = ExtractIcon(0, embeddedIcon.FileName, embeddedIcon.IconIndex);
                 return Icon.FromHandle(lIcon);
             } catch (Exception exc) {
@@ -110,7 +110,7 @@ namespace BioLink.Client.Utilities {
             IntPtr[] hIconEx = new IntPtr[1] { IntPtr.Zero };
 
             try {
-                EmbeddedIconInfo embeddedIcon = getEmbeddedIconInfo(fileAndParam);
+                EmbeddedIconInfo embeddedIcon = GetEmbeddedIconInfo(fileAndParam);
 
                 if (isLarge) {
                     readIconCount = ExtractIconEx(embeddedIcon.FileName, 0, hIconEx, hDummy, 1);
@@ -138,7 +138,7 @@ namespace BioLink.Client.Utilities {
             }
         }
 
-        protected static EmbeddedIconInfo getEmbeddedIconInfo(string fileAndParam) {
+        protected static EmbeddedIconInfo GetEmbeddedIconInfo(string fileAndParam) {
             EmbeddedIconInfo embeddedIcon = new EmbeddedIconInfo();
 
             if (String.IsNullOrEmpty(fileAndParam)) {
