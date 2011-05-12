@@ -135,7 +135,11 @@ namespace BioLink.Data {
         }
 
         public T Map(SqlDataReader reader) {
-            T t = new T();
+            return Map(reader, new T());
+        }
+
+        public T Map(SqlDataReader reader, T t ) {
+
             ReflectMap(t, reader, Mappings, Overrides);
             if (PostMapAction != null) {
                 PostMapAction(t);
