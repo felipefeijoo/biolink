@@ -86,7 +86,7 @@ namespace BioLink.Data {
         public List<int> GetTaxaIdsForParent(int parentId) {
             var ret = new List<int>();
             StoredProcReaderForEach("spBiotaList", (reader) => {
-                ret.Add((int)reader["TaxaID"]);
+                ret.Add(reader.GetIdentityValue());
             }, _P("intParentID", parentId));
             return ret;
         }
@@ -156,6 +156,19 @@ namespace BioLink.Data {
                 ImportObject(item, "spXMLImportMultimediaLink", _P("GUID", item.GUID));
                 if (item.ID < 0) {
                     ok = false;
+                } else {
+                    if (!string.IsNullOrWhiteSpace(item.Caption)) {
+                        try {
+                            Command((con, cmd) => {
+                                cmd.CommandText = "UPDATE tblMultimediaLink SET vchrCaption = @vchrCaption WHERE intMultimediaLinkID = @linkid";
+                                cmd.Parameters.Add(_P("@vchrCaption", item.Caption));
+                                cmd.Parameters.Add(_P("@linkid", item.ID));
+                                cmd.ExecuteNonQuery();
+                            });
+                        } catch (Exception ex) {
+                            Logger.Debug("Failed to insert caption for multimedia link id {0}. Probably due to the size of the caption exceeding the size of the table column. {1}", item.ID, ex.Message);
+                        }
+                    }
                 }
             }
             return ok;
@@ -178,7 +191,7 @@ namespace BioLink.Data {
         public int GetMultimediaTypeID(int lngCategoryID, string strMMType) {
             int result = -1;
             StoredProcReaderFirst("spXMLImportMultimediaTypeGet", (reader) => {
-                result = (int)reader[0];
+                result = reader.GetIdentityValue();
             }, _P("intCategoryID", lngCategoryID), _P("vchrMultimediaType", strMMType));
             return result;
         }
@@ -187,7 +200,7 @@ namespace BioLink.Data {
             lngTaxonID = -1;
             int temp = 0;
             StoredProcReaderFirst("spXMLImportBiotaFind", (reader) => {
-                temp = (int) reader[0];
+                temp = reader.GetIdentityValue();
             }, _P("GUID", GUID), _P("vchrFullName", FullName), _P("vchrEpithet", Epithet), _P("intParentID", ParentID));
             lngTaxonID = temp;
             return lngTaxonID >= 0;
@@ -215,6 +228,7 @@ namespace BioLink.Data {
             bool succeeded = false;
             StoredProcReaderFirst("spXMLImportBiotaUpdate", (reader) => {
                 mapper.Map(reader, taxon);
+                succeeded = true;
             }, _P("vchrBiotaID", taxon.ID), _P("txtUpdateSetClause", UpdateStr));
    
             if (!succeeded) {
@@ -243,7 +257,7 @@ namespace BioLink.Data {
 
             NameCodeItem item = null;
             StoredProcReaderFirst("spXMLImportBiotaDefRankResolve", (reader) => {
-                item = new NameCodeItem { Name = RankName, Code = reader["RankCode"] as string, IsExisting = ((int) reader["added"]) == 0 };
+                item = new NameCodeItem { Name = RankName, Code = reader["RankCode"] as string, IsExisting = (bool)reader["Added"] };
                 _RankCache.Add(RankName, item);
             }, _P("vchrFullRank", RankName));
 
@@ -270,7 +284,7 @@ namespace BioLink.Data {
             Added = false;
     
             StoredProcReaderFirst("spXMLImportBiotaDefKingdomResolve", (reader) => {
-                item = new NameCodeItem { Name = KingdomName, Code=reader["KingdomCode"] as string, IsExisting = (int) reader["Added"] == 0 };
+                item = new NameCodeItem { Name = KingdomName, Code=reader["KingdomCode"] as string, IsExisting = (bool) reader["Added"] };
             }, _P("vchrFullKingdom", KingdomName));
 
             if (item != null) {
@@ -295,7 +309,7 @@ namespace BioLink.Data {
         public int GetRefLinkTypeID(int lngCategoryID, string strRefLinkType) {
             int id = -1;
             StoredProcReaderFirst("spXMLImportRefLinkTypeGet", (reader) => {
-                id = (int) reader[0];
+                id = reader.GetIdentityValue();
             }, _P("intCategoryID", lngCategoryID), _P("vchrRefLinkType", strRefLinkType));
             return id;
         }
@@ -310,7 +324,7 @@ namespace BioLink.Data {
         public int InsertDistributionRegion(string strRegion, int lngParentID) {
             int id = -1;
             StoredProcReaderFirst("spXMLImportDistributionRegion", (reader) => {
-                id = (int)reader[0];
+                id = reader.GetIdentityValue();
             }, _P("intParentID", lngParentID), _P("vchrRegion", strRegion));
             return id;
         }
@@ -328,7 +342,7 @@ namespace BioLink.Data {
         public int ImportStorageLocation(string Location, int ParentID) {
             int id = -1;
             StoredProcReaderFirst("spXMLImportStorageLocation", (reader) => {
-                id = (int)reader[0];
+                id = reader.GetIdentityValue();
             }, _P("intParentID", ParentID), _P("vchrLocation", Location));
             return id;
         }
@@ -336,6 +350,53 @@ namespace BioLink.Data {
         public bool ImportTaxonStorage(List<XMLImportStorageLocation> list) {
             foreach (XMLImportStorageLocation loc in list) {
                 ImportObject(loc, "spXMLImportBiotaStorageLocation", _P("GUID", loc.GUID), _P("intBiotaID", loc.TaxonID), _P("BiotaStorageID", loc.LocationID));
+            }
+            return true;
+        }
+
+        public bool ImportPoliticalRegion(XMLImportRegion region) {
+            return ImportObject(region, "spXMLImportPoliticalRegion", _P("GUID", region.GUID), _P("intParentID", region.ParentID), _P("vchrRegion", region.RegionName));            
+        }
+
+        public bool ImportSite(XMLImportSite site) {
+            return ImportObject(site, "spXMLImportSite", _P("GUID", site.GUID), _P("tintLocalType", site.LocalityType), _P("vchrLocal", site.Locality), _P("fltPosY1", site.Y1), _P("fltPosX1", site.X1));
+        }
+
+        public bool ImportTrap(XMLImportTrap trap) {
+            return ImportObject(trap, "spXMLImportTrap", _P("GUID", trap.GUID), _P("intSiteID", trap.SiteID), _P("vchrTrapName", trap.TrapName));
+        }
+
+        public bool ImportSiteVisit(XMLImportSiteVisit visit) {
+            return ImportObject(visit, "spXMLImportSiteVisit", _P("GUID", visit.GUID), _P("intSiteID", visit.SiteID), _P("vchrCollector", visit.Collector), _P("intDateStart", visit.StartDate));
+        }
+
+        public bool ImportMaterial(XMLImportMaterial material) {
+            return ImportObject(material, "spXMLImportMaterial", _P("GUID", material.GUID));
+        }
+
+        public bool InsertMaterialIdentification(List<XMLImportIDHistory> list) {
+            foreach (XMLImportIDHistory item in list) {
+                if (!ImportObject(item, "spXMLImportMaterialIdentification", _P("GUID", item.GUID))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public bool InsertMaterialSubparts(List<XMLImportSubPart> list) {
+            foreach (XMLImportSubPart part in list) {
+                if (!ImportObject(part, "spXMLImportMaterialPart", _P("GUID", part.GUID))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public bool InsertMaterialEvents(List<XMLImportEvent> list) {
+            foreach (XMLImportEvent evt in list) {
+                if (!ImportObject(evt, "spXMLImportCurationEvent", _P("GUID", evt.GUID))) {
+                    return false;
+                }
             }
             return true;
         }

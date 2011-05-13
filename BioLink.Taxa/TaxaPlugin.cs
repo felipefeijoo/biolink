@@ -61,6 +61,9 @@ namespace BioLink.Client.Taxa {
                 _xmlImportOptions = new XMLIOImportOptions();
                 _xmlImportOptions.Owner = PluginManager.Instance.ParentWindow;
                 _xmlImportOptions.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                _xmlImportOptions.Closed += new EventHandler((sender, args) => {
+                    _xmlImportOptions = null;
+                });
             }
 
             _xmlImportOptions.Show();

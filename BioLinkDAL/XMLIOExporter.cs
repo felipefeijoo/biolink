@@ -39,6 +39,58 @@ namespace BioLink.Data {
         private FieldToNameMappings _siteMappings;
         private FieldToNameMappings _regionMappings;
         private FieldToNameMappings _trapMappings;
+        private static string[] _coordType = new string[] { "None", "Latitude Longitude", "Eastings Northings" };
+        private static string[] _localType = new string[] { "Nearest Place", "Locality" };
+        private static string[] _geomType = new string[] { "Point", "Line", "Bounding Box" };
+        private static string[] _elevType = new string[] { "Not Specified", "Elevation", "Depth" };
+
+        protected string IntTypeToStr(int index, string[] array) {
+            if (index >= 0 && index < array.Length) {
+                return array[index];
+            }
+            return "";
+        }
+
+        protected int StrToIntType(string str, string[] array) {
+            for (int i = 0; i < array.Length; ++i) {
+                if (str.Equals(array[i], StringComparison.CurrentCultureIgnoreCase)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        protected int GetCoordinateType(string str) {
+            return StrToIntType(str, _coordType);
+        }
+
+        protected int GetLocalityType(string str) {
+            return StrToIntType(str, _localType);
+        }
+
+        protected int GetGeometryType(string str) {
+            return StrToIntType(str, _geomType);
+        }
+
+        protected int GetElevationType(string str) {
+            return StrToIntType(str, _elevType);
+        }
+
+        protected string ElevationTypeStr(int p) {
+            return IntTypeToStr(p, _elevType);
+        }
+
+        protected string GeometryTypeStr(int p) {
+            return IntTypeToStr(p, _geomType);
+        }
+
+        protected string CoordinateTypeStr(int p) {
+            return IntTypeToStr(p, _coordType);
+        }
+
+        protected string LocalityTypeStr(int localType) {
+            return IntTypeToStr(localType, _localType);
+        }
 
         protected XMLIOBase(User user) {
             this.User = user;
@@ -205,7 +257,7 @@ namespace BioLink.Data {
             _multimediaLinkMappings = new FieldToNameMappings();
             _multimediaLinkMappings.Add("MULTIMEDIAID", "intMultimediaID", false);
             _multimediaLinkMappings.Add("MULTIMEDIATYPE", "MultimediaType", false);
-            _multimediaLinkMappings.Add("CAPTION", "vchrCaption");
+            _multimediaLinkMappings.Add("CAPTION", "vchrCaption", false);
             _multimediaLinkMappings.Add("USEINREPORTS", "bitUseInReport");
             // Notes Mappings
             _notesMappings = new FieldToNameMappings();
@@ -1245,36 +1297,6 @@ namespace BioLink.Data {
             return XMLSiteNode;
         }
 
-        private string ElevationTypeStr(int p) {
-            return IntTypeToStr(p, _elevType);
-        }
-
-        private string GeometryTypeStr(int p) {
-            return IntTypeToStr(p, _geomType);
-        }
-
-        private static string[] _coordType = new string[] { "None", "Latitude Longitude", "Eastings Northings" };
-        private static string[] _localType = new string[] { "Nearest Place", "Locality" };
-        private static string[] _geomType = new string[] { "Point", "Line", "Bounding Box" };
-        private static string[] _elevType = new string[] { "Not Specified", "Elevation", "Depth" };
-
-        private string IntTypeToStr(int index, string[] array) {
-            if (index >= 0 && index < array.Length) {
-                return array[index];
-            }
-            return "";
-        }
-
-
-
-        private string CoordinateTypeStr(int p) {
-            return IntTypeToStr(p, _coordType);
-        }
-
-        private string LocalityTypeStr(int localType) {
-            return IntTypeToStr(localType, _localType);
-        }
-
         private string AddToUnplacedList(int TaxonID) {
             if (TaxonID <= 0) {
                 return null;
@@ -1776,6 +1798,10 @@ namespace BioLink.Data {
 
         private string FormatDate(DateTime? dt) {
             if (dt.HasValue) {
+                if (dt.Value.Year == 1 && dt.Value.Month == 1 && dt.Value.Day == 1) {
+                    // This default date is out of range, and can't be imported. Not ideal, but set it to the export date instead.
+                    dt = DateTime.Now;
+                }
                 return string.Format("{0:yyyy-MM-dd}", dt.Value);
             }
             return "";
