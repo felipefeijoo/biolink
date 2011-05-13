@@ -38,12 +38,13 @@ namespace BioLink.Data {
                 var x = Attribute.GetCustomAttribute(propInfo, typeof(MappingInfo));
                 if (x != null) {
                     var mapping = x as MappingInfo;
-                    propMap.Add(mapping.Column, propInfo);
+                    if (!mapping.Ignore) {
+                        propMap[mapping.Column] = propInfo;
+                    }
+                } else if (propInfo.CanWrite) {
+                    propMap[propInfo.Name] = propInfo;
                 }
 
-                if (propInfo.CanWrite) {
-                    propMap.Add(propInfo.Name, propInfo);
-                }
             }
 
             var overrides = new Dictionary<string, ConvertingMapper>();

@@ -24,7 +24,7 @@ namespace BioLink.Data {
         private NameToIDCache _StorageCache;
         private Dictionary<string, AvailableNameInfo> _AvailableNameList;
 
-        private Dictionary<string, XMLImportProgressItem> _progressItems;
+        private Dictionary<ImportItemType, XMLImportProgressItem> _progressItems;
 
         private int _totalItems;
 
@@ -46,12 +46,12 @@ namespace BioLink.Data {
 
                 // Import Taxon...
                 var XMLTaxonRoot = GetTaxaRoot();
-        
-                if (XMLTaxonRoot == null) {                    
+
+                if (XMLTaxonRoot == null) {
                     Log("Failed to locate the TAXON Root node in XML !");
                 } else {
                     // Add main taxon nodes...
-                    if (AddTaxonChildren(XMLTaxonRoot, -1)) {            
+                    if (AddTaxonChildren(XMLTaxonRoot, -1)) {
                         // Add Unplaced Taxon
                         Log("Adding Unplaced Taxon");
                         var XMLUnplacedRoot = XMLTaxonRoot.SelectSingleNode("UNPLACEDTAXA") as XmlElement;
@@ -59,9 +59,25 @@ namespace BioLink.Data {
                             Log("No unplaced taxa in file.");
                         } else {
                             AddTaxonChildren(XMLUnplacedRoot, -1);
-                        }                        
+                        }
                     }
                 }
+
+                var XMLMaterialRoot = _xmlDoc.SelectSingleNode("//*/DATA/MATERIAL") as XmlElement;
+                if (XMLMaterialRoot == null) {
+                    Log("Failed to locate Material Root in XML ! No specimen data imported.");
+                } else {
+                    // Political Regions
+                    ImportPoliticalRegions(XMLMaterialRoot, 0);        
+                }
+
+                // Taxon Available Names (SAN records often point to material records, so do it after material has been imported !)
+                foreach (AvailableNameInfo AvailableNameItem in _AvailableNameList.Values) {
+                    ImportAvailableNameData(AvailableNameItem.XMLNode as XmlElement, AvailableNameItem.TaxonID, AvailableNameItem.IsAvailableName, AvailableNameItem.IsLiteratureName, AvailableNameItem.RankCategory);
+                }
+        
+                // Associates...
+                // ImportAssociates();
 
                 if (Observer != null) {
                     Observer.ImportCompleted();
@@ -69,38 +85,439 @@ namespace BioLink.Data {
             }
         }
 
-        private bool AddTaxonChildren(XmlElement ParentNode, int ParentID ) {
+        private bool ImportAvailableNameData(XmlElement TaxonNode, int TaxonID , bool isAvailableName, bool isLiteratureName, string RankCategory) {
     
+            if (isAvailableName) {
+                // Could be SAN, GAN or ALN depending on Rank Category...
+                switch (RankCategory.ToLower()) {
+                    case "s":        // SAN
+                        ImportSANData(TaxonNode, TaxonID);
+                        break;
+                    case "g":        // GAN
+                        // ImportGANData(TaxonNode, TaxonID);
+                        break;
+                    case "f":        // ALN
+                        // ImportALNData(TaxonNode, TaxonID);
+                        break;
+                    default:
+                        Log("Unknown rank category (TaxonID=" + TaxonID + ", RankCategory ='" + RankCategory + "')");
+                        break;
+                }
+            }
+    
+            if (isLiteratureName) {
+                // Add ALN data
+                // ImportALNData(TaxonNode, TaxonID);
+            }
+
+            return true;
+        }
+
+        private bool ImportSANData(XmlElement TaxonNode, int TaxonID) {
+    
+            var XMLSAN = TaxonNode.SelectSingleNode("SAN") as XmlElement;
+            if (XMLSAN == null) {
+                Log("The Importer determined that there should be Species Available Name (SAN) data for this Taxon (TaxonID=" + TaxonID + "), but no SAN node could be located !");
+            }
+
+
+            var san = new XMLImportSAN(XMLSAN);
+
+            var strRefID = GetNodeValue<string>(XMLSAN, "REFID", "");
+            if (string.IsNullOrWhiteSpace(strRefID )) {
+                strRefID = "NULL";
+            } else {
+                strRefID = _guidToIDCache.IDfromGUID(san.GUID) + "";
+            }
+                
+            GenerateUpdateString(XMLSAN, "SAN", san, "intBiotaID=" + TaxonID + ", intRefID=" + strRefID, "intBiotaID, intRefID", TaxonID + ", " + strRefID);
+            
+            var NodeList = XMLSAN.SelectNodes("SANTYPE");
+            var list = new List<XMLImportSANType>();
+            foreach(XmlElement XMLType in NodeList) {
+                var strMaterialID = GetNodeValue<string>(XMLType, "MATERIALID", "");
+                if (string.IsNullOrWhiteSpace(strMaterialID)) {
+                    strMaterialID = "NULL";
+                } else {
+                    strMaterialID = _guidToIDCache.IDfromGUID(strMaterialID) + "";
+                    if (strMaterialID == "-1") {
+                        strMaterialID = "NULL";
+                    }
+                }
+
+                var sanType = new XMLImportSANType(XMLType);
+                GenerateUpdateString(XMLType, "SANTYPE", sanType, "intBiotaID=" + TaxonID + ", intMaterialID=" + strMaterialID, "intBiotaID, intMaterialID", TaxonID + ", " + strMaterialID);
+                list.Add(sanType);                    
+            }
+        
+            //if (XMLIOService.ImportTaxonSAN(san, list)) {
+            //    Log("SAN Data imported for TaxonID=" + TaxonID);
+            //} else {
+            //    Log("Failed to import SAN Data for TaxonID=" + TaxonID);
+            //}
+
+            return true;
+        
+        }
+
+        private bool ImportPoliticalRegions(XmlElement xmlParentNode, int ParentID ) {
+    
+            Log("Importing Political Regions...");
+    
+            if (xmlParentNode == null) {             
+                Log("[ImportPoliticalRegions()] Parent Node is nothing! - Internal Error.");
+                return false;
+            }
+    
+            var NodeList = xmlParentNode.SelectNodes("REGION");
+
+            foreach (XmlElement XMLRegion in NodeList) {
+
+                var region = new XMLImportRegion(XMLRegion) { ParentID=ParentID, RegionName = GetNodeValue<string>(XMLRegion, "NAME", "ERR") };
+        
+                GenerateUpdateString(XMLRegion, "Region", region, "intParentID=" + ParentID, "intParentID", ParentID + "");
+            
+                // Insert region into database and retrieve RegionID
+        
+                if (!XMLIOService.ImportPoliticalRegion(region)) {
+                    Log("Error importing region !");
+                } else {
+
+                    Log("Region '" + region.RegionName + "' GUID=" + region.GUID + " Added (RegionID=" + region.ID + ")");
+                    _guidToIDCache.Add(region.GUID, region.ID);
+                    // Add traits for this region
+                    ImportTraits(XMLRegion, "Region", region.ID);
+                    ProgressTick(ImportItemType.Region);
+            
+                    ImportSites(XMLRegion, region.ID);
+                    //
+                    ImportPoliticalRegions(XMLRegion, region.ID);
+                }                
+            }
+    
+            return true;
+        }
+
+        private bool ImportSites(XmlElement XMLRegion, int RegionID ) {
+    
+            if (XMLRegion == null) {
+                Log("Region node is nothing ! - Internal Error !");
+                return false;
+            }
+    
+            Log("Checking for sites in RegionID=" + RegionID);
+    
+            var SiteList = XMLRegion.SelectNodes("SITE");
+            if (SiteList.Count > 0) {
+                Log("Found " + SiteList.Count + " sites to import (RegionID=" + RegionID + ")");
+        
+                foreach (XmlElement XMLSite in SiteList) {                    
+                    var lngLocalityType = GetLocalityType(GetNodeValue<string>(XMLSite, "LOCALITYTYPE", "locality"));
+                    var lngCoordType = GetCoordinateType(GetNodeValue<string>(XMLSite, "COORDINATETYPE", "none"));
+                    var lngGeometry = GetGeometryType(GetNodeValue<string>(XMLSite, "POSITIONGEOMETRY", "point"));
+                    var lngElevationType = GetElevationType(GetNodeValue<string>(XMLSite, "ELEVATIONTYPE", "not specified"));
+
+                    var site = new XMLImportSite(XMLSite) { LocalityType = lngLocalityType, Locality = GetNodeValue<string>(XMLSite, "LOCALITY"), X1=GetNodeValue<double>(XMLSite, "X1"), Y1=GetNodeValue<double>(XMLSite, "Y1")};
+
+                    GenerateUpdateString(XMLSite, "Site", site, 
+                        "intPoliticalRegionID=" + RegionID + ", tintLocalType=" + lngLocalityType + ", tintPosCoordinates=" + lngCoordType + ", tintPosAreaType=" + lngGeometry + ", tintElevType=" + lngElevationType, 
+                        "intPoliticalRegionID, tintLocalType, tintPosCoordinates, tintPosAreaType, tintElevType", 
+                        RegionID + ", " + lngLocalityType + ", " + lngCoordType + ", " + lngGeometry + ", " + lngElevationType);
+                        
+                    XMLIOService.ImportSite(site);
+                    if (site.ID < 0) {
+                        Log("Failed to import Site " + site.GUID + " !\nUpdateClause: {0}\n Insert Clause: {1} ", site.UpdateClause, site.InsertClause);
+                    } else {
+                        Log("Site " + site.GUID + " imported (SiteID=" + site.ID + ")");
+                        ImportTraits(XMLSite, "Site", site.ID);
+                        ImportNotes(XMLSite, "Site", site.ID);
+                        ImportMultimediaLinks(XMLSite, "Site", site.ID);
+                
+                        // Traps....
+                        ImportTraps(XMLSite, site.ID);
+                        // Visits...
+                        ImportSiteVisits(XMLSite, site.ID);
+
+                        ProgressTick(ImportItemType.Site);
+                    }
+                }
+            }
+            return true;
+        }
+
+        private int DateStrToInt(string date) {
+            if (date == null) {
+                return 0;
+            }
+            date = DateUtils.DateStrToBLDate(date);            
+            return date == null ? 0 : int.Parse(date);
+        }
+
+        private bool ImportSiteVisits(XmlElement XMLSite, int SiteID) {
+
+            if (XMLSite == null) {
+                Log("Site Node is nothing! - Internal Error !");
+                return false;
+            }
+    
+            Log("Checking for Site Visits in SiteID=" + SiteID);
+            var XMLSiteVisitList = XMLSite.SelectNodes("SITEVISIT");
+            if (XMLSiteVisitList.Count > 0) {
+
+                
+                Log("Found " + XMLSiteVisitList.Count + " Site Visits to import (SiteID=" + SiteID + ")");
+
+                foreach (XmlElement XMLSiteVisit in XMLSiteVisitList) {
+                    
+                    var lngDateStart = DateStrToInt(GetNodeValue<string>(XMLSiteVisit, "DATESTART"));
+                    var lngDateEnd = DateStrToInt(GetNodeValue<string>(XMLSiteVisit, "DATEEND"));
+                    var lngTimeStart = DateUtils.StrToBLTime(GetNodeValue<string>(XMLSiteVisit, "TIMESTART"));
+                    var lngTimeEnd = DateUtils.StrToBLTime(GetNodeValue<string>(XMLSiteVisit, "TIMEEND"));
+
+                    var visit = new XMLImportSiteVisit(XMLSiteVisit) { Collector = GetNodeValue<string>(XMLSiteVisit, "COLLECTOR"), SiteID = SiteID, StartDate = lngDateStart };
+            
+                    GenerateUpdateString(XMLSiteVisit, "SiteVisit", visit, 
+                    "intSiteID=" + SiteID + ", intDateStart=" + lngDateStart + ", intDateEnd=" + lngDateEnd + ", intTimeStart=" + lngTimeStart + ", intTimeEnd=" + lngTimeEnd, 
+                    "intSiteID, intDateStart, intDateEnd, intTimeStart, intTimeEnd", 
+                    SiteID + ", " + lngDateStart + ", " + lngDateEnd + ", " + lngTimeStart + ", " + lngTimeEnd);
+                        
+                    XMLIOService.ImportSiteVisit(visit);
+                    if (visit.ID < 0) {
+                        Log("Failed to insert SiteVisit " + visit.GUID + "!\nUpdateClause: {0}\nInsertClause: {1}", visit.UpdateClause, visit.InsertClause);
+                        return false;
+                    } else {
+                        Log("SiteVisit " + visit.GUID + " imported (SiteVisitID=" + visit.ID + ")");
+                        _guidToIDCache.Add(visit.GUID, visit.ID);
+                        // Traits
+                        ImportTraits(XMLSiteVisit, "SiteVisit", visit.ID);
+                        // Notes
+                        ImportNotes(XMLSiteVisit, "SiteVisit", visit.ID);
+                        // Do all material for this visit...
+                        ImportMaterial(XMLSiteVisit, visit.ID);
+                        // Update Status
+                        ProgressTick(ImportItemType.SiteVisit);
+                    }
+                }
+            }
+            return true;
+        }
+
+        private bool ImportMaterial(XmlElement XMLVisit, int SiteVisitID) {
+        
+            if (XMLVisit == null) {
+                Log("Site Visit Node is nothing! - Internal Error !");
+                return false;
+            }
+    
+            Log("Checking for Material for SiteVisitID=" + SiteVisitID);
+            var XMLMaterialList = XMLVisit.SelectNodes("MATERIAL");
+            if (XMLMaterialList.Count > 0) {
+                Log("Found " + XMLMaterialList.Count + " pieces of material to import (SiteVisitID=" + SiteVisitID + ")");
+        
+                foreach (XmlElement XMLMaterial in XMLMaterialList) {
+                    var material = new XMLImportMaterial(XMLMaterial);
+            
+                    GenerateUpdateString(XMLMaterial, "Material", material, "intSiteVisitID=" + SiteVisitID, "intSiteVisitID", SiteVisitID + "");
+                            
+                    XMLIOService.ImportMaterial(material);
+                    if (material.ID > 0) {
+                        Log("Material " + material.GUID + " imported (MaterialID=" + material.ID + ")");
+                        _guidToIDCache.Add(material.GUID, material.ID);
+                        // ID History
+                        ImportMaterialIDHistory(XMLMaterial, material.ID);
+                        // Subparts
+                        ImportMaterialSubParts(XMLMaterial, material.ID);
+                        // Events
+                        ImportMaterialEvents(XMLMaterial, material.ID);
+                        // Traits
+                        ImportTraits(XMLMaterial, "Material", material.ID);
+                        // Notes
+                        ImportNotes(XMLMaterial, "Material", material.ID);
+                        // Multimedia links
+                        ImportMultimediaLinks(XMLMaterial, "Material", material.ID);
+
+                        ProgressTick(ImportItemType.Material);
+                    } else {
+                        Log("Failed to import Material (GUID=" + material.GUID + ")!\nUpdateClause: {0}\nInsertClause: {1}", material.UpdateClause, material.InsertClause);
+                    }
+            
+                }
+            }
+
+            return true;
+        }
+
+        private bool ImportMaterialEvents(XmlElement XMLMaterial, int MaterialID) {
+    
+            if (XMLMaterial == null) {
+                Log("[ImportMaterialEvents()] Material Node is nothing ! Internal Error !");
+                return false;
+            }
+    
+            Log("Checking for Event items (MaterialID=" + MaterialID + ")");
+            var NodeList = XMLMaterial.SelectNodes("CURATIONEVENTS/CURATIONEVENT");
+    
+            if (NodeList.Count == 0) {
+                Log("No Curation Events found (MaterialID=" + MaterialID + ")");
+                return false;
+            }
+        
+            var list = new List<XMLImportEvent>();
+            
+            foreach (XmlElement XMLID in NodeList) {
+                var evt = new XMLImportEvent(XMLID);                
+                GenerateUpdateString(XMLID, "curationevent", evt, "intMaterialID=" + MaterialID, "intMaterialID", MaterialID + "");
+                list.Add(evt);
+
+            }
+    
+            if (list.Count > 0) {
+                if (!XMLIOService.InsertMaterialEvents(list)) {
+                    Log("Failed to import Events for MaterialID=" + MaterialID + "!");
+                    return false;
+                }
+            }
+    
+            return true;
+        }
+
+        private bool ImportMaterialSubParts(XmlElement XMLMaterial, int MaterialID) {
+    
+            if (XMLMaterial == null) {
+                Log("[ImportMaterialSubParts()] Material Node is nothing ! Internal Error !");
+                return false;
+            }
+    
+            Log("Checking for Subpart items (MaterialID=" + MaterialID + ")");
+            var NodeList = XMLMaterial.SelectNodes("SUBPARTS/SUBPART");
+    
+            if (NodeList.Count == 0) {
+                Log("No Sub Parts found (MaterialID=" + MaterialID + ")");
+                return false;
+            }
+    
+            var list = new List<XMLImportSubPart>();
+            
+            foreach (XmlElement XMLID in NodeList) {
+                var subpart = new XMLImportSubPart(XMLID);                
+                GenerateUpdateString(XMLID, "Subpart", subpart, "intMaterialID=" + MaterialID, "intMaterialID", MaterialID + "");
+                list.Add(subpart);        
+            }
+    
+            if (list.Count > 0) {
+                if (!XMLIOService.InsertMaterialSubparts(list)) {
+                    Log("Failed to import Subparts for MaterialID=" + MaterialID + " !");
+                }
+            }
+
+            return true;
+        }
+
+
+        private bool ImportMaterialIDHistory(XmlElement XMLMaterial, int MaterialID) {
+    
+            if (XMLMaterial == null) {
+                Log("[ImportMaterialHistory()] Material Node is nothing ! Internal Error !");
+                return false;
+            }
+    
+            Log("Checking for Identification History items (MaterialID=" + MaterialID + ")");
+            var NodeList = XMLMaterial.SelectNodes("IDENTIFICATIONHISTORY/IDENTIFICATION");
+    
+            if (NodeList.Count == 0) {
+                Log("No ID History items found (MaterialID=" + MaterialID + ")");
+                return false;
+            }
+
+            var list = new List<XMLImportIDHistory>();
+        
+            foreach (XmlElement XMLID in NodeList) {
+                var hist =new XMLImportIDHistory(XMLID);                
+                GenerateUpdateString(XMLID, "Identification", hist, "intMaterialID=" + MaterialID, "intMaterialID", MaterialID + "");        
+                list.Add(hist);
+            }
+    
+            if (list.Count > 0) {
+                if (! XMLIOService.InsertMaterialIdentification(list)) {
+                    Log("Failed to import ID History for MaterialID=" + MaterialID + " !");
+                }
+            }
+
+            return true;    
+        }
+
+        private bool ImportTraps(XmlElement XMLSite, int SiteID ) {
+    
+            if (XMLSite == null) {
+                Log("Site Node is nothing! - Internal Error !");
+                return false;
+            }
+    
+            Log("Checking for Traps in SiteID=" + SiteID);
+            var XMLTrapList = XMLSite.SelectNodes("TRAP");
+            if (XMLTrapList.Count > 0) {
+                Log("Found " + XMLTrapList.Count + " Traps to import (SiteID=" + SiteID + ")");
+        
+        
+                foreach (XmlElement XMLTrap in XMLTrapList) {
+                    var trap = new XMLImportTrap(XMLTrap) { SiteID = SiteID, TrapName=GetNodeValue<string>(XMLTrap, "NAME") };
+                    GenerateUpdateString(XMLTrap, "Trap", trap, "intSiteID=" + SiteID, "intSiteID", SiteID + "");
+                                
+                    XMLIOService.ImportTrap(trap);
+            
+                    if (trap.ID > 0) {
+                        Log("Trap " + trap.GUID + " imported (TrapID=" + trap.ID + ")");
+                        _guidToIDCache.Add(trap.GUID, trap.ID);
+                        // Traits
+                        ImportTraits(XMLTrap, "Trap", trap.ID);
+                        // Notes
+                        ImportNotes(XMLTrap, "Trap", trap.ID);
+
+                        // ProgressTick(ImportItemType.Trap);
+                        
+                    } else {
+                        Log("Failed to import trap " + trap.GUID + "!\n UpdateClause: {0}\nInsertClause: {1}", trap.UpdateClause, trap.InsertClause);
+                        return false;
+                    }                    
+                }
+            }
+
+            return true;
+        }
+
+        private bool AddTaxonChildren(XmlElement ParentNode, int ParentID) {
+
             var ChildList = ParentNode.SelectNodes("TAXON");
-               
-            foreach (XmlElement XMLChild in ChildList) {                
+
+            foreach (XmlElement XMLChild in ChildList) {
                 if (IsCancelled) {
                     return false;
                 }
-                    
+
                 var strFullName = GetNodeValue(XMLChild, "NAME", "ERR");
                 var strGUID = XMLChild.GetAttributeValue("ID", "");
-                Log("Adding taxon '" + strFullName + "' " + strGUID);       
+                Log("Adding taxon '" + strFullName + "' " + strGUID);
                 var strEpithet = GetNodeValue(XMLChild, "EPITHET", "");
                 int lngTaxonID;
                 if (!XMLIOService.FindTaxon(strGUID, strFullName, strEpithet, ParentID, out lngTaxonID)) {
-                    Log("Failed to get TaxonID for '" + strFullName + "' - GUID=" + strGUID + ".");            
+                    Log("Failed to get TaxonID for '" + strFullName + "' - GUID=" + strGUID + ".");
                     return false;
-                }                
-                var taxon = new XMLImportTaxon { Rank = GetNodeValue(XMLChild, "RANK", ""), Kingdom=GetNodeValue(XMLChild, "KINGDOM", ""), ID=lngTaxonID};
+                }
+                var taxon = new XMLImportTaxon(XMLChild) { Rank = GetNodeValue(XMLChild, "RANK", ""), Kingdom = GetNodeValue(XMLChild, "KINGDOM", ""), ID = lngTaxonID };
+                GenerateUpdateString(XMLChild, "Taxon", taxon);
                 Log("Updating Taxon '" + strFullName + "' (TaxonID=" + taxon.ID + ",Rank=" + taxon.Rank + ",Kingdom=" + taxon.Kingdom + ")...");
                 if (!XMLIOService.UpdateTaxon(taxon)) {
                     Log("Taxon update failed! {0}", taxon.GUID);
                     return false;
-                }                    
+                }
                 var bIsAvailableName = GetNodeValue<bool>(XMLChild, "ISAVAILABLENAME", false);
                 var bIsLiteratureName = GetNodeValue<bool>(XMLChild, "ISLITERATURENAME", false);
-        
+
                 if (bIsAvailableName || bIsLiteratureName) {
                     var ANItem = new AvailableNameInfo { IsAvailableName = bIsAvailableName, IsLiteratureName = bIsLiteratureName, RankCategory = taxon.RankCategory, TaxonID = taxon.ID, XMLNode = XMLChild };
                     _AvailableNameList.Add(strGUID, ANItem);
                 }
-                        
+
                 ImportCommonNames(XMLChild, lngTaxonID);
                 ImportRefLinks(XMLChild, "Taxon", lngTaxonID);
                 ImportDistribution(XMLChild, lngTaxonID);
@@ -109,13 +526,13 @@ namespace BioLink.Data {
                 // ImportKeyWords XMLChild, "Taxon", lngTaxonID
                 ImportMultimediaLinks(XMLChild, "Taxon", lngTaxonID);
                 ImportStorageLocations(XMLChild, lngTaxonID);
-        
-        //        ' Add this GUID to the cache...
-                    _guidToIDCache.Add(strGUID, lngTaxonID);        
-                ProgressTick("Taxon");
+
+                //        ' Add this GUID to the cache...
+                _guidToIDCache.Add(strGUID, lngTaxonID);
+                ProgressTick(ImportItemType.Taxon);
                 AddTaxonChildren(XMLChild, lngTaxonID);
             }
-    
+
             return true;
         }
 
@@ -128,7 +545,7 @@ namespace BioLink.Data {
             }
 
             var list = new List<XMLImportStorageLocation>();
-                  
+
             var ItemList = XMLDistNode.SelectNodes("STORAGELOCATION");
             foreach (XmlElement XMLStorageLocationNode in ItemList) {
                 var strDelimiter = XMLStorageLocationNode.GetAttributeValue("PATHSEPARATOR", "\\");
@@ -138,51 +555,51 @@ namespace BioLink.Data {
                     Log("Failed to map/add StorageLocation Path to StorageLocationID ! - " + strPath);
                 } else {
                     var loc = new XMLImportStorageLocation(XMLStorageLocationNode) { TaxonID = TaxonID, LocationID = lngStorageLocationID };
-                    GenerateUpdateString(XMLStorageLocationNode, "StorageLocation", loc, 
-                        "intBiotaID=" + TaxonID + ", intBiotaStorageID=" + lngStorageLocationID, 
-                        "intBiotaID, intBiotaStorageID", 
+                    GenerateUpdateString(XMLStorageLocationNode, "StorageLocation", loc,
+                        "intBiotaID=" + TaxonID + ", intBiotaStorageID=" + lngStorageLocationID,
+                        "intBiotaID, intBiotaStorageID",
                         TaxonID + ", " + lngStorageLocationID);
 
                     list.Add(loc);
                 }
             }
-        
-            if (list.Count > 0) {            
-                if (! XMLIOService.ImportTaxonStorage(list)) {
+
+            if (list.Count > 0) {
+                if (!XMLIOService.ImportTaxonStorage(list)) {
                     Log("Failed to insert distribution items for TaxonID=" + TaxonID + "!");
                 }
             }
             return true;
         }
 
-        private bool ImportDistribution(XmlElement TaxonNode, int TaxonID ) {
-    
+        private bool ImportDistribution(XmlElement TaxonNode, int TaxonID) {
+
             Log("Importing Distribution Regions for TaxonID=" + TaxonID);
             var XMLDistNode = TaxonNode.SelectSingleNode("DISTRIBUTION");
             if (XMLDistNode == null) {
                 Log("Failed to locate a DISTRIBUTION node in Taxon node !");
                 return false;
             }
-    
-    
+
+
             var list = new List<XMLImportDistribution>();
 
             var ItemList = XMLDistNode.SelectNodes("DISTRIBUTIONITEM");
             foreach (XmlElement XMLRegionNode in ItemList) {
-            
-                var strDelimiter = XMLRegionNode.GetAttributeValue("PATHSEPARATOR", "\\");        
+
+                var strDelimiter = XMLRegionNode.GetAttributeValue("PATHSEPARATOR", "\\");
                 var strPath = GetNodeValue<string>(XMLRegionNode, "FULLPATH");
                 var lngRegionID = ImportDistributionRegion(strPath, strDelimiter);
                 if (lngRegionID < 0) {
                     Log("Failed to map/add Region Path to RegionID ! - " + strPath);
                 } else {
-                    var dist = new XMLImportDistribution(XMLRegionNode)  { TaxonID = TaxonID, RegionID = lngRegionID };
+                    var dist = new XMLImportDistribution(XMLRegionNode) { TaxonID = TaxonID, RegionID = lngRegionID };
                     GenerateUpdateString(XMLRegionNode, "DistributionItem", dist, "intBiotaID=" + TaxonID + ", intDistributionRegionID=" + lngRegionID, "intBiotaID, intDistributionRegionID", TaxonID + ", " + lngRegionID);
                     list.Add(dist);
 
                 }
             }
-        
+
             if (list.Count > 0) {
                 if (!XMLIOService.ImportTaxonDistribution(list)) {
                     Log("Failed to insert distribution items for TaxonID=" + TaxonID + " !");
@@ -193,12 +610,12 @@ namespace BioLink.Data {
         }
 
         private int ImportStorageLocation(string Path, string Delimiter) {
-    
+
             int lngLocationID;
             if (_StorageCache.NameInCache(Path, out lngLocationID)) {
-                return lngLocationID;                
+                return lngLocationID;
             }
-    
+
             var lngIdx = Path.LastIndexOf(Delimiter);
             string strLocation;
             int lngParentID;
@@ -214,26 +631,26 @@ namespace BioLink.Data {
                 strLocation = Path;
                 lngParentID = 0;         // A ParentID of 0 means its a root node...
             }
-    
+
             lngLocationID = XMLIOService.ImportStorageLocation(strLocation, lngParentID);
-    
+
             if (lngLocationID < 0) {
                 Log("Failed to add storage location '" + strLocation + "'");
             } else {
                 _StorageCache.Add(Path, lngLocationID);
             }
             return lngLocationID;
-    
+
         }
 
 
-        private int ImportDistributionRegion(string Path, string Delimiter ) {
-    
+        private int ImportDistributionRegion(string Path, string Delimiter) {
+
             int lngRegionID;
             if (_DistRegionCache.NameInCache(Path, out lngRegionID)) {
                 return lngRegionID;
             }
-    
+
             var lngIdx = Path.LastIndexOf(Delimiter);
 
             string strRegion;
@@ -241,7 +658,7 @@ namespace BioLink.Data {
 
             if (lngIdx > 0) {
                 var strSubPath = Path.Substring(0, lngIdx);
-                strRegion = Path.Substring(lngIdx + 1);                
+                strRegion = Path.Substring(lngIdx + 1);
                 lngParentID = ImportDistributionRegion(strSubPath, Delimiter);
                 if (lngParentID < 0) {
                     return -1;
@@ -250,27 +667,27 @@ namespace BioLink.Data {
                 strRegion = Path;
                 lngParentID = 0;         // A ParentID of 0 means its a root node...
             }
-    
+
             lngRegionID = XMLIOService.InsertDistributionRegion(strRegion, lngParentID);
-    
+
             if (lngRegionID < 0) {
                 Log("Failed to add region '" + strRegion + "'");
             } else {
                 _DistRegionCache.Add(Path, lngRegionID);
             }
 
-            return lngRegionID;    
+            return lngRegionID;
         }
 
         private bool ImportRefLinks(XmlElement ParentNode, string ItemType, int ItemID) {
-    
+
             Log("Adding references for " + ItemType + "ID=" + ItemID);
             var XMLRefListNode = ParentNode.SelectSingleNode("REFERENCES");
             if (XMLRefListNode == null) {
                 Log("Failed to locate REFERENCES node for " + ItemType + " (ID=" + ItemID + ")");
                 return false;
             }
-        
+
             var NodeList = XMLRefListNode.SelectNodes("REFERENCELINK");
             var list = new List<XMLImportRefLink>();
             int lngCategoryID;
@@ -280,7 +697,7 @@ namespace BioLink.Data {
             }
 
             foreach (XmlElement XMLRefLink in NodeList) {
-            
+
                 var strRefLinkType = GetNodeValue(XMLRefLink, "REFLINKTYPE", "");
                 int lngRefLinkTypeID;
                 if (!_RefLinkTypeCache.NameInCache(strRefLinkType, out lngRefLinkTypeID)) {
@@ -294,16 +711,16 @@ namespace BioLink.Data {
                     }
                 }
 
-                var link = new XMLImportRefLink { GUID = XMLRefLink.GetAttributeValue("ID") };
-        
+                var link = new XMLImportRefLink(XMLRefLink);
+
                 GenerateUpdateString(XMLRefLink, "REFERENCELINK", link, "intRefLinkTypeID=" + lngRefLinkTypeID + ", intCatID=" + lngCategoryID + ", intIntraCatID=" + ItemID, "intRefLinkTypeID, intCatID, intIntraCatID", lngRefLinkTypeID + ", " + lngCategoryID + ", " + ItemID);
                 list.Add(link);
-                
-        
+
+
             }
-    
+
             if (list.Count > 0) {
-                if (!XMLIOService.ImportReferenceLinks(list)) {                                
+                if (!XMLIOService.ImportReferenceLinks(list)) {
                     Log("Failed to add RefLinks for Item {0} {1}", ItemType, ItemID);
                 }
             }
@@ -315,23 +732,23 @@ namespace BioLink.Data {
             return _xmlDoc.SelectSingleNode("//*/DATA/TAXA") as XmlElement;
         }
 
-        private bool ImportCommonNames(XmlElement  TaxonNode , int TaxonID ) {
+        private bool ImportCommonNames(XmlElement TaxonNode, int TaxonID) {
 
             var XMLNameParent = TaxonNode.SelectSingleNode("COMMONNAMELIST");
-    
+
             if (XMLNameParent == null) {
                 Log("Failed to locate COMMONNAME node in TAXON (ID=" + TaxonID + ")");
                 return false;
             }
-        
+
             var NodeList = XMLNameParent.SelectNodes("COMMONNAME");
             var list = new List<XMLImportCommonName>();
             foreach (XmlElement XMLCN in NodeList) {
-                var cn = new XMLImportCommonName { GUID = XMLCN.GetAttributeValue("ID"), CommonName = GetNodeValue<string>(XMLCN, "NAME") };
+                var cn = new XMLImportCommonName(XMLCN) { CommonName = GetNodeValue<string>(XMLCN, "NAME") };
                 GenerateUpdateString(XMLCN, "CommonName", cn, "intBiotaID=" + TaxonID, "intBiotaID", TaxonID + "");
-                list.Add(cn);                
+                list.Add(cn);
             }
-    
+
             if (list.Count > 0) {
                 if (!XMLIOService.ImportCommonNames(TaxonID, list)) {
                     Log("Failed to add Common Names for TaxonID " + TaxonID + " !");
@@ -344,7 +761,7 @@ namespace BioLink.Data {
 
         private void ImportReferences() {
             var XMLReferenceParent = _xmlDoc.SelectSingleNode("//*/DATA/REFERENCES");
-    
+
             Log("Importing References");
             if (XMLReferenceParent == null) {
                 Log("Failed to get REFERENCES node from XML File (No References Imported)");
@@ -353,47 +770,46 @@ namespace BioLink.Data {
 
             var NodeList = XMLReferenceParent.SelectNodes("REFERENCE");
 
-            foreach (XmlElement XMLReference in NodeList) {
-                var strGUID = XMLReference.GetAttributeValue("ID", "ERR");
-                var reference = new XMLImportReference { GUID = strGUID, Code = GetNodeValue<string>(XMLReference, "REFCODE"), Author = GetNodeValue<string>(XMLReference, "AUTHOR"), Year = GetNodeValue<string>(XMLReference, "YEAR") };
+            foreach (XmlElement XMLReference in NodeList) {                
+                var reference = new XMLImportReference(XMLReference) { Code = GetNodeValue<string>(XMLReference, "REFCODE"), Author = GetNodeValue<string>(XMLReference, "AUTHOR"), Year = GetNodeValue<string>(XMLReference, "YEAR") };
                 GenerateUpdateString(XMLReference, "REFERENCE", reference);
                 if (XMLIOService.ImportReference(reference)) {
                     var lngRefID = reference.ID;
                     if (lngRefID < 0) {
-                        Log("Failed to get ReferenceID from Reference Array (Not set in server?) (ID=" + strGUID + ")");
+                        Log("Failed to get ReferenceID from Reference Array (Not set in server?) (ID=" + reference.GUID + ")");
                     } else {
-                        _guidToIDCache.Add(strGUID, lngRefID);                        
+                        _guidToIDCache.Add(reference.GUID, lngRefID);
                         ImportTraits(XMLReference, "Reference", lngRefID);
                         ImportNotes(XMLReference, "Reference", lngRefID);
                         // ImportKeyWords XMLReference, "Reference", lngRefID
                         ImportMultimediaLinks(XMLReference, "Reference", lngRefID);
-                        ProgressTick("Reference");                        
+                        ProgressTick(ImportItemType.Reference);
                     }
                 } else {
-                    Log("Failed to import reference (ID=" + strGUID + ")");
+                    Log("Failed to import reference (ID=" + reference.GUID + ")");
                 }
 
             }
         }
 
         private bool ImportMultimediaLinks(XmlNode XMLParent, string ItemType, int ItemID) {
-            
+
             Log("Importing Multimedia links for " + ItemType + "ID=" + ItemID);
-    
+
             var XMLMMParent = XMLParent.SelectSingleNode("MULTIMEDIA");
 
             if (XMLMMParent == null) {
                 Log("Failed to locate MULTIMEDIA node for item (" + ItemType + "ID=" + ItemID + ")");
                 return false;
-            }            
-    
+            }
+
             int lngCategoryID;
             if (!GetCategoryID(ItemType, out lngCategoryID)) {
                 Log("Failed get get category id for item type {0}", ItemType);
                 return false;
             }
 
-    
+
             var MultimediaList = XMLMMParent.SelectNodes("MULTIMEDIALINK");
             if (MultimediaList.Count == 0) {
                 Log("No MULTIMEDIALINK nodes found in MULTIMEDIA node for " + ItemType + "ID=" + ItemID + ". No links imported.");
@@ -401,9 +817,9 @@ namespace BioLink.Data {
             }
 
             var list = new List<XMLImportMultimediaLink>();
-          
-            foreach (XmlElement XMLNode in MultimediaList) {            
-    
+
+            foreach (XmlElement XMLNode in MultimediaList) {
+
                 var bOK = true;
                 var strMMGUID = GetNodeValue(XMLNode, "MULTIMEDIAID", "ERR");
                 var lngMultimediaID = _guidToIDCache.IDfromGUID(strMMGUID);
@@ -411,7 +827,7 @@ namespace BioLink.Data {
                     Log("Failed to locate Multimedia item " + strMMGUID + " in cache. It either failed to import or was not present in source file.");
                     bOK = false;
                 }
-                       
+
                 var strMMType = GetNodeValue(XMLNode, "MULTIMEDIATYPE", "ERR");
                 int lngMultimediaTypeID;
                 if (!_MultimediaTypeCache.NameInCache(strMMType, out lngMultimediaTypeID)) {
@@ -419,22 +835,21 @@ namespace BioLink.Data {
                     if (lngMultimediaTypeID < 0) {
                         Log("Failed to get MultimediaTypeID for " + strMMGUID + " Type = '" + strMMType + "'");
                     } else {
-                         _MultimediaTypeCache.Add(strMMType, lngMultimediaTypeID);
+                        _MultimediaTypeCache.Add(strMMType, lngMultimediaTypeID);
                     }
                 }
-        
-                if (bOK) {
-                    var strGUID = XMLNode.GetAttributeValue("ID", "ERR");
-                    var mml = new XMLImportMultimediaLink { GUID = strGUID };
-                    GenerateUpdateString(XMLNode, "MultimediaLink", mml, 
-                        "intMultimediaTypeID=" + lngMultimediaTypeID + ", intCatID=" + lngCategoryID + ", intIntraCatID=" + ItemID + ", intMultimediaID=" + lngMultimediaID, 
-                        "intMultimediaTypeID, intCatID, intIntraCatID, intMultimediaID", 
+
+                if (bOK) {                    
+                    var mml = new XMLImportMultimediaLink(XMLNode) { Caption=GetNodeValue<string>(XMLNode, "CAPTION") };
+                    GenerateUpdateString(XMLNode, "MultimediaLink", mml,
+                        "intMultimediaTypeID=" + lngMultimediaTypeID + ", intCatID=" + lngCategoryID + ", intIntraCatID=" + ItemID + ", intMultimediaID=" + lngMultimediaID,
+                        "intMultimediaTypeID, intCatID, intIntraCatID, intMultimediaID",
                         lngMultimediaTypeID + ", " + lngCategoryID + ", " + ItemID + ", " + lngMultimediaID);
 
                     list.Add(mml);
                 }
             }
-    
+
             if (list.Count > 0) {
                 // Call the server and add the links to this record. !
                 if (XMLIOService.ImportMultimediaLink(list)) {
@@ -448,7 +863,7 @@ namespace BioLink.Data {
                 }
             }
 
-            return true;    
+            return true;
         }
 
 
@@ -467,19 +882,18 @@ namespace BioLink.Data {
             var NodeList = XMLJournalParent.SelectNodes("JOURNAL");
 
             foreach (XmlElement XMLJournal in NodeList) {
-                
-                var strGUID = XMLJournal.GetAttributeValue("ID", "ERR");
-                var journal = new XMLImportJournal { GUID = strGUID, FullName = GetNodeValue<string>(XMLJournal, "FULLNAME") };
+
+                var journal = new XMLImportJournal(XMLJournal) { FullName = GetNodeValue<string>(XMLJournal, "FULLNAME") };
                 GenerateUpdateString(XMLJournal, "Journal", journal);
 
-                if (XMLIOService.ImportJournal(journal)) {                
-                    _guidToIDCache.Add(strGUID, journal.ID);
+                if (XMLIOService.ImportJournal(journal)) {
+                    _guidToIDCache.Add(journal.GUID, journal.ID);
                     // var XMLJournal = GetNodeByGUID(strGUID, "JOURNAL")
                     ImportTraits(XMLJournal, "Journal", journal.ID);
                     ImportNotes(XMLJournal, "Journal", journal.ID);
-                    ProgressTick("Journal");                    
+                    ProgressTick(ImportItemType.Journal);
                 } else {
-                    Log("Failed to extract journal id from Journal Data (ID=" + strGUID + ")");
+                    Log("Failed to extract journal id from Journal Data (ID=" + journal.GUID + ")");
                 }
             }
         }
@@ -512,8 +926,8 @@ namespace BioLink.Data {
                 } else {
                     var imageData = Convert.FromBase64String(XMLData);
                     if (imageData.Length > 0) {
-                        var mm = new XMLImportMultimedia { GUID = strGUID, ImageData = imageData };
-                        
+                        var mm = new XMLImportMultimedia(XMLMM) { ImageData = imageData };
+
                         GenerateUpdateString(XMLMM, "MULTIMEDIAITEM", mm);
                         if (XMLIOService.ImportMultimedia(mm)) {
                             _guidToIDCache.Add(strGUID, mm.ID);
@@ -521,7 +935,7 @@ namespace BioLink.Data {
 
                             ImportTraits(XMLMM, "Multimedia", mm.ID);
                             ImportNotes(XMLMM, "Multimedia", mm.ID);
-                            ProgressTick("Multimedia");
+                            ProgressTick(ImportItemType.Multimedia);
                         }
 
 
@@ -560,16 +974,17 @@ namespace BioLink.Data {
             var notes = new List<XMLImportNote>();
 
             foreach (XmlElement XMLNote in NoteList) {
-                var strNoteGUID = XMLNote.GetAttributeValue("ID", "ERR");
+                //var strNoteGUID = XMLNote.GetAttributeValue("ID", "ERR");
                 var strNoteType = GetNodeValue(XMLNote, "NOTETYPE", "ERR");
                 int lngNoteTypeID = 0;
-                if (!_NoteTypeCache.NameInCache(lngCategoryID + "_" + strNoteType, out lngNoteTypeID)) {
+                var cacheKey = lngCategoryID + "_" + strNoteType;
+                if (!_NoteTypeCache.NameInCache(cacheKey, out lngNoteTypeID)) {
                     lngNoteTypeID = XMLIOService.NoteGetTypeID(lngCategoryID, strNoteType);
                     if (lngNoteTypeID < 0) {
                         Log("Failed to get NoteTypeID for Note !");
                         return;
                     } else {
-                        _NoteTypeCache.Add(lngCategoryID + " " + strNoteType, lngNoteTypeID);
+                        _NoteTypeCache.Add(cacheKey, lngNoteTypeID);
                     }
                 }
 
@@ -586,12 +1001,12 @@ namespace BioLink.Data {
                     }
                 }
 
-                var note = new XMLImportNote { GUID = strNoteGUID };                
+                var note = new XMLImportNote(XMLNote);
                 GenerateUpdateString(XMLNote, "NoteItem", note,
                     "intNoteTypeID=" + lngNoteTypeID + ", intCatID=" + lngCategoryID + ", intIntraCatID=" + ItemID + ", intRefID=" + strRefID,
                     "intNoteTypeID, intCatID, intIntraCatID, intRefID",
                     lngNoteTypeID + ", " + lngCategoryID + ", " + ItemID + ", " + strRefID);
-                
+
                 notes.Add(note);
             }
 
@@ -670,10 +1085,11 @@ namespace BioLink.Data {
             }
         }
 
-        private void ProgressTick(string item) {            
-            var count = _progressItems[item].Completed += 1;
+        private void ProgressTick(ImportItemType itemType) {
+            var item = _progressItems[itemType];
+            var count = item.Completed += 1;
             if (Observer != null) {
-                Observer.ProgressTick(item, count);
+                Observer.ProgressTick(item.Name, count);
             }
         }
 
@@ -836,16 +1252,16 @@ namespace BioLink.Data {
             _StorageCache = new NameToIDCache();
             _AvailableNameList = new Dictionary<string, AvailableNameInfo>();
 
-            _progressItems = new Dictionary<string, XMLImportProgressItem>();
-            _progressItems["Taxon"] = new XMLImportProgressItem { Name = "Taxon", Total = GetNodeValue(_xmlDoc, "//*/META/TAXONCOUNT", 0) };
-            _progressItems["Material"] = new XMLImportProgressItem { Name = "Material", Total = GetNodeValue(_xmlDoc, "//*/META/MATERIALCOUNT", 0) };
-            _progressItems["SiteVisit"] = new XMLImportProgressItem { Name = "SiteVisit", Total = GetNodeValue(_xmlDoc, "//*/META/SITEVISITCOUNT", 0) };
-            _progressItems["Site"] = new XMLImportProgressItem { Name = "Site", Total = GetNodeValue(_xmlDoc, "//*/META/SITECOUNT", 0) };
-            _progressItems["Region"] = new XMLImportProgressItem { Name = "Region", Total = GetNodeValue(_xmlDoc, "//*/META/REGIONCOUNT", 0) };
-            _progressItems["Journal"] = new XMLImportProgressItem { Name = "Journal", Total = GetNodeValue(_xmlDoc, "//*/META/JOURNALCOUNT", 0) };
-            _progressItems["Reference"] = new XMLImportProgressItem { Name = "Reference", Total = GetNodeValue(_xmlDoc, "//*/META/REFERENCECOUNT", 0) };
-            _progressItems["Associate"] = new XMLImportProgressItem { Name = "Associate", Total = GetNodeValue(_xmlDoc, "//*/META/ASSOCIATECOUNT", 0) };
-            _progressItems["Multimedia"] = new XMLImportProgressItem { Name = "Multimedia", Total = GetNodeValue(_xmlDoc, "//*/META/MULTIMEDIACOUNT", 0) };
+            _progressItems = new Dictionary<ImportItemType, XMLImportProgressItem>();
+            _progressItems[ImportItemType.Taxon] = new XMLImportProgressItem { Name = "Taxon", Total = GetNodeValue(_xmlDoc, "//*/META/TAXONCOUNT", 0) };
+            _progressItems[ImportItemType.Material] = new XMLImportProgressItem { Name = "Material", Total = GetNodeValue(_xmlDoc, "//*/META/MATERIALCOUNT", 0) };
+            _progressItems[ImportItemType.SiteVisit] = new XMLImportProgressItem { Name = "SiteVisit", Total = GetNodeValue(_xmlDoc, "//*/META/SITEVISITCOUNT", 0) };
+            _progressItems[ImportItemType.Site] = new XMLImportProgressItem { Name = "Site", Total = GetNodeValue(_xmlDoc, "//*/META/SITECOUNT", 0) };
+            _progressItems[ImportItemType.Region] = new XMLImportProgressItem { Name = "Region", Total = GetNodeValue(_xmlDoc, "//*/META/REGIONCOUNT", 0) };
+            _progressItems[ImportItemType.Journal] = new XMLImportProgressItem { Name = "Journal", Total = GetNodeValue(_xmlDoc, "//*/META/JOURNALCOUNT", 0) };
+            _progressItems[ImportItemType.Reference] = new XMLImportProgressItem { Name = "Reference", Total = GetNodeValue(_xmlDoc, "//*/META/REFERENCECOUNT", 0) };
+            _progressItems[ImportItemType.Associate] = new XMLImportProgressItem { Name = "Associate", Total = GetNodeValue(_xmlDoc, "//*/META/ASSOCIATECOUNT", 0) };
+            _progressItems[ImportItemType.Multimedia] = new XMLImportProgressItem { Name = "Multimedia", Total = GetNodeValue(_xmlDoc, "//*/META/MULTIMEDIACOUNT", 0) };
 
 
             _totalItems = _progressItems.Sum((item) => {
@@ -862,17 +1278,29 @@ namespace BioLink.Data {
         }
 
         private T GetNodeValue<T>(XmlNode root, string xpath, T @default = default(T)) {
-            var node = root.SelectSingleNode(xpath);
+            var node = root.SelectSingleNode(xpath);            
             if (node != null) {
-                if (typeof(int).IsAssignableFrom(typeof(T))) {
-                    return (T)(object)int.Parse(node.InnerText);
-                } else if (typeof(double).IsAssignableFrom(typeof(T))) {
-                    return (T)(object)double.Parse(node.InnerText);
-                } else if (typeof(bool).IsAssignableFrom(typeof(T))) {
-                    return (T)(object)bool.Parse(node.InnerText);
+
+                var str = node.InnerText;
+
+                if (string.IsNullOrWhiteSpace(str)) {
+                    return @default;
                 }
 
-                return (T)(object)node.InnerText;
+                if (typeof(int).IsAssignableFrom(typeof(T))) {
+                    return (T)(object)int.Parse(str);
+                } else if (typeof(double).IsAssignableFrom(typeof(T))) {
+                    return (T)(object)double.Parse(str);
+                } else if (typeof(bool).IsAssignableFrom(typeof(T))) {
+                    if (str.IsInteger()) {
+                        int i = int.Parse(str);
+                        return (T)(object)(i != 0);
+                    } else {
+                        return (T)(object)bool.Parse(str);
+                    }
+                }
+
+                return (T)(object)str;
             }
 
             return @default;
@@ -894,6 +1322,10 @@ namespace BioLink.Data {
         public bool IsAvailableName { get; set; }
         public bool IsLiteratureName { get; set; }
         public string RankCategory { get; set; }
+    }
+
+    public enum ImportItemType { 
+        Taxon, Material, SiteVisit, Site, Region, Journal, Reference, Associate, Multimedia
     }
 
 }

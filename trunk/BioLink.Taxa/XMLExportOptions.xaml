@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             Height="376" Width="516" MinHeight="376" MinWidth="500" xmlns:my="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility" SizeToContent="Manual">
+             Height="376" Width="516" MinHeight="376" MinWidth="500" xmlns:my="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility" SizeToContent="Manual" Title="XML Export">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />

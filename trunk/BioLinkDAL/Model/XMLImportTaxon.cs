@@ -2,10 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml;
 
 namespace BioLink.Data.Model {
 
     public class XMLImportTaxon : XMLImportObject {
+
+        public XMLImportTaxon() : base(null) { // Should actuall never be called! 
+            throw new Exception("This ctor should not be called!");
+        }
+
+        public XMLImportTaxon(XmlElement node) : base(node) { }
+
         public string Rank { get; set; }
         public string Kingdom { get; set; }
         public string RankCategory { get; set; }
@@ -33,9 +41,7 @@ namespace BioLink.Data.Model {
         public DateTime DateLastUpdated { get; set; }
         public string WhoLastUpdated { get; set; }
         public string DistQual { get; set; }
-        public string AvailableNameStatus { get; set; }
-
-        public Guid GUID { get; set; }
+        public string AvailableNameStatus { get; set; }        
         public string ParentKingdom { get; set; }
         public string ParentPhylum { get; set; }
         public string ParentClass { get; set; }
@@ -45,7 +51,10 @@ namespace BioLink.Data.Model {
         public string ParentSpecies { get; set; }
         public string ParentSubspecies { get; set; }
         public string RankLong { get; set; }
-        public string KingdomLong { get; set; }        
+        public string KingdomLong { get; set; }
+
+        [MappingInfo("GUID")]
+        public Guid GUIDObj { get; set; }
 
     }
 

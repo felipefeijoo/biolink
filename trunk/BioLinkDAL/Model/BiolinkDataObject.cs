@@ -13,8 +13,10 @@ namespace BioLink.Data.Model {
 
         public MappingInfo(string column) {
             Column = column;
+            Ignore = false;
         }
 
+        public bool Ignore { get; set; }
         public string Column { get; set; }
     }
 

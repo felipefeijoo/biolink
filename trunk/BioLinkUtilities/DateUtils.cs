@@ -134,6 +134,20 @@ namespace BioLink.Client.Utilities {
 
             return null;
         }
+
+        public static int StrToBLTime(string TimeStr) {
+            try {
+                if (TimeStr == null) {
+                    return 0;
+                }
+
+                var time = Microsoft.VisualBasic.DateAndTime.TimeValue(TimeStr);
+                return (DateAndTime.Hour(time) * 100) + DateAndTime.Minute(time);
+            } catch (Exception) {
+                return 0;
+            }
+        }
+
     }
 
     
