@@ -9,6 +9,8 @@ namespace BioLink.Data.Model {
     public class XMLImportSAN : XMLImportObject {
 
         public XMLImportSAN(XmlElement node) : base(node) { }
+
+        public int BiotaID { get; set; }
     
     }
 

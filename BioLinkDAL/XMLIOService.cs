@@ -400,6 +400,47 @@ namespace BioLink.Data {
             }
             return true;
         }
+
+        public bool ImportTaxonSAN(XMLImportSAN san, List<XMLImportSANType> list) {
+            if (ImportObject(san, "spXMLImportSAN", _P("GUID", san.GUID), _P("intBiotaID", san.BiotaID))) {
+                foreach (XMLImportSANType sanType in list) {
+                    if (!ImportObject(sanType, "spXMLImportSANTypeData", _P("GUID", sanType.GUID))) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        public bool ImportTaxonGAN(XMLImportGAN gan, List<XMLImportGANIncludedSpecies> species) {
+            if (ImportObject(gan, "spXMLImportGAN", _P("GUID", gan.GUID), _P("intBiotaID", gan.TaxonID))) {
+
+                foreach (XMLImportGANIncludedSpecies item in species) {
+                    if (!ImportObject(item, "spXMLImportGANIncludedSpecies", _P("GUID", item.GUID))) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+            return false;
+        }
+
+        public bool ImportTaxonALN(XMLImportALN aln) {
+            return ImportObject(aln, "spXMLImport", _P("GUID", aln.GUID), _P("intBiotaID", aln.TaxonID));
+        }
+
+        public bool ImportAssociate(XMLImportAssociate assoc) {
+            return ImportObject(assoc, "spXMLImportAssociate",
+                _P("GUID", assoc.GUID),
+                _P("intFromCatID", assoc.FromCatID),
+                _P("intFromIntraCatID", assoc.FromIntraCatID),
+                _P("intToCatID", assoc.ToCatID),
+                _P("intToIntraCatID", assoc.ToIntraCatID),
+                _P("txtAssocDescription", assoc.AssocDescription),
+                _P("vchRelationFromTo", assoc.RelationFromTo),
+                _P("vchrRelationToFrom", assoc.RelationToFrom));
+        }
     }
 
     class NameCodeCache : Dictionary<string, NameCodeItem> {
