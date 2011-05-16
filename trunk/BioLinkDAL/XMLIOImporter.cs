@@ -77,12 +77,52 @@ namespace BioLink.Data {
                 }
         
                 // Associates...
-                // ImportAssociates();
+                ImportAssociates();
 
                 if (Observer != null) {
                     Observer.ImportCompleted();
                 }
             }
+        }
+
+        private bool ImportAssociates() {
+    
+            Log("Importing Associates");
+            var XMLAssocParent = _xmlDoc.SelectSingleNode("//*/DATA/ASSOCIATES");    
+            
+            if (XMLAssocParent == null) {
+                Log("Failed to get ASSOCIATES node from XML File (No Associates Imported)");
+                return false;
+            }
+    
+            var NodeList = XMLAssocParent.SelectNodes("ASSOCIATE");
+    
+            foreach (XmlElement XMLAssoc in NodeList) {
+                var assoc = new XMLImportAssociate(XMLAssoc) { FromCatID = GetNodeValue<int>(XMLAssoc, "FROMCATEGORYID") };
+
+                assoc.FromIntraCatID = _guidToIDCache.IDfromGUID(GetNodeValue<string>(XMLAssoc, "FROMINTRACATID"));
+                assoc.ToCatID = GetNodeValue<int>(XMLAssoc, "TOCATEGORYID");
+                assoc.ToIntraCatID = _guidToIDCache.IDfromGUID(GetNodeValue<string>(XMLAssoc, "TOINTRACATID"));
+                assoc.AssocDescription = GetNodeValue<string>(XMLAssoc, "ASSOCDESCRIPTION");
+                assoc.RelationFromTo = GetNodeValue<string>(XMLAssoc, "RELATIONFROMTO");
+                assoc.RelationToFrom = GetNodeValue<string>(XMLAssoc, "RELATIONTOFROM");
+                
+                GenerateUpdateString(XMLAssoc, "ASSOCIATE", assoc);
+                                       
+                if (XMLIOService.ImportAssociate(assoc)) {
+                    
+                    if (assoc.ID < 0) {
+                        Log("Failed to get AssociateID from Associate Array (Not set in server?) (ID=" + assoc.GUID + ")");
+                    } else {
+                        _guidToIDCache.Add(assoc.GUID, assoc.ID);
+                        ProgressTick( ImportItemType.Associate);
+                    }
+                } else {
+                    Log("Failed to import associate (ID=" + assoc.GUID + ")");
+                }                
+            }
+
+            return true;        
         }
 
         private bool ImportAvailableNameData(XmlElement TaxonNode, int TaxonID , bool isAvailableName, bool isLiteratureName, string RankCategory) {
@@ -94,10 +134,10 @@ namespace BioLink.Data {
                         ImportSANData(TaxonNode, TaxonID);
                         break;
                     case "g":        // GAN
-                        // ImportGANData(TaxonNode, TaxonID);
+                        ImportGANData(TaxonNode, TaxonID);
                         break;
                     case "f":        // ALN
-                        // ImportALNData(TaxonNode, TaxonID);
+                        ImportALNData(TaxonNode, TaxonID);
                         break;
                     default:
                         Log("Unknown rank category (TaxonID=" + TaxonID + ", RankCategory ='" + RankCategory + "')");
@@ -107,10 +147,114 @@ namespace BioLink.Data {
     
             if (isLiteratureName) {
                 // Add ALN data
-                // ImportALNData(TaxonNode, TaxonID);
+                ImportALNData(TaxonNode, TaxonID);
             }
 
             return true;
+        }
+
+        private bool ImportALNData(XmlElement TaxonNode, int TaxonID) {
+    
+            var XMLALN = TaxonNode.SelectSingleNode("ALN") as XmlElement;
+            if (XMLALN == null) {
+                Log("The Importer deterimed that there should be Available Literature Name (ALN) data for this Taxon (TaxonID=" + TaxonID + "), but no ALN node could be located !");
+                return false;
+            }
+
+            var aln = new XMLImportALN(XMLALN) { TaxonID = TaxonID };
+
+            var strRefID = GetNodeValue(XMLALN, "REFID", "");
+            if (string.IsNullOrEmpty(strRefID )) {
+                strRefID = "NULL";
+            } else {
+                strRefID = _guidToIDCache.IDfromGUID(strRefID) + "";
+            }
+        
+    
+            GenerateUpdateString(XMLALN, "ALN", aln, 
+                "intBiotaID=" + TaxonID + ", intRefID=" + strRefID, 
+                "intBiotaID, intRefID", 
+                TaxonID + ", " + strRefID);
+                
+            if (XMLIOService.ImportTaxonALN(aln)) {
+                Log("ALN Data imported for TaxonID=" + TaxonID);
+                return true;
+            } else {
+                Log("Failed to import ALN Data for TaxonID=" + TaxonID);
+            }
+
+            return false;        
+        }
+
+        public int Designation(string Desig) {
+        
+            if (string.IsNullOrEmpty(Desig)) {
+                return -1;
+            }
+
+            switch(Desig.ToLower()) {
+                case "designated (type species)":
+                    return 0;                    
+                case "none required":
+                    return 1;
+                case "not designated (with included species)":
+                    return 2;
+                case "not designated (without included species)":
+                    return 3;
+                default:
+                    return -1;
+            }         
+        }
+
+        private bool ImportGANData(XmlElement TaxonNode, int TaxonID) {
+
+    
+            var XMLGAN = TaxonNode.SelectSingleNode("GAN") as XmlElement;
+            if (XMLGAN == null) {
+                Log("The Importer determined that there should be Genus Available Name (GAN) data for this Taxon (TaxonID=" + TaxonID + "), but no GAN node could be located !");                
+                return false;
+            }
+            
+            var strRefID = GetNodeValue<string>(XMLGAN, "REFID", "");
+            if (string.IsNullOrEmpty(strRefID)) {
+                strRefID = "NULL";
+            } else {
+                strRefID = _guidToIDCache.IDfromGUID(strRefID) + "";
+            }
+    
+            var intDesignation = Designation(GetNodeValue<string>(XMLGAN, "DESIGNATION", ""));
+
+            var gan = new XMLImportGAN(XMLGAN) { TaxonID = TaxonID };
+        
+            GenerateUpdateString(XMLGAN, "GAN", gan, 
+                "intBiotaID=" + TaxonID + ", intRefID=" + strRefID + ", sintDesignation=" + intDesignation, 
+                "intBiotaID, intRefID, sintDesignation", 
+                TaxonID + ", " + strRefID + ", " + intDesignation);
+                    
+    
+            var species = new List<XMLImportGANIncludedSpecies>();
+            if (intDesignation == 1 || intDesignation == 2) {
+                var NodeList = XMLGAN.SelectNodes("INCLUDEDSPECIES");                
+                foreach (XmlElement XMLIS in NodeList) {                
+                    var item = new XMLImportGANIncludedSpecies(XMLIS);
+                    var strIncSpecies = XMLIS.InnerText;
+                    
+                    item.InsertClause = "(intBiotaID, vchrIncludedSpecies) VALUES (" + TaxonID + ", '" + strIncSpecies + "')";
+                    item.UpdateClause = "intBiotaID=" + TaxonID + ", vchrIncludedSpecies='" + strIncSpecies + "'";
+                    
+                    species.Add(item);
+                }
+            }
+        
+            if (XMLIOService.ImportTaxonGAN(gan, species)) {
+                Log("GAN Data imported for TaxonID=" + TaxonID);
+                return true;
+            } else {
+                Log("Failed to import GAN Data for TaxonID=" + TaxonID);
+            }
+
+            return false;
+        
         }
 
         private bool ImportSANData(XmlElement TaxonNode, int TaxonID) {
@@ -121,7 +265,7 @@ namespace BioLink.Data {
             }
 
 
-            var san = new XMLImportSAN(XMLSAN);
+            var san = new XMLImportSAN(XMLSAN) { BiotaID = TaxonID };
 
             var strRefID = GetNodeValue<string>(XMLSAN, "REFID", "");
             if (string.IsNullOrWhiteSpace(strRefID )) {
@@ -150,11 +294,11 @@ namespace BioLink.Data {
                 list.Add(sanType);                    
             }
         
-            //if (XMLIOService.ImportTaxonSAN(san, list)) {
-            //    Log("SAN Data imported for TaxonID=" + TaxonID);
-            //} else {
-            //    Log("Failed to import SAN Data for TaxonID=" + TaxonID);
-            //}
+            if (XMLIOService.ImportTaxonSAN(san, list)) {
+                Log("SAN Data imported for TaxonID=" + TaxonID);
+            } else {
+                Log("Failed to import SAN Data for TaxonID=" + TaxonID);
+            }
 
             return true;
         

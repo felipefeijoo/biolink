@@ -74,9 +74,12 @@
     <Compile Include="IXMLImportProgressObserver.cs" />
     <Compile Include="Model\StorageLocation.cs" />
     <Compile Include="Model\TaxonStatistics.cs" />
+    <Compile Include="Model\XMLImportALN.cs" />
+    <Compile Include="Model\XMLImportAssociate.cs" />
     <Compile Include="Model\XMLImportCommonName.cs" />
     <Compile Include="Model\XMLImportDistribution.cs" />
     <Compile Include="Model\XMLImportEvent.cs" />
+    <Compile Include="Model\XMLImportGAN.cs" />
     <Compile Include="Model\XMLImportIDHistory.cs" />
     <Compile Include="Model\XMLImportJournal.cs" />
     <Compile Include="Model\XMLImportMaterial.cs" />
@@ -85,6 +88,7 @@
     <Compile Include="Model\XMLImportReference.cs" />
     <Compile Include="Model\XMLImportRefLink.cs" />
     <Compile Include="Model\XMLImportRegion.cs" />
+    <Compile Include="Model\XMLImportSAN.cs" />
     <Compile Include="Model\XMLImportSite.cs" />
     <Compile Include="Model\XMLImportSiteVisit.cs" />
     <Compile Include="Model\XMLImportStorageLocation.cs" />
