@@ -814,7 +814,8 @@ namespace BioLink.Data {
 
                 var XMLMaterial = _xmlDoc.CreateNode(XMLMaterialRoot, "MATERIALITEM");
                 var strMaterialGUID = materialId.MaterialGUID;
-                var guid = AddMaterialItem(materialId.MaterialID);
+                string guid;
+                AddMaterialItem(materialId.MaterialID, out guid);
                 if (guid != null) {
                     XMLMaterial.AddAttribute("ID", guid.ToString());
                 }
@@ -888,8 +889,8 @@ namespace BioLink.Data {
                             CreateNamedNode(XMLAssocNode, "FROMINTRACATID", AddToUnplacedList(lngFromID));
                             break;
                         case "Material":
-                            if (AddMaterialItem(lngFromID) != null) {
-                                CreateNamedNode(XMLAssocNode, "FROMINTRACATID", assocGuid.ToString());
+                            if (AddMaterialItem(lngFromID, out assocGuid) != null) {
+                                CreateNamedNode(XMLAssocNode, "FROMINTRACATID", assocGuid);
                             }
                             break;
                         default:
@@ -904,8 +905,8 @@ namespace BioLink.Data {
                             CreateNamedNode(XMLAssocNode, "TOINTRACATID", AddToUnplacedList(lngToID));
                             break;
                         case "Material":
-                            if (AddMaterialItem(lngToID) != null) {
-                                CreateNamedNode(XMLAssocNode, "TOINTRACATID", assocGuid.ToString());
+                            if (AddMaterialItem(lngToID, out assocGuid) != null) {
+                                CreateNamedNode(XMLAssocNode, "TOINTRACATID", assocGuid);
                             }
                             break;
                         default:
@@ -974,16 +975,18 @@ namespace BioLink.Data {
             return null;
         }
 
-        private XmlElement AddMaterialItem(int MaterialID) {
+        private XmlElement AddMaterialItem(int MaterialID, out string MaterialGUID) {
+
+            MaterialGUID = null;
 
             if (MaterialID <= 0) {
                 return null;
             }
 
             // Search to see if this material is already in the Document...
-            var guid = _materialList.GUIDForID(MaterialID);
-            if (!string.IsNullOrWhiteSpace(guid)) {
-                var existing = _xmlDoc.GetElementByGUID(guid, "MATERIAL");
+            MaterialGUID = _materialList.GUIDForID(MaterialID);
+            if (!string.IsNullOrWhiteSpace(MaterialGUID)) {
+                var existing = _xmlDoc.GetElementByGUID(MaterialGUID, "MATERIAL");
                 if (existing != null) {
                     return existing;
                 }
@@ -1002,7 +1005,7 @@ namespace BioLink.Data {
             var XMLMaterialRoot = AddSiteVisitItem(material.SiteVisitID, material.SiteVisitGUID.ToString());
 
             XmlElement XMLMaterial = _xmlDoc.CreateNode(XMLMaterialRoot, "MATERIAL");
-            var MaterialGUID = material.GUID.ToString();
+            MaterialGUID = material.GUID.ToString();
             XMLMaterial.AddAttribute("ID", MaterialGUID.ToString());
 
 
@@ -1784,7 +1787,8 @@ namespace BioLink.Data {
                         var lngMaterialID = type.MaterialID;
                         var strMaterialGUID = "";
                         if (lngMaterialID > 0) {
-                            AddMaterialItem(lngMaterialID.Value);
+                            string guid;
+                            AddMaterialItem(lngMaterialID.Value, out guid);
                         }
                         CreateNamedNode(XMLTypeNode, "intMaterialID", strMaterialGUID);
                     }
