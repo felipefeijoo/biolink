@@ -133,7 +133,8 @@ namespace BioLink.Data {
             _taxonMappings.Add("EPITHET", "vchrEpithet");
             _taxonMappings.Add("PUBLICATIONYEAR", "vchrYearOfPub");
             _taxonMappings.Add("AUTHOR", "vchrAuthor");
-            _taxonMappings.Add("NAMEQUALIFIER", "vchrNameQualifier");
+            // _taxonMappings.Add("NAMEQUALIFIER", "vchrNameQualifier"); ???
+            _taxonMappings.Add("NAMESTATUS", "vchrAvailableNameStatus");
             _taxonMappings.Add("ELEMENTTYPE", "chrElemType");
             _taxonMappings.Add("RANK", "RankLong", false);
             _taxonMappings.Add("KINGDOM", "KingdomLong", false);
@@ -150,8 +151,7 @@ namespace BioLink.Data {
             _taxonALNMappings = new FieldToNameMappings();
             _taxonALNMappings.Add("REFID", "intRefID", false);
             _taxonALNMappings.Add("REFPAGE", "vchrRefPage");
-            _taxonALNMappings.Add("REFQUAL", "txtRefQual");
-            _taxonALNMappings.Add("REFCODE", "vchrRefCode");
+            _taxonALNMappings.Add("REFQUAL", "txtRefQual");            
             // Taxon Genus Available Name (GAN)
             _taxonGANMappings = new FieldToNameMappings();
             _taxonGANMappings.Add("REFID", "intRefID", false);
@@ -160,7 +160,6 @@ namespace BioLink.Data {
             _taxonGANMappings.Add("DESIGNATION", "sintDesignation", false);
             _taxonGANMappings.Add("FIXATIONMETHOD", "vchrTSFixationMethod");
             _taxonGANMappings.Add("TYPESPECIES", "vchrTypeSpecies");
-            _taxonGANMappings.Add("REFCODE", "vchrRefCode");
             // Taxon Species Available Name (SAN)
             _taxonSANMappings = new FieldToNameMappings();
             _taxonSANMappings.Add("REFID", "intRefID", false);
@@ -170,7 +169,6 @@ namespace BioLink.Data {
             _taxonSANMappings.Add("PRIMARYTYPEPROBABLE", "bitPrimaryTypeProbable");
             _taxonSANMappings.Add("SECONDARYTYPE", "vchrSecondaryType");
             _taxonSANMappings.Add("SECONDARYTYPEPROBABLE", "bitSecondaryTypeProbable");
-            // _taxonSANMappings.Add("REFCODE", "vchrRefCode");
             // Taxon Species Available Name Type Data (SAN Type)
             _taxonSANTypeDataMappings = new FieldToNameMappings();
             _taxonSANTypeDataMappings.Add("TYPE", "vchrType");
@@ -732,7 +730,7 @@ namespace BioLink.Data {
                 CreateNamedNode(taxonNode, "vchrEpithet", taxon.Epithet);
                 CreateNamedNode(taxonNode, "vchrYearOfPub", taxon.YearOfPub);
                 CreateNamedNode(taxonNode, "vchrAuthor", taxon.Author);
-                CreateNamedNode(taxonNode, "vchrNameQualifier", taxon.NameStatus);
+                CreateNamedNode(taxonNode, "vchrAvailableNameStatus", taxon.NameStatus);
 
                 // Rank and Kingom are special!
                 var taxaService = new TaxaService(User);
