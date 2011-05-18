@@ -170,7 +170,7 @@ namespace BioLink.Data {
             _taxonSANMappings.Add("PRIMARYTYPEPROBABLE", "bitPrimaryTypeProbable");
             _taxonSANMappings.Add("SECONDARYTYPE", "vchrSecondaryType");
             _taxonSANMappings.Add("SECONDARYTYPEPROBABLE", "bitSecondaryTypeProbable");
-            _taxonSANMappings.Add("REFCODE", "vchrRefCode");
+            // _taxonSANMappings.Add("REFCODE", "vchrRefCode");
             // Taxon Species Available Name Type Data (SAN Type)
             _taxonSANTypeDataMappings = new FieldToNameMappings();
             _taxonSANTypeDataMappings.Add("TYPE", "vchrType");
