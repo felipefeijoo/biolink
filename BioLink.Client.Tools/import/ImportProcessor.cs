@@ -289,23 +289,25 @@ namespace BioLink.Client.Tools {
 
         protected void InsertTraits(string category, int id) {
             foreach (ImportFieldMapping mapping in Mappings) {
-                var match = _TraitRegex.Match(mapping.TargetColumn);
-                if (match.Success) {
-                    var candiateCategory = match.Groups[1].Value;
-                    if (!string.IsNullOrWhiteSpace(candiateCategory) && candiateCategory.Equals(category, StringComparison.CurrentCultureIgnoreCase)) {
+                if (!string.IsNullOrWhiteSpace(mapping.TargetColumn)) {
+                    var match = _TraitRegex.Match(mapping.TargetColumn);
+                    if (match.Success) {
+                        var candiateCategory = match.Groups[1].Value;
+                        if (!string.IsNullOrWhiteSpace(candiateCategory) && candiateCategory.Equals(category, StringComparison.CurrentCultureIgnoreCase)) {
 
-                        var valueObj = RowSource[mapping.SourceColumn];
-                        string strValue = null;
-                        if (valueObj != null) {
-                            strValue = valueObj.ToString();
-                        }
+                            var valueObj = RowSource[mapping.SourceColumn];
+                            string strValue = null;
+                            if (valueObj != null) {
+                                strValue = valueObj.ToString();
+                            }
 
-                        if (string.IsNullOrWhiteSpace(strValue)) {
-                            strValue = mapping.DefaultValue;
-                        }
+                            if (string.IsNullOrWhiteSpace(strValue)) {
+                                strValue = mapping.DefaultValue;
+                            }
 
-                        if (!string.IsNullOrWhiteSpace(strValue)) {
-                            Service.ImportTrait(category, id, mapping.SourceColumn, strValue);
+                            if (!string.IsNullOrWhiteSpace(strValue)) {
+                                Service.ImportTrait(category, id, mapping.SourceColumn, strValue);
+                            }
                         }
                     }
                 }

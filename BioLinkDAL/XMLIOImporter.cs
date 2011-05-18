@@ -1255,13 +1255,13 @@ namespace BioLink.Data {
                 if (XMLChild is XmlElement) {
                     var XMLElement = XMLChild as XmlElement;
                     if (LookupFieldName(ObjectType, XMLElement.Name, out strFieldName)) {
-                        var strValue = XMLElement.InnerText.Replace("'", "''");
+                        var strValue = XMLElement.InnerText.Replace("'", "''").Trim();
                         if (!CheckForObjectReference(ObjectType, strFieldName, ref strValue)) {
 
                             if (strFieldName.StartsWith("vchr") || strFieldName.StartsWith("chr") || strFieldName.StartsWith("txt") || strFieldName.StartsWith("dt")) {
                                 strValue = string.Format("'{0}'", strValue);
                             } else {
-                                strValue = BoolToBit(XMLChild.InnerText);
+                                strValue = BoolToBit(strValue);
                             }
 
                         }

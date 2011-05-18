@@ -39,7 +39,8 @@ namespace BioLink.Client.Utilities {
                 int Y = Int32.Parse(m.Groups[1].Value);
                 int M = Int32.Parse(m.Groups[2].Value);
                 int D = Int32.Parse(m.Groups[3].Value);
-                if (M == 0) {
+
+                if (M < 1 || M > 12) {
                     return Y.ToString();
                 } else if (D == 0) {
                     return String.Format("{0}, {1:0000}", CultureInfo.CurrentCulture.DateTimeFormat.AbbreviatedMonthNames[M - 1], Y);
