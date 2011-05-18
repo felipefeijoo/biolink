@@ -427,7 +427,7 @@ namespace BioLink.Data {
         }
 
         public bool ImportTaxonALN(XMLImportALN aln) {
-            return ImportObject(aln, "spXMLImport", _P("GUID", aln.GUID), _P("intBiotaID", aln.TaxonID));
+            return ImportObject(aln, "spXMLImportALN", _P("GUID", aln.GUID), _P("intBiotaID", aln.TaxonID));
         }
 
         public bool ImportAssociate(XMLImportAssociate assoc) {
@@ -438,7 +438,7 @@ namespace BioLink.Data {
                 _P("intToCatID", assoc.ToCatID),
                 _P("intToIntraCatID", assoc.ToIntraCatID),
                 _P("txtAssocDescription", assoc.AssocDescription),
-                _P("vchRelationFromTo", assoc.RelationFromTo),
+                _P("vchrRelationFromTo", assoc.RelationFromTo),
                 _P("vchrRelationToFrom", assoc.RelationToFrom));
         }
     }

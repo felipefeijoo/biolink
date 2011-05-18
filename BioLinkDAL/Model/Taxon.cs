@@ -18,7 +18,7 @@ namespace BioLink.Data.Model {
         public string YearOfPub { get; set; }
 
         public string Author { get; set; }
-
+        
         public string ElemType { get; set; }
 
         public string KingdomCode { get; set; }
