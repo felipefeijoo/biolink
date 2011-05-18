@@ -166,7 +166,7 @@ namespace BioLink.Client.Material {
 
                 var rdeNodeTypes = new List<SiteExplorerNodeType>(new SiteExplorerNodeType[] { SiteExplorerNodeType.Material, SiteExplorerNodeType.Site, SiteExplorerNodeType.SiteVisit });
                 if (node != null && rdeNodeTypes.Contains(node.NodeType)) {
-                    builder.New("Open in Rapid Data Entry...").Handler(() => { explorer.EditRDE(node); }).End();
+                    builder.New("Open in Rapid Data Entry...").Handler(() => { explorer.EditRDE(node); }).Enabled(!node.IsTemplate).End();
                 } else {
                     builder.New("Rapid Data Entry...").Handler(() => { explorer.EditRDE(node); }).End();
                 }
