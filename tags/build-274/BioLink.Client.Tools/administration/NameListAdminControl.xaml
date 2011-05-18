@@ -1,0 +1,24 @@
+﻿<src:AdministrationComponent x:Class="BioLink.Client.Tools.NameListAdminControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+             xmlns:src="clr-namespace:BioLink.Client.Tools"             
+             mc:Ignorable="d" 
+             d:DesignHeight="265" d:DesignWidth="506">
+    <Grid>
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="12,12,0,0" Name="cmbCategory" VerticalAlignment="Top" Width="172"  SelectionChanged="cmbCategory_SelectionChanged" />
+        <ListBox Margin="12,41,12,44" Name="lstTypeData">
+            <ListBox.Resources>
+                <DataTemplate DataType="{x:Type src:TypeDataViewModel}">
+                    <StackPanel Orientation="Horizontal">
+                        <ext:EditableTextBlock x:Name="txtTraitType" Text="{Binding Description, Mode=TwoWay}" IsInEditMode="{Binding Path=IsRenaming, Mode=TwoWay}" EditingComplete="txtTraitType_EditingComplete" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.Resources>
+        </ListBox>
+        <Button Content="_Add new" Height="23" HorizontalAlignment="Left" Margin="12,0,0,12" Name="btnAddNew" VerticalAlignment="Bottom" Width="75" Click="btnAddNew_Click" />
+        <Button Content="_Delete" Height="23" HorizontalAlignment="Left" Margin="93,0,0,12" Name="btnDelete" VerticalAlignment="Bottom" Width="75" Click="btnDelete_Click" />
+    </Grid>
+</src:AdministrationComponent>
