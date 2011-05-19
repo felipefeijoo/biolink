@@ -57,6 +57,12 @@ namespace BioLink.Client.Tools {
                 "{'Name':'UserStatsReport', 'Header' : 'Data Entry _Statistics by User Report'}"                
             ));
 
+            contrib.Add(new MenuWorkspaceContribution(this, "LoanContacts", (obj, e) => { ShowLoanContacts(); },
+                String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
+                "{'Name':'Loans', 'Header':'_Loans'}",
+                "{'Name':'LoanContacts', 'Header' : '_Contacts'}"
+            ));
+
             // Settings...
 
             contrib.Add(new MenuWorkspaceContribution(this, "Phrases", (obj, e) => { ShowPhraseManager(); },
@@ -115,6 +121,10 @@ namespace BioLink.Client.Tools {
                 _importWizard = null;
             }
 
+        }
+
+        private void ShowLoanContacts() {
+            ShowSingleton("Contacts", () => new LoanContactsControl(User, this));
         }
 
         private void ShowPhraseManager() {

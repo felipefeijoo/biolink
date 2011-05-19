@@ -27,11 +27,11 @@ namespace BioLink.Client.Extensibility {
         }
         #endregion
 
-        public TraitElementControl(User user, TraitViewModel model) {
+        public TraitElementControl(User user, TraitViewModel model, TraitCategoryType categoryType) {
             this.Model = model;
             DataContext = model;
             InitializeComponent();
-            txtValue.BindUser(user, PickListType.DistinctTraitList, model.Name, TraitCategoryType.Taxon);
+            txtValue.BindUser(user, PickListType.DistinctTraitList, model.Name, categoryType);
             if (!String.IsNullOrEmpty(model.Comment)) {
                 commentLink.Inlines.Clear();
                 commentLink.Inlines.Add(new Run("Edit comment"));

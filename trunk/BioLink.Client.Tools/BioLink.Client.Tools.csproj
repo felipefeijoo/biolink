@@ -64,6 +64,9 @@
       <DependentUpon>AdministrationControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="BoxCarDistributionModel.cs" />
+    <Compile Include="ContactDetails.xaml.cs">
+      <DependentUpon>ContactDetails.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DistributionModel.cs" />
     <Compile Include="EditPointWindow.xaml.cs">
       <DependentUpon>EditPointWindow.xaml</DependentUpon>
@@ -108,6 +111,9 @@
       <DependentUpon>TraitTypesControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="LayerImageGenerator.cs" />
+    <Compile Include="LoanContactsControl.xaml.cs">
+      <DependentUpon>LoanContactsControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ModellingTool.xaml.cs">
       <DependentUpon>ModellingTool.xaml</DependentUpon>
     </Compile>
@@ -214,6 +220,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ContactDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="EditPointWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -255,6 +265,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="administration\TraitTypesControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LoanContactsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
