@@ -14,7 +14,9 @@ namespace BioLink.Client.Extensibility {
         Material,                
         Multimedia,
         Reference,
-        Journal
+        Journal,
+        Contact,
+        Loan
     }
 
 }

@@ -72,6 +72,8 @@
     <Compile Include="IgnoreFormattingChanges.cs" />
     <Compile Include="ImportService.cs" />
     <Compile Include="IXMLImportProgressObserver.cs" />
+    <Compile Include="LoanService.cs" />
+    <Compile Include="Model\Contact.cs" />
     <Compile Include="Model\StorageLocation.cs" />
     <Compile Include="Model\TaxonStatistics.cs" />
     <Compile Include="Model\XMLImportALN.cs" />
@@ -117,7 +119,6 @@
     <Compile Include="Model\ConnectionProfile.cs" />
     <Compile Include="DatabaseAction.cs" />
     <Compile Include="DataMatrix.cs" />
-    <Compile Include="generated\DataObjects.cs" />
     <Compile Include="Mapper.cs" />
     <Compile Include="Model\CurationEvent.cs" />
     <Compile Include="Model\Favorite.cs" />

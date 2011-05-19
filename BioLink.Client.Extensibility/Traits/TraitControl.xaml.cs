@@ -75,7 +75,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void AddTraitEditor(TraitViewModel model) {
-            var itemControl = new TraitElementControl(User, model);
+            var itemControl = new TraitElementControl(User, model, TraitCategory);
             itemControl.TraitChanged += new TraitElementControl.TraitEventHandler((source, trait) => {
                 RegisterUniquePendingChange(new UpdateTraitDatabaseAction(trait.Model, Owner));
             });
