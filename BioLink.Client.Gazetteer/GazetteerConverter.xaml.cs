@@ -25,6 +25,33 @@ namespace BioLink.Client.Gazetteer {
     public partial class GazetteerConverter : Window {
         public GazetteerConverter() {
             InitializeComponent();
+            txtSource.FileSelected += new Action<string>(txtSource_FileSelected);
+        }
+
+        void txtSource_FileSelected(string filename) {
+            PrefillDestination(filename);
+        }
+
+        private void PrefillDestination(string filename) {
+            string dest = null;
+            var f = new FileInfo(filename);
+            string destName = f.Name;
+
+            if (f.Name.Contains(".")) {
+                destName = destName.Substring(0, destName.LastIndexOf('.'));
+            }
+
+            if (string.IsNullOrWhiteSpace(txtDest.Text)) {                
+                dest = string.Format("{0}\\{1}.gaz", f.DirectoryName, destName);                
+            } else {
+                var existing = new FileInfo(txtDest.Text);
+                dest = string.Format("{0}\\{1}.gaz", existing.DirectoryName, destName);
+            }
+
+            if (!string.IsNullOrWhiteSpace(dest)) {
+                txtDest.Text = dest;
+            }
+
         }
 
         private void btnConvert_Click(object sender, RoutedEventArgs e) {
