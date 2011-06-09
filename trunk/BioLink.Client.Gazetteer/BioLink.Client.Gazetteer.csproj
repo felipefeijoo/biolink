@@ -59,6 +59,12 @@
     <Compile Include="Gazetteer.xaml.cs">
       <DependentUpon>Gazetteer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GazetteerConverter.xaml.cs">
+      <DependentUpon>GazetteerConverter.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="GazetteerInfoForm.xaml.cs">
+      <DependentUpon>GazetteerInfoForm.xaml</DependentUpon>
+    </Compile>
     <Compile Include="GazetteerService.cs" />
     <Compile Include="GazetterPlugin.cs" />
     <Compile Include="OffsetControl.xaml.cs">
@@ -87,6 +93,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Gazetteer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GazetteerConverter.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GazetteerInfoForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

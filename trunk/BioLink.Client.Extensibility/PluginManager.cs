@@ -181,6 +181,11 @@ namespace BioLink.Client.Extensibility {
             form.Name = "HostFor_" + content.GetType().Name;
             form.SizeToContent = sizeToContent;
 
+            if (content is DatabaseActionControl) {
+                var dbcontrol = content as DatabaseActionControl;
+                dbcontrol.NotifyChangeContainerSet();
+            }
+
             if (content is IIconHolder) {
                 var icon = (content as IIconHolder).Icon;
                 if (icon != null) {

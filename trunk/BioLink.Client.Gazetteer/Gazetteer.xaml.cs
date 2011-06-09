@@ -51,6 +51,7 @@ namespace BioLink.Client.Gazetteer {
             _searchModel = new ObservableCollection<PlaceNameViewModel>();
             lstResults.ItemsSource = _searchModel;
             _owner = owner;
+            btnDataInfo.IsEnabled = false;
             if (_owner != null) {
                 string lastFile = Config.GetUser(_owner.User, "gazetteer.lastFile", "");
                 if (!String.IsNullOrEmpty(lastFile)) {
@@ -159,6 +160,7 @@ namespace BioLink.Client.Gazetteer {
                 _service = new GazetteerService(filename);
                 lblFile.Content = _service.FileName;
                 btnOpen.Content = _owner.GetCaption("Gazetteer.btnOpen.change");
+                btnDataInfo.IsEnabled = true;
                 // now populate the Divisions combo box...
                 var divisions = _service.GetDivisions();
                 cmbDivision.ItemsSource = divisions;
@@ -379,6 +381,26 @@ namespace BioLink.Client.Gazetteer {
                 _selectionCallback(selResult);
             }
 
+        }
+
+        private void Image_ImageFailed(object sender, ExceptionRoutedEventArgs e) {
+            ShowGazetteerInfo();
+        }
+
+        private void ShowGazetteerInfo() {
+            if (_service != null) {
+                var info = _service.GetGazetteerInfo();
+                if (info != null) {
+                    var frm = new GazetteerInfoForm(info);
+                    frm.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                    frm.Owner = PluginManager.Instance.ParentWindow;
+                    frm.ShowDialog();
+                }
+            }
+        }
+
+        private void btnDataInfo_Click(object sender, RoutedEventArgs e) {
+            ShowGazetteerInfo();
         }
 
     }
