@@ -20,19 +20,29 @@ namespace BioLink.Client.Extensibility {
                 dlg.Filter = Filter;
                 if (dlg.ShowDialog().GetValueOrDefault(false)) {
                     this.txt.Text = dlg.FileName;
+                    FireFileSelected(dlg.FileName);
                 }                
             } else {
                 var dlg = new SaveFileDialog();
                 dlg.Filter = Filter;
                 if (dlg.ShowDialog().GetValueOrDefault(false)) {
                     this.txt.Text = dlg.FileName;
+                    FireFileSelected(dlg.FileName);
                 }
+            }
+        }
+
+        private void FireFileSelected(string filename) {
+            if (FileSelected != null) {
+                FileSelected(filename);
             }
         }
 
         public FilenameTextBoxMode Mode { get; set; }
 
         public string Filter { get; set; }
+
+        public event Action<string> FileSelected;
 
     }
 
