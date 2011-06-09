@@ -24,25 +24,38 @@ namespace BioLink.Client.Tools {
     public partial class ContactDetails : DatabaseActionControl {
 
         private ContactViewModel _viewModel;
+        private int _contactId;
 
         public ContactDetails(User user, int contactId) : base(user, "LoanContact:" + contactId) {
             InitializeComponent();
+            _contactId = contactId;
+            this.ChangeContainerSet += new Action(ContactDetails_ChangeContainerSet);
 
-            var service = new LoanService(user);
-            var model = service.GetContact(contactId);
+        }
+
+        void ContactDetails_ChangeContainerSet() {
+            Contact model = null;
+            if (_contactId < 0) {
+                model = new Contact();
+                model.ContactID = _contactId;
+                RegisterUniquePendingChange(new InsertContactAction(model));
+            } else {
+                var service = new LoanService(User);
+                model = service.GetContact(_contactId);
+            }
 
             _viewModel = new ContactViewModel(model);
 
-            if (model != null) {
+            if (model != null && !string.IsNullOrEmpty(model.StreetAddress)) {
                 if (model.StreetAddress.Equals(model.PostalAddress, StringComparison.CurrentCultureIgnoreCase)) {
                     _viewModel.PostalSameAsStreet = true;
                 }
             }
 
-            tabContact.AddTabItem("Traits", new TraitControl(user, TraitCategoryType.Contact, _viewModel));
-            tabContact.AddTabItem("Notes", new NotesControl(user, TraitCategoryType.Contact, _viewModel));
+            tabContact.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Contact, _viewModel));
+            tabContact.AddTabItem("Notes", new NotesControl(User, TraitCategoryType.Contact, _viewModel));
 
-            txtInstituion.BindUser(user, "tblContact", "vchrInstitution");
+            txtInstituion.BindUser(User, "tblContact", "vchrInstitution");
 
             _viewModel.DataChanged += new DataChangedHandler(viewModel_DataChanged);
 
@@ -50,7 +63,9 @@ namespace BioLink.Client.Tools {
         }
 
         void viewModel_DataChanged(ChangeableModelBase viewmodel) {
-            RegisterUniquePendingChange(new UpdateContactAction(_viewModel.Model));                
+            if (_viewModel.ContactID >= 0) {
+                RegisterUniquePendingChange(new UpdateContactAction(_viewModel.Model));
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e) {
@@ -64,12 +79,4 @@ namespace BioLink.Client.Tools {
         }
     }
 
-    public class UpdateContactAction : GenericDatabaseAction<Contact> {
-        public UpdateContactAction(Contact model) : base(model) { }
-
-        protected override void ProcessImpl(User user) {
-            var service = new LoanService(user);
-            service.UpdateContact(Model);
-        }
-    }
 }

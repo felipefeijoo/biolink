@@ -49,10 +49,35 @@ namespace BioLink.Data {
                 _P("vchrEMail", contact.EMail));
         }
 
+        public void DeleteContact(int contactID) {
+            StoredProcUpdate("spContactDelete", _P("intContactID", contactID));
+        }
+
         protected GenericMapper<Contact> GetContactMapper() {
             return new GenericMapperBuilder<Contact>().build();
         }
 
+
+        public int InsertContact(Contact contact) {
+            var retval = ReturnParam("NewContactID");
+            StoredProcUpdate("spContactInsert",
+                _P("vchrName", contact.Name),
+                _P("vchrTitle", contact.Title),
+                _P("vchrGivenName", contact.GivenName),
+                _P("vchrPostalAddress", contact.StreetAddress),
+                _P("vchrStreetAddress", contact.StreetAddress),
+                _P("vchrInstitution", contact.Institution),
+                _P("vchrJobTitle", contact.JobTitle),
+                _P("vchrWorkPh", contact.WorkPh),
+                _P("vchrWorkFax", contact.WorkFax),
+                _P("vchrHomePh", contact.HomePh),
+                _P("vchrEMail", contact.EMail),
+                retval
+                );
+
+            int newContactID = (int)retval.Value;
+            return newContactID;
+        }
     }
 
     public enum ContactSearchType {

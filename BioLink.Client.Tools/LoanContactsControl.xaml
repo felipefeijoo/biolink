@@ -19,10 +19,19 @@
         </Grid.RowDefinitions>
         
         <ToolBar>
-            
+            <Button ToolTip="Add new contact" x:Name="btnNewContact" Click="btnNewContact_Click">
+                <Image Source="/BioLink.Client.Extensibility;component/images/AddNew.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" />                                
+            </Button>            
+            <Separator />
+            <Button ToolTip="Edit contact details" x:Name="btnDetails" Click="btnDetails_Click">
+                <Image Source="/BioLink.Client.Extensibility;component/images/Properties.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" />
+            </Button>
+            <Button x:Name="btnDeleteContact" ToolTip="Delete the selected contact" Click="btnDeleteContact_Click">
+                <Image Source="/BioLink.Client.Extensibility;component/images/Delete.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" />
+            </Button>
         </ToolBar>
         
-        <TabControl Grid.Row="1">
+        <TabControl Grid.Row="1" x:Name="tabContacts">
             <TabItem Header="_Find contact">
                 <Grid>
                     <Grid.RowDefinitions>

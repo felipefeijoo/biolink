@@ -193,7 +193,17 @@ namespace BioLink.Client.Tools {
             foreach (ImportFieldMappingViewModel mapping in _model) {
                 if (string.IsNullOrEmpty(mapping.TargetColumn)) {
                     var candidate = _fields.Find((field) => {
-                        return field.DisplayName.Equals(mapping.SourceColumn, StringComparison.CurrentCultureIgnoreCase);
+                        // First try a simple match of the name...
+                        if (field.DisplayName.Equals(mapping.SourceColumn, StringComparison.CurrentCultureIgnoreCase)) {
+                            return true;
+                        };
+                        // Next convert all underscores to spaces and try that....
+                        var test = mapping.SourceColumn.Replace("_", " ");
+                        if (field.DisplayName.Equals(test, StringComparison.CurrentCultureIgnoreCase)) {
+                            return true;
+                        }
+
+                        return false;
                     });
                     if (candidate != null) {
                         mapping.TargetColumn = string.Format("{0}.{1}", candidate.Category, candidate.DisplayName);

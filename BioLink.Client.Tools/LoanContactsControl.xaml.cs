@@ -23,6 +23,8 @@ namespace BioLink.Client.Tools {
     /// </summary>
     public partial class LoanContactsControl : DatabaseActionControl {
 
+        private ObservableCollection<ContactViewModel> _findModel;
+
         public LoanContactsControl(User user, ToolsPlugin plugin) : base(user, "LoanContactsManager") {
             InitializeComponent();
             this.Plugin = plugin;
@@ -33,6 +35,38 @@ namespace BioLink.Client.Tools {
             lvwFind.MouseDoubleClick += new MouseButtonEventHandler(lvwFind_MouseDoubleClick);
 
             txtFilter.PreviewKeyDown += new KeyEventHandler(txtFilter_PreviewKeyDown);
+
+            lvwFind.MouseRightButtonUp += new MouseButtonEventHandler(lvwFind_MouseRightButtonUp);
+        }
+
+        void lvwFind_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            var builder = new ContextMenuBuilder(null);
+
+            var selected = lvwFind.SelectedItem as ContactViewModel;
+            if (selected != null) {
+                builder.New("_Contact details...").Handler(() => { EditSelectedContact(); }).End();
+                builder.New("_Delete contact").Handler(() => { DeleteContact(selected); }).End();
+                builder.New("_Loans...").Handler(() => { ShowLoansForContact(selected); }).End();
+            }
+
+            if (builder.HasItems) {
+                builder.Separator();
+            }
+
+            builder.New("Add new contact...").Handler(() => { AddNewContact(); }).End();
+
+            if (builder.HasItems) {
+                lvwFind.ContextMenu = builder.ContextMenu;
+            }
+        }
+
+        private void AddNewContact() {
+            var ctl = new ContactDetails(User, -1);
+            PluginManager.Instance.AddNonDockableContent(Plugin, ctl, "Contact details: <New contact>", SizeToContent.Manual);            
+        }
+
+        private void ShowLoansForContact(ContactViewModel model) {
+            MessageBox.Show("TO DO!");
         }
 
         void lvwFind_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
@@ -53,12 +87,44 @@ namespace BioLink.Client.Tools {
             }
         }
 
+        private ContactViewModel GetSelectedContact() {
+            ContactViewModel selected = null;
+            if (tabContacts.SelectedIndex == 0) {
+                selected = lvwFind.SelectedItem as ContactViewModel;
+            }
+
+            return selected;
+        }
+
+        private void DeleteSelectedContact() {
+            var selected = GetSelectedContact();
+            if (selected != null) {
+                DeleteContact(selected);
+            }
+        }
+
         private void EditSelectedContact() {
-            var selected = lvwFind.SelectedItem as ContactViewModel;
+            var selected = GetSelectedContact();
             if (selected != null) {
                 var ctl = new ContactDetails(User, selected.ContactID);
                 PluginManager.Instance.AddNonDockableContent(Plugin, ctl, "Contact details: " + selected.FullName, SizeToContent.Manual);
             }
+        }
+
+        private void DeleteContact(ContactViewModel contact) {
+            
+            if (contact == null) {
+                return;
+            }
+
+            if (this.Question("Are you sure you wish to permanently delete this contact?", "Delete '" + contact.FullName + "'?")) {
+                contact.IsDeleted = true;
+                RegisterPendingChange(new DeleteContactAction(contact.Model));
+                if (_findModel.Contains(contact)) {
+                    _findModel.Remove(contact);
+                }
+            }
+
         }
 
         protected ToolsPlugin Plugin { get; private set; }
@@ -75,14 +141,27 @@ namespace BioLink.Client.Tools {
             if (!string.IsNullOrWhiteSpace(filter)) {
                 var service = new LoanService(User);
                 var list = service.FindContacts(filter, searchType);
-                lvwFind.ItemsSource = new ObservableCollection<ContactViewModel>(list.Select((m) => {
+                _findModel = new ObservableCollection<ContactViewModel>(list.Select((m) => {
                     return new ContactViewModel(m);
                 }));
+                lvwFind.ItemsSource = _findModel;
             }
         }
 
         private void btnFind_Click(object sender, RoutedEventArgs e) {
             DoFind();
+        }
+
+        private void btnNewContact_Click(object sender, RoutedEventArgs e) {
+            AddNewContact();
+        }
+
+        private void btnDetails_Click(object sender, RoutedEventArgs e) {
+            EditSelectedContact();
+        }
+
+        private void btnDeleteContact_Click(object sender, RoutedEventArgs e) {
+            DeleteSelectedContact();
         }
 
     }

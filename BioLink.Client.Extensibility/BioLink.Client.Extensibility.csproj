@@ -617,6 +617,7 @@
     <Resource Include="images\Speckle.png" />
     <Resource Include="images\Biolink.ico" />
     <Resource Include="images\Contact.png" />
+    <Resource Include="images\info.png" />
     <Content Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>

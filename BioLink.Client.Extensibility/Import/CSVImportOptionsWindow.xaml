@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:import="clr-namespace:BioLink.Client.Extensibility.Import"
              mc:Ignorable="d" 
              Height="400" Width="600" xmlns:my="clr-namespace:BioLink.Client.Extensibility" Title="Import delimited file options">
     <Grid>
@@ -15,7 +16,15 @@
             <Label Content="Enter/select the source file to import from:" Height="28" Margin="12,12,12,0" Name="label1" VerticalAlignment="Top" />
             <my:FilenameTextBox Margin="12,37,94,0" x:Name="txtFilename" VerticalAlignment="Top" Loaded="txtFilename_Loaded" Mode="Open" Filter="Text files (*.txt)|*.txt|Comma separated files (*.csv)|*.csv|All files (*.*)|*.*" />
             <Label Content="Delimiting character:" Height="28" Margin="12,66,0,0" Name="label2" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120" />
-            <ComboBox Height="23" HorizontalAlignment="Left" Margin="138,69,0,0" Name="cmbDelimiter" VerticalAlignment="Top" Width="67" IsEditable="True" />
+            <ComboBox Height="23" HorizontalAlignment="Left" Margin="138,69,0,0" Name="cmbDelimiter" VerticalAlignment="Top" Width="67" IsEditable="True" DisplayMemberPath="Description">
+                <!--<ComboBox.Resources>
+                    <DataTemplate DataType="{x:Type import:DelimiterViewModel}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Path=Description}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.Resources>-->
+            </ComboBox>
             <CheckBox Content="First row contains column names  " Height="16" HorizontalAlignment="Right" Margin="0,71,12,0" Name="chkFirstRowNames" VerticalAlignment="Top" Width="238" HorizontalContentAlignment="Left" FlowDirection="RightToLeft" VerticalContentAlignment="Center" />
             <Button Content="_View file" Height="23" HorizontalAlignment="Right" Margin="0,37,12,0" Name="btnViewFile" VerticalAlignment="Top" Width="75" Click="btnViewFile_Click" />
         </Grid>

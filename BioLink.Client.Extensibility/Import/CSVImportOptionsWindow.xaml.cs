@@ -25,7 +25,12 @@ namespace BioLink.Client.Extensibility.Import {
     /// </summary>
     public partial class CSVImportOptionsWindow : Window {
 
-        private String[] _delimiterOptions = new String[] { ",", ";", "|", "&#9;" };
+        private DelimiterViewModel[] _delimiterOptions = new DelimiterViewModel[] { 
+            new DelimiterViewModel(","), 
+            new DelimiterViewModel(";"), 
+            new DelimiterViewModel("|"), 
+            new DelimiterViewModel("&#9;", "TAB") 
+        };
 
         private char _textQualifier = '\"';
 
@@ -36,14 +41,20 @@ namespace BioLink.Client.Extensibility.Import {
 
             if (options != null) {
                 txtFilename.Text = options.Filename;
-                cmbDelimiter.Text = options.Delimiter;
+                cmbDelimiter.SelectedItem = FindDelimiter(options.Delimiter);
                 chkFirstRowNames.IsChecked = options.FirstRowContainsNames;
             } else {
-                cmbDelimiter.Text = ",";
+                cmbDelimiter.SelectedItem = FindDelimiter(",");
                 chkFirstRowNames.IsChecked = true;
             }
 
             this.Closed += new EventHandler(CSVImportOptionsWindow_Closed);
+        }
+
+        private DelimiterViewModel FindDelimiter(string delim) {
+            return _delimiterOptions.FirstOrDefault((cand) => {
+                return cand.Delimiter.Equals(delim, StringComparison.CurrentCultureIgnoreCase);
+            });
         }
 
         void CSVImportOptionsWindow_Closed(object sender, EventArgs e) {
@@ -59,7 +70,13 @@ namespace BioLink.Client.Extensibility.Import {
         }
 
         public String Delimiter {
-            get { return HttpUtility.HtmlDecode(cmbDelimiter.Text as string); }
+            get {
+                var delim = cmbDelimiter.SelectedItem as DelimiterViewModel;
+                if (delim == null) {
+                    return null;
+                }
+                return HttpUtility.HtmlDecode(delim.Delimiter); 
+            }
         }
 
         public List<string> ColumnNames { get; private set; }
@@ -149,5 +166,21 @@ namespace BioLink.Client.Extensibility.Import {
             SystemUtils.ShellExecute(txtFilename.Text);
         }
 
+    }
+
+    public class DelimiterViewModel {
+
+        public DelimiterViewModel(string delimiter) {
+            this.Delimiter = delimiter;
+            this.Description = delimiter;
+        }
+
+        public DelimiterViewModel(string delimiter, string description) {
+            this.Delimiter = delimiter;
+            this.Description = description;
+        }
+
+        public string Delimiter { get; set; }
+        public string Description { get; set; }
     }
 }

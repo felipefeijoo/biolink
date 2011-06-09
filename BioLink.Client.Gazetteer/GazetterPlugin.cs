@@ -16,6 +16,9 @@ namespace BioLink.Client.Gazetteer {
 
         public const string GAZETTEER_PLUGIN_NAME = "Gazetteer";
 
+
+        private GazetteerConverter _gazConverter;
+
         public GazetterPlugin() {
         }
 
@@ -30,11 +33,30 @@ namespace BioLink.Client.Gazetteer {
                 String.Format("{{'Name':'ShowGazetteer', 'Header':'{0}'}}", _R("Gazetteer.Menu.ShowExplorer"))
             ));
 
+            contrib.Add(new MenuWorkspaceContribution(this, "ShowEGazConverter", (obj, e) => { ShowEGazConverter(); },
+                String.Format("{{'Name':'Tools', 'Header':'_Tools','InsertAfter':'File'}}"),
+                String.Format("{{'Name':'eGaz', 'Header':'eGaz'}}"), String.Format("{{'Name':'ShowEGazConverter', 'Header':'Legacy eGaz file converter'}}")
+            ));
+
             _gazetter = new ExplorerWorkspaceContribution<Gazetteer>(this, "Gazetteer", new Gazetteer(this), _R("Gazetteer.Title"), (explorer) => {});
 
             contrib.Add(_gazetter);
 
             return contrib;            
+        }
+
+        private void ShowEGazConverter() {
+            if (_gazConverter == null) {
+                _gazConverter = new GazetteerConverter();
+                _gazConverter.Owner = PluginManager.Instance.ParentWindow;
+                _gazConverter.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                _gazConverter.Closed += new EventHandler((source,e) => {
+                    _gazConverter = null;
+                });
+            }
+
+            _gazConverter.Show();
+
         }
 
         public override bool RequestShutdown() {

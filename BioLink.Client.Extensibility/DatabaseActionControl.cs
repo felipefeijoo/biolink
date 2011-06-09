@@ -145,10 +145,19 @@ namespace BioLink.Client.Extensibility {
 
         public event PendingChangesCommittedHandler ChangesCommitted;
 
+        public event Action ChangeContainerSet;
+
 
         public virtual System.Windows.Media.ImageSource Icon {
             get { return null; }
         }
+
+        public void NotifyChangeContainerSet() {
+            if (ChangeContainerSet != null) {
+                ChangeContainerSet();
+            }
+        }
+
     }
 
     public interface IIdentifiableContent {
