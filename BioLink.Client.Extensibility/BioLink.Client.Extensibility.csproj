@@ -618,6 +618,8 @@
     <Resource Include="images\Biolink.ico" />
     <Resource Include="images\Contact.png" />
     <Resource Include="images\info.png" />
+    <Resource Include="images\Loan.png" />
+    <Resource Include="images\Loan_Overdue.png" />
     <Content Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>

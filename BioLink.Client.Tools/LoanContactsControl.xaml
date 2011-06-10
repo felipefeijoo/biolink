@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
              mc:Ignorable="d" 
-             d:DesignHeight="358" d:DesignWidth="454">
+             d:DesignHeight="441" d:DesignWidth="478">
     <Grid>
         <Grid.Resources>
             <Style x:Key="hcs" TargetType="{x:Type GridViewColumnHeader}">
@@ -29,6 +29,10 @@
             <Button x:Name="btnDeleteContact" ToolTip="Delete the selected contact" Click="btnDeleteContact_Click">
                 <Image Source="/BioLink.Client.Extensibility;component/images/Delete.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" />
             </Button>
+            <Button x:Name="btnContactLoans" ToolTip="Show the loans involving this contact" Click="btnContactLoans_Click">
+                <Image Source="/BioLink.Client.Extensibility;component/images/Loan.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" />
+            </Button>
+
         </ToolBar>
         
         <TabControl Grid.Row="1" x:Name="tabContacts">
@@ -65,7 +69,8 @@
                 </Grid>
             </TabItem>
             <TabItem Header="_Browse">
-                
+                <TabControl x:Name="tabBrowse" Margin="6" TabStripPlacement="Right">                    
+                </TabControl>
             </TabItem>
         </TabControl>
     </Grid>

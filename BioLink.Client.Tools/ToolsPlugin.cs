@@ -131,6 +131,23 @@ namespace BioLink.Client.Tools {
             ShowSingleton("Phrases", () => new PhraseManager(User));
         }
 
+        public void ShowLoansForContact(int contactId) {
+            var service = new LoanService(User);            
+            var contact = service.GetContact(contactId);            
+
+            if (contact != null) {
+                var vm = new ContactViewModel(contact);
+                var control = new LoansForContact(User, this, contactId);
+                PluginManager.Instance.AddNonDockableContent(this, control, "Loans involving " + vm.FullName, SizeToContent.Manual);
+            }
+
+        }
+
+        public void EditLoan(int loanId) {
+            var control = new LoanDetails(User, this, loanId);
+            PluginManager.Instance.AddNonDockableContent(this, control, string.Format("Loan Detail [{0}]", loanId), SizeToContent.Manual);
+        }
+
         private ControlHostWindow ShowReferenceManager() {
             return ShowSingleton("Reference Manager", () => new ReferenceManager(User, this), SizeToContent.Manual, true,(window)=> {
                 window.btnOk.IsDefault = false;

@@ -1,0 +1,21 @@
+﻿<ext:DatabaseActionControl x:Class="BioLink.Client.Tools.LoanDetails"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+             mc:Ignorable="d" 
+             d:DesignHeight="350" d:DesignWidth="384">
+    <Grid>
+        <TabControl Margin="6" x:Name="tabLoan">
+            <TabItem Header="_Detail">                
+            </TabItem>
+            <TabItem Header="_Material" x:Name="tabMaterial">
+            </TabItem>
+            <TabItem Header="_Correspondence" x:Name="tabCorrespondence">
+            </TabItem>
+            <TabItem Header="_Reminders" x:Name="tabReminders">
+            </TabItem>
+        </TabControl>
+    </Grid>
+</ext:DatabaseActionControl>
