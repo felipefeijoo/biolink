@@ -42,7 +42,7 @@ namespace BioLink.Client.Tools {
             string[] ranges = new string[] { "A-C", "D-F", "G-I", "J-L", "M-O", "P-R", "S-U", "V-X", "Y-Z" };
 
             _page = new JournalBrowsePage(user);
-            _page.LoadPage("A-B");
+            _page.LoadPage("A-C");
 
             foreach (string range in ranges) {
                 AddTabPage(range);

@@ -6,6 +6,7 @@ using System.Text;
 using BioLink.Data.Model;
 
 namespace BioLink.Data {
+
     public class LoanService : BioLinkService  {
 
         public LoanService(User user) : base(user) { }
@@ -26,6 +27,12 @@ namespace BioLink.Data {
             var where = string.Format(" like '{0}%'", filter);
             var mapper = GetContactMapper();
             return StoredProcToList("spContactList", mapper, _P("vchrSearchWhere", what), _P("vchrWhereClause", where));
+        }
+
+        public List<Contact> ListContactsRange(string from, string to) {            
+            var strWhere = "left(vchrName," + from.Length + ") between '" + from + "' and '" + to + "'";
+            var mapper = new GenericMapperBuilder<Contact>().build();
+            return StoredProcToList("spContactListRange", mapper, _P("vchrWhere", strWhere));
         }
 
         public Contact GetContact(int contactId) {
@@ -77,6 +84,26 @@ namespace BioLink.Data {
 
             int newContactID = (int)retval.Value;
             return newContactID;
+        }
+
+        public List<Loan> ListLoansForContact(int contactID) {
+            var mapper = new GenericMapperBuilder<Loan>().build();
+            return StoredProcToList("spLoanListForContact", mapper, _P("intContactID", contactID));
+        }
+
+        public static string FormatName(string title, string givenName, string surname) {
+            var sb = new StringBuilder();
+            if (!string.IsNullOrWhiteSpace(title)) {
+                sb.Append(title).Append(" ");
+            }
+
+            if (!string.IsNullOrWhiteSpace(givenName)) {
+                sb.Append(givenName).Append(" ");
+            }
+
+            sb.Append(surname);
+
+            return sb.ToString();
         }
     }
 

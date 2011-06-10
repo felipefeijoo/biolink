@@ -65,6 +65,9 @@
     </Compile>
     <Compile Include="BoxCarDistributionModel.cs" />
     <Compile Include="ContactActions.cs" />
+    <Compile Include="ContactBrowsePage.xaml.cs">
+      <DependentUpon>ContactBrowsePage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ContactDetails.xaml.cs">
       <DependentUpon>ContactDetails.xaml</DependentUpon>
     </Compile>
@@ -115,6 +118,16 @@
     <Compile Include="LoanContactsControl.xaml.cs">
       <DependentUpon>LoanContactsControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="LoanDetails.xaml.cs">
+      <DependentUpon>LoanDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LoansForContact.xaml.cs">
+      <DependentUpon>LoansForContact.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LoansForContactForm.xaml.cs">
+      <DependentUpon>LoansForContactForm.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LoanViewModel.cs" />
     <Compile Include="ModellingTool.xaml.cs">
       <DependentUpon>ModellingTool.xaml</DependentUpon>
     </Compile>
@@ -221,6 +234,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ContactBrowsePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ContactDetails.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -270,6 +287,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="LoanContactsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LoanDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LoansForContact.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LoansForContactForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -25,6 +25,9 @@ namespace BioLink.Client.Tools {
 
         private ObservableCollection<ContactViewModel> _findModel;
 
+        private ContactBrowsePage _page;
+        private TabItem _previousPage;
+
         public LoanContactsControl(User user, ToolsPlugin plugin) : base(user, "LoanContactsManager") {
             InitializeComponent();
             this.Plugin = plugin;
@@ -37,12 +40,75 @@ namespace BioLink.Client.Tools {
             txtFilter.PreviewKeyDown += new KeyEventHandler(txtFilter_PreviewKeyDown);
 
             lvwFind.MouseRightButtonUp += new MouseButtonEventHandler(lvwFind_MouseRightButtonUp);
+
+            string[] ranges = new string[] { "A-C", "D-F", "G-I", "J-L", "M-O", "P-R", "S-U", "V-X", "Y-Z" };
+
+            _page = new ContactBrowsePage(user);
+            _page.ContextMenuRequested += new Action<FrameworkElement, ContactViewModel>(_page_ContextMenuRequested);
+            _page.LoadPage("A-C");
+
+            foreach (string range in ranges) {
+                AddTabPage(range);
+            }
+        }
+
+        void _page_ContextMenuRequested(FrameworkElement sender, ContactViewModel obj) {
+            ShowContextMenu(sender, obj);
+        }
+
+        private void AddTabPage(string range) {
+            string[] bits = range.Split('-');
+            if (bits.Length == 2) {
+                char from = bits[0][0];
+                char to = bits[1][0];
+                string caption = "";
+                for (char ch = from; ch <= to; ch++) {
+                    caption += ch;
+                }
+
+                TabItem item = new TabItem();
+                item.Header = caption.ToUpper();
+                item.Tag = range;
+
+                item.RequestBringIntoView += new RequestBringIntoViewEventHandler(item_RequestBringIntoView);
+                item.LayoutTransform = new RotateTransform(90);
+                tabBrowse.Items.Add(item);
+
+            } else {
+                throw new Exception("Invalid page range!: " + range);
+            }
+
+        }
+
+        void item_RequestBringIntoView(object sender, RequestBringIntoViewEventArgs e) {
+            if (sender == _previousPage) {
+                return;
+            }
+
+            // Detach the page from the previous tab
+            if (_previousPage != null && _previousPage != sender) {
+                _previousPage.Content = null;
+            }
+
+            var selected = sender as TabItem;
+            if (selected != null) {
+                // Load the page with the correct items for the selected tab
+                _page.LoadPage(selected.Tag as string);
+                // Attach the page to the current tab
+                selected.Content = _page;
+            }
+            _previousPage = selected;
+           
         }
 
         void lvwFind_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            var selected = lvwFind.SelectedItem as ContactViewModel;
+            ShowContextMenu(lvwFind, selected);
+        }
+
+        private void ShowContextMenu(FrameworkElement sender, ContactViewModel selected) {
             var builder = new ContextMenuBuilder(null);
 
-            var selected = lvwFind.SelectedItem as ContactViewModel;
             if (selected != null) {
                 builder.New("_Contact details...").Handler(() => { EditSelectedContact(); }).End();
                 builder.New("_Delete contact").Handler(() => { DeleteContact(selected); }).End();
@@ -56,7 +122,7 @@ namespace BioLink.Client.Tools {
             builder.New("Add new contact...").Handler(() => { AddNewContact(); }).End();
 
             if (builder.HasItems) {
-                lvwFind.ContextMenu = builder.ContextMenu;
+                sender.ContextMenu = builder.ContextMenu;
             }
         }
 
@@ -66,7 +132,9 @@ namespace BioLink.Client.Tools {
         }
 
         private void ShowLoansForContact(ContactViewModel model) {
-            MessageBox.Show("TO DO!");
+            if (model != null) {
+                Plugin.ShowLoansForContact(model.ContactID);
+            }            
         }
 
         void lvwFind_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
@@ -91,6 +159,8 @@ namespace BioLink.Client.Tools {
             ContactViewModel selected = null;
             if (tabContacts.SelectedIndex == 0) {
                 selected = lvwFind.SelectedItem as ContactViewModel;
+            } else {
+                selected = _page.SelectedItem;
             }
 
             return selected;
@@ -162,6 +232,10 @@ namespace BioLink.Client.Tools {
 
         private void btnDeleteContact_Click(object sender, RoutedEventArgs e) {
             DeleteSelectedContact();
+        }
+
+        private void btnContactLoans_Click(object sender, RoutedEventArgs e) {
+            ShowLoansForContact(GetSelectedContact());
         }
 
     }
@@ -247,20 +321,7 @@ namespace BioLink.Client.Tools {
         }
 
         public string FullName {
-            get {
-                var sb = new StringBuilder();
-                if (!string.IsNullOrWhiteSpace(Title)) {
-                    sb.Append(Title).Append(" ");
-                }
-
-                if (!string.IsNullOrWhiteSpace(GivenName)) {
-                    sb.Append(GivenName).Append(" ");
-                }
-
-                sb.Append(Name);
-
-                return sb.ToString();
-            }
+            get { return LoanService.FormatName(Title, GivenName, Name); }
         }
 
         private bool _postalAsStreet;

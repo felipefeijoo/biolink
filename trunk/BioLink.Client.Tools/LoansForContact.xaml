@@ -1,0 +1,52 @@
+﻿<ext:DatabaseActionControl x:Class="BioLink.Client.Tools.LoansForContact"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+             mc:Ignorable="d" 
+             d:DesignHeight="348" d:DesignWidth="857">
+    <Grid>
+        <Grid.Resources>
+            <Style x:Key="hcs" TargetType="{x:Type GridViewColumnHeader}">
+                <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
+            </Style>
+        </Grid.Resources>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32" />
+            <RowDefinition Height="*" />            
+        </Grid.RowDefinitions>
+        <ToolBar>
+            
+        </ToolBar>
+        
+        <Grid Grid.Row="1">
+            <ListView x:Name="lvw" Grid.Row="1" Margin="6">
+                <ListView.Resources>
+                    <DataTemplate x:Key="IconColumnTemplate">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{Binding Path=Icon}" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True"/>
+                            <TextBlock Text="{Binding Path=LoanNumber}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.Resources>
+                <ListView.View>
+                    <GridView>
+                        <GridView.Columns>
+                            <GridViewColumn Width="100" Header="Loan #" CellTemplate="{StaticResource IconColumnTemplate}" HeaderContainerStyle="{StaticResource hcs}" />
+                            <GridViewColumn Width="120" Header="Requested by" HeaderContainerStyle="{StaticResource hcs}" DisplayMemberBinding="{Binding RequestedBy}" />
+                            <GridViewColumn Width="120" Header="Received by" HeaderContainerStyle="{StaticResource hcs}" DisplayMemberBinding="{Binding ReceivedBy}" />
+                            <GridViewColumn Width="120" Header="Authorized by" HeaderContainerStyle="{StaticResource hcs}" DisplayMemberBinding="{Binding AuthorizedBy}" />
+                            <GridViewColumn Width="100" Header="Status" HeaderContainerStyle="{StaticResource hcs}" DisplayMemberBinding="{Binding Status}" />
+                            <GridViewColumn Width="80" Header="Start date" HeaderContainerStyle="{StaticResource hcs}" DisplayMemberBinding="{Binding StartDateStr}" />
+                            <GridViewColumn Width="80" Header="Due date" HeaderContainerStyle="{StaticResource hcs}" DisplayMemberBinding="{Binding DueDateStr}" />
+                        </GridView.Columns>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+
+        </Grid>
+                
+    </Grid>
+</ext:DatabaseActionControl>

@@ -149,6 +149,14 @@ namespace BioLink.Client.Utilities {
             }
         }
 
+        public static string ShortDate(DateTime? dt) {
+            if (!dt.HasValue) {
+                return "";
+            }
+
+            return string.Format("{0:d}", dt.Value);
+        }
+
     }
 
     
