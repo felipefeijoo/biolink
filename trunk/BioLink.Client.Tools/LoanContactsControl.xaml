@@ -6,7 +6,7 @@
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
              mc:Ignorable="d" 
              d:DesignHeight="441" d:DesignWidth="478">
-    <Grid>
+    <Grid Margin="6">
         <Grid.Resources>
             <Style x:Key="hcs" TargetType="{x:Type GridViewColumnHeader}">
                 <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>

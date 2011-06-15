@@ -22,7 +22,7 @@ namespace BioLink.Client.Extensibility {
     /// </summary>
     public partial class LookupControl : UserControl {
 
-        private bool _manualSet = false;        
+        private bool _manualSet = false;
 
         public LookupControl() {
             InitializeComponent();
@@ -51,7 +51,7 @@ namespace BioLink.Client.Extensibility {
 
         void txt_PreviewKeyDown(object sender, KeyEventArgs e) {
 
-            if (e.Key == Key.Return ) {
+            if (e.Key == Key.Return) {
                 DoFind(txt.Text);
                 e.Handled = true;
             }
@@ -111,7 +111,7 @@ namespace BioLink.Client.Extensibility {
         void txt_PreviewLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e) {
             if (_validate) {
                 if (!txt.IsReadOnly) {
-                    if (!ValidateLookup()) {                                                
+                    if (!ValidateLookup()) {
                         if (!DoFind(txt.Text)) {
                             e.Handled = true;
                         }
@@ -121,12 +121,22 @@ namespace BioLink.Client.Extensibility {
         }
 
         private bool ValidateLookup() {
-            
+
             if (string.IsNullOrWhiteSpace(txt.Text)) {
                 ObjectID = 0;
                 return true;
             }
-            
+
+            if (LookupType == LookupType.Contact && ObjectID.HasValue && ObjectID.Value > 0) {
+                var loanService = new LoanService(User);
+                var contact = loanService.GetContact(ObjectID.Value);
+                if (contact != null) {
+                    if (LoanService.FormatName(contact).Equals(txt.Text, StringComparison.CurrentCultureIgnoreCase)) {
+                        return true;
+                    }
+                }
+            }
+
             var service = new SupportService(User);
             var lookupResults = service.LookupSearch(txt.Text, LookupType);
             if (lookupResults != null && lookupResults.Count >= 1) {
@@ -134,21 +144,21 @@ namespace BioLink.Client.Extensibility {
                     var result = lookupResults[0];
                     this.ObjectID = result.ObjectID;
                     return result.Label.Equals(txt.Text);
-                } 
+                }
             }
-            
-            return false;            
+
+            return false;
         }
 
         void txt_Drop(object sender, DragEventArgs e) {
             var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;
             if (pinnable != null) {
                 var plugin = PluginManager.Instance.GetPluginByName(pinnable.PluginID);
-                if (plugin != null) {                    
+                if (plugin != null) {
                     var viewModel = plugin.CreatePinnableViewModel(pinnable);
                     _manualSet = true;
                     this.Text = viewModel.DisplayLabel;
-                    this.ObjectID = pinnable.ObjectID;                    
+                    this.ObjectID = pinnable.ObjectID;
                     _manualSet = false;
                 }
             }
@@ -162,15 +172,60 @@ namespace BioLink.Client.Extensibility {
                 if (pinnable.LookupType == this.LookupType) {
                     e.Effects = DragDropEffects.Link;
                 }
-            } 
+            }
 
-            e.Handled = true;            
+            e.Handled = true;
         }
 
         public void BindUser(User user, LookupType lookupType, LookupOptions options = LookupOptions.None) {
             User = user;
             LookupType = lookupType;
             LookupOptions = options;
+            btnEdit.IsEnabled = true;
+            switch (LookupType) {
+                case LookupType.Material:
+                    btnEdit.ToolTip = "Edit Material details...";
+                    btnLookup.ToolTip = "Select Material from the Material explorer...";
+                    break;
+                case LookupType.SiteVisit:
+                    btnEdit.ToolTip = "Edit Site Visit details...";
+                    btnLookup.ToolTip = "Select a Site Visit from the Material explorer...";
+                    break;
+                case LookupType.Site:
+                    btnEdit.ToolTip = "Edit Site details...";
+                    btnLookup.ToolTip = "Select a Site from the Material explorer...";
+                    break;
+                case LookupType.Trap:
+                    btnEdit.ToolTip = "Edit Trap details...";
+                    btnLookup.ToolTip = "Select a Trap from the Material explorer...";
+                    break;
+                case LookupType.Region:
+                    btnEdit.ToolTip = "";
+                    btnEdit.IsEnabled = false;
+                    btnLookup.ToolTip = "Select a Region from the Material explorer...";
+                    break;
+                //case LookupType.SiteGroup:
+                //    btnEdit.ToolTip = "";
+                //    btnEdit.IsEnabled = false;
+                //    btnLookup.ToolTip = "Select a Site Group from the Material explorer...";
+                //    break;
+                case LookupType.Contact:
+                    btnEdit.ToolTip = "Edit Contact details...";
+                    btnLookup.ToolTip = "Select a Contact from the Contact explorer...";
+                    break;
+                case LookupType.Taxon:
+                    btnEdit.ToolTip = "Edit taxon details...";
+                    btnLookup.ToolTip = "Select a Taxon from the Taxon explorer...";
+                    break;
+                case LookupType.Reference:
+                    btnEdit.ToolTip = "Edit Reference details...";
+                    btnLookup.ToolTip = "Select a Reference from the Reference Manager...";
+                    break;
+                case LookupType.Journal:
+                    btnEdit.ToolTip = "Edit Journal details...";
+                    btnLookup.ToolTip = "Select a Journal from the Journal Manager...";
+                    break;
+            }
         }
 
         private void btnLookup_Click(object sender, RoutedEventArgs e) {
@@ -199,7 +254,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void LaunchLookup() {
-            
+
             switch (LookupType) {
                 case LookupType.Reference:
                     GenericLookup<ReferenceSearchResult>();
@@ -214,7 +269,7 @@ namespace BioLink.Client.Extensibility {
                     GenericLookup<Material>();
                     break;
                 case LookupType.Site:
-                    GenericLookup <Site>();
+                    GenericLookup<Site>();
                     break;
                 case LookupType.SiteVisit:
                     GenericLookup<SiteVisit>();
@@ -227,6 +282,9 @@ namespace BioLink.Client.Extensibility {
                     break;
                 case LookupType.SiteOrRegion:
                     GenericLookup<SiteExplorerNode>();
+                    break;
+                case LookupType.Contact:
+                    GenericLookup<Contact>();
                     break;
                 default:
                     throw new Exception("Unhandled Lookup type: " + LookupType.ToString());
@@ -275,7 +333,7 @@ namespace BioLink.Client.Extensibility {
         public static readonly DependencyProperty ObjectIDProperty = DependencyProperty.Register("ObjectID", typeof(int?), typeof(LookupControl), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnObjectIDChanged)));
 
         private static void OnObjectIDChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
-            var control = (LookupControl) obj;
+            var control = (LookupControl)obj;
             if (control.ObjectIDChanged != null && control._manualSet) {
                 control.ObjectIDChanged(control, control.ObjectID);
             }
@@ -296,7 +354,9 @@ namespace BioLink.Client.Extensibility {
         private static void OnIsReadOnlyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
             var control = (LookupControl)obj;
             if (control != null) {
-                control.btnLookup.IsEnabled = !(bool)args.NewValue;
+                bool readOnly = (bool) args.NewValue;
+                control.btnLookup.IsEnabled = !readOnly;
+                control.txt.IsReadOnly = readOnly;
             }
         }
 

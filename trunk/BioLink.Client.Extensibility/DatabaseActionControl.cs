@@ -66,6 +66,27 @@ namespace BioLink.Client.Extensibility {
             });
         }
 
+        public virtual bool Validate(List<String> messages) {
+            return true;
+        }
+
+        protected string WindowTitle {
+            get {
+                var window = this.FindParentWindow();
+                if (window != null) {
+                    return window.Title;
+                }
+                return "";
+            }
+
+            set {
+                var window = this.FindParentWindow();
+                if (window != null) {
+                    window.Title = value;
+                }
+            }
+        }
+
         private IChangeContainer FindChangeContainer() {
             var p = this as FrameworkElement;
 

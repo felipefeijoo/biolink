@@ -91,6 +91,10 @@ namespace BioLink.Data {
             return StoredProcToList("spLoanListForContact", mapper, _P("intContactID", contactID));
         }
 
+        public static String FormatName(Contact contact) {
+            return FormatName(contact.Title, contact.GivenName, contact.Name);
+        }
+
         public static string FormatName(string title, string givenName, string surname) {
             var sb = new StringBuilder();
             if (!string.IsNullOrWhiteSpace(title)) {
@@ -104,6 +108,54 @@ namespace BioLink.Data {
             sb.Append(surname);
 
             return sb.ToString();
+        }
+
+        public Loan GetLoan(int loanID) {
+            var mapper = new GenericMapperBuilder<Loan>().build();
+            return StoredProcGetOne("spLoanGet", mapper, _P("intLoanID", loanID));
+        }
+
+        public int InsertLoan(Loan loan) {
+            var retval = ReturnParam("NewLoanID");
+            StoredProcUpdate("spLoanInsert",
+                _P("vchrLoanNumber", loan.LoanNumber),
+                _P("intRequestorID", loan.RequestorID),
+                _P("intReceiverID", loan.ReceiverID),
+                _P("intOriginatorID", loan.OriginatorID),
+                _P("dtDateInitiated", loan.DateInitiated),
+                _P("dtDateDue", loan.DateDue),
+                _P("vchrMethodOfTransfer", loan.MethodOfTransfer),
+                _P("vchrPermitNumber", loan.PermitNumber),
+                _P("vchrTypeOfReturn", loan.TypeOfReturn),
+                _P("vchrRestrictions", loan.Restrictions),
+                _P("dtDateClosed", loan.DateClosed),
+                _P("bitLoanClosed", loan.LoanClosed),
+                retval
+            );
+
+            return (int)retval.Value;
+        }
+
+        public void UpdateLoan(Loan loan) {
+            StoredProcUpdate("spLoanUpdate",
+                _P("intLoanID", loan.LoanID),
+                _P("vchrLoanNumber", loan.LoanNumber),
+                _P("intRequestorID", loan.RequestorID),
+                _P("intReceiverID", loan.ReceiverID),
+                _P("intOriginatorID", loan.OriginatorID),
+                _P("dtDateInitiated", loan.DateInitiated),
+                _P("dtDateDue", loan.DateDue),
+                _P("vchrMethodOfTransfer", loan.MethodOfTransfer),
+                _P("vchrPermitNumber", loan.PermitNumber),
+                _P("vchrTypeOfReturn", loan.TypeOfReturn),
+                _P("vchrRestrictions", loan.Restrictions),
+                _P("dtDateClosed", loan.DateClosed),
+                _P("bitLoanClosed", loan.LoanClosed)
+            );
+        }
+
+        public void DeleteLoan(int loanId) {
+            StoredProcUpdate("spLoanDelete", _P("intLoanID", loanId));
         }
     }
 

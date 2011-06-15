@@ -5,10 +5,82 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
              mc:Ignorable="d" 
-             d:DesignHeight="350" d:DesignWidth="384">
+             d:DesignHeight="410" d:DesignWidth="547">
     <Grid>
+        <Grid.Resources>
+            <ext:HardDateConverter x:Key="hardDateConverter" />
+            <ext:NegatingConverter x:Key="negatingConverter" />
+        </Grid.Resources>
+
         <TabControl Margin="6" x:Name="tabLoan">
-            <TabItem Header="_Detail">                
+            <TabItem Header="_Detail">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="28" />
+                        <RowDefinition Height="28" />
+                        <RowDefinition Height="28" />
+                        <RowDefinition Height="28" />
+                        <RowDefinition Height="28" />
+                        <RowDefinition Height="28" />
+                        <RowDefinition Height="28" />
+                        <RowDefinition Height="28" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="60" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="100" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    
+                    <Label Content="Loan Number:"/>
+                    <ext:AutoNumberBox Grid.Row="0" Grid.Column="1" x:Name="txtLoanNumber" Height="23" Text="{Binding Path=LoanNumber}" />
+
+                    <Label Grid.Row="0" Grid.Column="2" Content="Permit No.:"/>
+                    <ext:TextBox Grid.Row="0" Grid.Column="3" x:Name="txtPermitNumber" Height="23" Text="{Binding Path=PermitNumber}"/>
+
+                    <Label Grid.Row="1" Grid.Column="0" Content="Borrower:"/>
+                    <ext:LookupControl Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" x:Name="txtBorrower" Height="23" ObjectID="{Binding RequestorID}" Text="{Binding Path=RequestedBy, Mode=OneWay}"/>
+                    
+                    <CheckBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Content="The borrower is the receiver" VerticalAlignment="Center" IsChecked="{Binding Path=BorrowerIsReceiver}" x:Name="chkBorrowerIsReceiver"/>
+
+                    <Label Grid.Row="3" Grid.Column="0" Content="Receiver:"/>
+                    <ext:LookupControl Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" x:Name="txtReceiver" Height="23" ObjectID="{Binding ReceiverID}" Text="{Binding Path=ReceivedBy, Mode=OneWay}" IsReadOnly="{Binding Path=BorrowerIsReceiver}" />
+
+                    <Label Grid.Row="4" Grid.Column="0" Content="Authorised by:"/>
+                    <ext:LookupControl Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" x:Name="txtAuthorizedBy" Height="23" ObjectID="{Binding OriginatorID}" Text="{Binding Path=AuthorizedBy, Mode=OneWay}" />
+
+                    <Label Grid.Row="5" Grid.Column="0" Content="Transfer method:"/>
+                    <ext:PickListControl Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" x:Name="txtTransferMethod" Height="23" Text="{Binding Path=MethodOfTransfer}"/>
+                    
+                    <Label Grid.Row="6" Grid.Column="0" Content="Date initiated:" />
+                    <ext:DateControl Grid.Row="6" Grid.Column="1" Date="{Binding Path=DateInitiated, Converter={StaticResource hardDateConverter}}" Height="23" x:Name="dtDateInitiated" />
+
+                    <Label Grid.Row="6" Grid.Column="2" Content="Due Date:" />
+                    <ext:DateControl Grid.Row="6" Grid.Column="3" Date="{Binding Path=DateDue, Converter={StaticResource hardDateConverter}}" Height="23" x:Name="dtDateDue" />
+                    
+                    <Label Grid.Row="7" Content="Return Type:" />
+                    <ext:PickListControl Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="3" x:Name="txtReturnType" Height="23" Text="{Binding TypeOfReturn}" />
+
+                    <Label Grid.Row="8" Content="Conditions:" />
+                    <ext:TextBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="3" x:Name="txtConditions" TextWrapping="Wrap" Margin="0,3,0,3" Text="{Binding Path=Restrictions}" />
+
+                    <GroupBox Grid.Row="9" Grid.ColumnSpan="4" Header="Loan Status" Margin="6,3,6,3">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <CheckBox Content="This loan is closed/inactive" VerticalAlignment="Center" IsChecked="{Binding Path=LoanClosed}"/>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Label Content="Date closed:" />
+                                <ext:DateControl Height="23" HorizontalAlignment="Right" Width="140" IsReadOnly="{Binding Path=LoanClosed, Mode=OneWay, Converter={StaticResource negatingConverter}}" Date="{Binding Path=DateClosed, Converter={StaticResource hardDateConverter}}"/>
+                            </StackPanel>
+                        </Grid>
+                    </GroupBox>
+
+                </Grid>
             </TabItem>
             <TabItem Header="_Material" x:Name="tabMaterial">
             </TabItem>

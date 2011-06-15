@@ -97,6 +97,15 @@ namespace BioLink.Client.Extensibility {
 
         public void ApplyChanges() {
 
+            if (Control is DatabaseActionControl) {
+                var dac = Control as DatabaseActionControl;
+                var messages = new List<string>();
+                if (!dac.Validate(messages)) {
+                    var message = String.Format("Changes could not be applied because:\n\n{0}\n", messages.Join("\n"));
+                    ErrorMessage.Show(message);
+                    return;
+                }
+            }
             if (HasPendingChanges) {
                 CommitPendingChanges();
             } else {

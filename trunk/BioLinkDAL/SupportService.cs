@@ -1337,6 +1337,9 @@ namespace BioLink.Data {
                     storedProcs.Add(new LookupProcedureBinding {ProcName = "spSiteLookup", LookupType=LookupType.Site });
                     storedProcs.Add(new LookupProcedureBinding { ProcName = "spRegionLookup", LookupType = LookupType.Region });
                     break;
+                case LookupType.Contact:
+                    storedProcs.Add(new LookupProcedureBinding { ProcName = "spContactLookup", LookupType = LookupType.Contact });
+                    break;
                 case LookupType.Unknown:
                 case LookupType.Trap:
                 case LookupType.PlaceName:
@@ -1435,7 +1438,8 @@ namespace BioLink.Data {
         Reference,
         Journal,
         PlaceName,
-        SiteOrRegion
+        SiteOrRegion,
+        Contact
     }
 
     public enum LookupOptions {

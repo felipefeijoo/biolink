@@ -40,7 +40,12 @@ namespace BioLink.Client.Tools {
         }
         public int RequestorID {
             get { return Model.RequestorID; }
-            set { SetProperty(() => Model.RequestorID, value); }
+            set { 
+                SetProperty(() => Model.RequestorID, value);
+                if (_borrowerIsReceiver) {
+                    SetProperty(() => Model.ReceiverID, value);
+                }
+            }
         }
 
         public int ReceiverID {
@@ -151,6 +156,13 @@ namespace BioLink.Client.Tools {
                 }
 
             }
+        }
+
+        private bool _borrowerIsReceiver;
+
+        public bool BorrowerIsReceiver {
+            get { return _borrowerIsReceiver; }
+            set { SetProperty("BorrowerIsReceiver", ref _borrowerIsReceiver, value); }
         }
 
         public string Status {
