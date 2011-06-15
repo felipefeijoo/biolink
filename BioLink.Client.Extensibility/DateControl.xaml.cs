@@ -70,7 +70,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         void txt_TextChanged(object sender, TextChangedEventArgs e) {
-            SetDate(txt.Text);   
+            SetDate(txt.Text);
         }
 
         public static string DateToStr(string bldate) {
@@ -78,7 +78,7 @@ namespace BioLink.Client.Extensibility {
                 return "";
             }
 
-            if (bldate.Length == 8) {                
+            if (bldate.Length == 8) {
                 int year = Int32.Parse(bldate.Substring(0, 4));
                 int month = Int32.Parse(bldate.Substring(4, 2));
                 int day = Int32.Parse(bldate.Substring(6, 2));
@@ -107,7 +107,7 @@ namespace BioLink.Client.Extensibility {
                     count++;
                 }
             }
-            
+
             DateTime dt;
 
             string bldate = null;
@@ -125,7 +125,7 @@ namespace BioLink.Client.Extensibility {
                         break;
                     default:
                         break;
-                }               
+                }
             } else {
                 int year;
                 if (Int32.TryParse(str, out year)) {
@@ -186,12 +186,39 @@ namespace BioLink.Client.Extensibility {
                     window.PreviewKeyUp += _keyHandler;
                 }
                 popup.Focus();
+                var dt = GetDateAsDateTime();
+                if (dt.HasValue) {
+                    cal.SelectedDate = dt.Value;
+                    cal.DisplayDate = dt.Value;
+                }
             } else {                
                 if (window != null && _keyHandler != null) {
                     window.PreviewKeyDown -= _keyHandler;
                     window.PreviewKeyUp -= _keyHandler;
                 }
             }
+        }
+
+        public DateTime? GetDateAsDateTime() {
+            var str = Date as string;
+            if (str != null) {
+                var formatted = DateControl.DateToStr(str);
+                DateTime dt;
+                if (DateTime.TryParse(formatted, out dt)) {
+                    return dt;
+                } else {
+                    int year;
+                    if (Int32.TryParse(formatted, out year)) {
+                        if (year > 0 && year <= 9999) {
+                            var tempDate = "01 jan " + formatted;
+                            if (DateTime.TryParse(tempDate, out dt)) {
+                                return dt;
+                            }
+                        }
+                    }
+                }
+            }
+            return null;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e) {
@@ -252,7 +279,7 @@ namespace BioLink.Client.Extensibility {
                 if (DateTime.TryParse(formatted, out dt)) {
                     return dt;
                 } else {
-                    int year;                    
+                    int year;
                     if (Int32.TryParse(formatted, out year)) {
                         if (year > 0 && year <= 9999) {
                             var tempDate = "01 jan " + formatted;
@@ -263,7 +290,7 @@ namespace BioLink.Client.Extensibility {
                     }
                 }
             }
-            return null;            
+            return null;
         }
     }
 }

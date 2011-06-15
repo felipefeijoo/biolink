@@ -63,5 +63,51 @@ namespace BioLink.Client.Tools {
 
         protected ToolsPlugin Plugin { get; private set; }
 
+        private void btnAddNew_Click(object sender, RoutedEventArgs e) {
+            AddNewLoan();
+        }
+
+        private void AddNewLoan() {
+            Plugin.AddNewLoan();
+        }
+
+        private void btnProperties_Click(object sender, RoutedEventArgs e) {
+            var loan = GetSelectedLoan();
+            if (loan != null) {
+                EditLoan(loan.LoanID);
+            }
+        }
+
+        private LoanViewModel GetSelectedLoan() {
+            return lvw.SelectedItem as LoanViewModel;
+        }
+
+        private void btnDelete_Click(object sender, RoutedEventArgs e) {
+            var loan = GetSelectedLoan();
+            if (loan != null) {
+                DeleteLoan(loan);
+            }
+        }
+
+        private void DeleteLoan(LoanViewModel loan) {
+            if (loan == null) {
+                return;
+            }
+
+            loan.IsDeleted = true;
+            _model.Remove(loan);
+            RegisterUniquePendingChange(new DeleteLoanAction(loan.Model));
+        }
+
+    }
+
+    public class DeleteLoanAction : GenericDatabaseAction<Loan> {
+
+        public DeleteLoanAction(Loan model) : base(model) { }
+
+        protected override void ProcessImpl(User user) {
+            var service = new LoanService(user);
+            service.DeleteLoan(Model.LoanID);
+        }
     }
 }

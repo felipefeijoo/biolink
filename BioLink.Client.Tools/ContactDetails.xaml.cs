@@ -60,6 +60,8 @@ namespace BioLink.Client.Tools {
             _viewModel.DataChanged += new DataChangedHandler(viewModel_DataChanged);
 
             this.DataContext = _viewModel;
+            this.WindowTitle = string.Format("Contact detail: {0} [{1}]", _viewModel.FullName, _viewModel.ContactID);
+
         }
 
         void viewModel_DataChanged(ChangeableModelBase viewmodel) {

@@ -18,7 +18,17 @@
             <RowDefinition Height="*" />            
         </Grid.RowDefinitions>
         <ToolBar>
-            
+            <Button x:Name="btnAddNew" Click="btnAddNew_Click">
+                <Image Source="/BioLink.Client.Extensibility;component/images/AddNew.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None" />
+            </Button>
+            <Separator />
+            <Button x:Name="btnProperties" Click="btnProperties_Click">
+                <Image Source="/BioLink.Client.Extensibility;component/images/Properties.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None" />
+            </Button>
+            <Button x:Name="btnDelete" Click="btnDelete_Click">
+                <Image Source="/BioLink.Client.Extensibility;component/images/Delete.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None" />
+            </Button>
+
         </ToolBar>
         
         <Grid Grid.Row="1">

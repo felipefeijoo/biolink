@@ -57,10 +57,17 @@ namespace BioLink.Client.Tools {
                 "{'Name':'UserStatsReport', 'Header' : 'Data Entry _Statistics by User Report'}"                
             ));
 
+            // Loans..
             contrib.Add(new MenuWorkspaceContribution(this, "LoanContacts", (obj, e) => { ShowLoanContacts(); },
                 String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
                 "{'Name':'Loans', 'Header':'_Loans'}",
                 "{'Name':'LoanContacts', 'Header' : '_Contacts'}"
+            ));
+
+            contrib.Add(new MenuWorkspaceContribution(this, "AddNewLoan", (obj, e) => { AddNewLoan(); },
+                String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
+                "{'Name':'Loans', 'Header':'_Loans'}",
+                "{'Name':'AddNewLoan', 'Header' : '_Add new Loan'}"
             ));
 
             // Settings...
@@ -123,8 +130,8 @@ namespace BioLink.Client.Tools {
 
         }
 
-        private void ShowLoanContacts() {
-            ShowSingleton("Contacts", () => new LoanContactsControl(User, this));
+        private ControlHostWindow ShowLoanContacts() {
+            return ShowSingleton("Contacts", () => new LoanContactsControl(User, this));
         }
 
         private void ShowPhraseManager() {
@@ -141,11 +148,6 @@ namespace BioLink.Client.Tools {
                 PluginManager.Instance.AddNonDockableContent(this, control, "Loans involving " + vm.FullName, SizeToContent.Manual);
             }
 
-        }
-
-        public void EditLoan(int loanId) {
-            var control = new LoanDetails(User, this, loanId);
-            PluginManager.Instance.AddNonDockableContent(this, control, string.Format("Loan Detail [{0}]", loanId), SizeToContent.Manual);
         }
 
         private ControlHostWindow ShowReferenceManager() {
@@ -262,7 +264,7 @@ namespace BioLink.Client.Tools {
 
         public override bool CanSelect<T>() {
             var t = typeof(T);
-            return typeof(ReferenceSearchResult).IsAssignableFrom(t) || typeof(Journal).IsAssignableFrom(t);
+            return typeof(ReferenceSearchResult).IsAssignableFrom(t) || typeof(Journal).IsAssignableFrom(t) || typeof(Contact).IsAssignableFrom(t);
         }
 
         public override void Select<T>(LookupOptions options, Action<SelectionResult> success) {
@@ -272,6 +274,9 @@ namespace BioLink.Client.Tools {
                 frm.BindSelectCallback(success);
             } else if (typeof(Journal).IsAssignableFrom(t)) {
                 var frm = ShowJournalManager();
+                frm.BindSelectCallback(success);
+            } else if (typeof(Contact).IsAssignableFrom(t)) {
+                var frm = ShowLoanContacts();
                 frm.BindSelectCallback(success);
             } else {
                 throw new Exception("Unhandled Selection Type: " + t.Name);
@@ -283,6 +288,7 @@ namespace BioLink.Client.Tools {
             switch (type) {
                 case LookupType.Reference:
                 case LookupType.Journal:
+                case LookupType.Contact:
                     return true;
             }
             return false;
@@ -302,6 +308,13 @@ namespace BioLink.Client.Tools {
                     var jmodel = service.GetJournal(pinnable.ObjectID);
                     if (jmodel != null) {
                         return new JournalViewModel(jmodel);
+                    }
+                    break;
+                case LookupType.Contact:
+                    var loanService = new LoanService(User);
+                    var cmodel = loanService.GetContact(pinnable.ObjectID);
+                    if (cmodel != null) {
+                        return new ContactViewModel(cmodel);
                     }
                     break;
             }
@@ -324,9 +337,19 @@ namespace BioLink.Client.Tools {
             PluginManager.Instance.AddNonDockableContent(this, control, string.Format("Journal Detail [{0}]", journalID), SizeToContent.Manual);
         }
 
+        public void EditContact(int contactID) {
+            var ctl = new ContactDetails(User, contactID);
+            PluginManager.Instance.AddNonDockableContent(this, ctl, "Contact details", SizeToContent.Manual);
+        }
+
         public void AddNewJournal() {
             var control = new JournalDetails(User, -1);
             PluginManager.Instance.AddNonDockableContent(this, control, "Journal Detail", SizeToContent.Manual);
+        }
+
+        public void EditLoan(int loanId) {
+            var control = new LoanDetails(User, this, loanId);
+            PluginManager.Instance.AddNonDockableContent(this, control, string.Format("Loan Detail [{0}]", loanId), SizeToContent.Manual);
         }
 
         public override void EditObject(LookupType type, int objectID) {
@@ -337,8 +360,16 @@ namespace BioLink.Client.Tools {
                 case LookupType.Journal:
                     EditJournal(objectID);
                     break;
+                case LookupType.Contact:
+                    EditContact(objectID);
+                    break;
             }
         }
-        
+
+
+        public void AddNewLoan() {
+            var control = new LoanDetails(User, this, -1);
+            PluginManager.Instance.AddNonDockableContent(this, control, "Loan Detail <New Loan>", SizeToContent.Manual);
+        }
     }
 }

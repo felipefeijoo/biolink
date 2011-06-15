@@ -21,7 +21,7 @@ namespace BioLink.Client.Tools {
     /// <summary>
     /// Interaction logic for LoanContactsControl.xaml
     /// </summary>
-    public partial class LoanContactsControl : DatabaseActionControl {
+    public partial class LoanContactsControl : DatabaseActionControl, ISelectionHostControl {
 
         private ObservableCollection<ContactViewModel> _findModel;
 
@@ -176,8 +176,7 @@ namespace BioLink.Client.Tools {
         private void EditSelectedContact() {
             var selected = GetSelectedContact();
             if (selected != null) {
-                var ctl = new ContactDetails(User, selected.ContactID);
-                PluginManager.Instance.AddNonDockableContent(Plugin, ctl, "Contact details: " + selected.FullName, SizeToContent.Manual);
+                Plugin.EditContact(selected.ContactID);
             }
         }
 
@@ -238,6 +237,14 @@ namespace BioLink.Client.Tools {
             ShowLoansForContact(GetSelectedContact());
         }
 
+
+        public SelectionResult Select() {
+            var selected = GetSelectedContact();
+            if (selected != null) {
+                return new SelectionResult { DataObject = selected, Description = selected.FullName, LookupType = LookupType.Contact, ObjectID = selected.ContactID };
+            }
+            return null;
+        }
     }
 
     public class ContactViewModel : GenericViewModelBase<Contact> {
