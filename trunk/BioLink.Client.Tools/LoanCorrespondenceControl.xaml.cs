@@ -59,7 +59,7 @@ namespace BioLink.Client.Tools {
         }
 
         public override FrameworkElement FirstControl {
-            get { throw new NotImplementedException(); }
+            get { return txtRefNo; }
         }
 
         protected int LoanID { get; private set; }
@@ -174,7 +174,11 @@ namespace BioLink.Client.Tools {
         }
 
         public string RecipientFullName {
-            get { return LoanService.FormatName(Model.RecipientTitle, Model.RecipientGivenName, Model.RecipientName);
+            get { return LoanService.FormatName(Model.RecipientTitle, Model.RecipientGivenName, Model.RecipientName); }
+        }
+
+        public override string ToString() {
+            return String.Format("{0}  {1} From: {2} To: {3}", RefNo, Date, SenderFullName, RecipientFullName); 
         }
 
     }
