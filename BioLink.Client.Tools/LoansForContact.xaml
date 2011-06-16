@@ -18,14 +18,19 @@
             <RowDefinition Height="*" />            
         </Grid.RowDefinitions>
         <ToolBar>
-            <Button x:Name="btnAddNew" Click="btnAddNew_Click">
+            <Button x:Name="btnAddNew" Click="btnAddNew_Click" ToolTip="Create a new loan">
                 <Image Source="/BioLink.Client.Extensibility;component/images/AddNew.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None" />
             </Button>
             <Separator />
-            <Button x:Name="btnProperties" Click="btnProperties_Click">
+            <Button x:Name="btnRefresh" Click="btnRefresh_Click" ToolTip="Refresh list of loans for this contact">
+                <Image Source="/BioLink.Client.Extensibility;component/images/Refresh.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None" />
+            </Button>
+
+            <Separator />
+            <Button x:Name="btnProperties" Click="btnProperties_Click" ToolTip="Edit selected loan details">
                 <Image Source="/BioLink.Client.Extensibility;component/images/Properties.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None" />
             </Button>
-            <Button x:Name="btnDelete" Click="btnDelete_Click">
+            <Button x:Name="btnDelete" Click="btnDelete_Click" ToolTip="Delete the selected loan">
                 <Image Source="/BioLink.Client.Extensibility;component/images/Delete.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None" />
             </Button>
 

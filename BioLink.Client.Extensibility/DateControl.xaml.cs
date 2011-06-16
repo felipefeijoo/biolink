@@ -99,6 +99,14 @@ namespace BioLink.Client.Extensibility {
 
         private void SetDate(string str) {
 
+            if (str == null) {
+                return;
+            }
+
+            if (str.Equals("today", StringComparison.CurrentCultureIgnoreCase)) {
+                str = DateTime.Now.ToShortDateString();
+            } 
+
             var bits = str.Split(' ', '-', '/', '.', '\\', '_', ',', '%', '#', '!', '~', ';', ':');
             var strDate = String.Join(" ", bits);
             int count = 0;

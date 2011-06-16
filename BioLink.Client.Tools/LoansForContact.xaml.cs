@@ -31,7 +31,22 @@ namespace BioLink.Client.Tools {
             this.ContactID = contactId;
             LoadModelAsync();
 
+            lvw.MouseRightButtonUp += new MouseButtonEventHandler(lvw_MouseRightButtonUp);
+
             lvw.MouseDoubleClick += new MouseButtonEventHandler(lvw_MouseDoubleClick);
+        }
+
+        void lvw_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            var builder = new ContextMenuBuilder(null);
+
+            builder.New("Edit Loan").Handler(() => { EditSelectedLoan(); }).End();
+            builder.Separator();
+            builder.New("Delete Loan").Handler(() => { DeleteLoan(GetSelectedLoan()); }).End();
+            builder.Separator();
+            builder.New("Refresh list").Handler(() => { RefreshContent(); }).End();
+            builder.New("Add New Loan").Handler(() => { AddNewLoan(); }).End();
+
+            lvw.ContextMenu = builder.ContextMenu;
         }
 
         void lvw_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
@@ -45,6 +60,13 @@ namespace BioLink.Client.Tools {
             Plugin.EditLoan(loanId);
         }
 
+        private void EditSelectedLoan() {
+            var loan = GetSelectedLoan();
+            if (loan != null) {
+                EditLoan(loan.LoanID);
+            }
+        }
+
         private void LoadModelAsync() {
             JobExecutor.QueueJob(() => {
                 var service = new LoanService(User);
@@ -53,10 +75,14 @@ namespace BioLink.Client.Tools {
                     return new LoanViewModel(model);
                 }));
 
-                lvw.InvokeIfRequired(() => {
+                this.InvokeIfRequired(() => {
                     lvw.ItemsSource = _model;
                 });
             });
+        }
+
+        public override void RefreshContent() {
+            LoadModelAsync();
         }
 
         protected int ContactID { get; private set; }
@@ -97,6 +123,10 @@ namespace BioLink.Client.Tools {
             loan.IsDeleted = true;
             _model.Remove(loan);
             RegisterUniquePendingChange(new DeleteLoanAction(loan.Model));
+        }
+
+        private void btnRefresh_Click(object sender, RoutedEventArgs e) {
+            RefreshContent();
         }
 
     }

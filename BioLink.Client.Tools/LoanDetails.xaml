@@ -82,12 +82,6 @@
 
                 </Grid>
             </TabItem>
-            <TabItem Header="_Material" x:Name="tabMaterial">
-            </TabItem>
-            <TabItem Header="_Correspondence" x:Name="tabCorrespondence">
-            </TabItem>
-            <TabItem Header="_Reminders" x:Name="tabReminders">
-            </TabItem>
         </TabControl>
     </Grid>
 </ext:DatabaseActionControl>

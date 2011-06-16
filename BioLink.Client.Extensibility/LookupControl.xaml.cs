@@ -45,6 +45,8 @@ namespace BioLink.Client.Extensibility {
             txt.PreviewKeyDown += new KeyEventHandler(txt_PreviewKeyDown);
 
             txtWatermark.DataContext = this;
+
+            EnforceLookup = true;
         }
 
         private bool _validate = true;
@@ -111,7 +113,7 @@ namespace BioLink.Client.Extensibility {
         void txt_PreviewLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e) {
             if (_validate) {
                 if (!txt.IsReadOnly) {
-                    if (!ValidateLookup()) {
+                    if (!ValidateLookup() && EnforceLookup) {
                         if (!DoFind(txt.Text)) {
                             e.Handled = true;
                         }
@@ -369,6 +371,8 @@ namespace BioLink.Client.Extensibility {
         public LookupType LookupType { get; private set; }
 
         public LookupOptions LookupOptions { get; private set; }
+
+        public bool EnforceLookup { get; set; }
 
         #endregion
 
