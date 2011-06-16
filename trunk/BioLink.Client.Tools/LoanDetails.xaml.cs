@@ -29,15 +29,17 @@ namespace BioLink.Client.Tools {
 
             this.Plugin = plugin;
             this.LoanID = loanID;
-
             this.ChangeContainerSet += new Action(LoanDetails_ChangeContainerSet);
-
         }
 
         public override bool Validate(List<string> messages) {
 
             if (!txtBorrower.ObjectID.HasValue || string.IsNullOrWhiteSpace(txtBorrower.Text)) {
                 messages.Add("You must select a borrower for this loan");
+            }
+
+            if (string.IsNullOrWhiteSpace(txtLoanNumber.Text)) {
+                messages.Add("You must enter or generate a loan number for this loan");
             }
 
             return messages.Count == 0;
@@ -73,6 +75,11 @@ namespace BioLink.Client.Tools {
                 this.DataContext = _viewModel;
                 _viewModel.DataChanged += new DataChangedHandler(viewModel_DataChanged);
             }
+
+            tabLoan.AddTabItem("_Material", new OneToManyControl(new LoanMaterialControl(User, LoanID)));
+
+            tabLoan.AddTabItem("_Traits", new TraitControl(User, TraitCategoryType.Loan, _viewModel));
+            tabLoan.AddTabItem("_Notes", new NotesControl(User, TraitCategoryType.Loan, _viewModel));
 
         }
 

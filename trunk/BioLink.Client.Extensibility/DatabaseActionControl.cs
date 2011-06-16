@@ -179,10 +179,14 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
+        public virtual void RefreshContent() {
+        }
+
     }
 
     public interface IIdentifiableContent {
-        string ContentIdentifier { get; }        
+        string ContentIdentifier { get; }
+        void RefreshContent();
     }
     
 }

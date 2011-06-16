@@ -75,6 +75,7 @@
     <Compile Include="LoanService.cs" />
     <Compile Include="Model\Contact.cs" />
     <Compile Include="Model\Loan.cs" />
+    <Compile Include="Model\LoanMaterial.cs" />
     <Compile Include="Model\StorageLocation.cs" />
     <Compile Include="Model\TaxonStatistics.cs" />
     <Compile Include="Model\XMLImportALN.cs" />

@@ -155,24 +155,39 @@ namespace BioLink.Client.Extensibility {
 
         }
 
+        public ControlHostWindow GetWindowForContent(IIdentifiableContent control) {
+            if (control == null) {
+                return null;
+            }
+
+            foreach (ControlHostWindow f in _hostWindows) {
+                if (f.Control is IIdentifiableContent) {
+                    var host = f.Control as IIdentifiableContent;
+                    if (host.ContentIdentifier == control.ContentIdentifier) {
+                        return f;
+                    }
+                }
+            }
+            return null;
+        }
+
         public ControlHostWindow AddNonDockableContent(IBioLinkPlugin plugin, Control content, string title, SizeToContent sizeToContent, bool autoSavePosition = true, Action<ControlHostWindow> initFunc = null) {
 
             // First check to see if this content is already being shown...
             if (content is IIdentifiableContent) {
-                var newhost = content as IIdentifiableContent;
-
-                foreach (ControlHostWindow f in _hostWindows) {
-                    if (f.Control is IIdentifiableContent) {
-                        var host = f.Control as IIdentifiableContent;
-                        if (host.ContentIdentifier == newhost.ContentIdentifier) {
-                            f.Show();
-                            f.Focus();
-                            return f;
-                        }
+                
+                var window = GetWindowForContent(content as IIdentifiableContent);
+                if (window != null) {                    
+                    var existing = window.Control as IIdentifiableContent;
+                    window.Show();
+                    if (window.WindowState == WindowState.Minimized) {
+                        window.WindowState = WindowState.Normal;
                     }
+                    window.Focus();
+                    existing.RefreshContent();
+                    return window;
                 }
             }
-
 
             bool hideButtons = !(content is DatabaseActionControl);
             ControlHostWindow form = new ControlHostWindow(User, content, sizeToContent, hideButtons);
@@ -497,6 +512,7 @@ namespace BioLink.Client.Extensibility {
 
             return default(T);
         }
+
     }
 
 }

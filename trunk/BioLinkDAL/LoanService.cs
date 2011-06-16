@@ -157,6 +157,84 @@ namespace BioLink.Data {
         public void DeleteLoan(int loanId) {
             StoredProcUpdate("spLoanDelete", _P("intLoanID", loanId));
         }
+
+        public List<LoanMaterial> GetLoanMaterial(int loanId) {
+            var mapper = new GenericMapperBuilder<LoanMaterial>().build();
+            return StoredProcToList("spLoanMaterialList", mapper, _P("intLoanID", loanId));
+        }
+
+        public LoanMaterial GetSingleLoanMaterial(int loanMaterialID) {
+            var mapper = new GenericMapperBuilder<LoanMaterial>().build();
+            return StoredProcGetOne("spLoanMaterialGet", mapper, _P("intLoanMaterialID", loanMaterialID));
+        }
+
+        public int InsertLoanMaterial(LoanMaterial m) {
+            var retval = ReturnParam("NewLoanMaterialID");
+            StoredProcUpdate("spLoanMaterialInsert",
+                _P("intLoanID", m.LoanID),
+                _P("intMaterialID", m.MaterialID),
+                _P("vchrNumSpecimens", m.NumSpecimens),
+                _P("vchrTaxonName", m.TaxonName),
+                _P("vchrMaterialDescription", m.MaterialDescription),
+                _P("dtDateAdded", m.DateAdded),
+                _P("dtDateReturned", m.DateReturned),
+                _P("bitReturned", m.Returned),
+                retval
+            );
+            return (int)retval.Value;
+        }
+
+        public void UpdateLoanMaterial(LoanMaterial m) {
+            StoredProcUpdate("spLoanMaterialUpdate",
+                _P("intLoanMaterialID", m.LoanMaterialID),
+                _P("intLoanID", m.LoanID),
+                _P("intMaterialID", m.MaterialID),
+                _P("vchrNumSpecimens", m.NumSpecimens),
+                _P("vchrTaxonName", m.TaxonName),
+                _P("vchrMaterialDescription", m.MaterialDescription),
+                _P("dtDateAdded", m.DateAdded),
+                _P("dtDateReturned", m.DateReturned),
+                _P("bitReturned", m.Returned));                
+        }
+
+        public void DeleteLoanMaterial(int loanMaterialID) {
+            StoredProcUpdate("spLoanMaterialDelete", _P("intLoanMaterialID", loanMaterialID));
+        }
+
+        public List<LoanCorrespondence> GetLoanCorrespondence(int loanId) {
+            var mapper = new GenericMapperBuilder<LoanCorrespondence>().build();
+            return StoredProcToList("spLoanCorrList", mapper, _P("intLoanID", loanId));
+        }
+
+        public void InsertLoanCorrespondence(LoanCorrespondence c) {
+
+            StoredProcUpdate("spLoanCorrInsert",
+                _P("intLoanID", c.LoanID),
+                _P("vchrRefNo", c.RefNo),
+                _P("vchrType", c.Type),
+                _P("dtDate", c.Date),
+                _P("intSenderID", c.SenderID),
+                _P("intRecipientID", c.RecipientID),
+                _P("txtDescription", c.Description));
+        }
+
+        public void UpdateLoanCorrespondence(LoanCorrespondence c) {
+            StoredProcUpdate("spLoanCorrUpdate",
+                _P("intLoanCorrespondenceID", c.LoanCorrespondenceID),
+                _P("intLoanID", c.LoanID),
+                _P("vchrRefNo", c.RefNo),
+                _P("vchrType", c.Type),
+                _P("dtDate", c.Date),
+                _P("intSenderID", c.SenderID),
+                _P("intRecipientID", c.RecipientID),
+                _P("txtDescription", c.Description)
+            );
+        }
+
+        public void DeleteLoanCorrespondence(int loanCorrespondenceId) {
+            StoredProcUpdate("spLoanCorrDelete", _P("intLoanCorrespondenceID", loanCorrespondenceId));
+        }
+
     }
 
     public enum ContactSearchType {

@@ -50,6 +50,12 @@ namespace BioLink.Client.Tools {
             foreach (string range in ranges) {
                 AddTabPage(range);
             }
+
+            Loaded += new RoutedEventHandler(LoanContactsControl_Loaded);
+        }
+
+        void LoanContactsControl_Loaded(object sender, RoutedEventArgs e) {
+            txtFilter.Focus();
         }
 
         void _page_ContextMenuRequested(FrameworkElement sender, ContactViewModel obj) {

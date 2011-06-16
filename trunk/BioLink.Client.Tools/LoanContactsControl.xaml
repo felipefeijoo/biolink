@@ -43,7 +43,7 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <Label Content="Find:" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" Width="47" />
-                    <TextBox Height="23" Margin="59,8,175,0" Name="txtFilter" VerticalAlignment="Top" KeyDown="textBox1_KeyDown" />
+                    <ext:TextBox Height="23" Margin="59,8,175,0" Name="txtFilter" VerticalAlignment="Top" KeyDown="textBox1_KeyDown" />
                     <ComboBox x:Name="cmbFindWhat" Height="23" HorizontalAlignment="Right" Margin="0,8,69,0" VerticalAlignment="Top" Width="100" />
                     <Button Content="_Find" Height="23" Margin="0,8,6,0" Name="btnFind" VerticalAlignment="Top" HorizontalAlignment="Right" Width="57" Click="btnFind_Click" />
                     
