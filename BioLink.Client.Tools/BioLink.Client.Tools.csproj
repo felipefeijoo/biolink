@@ -118,6 +118,9 @@
     <Compile Include="LoanContactsControl.xaml.cs">
       <DependentUpon>LoanContactsControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="LoanCorrespondenceControl.xaml.cs">
+      <DependentUpon>LoanCorrespondenceControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="LoanDetails.xaml.cs">
       <DependentUpon>LoanDetails.xaml</DependentUpon>
     </Compile>
@@ -290,6 +293,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="LoanContactsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LoanCorrespondenceControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -77,6 +77,7 @@ namespace BioLink.Client.Tools {
             }
 
             tabLoan.AddTabItem("_Material", new OneToManyControl(new LoanMaterialControl(User, LoanID)));
+            tabLoan.AddTabItem("_Correspondence", new OneToManyControl(new LoanCorrespondenceControl(User, LoanID)));
 
             tabLoan.AddTabItem("_Traits", new TraitControl(User, TraitCategoryType.Loan, _viewModel));
             tabLoan.AddTabItem("_Notes", new NotesControl(User, TraitCategoryType.Loan, _viewModel));
