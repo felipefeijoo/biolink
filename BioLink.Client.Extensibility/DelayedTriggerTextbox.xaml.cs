@@ -28,6 +28,18 @@ namespace BioLink.Client.Extensibility {
             _timer = new Timer(new TimerCallback((obj) => {
                 Trigger();
             }), null, Timeout.Infinite, Timeout.Infinite);
+
+            textBox.GotKeyboardFocus += new KeyboardFocusChangedEventHandler(textBox_GotKeyboardFocus);
+            textBox.MouseDoubleClick += new MouseButtonEventHandler(textBox_MouseDoubleClick);
+
+        }
+
+        void textBox_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
+            textBox.SelectAll();
+        }
+
+        void textBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e) {
+            textBox.SelectAll();
         }
 
         public event TypingPausedEventHandler TypingPaused;

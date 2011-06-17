@@ -48,9 +48,17 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void lst_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
-            if (lst.SelectedItem != null) {
-                this.DialogResult = true;
-                this.Close();
+
+            DependencyObject src = (DependencyObject)(e.OriginalSource);
+            while (!(src is Control)) {
+                src = VisualTreeHelper.GetParent(src);
+            }
+
+            if (src != null && src is ListBoxItem) {
+                if (lst.SelectedItem != null) {
+                    this.DialogResult = true;
+                    this.Close();
+                }
             }
         }
 

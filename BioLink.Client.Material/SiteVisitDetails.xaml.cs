@@ -36,6 +36,8 @@ namespace BioLink.Client.Material {
             var viewModel = new SiteVisitViewModel(model);
             this.DataContext = viewModel;
 
+            txtCollector.BindUser(user);
+
             viewModel.DataChanged += new DataChangedHandler(viewModel_DataChanged);
 
             tab.AddTabItem("Traits", new TraitControl(user, TraitCategoryType.SiteVisit, viewModel));
@@ -45,22 +47,6 @@ namespace BioLink.Client.Material {
 
         void viewModel_DataChanged(ChangeableModelBase viewmodel) {
             RegisterUniquePendingChange(new UpdateSiteVisitAction((viewmodel as SiteVisitViewModel).Model));
-        }
-
-        private void txtCollector_Click(object sender, RoutedEventArgs e) {
-            Func<IEnumerable<string>> itemsFunc = () => {
-                var service = new MaterialService(User);
-                return service.GetDistinctCollectors();
-            };
-
-            PickListWindow frm = new PickListWindow(User, "Select a collector", itemsFunc, null);
-            if (frm.ShowDialog().ValueOrFalse()) {
-                if (String.IsNullOrWhiteSpace(txtCollector.Text)) {
-                    txtCollector.Text = frm.SelectedValue as string;
-                } else {
-                    txtCollector.Text += ", " + frm.SelectedValue;
-                }
-            }
         }
 
     }

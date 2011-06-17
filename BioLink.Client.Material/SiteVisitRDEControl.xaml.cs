@@ -25,6 +25,7 @@ namespace BioLink.Client.Material {
 
         public SiteVisitRDEControl(User user) {
             InitializeComponent();
+            txtCollector.BindUser(user);
             this.User = user;
         }
 

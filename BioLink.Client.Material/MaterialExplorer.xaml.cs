@@ -139,6 +139,16 @@ namespace BioLink.Client.Material {
             tvwMaterial.AllowDrop = true;
             _favorites = new MaterialFavorites(User, this);
             tabMaterial.AddTabItem("Favorites", _favorites);
+
+            txtFind.PreviewKeyDown += new KeyEventHandler(txtFind_PreviewKeyDown);
+        }
+
+        void txtFind_PreviewKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key == Key.Down) {
+                tvwFind.Focus();
+                e.Handled = true;
+            }
+
         }
 
         private ViewModelPlaceholder CreateTemplateNode(string label, string imagePath, Func<List<SiteExplorerNodeViewModel>> getTemplates) {

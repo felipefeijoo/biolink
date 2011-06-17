@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+             xmlns:mat="clr-namespace:BioLink.Client.Material"                           
              mc:Ignorable="d" 
              d:DesignHeight="414" d:DesignWidth="646">
     <UserControl.Resources>
@@ -18,7 +19,7 @@
             <TabItem Header="General" Name="tabGeneral">
                 <Grid>
                     <Label Content="Collectors:" Height="28" HorizontalAlignment="Left" Margin="10,10,0,0" Name="label3" VerticalAlignment="Top" Width="87" />
-                    <ext:EllipsisTextBox Margin="103,10,6,0" Name="txtCollector" VerticalAlignment="Top" Text="{Binding Collector}" Click="txtCollector_Click" />
+                    <mat:CollectorControl Margin="103,10,6,0" x:Name="txtCollector" VerticalAlignment="Top" Text="{Binding Collector}" />
                     <Label Content="Field Number:" Height="28" HorizontalAlignment="Left" Margin="10,44,0,0" Name="label4" VerticalAlignment="Top" Width="87" />
                     <ext:TextBox Height="23" Margin="103,46,0,0" Name="txtFieldNumber" VerticalAlignment="Top" HorizontalAlignment="Left" Width="154" Text="{Binding FieldNumber}"/>
                     <GroupBox Header="Date / Time" Height="206" HorizontalAlignment="Left" Margin="10,78,0,0" Name="groupBox1" VerticalAlignment="Top" Width="596">

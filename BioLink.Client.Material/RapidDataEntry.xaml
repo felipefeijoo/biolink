@@ -14,6 +14,9 @@
             <Style TargetType="{x:Type ext:TextBox}">
                 <Setter Property="IsReadOnly" Value="{Binding Locked}" />
             </Style>
+            <Style TargetType="{x:Type mat:CollectorControl}">
+                <Setter Property="IsReadOnly" Value="{Binding Locked}" />
+            </Style>
             <Style TargetType="{x:Type ext:LookupControl}">
                 <Setter Property="IsReadOnly" Value="{Binding Locked}" />
             </Style>
