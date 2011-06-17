@@ -128,7 +128,7 @@
                     <Button Content="Find" Height="23" HorizontalAlignment="Right" Margin="0,6,6,0" Name="btnFind" VerticalAlignment="Top" Width="75" Click="btnFind_Click" />
                     <ComboBox Height="23" HorizontalAlignment="Right" Margin="0,6,87,0" Name="cmbFindScope" VerticalAlignment="Top" Width="120" SelectionChanged="cmbFindScope_SelectionChanged" />
                     <Label Content="in" Height="28" HorizontalAlignment="Right" Margin="0,5,218,0" Name="label1" VerticalAlignment="Top" />
-                    <TextBox Height="23" Margin="6,7,244,0" Name="txtFind" VerticalAlignment="Top" KeyDown="txtFind_KeyDown" />
+                    <ext:TextBox Height="23" Margin="6,7,244,0" Name="txtFind" VerticalAlignment="Top" KeyDown="txtFind_KeyDown" />
                     <ext:VTreeView Margin="6,39,6,6" Name="tvwFind" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" MouseRightButtonUp="treeview_MouseRightButtonUp">
                         
                         <TreeView.ItemsPanel>

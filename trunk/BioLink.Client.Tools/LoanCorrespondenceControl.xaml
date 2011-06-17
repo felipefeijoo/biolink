@@ -35,7 +35,7 @@
         <ext:LookupControl Grid.Row="2" Grid.Column="1" Height="23" Text="{Binding Path=RecipientFullName, Mode=OneWay}" x:Name="txtRecipient"/>
 
         <Label Grid.Row="3" Grid.Column="0" Content="Date:" />
-        <ext:DateControl x:Name="dtDate" Grid.Row="3" Grid.Column="1" Height="23" Date="{Binding Path=Dat,Converter={StaticResource hardDateConverter}}" />
+        <ext:DateControl x:Name="dtDate" Grid.Row="3" Grid.Column="1" Height="23" Date="{Binding Path=Date,Converter={StaticResource hardDateConverter}}" />
 
         <Label Grid.Row="4" Grid.Column="0" Content="Type:" />
         <ext:PickListControl Grid.Row="4" Grid.Column="1" Height="23" Text="{Binding Path=Type}" x:Name="txtType" />

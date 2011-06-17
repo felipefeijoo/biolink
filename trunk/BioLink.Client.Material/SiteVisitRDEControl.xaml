@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+             xmlns:mat="clr-namespace:BioLink.Client.Material"
              mc:Ignorable="d" 
              d:DesignHeight="30" d:DesignWidth="653">
     <Grid>
@@ -17,7 +18,7 @@
         </Grid.ColumnDefinitions>      
         
         <Label Content="Collectors:" />
-        <ext:EllipsisTextBox Grid.Column="1" Name="txtCollector" Text="{Binding Collector}" Height="23" Click="txtCollector_Click"/>
+        <mat:CollectorControl Grid.Column="1" x:Name="txtCollector" Text="{Binding Collector}" Height="23" />
         
         <Label Grid.Column="2" Content="Start:" />
         <ext:DateControl Grid.Column="3" Height="23" Name="dtStart" Date="{Binding DateStart}"/>

@@ -65,12 +65,26 @@ namespace BioLink.Client.Extensibility {
                     lblAxis.Content = this.Resources["LatLong.lblAxis." + value.ToString()];
                 }
                 if (cmbDirection != null) {
+
+                    var defaultLongDir = Config.GetGlobal("LatLong.Default.Longitude.Direction", "E");
+                    var defaultLatDir = Config.GetGlobal("LatLong.Default.Latitude.Direction", "S");
+
                     var list = new String[] { "E", "W" };
+                    int defaultDir = 0;                    
                     if (_coordType == CoordinateType.Latitude) {
                         list = new String[] { "N", "S" };
+                        if (defaultLatDir.Equals("S", StringComparison.CurrentCultureIgnoreCase)) {
+                            defaultDir = 1;
+                        }
+                    } else {
+                        if (defaultLongDir.Equals("W", StringComparison.CurrentCultureIgnoreCase)) {
+                            defaultDir = 1;
+                        }
                     }
+
                     cmbDirection.ItemsSource = list;
-                    cmbDirection.SelectedIndex = 0;
+                    cmbDirection.SelectedIndex = defaultDir;
+                    cmbDirection.SelectedItem = list[defaultDir];
                 }
             }
         }
@@ -256,6 +270,13 @@ namespace BioLink.Client.Extensibility {
                 case LatLongMode.DegreesDecimalMinutesDirection:
                     string direction;
                     GeoUtils.DecDegToDDecMDir(Value, out degrees, out minutes, out direction, this._coordType);
+                    if (Value == 0) {
+                        if (_coordType == CoordinateType.Latitude) {
+                            direction = Config.GetGlobal("LatLong.Default.Longitude.Direction", "E");
+                        } else {
+                            direction = Config.GetGlobal("LatLong.Default.Latitude.Direction", "S");
+                        }
+                    }
                     txtDegrees.Text = degrees + "";
                     txtMinutes.Text = minutes + "";
                     cmbDirection.SelectedItem = direction;
@@ -274,6 +295,15 @@ namespace BioLink.Client.Extensibility {
                     int iMinutes;
                     int seconds;
                     GeoUtils.DecDegToDMS(Value, _coordType, out degrees, out iMinutes, out seconds, out direction);
+
+                    if (Value == 0) {
+                        if (_coordType == CoordinateType.Latitude) {
+                            direction = Config.GetGlobal("LatLong.Default.Longitude.Direction", "E");                    
+                        } else {
+                            direction = Config.GetGlobal("LatLong.Default.Latitude.Direction", "S");
+                        }
+                    }
+
                     txtDegrees.Text = degrees + "";
                     txtMinutes.Text = iMinutes + "";
                     txtSeconds.Text = seconds + "";

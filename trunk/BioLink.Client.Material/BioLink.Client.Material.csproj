@@ -48,6 +48,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CollectorControl.xaml.cs">
+      <DependentUpon>CollectorControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CurationEventDatabaseActions.cs" />
     <Compile Include="CurationEventsControl.xaml.cs">
       <DependentUpon>CurationEventsControl.xaml</DependentUpon>
@@ -159,6 +162,10 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="CollectorControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="CurationEventsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -8,6 +8,7 @@ using BioLink.Client.Utilities;
 using BioLink.Data;
 using BioLink.Data.Model;
 using System.Collections.Generic;
+using System.Windows.Media;
 
 
 namespace BioLink.Client.Extensibility {
@@ -27,14 +28,33 @@ namespace BioLink.Client.Extensibility {
 
         private ObservableCollection<Object> _model;
 
-        public PickListWindow(User user, string caption, Func<IEnumerable<object>> itemsFunc, Func<String, bool> addItemFunc) {
+        protected Control LaunchingControl { get; private set; }
+
+        public PickListWindow(User user, string caption, Func<IEnumerable<object>> itemsFunc, Func<String, bool> addItemFunc, string initialFilter = "", Control PositionUnder = null, Control PositionUnderAncestor = null) {
             _itemsFunc = itemsFunc;
             _addItemFunc = addItemFunc;
             this.User = user;
             InitializeComponent();
-            Config.RestoreWindowPosition(user, this);
+            LaunchingControl = PositionUnder;
+
+            if (PositionUnder == null || PositionUnderAncestor == null) {
+                Config.RestoreWindowPosition(user, this);
+            } else {
+                Owner = PositionUnder.FindParentWindow();
+                GeneralTransform transform = PositionUnder.TransformToAncestor(PositionUnderAncestor);
+                var rootPoint = PositionUnder.PointToScreen(transform.Transform(new Point(0, 0)));
+                Top = rootPoint.Y + PositionUnder.ActualHeight;
+                Left = rootPoint.X;
+                Width = PositionUnder.ActualWidth;
+                Height = 250;
+            }
+
             Title = caption;
             LoadModel();
+
+            if (!string.IsNullOrWhiteSpace(initialFilter)) {
+                txtFilter.Text = initialFilter;
+            }
 
             btnAddNew.Visibility = System.Windows.Visibility.Hidden;
 
@@ -52,6 +72,7 @@ namespace BioLink.Client.Extensibility {
                     });
                 });
             }
+            
         }
 
         public void LoadModel() {
@@ -71,6 +92,8 @@ namespace BioLink.Client.Extensibility {
 
             }
             lst.ItemsSource = _model;
+
+            lst.SelectedIndex = 0;
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e) {
@@ -108,6 +131,8 @@ namespace BioLink.Client.Extensibility {
             };
 
             dataView.Refresh();
+
+            lst.SelectedIndex = 0;
         }
 
         public object SelectedValue {
@@ -137,13 +162,23 @@ namespace BioLink.Client.Extensibility {
 
 
         private void Window_Deactivated(object sender, EventArgs e) {
-            Config.SaveWindowPosition(User, this);
+            if (LaunchingControl == null) {
+                Config.SaveWindowPosition(User, this);
+            }
         }
 
         private void lst_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
-            if (lst.SelectedItem != null) {
-                this.DialogResult = true;
-                this.Hide();
+
+            DependencyObject src = (DependencyObject)(e.OriginalSource);
+            while (!(src is Control)) {
+                src = VisualTreeHelper.GetParent(src);
+            }
+
+            if (src != null && src is ListViewItem) {
+                if (lst.SelectedItem != null) {
+                    this.DialogResult = true;
+                    this.Hide();
+                }
             }
         }
 
