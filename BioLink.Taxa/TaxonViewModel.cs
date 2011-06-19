@@ -9,6 +9,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Globalization;
 
+using BioLink.Data;
 using BioLink.Data.Model;
 using BioLink.Client.Utilities;
 using BioLink.Client.Extensibility;
@@ -79,6 +80,91 @@ namespace BioLink.Client.Taxa {
         }
 
         public bool IsRootNode { get; private set; }
+
+        public override FrameworkElement TooltipContent {
+            get {
+                var control = new StackPanel();
+                control.Orientation = Orientation.Vertical;                
+                
+                control.Loaded +=new RoutedEventHandler((sender, e) => {
+
+                    control.Children.Clear();
+
+                    var service = new TaxaService(PluginManager.Instance.User);
+
+                    var elementRank = service.GetTaxonRank(ElemType);
+
+                    var caption = new StackPanel();
+
+                    caption.Orientation = Orientation.Horizontal;
+
+                    var img = new Image();
+                    img.VerticalAlignment = VerticalAlignment.Top;
+                    img.Source = this.Icon;
+                    img.UseLayoutRounding = true;
+                    img.SnapsToDevicePixels = true;
+                    img.Stretch = Stretch.None;
+
+                    img.Margin = new Thickness(6, 0, 6, 0);
+
+                    caption.Children.Add(img);
+
+                    var label = new TextBlock();
+                    label.TextWrapping = TextWrapping.Wrap;
+                    label.Text = String.Format("{0}\n({1}) [{2}]\n{3}  {4}", TaxaFullName, elementRank.LongName, this.ObjectID, this.Author, this.YearOfPub);
+                    caption.Children.Add(label);
+
+                    control.Children.Add(caption);
+
+                    var bits = Parentage.Split('\\');
+
+                    int i = bits.Length - 1;
+                    int j = 0;
+                    var parents = new Stack<Taxon>();
+                    while (--i >= 0 && j++ < 3) {
+                        if (!string.IsNullOrEmpty(bits[i])) {
+                            var parentId = Int32.Parse(bits[i]);
+                            var parent = service.GetTaxon(parentId);
+                            parents.Push(parent);
+                        }
+                    }
+                    
+                    i = 0;
+                    var a = new StackPanel();
+                    a.Orientation = Orientation.Vertical;
+                    foreach (Taxon t in parents) {
+                        var aa = new StackPanel();
+                        aa.Orientation = Orientation.Horizontal;
+
+                        var panel = new Grid();
+                        panel.Width = 10 * i++;                        
+                        aa.Children.Add(panel);
+
+                        var parentIcon = new Image();
+                        parentIcon.Source = ConstructIcon(t.AvailableName.ValueOrFalse() || t.LiteratureName.ValueOrFalse(), t.ElemType, false);
+                        parentIcon.UseLayoutRounding = true;
+                        parentIcon.SnapsToDevicePixels = true;
+                        parentIcon.Stretch = Stretch.None;
+                        aa.Children.Add(parentIcon);
+                                                    
+                        // ancestry.Append(' ', i++ * 2);
+                        var rank = service.GetTaxonRank(t.ElemType);
+                        var txt = new TextBlock();
+                        txt.Text = string.Format("{0}: {1}\n", rank.LongName, t.TaxaFullName);
+                        aa.Children.Add(txt);
+                        a.Children.Add(aa);
+                    }
+
+                    control.Children.Add(a);
+
+                });
+
+                
+
+                return control;
+                
+            }
+        }
 
         public void RegenerateLabel() {
             // Force the icon to be reconstructed, possibly now with a changed badge/overlay

@@ -10,7 +10,7 @@
         <ListView x:Name="lvw">
             <ListView.Resources>                
                 <DataTemplate DataType="{x:Type src:ViewModelBase}">
-                    <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal" ToolTip="{Binding Path=TooltipContent}">                        
                         <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,1" />
                         <TextBlock Text="{Binding Path=DisplayLabel,Mode=OneWay}" VerticalAlignment="Center" />
                     </StackPanel>
