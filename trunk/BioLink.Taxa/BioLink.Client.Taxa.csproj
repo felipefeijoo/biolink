@@ -109,6 +109,9 @@
     <Compile Include="TaxonNameParser.cs" />
     <Compile Include="TaxonReportBase.cs" />
     <Compile Include="TaxonSelectorContentProvider.cs" />
+    <Compile Include="TaxonTooltipContent.xaml.cs">
+      <DependentUpon>TaxonTooltipContent.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TaxonViewModel.cs" />
     <Compile Include="TypeListReport.cs" />
     <Compile Include="XMLExportOptions.xaml.cs">
@@ -166,6 +169,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="TaxonNameDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TaxonTooltipContent.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

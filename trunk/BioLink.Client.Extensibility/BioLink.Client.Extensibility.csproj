@@ -117,6 +117,9 @@
       <DependentUpon>CSVExporterOptionsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Export\Excel2003Exporter.cs" />
+    <Compile Include="GenericTooltipContent.xaml.cs">
+      <DependentUpon>GenericTooltipContent.xaml</DependentUpon>
+    </Compile>
     <Compile Include="IIconHolder.cs" />
     <Compile Include="MultiMedia\FindMultimediaDialog.xaml.cs">
       <DependentUpon>FindMultimediaDialog.xaml</DependentUpon>
@@ -367,6 +370,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Export\CSVExporterOptionsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GenericTooltipContent.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

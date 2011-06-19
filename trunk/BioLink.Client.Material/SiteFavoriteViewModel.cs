@@ -25,6 +25,12 @@ namespace BioLink.Client.Material {
             }
         }
 
+        public override System.Windows.FrameworkElement TooltipContent {
+            get {
+                return new SiteTooltipContent(PluginManager.Instance.User, ElemID, ElemType, Name);
+            }
+        }
+
         protected override string RelativeImagePath {
             get {
                 var image = "Region";
