@@ -145,7 +145,7 @@ namespace BioLink.Client.Material {
 
         void txtFind_PreviewKeyDown(object sender, KeyEventArgs e) {
             if (e.Key == Key.Down) {
-                tvwFind.Focus();
+                tvwFind.Focus();                
                 e.Handled = true;
             }
 

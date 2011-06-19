@@ -34,7 +34,27 @@ namespace BioLinkApplication {
 
             var v = this.GetType().Assembly.GetName().Version;
             Title = String.Format("BioLink {0}.{1}.{2}", v.Major, v.Minor, v.Revision);
+
+            this.SizeChanged += new SizeChangedEventHandler(MainWindow_SizeChanged);
+            this.LocationChanged += new EventHandler(MainWindow_LocationChanged);
+
             ShowLogin();
+        }
+
+        void MainWindow_LocationChanged(object sender, EventArgs e) {
+            SaveWindowPosition();
+        }
+
+        void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e) {
+            SaveWindowPosition();
+        }
+
+        private void SaveWindowPosition() {
+            if (User != null) {
+                if (this.WindowState == System.Windows.WindowState.Normal) {
+                    Config.SaveWindowPosition(User, this);
+                }
+            }
         }
 
         public static MainWindow Instance {
@@ -81,6 +101,8 @@ namespace BioLinkApplication {
             _hostControl.User = (e as LoginSuccessfulEventArgs).User;
             this.User = _hostControl.User;
             contentGrid.Children.Add(_hostControl);
+
+            Config.RestoreWindowPosition(User, this);
 
             Title = String.Format("BioLink - {0}\\{1} ({2})", User.ConnectionProfile.Server, User.ConnectionProfile.Database, User.Username);
             _hostControl.StartUp();

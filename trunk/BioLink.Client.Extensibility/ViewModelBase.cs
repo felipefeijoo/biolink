@@ -10,6 +10,7 @@ using BioLink.Client.Utilities;
 using BioLink.Data;
 using BioLink.Data.Model;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace BioLink.Client.Extensibility {
 
@@ -180,6 +181,17 @@ namespace BioLink.Client.Extensibility {
             }
             set {
                 _icon = value;
+            }
+        }
+
+        public virtual FrameworkElement TooltipContent {
+            get {
+                var control = new StackPanel();
+                control.Orientation = Orientation.Horizontal;
+                var label = new Label();
+                label.Content = this.DisplayLabel;
+                control.Children.Add(label);
+                return control;
             }
         }
 

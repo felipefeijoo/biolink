@@ -56,6 +56,17 @@ namespace BioLink.Client.Extensibility {
             }
 
             this.Service = new SupportService(user);
+
+            txt.PreviewKeyDown += new KeyEventHandler(txt_PreviewKeyDown);
+        }
+
+        void txt_PreviewKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key == Key.Space && (Keyboard.Modifiers & ModifierKeys.Control) > 0) {
+                e.Handled = true;
+                txt.SelectAll(); // We do this so that the selection will overwrite the initial filter that was typed in...
+                ShowPickList(true, txt.Text);
+            }
+
         }
 
         public void BindUser(User user, string tableName, string fieldName) {
@@ -68,20 +79,21 @@ namespace BioLink.Client.Extensibility {
             });
 
             this.Service = new SupportService(user);
+            txt.PreviewKeyDown += new KeyEventHandler(txt_PreviewKeyDown);
         }
 
 
         private void btn_Click(object sender, RoutedEventArgs e) {
-            ShowPickList();
+            ShowPickList(false);
         }
 
-        public static string ShowDistinctList(User user, string table, string field) {
+        public static string ShowDistinctList(User user, string table, string field, string filter, Control ownerControl = null, Control ownerAncestor = null) {
             var service = new SupportService(user);
             Func<IEnumerable<string>> itemsFunc = () => {
                 return service.GetDistinctValues(table, field);
             };
 
-            PickListWindow frm = new PickListWindow(user, String.Format("Distinct values for {0}_{1}",table, field), itemsFunc, null);
+            PickListWindow frm = new PickListWindow(user, String.Format("Distinct values for {0}_{1}",table, field), itemsFunc, null, filter, ownerControl, ownerAncestor);
 
             if (frm.ShowDialog().GetValueOrDefault(false)) {
                 return frm.SelectedValue as string;
@@ -90,7 +102,7 @@ namespace BioLink.Client.Extensibility {
             return null;
         }
 
-        public static string ShowPickList(User user, PickListType type, string categoryName, TraitCategoryType traitCategory) {
+        public static string ShowPickList(User user, PickListType type, string categoryName, TraitCategoryType traitCategory, string filter = null, Control owner = null, Control ownerAncestor = null) {
             Func<IEnumerable<string>> itemsFunc = null;
             Func<string, bool> addItemFunc = null;
             string caption = "Select a value";
@@ -149,7 +161,7 @@ namespace BioLink.Client.Extensibility {
                     throw new Exception("Unhandled pick list type: " + type);
             }
 
-            PickListWindow frm = new PickListWindow(user, caption, itemsFunc, addItemFunc);
+            PickListWindow frm = new PickListWindow(user, caption, itemsFunc, addItemFunc, filter, owner, ownerAncestor);
 
             if (frm.ShowDialog().GetValueOrDefault(false)) {
                 return frm.SelectedValue as string;
@@ -158,12 +170,12 @@ namespace BioLink.Client.Extensibility {
             return null;
         }
 
-        private void ShowPickList() {
+        private void ShowPickList(bool positionControl, string filter = "") {
             string value = null;
             if (PickListType == Extensibility.PickListType.DistinctList) {
-                value = ShowDistinctList(User, TableName, FieldName);
+                value = ShowDistinctList(User, TableName, FieldName, filter, (positionControl ? txt : null), (positionControl ? this : null));
             } else {
-                value = ShowPickList(User, PickListType, CategoryName, TraitCategory);
+                value = ShowPickList(User, PickListType, CategoryName, TraitCategory, filter, (positionControl ? txt : null), (positionControl ? this : null));
             }
 
             if (value != null) {
@@ -223,7 +235,7 @@ namespace BioLink.Client.Extensibility {
 
         private void txt_KeyDown(object sender, KeyEventArgs e) {
             if (e.Key == Key.Enter && (Keyboard.Modifiers & ModifierKeys.Control) > 0) {
-                ShowPickList();
+                ShowPickList(true, txt.Text);
                 e.Handled = true;
             }
         }
