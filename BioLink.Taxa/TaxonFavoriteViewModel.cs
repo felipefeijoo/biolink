@@ -29,6 +29,13 @@ namespace BioLink.Client.Taxa {
             }
         }
 
+        public override FrameworkElement TooltipContent {
+            get {
+                return new TaxonTooltipContent(PluginManager.Instance.User, Model.TaxaID);
+            }
+        }
+
+
         public override string ToString() {
             return "TaxonFavorite: " + DisplayLabel;
         }

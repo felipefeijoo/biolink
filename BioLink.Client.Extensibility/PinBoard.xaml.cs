@@ -44,7 +44,6 @@ namespace BioLink.Client.Extensibility {
             lvw.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(lvw_PreviewMouseLeftButtonDown);
             lvw.PreviewMouseMove += new MouseEventHandler(lvw_PreviewMouseMove);
 
-
             // this.GiveFeedback += new GiveFeedbackEventHandler(PinBoard_GiveFeedback);
             this.PreviewDragOver += new DragEventHandler(PinBoard_PreviewDragEnter);
             this.PreviewDragEnter += new DragEventHandler(PinBoard_PreviewDragEnter);

@@ -218,6 +218,16 @@ namespace BioLink.Client.Extensibility {
             _objectIDExpr = objectIDExpr;
         }
 
+        public override FrameworkElement TooltipContent {
+            get {
+                if (Model is OwnedDataObject) {
+                    return new GenericTooltipContent(PluginManager.Instance.User, Model as OwnedDataObject, this);
+                } else {
+                    return base.TooltipContent;
+                }
+            }
+        }
+
         protected void SetProperty<K>(Expression<Func<K>> wrappedPropertyExpr, K value, Action doIfChanged = null, bool changeAgnostic = false) {
             SetProperty(wrappedPropertyExpr, Model, value, doIfChanged, changeAgnostic);
         }
