@@ -1,0 +1,24 @@
+﻿<ext:DatabaseActionControl x:Class="BioLink.Client.Material.TrapDetails"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+             mc:Ignorable="d">
+    <Grid>
+        <Label Content="Site name:" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" Name="label1" VerticalAlignment="Top" Width="76" />
+        <ext:TextBox Height="23" Margin="101,14,12,0" Name="txtSiteName" VerticalAlignment="Top" IsEnabled="False" Text="{Binding SiteName}" />
+        <Label Content="Trap name:" Height="28" HorizontalAlignment="Left" Margin="12,46,0,0" Name="label2" VerticalAlignment="Top" Width="76" />
+        <ext:TextBox Height="23" IsEnabled="True" Margin="101,46,12,0" Name="txtTrapName" VerticalAlignment="Top" Text="{Binding TrapName}" />
+        <TabControl Margin="12,80,12,12" Name="tabTrap" MinWidth="400" MinHeight="180">
+            <TabItem Header="General" Name="tabGeneral">
+                <Grid>
+                    <Label Content="Trap type:" Height="28" HorizontalAlignment="Left" Margin="6,11,0,0" Name="label3" VerticalAlignment="Top" Width="76" />
+                    <ext:PickListControl Height="23" Margin="88,11,6,0" Name="txtTrapType" VerticalAlignment="Top" Text="{Binding TrapType}" />
+                    <Label Content="Description:" Height="28" HorizontalAlignment="Left" Margin="6,45,0,0" Name="label4" VerticalAlignment="Top" Width="76" />
+                    <ext:TextBox Height="75" Margin="88,50,6,0" Name="txtDescription" VerticalAlignment="Top" VerticalScrollBarVisibility="Visible" Text="{Binding Description}" />
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</ext:DatabaseActionControl>

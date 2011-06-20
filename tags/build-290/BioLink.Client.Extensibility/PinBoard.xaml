@@ -1,0 +1,21 @@
+﻿<UserControl x:Class="BioLink.Client.Extensibility.PinBoard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:src="clr-namespace:BioLink.Client.Extensibility"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <ListView x:Name="lvw">
+            <ListView.Resources>                
+                <DataTemplate DataType="{x:Type src:ViewModelBase}">
+                    <StackPanel Orientation="Horizontal" ToolTip="{Binding Path=TooltipContent}" ToolTipService.ShowDuration="30000">
+                        <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,1" />
+                        <TextBlock Text="{Binding Path=DisplayLabel,Mode=OneWay}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </DataTemplate>                
+            </ListView.Resources>
+        </ListView>
+    </Grid>
+</UserControl>
