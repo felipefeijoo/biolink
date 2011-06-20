@@ -48,6 +48,11 @@
                         <TextBox Height="23" Margin="86,74,6,0" Name="txtOther" VerticalAlignment="Top" Grid.ColumnSpan="2" />
                         <Button Content="_Search" Height="23" HorizontalAlignment="Right" Margin="0,103,6,0" Name="btnFind" VerticalAlignment="Top" Width="75" Click="btnFind_Click" Grid.Column="1" IsDefault="True" />
                         <ListView Margin="6,132,6,6" Name="lvwResults">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="{x:Type ListViewItem}">
+                                    <Setter Property="ToolTip" Value="{Binding Path=TooltipContent}" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn Width="150" Header="Code" DisplayMemberBinding="{Binding RefCode}" />

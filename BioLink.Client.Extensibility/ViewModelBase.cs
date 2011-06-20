@@ -209,6 +209,23 @@ namespace BioLink.Client.Extensibility {
 
     }
 
+    public class DefaultTooltipContent : TooltipContentBase {
+
+        public DefaultTooltipContent(int objectId, ViewModelBase viewModel, OwnedDataObject model) : base(objectId, viewModel) {
+            this.Model = model;
+        }
+
+        protected OwnedDataObject Model { get; private set; }
+
+
+        protected override OwnedDataObject GetModel() {
+            return Model;
+        }
+
+        protected override void GetDetailText(OwnedDataObject model, TextTableBuilder builder) {            
+        }
+    }
+
     public abstract class GenericViewModelBase<T> : ViewModelBase {
 
         private Expression<Func<int>> _objectIDExpr = null;
@@ -221,7 +238,8 @@ namespace BioLink.Client.Extensibility {
         public override FrameworkElement TooltipContent {
             get {
                 if (Model is OwnedDataObject) {
-                    return new GenericTooltipContent(PluginManager.Instance.User, Model as OwnedDataObject, this);
+                    return new DefaultTooltipContent(ObjectID.Value, this as ViewModelBase, this.Model as OwnedDataObject);
+                    // return new GenericTooltipContent(PluginManager.Instance.User, Model as OwnedDataObject, this);
                 } else {
                     return base.TooltipContent;
                 }

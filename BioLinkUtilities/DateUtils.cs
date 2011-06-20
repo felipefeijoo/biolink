@@ -32,6 +32,13 @@ namespace BioLink.Client.Utilities {
             return datestr;
         }
 
+        public static string BLDateToStr(int? bldate, string @default = "") {
+            if (!bldate.HasValue) {
+                return @default;
+            }
+            return BLDateToStr(bldate.Value);
+        }
+
         public static string BLDateToStr(int bldate) {
             String datestr = bldate.ToString();
             Match m = BLDateRegex.Match(datestr);
