@@ -133,8 +133,9 @@ namespace BioLink.Client.Material {
             RDESiteViewModel root = null;
             List<RDEMaterial> material = null;
 
-            if (objectId < 0) {                
-                root = CreateSiteViewModel(new RDESite { Locked = false } );                
+            if (objectId < 0) {
+                root = CreateSiteViewModel(new RDESite());
+                root.Locked = false;
                 RegisterPendingChange(new InsertRDESiteAction(root.Model));
                 var siteVisit = AddNewSiteVisit(root);
                 var newMaterial = AddNewMaterial(siteVisit);

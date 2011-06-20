@@ -44,6 +44,7 @@ namespace BioLink.Client.Extensibility {
             }
             this.SelectedAction = selectAction;
             LoadTopLevel();
+            RestoreLastExpandedNodes();
             Loaded += new RoutedEventHandler(HierarchicalSelector_Loaded);
 
             this.ChangeRegistered += new PendingChangedRegisteredHandler(HierarchicalSelector_ChangeRegistered);
@@ -217,7 +218,7 @@ namespace BioLink.Client.Extensibility {
                 return;
             }
 
-            if (string.IsNullOrEmpty(txtFind.Text)) {
+            if (string.IsNullOrEmpty(text)) {
                 tvwExplorer.Visibility = System.Windows.Visibility.Visible;
                 tvwSearchResults.Visibility = System.Windows.Visibility.Collapsed;
             } else {
@@ -227,7 +228,7 @@ namespace BioLink.Client.Extensibility {
 
             if (text.Length > 1) {
                 using (new OverrideCursor(Cursors.Wait)) {                    
-                    var list = _content.Search(txtFind.Text);
+                    var list = _content.Search(text);
                     var model = new ObservableCollection<HierarchicalViewModelBase>(list);
                     foreach (HierarchicalViewModelBase vm in list) {
                         vm.Children.Add(new ViewModelPlaceholder("Loading..."));
@@ -291,6 +292,8 @@ namespace BioLink.Client.Extensibility {
 
         private bool Select(HierarchicalViewModelBase selected) {
 
+            SaveExpandedNodes();
+
             if (_content != null) {
                 var result = _content.CreateSelectionResult(selected);
                 if (SelectedAction != null) {
@@ -300,6 +303,35 @@ namespace BioLink.Client.Extensibility {
             }
 
             return false;
+        }
+
+        private void SaveExpandedNodes() {
+            Config.SetProfile(User, _content.GetType().Name + ".LastSearch", txtFind.Text.Trim());
+            var model = _model;
+            if (!string.IsNullOrWhiteSpace(txtFind.Text)) {
+                model = tvwSearchResults.ItemsSource as ObservableCollection<HierarchicalViewModelBase>;
+            }
+            var expanded = GetExpandedParentages(model);
+            Config.SetProfile(User, _content.GetType().Name + ".ExpandedParentages", expanded);
+        }
+
+        private void RestoreLastExpandedNodes() {
+
+            var findstr = Config.GetProfile(User, _content.GetType().Name + ".LastSearch", "");
+            var model = _model;
+            if (!string.IsNullOrWhiteSpace(findstr)) {
+                txtFind.TimerDisabled = true;
+                txtFind.Text = findstr;
+                txtFind.TimerDisabled = false;
+
+                DoFind(findstr);
+                model = tvwSearchResults.ItemsSource as ObservableCollection<HierarchicalViewModelBase>;
+            }
+
+            List<string> expanded = Config.GetProfile<List<string>>(User, _content.GetType().Name + ".ExpandedParentages", null);
+            if (expanded != null) {
+                ExpandParentages(model, expanded);
+            }
         }
 
         private void tvw_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {

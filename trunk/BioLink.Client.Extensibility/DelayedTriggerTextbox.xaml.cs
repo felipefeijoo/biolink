@@ -64,7 +64,9 @@ namespace BioLink.Client.Extensibility {
         private void textBox_TextChanged(object sender, TextChangedEventArgs e) {
             try {                
                 if (!String.IsNullOrEmpty(textBox.Text)) {
-                    _timer.Change(Delay, Delay);
+                    if (!this.TimerDisabled) {
+                        _timer.Change(Delay, Delay);
+                    }
                 } else {
                     Trigger();
                 }
@@ -86,6 +88,9 @@ namespace BioLink.Client.Extensibility {
         }
 
         public int Delay { get; set; }
+
+        public bool TimerDisabled { get; set; }
+
     }
 
     public delegate void TypingPausedEventHandler(string text);
