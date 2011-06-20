@@ -1,0 +1,44 @@
+﻿<ext:FavoritesControl x:Class="BioLink.Client.Material.MaterialFavorites"
+                      x:TypeArguments="datamodel:SiteFavorite, mat:SiteExplorerNodeViewModel"
+                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                     xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+                     xmlns:data="clr-namespace:BioLink.Data;assembly=BioLink.Data"
+                     xmlns:datamodel="clr-namespace:BioLink.Data.Model;assembly=BioLink.Data" 
+                      xmlns:mat="clr-namespace:BioLink.Client.Material"
+                     mc:Ignorable="d" 
+                     d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <ext:VTreeView Name="tvwFavorites" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard">
+            <TreeView.Resources>
+                <HierarchicalDataTemplate DataType="{x:Type mat:SiteFavoriteViewModel}" ItemsSource="{Binding Path=Children}">
+                    <StackPanel Orientation="Horizontal" ToolTip="{Binding Path=TooltipContent}" ToolTipService.ShowDuration="30000">
+                        <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,1" />
+                        <ext:EditableTextBlock FontSize="11" x:Name="FavoriteName" Text="{Binding Path=DisplayLabel,Mode=OneWay}" VerticalAlignment="Center" IsInEditMode="{Binding Path=IsRenaming, Mode=TwoWay}" EditingComplete="FavoriteName_EditingComplete" ViewModel="{Binding}"/>
+                    </StackPanel>
+                    <HierarchicalDataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding IsDeleted}" Value="True">
+                            <Setter TargetName="FavoriteName" Property="TextDecorations" Value="Strikethrough" />
+                        </DataTrigger>
+                    </HierarchicalDataTemplate.Triggers>
+                </HierarchicalDataTemplate>
+
+                <HierarchicalDataTemplate DataType="{x:Type ext:ViewModelPlaceholder}" ItemsSource="{Binding Path=Children}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Path=DisplayLabel,Mode=OneWay}" VerticalAlignment="Center" FontWeight="Bold" />
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+
+            </TreeView.Resources>
+
+            <TreeView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ext:BLVirtualizingStackPanel />
+                </ItemsPanelTemplate>
+            </TreeView.ItemsPanel>
+
+        </ext:VTreeView>           
+    </Grid>
+</ext:FavoritesControl>
