@@ -96,11 +96,9 @@
       <DependentUpon>SiteCompare.xaml</DependentUpon>
     </Compile>
     <Compile Include="SiteFavoriteViewModel.cs" />
+    <Compile Include="SiteNodeTooltipContent.cs" />
     <Compile Include="SiteRDEControl.xaml.cs">
       <DependentUpon>SiteRDEControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="SiteTooltipContent.xaml.cs">
-      <DependentUpon>SiteTooltipContent.xaml</DependentUpon>
     </Compile>
     <Compile Include="SiteVisitRDEControl.xaml.cs">
       <DependentUpon>SiteVisitRDEControl.xaml</DependentUpon>
@@ -234,10 +232,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="SiteRDEControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="SiteTooltipContent.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

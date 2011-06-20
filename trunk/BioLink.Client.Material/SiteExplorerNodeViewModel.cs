@@ -24,7 +24,7 @@ namespace BioLink.Client.Material {
 
         public override System.Windows.FrameworkElement TooltipContent {
             get {
-                return new SiteTooltipContent(PluginManager.Instance.User, ObjectID.Value, ElemType, Name);
+                return new SiteNodeTooltipContent(ObjectID.Value, this, ElemType, Name);
             }
         }
 

@@ -23,6 +23,14 @@ namespace BioLink.Client.Tools {
             }
         }
 
+        public override System.Windows.FrameworkElement TooltipContent {
+
+            get {
+                return new ReferenceTooltipContent(RefID, this);
+            }
+
+        }
+
         public override string DisplayLabel {
             get {
                 return RefCode;
@@ -169,6 +177,27 @@ namespace BioLink.Client.Tools {
             set { SetProperty(() => Model.JournalName, value); }
         }
         
+    }
+
+    public class ReferenceTooltipContent : TooltipContentBase {
+
+        public ReferenceTooltipContent(int refId, ViewModelBase model) : base(refId, model) {
+        }
+
+        protected override void GetDetailText(OwnedDataObject model, TextTableBuilder builder) {
+            var refmodel = model as Reference;
+
+            builder.Add("Type", refmodel.RefType);
+            builder.Add("Title", RTFUtils.StripMarkup(refmodel.Title));
+            builder.Add("Author", refmodel.Author);
+            builder.Add("Year", refmodel.YearOfPub);
+                        
+        }
+
+        protected override OwnedDataObject GetModel() {
+            var service = new SupportService(User);
+            return service.GetReference(ObjectID);
+        }
     }
 
 }

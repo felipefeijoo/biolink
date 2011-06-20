@@ -314,6 +314,12 @@ namespace BioLink.Client.Tools {
             get { return String.Format("{0}, {1} [{2}] ({3})", Title, Author, YearOfPub, RefCode); }
         }
 
+        public override FrameworkElement TooltipContent {
+            get {
+                return new ReferenceTooltipContent(RefID, this);
+            }
+        }
+
         public int RefID {
             get { return Model.RefID; }
             set { SetProperty(() => Model.RefID, value); }
