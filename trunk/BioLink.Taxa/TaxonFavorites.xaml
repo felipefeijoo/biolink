@@ -18,62 +18,64 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="36" />
-        </Grid.RowDefinitions>            
-        <TreeView Name="tvwFavorites" Margin="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard">
-            <TreeView.Resources>
-                <HierarchicalDataTemplate DataType="{x:Type src:TaxonFavoriteViewModel}" ItemsSource="{Binding Path=Children, Converter={StaticResource TaxonFavoriteSortingConverter}}">
-                    <StackPanel Orientation="Horizontal" ToolTip="{Binding Path=TooltipContent}" ToolTipService.ShowDuration="30000">
-                        <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,1" />
-                        <ext:EditableTextBlock FontSize="11" x:Name="FavoriteName" Text="{Binding Path=TaxonLabel,Mode=OneWay}" VerticalAlignment="Center" IsInEditMode="{Binding Path=IsRenaming, Mode=TwoWay}" EditingComplete="TaxonName_EditingComplete" ViewModel="{Binding}"/>
-                    </StackPanel>
-                    <HierarchicalDataTemplate.Triggers>
-                        <DataTrigger Binding="{Binding IsDeleted}" Value="True">
-                            <Setter TargetName="FavoriteName" Property="TextDecorations" Value="Strikethrough" />
-                        </DataTrigger>
-                    </HierarchicalDataTemplate.Triggers>
-                </HierarchicalDataTemplate>
+        </Grid.RowDefinitions>   
+        <ext:DragDropScrollViewer>
+            <TreeView Name="tvwFavorites" Margin="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard">
+                <TreeView.Resources>
+                    <HierarchicalDataTemplate DataType="{x:Type src:TaxonFavoriteViewModel}" ItemsSource="{Binding Path=Children, Converter={StaticResource TaxonFavoriteSortingConverter}}">
+                        <StackPanel Orientation="Horizontal" ToolTip="{Binding Path=TooltipContent}" ToolTipService.ShowDuration="30000">
+                            <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,1" />
+                            <ext:EditableTextBlock FontSize="11" x:Name="FavoriteName" Text="{Binding Path=TaxonLabel,Mode=OneWay}" VerticalAlignment="Center" IsInEditMode="{Binding Path=IsRenaming, Mode=TwoWay}" EditingComplete="TaxonName_EditingComplete" ViewModel="{Binding}"/>
+                        </StackPanel>
+                        <HierarchicalDataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding IsDeleted}" Value="True">
+                                <Setter TargetName="FavoriteName" Property="TextDecorations" Value="Strikethrough" />
+                            </DataTrigger>
+                        </HierarchicalDataTemplate.Triggers>
+                    </HierarchicalDataTemplate>
                 
-                <HierarchicalDataTemplate DataType="{x:Type ext:ViewModelPlaceholder}" ItemsSource="{Binding Path=Children}">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Path=DisplayLabel,Mode=OneWay}" VerticalAlignment="Center" FontWeight="Bold" />
-                    </StackPanel>
-                </HierarchicalDataTemplate>
+                    <HierarchicalDataTemplate DataType="{x:Type ext:ViewModelPlaceholder}" ItemsSource="{Binding Path=Children}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Path=DisplayLabel,Mode=OneWay}" VerticalAlignment="Center" FontWeight="Bold" />
+                        </StackPanel>
+                    </HierarchicalDataTemplate>
 
-                <HierarchicalDataTemplate x:Name="AllTaxaDataTemplate" DataType="{x:Type src:TaxonViewModel}" ItemsSource="{Binding Path=Children, Converter={StaticResource SortedTaxonConverter}}">
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,0" />
-                        <TextBlock FontSize="11" x:Name="TaxonName" Text="{Binding Path=TaxonLabel,Mode=OneWay}" VerticalAlignment="Center" />
-                    </StackPanel>
-                    <HierarchicalDataTemplate.Triggers>
-                        <DataTrigger Binding="{Binding IsDeleted}" Value="True">
-                            <Setter TargetName="TaxonName" Property="TextDecorations" Value="Strikethrough" />
-                        </DataTrigger>
-                    </HierarchicalDataTemplate.Triggers>
-                </HierarchicalDataTemplate>
+                    <HierarchicalDataTemplate x:Name="AllTaxaDataTemplate" DataType="{x:Type src:TaxonViewModel}" ItemsSource="{Binding Path=Children, Converter={StaticResource SortedTaxonConverter}}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,0" />
+                            <TextBlock FontSize="11" x:Name="TaxonName" Text="{Binding Path=TaxonLabel,Mode=OneWay}" VerticalAlignment="Center" />
+                        </StackPanel>
+                        <HierarchicalDataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding IsDeleted}" Value="True">
+                                <Setter TargetName="TaxonName" Property="TextDecorations" Value="Strikethrough" />
+                            </DataTrigger>
+                        </HierarchicalDataTemplate.Triggers>
+                    </HierarchicalDataTemplate>
 
-                <Style TargetType="{x:Type TreeViewItem}">
+                    <Style TargetType="{x:Type TreeViewItem}">
                     
-                    <Setter Property="IsExpanded" Value="{Binding Path=IsExpanded, Mode=TwoWay}" />
-                    <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
+                        <Setter Property="IsExpanded" Value="{Binding Path=IsExpanded, Mode=TwoWay}" />
+                        <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
                     
-                    <EventSetter Event="TreeViewItem.MouseRightButtonDown" Handler="TreeViewItem_MouseRightButtonDown"/>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Unverified}" Value="True">
-                            <Setter Property="Foreground" Value="Red" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding AvailableName}" Value="True">
-                            <Setter Property="FontStyle" Value="Italic" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding IsRenaming}" Value="True">
-                            <Setter Property="TextBox.Visibility" Value="Visible" />
-                        </DataTrigger>
-                    </Style.Triggers>
+                        <EventSetter Event="TreeViewItem.MouseRightButtonDown" Handler="TreeViewItem_MouseRightButtonDown"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Unverified}" Value="True">
+                                <Setter Property="Foreground" Value="Red" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding AvailableName}" Value="True">
+                                <Setter Property="FontStyle" Value="Italic" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsRenaming}" Value="True">
+                                <Setter Property="TextBox.Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
 
-                </Style>
+                    </Style>
 
-            </TreeView.Resources>
+                </TreeView.Resources>
 
-        </TreeView>
+            </TreeView>
+        </ext:DragDropScrollViewer>
         <Grid Grid.Row="1" Background="{x:Static SystemColors.ControlBrush}">
             <Button Content="_Cancel" Height="23" HorizontalAlignment="Right" Margin="0,6,6,0" Name="btnCancel" VerticalAlignment="Top" Width="75" IsEnabled="False" Click="btnCancel_Click" />
             <Button Content="_Apply" Height="23" HorizontalAlignment="Right" Margin="0,6,87,0" Name="btnApply" VerticalAlignment="Top" Width="75" IsEnabled="False" Click="btnApply_Click" />            

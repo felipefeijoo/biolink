@@ -5,7 +5,8 @@ namespace BioLink.Client.Extensibility {
 
     [StyleTypedProperty(Property = "ItemContainerStyle", StyleTargetType = typeof(VTreeViewItem))]
     public class VTreeView : TreeView {
-        protected override DependencyObject GetContainerForItemOverride() {
+
+        protected override DependencyObject GetContainerForItemOverride() {            
             return new VTreeViewItem();
         }
 

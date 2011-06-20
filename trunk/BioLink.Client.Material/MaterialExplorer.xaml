@@ -79,65 +79,70 @@
             <RowDefinition Height="40" />
         </Grid.RowDefinitions>
         <TabControl x:Name="tabMaterial">
+            
             <TabItem Header="Contents">
-                <ext:VTreeView x:Name="tvwMaterial" BorderThickness="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" MouseRightButtonUp="treeview_MouseRightButtonUp" MouseRightButtonDown="tvwMaterial_MouseRightButtonDown" AutoExpandTopLevel="True">
+                <ext:DragDropScrollViewer>
+                    <ext:VTreeView x:Name="tvwMaterial" BorderThickness="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" MouseRightButtonUp="treeview_MouseRightButtonUp" MouseRightButtonDown="tvwMaterial_MouseRightButtonDown" AutoExpandTopLevel="True">
                     
-                    <TreeView.ItemsPanel>
-                        <ItemsPanelTemplate>                            
-                            <ext:BLVirtualizingStackPanel />
-                        </ItemsPanelTemplate>
-                    </TreeView.ItemsPanel>
-
-                    <ext:VTreeViewItem x:Name="regionsNode">
-                        <TreeViewItem.Header>
-                            <TextBlock FontWeight="Bold" Text="Regions, Sites, Site Visits and Material" />
-                        </TreeViewItem.Header>
-                        <TreeViewItem.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <ext:BLVirtualizingStackPanel />
-                            </ItemsPanelTemplate>
-                        </TreeViewItem.ItemsPanel>
-                    </ext:VTreeViewItem>
-
-                    <ext:VTreeViewItem x:Name="unplacedNode">
-                        <TreeViewItem.Header>
-                            <TextBlock FontWeight="Bold" Text="Unplaced Sites" />
-                        </TreeViewItem.Header>
-                        <TreeViewItem.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <ext:BLVirtualizingStackPanel />
-                            </ItemsPanelTemplate>
-                        </TreeViewItem.ItemsPanel>
-                    </ext:VTreeViewItem>
-
-                    <ext:VTreeViewItem x:Name="templatesNode">
-                        <TreeViewItem.Header>
-                            <TextBlock FontWeight="Bold" Text="Templates" />
-                        </TreeViewItem.Header>
-                        <TreeViewItem.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <ext:BLVirtualizingStackPanel />
-                            </ItemsPanelTemplate>
-                        </TreeViewItem.ItemsPanel>
-                    </ext:VTreeViewItem>
-
-                </ext:VTreeView>
-            </TabItem>
-            <TabItem Header="Find">
-                <Grid>
-                    <Button Content="Find" Height="23" HorizontalAlignment="Right" Margin="0,6,6,0" Name="btnFind" VerticalAlignment="Top" Width="75" Click="btnFind_Click" />
-                    <ComboBox Height="23" HorizontalAlignment="Right" Margin="0,6,87,0" Name="cmbFindScope" VerticalAlignment="Top" Width="120" SelectionChanged="cmbFindScope_SelectionChanged" />
-                    <Label Content="in" Height="28" HorizontalAlignment="Right" Margin="0,5,218,0" Name="label1" VerticalAlignment="Top" />
-                    <ext:TextBox Height="23" Margin="6,7,244,0" Name="txtFind" VerticalAlignment="Top" KeyDown="txtFind_KeyDown" />
-                    <ext:VTreeView Margin="6,39,6,6" Name="tvwFind" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" MouseRightButtonUp="treeview_MouseRightButtonUp">
-                        
                         <TreeView.ItemsPanel>
-                            <ItemsPanelTemplate>
+                            <ItemsPanelTemplate>                            
                                 <ext:BLVirtualizingStackPanel />
                             </ItemsPanelTemplate>
                         </TreeView.ItemsPanel>
 
+                        <ext:VTreeViewItem x:Name="regionsNode">
+                            <TreeViewItem.Header>
+                                <TextBlock FontWeight="Bold" Text="Regions, Sites, Site Visits and Material" />
+                            </TreeViewItem.Header>
+                            <TreeViewItem.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <ext:BLVirtualizingStackPanel />
+                                </ItemsPanelTemplate>
+                            </TreeViewItem.ItemsPanel>
+                        </ext:VTreeViewItem>
+
+                        <ext:VTreeViewItem x:Name="unplacedNode">
+                            <TreeViewItem.Header>
+                                <TextBlock FontWeight="Bold" Text="Unplaced Sites" />
+                            </TreeViewItem.Header>
+                            <TreeViewItem.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <ext:BLVirtualizingStackPanel />
+                                </ItemsPanelTemplate>
+                            </TreeViewItem.ItemsPanel>
+                        </ext:VTreeViewItem>
+
+                        <ext:VTreeViewItem x:Name="templatesNode">
+                            <TreeViewItem.Header>
+                                <TextBlock FontWeight="Bold" Text="Templates" />
+                            </TreeViewItem.Header>
+                            <TreeViewItem.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <ext:BLVirtualizingStackPanel />
+                                </ItemsPanelTemplate>
+                            </TreeViewItem.ItemsPanel>
+                        </ext:VTreeViewItem>
+
                     </ext:VTreeView>
+                </ext:DragDropScrollViewer>
+            </TabItem>
+            <TabItem Header="Find">
+                <Grid>
+                    <ext:TextBox Height="23" Margin="6,7,244,0" Name="txtFind" VerticalAlignment="Top" KeyDown="txtFind_KeyDown" />
+                    <Label Content="in" Height="28" HorizontalAlignment="Right" Margin="0,5,218,0" Name="label1" VerticalAlignment="Top" />
+                    <ComboBox Height="23" HorizontalAlignment="Right" Margin="0,6,87,0" Name="cmbFindScope" VerticalAlignment="Top" Width="120" SelectionChanged="cmbFindScope_SelectionChanged" />                    
+                    <Button Content="Find" Height="23" HorizontalAlignment="Right" Margin="0,6,6,0" Name="btnFind" VerticalAlignment="Top" Width="75" Click="btnFind_Click" />
+                    <ext:DragDropScrollViewer Margin="6,39,6,6">
+                        <ext:VTreeView  Name="tvwFind" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" MouseRightButtonUp="treeview_MouseRightButtonUp" AllowDrop="True">
+
+                            <TreeView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <ext:BLVirtualizingStackPanel />
+                                </ItemsPanelTemplate>
+                            </TreeView.ItemsPanel>
+
+                        </ext:VTreeView>
+                    </ext:DragDropScrollViewer>
                 </Grid>
             </TabItem>
         </TabControl>

@@ -132,6 +132,9 @@ namespace BioLink.Client.Material {
             tvwMaterial.PreviewDragOver += new DragEventHandler(tvwMaterial_PreviewDragOver);
             tvwMaterial.PreviewDragEnter += new DragEventHandler(tvwMaterial_PreviewDragOver);
 
+            tvwFind.PreviewDragOver += new DragEventHandler(tvwFind_PreviewDragOver);
+            tvwFind.PreviewDragEnter += new DragEventHandler(tvwFind_PreviewDragOver);
+
             this.Drop += new DragEventHandler(MaterialExplorer_Drop);
 
             var service = new MaterialService(User);
@@ -143,9 +146,30 @@ namespace BioLink.Client.Material {
             txtFind.PreviewKeyDown += new KeyEventHandler(txtFind_PreviewKeyDown);
         }
 
+        void tvwFind_PreviewDragOver(object sender, DragEventArgs e) {
+            var dest = GetHoveredTreeViewItem(e, tvwFind);
+            var source = e.Data.GetData("SiteExplorerNodeViewModel") as SiteExplorerNodeViewModel;
+
+            e.Effects = DragDropEffects.None;
+
+            if (dest != null && source != null && dest != source) {
+                string key = MakeDropMapKey(source, dest);
+                if (_DropMap.ContainsKey(key)) {
+                    e.Effects = DragDropEffects.Move;
+                }
+            }
+
+            e.Handled = true;
+        }
+
         void txtFind_PreviewKeyDown(object sender, KeyEventArgs e) {
             if (e.Key == Key.Down) {
                 tvwFind.Focus();                
+                e.Handled = true;
+            }
+
+            if (e.Key == Key.Enter) {
+                DoFind(true);
                 e.Handled = true;
             }
 
@@ -173,7 +197,13 @@ namespace BioLink.Client.Material {
 
         void MaterialExplorer_Drop(object sender, DragEventArgs e) {
 
-            var dest = tvwMaterial.SelectedItem as SiteExplorerNodeViewModel;
+            var tvw = GetCurrentTree();
+
+            if (tvw == null) {
+                return;
+            }
+
+            var dest = tvw.SelectedItem as SiteExplorerNodeViewModel;
             var source = e.Data.GetData("SiteExplorerNodeViewModel") as SiteExplorerNodeViewModel;
 
             e.Effects = DragDropEffects.None;
@@ -945,10 +975,14 @@ namespace BioLink.Client.Material {
 
 
         private void btnFind_Click(object sender, RoutedEventArgs e) {
-            DoFind();
+            DoFind(true);
         }
 
-        private void DoFind() {
+        private void DoFind(bool explicitClick = false) {
+            if (string.IsNullOrWhiteSpace(txtFind.Text)) {
+                return;
+            }
+
             var service = new MaterialService(User);
             var scope = cmbFindScope.SelectedItem as MaterialFindScope;
             string limitations = "";
@@ -958,6 +992,10 @@ namespace BioLink.Client.Material {
             var list = service.FindNodesByName(txtFind.Text, limitations);
             var findModel = BuildExplorerModel(list, true);
             tvwFind.ItemsSource = findModel;
+            if (explicitClick && list.Count == 0) {
+                MessageBox.Show("No matching elements found.", "No results", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
         }
 
         private void txtFind_KeyDown(object sender, KeyEventArgs e) {
