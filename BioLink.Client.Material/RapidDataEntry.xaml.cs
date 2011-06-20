@@ -39,7 +39,7 @@ namespace BioLink.Client.Material {
         private AutoFillMode _autoFillMode = AutoFillMode.NoAutoFill;
         private bool _autoNumber = false;
 
-        public RapidDataEntry(User user, int objectId, SiteExplorerNodeType objectType) : base(user, "RDE") {
+        public RapidDataEntry(User user, int objectId, SiteExplorerNodeType objectType) : base(user, "RDE:" + objectType.ToString() + ":" + objectId) {
 
             // Bind input gestures to the commands...
             AddNewSiteCmd.InputGestures.Add(new KeyGesture(Key.T, ModifierKeys.Control));
@@ -134,7 +134,7 @@ namespace BioLink.Client.Material {
             List<RDEMaterial> material = null;
 
             if (objectId < 0) {                
-                root = CreateSiteViewModel(new RDESite());
+                root = CreateSiteViewModel(new RDESite { Locked = false } );                
                 RegisterPendingChange(new InsertRDESiteAction(root.Model));
                 var siteVisit = AddNewSiteVisit(root);
                 var newMaterial = AddNewMaterial(siteVisit);

@@ -389,13 +389,13 @@ namespace BioLink.Client.Material {
 
             // Region explorer...
             var list = service.GetTopLevelExplorerItems();
-            RegionsModel = BuildExplorerModel(list);
+            RegionsModel = BuildExplorerModel(list, false);
             regionsNode.ItemsSource = RegionsModel;
             regionsNode.IsExpanded = true;
 
             // Unplaced sites (Sites with no region)...
             list = service.GetTopLevelExplorerItems(SiteExplorerNodeType.Unplaced);
-            UnplacedModel = BuildExplorerModel(list);
+            UnplacedModel = BuildExplorerModel(list, false);
             unplacedNode.ItemsSource = UnplacedModel;
 
             // Templates...
@@ -457,7 +457,7 @@ namespace BioLink.Client.Material {
             get { return _favorites; } 
         }
 
-        private ObservableCollection<HierarchicalViewModelBase> BuildExplorerModel(List<SiteExplorerNode> list) {
+        private ObservableCollection<HierarchicalViewModelBase> BuildExplorerModel(List<SiteExplorerNode> list, bool isFindModel) {
 
             list.Sort((item1, item2) => {
                 int compare = item1.ElemType.CompareTo(item2.ElemType);
@@ -469,7 +469,7 @@ namespace BioLink.Client.Material {
 
 
             var regionsModel = new ObservableCollection<HierarchicalViewModelBase>(list.ConvertAll((model) => {
-                var viewModel = new SiteExplorerNodeViewModel(model);
+                var viewModel = new SiteExplorerNodeViewModel(model, isFindModel);
 
                 if (model.NumChildren > 0) {
                     viewModel.Children.Add(new ViewModelPlaceholder("Loading..."));
@@ -486,7 +486,7 @@ namespace BioLink.Client.Material {
                 parent.Children.Clear();
                 var service = new MaterialService(User);
                 var list = service.GetExplorerElementsForParent(parent.ElemID, parent.ElemType);
-                var viewModel = BuildExplorerModel(list);
+                var viewModel = BuildExplorerModel(list, parent.IsFindViewModel);
                 foreach (HierarchicalViewModelBase childViewModel in viewModel) {
                     childViewModel.Parent = parent;
                     parent.Children.Add(childViewModel);
@@ -956,7 +956,7 @@ namespace BioLink.Client.Material {
                 limitations = scope.Value;
             }
             var list = service.FindNodesByName(txtFind.Text, limitations);
-            var findModel = BuildExplorerModel(list);
+            var findModel = BuildExplorerModel(list, true);
             tvwFind.ItemsSource = findModel;
         }
 

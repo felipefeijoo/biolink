@@ -365,6 +365,7 @@ namespace BioLink.Client.Material {
                 if (place != null) {
                     lat.Value = place.Latitude;
                     lon.Value = place.Longitude;
+                    txtPosSource.Text = "EGaz";
                     if (updateLocality) {
                         UpdateLocality(place);
                     }

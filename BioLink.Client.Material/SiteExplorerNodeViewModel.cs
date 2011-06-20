@@ -6,10 +6,23 @@ namespace BioLink.Client.Material {
 
     public class SiteExplorerNodeViewModel : GenericHierarchicalViewModelBase<SiteExplorerNode> {
 
-        public SiteExplorerNodeViewModel(SiteExplorerNode model) : base(model, ()=>model.ElemID) { }
+        public SiteExplorerNodeViewModel(SiteExplorerNode model, bool isFindViewModel = false) : base(model, ()=>model.ElemID) {
+            IsFindViewModel = isFindViewModel;
+        }
+
+        public bool IsFindViewModel { get; private set; }
 
         public override string DisplayLabel {
-            get { return Name; }
+            get {
+                    if (IsFindViewModel && ElemType == "Site") {
+                        var label = Name.Trim();
+                        if (!label.EndsWith(";")) {
+                            label += "; ";
+                        } 
+                        return label + Model.RegionName;                        
+                    } 
+                    return Name;
+                }
         }
 
         public string GetParentage() {
