@@ -35,6 +35,20 @@ namespace BioLink.Client.Material {
             tabTraits.Content = _traits;
 
             this.DataContextChanged += new DependencyPropertyChangedEventHandler(SiteRDEControl_DataContextChanged);
+
+            ctlPosition.PositionChanged += new Action<PlaceName, string>(ctlPosition_PositionChanged);
+        }
+
+        void ctlPosition_PositionChanged(PlaceName placeName, string changeSource) {
+            txtSource.Text = changeSource;
+            string locality = placeName.Name;
+            if (placeName.PlaceNameType == PlaceNameType.OffsetAndDirection) {
+                locality = string.Format("{0} {1} {2} of {3}", placeName.Offset, placeName.Units, placeName.Direction, placeName.Name);
+            }
+
+            if (this.Question(string.Format("Do you wish to update the locality from '{0}' to '{1}'?", txtLocality.Text, locality), "Update locality?")) {
+                txtLocality.Text = locality;
+            }
         }
 
         void SiteRDEControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e) {

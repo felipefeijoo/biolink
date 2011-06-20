@@ -175,9 +175,14 @@ namespace BioLink.Client.Extensibility {
                 if (place != null) {
                     lat.Value = place.Latitude;
                     lon.Value = place.Longitude;
+                    if (PositionChanged != null) {
+                        PositionChanged(place, "EGaz");
+                    }
                 }
             });
         }
+
+        public event Action<PlaceName, string> PositionChanged;
 
     }
 
