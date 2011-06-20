@@ -8,6 +8,16 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <ListView x:Name="lvw">
+            <ListView.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.HeaderTemplate>
+                        <DataTemplate>
+                            <TextBlock FontSize="15" FontWeight="Bold" Text="{Binding Name}"/>
+                        </DataTemplate>
+                    </GroupStyle.HeaderTemplate>
+                </GroupStyle>
+            </ListView.GroupStyle>
+
             <ListView.Resources>                
                 <DataTemplate DataType="{x:Type src:ViewModelBase}">
                     <StackPanel Orientation="Horizontal" ToolTip="{Binding Path=TooltipContent}" ToolTipService.ShowDuration="30000">

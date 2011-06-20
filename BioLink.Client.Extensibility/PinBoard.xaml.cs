@@ -18,6 +18,7 @@ using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 
 namespace BioLink.Client.Extensibility {
+
     /// <summary>
     /// Interaction logic for PinBoard.xaml
     /// </summary>
@@ -49,6 +50,10 @@ namespace BioLink.Client.Extensibility {
             this.PreviewDragEnter += new DragEventHandler(PinBoard_PreviewDragEnter);
 
             this.Drop += new DragEventHandler(PinBoard_Drop);
+
+            CollectionView myView = (CollectionView)CollectionViewSource.GetDefaultView(lvw.ItemsSource);
+            myView.GroupDescriptions.Add(new PinnableLookupTypeGroupDescription());
+            myView.SortDescriptions.Add( new System.ComponentModel.SortDescription("DisplayLabel", System.ComponentModel.ListSortDirection.Ascending));
         }
 
         void lvw_PreviewMouseMove(object sender, MouseEventArgs e) {
@@ -241,6 +246,21 @@ namespace BioLink.Client.Extensibility {
         }
 
 
+    }
+
+    class PinnableLookupTypeGroupDescription : System.ComponentModel.GroupDescription {
+
+        public override object GroupNameFromItem(object item, int level, System.Globalization.CultureInfo culture) {
+            var vm = item as ViewModelBase;
+            if (vm != null) {
+                var pinnable = vm.Tag as PinnableObject;
+                if (pinnable != null) {
+                    return pinnable.LookupType.ToString();
+                }
+            }
+
+            return "Other";
+        }
     }
 
 }

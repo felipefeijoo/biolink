@@ -100,6 +100,7 @@
     <Compile Include="DateControl.xaml.cs">
       <DependentUpon>DateControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DragDropScrollViewer.cs" />
     <Compile Include="EastingsNorthingsControl.xaml.cs">
       <DependentUpon>EastingsNorthingsControl.xaml</DependentUpon>
     </Compile>

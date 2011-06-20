@@ -129,18 +129,20 @@
                                 
                             </Grid>
                             <Grid Grid.Row="1">
-                                <ext:VTreeView x:Name="tvwAllTaxa" Margin="0,0,0,0" BorderThickness="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" PreviewMouseMove="TreeView_PreviewMouseMove" PreviewMouseLeftButtonDown="TreeView_PreviewMouseLeftButtonDown" MouseRightButtonUp="TreeView_MouseRightButtonUp" AutoExpandTopLevel="True">
-                                    <TreeView.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <!-- This custom VSP exposes BringIntoView -->
-                                            <ext:BLVirtualizingStackPanel />
-                                        </ItemsPanelTemplate>
-                                    </TreeView.ItemsPanel>
+                                <ext:DragDropScrollViewer>
+                                    <ext:VTreeView x:Name="tvwAllTaxa" Margin="0,0,0,0" BorderThickness="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" PreviewMouseMove="TreeView_PreviewMouseMove" PreviewMouseLeftButtonDown="TreeView_PreviewMouseLeftButtonDown" MouseRightButtonUp="TreeView_MouseRightButtonUp" AutoExpandTopLevel="True">
+                                        <TreeView.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <!-- This custom VSP exposes BringIntoView -->
+                                                <ext:BLVirtualizingStackPanel />
+                                            </ItemsPanelTemplate>
+                                        </TreeView.ItemsPanel>
 
-                                    <TreeViewItem>
-                                        <TreeViewItem.Header>Loading...</TreeViewItem.Header>
-                                    </TreeViewItem>
-                                </ext:VTreeView>                                
+                                        <TreeViewItem>
+                                            <TreeViewItem.Header>Loading...</TreeViewItem.Header>
+                                        </TreeViewItem>
+                                    </ext:VTreeView>
+                                </ext:DragDropScrollViewer>
                             </Grid>
                         </Grid>
                     </Border>

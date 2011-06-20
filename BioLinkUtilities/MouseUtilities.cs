@@ -24,5 +24,7 @@ namespace BioLink.Client.Utilities {
             GetCursorPos(ref mouse);
             return relativeTo.PointFromScreen(new Point((double)mouse.X, (double)mouse.Y));
         }
+
+
     }
 }
