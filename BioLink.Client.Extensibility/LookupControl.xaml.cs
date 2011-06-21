@@ -34,7 +34,7 @@ namespace BioLink.Client.Extensibility {
             txt.PreviewDragEnter += new DragEventHandler(txt_PreviewDragEnter);
             txt.PreviewDragOver += new DragEventHandler(txt_PreviewDragEnter);
 
-            txt.Drop += new DragEventHandler(txt_Drop);
+            txt.PreviewDrop += new DragEventHandler(txt_PreviewDrop);
 
             txt.PreviewLostKeyboardFocus += new KeyboardFocusChangedEventHandler(txt_PreviewLostKeyboardFocus);
 
@@ -47,6 +47,21 @@ namespace BioLink.Client.Extensibility {
             txtWatermark.DataContext = this;
 
             EnforceLookup = true;
+        }
+
+        void txt_PreviewDrop(object sender, DragEventArgs e) {
+            var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;
+            if (pinnable != null) {
+                var plugin = PluginManager.Instance.GetPluginByName(pinnable.PluginID);
+                if (plugin != null) {
+                    var viewModel = plugin.CreatePinnableViewModel(pinnable);
+                    _manualSet = true;
+                    this.Text = viewModel.DisplayLabel;
+                    this.ObjectID = pinnable.ObjectID;
+                    _manualSet = false;
+                    e.Handled = true;
+                }
+            }            
         }
 
         private bool _validate = true;
@@ -150,20 +165,6 @@ namespace BioLink.Client.Extensibility {
             }
 
             return false;
-        }
-
-        void txt_Drop(object sender, DragEventArgs e) {
-            var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;
-            if (pinnable != null) {
-                var plugin = PluginManager.Instance.GetPluginByName(pinnable.PluginID);
-                if (plugin != null) {
-                    var viewModel = plugin.CreatePinnableViewModel(pinnable);
-                    _manualSet = true;
-                    this.Text = viewModel.DisplayLabel;
-                    this.ObjectID = pinnable.ObjectID;
-                    _manualSet = false;
-                }
-            }
         }
 
         void txt_PreviewDragEnter(object sender, DragEventArgs e) {

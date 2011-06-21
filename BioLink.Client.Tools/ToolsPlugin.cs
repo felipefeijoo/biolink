@@ -64,6 +64,12 @@ namespace BioLink.Client.Tools {
                 "{'Name':'LoanContacts', 'Header' : '_Contacts'}"
             ));
 
+            contrib.Add(new MenuWorkspaceContribution(this, "FindLoans", (obj, e) => { ShowFindLoans(); },
+                String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
+                "{'Name':'Loans', 'Header':'_Loans'}",
+                "{'Name':'FindLoans', 'Header' : '_Find Loan'}"
+            ));
+
             contrib.Add(new MenuWorkspaceContribution(this, "AddNewLoan", (obj, e) => { AddNewLoan(); },
                 String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
                 "{'Name':'Loans', 'Header':'_Loans'}",
@@ -132,6 +138,10 @@ namespace BioLink.Client.Tools {
 
         private ControlHostWindow ShowLoanContacts() {
             return ShowSingleton("Contacts", () => new LoanContactsControl(User, this));
+        }
+
+        private ControlHostWindow ShowFindLoans() {
+            return ShowSingleton("Find Loans", () => new LoanSearchControl(User, this));
         }
 
         private void ShowPhraseManager() {
@@ -242,7 +252,7 @@ namespace BioLink.Client.Tools {
 
             if (obj is ReferenceViewModel) {
                 var list = new List<Command>();
-                list.Add(new Command("Edit", (vm) => {
+                list.Add(new Command("Edit details...", (vm) => {
                     var r = vm as ReferenceViewModel;
                     EditReference(r.RefID);
                 }));
@@ -252,9 +262,24 @@ namespace BioLink.Client.Tools {
 
             if (obj is JournalViewModel) {
                 var list = new List<Command>();
-                list.Add(new Command("Edit", (vm) => {
+                list.Add(new Command("Edit details...", (vm) => {
                     var j = vm as JournalViewModel;
                     EditJournal(j.JournalID);
+                }));
+
+                return list;
+            }
+
+            if (obj is ContactViewModel) {
+                var list = new List<Command>();
+                var c = obj as ContactViewModel;
+
+                list.Add(new Command("Edit details...", (vm) => {
+                    EditContact(c.ContactID);
+                }));
+
+                list.Add(new Command("Show Loans ...", (vm) => {
+                    ShowLoansForContact(c.ContactID);
                 }));
 
                 return list;

@@ -194,7 +194,7 @@ namespace BioLink.Client.Material {
 
                 // list.Add(new Command("Show in explorer", (dataobj) => { _explorer.ShowInExplorer(node.ElemID); }));
                 // list.Add(new CommandSeparator());
-                list.Add(new Command("Edit Details...", (dataobj) => { _explorer.EditNode(node); }));
+                list.Add(new Command("Edit details...", (dataobj) => { _explorer.EditNode(node); }));
             }
 
             return list;
