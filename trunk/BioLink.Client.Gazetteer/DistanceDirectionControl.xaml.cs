@@ -46,27 +46,34 @@ namespace BioLink.Client.Gazetteer {
         }
 
         void DistanceDirectionControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e) {
-            Recalculate();
+            Clear();
+        }
+
+        public void Clear() {
+            txtLatitude.Text = "";
+            txtLongitude.Text = "";
         }
 
         private void Recalculate() {
-            var place = this.DataContext as PlaceNameViewModel;
-            if (place != null) {
-                double lat, lon;
-                string error = "";
-                if (GeoUtils.DMSStrToDecDeg(txtLatitude.Text, CoordinateType.Latitude, out lat, out error)) {
-                    if (GeoUtils.DMSStrToDecDeg(txtLongitude.Text, CoordinateType.Longitude, out lon, out error)) {
-                        string direction = GeoUtils.GreatCircleArcDirection(place.Latitude, place.Longitude, lat, lon, 32);
-                        string distance = String.Format("{0:0.00}", GeoUtils.GreatCircleArcLength(place.Latitude, place.Longitude, lat, lon, cmbUnits.SelectedItem as string));
-                        txtResults.Text = String.Format("{0} {1} {2}", distance, cmbUnits.SelectedItem as string, direction);
-                    } 
-                }
+            txtResults.Text = "";
+           var place = this.DataContext as PlaceNameViewModel;
+           if (place != null) {
+               double lat, lon;
+               string error = "";
+               if (GeoUtils.DMSStrToDecDeg(txtLatitude.Text, CoordinateType.Latitude, out lat, out error)) {
+                   if (GeoUtils.DMSStrToDecDeg(txtLongitude.Text, CoordinateType.Longitude, out lon, out error)) {
+                       string direction = GeoUtils.GreatCircleArcDirection(place.Latitude, place.Longitude, lat, lon, 32);
+                       string distance = String.Format("{0:0.00}", GeoUtils.GreatCircleArcLength(place.Latitude, place.Longitude, lat, lon, cmbUnits.SelectedItem as string));
+                       txtResults.Text = String.Format("{0} {1} {2}", distance, cmbUnits.SelectedItem as string, direction);
+                   }
+               }
 
-                if (!String.IsNullOrEmpty(error)) {
-                    txtResults.Text = error;
-                }
-
-            }
+               if (!String.IsNullOrEmpty(error)) {
+                   txtResults.Text = error;
+               }
+           } else {
+               txtResults.Text = "You must select a place name first";
+           }
         }
     }
 }

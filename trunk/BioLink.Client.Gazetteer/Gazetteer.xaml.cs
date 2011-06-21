@@ -233,6 +233,8 @@ namespace BioLink.Client.Gazetteer {
                             lblResults.Content = _owner.GetCaption("Gazetteer.Search.Results", results.Count);
                         }
 
+                        _offsetControl.Clear();
+                        _dirDistControl.Clear();
                         _searchModel.Clear();                        
                         foreach (PlaceName place in results) {
                             _searchModel.Add(new PlaceNameViewModel(place));

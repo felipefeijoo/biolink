@@ -109,13 +109,7 @@ namespace BioLink.Client.Gazetteer {
         }
 
         void OffsetControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e) {
-
-            if (DataContext as PlaceNameViewModel != null) {
-                CalculateOffsetPosition();
-            } else {
-                txtResults.Clear();
-            }
-
+            Clear();
         }
 
         private void CalculateOffsetPosition() {
