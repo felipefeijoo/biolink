@@ -16,6 +16,7 @@ using BioLink.Data;
 using BioLink.Client.Utilities;
 using System.Collections.ObjectModel;
 using Newtonsoft.Json;
+using System.ComponentModel;
 
 namespace BioLink.Client.Extensibility {
 
@@ -52,8 +53,11 @@ namespace BioLink.Client.Extensibility {
             this.Drop += new DragEventHandler(PinBoard_Drop);
 
             CollectionView myView = (CollectionView)CollectionViewSource.GetDefaultView(lvw.ItemsSource);
+            
+            myView.SortDescriptions.Add(new SortDescription("Tag.LookupType", ListSortDirection.Ascending));
+            myView.SortDescriptions.Add( new SortDescription("DisplayLabel", ListSortDirection.Ascending));
+
             myView.GroupDescriptions.Add(new PinnableLookupTypeGroupDescription());
-            myView.SortDescriptions.Add( new System.ComponentModel.SortDescription("DisplayLabel", System.ComponentModel.ListSortDirection.Ascending));
         }
 
         void lvw_PreviewMouseMove(object sender, MouseEventArgs e) {
@@ -261,6 +265,9 @@ namespace BioLink.Client.Extensibility {
 
             return "Other";
         }
+    }
+
+    class foo  {
     }
 
 }
