@@ -64,11 +64,14 @@
       <DependentUpon>AdministrationControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="BoxCarDistributionModel.cs" />
-    <Compile Include="ContactActions.cs" />
-    <Compile Include="ContactBrowsePage.xaml.cs">
+    <Compile Include="LoanRemindersControl.xaml.cs">
+      <DependentUpon>LoanRemindersControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Loans\ContactActions.cs" />
+    <Compile Include="Loans\ContactBrowsePage.xaml.cs">
       <DependentUpon>ContactBrowsePage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ContactDetails.xaml.cs">
+    <Compile Include="Loans\ContactDetails.xaml.cs">
       <DependentUpon>ContactDetails.xaml</DependentUpon>
     </Compile>
     <Compile Include="DistributionModel.cs" />
@@ -115,25 +118,28 @@
       <DependentUpon>TraitTypesControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="LayerImageGenerator.cs" />
-    <Compile Include="LoanContactsControl.xaml.cs">
+    <Compile Include="Loans\LoanContactsControl.xaml.cs">
       <DependentUpon>LoanContactsControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="LoanCorrespondenceControl.xaml.cs">
+    <Compile Include="Loans\LoanCorrespondenceControl.xaml.cs">
       <DependentUpon>LoanCorrespondenceControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="LoanDetails.xaml.cs">
+    <Compile Include="Loans\LoanDetails.xaml.cs">
       <DependentUpon>LoanDetails.xaml</DependentUpon>
     </Compile>
-    <Compile Include="LoanMaterialControl.xaml.cs">
+    <Compile Include="Loans\LoanMaterialControl.xaml.cs">
       <DependentUpon>LoanMaterialControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="LoansForContact.xaml.cs">
+    <Compile Include="Loans\LoanSearchControl.xaml.cs">
+      <DependentUpon>LoanSearchControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Loans\LoansForContact.xaml.cs">
       <DependentUpon>LoansForContact.xaml</DependentUpon>
     </Compile>
-    <Compile Include="LoansForContactForm.xaml.cs">
+    <Compile Include="Loans\LoansForContactForm.xaml.cs">
       <DependentUpon>LoansForContactForm.xaml</DependentUpon>
     </Compile>
-    <Compile Include="LoanViewModel.cs" />
+    <Compile Include="Loans\LoanViewModel.cs" />
     <Compile Include="ModellingTool.xaml.cs">
       <DependentUpon>ModellingTool.xaml</DependentUpon>
     </Compile>
@@ -240,11 +246,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ContactBrowsePage.xaml">
+    <Page Include="LoanRemindersControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ContactDetails.xaml">
+    <Page Include="Loans\ContactBrowsePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Loans\ContactDetails.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -292,27 +302,31 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="LoanContactsControl.xaml">
+    <Page Include="Loans\LoanContactsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="LoanCorrespondenceControl.xaml">
+    <Page Include="Loans\LoanCorrespondenceControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="LoanDetails.xaml">
+    <Page Include="Loans\LoanDetails.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="LoanMaterialControl.xaml">
+    <Page Include="Loans\LoanMaterialControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="LoansForContact.xaml">
+    <Page Include="Loans\LoanSearchControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="LoansForContactForm.xaml">
+    <Page Include="Loans\LoansForContact.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Loans\LoansForContactForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

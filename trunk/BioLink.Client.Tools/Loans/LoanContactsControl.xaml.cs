@@ -27,6 +27,8 @@ namespace BioLink.Client.Tools {
 
         private ContactBrowsePage _page;
         private TabItem _previousPage;
+        private Point _startPoint;
+        private bool _IsDragging;
 
         public LoanContactsControl(User user, ToolsPlugin plugin) : base(user, "LoanContactsManager") {
             InitializeComponent();
@@ -36,6 +38,10 @@ namespace BioLink.Client.Tools {
             cmbFindWhat.SelectedIndex = 0;
             lvwFind.KeyUp += new KeyEventHandler(lvwFind_KeyUp);
             lvwFind.MouseDoubleClick += new MouseButtonEventHandler(lvwFind_MouseDoubleClick);
+
+            lvwFind.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(lvwFind_PreviewMouseLeftButtonDown);
+            lvwFind.PreviewMouseMove += new MouseEventHandler(lvwFind_PreviewMouseMove);
+
 
             txtFilter.PreviewKeyDown += new KeyEventHandler(txtFilter_PreviewKeyDown);
 
@@ -52,6 +58,59 @@ namespace BioLink.Client.Tools {
             }
 
             Loaded += new RoutedEventHandler(LoanContactsControl_Loaded);
+        }
+
+        void lvwFind_PreviewMouseMove(object sender, MouseEventArgs e) {
+            CommonPreviewMouseMove(e, sender as ListView);
+        }
+
+        void lvwFind_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+            _startPoint = e.GetPosition(lvwFind);
+        }
+
+        private void CommonPreviewMouseMove(MouseEventArgs e, ListView listView) {
+
+            if (_startPoint == null) {
+                return;
+            }
+
+            if (e.LeftButton == MouseButtonState.Pressed && !_IsDragging) {
+                Point position = e.GetPosition(listView);
+                if (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance) {
+
+                    var x = listView.InputHitTest(position) as FrameworkElement;
+                    if (x != null && x.DataContext is ContactViewModel) {
+                        if (listView.SelectedItem != null) {
+
+                            ListViewItem item = listView.ItemContainerGenerator.ContainerFromItem(listView.SelectedItem) as ListViewItem;
+                            if (item != null) {
+                                StartDrag(e, listView, item);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void StartDrag(MouseEventArgs mouseEventArgs, ListView listView, ListViewItem item) {
+
+            var selected = listView.SelectedItem as ContactViewModel;
+            if (selected != null) {
+                var data = new DataObject("Pinnable", selected);
+
+                var pinnable = new PinnableObject(ToolsPlugin.TOOLS_PLUGIN_NAME, LookupType.Contact, selected.ContactID);
+                data.SetData(PinnableObject.DRAG_FORMAT_NAME, pinnable);
+                data.SetData(DataFormats.Text, selected.DisplayLabel);
+
+                try {
+                    _IsDragging = true;
+                    DragDrop.DoDragDrop(item, data, DragDropEffects.Copy | DragDropEffects.Move | DragDropEffects.Link);
+                } finally {
+                    _IsDragging = false;
+                }
+            }
+
+            InvalidateVisual();
         }
 
         void LoanContactsControl_Loaded(object sender, RoutedEventArgs e) {
@@ -268,6 +327,14 @@ namespace BioLink.Client.Tools {
             }
         }
 
+        public override FrameworkElement TooltipContent {
+            get { return new ContactTooltipContent(ContactID, this); }
+        }
+
+        public override string DisplayLabel {
+            get { return FullName; }
+        }
+
         public int ContactID {
             get { return Model.ContactID; }
             set { SetProperty(() => Model.ContactID, value); }
@@ -349,5 +416,23 @@ namespace BioLink.Client.Tools {
             }
         }
 
+    }
+
+    public class ContactTooltipContent : TooltipContentBase {
+
+        public ContactTooltipContent(int contactId, ContactViewModel viewModel) : base(contactId, viewModel) { }
+
+        protected override void GetDetailText(OwnedDataObject model, TextTableBuilder builder) {
+            var viewModel = ViewModel as ContactViewModel;
+
+            builder.Add("Job title", viewModel.JobTitle);
+            builder.Add("E-mail", viewModel.EMail);
+            builder.Add("Work phone", viewModel.WorkPh);            
+        }
+
+        protected override OwnedDataObject GetModel() {
+            var service = new LoanService(User);
+            return service.GetLoan(ObjectID);
+        }
     }
 }

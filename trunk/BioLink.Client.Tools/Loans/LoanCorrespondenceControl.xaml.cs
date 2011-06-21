@@ -22,14 +22,18 @@ namespace BioLink.Client.Tools {
     /// </summary>
     public partial class LoanCorrespondenceControl : OneToManyDetailControl {
 
-        public LoanCorrespondenceControl(User user, int loanId) : base(user, "LoanCorrespondence:" + loanId) {
+        public LoanCorrespondenceControl(User user, Loan loan) : base(user, "LoanCorrespondence:" + loan.LoanID) {
             InitializeComponent();
-            this.LoanID = loanId;
+            txtRefNo.BindUser(user, "LoanCorrespondence", "tblLoanCorrespondence", "vchrRefNo");
+            txtSender.BindUser(user, LookupType.Contact);
+            txtRecipient.BindUser(user, LookupType.Contact);
+            txtType.BindUser(user, PickListType.Phrase, "Correspondence Type", TraitCategoryType.Loan);
+            this.Loan = loan;
         }
 
         public override ViewModelBase AddNewItem(out DatabaseAction addAction) {
-            var model = new LoanCorrespondence() { LoanID = this.LoanID };
-            addAction = new InsertLoanCorrespondenceAction(model);
+            var model = new LoanCorrespondence() {  };
+            addAction = new InsertLoanCorrespondenceAction(model, Loan);
             return new LoanCorrespondenceViewModel(model);
         }
 
@@ -44,7 +48,7 @@ namespace BioLink.Client.Tools {
 
         public override List<ViewModelBase> LoadModel() {
             var service = new LoanService(User);
-            var list = service.GetLoanCorrespondence(LoanID);
+            var list = service.GetLoanCorrespondence(Loan.LoanID);
             return new List<ViewModelBase>(list.Select((m) => {
                 return new LoanCorrespondenceViewModel(m);
             }));
@@ -62,18 +66,23 @@ namespace BioLink.Client.Tools {
             get { return txtRefNo; }
         }
 
-        protected int LoanID { get; private set; }
+        protected Loan Loan { get; private set; }
 
     }
 
     public class InsertLoanCorrespondenceAction : GenericDatabaseAction<LoanCorrespondence> {
 
-        public InsertLoanCorrespondenceAction(LoanCorrespondence model) : base(model) { }
+        public InsertLoanCorrespondenceAction(LoanCorrespondence model, Loan loan) : base(model) {
+            Loan = loan;
+        }
 
         protected override void ProcessImpl(User user) {
             var service = new LoanService(user);
+            Model.LoanID = Loan.LoanID;
             service.InsertLoanCorrespondence(Model);
         }
+
+        protected Loan Loan { get; private set; }
     }
 
     public class UpdateLoanCorrespondenceAction : GenericDatabaseAction<LoanCorrespondence> {
@@ -178,7 +187,7 @@ namespace BioLink.Client.Tools {
         }
 
         public override string ToString() {
-            return String.Format("{0}  {1} From: {2} To: {3}", RefNo, Date, SenderFullName, RecipientFullName); 
+            return String.Format("{0}  {1:d} From: {2} To: {3}", RefNo, Date, SenderFullName, RecipientFullName); 
         }
 
     }

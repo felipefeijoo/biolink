@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BioLink.Data.Model {
 
-    public class Loan : GUIDObject {
+    public class Loan : OwnedDataObject {
 
         public int LoanID { get; set; }
         public string LoanNumber { get; set; }

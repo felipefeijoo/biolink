@@ -235,6 +235,45 @@ namespace BioLink.Data {
             StoredProcUpdate("spLoanCorrDelete", _P("intLoanCorrespondenceID", loanCorrespondenceId));
         }
 
+
+        public List<Loan> FindLoans(string filter, string what, bool findOpenLoansOnly) {
+            var mapper = new GenericMapperBuilder<Loan>().build();
+            filter = filter.Replace("*", "%");
+            var list = StoredProcToList("spLoanFind", mapper, _P("vchrFieldType", what), _P("vchrFieldValue", filter), _P("bitOnlyActiveLoans", findOpenLoansOnly));
+            return list;
+        }
+
+        public List<LoanReminder> GetLoanReminders(int loanId) {
+            var mapper = new GenericMapperBuilder<LoanReminder>().build();
+            return StoredProcToList("spLoanReminderList", mapper, _P("intLoanID", loanId));
+        }
+
+        public int InsertLoanReminder(LoanReminder r) {
+            var retval = ReturnParam("NewLoanReminderID");
+            StoredProcUpdate("spLoanReminderInsert",
+                _P("intLoanID", r.LoanID),
+                _P("dtDate", r.Date),
+                _P("bitClosed", r.Closed),
+                _P("txtDescription", r.Description),
+                retval
+            );
+
+            return (int)retval.Value;
+        }
+
+        public void UpdateLoanReminder(LoanReminder r) {
+            StoredProcUpdate("spLoanReminderUpdate",
+                _P("intLoanReminderID", r.LoanReminderID),
+                _P("intLoanID", r.LoanID),
+                _P("dtDate", r.Date),
+                _P("bitClosed", r.Closed),
+                _P("txtDescription", r.Description)
+            );
+        }
+
+        public void DeleteLoanReminder(int loanReminderId) {
+            StoredProcUpdate("spLoanReminderDelete", _P("intLoanReminderID", loanReminderId));
+        }
     }
 
     public enum ContactSearchType {

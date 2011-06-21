@@ -24,16 +24,14 @@ namespace BioLink.Client.Tools {
 
         protected Loan Loan { get; private set; }
 
-        public LoanMaterialControl(User user, int loanId) : base(user, "LoanMaterial:" + loanId) {
+        public LoanMaterialControl(User user, Loan model) : base(user, "LoanMaterial:" + model.LoanID) {
             InitializeComponent();
 
             txtMaterial.BindUser(user, LookupType.Material);
             txtTaxon.BindUser(user, LookupType.Taxon);
             txtTaxon.EnforceLookup = false; // Any taxon name will do!
 
-            LoanID = loanId;
-            var service = new LoanService(user);
-            this.Loan = service.GetLoan(loanId);
+            Loan = model;
 
             lblClosed.Visibility = System.Windows.Visibility.Collapsed;
             chkReturned.IsEnabled = true;
@@ -55,8 +53,8 @@ namespace BioLink.Client.Tools {
         }
 
         public override ViewModelBase AddNewItem(out DatabaseAction addAction) {            
-            var model = new LoanMaterial() { LoanID = this.LoanID, Returned = false };
-            addAction = new InsertLoanMaterialAction(model);
+            var model = new LoanMaterial() { Returned = false };
+            addAction = new InsertLoanMaterialAction(model, Loan);
             return new LoanMaterialViewModel(model);
         }
 
@@ -67,7 +65,7 @@ namespace BioLink.Client.Tools {
 
         public override List<ViewModelBase> LoadModel() {
             var service = new LoanService(User);
-            var list = service.GetLoanMaterial(LoanID);
+            var list = service.GetLoanMaterial(Loan.LoanID);
             var model = new List<ViewModelBase>(list.Select((m) => {
                 return new LoanMaterialViewModel(m);
             }));
@@ -81,8 +79,6 @@ namespace BioLink.Client.Tools {
         public override FrameworkElement FirstControl {
             get { return txtMaterial; }
         }
-
-        protected int LoanID { get; private set; }
 
     }
 
@@ -99,12 +95,17 @@ namespace BioLink.Client.Tools {
 
     public class InsertLoanMaterialAction : GenericDatabaseAction<LoanMaterial> {
 
-        public InsertLoanMaterialAction(LoanMaterial model) : base(model) { }
+        public InsertLoanMaterialAction(LoanMaterial model, Loan loan) : base(model) {
+            Loan = loan;
+        }
 
         protected override void ProcessImpl(User user) {
             var service = new LoanService(user);
+            Model.LoanID = Loan.LoanID;
             Model.LoanMaterialID = service.InsertLoanMaterial(Model);
         }
+
+        private Loan Loan { get; set; }
     }
 
     public class UpdateLoanMaterialAction : GenericDatabaseAction<LoanMaterial> {

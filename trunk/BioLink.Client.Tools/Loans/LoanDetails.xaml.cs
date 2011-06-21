@@ -76,8 +76,9 @@ namespace BioLink.Client.Tools {
                 _viewModel.DataChanged += new DataChangedHandler(viewModel_DataChanged);
             }
 
-            tabLoan.AddTabItem("_Material", new OneToManyControl(new LoanMaterialControl(User, LoanID)));
-            tabLoan.AddTabItem("_Correspondence", new OneToManyControl(new LoanCorrespondenceControl(User, LoanID)));
+            tabLoan.AddTabItem("_Material", new OneToManyControl(new LoanMaterialControl(User, model)));
+            tabLoan.AddTabItem("_Correspondence", new OneToManyControl(new LoanCorrespondenceControl(User, model)));
+            tabLoan.AddTabItem("_Reminders", new OneToManyControl(new LoanRemindersControl(User, model)));
 
             tabLoan.AddTabItem("_Traits", new TraitControl(User, TraitCategoryType.Loan, _viewModel));
             tabLoan.AddTabItem("_Notes", new NotesControl(User, TraitCategoryType.Loan, _viewModel));
