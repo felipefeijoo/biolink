@@ -115,6 +115,7 @@ namespace BioLink.Client.Material {
 
             cmbFindScope.ItemsSource = findScopes;
             cmbFindScope.DisplayMemberPath = "Label";
+            cmbFindScope.PreviewKeyDown += new KeyEventHandler(cmbFindScope_PreviewKeyDown);
 
             int lastSelectedIndex = Config.GetUser(User, "Material.Find.LastFilter", -1);
             if (lastSelectedIndex < 0 || lastSelectedIndex >= findScopes.Count) {
@@ -146,6 +147,13 @@ namespace BioLink.Client.Material {
             txtFind.PreviewKeyDown += new KeyEventHandler(txtFind_PreviewKeyDown);
         }
 
+        void cmbFindScope_PreviewKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key == Key.Enter) {
+                DoFind();
+                e.Handled = true;
+            }
+        }
+
         void tvwFind_PreviewDragOver(object sender, DragEventArgs e) {
             var dest = GetHoveredTreeViewItem(e, tvwFind);
             var source = e.Data.GetData("SiteExplorerNodeViewModel") as SiteExplorerNodeViewModel;
@@ -169,7 +177,7 @@ namespace BioLink.Client.Material {
             }
 
             if (e.Key == Key.Enter) {
-                DoFind(true);
+                DoFind();
                 e.Handled = true;
             }
 
@@ -975,24 +983,30 @@ namespace BioLink.Client.Material {
 
 
         private void btnFind_Click(object sender, RoutedEventArgs e) {
-            DoFind(true);
+            DoFind();
         }
 
-        private void DoFind(bool explicitClick = false) {
-            if (string.IsNullOrWhiteSpace(txtFind.Text)) {
-                return;
+        private void DoFind() {
+
+            int resultsCount = 0;
+            using (new OverrideCursor(Cursors.Wait)) {
+                if (string.IsNullOrWhiteSpace(txtFind.Text)) {
+                    return;
+                }
+
+                var service = new MaterialService(User);
+                var scope = cmbFindScope.SelectedItem as MaterialFindScope;
+                string limitations = "";
+                if (scope != null) {
+                    limitations = scope.Value;
+                }
+                var list = service.FindNodesByName(txtFind.Text, limitations);
+                resultsCount = list.Count;
+                var findModel = BuildExplorerModel(list, true);
+                tvwFind.ItemsSource = findModel;
             }
 
-            var service = new MaterialService(User);
-            var scope = cmbFindScope.SelectedItem as MaterialFindScope;
-            string limitations = "";
-            if (scope != null) {
-                limitations = scope.Value;
-            }
-            var list = service.FindNodesByName(txtFind.Text, limitations);
-            var findModel = BuildExplorerModel(list, true);
-            tvwFind.ItemsSource = findModel;
-            if (explicitClick && list.Count == 0) {
+            if (resultsCount == 0) {
                 MessageBox.Show("No matching elements found.", "No results", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
 
