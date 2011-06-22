@@ -3,8 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:gaz="clr-namespace:BioLink.Client.Gazetteer"
              mc:Ignorable="d" 
-             Height="274" Width="545" Title="Legacy eGaz file conversion" xmlns:my="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility">
+             Height="420" Width="627" Title="Legacy eGaz file conversion" xmlns:my="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -15,12 +16,22 @@
             <Button Content="_Cancel" Height="23" HorizontalAlignment="Right" Margin="0,7,6,0" Name="btnCancel" VerticalAlignment="Top" Width="75" IsCancel="True" Click="btnCancel_Click" />
             <Button Content="C_onvert" Height="23" HorizontalAlignment="Right" Margin="0,7,87,0" Name="btnConvert" VerticalAlignment="Top" Width="75" Click="btnConvert_Click" />
         </Grid>
-        <Label Content="Source file:" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" Name="label1" VerticalAlignment="Top" Width="112" />
-        <Label Content="Destination file:" Height="28" HorizontalAlignment="Left" Margin="12,46,0,0" Name="label2" VerticalAlignment="Top" Width="112" />
-        <my:FilenameTextBox Margin="130,12,12,0" Name="txtSource" VerticalAlignment="Top" Filter="eGaz 2.0 files (*.mdb)|*.mdb|All files (*.*)|*.*" Mode="Open"/>
-        <my:FilenameTextBox Margin="130,46,12,0" Name="txtDest" VerticalAlignment="Top" Filter="eGaz 3 files (*.gaz)|*.gaz|All files (*.*)|*.*" Mode="Save" />
-        <ProgressBar Height="25" Margin="12,126,12,0" Name="progressBar" VerticalAlignment="Top" />
-        <Label Height="28" Margin="12,100,12,0" Name="lblProgress" VerticalAlignment="Top" />
+        <ProgressBar Height="24" Margin="12,0,12,55" Name="progressBar" VerticalAlignment="Bottom" />
+        <Label Height="28" Margin="12,0,12,77" Name="lblProgress" VerticalAlignment="Bottom" />
+        <Label Content="Overall progress:" Height="28" HorizontalAlignment="Left" Margin="12,0,0,28" Name="label3" VerticalAlignment="Bottom" />
+        <ProgressBar Height="24" Margin="12,0,12,6" Name="totalProgressBar" VerticalAlignment="Bottom" />
+        <ListBox Margin="12,12,114,111" Name="lst">
+            <ListBox.Resources>
+                <DataTemplate DataType="{x:Type gaz:GazetteerConversionTarget}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{Binding Path=Icon}" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
+                        <TextBlock Text="{Binding Path=DisplayLabel}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.Resources>
+        </ListBox>
+        <Button Content="_Add File(s)..." Height="23" HorizontalAlignment="Right" Margin="0,12,12,0" Name="btnAddFiles" VerticalAlignment="Top" Width="96" Click="btnAddFiles_Click" />
+        <Button Content="_Remove file" Height="23" HorizontalAlignment="Right" Margin="0,41,12,0" Name="btnRemoveFile" VerticalAlignment="Top" Width="96" Click="btnRemoveFile_Click" />
     </Grid>
     
     

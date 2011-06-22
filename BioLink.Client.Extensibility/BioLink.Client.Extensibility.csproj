@@ -625,6 +625,7 @@
     <Resource Include="images\Refresh.png" />
     <Resource Include="images\Reminder.png" />
     <Resource Include="images\Reminder_Overdue.png" />
+    <Resource Include="images\Tick.png" />
     <Content Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>
