@@ -117,6 +117,12 @@ namespace BioLink.Client.Extensibility {
 
         public TextTableBuilder() { }
 
+        public void Add(string heading, DateTime? value) {
+            if (value.HasValue) {
+                AddFormat(heading, "{0:d}", value.Value);
+            }
+        }
+
         public void Add(string heading, string value) {
             if (!string.IsNullOrWhiteSpace(heading) && !string.IsNullOrWhiteSpace(value)) {
                 _list.Add(new Pair<string, string>(heading, value));

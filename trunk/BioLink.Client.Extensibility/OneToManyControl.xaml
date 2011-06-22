@@ -23,6 +23,7 @@
             <ListBox.Resources>
                 <DataTemplate DataType="{x:Type ext:ViewModelBase}">
                     <StackPanel Orientation="Horizontal">
+                        <Image Source="{Binding Path=Icon}" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
                         <TextBlock Text="{Binding DisplayLabel,Mode=OneWay}" />
                     </StackPanel>
                 </DataTemplate>

@@ -274,6 +274,11 @@ namespace BioLink.Data {
         public void DeleteLoanReminder(int loanReminderId) {
             StoredProcUpdate("spLoanReminderDelete", _P("intLoanReminderID", loanReminderId));
         }
+
+        public List<LoanReminderEx> GetRemindersDue(DateTime dateTime) {
+            var mapper = new GenericMapperBuilder<LoanReminderEx>().build();
+            return StoredProcToList("spLoanReminderDue", mapper, _P("dtDueByDate", dateTime));
+        }
     }
 
     public enum ContactSearchType {

@@ -64,7 +64,7 @@
       <DependentUpon>AdministrationControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="BoxCarDistributionModel.cs" />
-    <Compile Include="LoanRemindersControl.xaml.cs">
+    <Compile Include="Loans\LoanRemindersControl.xaml.cs">
       <DependentUpon>LoanRemindersControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Loans\ContactActions.cs" />
@@ -136,9 +136,6 @@
     <Compile Include="Loans\LoansForContact.xaml.cs">
       <DependentUpon>LoansForContact.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Loans\LoansForContactForm.xaml.cs">
-      <DependentUpon>LoansForContactForm.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Loans\LoanViewModel.cs" />
     <Compile Include="ModellingTool.xaml.cs">
       <DependentUpon>ModellingTool.xaml</DependentUpon>
@@ -146,6 +143,9 @@
     <Compile Include="ModelPoint.cs" />
     <Compile Include="MultimediaManager.xaml.cs">
       <DependentUpon>MultimediaManager.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Loans\OverdueLoansControl.xaml.cs">
+      <DependentUpon>OverdueLoansControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="PointSetDisplayOptionsWindow.xaml.cs">
       <DependentUpon>PointSetDisplayOptionsWindow.xaml</DependentUpon>
@@ -246,7 +246,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="LoanRemindersControl.xaml">
+    <Page Include="Loans\LoanRemindersControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -326,15 +326,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Loans\LoansForContactForm.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="ModellingTool.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MultimediaManager.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Loans\OverdueLoansControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
