@@ -50,7 +50,7 @@ namespace BioLink.Client.Gazetteer {
                 // Create Tables...
                 ExecuteNonQuery("CREATE TABLE 'tblSettings' ('SettingKey' TEXT, 'SettingValue' TEXT, 'LongData' TEXT, 'UseLongData' INTEGER)");
                 ExecuteNonQuery("CREATE TABLE 'tblDivisions' ('tDatabase' TEXT, 'tAbbreviation' TEXT, 'tFull' TEXT)");
-                ExecuteNonQuery("CREATE TABLE 'tblGaz' ('tPlace' TEXT, 'tType' TEXT, 'tDivision' TEXT, 'tLatitude' TEXT, 'tLongitude' TEXT, 'GazID' INTEGER, 'dblLatitude' DOUBLE, 'dblLongitude' DOUBLE)");
+                ExecuteNonQuery("CREATE TABLE 'tblGaz' ('tPlace' TEXT, 'tType' TEXT, 'tDivision' TEXT, 'tLatitude' TEXT, 'tLongitude' TEXT, 'dblLatitude' DOUBLE, 'dblLongitude' DOUBLE)");
 
                 // Create indexes
                 ExecuteNonQuery("CREATE UNIQUE INDEX 'tblDivisions_PrimaryKey' ON 'tblDivisions' ('tDatabase' )");
@@ -139,9 +139,9 @@ namespace BioLink.Client.Gazetteer {
             ExecuteNonQuery("INSERT INTO tblDivisions (tDatabase, tAbbreviation, tFull) VALUES (@database, @abbrev, @full)", _P("@database", databaseName), _P("@abbrev", abbrev), _P("@full", full));
         }
 
-        public void AddPlaceName(string place, string type, string division, string latstring, string lonstring, int gazid, double lat, double lon) {
-            ExecuteNonQuery("INSERT INTO tblGaz (tPlace, tType, tDivision, tLatitude, tLongitude, GazID, dblLatitude, dblLongitude) VALUES (@place, @type, @division, @latstring, @lonstring, @gazid, @lat, @lon)", 
-                _P("@place", place), _P("@type", type), _P("@division", division), _P("@latstring", latstring), _P("@lonstring", lonstring), _P("@gazid", gazid), _P("@lat", lat), _P("@lon", lon));
+        public void AddPlaceName(string place, string type, string division, string latstring, string lonstring, double lat, double lon) {
+            ExecuteNonQuery("INSERT INTO tblGaz (tPlace, tType, tDivision, tLatitude, tLongitude, dblLatitude, dblLongitude) VALUES (@place, @type, @division, @latstring, @lonstring, @lat, @lon)", 
+                _P("@place", place), _P("@type", type), _P("@division", division), _P("@latstring", latstring), _P("@lonstring", lonstring), _P("@lat", lat), _P("@lon", lon));
         }
 
         public GazetteerInfo GetGazetteerInfo() {
