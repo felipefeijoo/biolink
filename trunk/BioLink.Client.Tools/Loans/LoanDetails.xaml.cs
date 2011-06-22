@@ -23,6 +23,7 @@ namespace BioLink.Client.Tools {
     public partial class LoanDetails : DatabaseActionControl {
 
         private LoanViewModel _viewModel;
+        private OneToManyControl _reminders;
 
         public LoanDetails(User user, ToolsPlugin plugin, int loanID) : base(user, "Loan:" + loanID) {
             InitializeComponent();
@@ -42,7 +43,27 @@ namespace BioLink.Client.Tools {
                 messages.Add("You must enter or generate a loan number for this loan");
             }
 
+            if (_reminders != null) {
+                if (!_reminders.IsPopulated) {
+                    _reminders.Populate();
+                }
+                if (_reminders.GetModel().Count == 0) {
+                    AddLoanReminder();
+                }
+            }
+
             return messages.Count == 0;
+        }
+
+        private void AddLoanReminder() {
+            if (_viewModel.DateDue.HasValue) {
+                if (this.Question("Do you wish BioLink to automatically create a 'Loan due' reminder for this loan?", "Create automatic reminder")) {
+                    HardDateConverter c = new HardDateConverter();
+                    var reminder = new LoanReminder { LoanID = LoanID, Date = _viewModel.DateDue.Value, Description = "This loan was due back today", Closed = false};
+                    RegisterPendingChange(new InsertLoanReminderAction(reminder, _viewModel.Model));
+                    _reminders.GetModel().Add(new LoanReminderViewModel(reminder));
+                }
+            }
         }
 
         void LoanDetails_ChangeContainerSet() {
@@ -78,7 +99,8 @@ namespace BioLink.Client.Tools {
 
             tabLoan.AddTabItem("_Material", new OneToManyControl(new LoanMaterialControl(User, model)));
             tabLoan.AddTabItem("_Correspondence", new OneToManyControl(new LoanCorrespondenceControl(User, model)));
-            tabLoan.AddTabItem("_Reminders", new OneToManyControl(new LoanRemindersControl(User, model)));
+            _reminders = new OneToManyControl(new LoanRemindersControl(User, model));
+            tabLoan.AddTabItem("_Reminders", _reminders);
 
             tabLoan.AddTabItem("_Traits", new TraitControl(User, TraitCategoryType.Loan, _viewModel));
             tabLoan.AddTabItem("_Notes", new NotesControl(User, TraitCategoryType.Loan, _viewModel));
