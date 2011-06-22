@@ -25,6 +25,11 @@ namespace BioLink.Client.Material {
         public CollectorControl() {
             InitializeComponent();
             txt.PreviewKeyDown += new KeyEventHandler(txt_PreviewKeyDown);
+            txt.TextChanged += new TextChangedEventHandler(txt_TextChanged);
+        }
+
+        private void txt_TextChanged(object sender, TextChangedEventArgs e) {
+            Text = txt.Text;
         }
 
         void txt_PreviewKeyDown(object sender, KeyEventArgs e) {
