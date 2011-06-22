@@ -12,8 +12,7 @@ namespace BioLink.Data.Model {
         public string LatitudeString { get; set; }
         public string LongitudeString { get; set; }
         public double Latitude { get; set; }
-        public double Longitude { get; set; }
-        public string GazID { get; set; }
+        public double Longitude { get; set; }        
         public PlaceNameType PlaceNameType { get; set; }
         public string Offset { get; set; }
         public string Units { get; set; }

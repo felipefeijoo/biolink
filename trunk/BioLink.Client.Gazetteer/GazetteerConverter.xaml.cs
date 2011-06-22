@@ -186,21 +186,21 @@ namespace BioLink.Client.Gazetteer {
 
                         if (totalPlaceNames > 0) {
                             StatusMessage("Converting Place Names...");
-                            using (cmd = new OleDbCommand("SELECT tPlace, tType, tDivision, tLatitude, tLongitude, GazID, dblLatitude, dblLongitude from tblGaz", con)) {
+                            using (cmd = new OleDbCommand("SELECT tPlace, tType, tDivision, tLatitude, tLongitude, dblLatitude, dblLongitude from tblGaz", con)) {                            
                                 using (OleDbDataReader reader = cmd.ExecuteReader()) {
                                     while (reader.Read()) {
                                         double lat = 0;
-                                        if (!reader.IsDBNull(6)) {
-                                            lat = (double)reader[6];
+                                        if (!reader.IsDBNull(5)) {
+                                            lat = (double)reader[5];
                                         }
 
                                         double lon = 0;
-                                        if (!reader.IsDBNull(7)) {
-                                            lon = (double)reader[7];
+                                        if (!reader.IsDBNull(6)) {
+                                            lon = (double)reader[6];
                                         }
 
                                         try {
-                                            service.AddPlaceName(reader[0] as string, reader[1] as string, reader[2] as string, reader[3] as string, reader[4] as string, (int)reader[5], lat, lon);
+                                            service.AddPlaceName(reader[0] as string, reader[1] as string, reader[2] as string, reader[3] as string, reader[4] as string, lat, lon);
                                         } catch (Exception) {
                                             errors++;
                                         }

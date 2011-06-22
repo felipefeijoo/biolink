@@ -58,11 +58,6 @@ namespace BioLink.Client.Gazetteer {
             set { SetProperty(() => Model.Longitude, value); }
         }
 
-        public string GazID {
-            get { return Model.GazID; }
-            set { SetProperty(() => Model.GazID, value); }        
-        }
-
         public PlaceNameType PlaceNameType {
             get { return Model.PlaceNameType; }
             set { SetProperty(() => Model.PlaceNameType, value); }
