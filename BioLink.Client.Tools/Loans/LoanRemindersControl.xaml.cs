@@ -34,7 +34,7 @@ namespace BioLink.Client.Tools {
         }
 
         public override ViewModelBase AddNewItem(out DatabaseAction addAction) {
-            var model = new LoanReminder() { };
+            var model = new LoanReminder() { Closed = false };
             addAction = new InsertLoanReminderAction(model, Loan);
             return new LoanReminderViewModel(model);
         }
@@ -114,6 +114,18 @@ namespace BioLink.Client.Tools {
             get { return ToString(); }            
         }
 
+        public override ImageSource Icon {
+            get {
+                if (IsOverdue) {
+                    return ImageCache.GetImage("pack://application:,,,/BioLink.Client.Extensibility;component/images/Reminder_Overdue.png");
+                } else {
+                    return ImageCache.GetImage("pack://application:,,,/BioLink.Client.Extensibility;component/images/Reminder.png");
+                }
+            }
+            
+            set {  }
+        }
+
         public int LoanReminderID {
             get { return Model.LoanReminderID; }
             set { SetProperty(() => Model.LoanReminderID, value); }
@@ -141,6 +153,25 @@ namespace BioLink.Client.Tools {
 
         public override string ToString() {
             return string.Format("{0:d}  {1}", Date, Description);
+        }
+
+        public bool IsOverdue {
+            get {
+                if (!Date.HasValue || Closed.ValueOrFalse()) {
+                    return false;
+                }
+                return DateTime.Compare(DateTime.Now, Date.Value) > 0; 
+            }
+        }
+
+        public string DateStr {
+            get {
+                if (!Date.HasValue) {
+                    return "";
+                }
+
+                return string.Format("{0:d}", Date);
+            }
         }
 
     }

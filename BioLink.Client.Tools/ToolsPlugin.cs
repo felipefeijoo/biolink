@@ -70,6 +70,13 @@ namespace BioLink.Client.Tools {
                 "{'Name':'FindLoans', 'Header' : '_Find Loan'}"
             ));
 
+            contrib.Add(new MenuWorkspaceContribution(this, "Reminders", (obj, e) => { ShowLoanReminders(); },
+                String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
+                "{'Name':'Loans', 'Header':'_Loans'}",
+                "{'Name':'Reminders', 'Header' : 'Reminders'}"
+            ));
+
+
             contrib.Add(new MenuWorkspaceContribution(this, "AddNewLoan", (obj, e) => { AddNewLoan(); },
                 String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
                 "{'Name':'Loans', 'Header':'_Loans'}",
@@ -142,6 +149,10 @@ namespace BioLink.Client.Tools {
 
         private ControlHostWindow ShowFindLoans() {
             return ShowSingleton("Find Loans", () => new LoanSearchControl(User, this));
+        }
+
+        private ControlHostWindow ShowLoanReminders() {
+            return ShowSingleton("Reminders", () => new OverdueLoansControl(User, this));
         }
 
         private void ShowPhraseManager() {
@@ -249,29 +260,24 @@ namespace BioLink.Client.Tools {
             }
 
             var obj = selected[0];
+            var list = new List<Command>();
 
             if (obj is ReferenceViewModel) {
-                var list = new List<Command>();
+                
                 list.Add(new Command("Edit details...", (vm) => {
                     var r = vm as ReferenceViewModel;
                     EditReference(r.RefID);
                 }));
-
-                return list;
             }
 
             if (obj is JournalViewModel) {
-                var list = new List<Command>();
                 list.Add(new Command("Edit details...", (vm) => {
                     var j = vm as JournalViewModel;
                     EditJournal(j.JournalID);
                 }));
-
-                return list;
             }
 
             if (obj is ContactViewModel) {
-                var list = new List<Command>();
                 var c = obj as ContactViewModel;
 
                 list.Add(new Command("Edit details...", (vm) => {
@@ -282,9 +288,16 @@ namespace BioLink.Client.Tools {
                     ShowLoansForContact(c.ContactID);
                 }));
 
-                return list;
             }
-            return null;
+
+            if (obj is LoanViewModel) {
+                var loan = obj as LoanViewModel;
+                list.Add(new Command("Edit details...", (vm) => {
+                    EditLoan(loan.LoanID);
+                }));
+            }
+
+            return list;
         }
 
         public override bool CanSelect<T>() {
@@ -314,6 +327,7 @@ namespace BioLink.Client.Tools {
                 case LookupType.Reference:
                 case LookupType.Journal:
                 case LookupType.Contact:
+                case LookupType.Loan:
                     return true;
             }
             return false;
@@ -340,6 +354,13 @@ namespace BioLink.Client.Tools {
                     var cmodel = loanService.GetContact(pinnable.ObjectID);
                     if (cmodel != null) {
                         return new ContactViewModel(cmodel);
+                    }
+                    break;
+                case LookupType.Loan:
+                    loanService = new LoanService(User);
+                    var lmodel = loanService.GetLoan(pinnable.ObjectID);
+                    if (lmodel != null) {
+                        return new LoanViewModel(lmodel);
                     }
                     break;
             }

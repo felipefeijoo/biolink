@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace BioLink.Data.Model {
+
     public class LoanReminder : GUIDObject {
 
         public int LoanReminderID { get; set; }
@@ -17,4 +18,13 @@ namespace BioLink.Data.Model {
         }
 
     }
+
+    public class LoanReminderEx : LoanReminder {
+
+        public string LoanNumber { get; set; }
+        public DateTime? DateInitiated { get; set; }
+
+    }
+
+
 }

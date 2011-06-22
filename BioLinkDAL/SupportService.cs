@@ -1439,7 +1439,8 @@ namespace BioLink.Data {
         Journal,
         PlaceName,
         SiteOrRegion,
-        Contact
+        Contact,
+        Loan
     }
 
     public enum LookupOptions {

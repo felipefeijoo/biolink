@@ -13,6 +13,13 @@ namespace BioLink.Client.Tools {
 
         public LoanViewModel(Loan model) : base(model, ()=>model.LoanID) { }
 
+        public override string DisplayLabel {
+            get {
+                var refNumber = String.IsNullOrEmpty(LoanNumber) ? PermitNumber : LoanNumber;
+                return string.Format("{0}  {1}  Due: {2}", refNumber, RequestedBy, DueDateStr);
+            }
+        }
+
         public override ImageSource Icon {
             get {
                 if (base.Icon == null) {
@@ -26,6 +33,12 @@ namespace BioLink.Client.Tools {
             }
             set {
                 base.Icon = value;
+            }
+        }
+
+        public override System.Windows.FrameworkElement TooltipContent {
+            get {
+                return new LoanTooltipContent(LoanID, this);
             }
         }
 
@@ -183,6 +196,27 @@ namespace BioLink.Client.Tools {
             get { return DateUtils.ShortDate(DateDue); }
         }
 
+    }
 
+    public class LoanTooltipContent : TooltipContentBase {
+
+        public LoanTooltipContent(int objectId, ViewModelBase viewModel) : base(objectId, viewModel) { }
+
+        protected override void GetDetailText(OwnedDataObject model, TextTableBuilder builder) {
+            var loan = model as Loan;
+            builder.Add("Loan number", loan.LoanNumber);
+            builder.Add("Permit number", loan.PermitNumber);
+            builder.Add("Date initiated", loan.DateInitiated);
+            builder.Add("Date due", loan.DateDue);
+            builder.AddFormat("Requested by", LoanService.FormatName(loan.RequestorTitle, loan.RequestorGivenName, loan.RequestorName));
+            builder.AddFormat("Received by", LoanService.FormatName(loan.ReceiverTitle, loan.RequestorGivenName, loan.ReceiverName));
+            builder.AddFormat("Authorized by", LoanService.FormatName(loan.OriginatorTitle, loan.OriginatorGivenName, loan.OriginatorName));
+            builder.AddFormat("Status", (ViewModel as LoanViewModel).Status);
+        }
+
+        protected override OwnedDataObject GetModel() {
+            var service = new LoanService(User);
+            return service.GetLoan(ObjectID);
+        }
     }
 }

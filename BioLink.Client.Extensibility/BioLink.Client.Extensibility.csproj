@@ -623,6 +623,8 @@
     <Resource Include="images\Loan.png" />
     <Resource Include="images\Loan_Overdue.png" />
     <Resource Include="images\Refresh.png" />
+    <Resource Include="images\Reminder.png" />
+    <Resource Include="images\Reminder_Overdue.png" />
     <Content Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>

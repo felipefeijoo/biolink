@@ -31,6 +31,6 @@
         
         <Separator Grid.Row="2" Grid.ColumnSpan="2"  />
         
-        <CheckBox Grid.Row="3" Grid.ColumnSpan="2" Content="This reminder is closed" VerticalAlignment="Center" IsChecked="{Binding Path=Closed}" />
+        <CheckBox Grid.Row="3" Grid.ColumnSpan="2" Content="This reminder is closed" VerticalAlignment="Center" IsChecked="{Binding Path=Closed, Mode=TwoWay}" />
     </Grid>
 </ext:OneToManyDetailControl>
