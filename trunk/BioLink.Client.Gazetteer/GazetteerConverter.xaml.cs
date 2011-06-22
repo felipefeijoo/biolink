@@ -16,6 +16,8 @@ using BioLink.Client.Utilities;
 using BioLink.Data;
 using System.IO;
 using System.Data.OleDb;
+using Microsoft.Win32;
+using System.Collections.ObjectModel;
 
 namespace BioLink.Client.Gazetteer {
 
@@ -23,35 +25,23 @@ namespace BioLink.Client.Gazetteer {
     /// Interaction logic for GazetteerConverter.xaml
     /// </summary>
     public partial class GazetteerConverter : Window {
+
+        private ObservableCollection<GazetteerConversionTarget> _jobList = new ObservableCollection<GazetteerConversionTarget>();
         public GazetteerConverter() {
             InitializeComponent();
-            txtSource.FileSelected += new Action<string>(txtSource_FileSelected);
+
+            _jobList.Clear();
+            lst.ItemsSource = _jobList;
         }
 
-        void txtSource_FileSelected(string filename) {
-            PrefillDestination(filename);
-        }
-
-        private void PrefillDestination(string filename) {
-            string dest = null;
+        private string CalculateTargetName(string filename) {            
             var f = new FileInfo(filename);
             string destName = f.Name;
 
             if (f.Name.Contains(".")) {
                 destName = destName.Substring(0, destName.LastIndexOf('.'));
             }
-
-            if (string.IsNullOrWhiteSpace(txtDest.Text)) {                
-                dest = string.Format("{0}\\{1}.gaz", f.DirectoryName, destName);                
-            } else {
-                var existing = new FileInfo(txtDest.Text);
-                dest = string.Format("{0}\\{1}.gaz", existing.DirectoryName, destName);
-            }
-
-            if (!string.IsNullOrWhiteSpace(dest)) {
-                txtDest.Text = dest;
-            }
-
+            return string.Format("{0}\\{1}.gaz", f.DirectoryName, destName);                
         }
 
         private void btnConvert_Click(object sender, RoutedEventArgs e) {
@@ -59,29 +49,6 @@ namespace BioLink.Client.Gazetteer {
         }
 
         private void DoConvert() {
-            if (string.IsNullOrWhiteSpace(txtSource.Text)) {
-                ErrorMessage.Show("You must select a source gazetteer file to convert!");
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(txtDest.Text)) {
-                ErrorMessage.Show("You must enter a destination filename!");
-                return;
-            }
-
-            if (!File.Exists(txtSource.Text)) {
-                ErrorMessage.Show("Source file does not exist, or is not readable!");
-                return;
-            }
-
-            if (File.Exists(txtDest.Text)) {
-                if (!this.Question("The destination file already exists. Do you wish to overwrite it?", "Overwrite file?")) {
-                    return;
-                }                   
-            }
-
-            var source = txtSource.Text;
-            var dest = txtDest.Text;
 
             JobExecutor.QueueJob(() => {
                 try {
@@ -90,7 +57,20 @@ namespace BioLink.Client.Gazetteer {
                         btnConvert.IsEnabled = false;
                     });
 
-                    ConvertFile(source, dest);
+                    this.InvokeIfRequired(() => {
+                        totalProgressBar.Maximum = _jobList.Count;
+                        totalProgressBar.Value = 0;
+                    });
+
+                    foreach (GazetteerConversionTarget job in _jobList) {
+                        job.IsCurrent = true;
+                        ConvertFile(job);
+                        this.InvokeIfRequired(() => {
+                            totalProgressBar.Value++;
+                        });
+                        job.IsComplete = true;
+                        job.IsCurrent = false;
+                    }
                 } finally {
                     this.InvokeIfRequired(() => {
                         btnCancel.IsEnabled = true;
@@ -107,14 +87,14 @@ namespace BioLink.Client.Gazetteer {
             });
         }
 
-        private void ConvertFile(string sourceFile, string destFile) {
+        private void ConvertFile(GazetteerConversionTarget job) {
             // First try and connect to the source file...
             try {
-                int settingsCount = 0;
-                int divisionCount = 0;
-                int placeCount = 0;
-                int errors = 0;
-                using (var con = new OleDbConnection(@"Provider=Microsoft.JET.OLEDB.4.0;data source=" + sourceFile + ";Jet OLEDB:Database Password=123456")) {
+                job.SettingsCount = 0;
+                job.DivisionCount = 0;
+                job.PlaceCount = 0;
+                job.Errors = 0;
+                using (var con = new OleDbConnection(@"Provider=Microsoft.JET.OLEDB.4.0;data source=" + job.SourceFile + ";Jet OLEDB:Database Password=123456")) {
                     con.Open();
                     OleDbCommand cmd;
                     StatusMessage("Checking source file...");
@@ -132,7 +112,7 @@ namespace BioLink.Client.Gazetteer {
                         }
 
                         // If we get here we have a valid gaz file, so create the new file...
-                        var service = new GazetteerService(destFile, true);
+                        var service = new GazetteerService(job.TargetFile, true);
 
                         // begin a transaction for all the inserts...
                         service.BeginTransaction();
@@ -150,7 +130,7 @@ namespace BioLink.Client.Gazetteer {
                                         value = reader[2] as string;
                                     }
                                     service.SetSetting(key, value, useLongData);
-                                    settingsCount++;
+                                    job.SettingsCount++;
                                 }
                             }
                         }
@@ -163,7 +143,7 @@ namespace BioLink.Client.Gazetteer {
                             using (OleDbDataReader reader = cmd.ExecuteReader()) {
                                 while (reader.Read()) {
                                     service.AddDivision(reader[0] as string, reader[1] as string, reader[2] as string);
-                                    divisionCount++;
+                                    job.DivisionCount++;
                                 }
                             }
                         }
@@ -202,11 +182,11 @@ namespace BioLink.Client.Gazetteer {
                                         try {
                                             service.AddPlaceName(reader[0] as string, reader[1] as string, reader[2] as string, reader[3] as string, reader[4] as string, lat, lon);
                                         } catch (Exception) {
-                                            errors++;
+                                            job.Errors++;
                                         }
-                                        placeCount++;
+                                        job.PlaceCount++;
                                         progressBar.InvokeIfRequired(() => {
-                                            progressBar.Value = placeCount;
+                                            progressBar.Value = job.PlaceCount;
                                         });
                                     }
                                 }
@@ -223,9 +203,7 @@ namespace BioLink.Client.Gazetteer {
                     
                 }
 
-                
-
-                MessageBox.Show( string.Format("Conversion complete with {3} errors: \n{0} Settings\n{1} Divisions\n{2} Place names.", settingsCount, divisionCount, placeCount, errors), "Conversion complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                // MessageBox.Show( string.Format("Conversion complete with {3} errors: \n{0} Settings\n{1} Divisions\n{2} Place names.", job.SettingsCount, job.DivisionCount, job.PlaceCount, job.Errors), "Conversion complete", MessageBoxButton.OK, MessageBoxImage.Information);
             } catch (Exception ex) {
                 ErrorMessage.Show(ex.ToString());
             }
@@ -234,6 +212,89 @@ namespace BioLink.Client.Gazetteer {
         private void btnCancel_Click(object sender, RoutedEventArgs e) {
             this.Close();
         }
+
+        private void btnAddFiles_Click(object sender, RoutedEventArgs e) {
+            AddFiles();
+        }
+
+        private void AddFiles() {
+            var dlg = new OpenFileDialog();
+            dlg.Multiselect = true;
+            dlg.Filter = "eGaz 2.0 files (*.mdb)|*.mdb|All files (*.*)|*.*";
+            if (dlg.ShowDialog().ValueOrFalse()) {
+                foreach (string filename in dlg.FileNames) {
+                    var job = new GazetteerConversionTarget { SourceFile = filename, TargetFile = CalculateTargetName(filename) };
+                    _jobList.Add(job);
+                }
+            }
+        }
+
+        private void btnRemoveFile_Click(object sender, RoutedEventArgs e) {
+            var selected = lst.SelectedItem as GazetteerConversionTarget;
+            if (selected != null) {
+                _jobList.Remove(selected);
+            }
+        }
+    }
+
+    public class GazetteerConversionTarget : ViewModelBase {
+
+        private bool _isCurrent;
+        private bool _isComplete;
+
+        public string SourceFile { get; set; }
+        public string TargetFile { get; set; }
+        public int SettingsCount { get; set; }
+        public int DivisionCount { get; set; }
+        public int PlaceCount { get; set; }
+        public int Errors { get; set; }
+
+        public bool IsCurrent {
+            get { return _isCurrent; }
+            set { 
+                SetProperty("IsCurrent", ref _isCurrent, value);
+                RaisePropertyChanged("Icon");
+            }
+        }
+
+        public bool IsComplete {
+            get { return _isComplete; }
+            set {
+                SetProperty("IsComplete", ref _isComplete, value);
+                RaisePropertyChanged("Icon");
+            }
+        }
+
+        public override string DisplayLabel {
+            get {
+                if (IsComplete) {
+                    return string.Format("{0} ({1} Settings {2} Divisions {3} Places {4} Errors)", SourceFile, SettingsCount, DivisionCount, PlaceCount, Errors);
+                }
+
+                return string.Format("{0}", SourceFile);             
+
+            }
+        }
+
+        public override ImageSource Icon {
+            get {
+                if (IsCurrent) {
+                    return ImageCache.GetImage("pack://application:,,,/BioLink.Client.Extensibility;component/images/RightArrowSmall.png");
+                } else if (IsComplete) {
+                    return ImageCache.GetImage("pack://application:,,,/BioLink.Client.Extensibility;component/images/Tick.png");
+                }
+                return  null; // ImageCache.GetImage("pack://application:,,,/BioLink.Client.Extensibility;component/images/AddNewSmall.png");
+            }
+            set {
+                base.Icon = value;
+            }
+        }
+
+        public override int? ObjectID {
+            get { return null; }
+        }
+
+
     }
 
 }
