@@ -13,7 +13,7 @@
         
         <TextBlock Text="You have selected to export one or more taxon. Please select how you wish to export this data." Height="51" Name="label1" VerticalAlignment="Top" TextWrapping="WrapWithOverflow" Margin="12,12,12,0" />
         <TextBlock Text="Please select a destination file:" Height="28" Margin="12,69,12,0" Name="label2" VerticalAlignment="Top" />
-        <my:FilenameTextBox Margin="12,94,12,0" Name="txtFilename" VerticalAlignment="Top" />
+        <my:FilenameTextBox Margin="12,94,12,0" Name="txtFilename" VerticalAlignment="Top" Mode="Save" />
         
         <Grid Margin="12,123,12,0" Height="122" VerticalAlignment="Top">
             <Grid.ColumnDefinitions>
