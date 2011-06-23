@@ -69,18 +69,18 @@
                 </Grid.RowDefinitions>
                 
                 <ToolBar Margin="2">
-                    <Button x:Name="btnReplaceImage">
+                    <Button x:Name="btnReplaceImage" ToolTip="Replace this multimedia item">
                         <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/Open.png" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
                     </Button>
-                    <Button x:Name="btnSaveAs" Click="btnSaveAs_Click">
+                    <Button x:Name="btnSaveAs" Click="btnSaveAs_Click" ToolTip="Save item to disk">
                         <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/Save.png" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
                     </Button>
-                    
-                    <Button x:Name="btnProperties" Click="btnProperties_Click">
+
+                    <Button x:Name="btnProperties" Click="btnProperties_Click" ToolTip="Edit/View multimedia properties ">
                         <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/Properties.png" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
                     </Button>
 
-                    <Button x:Name="btnLaunch" Click="btnLaunch_Click">
+                    <Button x:Name="btnLaunch" Click="btnLaunch_Click" ToolTip="Launch the default viewer for this multimedia">
                         <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/Launch.png" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
                     </Button>
 
