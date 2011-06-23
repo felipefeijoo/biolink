@@ -6,7 +6,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:src="clr-namespace:BioLink.Client.Extensibility"
              mc:Ignorable="d" 
-             d:DesignHeight="294" d:DesignWidth="467" WindowStartupLocation="CenterOwner" UseLayoutRounding="True" Closing="Window_Closing" Icon="/BioLink.Client.Extensibility;component/images/Biolink.ico">
+             d:DesignHeight="349" d:DesignWidth="651" WindowStartupLocation="CenterOwner" UseLayoutRounding="True" Closing="Window_Closing" Icon="/BioLink.Client.Extensibility;component/images/Biolink.ico" SizeToContent="WidthAndHeight">
     <Grid x:Name="grid">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -15,11 +15,21 @@
         </Grid.RowDefinitions>        
         <Grid Grid.Row="0" x:Name="ControlHost"></Grid>
         <Grid Grid.Row="1" Background="{x:Static SystemColors.ControlBrush}" x:Name="buttonBar">
-            <Button Content="Cancel" Margin="0,0,6,6" Name="btnCancel" Height="23" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" IsCancel="True" Click="btnCancel_Click" />
-            <Button Content="_Apply" Height="23" Margin="0,0,87,6" Name="btnApply" VerticalAlignment="Bottom" IsEnabled="False" Click="btnApply_Click" Width="75" HorizontalAlignment="Right" />
-            <Button x:FieldModifier="public" Content="OK" Height="23" HorizontalAlignment="Right" Margin="0,0,168,6" Name="btnOk" VerticalAlignment="Bottom" Width="75" IsDefault="False" Click="btnOk_Click" />
-            <Button Content="_Select" Height="23" HorizontalAlignment="Right" Margin="0,0,250,8" Name="btnSelect" VerticalAlignment="Bottom" Width="75" Visibility="Hidden" />
-            <ToggleButton Content="?" Height="23" HorizontalAlignment="Left" Margin="6,9,0,0" Name="btnDebug" VerticalAlignment="Top" Width="23" Click="btnDebug_Click" />
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal" x:Name="CustomButtonBar" Grid.Column="0">
+                <ToggleButton Content="?" Height="23" Name="btnDebug" VerticalAlignment="Center" Width="23" Click="btnDebug_Click" Margin="6,0,3,0"/>
+            </StackPanel>
+            
+            <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
+                <Button Content="_Select" Height="23" Name="btnSelect" VerticalAlignment="Center" Width="75" Visibility="Hidden" Margin="3"/>
+                <Button x:FieldModifier="public" Content="OK" Height="23" Name="btnOk" VerticalAlignment="Center" Width="75" IsDefault="False" Click="btnOk_Click" Margin="3"/>
+                <Button Content="_Apply" Height="23" Name="btnApply" VerticalAlignment="Center" IsEnabled="False" Click="btnApply_Click" Width="75" Margin="3"/>
+                <Button Content="Cancel" Name="btnCancel" Height="23" VerticalAlignment="Center" Width="75" IsCancel="True" Click="btnCancel_Click" Margin="3,0,6,0"/>
+            </StackPanel>
+            
         </Grid>
         <ListBox Grid.Row="2" Name="lstPendingChanges" />
     </Grid>

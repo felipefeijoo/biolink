@@ -164,16 +164,11 @@ namespace BioLink.Client.Maps {
         }
 
         void mapBox_DragOver(object sender, System.Windows.Forms.DragEventArgs e) {
-
-
             var pointGenerator = GetPointGenerator(e);
-
             e.Effect = System.Windows.Forms.DragDropEffects.None;
-
             if (pointGenerator != null) {
                 e.Effect = System.Windows.Forms.DragDropEffects.Link;
             }
-
         }
 
         void MapControl_Unloaded(object sender, System.Windows.RoutedEventArgs e) {
@@ -211,10 +206,11 @@ namespace BioLink.Client.Maps {
             });            
         }
 
-        private Dictionary<Int32, FeatureDataRow> FindIDs(List<FeatureDataRow> rows, string columnName) {
+        private Dictionary<Int32, FeatureDataRow> FindIDs(List<FeatureDataRowLayerPair> rows, string columnName) {
             var results = new Dictionary<Int32, FeatureDataRow>();
 
-            foreach (FeatureDataRow row in rows) {
+            foreach (FeatureDataRowLayerPair rowPair in rows) {
+                var row = rowPair.FeatureDataRow;
                 foreach (DataColumn col in row.Table.Columns) {
                     if (col.ColumnName.Contains(columnName)) {
                         int id = (int)row[col.ColumnName];
@@ -336,6 +332,12 @@ namespace BioLink.Client.Maps {
                         BuildMenuItem(menu, "Drop distance anchor", () => {
                             DropDistanceAnchor();
                         });
+                        
+                        BuildMenuItem(menu, "Layer info at this point", () => {
+                            var frm = new FeatureInfoControl(rows);
+                            frm.ShowDialog();                            
+                        });
+
                     } else {
                         BuildMenuItem(menu, "Hide distance anchor", () => {
                             HideDistanceAnchor();
@@ -522,9 +524,9 @@ namespace BioLink.Client.Maps {
             return null;
         }
 
-        public List<FeatureDataRow> Drill(SharpMap.Geometries.Point pos) {
+        public List<FeatureDataRowLayerPair> Drill(SharpMap.Geometries.Point pos) {
 
-            var list = new List<FeatureDataRow>();
+            var list = new List<FeatureDataRowLayerPair>();
 
             // BoundingBox bbox = pos.GetBoundingBox();            
             double delta = mapBox.Map.MapHeight * 0.01;
@@ -545,7 +547,8 @@ namespace BioLink.Client.Maps {
                             layer.DataSource.Close();
                         } else {
                             for (int i = 0; i < tbl.Rows.Count; ++i) {
-                                list.Add(tbl.Rows[i] as FeatureDataRow);
+                                var data = new FeatureDataRowLayerPair { FeatureDataRow = tbl.Rows[i] as FeatureDataRow, Layer = l };
+                                list.Add(data);
                             }
                         }
                     }
@@ -1004,6 +1007,13 @@ namespace BioLink.Client.Maps {
         public System.Drawing.Drawing2D.HatchStyle? HatchStyle { get; set; }
         public System.Drawing.Color FillColor { get; set; }
         public bool DrawOutline { get; set; }
+
+    }
+
+    public class FeatureDataRowLayerPair {
+
+        public FeatureDataRow FeatureDataRow { get; set; }
+        public ILayer Layer { get; set; }
 
     }
 

@@ -14,27 +14,27 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="32" />
-            <RowDefinition />
+            <RowDefinition Height="*"/>
             <RowDefinition Height="37" />
         </Grid.RowDefinitions> 
-        <ToolBar Grid.Row="0" x:Name="toolbar">
-            <Button x:Name="btnAddLayer" Click="btnAddLayer_Click">
+        <ToolBar Grid.Row="0" x:Name="toolbar" SnapsToDevicePixels="True" UseLayoutRounding="True">
+            <Button x:Name="btnAddLayer" Click="btnAddLayer_Click" ToolTip="Add a new layer">
                 <Button.Content>
                     <Image Source="images/AddLayer.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None"/>
                 </Button.Content>
             </Button>
-            <Button x:Name="btnDeleteLayer" Click="btnDeleteLayer_Click">
+            <Button x:Name="btnDeleteLayer" Click="btnDeleteLayer_Click" ToolTip="Remove the selected layer">
                 <Button.Content>
                     <Image Source="images/RemoveLayer.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None"/>
                 </Button.Content>
             </Button>
             <Separator />
-            <Button x:Name="btnLayerUp" Click="btnLayerUp_Click">
+            <Button x:Name="btnLayerUp" Click="btnLayerUp_Click" ToolTip="Move the selected layer up">
                 <Button.Content>
                     <Image Source="images/LayerUp.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None"/>
                 </Button.Content>
             </Button>
-            <Button x:Name="btnLayerDown" Click="btnLayerDown_Click">
+            <Button x:Name="btnLayerDown" Click="btnLayerDown_Click" ToolTip="Move the selected layer down">
                 <Button.Content>
                     <Image Source="images/LayerDown.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None"/>
                 </Button.Content>
@@ -49,7 +49,7 @@
             <ListBox Grid.Column="0" Name="lstLayers" Margin="5" SelectionChanged="lstLayers_SelectionChanged">
                 <ListBox.Resources>
                     <DataTemplate DataType="{x:Type src:LayerViewModel}">
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal" ToolTip="{Binding Path=TooltipContent}" ToolTipService.ShowDuration="30000">
                             <TextBlock Text="{Binding Name}" />
                         </StackPanel>
                     </DataTemplate>

@@ -26,7 +26,7 @@
                 </Button.Content>
             </Button>
             <Separator />
-            <Button x:Name="btnLayers" Click="btnLayers_Click" >
+            <Button x:Name="btnLayers" Click="btnLayers_Click" ToolTip="Add, remove or modify Map layers" >
                 <Button.Content>
                     <Image Source="images/Layers.png" Stretch="None" UseLayoutRounding="True" />
                 </Button.Content>
