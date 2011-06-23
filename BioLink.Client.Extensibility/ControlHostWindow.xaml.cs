@@ -88,6 +88,11 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
+        public void AddCustomButton(FrameworkElement element) {
+            element.Margin = new Thickness(3, 0, 3, 0);
+            CustomButtonBar.Children.Add(element);
+        }
+
         public bool RequestClose() {
             if (HasPendingChanges) {
                 return this.DiscardChangesQuestion();

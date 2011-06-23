@@ -81,15 +81,58 @@ namespace BioLink.Client.Maps {
 
 
     public class RasterLayerViewModel : LayerViewModel {
-        
 
         public RasterLayerViewModel(MyGdalRasterLayer model) : base(model) { }
+
+        public override FrameworkElement TooltipContent {
+            get { return new RasterLayerTooltipContent(this); }
+        }
 
         public string Name {
             get { return Model.LayerName; }
         }
 
+    }
 
+    public class RasterLayerTooltipContent : TooltipContentBase {
+
+        public RasterLayerTooltipContent(RasterLayerViewModel viewModel) : base(0, viewModel) { }
+
+        protected override void GetDetailText(Data.Model.OwnedDataObject model, TextTableBuilder builder) {
+            var vm = ViewModel as LayerViewModel;
+            if (vm != null) {
+                var m = vm.Model as GdalRasterLayer;
+                if (m != null) {
+                    builder.Add("Layer type", "Raster");
+                    builder.Add("Filename", m.Filename);
+                }
+            }
+        }
+
+        protected override Data.Model.OwnedDataObject GetModel() {
+            return null;
+        }
+    }
+
+
+    public class VectorLayerTooltipContent : TooltipContentBase {
+
+        public VectorLayerTooltipContent(VectorLayerViewModel viewModel) : base(0, viewModel) { }
+
+        protected override void GetDetailText(Data.Model.OwnedDataObject model, TextTableBuilder builder) {
+            var vm = ViewModel as LayerViewModel;
+            if (vm != null) {
+                var m = vm.Model as VectorLayer;
+                if (m != null) {
+                    builder.Add("Layer type", "Vector");
+                    builder.Add("Filename", m.DataSource.ConnectionID);
+                }
+            }
+        }
+
+        protected override Data.Model.OwnedDataObject GetModel() {
+            return null;
+        }
     }
 
     public class VectorLayerViewModel : LayerViewModel {
@@ -108,6 +151,14 @@ namespace BioLink.Client.Maps {
             _Line = model.Style.Line;
             _drawOutline = model.Style.EnableOutline;
             _symbol = model.Style.Symbol;
+        }
+
+        public override string DisplayLabel {
+            get { return Name; }
+        }
+
+        public override FrameworkElement TooltipContent {
+            get { return new VectorLayerTooltipContent(this); }
         }
 
         public string Name {

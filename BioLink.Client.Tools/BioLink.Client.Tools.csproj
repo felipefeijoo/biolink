@@ -64,7 +64,7 @@
       <DependentUpon>AdministrationControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="BoxCarDistributionModel.cs" />
-    <Compile Include="LoanFormManager.xaml.cs">
+    <Compile Include="Loans\LoanFormManager.xaml.cs">
       <DependentUpon>LoanFormManager.xaml</DependentUpon>
     </Compile>
     <Compile Include="Loans\LoanRemindersControl.xaml.cs">
@@ -249,7 +249,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="LoanFormManager.xaml">
+    <Page Include="Loans\LoanFormManager.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
