@@ -18,6 +18,7 @@ using BioLink.Data.Model;
 using System.Threading;
 using System.Collections.ObjectModel;
 using Microsoft.Win32;
+using System.IO;
 
 namespace BioLink.Client.Gazetteer {
     /// <summary>
@@ -36,6 +37,7 @@ namespace BioLink.Client.Gazetteer {
         private OffsetControl _offsetControl;
         private DistanceDirectionControl _dirDistControl;
         private Action<SelectionResult> _selectionCallback;
+        private ObservableCollection<GazetteerFile> _fileMRU;
 
         #region Designer CTOR
         public Gazetteer() {
@@ -52,12 +54,16 @@ namespace BioLink.Client.Gazetteer {
             lstResults.ItemsSource = _searchModel;
             _owner = owner;
             btnDataInfo.IsEnabled = false;
-            if (_owner != null) {
-                string lastFile = Config.GetUser(_owner.User, "gazetteer.lastFile", "");
-                if (!String.IsNullOrEmpty(lastFile)) {
-                    LoadFile(lastFile);
-                }
-            }
+            
+            List<string> list = Config.GetUser(_owner.User, "gazetteer.recentlyUsedFiles", new List<string>());
+
+            _fileMRU = new ObservableCollection<GazetteerFile>(list.ConvertAll((path) => {
+                return new GazetteerFile(path);
+            }));
+
+            cmbFile.ItemsSource = _fileMRU;
+
+            cmbFile.SelectionChanged += new SelectionChangedEventHandler(cmbFile_SelectionChanged);
 
             _offsetControl = new OffsetControl();
             _offsetControl.SelectedPlaceNameChanged += new Action<PlaceName>((place) => {
@@ -76,6 +82,34 @@ namespace BioLink.Client.Gazetteer {
 
             optFindLatLong.IsChecked = true;
 
+            Loaded += new RoutedEventHandler(Gazetteer_Loaded);
+
+        }
+
+        void Gazetteer_Loaded(object sender, RoutedEventArgs e) {
+            string lastFile = Config.GetUser(_owner.User, "gazetteer.lastFile", "");
+            if (!String.IsNullOrEmpty(lastFile)) {
+                var gazFile = FindOrAddToMRU(lastFile);
+                cmbFile.SelectedItem = gazFile;
+            }
+        }
+
+        private GazetteerFile FindOrAddToMRU(string filename) {
+            var gazFile = _fileMRU.FirstOrDefault((m) => {
+                return m.FullPath.Equals(filename, StringComparison.CurrentCultureIgnoreCase);
+            });
+            if (gazFile == null) {
+                gazFile = AddFileToMRU(filename);
+            }
+
+            return gazFile;
+        }
+
+        void cmbFile_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            var selected = cmbFile.SelectedItem as GazetteerFile;
+            if (selected != null) {
+                LoadFile(selected.FullPath);
+            }
         }
 
         void lstResults_SelectionChanged(object sender, SelectionChangedEventArgs e) {
@@ -157,17 +191,41 @@ namespace BioLink.Client.Gazetteer {
 
         private void LoadFile(string filename) {
             try {
+
+                if (filename == null) {
+                    return;
+                }
+
                 _service = new GazetteerService(filename);
-                lblFile.Content = _service.FileName;
-                btnOpen.Content = _owner.GetCaption("Gazetteer.btnOpen.change");
+                // cmbFile.Text = filename;
                 btnDataInfo.IsEnabled = true;
                 // now populate the Divisions combo box...
                 var divisions = _service.GetDivisions();
                 cmbDivision.ItemsSource = divisions;
                 cmbDivision.SelectedIndex = 0;
+                AddFileToMRU(filename);                
             } catch (Exception ex) {
                 ErrorMessage.Show(ex.ToString());
             }
+        }
+
+        private GazetteerFile AddFileToMRU(string filename) {
+
+            var gazFile = _fileMRU.FirstOrDefault((c) => {
+                return c.FullPath.Equals(filename, StringComparison.CurrentCultureIgnoreCase);
+            });
+
+            if (gazFile == null) {
+                gazFile = new GazetteerFile(filename);
+                _fileMRU.Insert(0, gazFile);
+            } 
+
+            int mruLength = Config.GetGlobal("Gazetteer.MaxMRUItems", 4);
+            while (_fileMRU.Count > mruLength) {
+                _fileMRU.RemoveAt(mruLength);
+            }
+
+            return gazFile;
         }
 
         private void btnOpen_Click(object sender, RoutedEventArgs e) {
@@ -181,6 +239,8 @@ namespace BioLink.Client.Gazetteer {
             bool? result = dlg.ShowDialog();
             if (result.GetValueOrDefault(false)) {
                 LoadFile(dlg.FileName);
+                var gazFile = FindOrAddToMRU(dlg.FileName);
+                cmbFile.SelectedItem = gazFile;
             }
         }
 
@@ -274,6 +334,9 @@ namespace BioLink.Client.Gazetteer {
         public void Dispose() {
             if (_service != null) {
                 Config.SetUser(_owner.User, "gazetteer.lastFile", _service.Filename);
+                Config.SetUser(_owner.User, "gazetteer.recentlyUsedFiles", new List<string>( _fileMRU.Select((m) => {
+                    return m.FullPath;
+                })));
                 _service.Dispose();
             }
         }
@@ -406,5 +469,30 @@ namespace BioLink.Client.Gazetteer {
         }
 
     }
+
+    public class GazetteerFile {
+        public GazetteerFile(string path) {
+            FullPath = path;
+            var info = new FileInfo(path);
+            Name = info.Name;
+        }
+
+        public string FullPath { get; set; }
+
+        public string Name { get; private set; }
+        
+    }
+
+    public class GazFileComparer : IEqualityComparer<GazetteerFile> {
+
+        public bool Equals(GazetteerFile x, GazetteerFile y) {
+            return x.FullPath.Equals(y.FullPath, StringComparison.CurrentCultureIgnoreCase);
+        }
+
+        public int GetHashCode(GazetteerFile obj) {
+            return obj.FullPath.GetHashCode();
+        }
+    }
     
 }
+
