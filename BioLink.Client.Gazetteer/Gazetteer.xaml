@@ -12,14 +12,43 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="StringResources.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            
+            <SolidColorBrush x:Key="SelectedBackgroundBrush" Color="#DDD" />
+            <SolidColorBrush x:Key="DisabledForegroundBrush" Color="#888" />
+            <ControlTemplate x:Key="FullDescriptionTemplate" TargetType="ComboBoxItem">
+                <Border Name="Border" Padding="2" SnapsToDevicePixels="true">
+                    <StackPanel>
+                        <TextBlock Text="{Binding Path=FullPath}"/>
+                    </StackPanel>
+                </Border>
+                <ControlTemplate.Triggers>
+                    <Trigger Property="IsHighlighted" Value="true">
+                        <Setter TargetName="Border" Property="Background" Value="{StaticResource SelectedBackgroundBrush}"/>
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="false">
+                        <Setter Property="Foreground" Value="{StaticResource DisabledForegroundBrush}"/>
+                    </Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
 
     <Grid>
-
-        <Label Content="{StaticResource Gazetteer.SelectFile}" Height="28" Name="lblFile" VerticalAlignment="Top" Margin="12,7,161,0" />
-        <Button Content="{StaticResource Gazetteer.btnOpen}" Height="23" Margin="0,8,12,0" Name="btnOpen" VerticalAlignment="Top" HorizontalAlignment="Right" Width="81" Click="btnOpen_Click" />
-
+        <ComboBox Height="23" Margin="12,8,131,0" Name="cmbFile" VerticalAlignment="Top" Text="{Binding Path=Name}" >
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Path=Name}"/>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+            <ComboBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ComboBoxItem}">
+                    <Setter Property="Template" Value="{StaticResource FullDescriptionTemplate}" />
+                </Style>
+            </ComboBox.ItemContainerStyle>
+        </ComboBox>
+        
+        <Button Content="{StaticResource Gazetteer.btnOpen}" Height="23" Margin="0,8,12,0" Name="btnOpen" VerticalAlignment="Top" HorizontalAlignment="Right" Width="81" Click="btnOpen_Click" ToolTip="Select a gazetteer file"/>
+        
         <Image Height="16" HorizontalAlignment="Left" Margin="12,44,0,0" Name="imgSearch" VerticalAlignment="Top" Width="16" Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/Find.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True"/>
         <my:DelayedTriggerTextbox Margin="34,41,245,0" Name="txtFind" VerticalAlignment="Top" TypingPaused="delayedTriggerTextbox1_TypingPaused" TextChanged="delayedTriggerTextbox1_TextChanged" KeyUp="delayedTriggerTextbox1_KeyUp" MinWidth="30" />
         <CheckBox Content="{StaticResource Gazetteer.chkLimit}" Height="18" HorizontalAlignment="Right" Margin="0,46,131,0" Name="chkLimit" VerticalAlignment="Top" Width="104" Checked="chkLimit_Checked" Unchecked="chkLimit_Unchecked" />
@@ -50,5 +79,6 @@
         <Button Height="23" HorizontalAlignment="Right" Margin="0,8,99,0" Name="btnDataInfo" VerticalAlignment="Top" Width="24" Click="btnDataInfo_Click">
             <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/info.png" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" ImageFailed="Image_ImageFailed" />
         </Button>
+        
     </Grid>
 </UserControl>
