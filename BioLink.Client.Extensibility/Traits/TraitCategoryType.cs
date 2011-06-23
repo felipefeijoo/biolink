@@ -16,7 +16,8 @@ namespace BioLink.Client.Extensibility {
         Reference,
         Journal,
         Contact,
-        Loan
+        Loan,
+        Biolink
     }
 
 }

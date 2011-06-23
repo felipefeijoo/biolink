@@ -34,8 +34,7 @@ namespace BioLink.Client.Tools {
         private bool _IsDragging;
         private Point _startPoint;
 
-        public MultimediaManager(User user)
-            : base(user, "MultimediaManager") {
+        public MultimediaManager(User user) : base(user, "MultimediaManager") {
             InitializeComponent();
 
             var service = new SupportService(user);

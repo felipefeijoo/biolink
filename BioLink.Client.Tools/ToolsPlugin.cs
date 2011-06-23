@@ -76,12 +76,18 @@ namespace BioLink.Client.Tools {
                 "{'Name':'Reminders', 'Header' : 'Reminders'}"
             ));
 
-
             contrib.Add(new MenuWorkspaceContribution(this, "AddNewLoan", (obj, e) => { AddNewLoan(); },
                 String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
                 "{'Name':'Loans', 'Header':'_Loans'}",
                 "{'Name':'AddNewLoan', 'Header' : '_Add new Loan'}"
             ));
+
+            contrib.Add(new MenuWorkspaceContribution(this, "ManageLoanForms", (obj, e) => { ShowLoanFormManager(); },
+                String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
+                "{'Name':'Loans', 'Header':'_Loans'}",
+                "{'Name':'ManageLoanForms', 'Header' : '_Manage Loan Forms'}"
+            ));
+
 
             // Settings...
 
@@ -154,6 +160,11 @@ namespace BioLink.Client.Tools {
         private ControlHostWindow ShowLoanReminders() {
             return ShowSingleton("Reminders", () => new OverdueLoansControl(User, this));
         }
+
+        private ControlHostWindow ShowLoanFormManager() {
+            return ShowSingleton("Loan Forms", () => new LoanFormManager(User, this));
+        }
+
 
         private void ShowPhraseManager() {
             ShowSingleton("Phrases", () => new PhraseManager(User));
