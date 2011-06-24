@@ -52,7 +52,11 @@ namespace SharpMap.Layers {
     /// </remarks>
     public class MyGdalRasterLayer : Layer, ICanQueryLayer, IDisposable {
         static MyGdalRasterLayer() {
-            FwToolsHelper.Configure();
+            try {
+                FwToolsHelper.Configure();
+            } catch (Exception) {
+
+            }
         }
         private int _bitDepth = 8;
         private bool _colorCorrect = true; // apply color correction values
