@@ -44,7 +44,7 @@ namespace BioLink.Client.Tools {
     public class BuiltInProxyViewModel : ViewModelBase {
 
         public override int? ObjectID {
-            get { return 45057; }
+            get { return SupportService.BIOLINK_INTRA_CAT_ID; }
         }
     }
 }
