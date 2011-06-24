@@ -209,6 +209,9 @@
     <Resource Include="images\LayerUp.png" />
     <Resource Include="images\RemoveLayer.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\info.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir "$(SolutionDir)\BiolinkApplication\bin\Debug"

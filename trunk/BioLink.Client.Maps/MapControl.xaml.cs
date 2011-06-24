@@ -93,6 +93,8 @@ namespace BioLink.Client.Maps {
 
             });
 
+            InfoGrid.SizeChanged += new System.Windows.SizeChangedEventHandler(InfoGrid_SizeChanged);
+
             mapBox.MouseUp += new MapBox.MouseEventHandler(map_MouseUp);
 
             var user = PluginManager.Instance.User;
@@ -106,6 +108,8 @@ namespace BioLink.Client.Maps {
             mapBox.BackColor = backcolor;
 
             SerializedEnvelope env = Config.GetUser<SerializedEnvelope>(user, "MapTool." + mode.ToString() + ".LastExtent", null);
+
+            HideInfoPanel();
 
             this.Loaded += new System.Windows.RoutedEventHandler((source, e) => {
                 if (env != null) {
@@ -121,9 +125,40 @@ namespace BioLink.Client.Maps {
 
             mapBox.DragOver += new System.Windows.Forms.DragEventHandler(mapBox_DragOver);
             mapBox.DragDrop += new System.Windows.Forms.DragEventHandler(mapBox_DragDrop);
+
+            btnInfo.Checked += new System.Windows.RoutedEventHandler(btnInfo_Checked);
+            btnInfo.Unchecked += new System.Windows.RoutedEventHandler(btnInfo_Unchecked);
             
             Unloaded += new System.Windows.RoutedEventHandler(MapControl_Unloaded);
 
+        }
+
+        void btnInfo_Unchecked(object sender, System.Windows.RoutedEventArgs e) {
+            HideInfoPanel();
+        }
+
+        void btnInfo_Checked(object sender, System.Windows.RoutedEventArgs e) {
+            ShowInfoPanel();
+        }
+
+        private void HideInfoPanel() {
+            infoGridSplitter.Visibility = System.Windows.Visibility.Collapsed;
+            InfoGrid.Visibility = System.Windows.Visibility.Collapsed;
+            mapGrid.ColumnDefinitions[1].Width = new System.Windows.GridLength(0);
+            mapGrid.ColumnDefinitions[2].Width = new System.Windows.GridLength(0);
+            _resizeTimer.Change(RESIZE_TIMEOUT, Timeout.Infinite);
+        }
+
+        private void ShowInfoPanel() {
+            infoGridSplitter.Visibility = System.Windows.Visibility.Visible;
+            InfoGrid.Visibility = System.Windows.Visibility.Visible;
+            mapGrid.ColumnDefinitions[1].Width = new System.Windows.GridLength(6);
+            mapGrid.ColumnDefinitions[2].Width = new System.Windows.GridLength(250);
+            _resizeTimer.Change(RESIZE_TIMEOUT, Timeout.Infinite);
+        }
+
+        void InfoGrid_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e) {
+            _resizeTimer.Change(RESIZE_TIMEOUT, Timeout.Infinite);
         }
 
         private IMapPointSetGenerator GetPointGenerator(System.Windows.Forms.DragEventArgs e) {
@@ -333,11 +368,6 @@ namespace BioLink.Client.Maps {
                             DropDistanceAnchor();
                         });
                         
-                        BuildMenuItem(menu, "Layer info at this point", () => {
-                            var frm = new FeatureInfoControl(rows);
-                            frm.ShowDialog();                            
-                        });
-
                     } else {
                         BuildMenuItem(menu, "Hide distance anchor", () => {
                             HideDistanceAnchor();
@@ -370,13 +400,17 @@ namespace BioLink.Client.Maps {
                 menu.Show(mapBox, evt.Location);
             } else {
 
-                if (mapBox.ActiveTool == MapBox.Tools.None) {
-                    
-
-                    if (Mode == MapMode.RegionSelect) {
+                if (mapBox.ActiveTool == MapBox.Tools.None || mapBox.ActiveTool== MapBox.Tools.Pan) {
+                    if (Mode == MapMode.RegionSelect && mapBox.ActiveTool == MapBox.Tools.None) {
                         SelectRegion(pointClick);
-                    } 
-                }
+                    } else {
+                        if (btnInfo.IsChecked.ValueOrFalse()) {
+                            var rows = Drill(pointClick);
+                            featureInfo.DisplayFeatures(pointClick, rows);   
+                        }
+                    }
+                }                
+
             }
         }
 

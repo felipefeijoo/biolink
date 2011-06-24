@@ -21,15 +21,21 @@ namespace BioLink.Client.Maps {
     /// <summary>
     /// Interaction logic for FeatureInfoControl.xaml
     /// </summary>
-    public partial class FeatureInfoControl : Window {
+    public partial class FeatureInfoControl : UserControl {
 
         private ObservableCollection<FeatureDataElement> _model;
 
-        public FeatureInfoControl(List<FeatureDataRowLayerPair> rows) {
+        public FeatureInfoControl() {
             InitializeComponent();
 
+        }
+
+        public void DisplayFeatures(SharpMap.Geometries.Point point, List<FeatureDataRowLayerPair> rows) {
+
+            lblPosition.Content = String.Format("Info at: {0} - {1}", GeoUtils.DecDegToDMS(point.X, CoordinateType.Longitude), GeoUtils.DecDegToDMS(point.Y, CoordinateType.Latitude));
+
             _model = new ObservableCollection<FeatureDataElement>();
-            foreach (FeatureDataRowLayerPair info in rows) {                
+            foreach (FeatureDataRowLayerPair info in rows) {
                 foreach (DataColumn col in info.FeatureDataRow.Table.Columns) {
                     var item = new FeatureDataElement { Name = col.ColumnName, Value = info.FeatureDataRow[col.ColumnName].ToString(), LayerName = info.Layer.LayerName };
                     _model.Add(item);
@@ -37,6 +43,10 @@ namespace BioLink.Client.Maps {
             }
 
             lvw.ItemsSource = _model;
+
+            CollectionView myView = (CollectionView)CollectionViewSource.GetDefaultView(lvw.ItemsSource);
+
+            myView.GroupDescriptions.Add(new PropertyGroupDescription("LayerName"));
 
         }
 

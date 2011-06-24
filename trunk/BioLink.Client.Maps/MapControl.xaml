@@ -17,50 +17,63 @@
         <ToolBar>
             <Button x:Name="btnSaveImage" ToolTip="Save as image" Click="btnSaveImage_Click">
                 <Button.Content>
-                    <Image Source="images/Save.png" Stretch="None" UseLayoutRounding="True" />
+                    <Image Source="images/Save.png" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True" />
                 </Button.Content>
             </Button>
             <Button x:Name="btnCopyImage" ToolTip="Copy image to clipboard" Click="btnCopyImage_Click">
                 <Button.Content>
-                    <Image Source="images/Copy.png" Stretch="None" UseLayoutRounding="True" />
+                    <Image Source="images/Copy.png" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True"/>
                 </Button.Content>
             </Button>
             <Separator />
             <Button x:Name="btnLayers" Click="btnLayers_Click" ToolTip="Add, remove or modify Map layers" >
                 <Button.Content>
-                    <Image Source="images/Layers.png" Stretch="None" UseLayoutRounding="True" />
+                    <Image Source="images/Layers.png" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True"/>
                 </Button.Content>
             </Button>
             <Separator />
             <Button Name="btnZoomToExtent" ToolTip="Zoom To Exents" Click="btnZoomToExtent_Click" >
                 <Button.Content>
-                    <Image Source="images/ZoomToExtents.png" Stretch="None" UseLayoutRounding="True" />
+                    <Image Source="images/ZoomToExtents.png" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True"/>
                 </Button.Content>
             </Button>
             <Separator />
             <RadioButton Name="btnArrow" Checked="btnArrow_Checked" ToolTip="Select">
                 <RadioButton.Content>
-                    <Image Source="images/Arrow.png" Stretch="None" UseLayoutRounding="True" />
+                    <Image Source="images/Arrow.png" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True"/>
                 </RadioButton.Content>
             </RadioButton>
             <RadioButton Name="btnZoomToWindow" Checked="btnZoomToWindow_Checked" ToolTip="Zoom to region">
                 <RadioButton.Content>
-                    <Image Source="images/ZoomIn.png" Stretch="None" UseLayoutRounding="True" />
+                    <Image Source="images/ZoomIn.png" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True"/>
                 </RadioButton.Content>                    
             </RadioButton>
             <RadioButton Name="btnPan" Checked="btnPan_Checked" ToolTip="Pan">
                 <RadioButton.Content>
-                    <Image Source="images/Pan.png" Stretch="None" UseLayoutRounding="True" />
+                    <Image Source="images/Pan.png" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True" />
                 </RadioButton.Content>
             </RadioButton>
+            <Separator />
+            <ToggleButton Name="btnInfo" Checked="btnPan_Checked" ToolTip="Show/Hide feature information panel">
+                <ToggleButton.Content>
+                    <Image Source="images/info.png" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True" />
+                </ToggleButton.Content>
+            </ToggleButton>
+
         </ToolBar>
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" x:Name="mapGrid">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="6" />
+                <ColumnDefinition Width="150" />
             </Grid.ColumnDefinitions>
-            <wfi:WindowsFormsHost  Background="Azure" Margin="0,0,0,0" AllowDrop="True">
+            <wfi:WindowsFormsHost Grid.Column="0"  Background="Azure" Margin="0,0,0,0" AllowDrop="True">
                 <maps:MapBox x:Name="mapBox" Click="map_Click" />
             </wfi:WindowsFormsHost>
+            <GridSplitter Grid.Column="1" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext" x:Name="infoGridSplitter" Margin="0" Background="{x:Static SystemColors.ControlBrush}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+            <Grid Grid.Column="2" x:Name="InfoGrid">
+                <maps:FeatureInfoControl x:Name="featureInfo" Margin="0" />
+            </Grid>
         </Grid>
         <Grid Grid.Row="2">
             <Button Content="_Update" HorizontalAlignment="Right" Margin="0,6,6,0" Name="btnUpdate" Width="75" Height="23" VerticalAlignment="Top" Click="btnUpdate_Click" />
