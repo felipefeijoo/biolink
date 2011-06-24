@@ -24,6 +24,7 @@ namespace BioLink.Client.Tools {
 
         private LoanViewModel _viewModel;
         private OneToManyControl _reminders;
+        private GenerateLoanFormControl _loanFormGenerator;
 
         public LoanDetails(User user, ToolsPlugin plugin, int loanID) : base(user, "Loan:" + loanID) {
             InitializeComponent();
@@ -31,6 +32,13 @@ namespace BioLink.Client.Tools {
             this.Plugin = plugin;
             this.LoanID = loanID;
             this.ChangeContainerSet += new Action(LoanDetails_ChangeContainerSet);
+            
+        }
+
+        public override void Dispose() {
+            if (_loanFormGenerator != null) {
+                _loanFormGenerator.Close();
+            }
         }
 
         public override bool Validate(List<string> messages) {
@@ -105,6 +113,30 @@ namespace BioLink.Client.Tools {
             tabLoan.AddTabItem("_Traits", new TraitControl(User, TraitCategoryType.Loan, _viewModel));
             tabLoan.AddTabItem("_Notes", new NotesControl(User, TraitCategoryType.Loan, _viewModel));
 
+            var window = this.FindParentWindow() as ControlHostWindow;
+            if (window != null) {
+                var button = new Button { Width = 130, Height = 23, Content = "_Generate Loan Form..." };
+                window.AddCustomButton(button);
+                button.Click += new RoutedEventHandler((source, e) => {
+                    ShowLoanForms();
+                });
+            }
+            
+
+        }
+
+        private void ShowLoanForms() {
+
+            if (_loanFormGenerator == null) {
+                _loanFormGenerator = new GenerateLoanFormControl(User, Plugin, LoanID);
+                _loanFormGenerator.Owner = this.FindParentWindow();
+                _loanFormGenerator.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                _loanFormGenerator.Closed += new EventHandler((source, e) => {
+                    _loanFormGenerator = null;
+                });
+            } 
+            
+            _loanFormGenerator.Show();
         }
 
         void viewModel_DataChanged(ChangeableModelBase viewmodel) {

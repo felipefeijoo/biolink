@@ -149,24 +149,24 @@ namespace BioLink.Client.Tools {
 
         }
 
-        private ControlHostWindow ShowLoanContacts() {
+        public ControlHostWindow ShowLoanContacts() {
             return ShowSingleton("Contacts", () => new LoanContactsControl(User, this));
         }
 
-        private ControlHostWindow ShowFindLoans() {
+        public ControlHostWindow ShowFindLoans() {
             return ShowSingleton("Find Loans", () => new LoanSearchControl(User, this));
         }
 
-        private ControlHostWindow ShowLoanReminders() {
+        public ControlHostWindow ShowLoanReminders() {
             return ShowSingleton("Reminders", () => new OverdueLoansControl(User, this));
         }
 
-        private ControlHostWindow ShowLoanFormManager() {
+        public ControlHostWindow ShowLoanFormManager() {
             return ShowSingleton("Loan Forms", () => new LoanFormManager(User, this));
         }
 
 
-        private void ShowPhraseManager() {
+        public void ShowPhraseManager() {
             ShowSingleton("Phrases", () => new PhraseManager(User));
         }
 
@@ -182,37 +182,37 @@ namespace BioLink.Client.Tools {
 
         }
 
-        private ControlHostWindow ShowReferenceManager() {
+        public ControlHostWindow ShowReferenceManager() {
             return ShowSingleton("Reference Manager", () => new ReferenceManager(User, this), SizeToContent.Manual, true,(window)=> {
                 window.btnOk.IsDefault = false;
             });
         }
 
-        private ControlHostWindow ShowJournalManager() {
+        public ControlHostWindow ShowJournalManager() {
             return ShowSingleton("Journal Manager", () => new JournalManager(User, this));
         }
 
-        private void ShowQueryTool() {
+        public void ShowQueryTool() {
             ShowSingleton("Query Tool", () => new QueryTool(User, this));
         }
 
-        private void ShowModelling() {
+        public void ShowModelling() {
             ShowSingleton("Predicted Distribution Modelling", () => new ModellingTool(User, this));
         }
 
-        private void ShowUserManager() {
+        public void ShowUserManager() {
             ShowSingleton("Users and Groups", () => new UserManager(User, this));
         }
 
-        private void ShowAdminWindow() {
+        public void ShowAdminWindow() {
             ShowSingleton("Administration", () => new AdministrationControl(User));
         }
 
-        private void ShowMultimediaManagerWindow() {
+        public void ShowMultimediaManagerWindow() {
             ShowSingleton("Multimedia Manager", () => new MultimediaManager(User));
         }
 
-        private void ShowImport() {
+        public void ShowImport() {
             if (_importWizard == null) {
                 var context = new ImportWizardContext();
 
@@ -236,7 +236,7 @@ namespace BioLink.Client.Tools {
             _importWizard.Focus();
         }
 
-        private void ShowImportReferences() {
+        public void ShowImportReferences() {
             if (_importReferencesWizard == null) {
                 var context = new ImportWizardContext();
 
@@ -260,7 +260,7 @@ namespace BioLink.Client.Tools {
             _importReferencesWizard.Focus();
         }
 
-        private void ShowUserStatsReport() {
+        public void ShowUserStatsReport() {
             PluginManager.Instance.RunReport(this, new UserStatsReport(User));
         }
 
