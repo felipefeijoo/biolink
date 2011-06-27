@@ -63,7 +63,10 @@
     <Compile Include="administration\AdministrationControl.xaml.cs">
       <DependentUpon>AdministrationControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="BoxCarDistributionModel.cs" />
+    <Compile Include="LabelManagerControl.xaml.cs">
+      <DependentUpon>LabelManagerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modelling\BoxCarDistributionModel.cs" />
     <Compile Include="Loans\GenerateLoanFormControl.xaml.cs">
       <DependentUpon>GenerateLoanFormControl.xaml</DependentUpon>
     </Compile>
@@ -80,14 +83,14 @@
     <Compile Include="Loans\ContactDetails.xaml.cs">
       <DependentUpon>ContactDetails.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DistributionModel.cs" />
-    <Compile Include="EditPointWindow.xaml.cs">
+    <Compile Include="Modelling\DistributionModel.cs" />
+    <Compile Include="Modelling\EditPointWindow.xaml.cs">
       <DependentUpon>EditPointWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="EnvironmentalLayer.cs" />
-    <Compile Include="GowerMetricModel.cs" />
-    <Compile Include="GridLayerFileViewModel.cs" />
-    <Compile Include="GridLayerProperties.xaml.cs">
+    <Compile Include="Modelling\EnvironmentalLayer.cs" />
+    <Compile Include="Modelling\GowerMetricModel.cs" />
+    <Compile Include="Modelling\GridLayerFileViewModel.cs" />
+    <Compile Include="Modelling\GridLayerProperties.xaml.cs">
       <DependentUpon>GridLayerProperties.xaml</DependentUpon>
     </Compile>
     <Compile Include="import\ImportCache.cs" />
@@ -123,7 +126,7 @@
     <Compile Include="administration\TraitTypesControl.xaml.cs">
       <DependentUpon>TraitTypesControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="LayerImageGenerator.cs" />
+    <Compile Include="Modelling\LayerImageGenerator.cs" />
     <Compile Include="Loans\LoanContactsControl.xaml.cs">
       <DependentUpon>LoanContactsControl.xaml</DependentUpon>
     </Compile>
@@ -143,26 +146,26 @@
       <DependentUpon>LoansForContact.xaml</DependentUpon>
     </Compile>
     <Compile Include="Loans\LoanViewModel.cs" />
-    <Compile Include="ModellingTool.xaml.cs">
+    <Compile Include="Modelling\ModellingTool.xaml.cs">
       <DependentUpon>ModellingTool.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ModelPoint.cs" />
+    <Compile Include="Modelling\ModelPoint.cs" />
     <Compile Include="MultimediaManager.xaml.cs">
       <DependentUpon>MultimediaManager.xaml</DependentUpon>
     </Compile>
     <Compile Include="Loans\OverdueLoansControl.xaml.cs">
       <DependentUpon>OverdueLoansControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PointSetDisplayOptionsWindow.xaml.cs">
+    <Compile Include="Modelling\PointSetDisplayOptionsWindow.xaml.cs">
       <DependentUpon>PointSetDisplayOptionsWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PointSetsControl.xaml.cs">
+    <Compile Include="Modelling\PointSetsControl.xaml.cs">
       <DependentUpon>PointSetsControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SingleModelOptionsControl.xaml.cs">
+    <Compile Include="Modelling\SingleModelOptionsControl.xaml.cs">
       <DependentUpon>SingleModelOptionsControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SpeciesRichnessOptions.xaml.cs">
+    <Compile Include="Modelling\SpeciesRichnessOptions.xaml.cs">
       <DependentUpon>SpeciesRichnessOptions.xaml</DependentUpon>
     </Compile>
     <Compile Include="usermanager\PermissionProperties.xaml.cs">
@@ -252,6 +255,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="LabelManagerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Loans\GenerateLoanFormControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -272,11 +279,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="EditPointWindow.xaml">
+    <Page Include="Modelling\EditPointWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="GridLayerProperties.xaml">
+    <Page Include="Modelling\GridLayerProperties.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -340,7 +347,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ModellingTool.xaml">
+    <Page Include="Modelling\ModellingTool.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -352,19 +359,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="PointSetDisplayOptionsWindow.xaml">
+    <Page Include="Modelling\PointSetDisplayOptionsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="PointSetsControl.xaml">
+    <Page Include="Modelling\PointSetsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="SingleModelOptionsControl.xaml">
+    <Page Include="Modelling\SingleModelOptionsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="SpeciesRichnessOptions.xaml">
+    <Page Include="Modelling\SpeciesRichnessOptions.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

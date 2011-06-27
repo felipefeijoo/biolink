@@ -88,6 +88,13 @@ namespace BioLink.Client.Tools {
                 "{'Name':'ManageLoanForms', 'Header' : '_Manage Loan Forms'}"
             ));
 
+            // Label Manager
+
+            contrib.Add(new MenuWorkspaceContribution(this, "LabelManager", (obj, e) => { ShowLabelManager(); },
+                String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
+                "{'Name':'LabelManager', 'Header':'Label Manager'}"
+            ));
+
 
             // Settings...
 
@@ -165,6 +172,9 @@ namespace BioLink.Client.Tools {
             return ShowSingleton("Loan Forms", () => new LoanFormManager(User, this));
         }
 
+        public ControlHostWindow ShowLabelManager() {
+            return ShowSingleton("Label Manager", () => new OneToManyControl(new LabelManagerControl(User)) { Margin = new Thickness(6) });
+        }
 
         public void ShowPhraseManager() {
             ShowSingleton("Phrases", () => new PhraseManager(User));

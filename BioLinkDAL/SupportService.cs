@@ -1416,6 +1416,38 @@ namespace BioLink.Data {
 
         #endregion
 
+        #region Labels
+
+        public List<LabelSet> GetLabelSets() {
+            var mapper = new GenericMapperBuilder<LabelSet>().build();
+            return StoredProcToList("spLabelSetList", mapper);
+        }
+
+        public void DeleteLabelSet(int labelSetId) {
+            StoredProcUpdate("spLabelSetDelete", _P("intLabelSetID", labelSetId));
+        }
+
+        public int InsertLabelSet(LabelSet model) {
+            var retval = ReturnParam("newLabelSetID");
+            StoredProcUpdate("spLabelSetInsert",
+                _P("vchrName", model.Name),
+                _P("vchrDelimitedFields", model.Delimited),
+                retval);
+
+            return (int) retval.Value;
+        }
+
+        public void UpdateLabelSet(LabelSet model) {
+            
+            StoredProcUpdate("spLabelSetUpdate",
+                _P("intLabelSetID", model.ID),
+                _P("vchrName", model.Name),
+                _P("vchrDelimitedFields", model.Delimited)
+            );            
+        }
+
+        #endregion
+
     }
 
     public class RefTypeMapping {
