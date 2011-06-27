@@ -147,6 +147,12 @@ namespace BioLink.Client.Extensibility {
                                 _controlHosts.Remove(title);
                             }
                         });
+
+                        if (control is ILazyPopulateControl) {
+                            var lazyLoadee = control as ILazyPopulateControl;
+                            lazyLoadee.Populate();
+                        }
+
                     }
                 }
             }
