@@ -13,7 +13,7 @@ namespace BioLink.Data {
 
         private static Regex PREFIX_REGEX = new Regex(@"^([a-z]+)[A-Za-z\d]+$");
 
-        private static string KNOWN_TYPE_PREFIXES = "chr,vchr,bit,int,txt,flt,tint,dt,sint,img";
+        public static string KNOWN_TYPE_PREFIXES = "chr,vchr,bit,int,txt,flt,tint,dt,sint,img";
 
         public static void ReflectMap(object dest, DbDataReader reader, ColumnMapping[] columnMappings, params ConvertingMapper[] columnOverrides) {
             PropertyInfo[] props = dest.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);

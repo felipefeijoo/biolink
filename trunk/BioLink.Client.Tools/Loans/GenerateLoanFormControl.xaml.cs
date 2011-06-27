@@ -85,7 +85,7 @@ namespace BioLink.Client.Tools {
             var supportSevice = new SupportService(User);
             var loanTraits = supportSevice.GetTraits(TraitCategoryType.Loan.ToString(), LoanID);
             var bytes = supportSevice.GetMultimediaBytes(mmID);
-            var template = Encoding.UTF8.GetString(bytes);
+            var template = Encoding.ASCII.GetString(bytes);
             var content = GenerateLoanForm(template, loan, loanMaterial, loanTraits);
 
             var filename = TempFileManager.NewTempFilename("RTF", "LoanForm");
@@ -124,9 +124,71 @@ namespace BioLink.Client.Tools {
         }
 
         private string SubstitutePlaceHolder(string key, Loan loan, List<LoanMaterial> material, List<Trait> traits) {
-            var sb = new StringBuilder();
-            sb.AppendFormat("{0}", key);
+            var sb = new StringBuilder();            
+            if (key.Contains('(')) {
+                // group...
+                var collectionName = key.Substring(0, key.IndexOf('('));
+                var fieldstr = key.Substring(key.IndexOf('(')+1);
+                var fields = fieldstr.Substring(0, fieldstr.Length - 1).Split(',');
+
+                List<object> collection = null;                
+                if (collectionName.Equals("material", StringComparison.CurrentCultureIgnoreCase)) {
+                    collection = new List<object>(material);
+                } else if (collectionName.Equals("trait", StringComparison.CurrentCultureIgnoreCase)) {
+                    collection = new List<object>(traits);
+                }
+
+                if (collection != null) {
+                    foreach (Object obj in collection) {
+                        int i = 0;
+                        foreach (string field in fields) {
+                            var value = GetPropertyValue(obj, field);
+                            if (!string.IsNullOrEmpty(value)) {
+                                sb.Append(RTFUtils.EscapeUnicode(value));
+                            }
+                            if (++i < fields.Length) {
+                                sb.Append(", ");
+                            } else {
+                                sb.Append(". \\par\\pard ");
+                            }
+                        }
+                    }
+                }
+                
+            } else {                
+                // single value from the Loan model...
+                var value = GetPropertyValue(loan, key);
+                if (!string.IsNullOrEmpty(value)) {                    
+                    sb.Append(RTFUtils.EscapeUnicode(value));
+                }
+            }
             return sb.ToString();
+        }
+
+        private string GetPropertyValue(object obj, string propertyName) {
+
+            var p = obj.GetType().GetProperty(propertyName);
+            if (p == null) {
+                var prefixes = MapperBase.KNOWN_TYPE_PREFIXES.Split(',');
+                foreach (string prefix in prefixes) {
+                    if (propertyName.StartsWith(prefix, StringComparison.CurrentCultureIgnoreCase)) {
+                        propertyName = propertyName.Substring(prefix.Length);
+                        p = obj.GetType().GetProperty(propertyName);
+                        break;
+                    }
+                }
+            }
+            if (p != null) {
+                var val = p.GetValue(obj, null);
+                if (val != null) {
+                    if (val is DateTime) {
+                        return string.Format("{0:d}", val);
+                    } 
+                    return val.ToString();
+                }
+            }
+
+            return null;
         }
 
         private string ReadPlaceHolder(TextReader reader) {
@@ -160,4 +222,5 @@ namespace BioLink.Client.Tools {
             get { return string.Format("{0} {1}", this.Extension, SystemUtils.ByteCountToSizeString(this.SizeInBytes)); }
         }
     }
+
 }

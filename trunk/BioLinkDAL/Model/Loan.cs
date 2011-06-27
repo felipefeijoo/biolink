@@ -24,12 +24,21 @@ namespace BioLink.Data.Model {
         public string RequestorTitle { get; set; }
         public string RequestorGivenName { get; set; }
         public string RequestorName { get; set; }
+        public string RequestorInstitution { get; set; }
+        public string RequestorPostalAddress { get; set; }
+        public string RequestorStreetAddress { get; set; }
         public string ReceiverTitle	{ get; set; }
         public string ReceiverGivenName	{ get; set; }
         public string ReceiverName { get; set; }
+        public string ReceiverInstitution { get; set; }
+        public string ReceiverPostalAddress	{ get; set; }
+        public string ReceiverStreetAddress { get; set; }
         public string OriginatorTitle { get; set; }
         public string OriginatorGivenName { get; set; }
         public string OriginatorName { get; set; }
+		public string OriginatorPostalAddress { get; set; }
+        public string OriginatorStreetAddress { get; set; }
+
 
 
         protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {

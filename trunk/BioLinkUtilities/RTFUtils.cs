@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 namespace BioLink.Client.Utilities {
     public static class RTFUtils {
 
-        private static Regex XX = new Regex(@"(?s)^{\s*{(.*)}\s*}\s*$");
+        private static Regex RTF_REGEX = new Regex(@"(?s)^{\s*{(.*)}\s*}\s*$");
 
         public static string StripMarkup(string rtf) {
             if (string.IsNullOrEmpty(rtf)) {
@@ -20,7 +20,7 @@ namespace BioLink.Client.Utilities {
                 return rtf;
             }
 
-            var m = XX.Match(rtf);
+            var m = RTF_REGEX.Match(rtf);
             if (m.Success) {
                 rtf = string.Format("{{{0}}}", m.Groups[1]);
             }
@@ -32,6 +32,24 @@ namespace BioLink.Client.Utilities {
             } catch (ArgumentException) {
                 return rtf;
             }
+        }
+
+        public static string EscapeUnicode(string value) {
+            var sb = new StringBuilder();
+
+            foreach (char ch in value) {
+                if (ch > 127) {
+                    sb.AppendFormat("\\u{0}?", (int)ch);
+                } else {
+                    if (ch == '\n') {
+                        sb.Append("\\par ");
+                    } else {
+                        sb.Append(ch);
+                    }
+                }
+            }
+
+            return sb.ToString();
         }
     }
 
