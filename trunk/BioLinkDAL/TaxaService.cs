@@ -707,7 +707,7 @@ namespace BioLink.Data {
                     lngLastRegionID = -1;
                     lngLastSiteID = -1;
                     sb.Par().Par().Append(@"\pard\sb20\fs28\b ");
-                    sb.Append((string) reader["BiotaFullName"]).Append(@"\b0");
+                    sb.Append(AsString(reader["BiotaFullName"])).Append(@"\b0");
                     // extract the family and order
                     string orderRank = GetBiotaRankElemType(lngLastBiotaID, "O");
                     string familyRank = GetBiotaRankElemType(lngLastBiotaID, "F");
@@ -726,7 +726,7 @@ namespace BioLink.Data {
                     if (lngLastRegionID != regionID) {
                         // Add the region
                         lngLastRegionID = regionID;
-                        sb.Par().Append(@"\pard\sb10\fs20\li600\b ").Append((string) reader["FullRegion"]).Append(@"\b0 ");
+                        sb.Par().Append(@"\pard\sb10\fs20\li600\b ").Append(AsString(reader["FullRegion"])).Append(@"\b0 ");
                     }
 
                     int siteID = (Int32)reader["SiteID"];

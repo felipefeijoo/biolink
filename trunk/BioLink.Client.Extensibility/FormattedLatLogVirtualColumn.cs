@@ -83,6 +83,10 @@ namespace BioLink.Client.Extensibility {
                             } else {
                                 return string.Format("{0} to {1}", FormatDate(startdate.Value), FormatDate(enddate.Value));
                             }
+                        } else if (startdate.HasValue) {
+                            return FormatDate(startdate.Value);
+                        } else if (enddate.HasValue) {
+                            return "Before " + FormatDate(enddate.Value);
                         }
                     }
                 }

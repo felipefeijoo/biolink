@@ -61,6 +61,10 @@ namespace BioLink.Client.Material {
                 }
                 _traits.BindModel(site.Traits, site);
                 _currentSite = site;
+
+                if (!site.Latitude.HasValue || !site.Longitude.HasValue || (site.Latitude.Value == 0 && site.Longitude.Value == 0) ) {
+                    ctlPosition.Clear();
+                }
             }
         }
 

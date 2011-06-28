@@ -49,7 +49,7 @@ namespace BioLink.Data {
                     lngLastRegionID = -1;
                     lngLastSiteID = -1;
                     rtf.Par().Par().Append(@"\pard\sb20\fs28\b ");
-                    rtf.Append( (string) reader["BiotaFullName"]).Append(@"\b0");
+                    rtf.Append(AsString(reader["BiotaFullName"])).Append(@"\b0");
                 
                     // extract the family and order
                     strOrderRank = taxonService.GetBiotaRankElemType(currentBiotaID, "O");                    
@@ -69,7 +69,7 @@ namespace BioLink.Data {
                         // Add the region
                         lngLastRegionID = currentRegionID;
                         rtf.Par().Append(@"\pard\sb10\fs20\li600 ");
-                        rtf.Append((string) reader["FullRegion"]);
+                        rtf.Append(AsString(reader["FullRegion"]));
                     }
 
                     int currentSiteID = (int) reader["SiteID"];
@@ -82,14 +82,14 @@ namespace BioLink.Data {
                         int localType = (byte) reader["LocalType"];
                         switch (localType) {
                             case 0:
-                                rtf.Append((string) reader["Local"]);
+                                rtf.Append(AsString(reader["Local"]));
                                 break;                            
-                            case 1:
-                                rtf.Append((string) reader["DistanceFromPlace"]).Append(" ");
-                                rtf.Append((string) reader["DirFromPlace"]).Append(" of ").Append((string) reader["Local"]);
+                            case 1:                                
+                                rtf.Append(AsString(reader["DistanceFromPlace"])).Append(" ");
+                                rtf.Append(AsString(reader["DirFromPlace"])).Append(" of ").Append(AsString(reader["Local"]));
                                 break;
                             default:
-                                rtf.Append((string) reader["Local"]);
+                                rtf.Append(AsString(reader["Local"]));
                                 break;
                         }
                     

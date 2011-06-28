@@ -346,6 +346,30 @@ namespace BioLink.Client.Extensibility {
             DegreesDecimalMinutesDirection
         }
 
+
+        internal void Clear() {
+            var defaultLongDir = Config.GetGlobal("LatLong.Default.Longitude.Direction", "E");
+            var defaultLatDir = Config.GetGlobal("LatLong.Default.Latitude.Direction", "S");
+
+            var list = new String[] { "E", "W" };
+            int defaultDir = 0;
+            if (_coordType == CoordinateType.Latitude) {
+                list = new String[] { "N", "S" };
+                if (defaultLatDir.Equals("S", StringComparison.CurrentCultureIgnoreCase)) {
+                    defaultDir = 1;
+                }
+            } else {
+                if (defaultLongDir.Equals("W", StringComparison.CurrentCultureIgnoreCase)) {
+                    defaultDir = 1;
+                }
+            }
+
+            txtDegrees.Clear();
+            txtMinutes.Clear();
+            txtSeconds.Clear();
+
+            cmbDirection.SelectedIndex = defaultDir;            
+        }
     }
 
     public delegate void CoordinateValueChangedHandler(object source, double value);

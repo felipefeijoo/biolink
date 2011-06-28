@@ -300,7 +300,7 @@ namespace BioLink.Data {
         }
 
         public string AsString(object obj, string @default = "") {
-            if (obj != null) {
+            if (obj != null && !DBNull.Value.Equals(obj)) {
                 return obj.ToString();
             }
             return @default;
