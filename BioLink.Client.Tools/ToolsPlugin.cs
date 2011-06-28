@@ -134,6 +134,13 @@ namespace BioLink.Client.Tools {
                 String.Format("{{'Name':'Administration', 'Header':'{0}'}}", "Administration...")
             ));
 
+            contrib.Add(new MenuWorkspaceContribution(this, "HTMLManager", (obj, e) => { ShowHTMLManager(); },
+                String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
+                "{'Name':'Settings', 'Header':'_Settings'}",
+                String.Format("{{'Name':'HTMLManager', 'Header':'{0}'}}", "Manage HTML (Welcome page)...")
+            ));
+
+
             return contrib;
         }
 
@@ -169,7 +176,11 @@ namespace BioLink.Client.Tools {
         }
 
         public ControlHostWindow ShowLoanFormManager() {
-            return ShowSingleton("Loan Forms", () => new LoanFormManager(User, this));
+            return ShowSingleton("Loan Forms", () => new SpecializedMultimediaManager(User, this, TraitCategoryType.Biolink, SupportService.BIOLINK_INTRA_CAT_ID));
+        }
+
+        public ControlHostWindow ShowHTMLManager() {
+            return ShowSingleton("Welcome screen HTML", () => new SpecializedMultimediaManager(User, this, TraitCategoryType.Biolink, SupportService.BIOLINK_HTML_INTRA_CAT_ID));
         }
 
         public ControlHostWindow ShowLabelManager() {
