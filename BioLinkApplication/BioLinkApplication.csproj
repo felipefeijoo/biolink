@@ -117,6 +117,7 @@
     <Compile Include="About.xaml.cs">
       <DependentUpon>About.xaml</DependentUpon>
     </Compile>
+    <Compile Include="BuildLabel.cs" />
     <Compile Include="ConnectionProfileViewModel.cs" />
     <Compile Include="Styles.xaml.cs">
       <DependentUpon>Styles.xaml</DependentUpon>

@@ -23,7 +23,7 @@ namespace BioLinkApplication {
         public About() {
             InitializeComponent();
             var v = this.GetType().Assembly.GetName().Version;
-            var version = String.Format("Version {0}.{1} (build {2})", v.Major, v.Minor, v.Revision);
+            var version = String.Format("Version {0}.{1} (build {2}) {3}", v.Major, v.Minor, v.Revision, BuildLabel.BUILD_LABEL);
             lblVersion.Content = version;
 
             var model = new List<PluginVersionInfo>();
