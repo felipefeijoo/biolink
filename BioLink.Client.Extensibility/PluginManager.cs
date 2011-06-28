@@ -10,6 +10,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 using BioLink.Data;
+using BioLink.Data.Model;
 using System.Windows.Controls;
 
 namespace BioLink.Client.Extensibility {
@@ -56,6 +57,39 @@ namespace BioLink.Client.Extensibility {
 
         public void LoadPlugins(PluginAction pluginAction) {
             LoadPlugins(pluginAction, ".|^BioLink[.].*[.]dll$", "./plugins");
+
+            NotifyProgress("Loading html...", 99, ProgressEventType.Update);
+
+            var service = new SupportService(User);
+            var links = service.GetMultimediaItems(TraitCategoryType.Biolink.ToString(), SupportService.BIOLINK_HTML_INTRA_CAT_ID);
+            if (links.Count > 0) {
+
+                var directory = new DirectoryInfo(Path.Combine(SystemUtils.GetUserDataPath(), ".BioLink"));
+                if (directory.Exists) {
+                    directory.Delete(true);                    
+                }
+
+                directory.Create();
+
+
+                string htmlfile = "";
+                foreach (MultimediaLink link in links) {
+                    var filename = Path.Combine(directory.FullName, link.Name + "." + link.Extension);
+                    var bytes = service.GetMultimediaBytes(link.MultimediaID);
+                    File.WriteAllBytes(filename, bytes);
+
+                    if (link.Extension.StartsWith("html", StringComparison.CurrentCultureIgnoreCase)) {
+                        htmlfile = filename;
+                    }
+                }
+
+                BioLinkCorePlugin core = GetExtensionsOfType<BioLinkCorePlugin>()[0];                
+                var browser = new WebBrowser();
+                AddDockableContent(core, browser, "Welcome");
+                browser.Navigate(string.Format("file:///{0}", htmlfile));
+            }
+
+            
         }
 
         public event ProgressHandler ProgressEvent;
@@ -147,10 +181,10 @@ namespace BioLink.Client.Extensibility {
             return extension;
         }
 
-        public void AddDockableContent(IBioLinkPlugin plugin, FrameworkElement content, string title) {
+        public void AddDockableContent(IBioLinkPlugin plugin, FrameworkElement content, string title, bool closeable = true) {
 
             if (DockableContentAdded != null) {
-                DockableContentAdded(plugin, content, title);
+                DockableContentAdded(plugin, content, title, closeable);
             }
 
         }
@@ -491,7 +525,7 @@ namespace BioLink.Client.Extensibility {
 
         public delegate void ShowDockableContributionDelegate(IBioLinkPlugin plugin, string name);
 
-        public delegate void AddDockableContentDelegate(IBioLinkPlugin plugin, FrameworkElement content, string title);
+        public delegate void AddDockableContentDelegate(IBioLinkPlugin plugin, FrameworkElement content, string title, bool closeable);
 
         public delegate void CloseDockableContentDelegate(FrameworkElement content);
 

@@ -14,6 +14,7 @@ namespace BioLink.Data {
     public class SupportService : BioLinkService {
 
         public const int BIOLINK_INTRA_CAT_ID = 45057;
+        public const int BIOLINK_HTML_INTRA_CAT_ID = 0;
 
         public static Dictionary<string, RefTypeMapping> RefTypeMap = new Dictionary<string, RefTypeMapping>();
         public static List<FieldDescriptor> FieldDescriptors = new List<FieldDescriptor>();

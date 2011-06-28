@@ -81,12 +81,13 @@ namespace BioLinkApplication {
             }
         }
 
-        void _pluginManager_DockableContentAdded(IBioLinkPlugin plugin, FrameworkElement content, string title) {
+        void _pluginManager_DockableContentAdded(IBioLinkPlugin plugin, FrameworkElement content, string title, bool isClosable) {
 
             BiolinkDocumentContent newContent = new BiolinkDocumentContent {
                 Title = title, 
                 Content = content,
-                FloatingWindowSize = new Size(600,500)
+                FloatingWindowSize = new Size(600,500),
+                IsCloseable = isClosable
             };
 
             newContent.Closed += new EventHandler((e,a) => {

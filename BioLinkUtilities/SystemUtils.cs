@@ -7,6 +7,7 @@ using Microsoft.Win32;
 using System.Drawing;
 using System.Diagnostics;
 using System.Windows.Controls;
+using System.IO;
 
 namespace BioLink.Client.Utilities {
 
@@ -286,6 +287,16 @@ namespace BioLink.Client.Utilities {
             }
 
             return string.Format("{0}.{1}", filename, newExtension);            
+        }
+
+        static public string GetUserDataPath() {
+            string dir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            dir = Path.Combine(dir, "MySoftware");
+            if (!Directory.Exists(dir)) {
+                Directory.CreateDirectory(dir);
+            }
+
+            return dir;
         }
 
     }
