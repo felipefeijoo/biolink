@@ -70,9 +70,6 @@
     <Compile Include="Loans\GenerateLoanFormControl.xaml.cs">
       <DependentUpon>GenerateLoanFormControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Loans\LoanFormManager.xaml.cs">
-      <DependentUpon>LoanFormManager.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Loans\LoanRemindersControl.xaml.cs">
       <DependentUpon>LoanRemindersControl.xaml</DependentUpon>
     </Compile>
@@ -168,6 +165,9 @@
     <Compile Include="Modelling\SpeciesRichnessOptions.xaml.cs">
       <DependentUpon>SpeciesRichnessOptions.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SpecializedMultimediaManager.xaml.cs">
+      <DependentUpon>SpecializedMultimediaManager.xaml</DependentUpon>
+    </Compile>
     <Compile Include="usermanager\PermissionProperties.xaml.cs">
       <DependentUpon>PermissionProperties.xaml</DependentUpon>
     </Compile>
@@ -260,10 +260,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Loans\GenerateLoanFormControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Loans\LoanFormManager.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -372,6 +368,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Modelling\SpeciesRichnessOptions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SpecializedMultimediaManager.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
