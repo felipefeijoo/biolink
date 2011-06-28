@@ -44,6 +44,11 @@ namespace BioLink.Client.Extensibility {
             HookTextBox(ctl.txtSeconds);
         }
 
+        public void Clear() {
+            lon.Clear();
+            lat.Clear();
+        }
+
         private void HookTextBox(System.Windows.Controls.TextBox box) {
             box.AllowDrop = true;
 

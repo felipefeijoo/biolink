@@ -1446,6 +1446,11 @@ namespace BioLink.Data {
             );            
         }
 
+        public List<LabelSetItem> GetLabelSetItems() {
+            var mapper = new GenericMapperBuilder<LabelSetItem>().build();
+            return StoredProcToList("spLabelSetItemList", mapper);
+        }
+
         #endregion
 
     }
