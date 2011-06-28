@@ -1356,7 +1356,7 @@ namespace BioLink.Data {
                         var model = new LookupResult();
                         model.LookupType = binding.LookupType;
                         model.LookupObjectID = (int)reader[0];
-                        model.Label = (string)reader[1];
+                        model.Label = AsString(reader[1]);
                         results.Add(model);
                     }, _P(paramName, filter));
                 }

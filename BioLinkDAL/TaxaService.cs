@@ -537,7 +537,7 @@ namespace BioLink.Data {
 
             if (level == 0) {
                 StoredProcReaderFirst("spReportCheckList", (reader) => {
-                    string rankCode = ((string)reader["RankCode"]).Trim();
+                    string rankCode = (AsString(reader["RankCode"])).Trim();
                     if (selectedRanks.Find((name) => { return name.Code == rankCode; }) != null) {
                         list.Add(new ChecklistData {
                             BiotaID = reader.Get<int>("intBiotaID"),
@@ -557,7 +557,7 @@ namespace BioLink.Data {
             }
 
             StoredProcReaderForEach("spReportCheckList", (reader) => {
-                string rankCode = ((string)reader["RankCode"]).Trim();
+                string rankCode = (AsString(reader["RankCode"])).Trim();
                 if (selectedRanks.Find((name) => { return name.Code == rankCode; }) != null) {
                     list.Add(new ChecklistData {
                         BiotaID = reader.Get<int>("intBiotaID"),

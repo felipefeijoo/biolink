@@ -153,18 +153,20 @@ namespace BioLink.Client.Taxa {
                                     }).MenuItem);
                                 }
                                 addMenu.Items.Add(new Separator());
-                                addMenu.Items.Add(_builder.New("Unranked Valid").Handler(() => { Explorer.AddUnrankedValid(Taxon); }).MenuItem);
-                                addMenu.Items.Add(new Separator());
-                                AddSpecialNameMenuItems(addMenu, rank.AvailableNameAllowed, rank.LituratueNameAllowed, rank.AvailableNameAllowed, rank.AvailableNameAllowed);
-                                addMenu.Items.Add(new Separator());
-                                foreach (TaxonRank childRank in validChildRanks) {
-                                    // The for loop variable is outside of the scope of the closure, so we need to create a local...
-                                    TaxonRank closureRank = Explorer.Service.GetTaxonRank(childRank.Code);
-                                    if (childRank.UnplacedAllowed.ValueOrFalse()) {
-                                        addMenu.Items.Add(_builder.New("Unplaced " + childRank.LongName).Handler(() => { Explorer.AddNewTaxon(Taxon, closureRank, true); }).MenuItem);
-                                    }
+                            }
+
+                            addMenu.Items.Add(_builder.New("Unranked Valid").Handler(() => { Explorer.AddUnrankedValid(Taxon); }).MenuItem);
+                            addMenu.Items.Add(new Separator());
+                            AddSpecialNameMenuItems(addMenu, rank.AvailableNameAllowed, rank.LituratueNameAllowed, rank.AvailableNameAllowed, rank.AvailableNameAllowed);
+                            addMenu.Items.Add(new Separator());
+                            foreach (TaxonRank childRank in validChildRanks) {
+                                // The for loop variable is outside of the scope of the closure, so we need to create a local...
+                                TaxonRank closureRank = Explorer.Service.GetTaxonRank(childRank.Code);
+                                if (childRank.UnplacedAllowed.ValueOrFalse()) {
+                                    addMenu.Items.Add(_builder.New("Unplaced " + childRank.LongName).Handler(() => { Explorer.AddNewTaxon(Taxon, closureRank, true); }).MenuItem);
                                 }
                             }
+                            
                         }
                         break;
                 }
