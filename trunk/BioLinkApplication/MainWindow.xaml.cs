@@ -33,7 +33,7 @@ namespace BioLinkApplication {
             _instance = this;
 
             var v = this.GetType().Assembly.GetName().Version;
-            Title = String.Format("BioLink {0}.{1}.{2}", v.Major, v.Minor, v.Revision);
+            Title = String.Format("BioLink {0}.{1}.{2} {3}", v.Major, v.Minor, v.Revision, BuildLabel.BUILD_LABEL);
 
             this.SizeChanged += new SizeChangedEventHandler(MainWindow_SizeChanged);
             this.LocationChanged += new EventHandler(MainWindow_LocationChanged);
