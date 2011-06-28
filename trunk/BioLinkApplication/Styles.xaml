@@ -60,7 +60,7 @@
 							                Text="{Binding Title, RelativeSource={RelativeSource TemplatedParent}, StringFormat='{}{0} '}"
 							                Foreground="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DocumentHeaderForeground}}}"/>
                                     <ad:ImageEx x:Name="PART_LockedIcon" Source="/AvalonDock;component/resources/Images/Locked.png" Width="6" Visibility="Collapsed"  Margin="2,0,0,0" VerticalAlignment="Center"/>
-                                    <Button Width="15" Height="15" Margin="2,0,2,0" Style="{StaticResource PaneHeaderCommandStyle}" Command="ad:ManagedContentCommands.Close">
+                                    <Button Width="15" Height="15" Margin="2,0,2,0" Style="{StaticResource PaneHeaderCommandStyle}" Command="ad:ManagedContentCommands.Close" x:Name="btnClose">
                                         <ad:ImageEx Source="/AvalonDock;component/resources/Images/PinClose.png" Width="13" />
                                     </Button>
 
@@ -84,6 +84,11 @@
                         <DataTrigger Binding="{Binding Path=IsActiveDocument, RelativeSource={RelativeSource Self}}" Value="True">
                             <Setter Property="TextBlock.FontWeight" TargetName="tabItemTitle" Value="Bold"/>
                         </DataTrigger>
+
+                        <DataTrigger Binding="{Binding Path=IsCloseable, RelativeSource={RelativeSource Self}}" Value="False">
+                            <Setter Property="Button.Visibility" Value="Collapsed" TargetName="btnClose" />
+                        </DataTrigger>
+                        
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsMouseOver" SourceName="tabItemIntBorder" Value="True"/>
