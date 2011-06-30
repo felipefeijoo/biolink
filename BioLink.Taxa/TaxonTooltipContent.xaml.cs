@@ -40,7 +40,8 @@ namespace BioLink.Client.Taxa {
             var elementRank = service.GetTaxonRank(Model.ElemType);
 
             lblHeader.Content = Model.TaxaFullName;
-            lblSystem.Content = string.Format("[{0}] {1} Last updated: {2:g} by {3}", Model.TaxaID.Value, elementRank.LongName, Model.DateLastUpdated, Model.WhoLastUpdated);
+            var rankName = (elementRank == null ? "Unranked" : elementRank.LongName);
+            lblSystem.Content = string.Format("[{0}] {1} Last updated: {2:g} by {3}", Model.TaxaID.Value, rankName, Model.DateLastUpdated, Model.WhoLastUpdated);
             imgIcon.Source = TaxonViewModel.ConstructIcon(Model.AvailableName.ValueOrFalse() || Model.LiteratureName.ValueOrFalse(), Model.ElemType, false);            
 
             // Ancestry
@@ -74,10 +75,11 @@ namespace BioLink.Client.Taxa {
                 parentIcon.Margin = new Thickness(6, 0, 6, 0);
                 parentPanel.Children.Add(parentIcon);
 
-                var rank = service.GetTaxonRank(t.ElemType);                
+                var rank = service.GetTaxonRank(t.ElemType);
+                rankName = (rank == null ? "Unranked" : rank.LongName);
                 var txt = new TextBlock();
                 txt.VerticalAlignment = System.Windows.VerticalAlignment.Top;
-                txt.Text = string.Format("{1}   ({0})", rank.LongName, t.TaxaFullName);
+                txt.Text = string.Format("{1}   ({0})", rankName, t.TaxaFullName);
                 parentPanel.Children.Add(txt);
                 grdAncestry.Children.Add(parentPanel);
                 i++;
