@@ -1,0 +1,53 @@
+﻿<UserControl x:Class="BioLinkApplication.BiolinkHost"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ad="clr-namespace:AvalonDock;assembly=AvalonDock"
+             mc:Ignorable="d" 
+             d:DesignHeight="374" d:DesignWidth="710">
+    <Grid>
+        <Grid.Resources>
+            <!--
+            <ResourceDictionary Source="/AvalonDock.Themes;component/themes/ExpressionDark.xaml" />
+            -->
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="23" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="23" />
+        </Grid.RowDefinitions>
+
+        <Menu Grid.Row="0"  DockPanel.Dock="Top" x:Name="menuBar">
+            <MenuItem Header="_File" x:Name="File">
+                <MenuItem Header="_Log out" x:Name="LogOut" Click="LogOut_Click" ></MenuItem>
+                <Separator />
+                <MenuItem Header="_Exit" x:Name="Exit" Click="Exit_Click" />
+            </MenuItem>
+            <MenuItem Header="_Help" x:Name="Help">
+                <MenuItem Header="_About" x:Name="About" Click="About_Click" />
+            </MenuItem>
+        </Menu>            
+        
+        <ad:DockingManager Grid.Row="1" x:Name="dockManager">
+            <ad:ResizingPanel Orientation="Horizontal" >
+                <ad:DockablePane x:Name="explorersPane" ad:ResizingPanel.ResizeWidth="200">
+                </ad:DockablePane>                    
+                <ad:DocumentPane x:Name="documentPane">                        
+                </ad:DocumentPane>
+            </ad:ResizingPanel>
+        </ad:DockingManager>
+
+        <StatusBar Grid.Row="2">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="400" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" x:Name="txtProfile" />
+                <TextBlock Grid.Column="1" x:Name="txtStatus" />
+            </Grid>
+        </StatusBar>
+
+    </Grid>
+</UserControl>

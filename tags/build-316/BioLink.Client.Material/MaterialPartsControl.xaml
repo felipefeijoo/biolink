@@ -1,0 +1,103 @@
+﻿<ext:DatabaseActionControl x:Class="BioLink.Client.Material.MaterialPartsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+             xmlns:mat="clr-namespace:BioLink.Client.Material"
+             mc:Ignorable="d" 
+             d:DesignHeight="396" d:DesignWidth="733">
+    <Grid>
+        <Grid.Resources>
+            <ext:HardDateConverter x:Key="hardDateConverter" />
+        </Grid.Resources>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200" MinWidth="180"/>
+            <ColumnDefinition Width="*" MinWidth="360"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+
+        <GridSplitter ResizeDirection="Columns" Grid.Row="0" Grid.Column="0" Width="8" />
+
+        <ListBox Grid.Column="0" Name="lst" Margin="0,0,8,0" MinWidth="180">
+            <ListBox.Resources>
+                <DataTemplate DataType="{x:Type mat:MaterialPartViewModel}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding DisplayLabel,Mode=OneWay}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.Resources>
+        </ListBox>
+        <Grid Grid.Column="1" DataContext="{Binding ElementName=lst, Path=SelectedItem}" x:Name="detailGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="70"/>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="5" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="28"/>
+                <RowDefinition Height="28"/>
+                <RowDefinition Height="28"/>
+                <RowDefinition Height="28"/>
+                <RowDefinition Height="28"/>
+                <RowDefinition Height="28"/>
+                <RowDefinition Height="28"/>
+                <RowDefinition Height="28"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Label Content="Name:" HorizontalAlignment="Left" Name="label16" />
+            
+            <AdornerDecorator Grid.Row="0" Grid.ColumnSpan="3" Grid.Column="1">
+                <ext:TextBox Height="23" Name="txtName" Text="{Binding PartName}" >
+                    <ext:WatermarkService.Watermark>
+                        <TextBlock>Leave blank to automatically generate name</TextBlock>
+                    </ext:WatermarkService.Watermark>                    
+                </ext:TextBox>
+            </AdornerDecorator>
+
+            <Label Grid.Row="1" Content="Sample type:" Name="label17" />
+            <ext:PickListControl Grid.Row="1" Grid.Column="1" Height="23" Name="plSampleType" Text="{Binding SampleType}" Grid.ColumnSpan="3" />
+            
+            <Label Grid.Row="2" Content="# Specimens:" Name="label19" />
+            <ext:TextBox Grid.Row="2" Grid.Column="1" Height="23" Name="txtSpecimentCount" Text="{Binding NoSpecimens}" />
+
+            <Label Grid.Row="2" Grid.Column="2" Content="Qualifier:" Name="label20" />
+            <ext:PickListControl Height="23" Name="plQualifier" Text="{Binding NoSpecimensQual}" Grid.Column="3" Grid.Row="2" />
+            
+            <Label Grid.Row="3" Content="Gender:" Name="label23" />
+            <ext:PickListControl Grid.Row="3" Grid.Column="1" Height="23" Name="plGender" Text="{Binding Gender}" Margin="0,2" />
+            
+            <Label Content="Life stage:" Name="label1" Grid.Column="2" Grid.Row="3" />
+            <ext:PickListControl Height="23" Name="plLifeStage" Text="{Binding Lifestage}" Grid.Column="3" Grid.Row="3" />
+            
+            <Label Grid.Row="4" Content="Registration #:" Name="label24" Height="28" VerticalAlignment="Top" />
+            <ext:TextBox Height="23" Name="txtRegistrationNumber" Text="{Binding RegNo}" Grid.Column="1" Grid.Row="4" />
+            
+            <Label Content="Condition:" Name="label2" Grid.Column="2" Grid.Row="4" />
+            <ext:PickListControl Height="23" Name="plCondition" Text="{Binding Condition}" Grid.Column="3" Grid.Row="4" />
+            
+            <Label Content="Storage site:" Name="lblStorageSite" Grid.Row="5" />
+            <ext:PickListControl Height="23" Name="plStorageSite" Text="{Binding StorageSite}" Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="3" />
+
+            <Label Content="Storage method:" Name="label3" Grid.Row="6" />
+            <ext:PickListControl Height="23" Name="plStorageMethod" Text="{Binding StorageMethod}" Grid.Column="1" Grid.Row="6" Grid.ColumnSpan="3" />
+
+            <Label Content="Curation status:" Name="label4" Grid.Row="7" />
+            <ext:PickListControl Grid.ColumnSpan="3" Grid.Column="1" Height="23" Name="plCurationStatus" Text="{Binding CurationStatus}" Grid.Row="7" />
+            
+            <Label Content="Notes:" Name="lblNotes" Grid.Row="8" />
+            <ext:BindableRichTextBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="3" Name="txtNotes" RTF="{Binding Notes}" Margin="0,6,1,0">
+                <FlowDocument PageWidth="{Binding ElementName=txtNotes, Path=ActualWidth}" />
+            </ext:BindableRichTextBox>
+        </Grid>
+        <Button Content="_Delete" Grid.Row="1" Height="23" HorizontalAlignment="Left" Margin="81,5,0,0" Name="btnDelete" VerticalAlignment="Top" Width="75" Click="btnDelete_Click" />
+        <Button Content="_Add new" Height="23" HorizontalAlignment="Left" Margin="0,5,0,0" Name="btnAdd" VerticalAlignment="Top" Width="75" Grid.Row="1" Click="btnAdd_Click" />
+
+    </Grid>
+</ext:DatabaseActionControl>
