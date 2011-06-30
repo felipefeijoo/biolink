@@ -83,10 +83,13 @@ namespace BioLink.Client.Extensibility {
                     }
                 }
 
-                BioLinkCorePlugin core = GetExtensionsOfType<BioLinkCorePlugin>()[0];                
-                var browser = new WebBrowser();
-                AddDockableContent(core, browser, "Welcome");
-                browser.Navigate(string.Format("file:///{0}", htmlfile));
+                if (!string.IsNullOrWhiteSpace(htmlfile)) {
+                    BioLinkCorePlugin core = GetExtensionsOfType<BioLinkCorePlugin>()[0];
+                    var browser = new WebBrowser();
+                    AddDockableContent(core, browser, "Welcome");
+                    browser.Navigate(string.Format("file:///{0}", htmlfile));
+                }
+
             }
 
             

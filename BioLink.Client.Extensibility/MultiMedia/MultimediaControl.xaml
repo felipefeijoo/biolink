@@ -56,7 +56,7 @@
                     <Border Margin="3" BorderThickness="1" BorderBrush="{x:Static SystemColors.ControlDarkBrush}" Background="{x:Static SystemColors.ControlBrush}" CornerRadius="3" Height="130" Padding="5">
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120">
                             <Image Source="{Binding Thumbnail}" Stretch="None" SnapsToDevicePixels="True" />
-                            <TextBlock MinHeight="20" TextAlignment="Center" Text="{Binding Name}" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" FontSize="10" Foreground="Black"/>
+                            <TextBlock MinHeight="20" TextAlignment="Center" Text="{Binding Fullname}" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" FontSize="10" Foreground="Black"/>
                         </StackPanel>
                     </Border>
                 </DataTemplate>

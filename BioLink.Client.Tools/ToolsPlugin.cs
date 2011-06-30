@@ -140,6 +140,11 @@ namespace BioLink.Client.Tools {
                 String.Format("{{'Name':'HTMLManager', 'Header':'{0}'}}", "Manage HTML (Welcome page)...")
             ));
 
+            contrib.Add(new MenuWorkspaceContribution(this, "Preferences", (obj, e) => { ShowUserPreferences(); },
+                String.Format("{{'Name':'Tools', 'Header':'{0}','InsertAfter':'View'}}", _R("Tools.Menu.Tools")),
+                "{'Name':'Settings', 'Header':'_Settings'}",
+                String.Format("{{'Name':'UserPreferences', 'Header':'{0}'}}", "Preferences...")
+            ));
 
             return contrib;
         }
@@ -161,6 +166,13 @@ namespace BioLink.Client.Tools {
                 _importWizard = null;
             }
 
+        }
+
+        private void ShowUserPreferences() {
+            var frm = new AdvancedPreferences();
+            frm.Owner = PluginManager.Instance.ParentWindow;
+            frm.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            frm.ShowDialog();
         }
 
         public ControlHostWindow ShowLoanContacts() {

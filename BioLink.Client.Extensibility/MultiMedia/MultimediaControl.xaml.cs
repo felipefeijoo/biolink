@@ -191,6 +191,8 @@ namespace BioLink.Client.Extensibility {
                                 } else {
                                     model.Name = finfo.Name;
                                 }
+                                model.SizeInBytes = (int) finfo.Length;
+
                                 viewModel = new MultimediaLinkViewModel(model);
                                 viewModel.Thumbnail = GraphicsUtils.GenerateThumbnail(filename, THUMB_SIZE);
                                 _tempFileManager.CopyToTempFile(viewModel.MultimediaID, filename);

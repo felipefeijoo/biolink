@@ -52,5 +52,9 @@ namespace BioLink.Client.Extensibility {
             set { SetProperty(() => Model.FileExtension, value); }
         }
 
+        public string Fullname {
+            get { return string.Format("{0}.{1}", Name, FileExtension); }
+        }
+
     }
 }

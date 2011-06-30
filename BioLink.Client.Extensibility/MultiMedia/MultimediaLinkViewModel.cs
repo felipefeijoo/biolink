@@ -70,6 +70,11 @@ namespace BioLink.Client.Extensibility {
             get { return string.Format("{0} {1}", this.Extension, ByteConverter.FormatBytes(SizeInBytes)); }
         }
 
+        public string Fullname {
+            get { return string.Format("{0} ({1})", Name, FileInfo); }
+        }
+
+
 
     }
 }
