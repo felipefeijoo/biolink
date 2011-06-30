@@ -6,12 +6,29 @@ using BioLink.Data.Model;
 using System.Windows.Media.Imaging;
 using System.Windows;
 using BioLink.Client.Utilities;
+using System.IO;
 
 namespace BioLink.Client.Extensibility {
 
     public class MultimediaLinkViewModel : GenericViewModelBase<MultimediaLink> {
 
         public MultimediaLinkViewModel(MultimediaLink model) : base(model, ()=>model.MultimediaLinkID) { }
+
+        public override FrameworkElement TooltipContent {
+            get { return new MultimediaLinkTooltip(this); }
+        }
+
+        public override string DisplayLabel {
+            get {
+                long size = SizeInBytes;
+                if (!string.IsNullOrWhiteSpace(TempFilename)) {
+                    var finfo = new FileInfo(TempFilename);
+                    size = finfo.Length;
+                }
+                var sizeStr = SystemUtils.ByteCountToSizeString(size);
+                return string.Format("{0}.{1} ({2})", Name, Extension, sizeStr);
+            }
+        }
 
         public int MultimediaID {
             get { return Model.MultimediaID; }
@@ -71,8 +88,10 @@ namespace BioLink.Client.Extensibility {
         }
 
         public string Fullname {
-            get { return string.Format("{0} ({1})", Name, FileInfo); }
+            get { return string.Format("{0}.{1}", Name, Extension); }
         }
+
+        public string TempFilename { get; set; }
 
 
 

@@ -203,6 +203,7 @@
     <Compile Include="MultiMedia\MultimediaDetails.xaml.cs">
       <DependentUpon>MultimediaDetails.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MultiMedia\MultimediaLinkTooltip.cs" />
     <Compile Include="MultiMedia\MultimediaLinkViewModel.cs" />
     <Compile Include="MultiMedia\MultimediaViewModel.cs" />
     <Compile Include="MultiMedia\UpdateMultimediaAction.cs" />

@@ -108,10 +108,8 @@
     </Compile>
     <Compile Include="TaxonNameParser.cs" />
     <Compile Include="TaxonReportBase.cs" />
-    <Compile Include="TaxonSelectorContentProvider.cs" />
-    <Compile Include="TaxonTooltipContent.xaml.cs">
-      <DependentUpon>TaxonTooltipContent.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="images\TaxonSelectorContentProvider.cs" />
+    <Compile Include="TaxonTooltipContent.xaml.cs" />
     <Compile Include="TaxonViewModel.cs" />
     <Compile Include="TypeListReport.cs" />
     <Compile Include="XMLExportOptions.xaml.cs">
@@ -173,8 +171,8 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="TaxonTooltipContent.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="XMLExportOptions.xaml">
       <SubType>Designer</SubType>

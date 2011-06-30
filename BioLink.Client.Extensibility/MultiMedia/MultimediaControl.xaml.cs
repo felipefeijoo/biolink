@@ -97,6 +97,7 @@ namespace BioLink.Client.Extensibility {
 
         private void GenerateThumbnail(MultimediaLinkViewModel item, int maxDimension) {
             string filename = _tempFileManager.GetContentFileName(item.MultimediaID, item.Extension);
+            item.TempFilename = filename;
             this.InvokeIfRequired(() => {
                 item.Thumbnail = GraphicsUtils.GenerateThumbnail(filename, maxDimension);
             });
