@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using BioLink.Client.Utilities;
+using Microsoft.VisualBasic;
 
 namespace BioLink.Client.Extensibility {
     /// <summary>
@@ -25,10 +26,27 @@ namespace BioLink.Client.Extensibility {
         public DateControl() {
             InitializeComponent();
             txt.TextChanged += new TextChangedEventHandler(txt_TextChanged);
+            txt.PreviewLostKeyboardFocus += new KeyboardFocusChangedEventHandler(txt_PreviewLostKeyboardFocus);
             txt.LostFocus += new RoutedEventHandler(txt_LostFocus);
             cal.SelectionMode = CalendarSelectionMode.SingleDate;
             cal.SelectedDatesChanged += new EventHandler<SelectionChangedEventArgs>(cal_SelectedDatesChanged);
             cal.MouseDoubleClick += new MouseButtonEventHandler(cal_MouseDoubleClick);
+        }
+
+        void txt_PreviewLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e) {
+            
+            if (IsHardDate) {
+                if (!string.IsNullOrEmpty(Date)) {
+                    int year = Int32.Parse(Date.Substring(0, 4));
+                    int month = Int32.Parse(Date.Substring(4, 2));
+                    int day = Int32.Parse(Date.Substring(6, 2));
+                    if (year == 0 || month == 0 || day == 0) {
+                        e.Handled = true;
+                        return;
+                    }
+                }
+            }
+
         }
 
         void DateControl_LostFocus(object sender, RoutedEventArgs e) {
@@ -120,19 +138,24 @@ namespace BioLink.Client.Extensibility {
 
             string bldate = null;
 
-            if (DateTime.TryParse(strDate, out dt)) {
-                switch (count) {
-                    case 1:
-                        bldate = string.Format("{0:4}0000", dt.Year);
-                        break;
-                    case 2:
-                        bldate = string.Format("{0:0000}{1:00}00", dt.Year, dt.Month);
-                        break;
-                    case 3:
-                        bldate = string.Format("{0:0000}{1:00}{2:00}", dt.Year, dt.Month, dt.Day);
-                        break;
-                    default:
-                        break;
+            if (Information.IsDate(strDate)) {
+                dt = Microsoft.VisualBasic.DateAndTime.DateValue(strDate);
+                if (DateAndTime.Day(dt) == 1) {
+                    switch (count) {
+                        case 1:
+                            bldate = string.Format("{0:4}0000", dt.Year);
+                            break;
+                        case 2:
+                            bldate = string.Format("{0:0000}{1:00}00", dt.Year, dt.Month);
+                            break;
+                        case 3:
+                            bldate = string.Format("{0:0000}{1:00}{2:00}", dt.Year, dt.Month, dt.Day);
+                            break;
+                        default:
+                            break;
+                    }
+                } else {
+                    bldate = string.Format("{0:0000}{1:00}{2:00}", dt.Year, dt.Month, dt.Day);
                 }
             } else {
                 int year;
@@ -168,6 +191,17 @@ namespace BioLink.Client.Extensibility {
             if (!control._selfSet) {
                 control.txt.Text = DateControl.DateToStr(control.Date);
             }
+        }
+
+        public bool IsHardDate {
+            get { return (bool)GetValue(IsHardDateProperty); }
+            set { SetValue(IsHardDateProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsHardDateProperty = DependencyProperty.Register("IsHardDate", typeof(bool), typeof(DateControl), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.Journal | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnIsHardDateChanged)));
+
+        private static void OnIsHardDateChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            var control = obj as DateControl;
         }
 
         public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(DateControl), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnIsReadOnlyChanged)));
