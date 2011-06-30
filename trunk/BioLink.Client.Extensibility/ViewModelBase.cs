@@ -239,7 +239,6 @@ namespace BioLink.Client.Extensibility {
             get {
                 if (Model is OwnedDataObject) {
                     return new DefaultTooltipContent(ObjectID.Value, this as ViewModelBase, this.Model as OwnedDataObject);
-                    // return new GenericTooltipContent(PluginManager.Instance.User, Model as OwnedDataObject, this);
                 } else {
                     return base.TooltipContent;
                 }
