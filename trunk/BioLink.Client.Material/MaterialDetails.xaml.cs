@@ -83,7 +83,19 @@ namespace BioLink.Client.Material {
         }
 
         void txtIdentification_ObjectIDChanged(object source, int? objectID) {
-            if (this.Question("Do you wish to record a history of this identification change?", "Create identification history?")) {
+
+            var askQuestion = Config.GetUser<bool>(User, "Material.ShowRecordIDHistoryQuestion", true);
+
+            bool addHistory = false;
+            if (askQuestion) {
+                var frm = new IdentificationHistoryQuestion();
+                frm.Owner = this.FindParentWindow();
+                addHistory = frm.ShowDialog().ValueOrFalse();
+            } else {
+                addHistory = Config.GetUser(User, "Material.DefaultRecordIDHistory", false);
+            }
+
+            if (addHistory) {
                 _historyControl.AddHistoryFromMaterial(_viewModel);
                 // Clear id fields...
                 _viewModel.IdentificationAccuracy = "";
@@ -93,9 +105,7 @@ namespace BioLink.Client.Material {
                 _viewModel.IdentificationNotes = "";
                 _viewModel.IdentificationReferenceID = 0;
                 _viewModel.IdentificationRefPage = "";
-                _viewModel.IdentifiedBy = "";
-
-
+                _viewModel.IdentifiedBy = "";                
             }
         }
 

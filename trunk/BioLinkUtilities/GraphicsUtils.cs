@@ -56,7 +56,7 @@ namespace BioLink.Client.Utilities {
                 System.Drawing.Icon icon = SystemUtils.GetIconFromExtension(ext);
                 if (icon != null) {
                     return SystemDrawingIconToBitmapSource(icon);
-                }
+                } 
             }
             return null;
         }
@@ -155,7 +155,11 @@ namespace BioLink.Client.Utilities {
                     }
                 } catch (Exception) {
                     FileInfo finfo = new FileInfo(filename);
-                    return GraphicsUtils.ExtractIconForExtension(finfo.Extension.Substring(1));
+                    var result = GraphicsUtils.ExtractIconForExtension(finfo.Extension.Substring(1));
+                    if (result == null) {
+                        result = GraphicsUtils.GetIconForFilePath(filename);
+                    }
+                    return result;
                 }
             }
 

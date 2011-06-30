@@ -128,7 +128,7 @@ namespace BioLink.Client.Extensibility {
         void txt_PreviewLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e) {
             if (_validate) {
                 if (!txt.IsReadOnly) {
-                    if (!ValidateLookup() && EnforceLookup) {
+                    if (EnforceLookup && !ValidateLookup()) {
                         if (!DoFind(txt.Text)) {
                             e.Handled = true;
                         }
@@ -157,10 +157,10 @@ namespace BioLink.Client.Extensibility {
             var service = new SupportService(User);
             var lookupResults = service.LookupSearch(txt.Text, LookupType);
             if (lookupResults != null && lookupResults.Count >= 1) {
-                if (lookupResults.Count == 1) {
-                    var result = lookupResults[0];
-                    this.ObjectID = result.ObjectID;
-                    return result.Label.Equals(txt.Text);
+                foreach (LookupResult result in lookupResults) {
+                    if (result.Label.Equals(txt.Text, StringComparison.CurrentCultureIgnoreCase) && this.ObjectID == result.ObjectID) {
+                        return true;
+                    }
                 }
             }
 

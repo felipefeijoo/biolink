@@ -99,8 +99,9 @@ namespace BioLink.Client.Utilities {
                 EmbeddedIconInfo embeddedIcon = GetEmbeddedIconInfo(fileAndParam);
                 IntPtr lIcon = ExtractIcon(0, embeddedIcon.FileName, embeddedIcon.IconIndex);
                 return Icon.FromHandle(lIcon);
-            } catch (Exception exc) {
-                throw exc;
+            } catch (Exception) {
+                return null;
+                // throw exc;
             }
         }
 

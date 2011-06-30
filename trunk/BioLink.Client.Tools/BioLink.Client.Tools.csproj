@@ -63,6 +63,9 @@
     <Compile Include="administration\AdministrationControl.xaml.cs">
       <DependentUpon>AdministrationControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="AdvancedPreferences.xaml.cs">
+      <DependentUpon>AdvancedPreferences.xaml</DependentUpon>
+    </Compile>
     <Compile Include="LabelManagerControl.xaml.cs">
       <DependentUpon>LabelManagerControl.xaml</DependentUpon>
     </Compile>
@@ -252,6 +255,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="administration\AdministrationControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AdvancedPreferences.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
