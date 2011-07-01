@@ -39,6 +39,7 @@ namespace BioLink.Client.Extensibility {
             btnCancel.IsEnabled = false;
             btnOK.IsEnabled = false;
             lblStatus.Content = "Generating points...";
+            this.Cursor = Cursors.Wait;
             JobExecutor.QueueJob(() => {
                 if (Generator != null) {
                     Points = Generator();
@@ -53,6 +54,7 @@ namespace BioLink.Client.Extensibility {
                     lblStatus.Content = "";
                     this.DialogResult = true;
                     this.Close();
+                    this.Cursor = Cursors.Arrow;
                 });
             });
             

@@ -40,7 +40,7 @@ namespace BioLink.Client.Taxa {
 
             cmbKingdom.ItemsSource = _kingdomList;
 
-            this.chkChangedCombination.Visibility = (_rank.Category == "S" ? Visibility.Visible : Visibility.Hidden);
+            this.chkChangedCombination.Visibility = (_rank != null && _rank.Category == "S" ? Visibility.Visible : Visibility.Hidden);
 
             if (taxon.AvailableName.ValueOrFalse() || taxon.LiteratureName.ValueOrFalse()) {
 
@@ -98,7 +98,7 @@ namespace BioLink.Client.Taxa {
         }        
 
         public string RankLongName {
-            get { return _rank.GetElementTypeLongName(this.Taxon); }            
+            get { return _rank == null ? "Unranked" : _rank.GetElementTypeLongName(this.Taxon); }            
         }
 
         public bool IsVerified {

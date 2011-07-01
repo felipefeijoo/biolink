@@ -109,7 +109,9 @@
     <Compile Include="TaxonNameParser.cs" />
     <Compile Include="TaxonReportBase.cs" />
     <Compile Include="TaxonSelectorContentProvider.cs" />
-    <Compile Include="TaxonTooltipContent.xaml.cs" />
+    <Compile Include="TaxonTooltipContent.xaml.cs">
+      <DependentUpon>TaxonTooltipContent.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TaxonViewModel.cs" />
     <Compile Include="TypeListReport.cs" />
     <Compile Include="XMLExportOptions.xaml.cs">

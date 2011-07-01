@@ -5,6 +5,6 @@ using System.Text;
 
 namespace BioLinkApplication {
     public static class BuildLabel {
-        public const string BUILD_LABEL = "BETA 1";
+        public const string BUILD_LABEL = "BETA";
     }
 }
