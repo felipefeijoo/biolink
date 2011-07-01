@@ -808,7 +808,7 @@ namespace BioLink.Client.Taxa {
 
                 TaxonRank taxonRank = Service.GetTaxonRank(model.ElemType);
 
-                String title = String.Format("Taxon Detail: {0} ({1}) [{2}]", model.TaxaFullName, taxonRank.GetElementTypeLongName(model.Taxon), model.TaxaID);
+                String title = String.Format("Taxon Detail: {0} ({1}) [{2}]", model.TaxaFullName, taxonRank == null ? "Unranked" : taxonRank.GetElementTypeLongName(model.Taxon), model.TaxaID);
 
                 PluginManager.Instance.AddNonDockableContent(Owner, control, title, SizeToContent.Manual);
             }

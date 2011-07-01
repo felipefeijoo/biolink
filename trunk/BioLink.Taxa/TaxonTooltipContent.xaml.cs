@@ -29,7 +29,6 @@ namespace BioLink.Client.Taxa {
             Loaded += new RoutedEventHandler(TaxonTooltipContent_Loaded);
         }
 
-
         void TaxonTooltipContent_Loaded(object sender, RoutedEventArgs e) {
             var service = new TaxaService(PluginManager.Instance.User);
             var Model = service.GetTaxon(TaxonID);
@@ -39,8 +38,17 @@ namespace BioLink.Client.Taxa {
 
             var elementRank = service.GetTaxonRank(Model.ElemType);
 
-            lblHeader.Content = Model.TaxaFullName;
-            var rankName = (elementRank == null ? "Unranked" : elementRank.LongName);
+            var header = Model.TaxaFullName;
+
+            if (Model.AvailableName.ValueOrFalse()) {
+                header += " (Available name)";
+            } else if (Model.LiteratureName.ValueOrFalse()) {
+                header += " (Literature name)";
+            }
+
+            lblHeader.Content = header;
+            var rankName = (elementRank == null ? "Unranked" : elementRank.LongName + (Model.AvailableName.ValueOrFalse() ? " Available Name" : ""));
+
             lblSystem.Content = string.Format("[{0}] {1} Last updated: {2:g} by {3}", Model.TaxaID.Value, rankName, Model.DateLastUpdated, Model.WhoLastUpdated);
             imgIcon.Source = TaxonViewModel.ConstructIcon(Model.AvailableName.ValueOrFalse() || Model.LiteratureName.ValueOrFalse(), Model.ElemType, false);            
 
@@ -62,24 +70,13 @@ namespace BioLink.Client.Taxa {
             grdAncestry.Children.Clear();
             
             foreach (Taxon t in parents) {
-                var parentPanel = new StackPanel();
-                parentPanel.Orientation = Orientation.Horizontal;
-                parentPanel.Margin = new Thickness(i * 15, i * 25, 0, 0);
-
-                var parentIcon = new Image();
-                parentIcon.VerticalAlignment = System.Windows.VerticalAlignment.Top;
-                parentIcon.Source = TaxonViewModel.ConstructIcon(t.AvailableName.ValueOrFalse() || t.LiteratureName.ValueOrFalse(), t.ElemType, false);
-                parentIcon.UseLayoutRounding = true;
-                parentIcon.SnapsToDevicePixels = true;
-                parentIcon.Stretch = Stretch.None;
-                parentIcon.Margin = new Thickness(6, 0, 6, 0);
+                var parentPanel = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(i * 15, i * 25, 0, 0) };
+                var parentIcon = new Image() { VerticalAlignment = System.Windows.VerticalAlignment.Top, UseLayoutRounding = true, SnapsToDevicePixels = true, Stretch = Stretch.None, Margin = new Thickness(6, 0, 6, 0) };                
+                parentIcon.Source = TaxonViewModel.ConstructIcon(t.AvailableName.ValueOrFalse() || t.LiteratureName.ValueOrFalse(), t.ElemType, false);                
                 parentPanel.Children.Add(parentIcon);
-
                 var rank = service.GetTaxonRank(t.ElemType);
                 rankName = (rank == null ? "Unranked" : rank.LongName);
-                var txt = new TextBlock();
-                txt.VerticalAlignment = System.Windows.VerticalAlignment.Top;
-                txt.Text = string.Format("{1}   ({0})", rankName, t.TaxaFullName);
+                var txt = new TextBlock() {VerticalAlignment = System.Windows.VerticalAlignment.Top, Text = string.Format("{1}   ({0})", rankName, t.TaxaFullName) };
                 parentPanel.Children.Add(txt);
                 grdAncestry.Children.Add(parentPanel);
                 i++;

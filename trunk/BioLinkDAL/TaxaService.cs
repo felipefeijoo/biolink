@@ -13,8 +13,8 @@ namespace BioLink.Data {
         public static string SPECIES_INQUIRENDA = "SI";
         public static string INCERTAE_SEDIS = "IS";
 
-        private List<TaxonRank> _rankList;
-        private byte[] _rankLock = new byte[] { };
+        private static List<TaxonRank> _rankList;
+        private static byte[] _rankLock = new byte[] { };
 
         public TaxaService(User user) : base(user) {
         }
@@ -805,7 +805,7 @@ namespace BioLink.Data {
             }, _P("vchrItemType", itemType), _P("intItemID", siteOrRegionID), _P("intBiotaID", taxonID));
 
             if (!hasResults) {
-                sb.Append("No results.");
+                sb.Par().Par().Append("No results.");
             }
     
    
