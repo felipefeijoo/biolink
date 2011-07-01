@@ -989,25 +989,35 @@ namespace BioLink.Client.Material {
         private void DoFind() {
 
             int resultsCount = 0;
+            var text = txtFind.Text;
+            var scope = cmbFindScope.SelectedItem as MaterialFindScope;
+
             using (new OverrideCursor(Cursors.Wait)) {
-                if (string.IsNullOrWhiteSpace(txtFind.Text)) {
+
+                if (string.IsNullOrWhiteSpace(text)) {
                     return;
                 }
 
                 var service = new MaterialService(User);
-                var scope = cmbFindScope.SelectedItem as MaterialFindScope;
+
                 string limitations = "";
                 if (scope != null) {
                     limitations = scope.Value;
                 }
-                var list = service.FindNodesByName(txtFind.Text, limitations);
+                var list = service.FindNodesByName(text, limitations);
+
+                if (!PluginManager.Instance.CheckSearchResults(list)) {
+                    return;
+                }
+
                 resultsCount = list.Count;
                 var findModel = BuildExplorerModel(list, true);
                 tvwFind.ItemsSource = findModel;
-            }
+                tvwFind.UpdateLayout();
 
-            if (resultsCount == 0) {
-                MessageBox.Show("No matching elements found.", "No results", MessageBoxButton.OK, MessageBoxImage.Warning);
+                if (resultsCount == 0) {
+                    MessageBox.Show("No matching elements found.", "No results", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }                
             }
 
         }

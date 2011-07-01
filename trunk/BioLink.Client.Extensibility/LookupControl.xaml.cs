@@ -93,12 +93,16 @@ namespace BioLink.Client.Extensibility {
             _validate = true;
             if (lookupResults != null) {
                 if (lookupResults.Count > 1) {
+
+                    if (!PluginManager.Instance.CheckSearchResults(lookupResults)) {
+                        return false;
+                    }
+
                     GeneralTransform transform = txt.TransformToAncestor(this);
                     var rootPoint = txt.PointToScreen(transform.Transform(new Point(0, 0)));
 
                     var frm = new LookupResults(lookupResults);
                     frm.Owner = this.FindParentWindow();
-
 
                     frm.Top = rootPoint.Y + txt.ActualHeight;
                     frm.Left = rootPoint.X;

@@ -550,6 +550,18 @@ namespace BioLink.Client.Extensibility {
             return default(T);
         }
 
+
+        public bool CheckSearchResults(System.Collections.ICollection list) {
+            if (list != null) {
+                var searchLimit = Config.GetUser(User, "SearchResults.MaxSearchResults", 2000);
+                if (list.Count > searchLimit) {
+                    ErrorMessage.Show("Your search returned too many results (more than {0} rows). Please refine your search criteria and try again.", searchLimit);
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 
 }
