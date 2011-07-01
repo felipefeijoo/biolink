@@ -26,6 +26,7 @@ namespace BioLink.Client.Tools {
 
             chkAskIDHistoryQuestion.IsChecked = Config.GetUser(User, "Material.ShowRecordIDHistoryQuestion", true);
             chkDefaultIDHistoryCreation.IsChecked = Config.GetUser(User, "Material.DefaultRecordIDHistory", true);
+            txtMaxSearchResults.Text = Config.GetUser(User, "SearchResults.MaxSearchResults", 2000).ToString();
         }
 
         public User User {
@@ -44,6 +45,10 @@ namespace BioLink.Client.Tools {
         private void SavePreferences() {
             Config.SetUser(User, "Material.ShowRecordIDHistoryQuestion", chkAskIDHistoryQuestion.IsChecked.ValueOrFalse());
             Config.SetUser(User, "Material.DefaultRecordIDHistory", chkDefaultIDHistoryCreation.IsChecked.ValueOrFalse());
+            int maxResults = 0;
+            if (Int32.TryParse(txtMaxSearchResults.Text, out maxResults)) {
+                Config.SetUser(User, "SearchResults.MaxSearchResults", maxResults);
+            }
         }
     }
 }

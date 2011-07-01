@@ -152,15 +152,20 @@ namespace BioLink.Client.Taxa {
 
             if (String.IsNullOrEmpty(searchTerm)) {
                 return;
-            } 
+            }
 
+            _searchModel.Clear();
 
             using (new OverrideCursor(Cursors.Wait)) {
                 if (Owner == null) {
                     return;
                 }
                 List<TaxonSearchResult> results = new TaxaService(Owner.User).FindTaxa(searchTerm);
-                _searchModel.Clear();
+
+                if (!PluginManager.Instance.CheckSearchResults(results)) {
+                    return;
+                }
+
                 tvwResults.InvokeIfRequired(() => {                    
                     foreach (Taxon t in results) {
                         var item = new TaxonViewModel(null, t, GenerateTaxonDisplayLabel);
