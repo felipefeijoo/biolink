@@ -168,5 +168,6 @@ namespace BioLink.Client.Extensibility {
         public virtual T GetAdaptorForPinnable<T>(PinnableObject pinnable) {
             return default(T);
         }
+        
     }
 }

@@ -164,6 +164,42 @@ namespace BioLink.Client.Utilities {
             return string.Format("{0:d}", dt.Value);
         }
 
+        public static string FormatDate(int d, bool asRomanMonth = false) {
+            if (d == 0) {
+                return "";
+            }
+
+            if (asRomanMonth) {
+                return DateRomanMonth(d);
+            } else {
+                return BLDateToStr(d);
+            }
+        }
+
+        public static string FormatDates(int dateType, int? startDate, int? endDate, string casualDate) {
+            if (dateType == 2) {
+                return casualDate;
+            } else {
+                if (startDate.HasValue && endDate.HasValue) {
+                    if (startDate == endDate) {
+                        return FormatDate(startDate.Value);
+                    } else if (startDate.Value == 0) {
+                        return "Before " + FormatDate(endDate.Value, false);
+                    } else if (endDate == 0) {
+                        return FormatDate(startDate.Value, false);
+                    } else {
+                        return string.Format("{0} to {1}", FormatDate(startDate.Value), FormatDate(endDate.Value));
+                    }
+                } else if (startDate.HasValue) {
+                    return FormatDate(startDate.Value);
+                } else if (endDate.HasValue) {
+                    return "Before " + FormatDate(endDate.Value);
+                }
+            }
+            return "";
+        }
+
+
     }
 
     

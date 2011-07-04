@@ -562,6 +562,22 @@ namespace BioLink.Client.Extensibility {
 
             return true;
         }
+
+        public ViewModelBase GetViewModel(LookupType t, int objectId) {
+
+            var candidates = new List<ViewModelBase>();
+            TraversePlugins((plugin) => {
+                if (plugin.CanEditObjectType(t)) {
+                    var pinnable = new PinnableObject(plugin.Name, t, objectId);
+                    candidates.Add(plugin.CreatePinnableViewModel(pinnable));
+                }
+            });
+
+            if (candidates.Count > 0) {
+                return candidates[0];
+            }
+            return null;
+        }
     }
 
 }

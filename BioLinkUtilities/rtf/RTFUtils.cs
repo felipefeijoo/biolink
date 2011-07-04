@@ -9,29 +9,21 @@ using System.Text.RegularExpressions;
 namespace BioLink.Client.Utilities {
     public static class RTFUtils {
 
-        private static Regex RTF_REGEX = new Regex(@"(?s)^{\s*{(.*)}\s*}\s*$");
+        public static String filter(String rtf, bool newLinesToSpace, params String[] allowedKeywords) {
 
-        public static string StripMarkup(string rtf) {
-            if (string.IsNullOrEmpty(rtf)) {
-                return rtf;
-            }
+		    if (string.IsNullOrWhiteSpace(rtf)) {
+			    return rtf;
+		    }
 
-            if (!rtf.StartsWith("{") && !rtf.EndsWith("}")) {
-                return rtf;
-            }
+		    FilteringRTFHandler handler = new FilteringRTFHandler(newLinesToSpace, allowedKeywords);
+		    RTFReader reader = new RTFReader(rtf, handler);
+		    
+			reader.parse();
+		    return handler.getFilteredText();
+	    }
 
-            var m = RTF_REGEX.Match(rtf);
-            if (m.Success) {
-                rtf = string.Format("{{{0}}}", m.Groups[1]);
-            }
-
-            try {
-                var rtb = new RichTextBox();
-                rtb.Rtf = rtf;
-                return rtb.Text;
-            } catch (ArgumentException) {
-                return rtf;
-            }
+        public static String StripMarkup(String rtf, bool newlinesToSpace = true) {
+            return filter(rtf, newlinesToSpace);
         }
 
         public static string EscapeUnicode(string value) {

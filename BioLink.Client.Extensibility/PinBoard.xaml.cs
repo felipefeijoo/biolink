@@ -230,11 +230,11 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        public int ObjectID { get; private set; }
+        public int ObjectID { get; set; }
 
-        public string PluginID { get; private set; }
+        public string PluginID { get; set; }
 
-        public LookupType LookupType { get; private set; }
+        public LookupType LookupType { get; set; }
 
         public string StateData { get; set; }
 

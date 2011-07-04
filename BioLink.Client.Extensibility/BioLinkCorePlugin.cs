@@ -52,5 +52,6 @@ namespace BioLink.Client.Extensibility {
         public override List<Command> GetCommandsForSelected(List<ViewModelBase> selected) {
             return null;
         }
+
     }
 }

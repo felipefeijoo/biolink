@@ -5,8 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
              mc:Ignorable="d" 
-             d:DesignHeight="351" d:DesignWidth="439">
+             d:DesignHeight="354" d:DesignWidth="811">
     <Grid>
+        <Grid.Resources>
+            <Style x:Key="hcs" TargetType="{x:Type GridViewColumnHeader}">
+                <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
+            </Style>
+        </Grid.Resources>
         <TabControl>
             <TabItem Header="_Items">
                 <Grid>
@@ -20,10 +25,30 @@
                     <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="112,2,0,0" Name="txrtName" VerticalAlignment="Center" Width="246" Text="{Binding Path=Name}"/>
 
                     <ListView Grid.Row="1" Margin="6" x:Name="lvw">
+                        <ListView.Resources>
+                            <DataTemplate x:Key="NumCopiesTemplate">
+                                <Grid Margin="0">
+                                    <ext:NumberUpDown Number="{Binding Path=NumCopies}" Margin="0" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.Resources>
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
                         <ListView.View>
                             <GridView>
                                 <GridView.Columns>
-                                    <GridViewColumn Header="Num Copies" />
+                                    <GridViewColumn Width="80" Header="Num Copies" HeaderContainerStyle="{StaticResource hcs}" CellTemplate="{StaticResource NumCopiesTemplate}" />
+                                    <GridViewColumn Width="80" Header="Order" DisplayMemberBinding="{Binding Path=PrintOrder}" HeaderContainerStyle="{StaticResource hcs}" />
+                                    <GridViewColumn Width="100" Header="Region" DisplayMemberBinding="{Binding Path=Region}" HeaderContainerStyle="{StaticResource hcs}" />
+                                    <GridViewColumn Width="100" Header="Locality" DisplayMemberBinding="{Binding Path=Local}" HeaderContainerStyle="{StaticResource hcs}" />
+                                    <GridViewColumn Width="120" Header="Lat./Long." DisplayMemberBinding="{Binding Path=Position}" HeaderContainerStyle="{StaticResource hcs}" />
+                                    <GridViewColumn Width="120" Header="Collectors" DisplayMemberBinding="{Binding Path=Collectors}" HeaderContainerStyle="{StaticResource hcs}" />
+                                    <GridViewColumn Width="120" Header="Dates" DisplayMemberBinding="{Binding Path=DateStr}" HeaderContainerStyle="{StaticResource hcs}" />
+                                    <GridViewColumn Width="120" Header="Taxa" DisplayMemberBinding="{Binding Path=TaxaFullName}" HeaderContainerStyle="{StaticResource hcs}" />
+                                    <GridViewColumn Width="120" Header="Accession No." DisplayMemberBinding="{Binding Path=AccessionNo}" HeaderContainerStyle="{StaticResource hcs}" />
                                 </GridView.Columns>
                             </GridView>
                         </ListView.View>
