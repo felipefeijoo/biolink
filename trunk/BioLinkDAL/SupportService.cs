@@ -477,6 +477,17 @@ namespace BioLink.Data {
             return result;
         }
 
+        public List<MultimediaLinkedItem> ListItemsLinkedToMultimedia(int multimediaID) {
+            var mapper = new GenericMapperBuilder<MultimediaLinkedItem>().build();
+            var list = new List<MultimediaLinkedItem>();
+            SQLReaderForEach("SELECT M.intMultimediaLinkID, M.intMultimediaTypeID, M.intCatID, M.intIntraCatID, M.intMultimediaID, M.vchrCaption, M.bitUseInReport, M.GUID, TC.vchrCategory as [CategoryName] FROM tblMultimediaLink as M INNER JOIN tblTraitCategory as TC ON TC.intTraitCategoryID = M.intCatID WHERE intMultimediaID = @mmid", (reader) => {
+                list.Add(mapper.Map(reader));
+            }, _P("mmid", multimediaID));
+
+            return list;
+        }
+
+
         public List<MultimediaLink> FindMultimedia(string extension, string category, string term) {
 
             if (string.IsNullOrWhiteSpace(extension)) {

@@ -69,6 +69,9 @@
     <Compile Include="LabelManagerControl.xaml.cs">
       <DependentUpon>LabelManagerControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="LinkedMultimediaItemsControl.xaml.cs">
+      <DependentUpon>LinkedMultimediaItemsControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Modelling\BoxCarDistributionModel.cs" />
     <Compile Include="Loans\GenerateLoanFormControl.xaml.cs">
       <DependentUpon>GenerateLoanFormControl.xaml</DependentUpon>
@@ -263,6 +266,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="LabelManagerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LinkedMultimediaItemsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

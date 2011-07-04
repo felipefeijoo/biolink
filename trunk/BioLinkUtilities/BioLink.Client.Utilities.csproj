@@ -102,14 +102,20 @@
       <DependentUpon>InputBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="IProgressMonitor.cs" />
+    <Compile Include="rtf\FilteringRTFHandler.cs" />
+    <Compile Include="rtf\Keyword.cs" />
     <Compile Include="LegacySettings.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="MouseUtilities.cs" />
     <Compile Include="OverrideCursor.cs" />
     <Compile Include="Pair.cs" />
+    <Compile Include="rtf\ParserState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReflectionUtils.cs" />
-    <Compile Include="RTFUtils.cs" />
+    <Compile Include="PushbackReader.cs" />
+    <Compile Include="rtf\ReflectionUtils.cs" />
+    <Compile Include="rtf\RTFHandler.cs" />
+    <Compile Include="rtf\RTFReader.cs" />
+    <Compile Include="rtf\RTFUtils.cs" />
     <Compile Include="SystemUtils.cs" />
     <Compile Include="TempFileManager.cs" />
     <Compile Include="tests\FileSystemTraverserTests.cs" />

@@ -84,6 +84,13 @@
                         <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/Launch.png" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
                     </Button>
 
+                    <Button x:Name="btnLinks" Click="btnLinks_Click"  ToolTip="Find items that link to this multimedia">
+                        <Button.Content>
+                            <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/images/RedLink.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True"/>
+                        </Button.Content>
+                    </Button>
+
+
                 </ToolBar>
 
                 <Image Grid.Row="1" SnapsToDevicePixels="True" Stretch="None" UseLayoutRounding="True" Name="imgPreview" Opacity="1" />

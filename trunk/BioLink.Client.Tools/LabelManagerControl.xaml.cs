@@ -42,6 +42,9 @@ namespace BioLink.Client.Tools {
                 }));
 
                 lvw.ItemsSource = lvwModel;
+
+                ListCollectionView dataView = CollectionViewSource.GetDefaultView(lvw.ItemsSource) as ListCollectionView;
+                dataView.SortDescriptions.Add(new System.ComponentModel.SortDescription("PrintOrder", System.ComponentModel.ListSortDirection.Ascending));
             }
         }
 
@@ -263,6 +266,30 @@ namespace BioLink.Client.Tools {
         public int NumCopies {
             get { return Model.NumCopies; }
             set { SetProperty(() => Model.NumCopies, value); }
+        }
+
+        public string Position {
+            get {
+                var sb = new StringBuilder();
+                if (Lat.HasValue && Long.HasValue) {
+                    sb.AppendFormat("{0}, {1}", Lat.Value, Long.Value);
+                    if (Lat2.HasValue && Long2.HasValue) {
+                        sb.AppendFormat(" - {0}, {1}", Lat2.Value, Long2.Value);
+                    }
+                }
+
+                if (sb.Length == 0) {
+                    sb.Append("No position");
+                }
+
+
+                return sb.ToString();
+
+            }
+        }
+
+        public string DateStr {
+            get { return DateUtils.FormatDates(DateType, StartDate, EndDate, CasualDate); }
         }
 
     }

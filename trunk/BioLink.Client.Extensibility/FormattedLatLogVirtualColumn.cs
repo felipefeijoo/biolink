@@ -68,27 +68,8 @@ namespace BioLink.Client.Extensibility {
                 object objDateType = row[dateTypeCol];
                 if (objDateType != null) {
                     int.TryParse(objDateType.ToString(), out dateType);
-                    if (dateType == 2) {
-                        return row[casualDateCol];
-                    } else {
-                        int? startdate = row[startDateCol] as int?;
-                        int? enddate = row[endDateCol] as int?;
-                        if (startdate.HasValue && enddate.HasValue) {
-                            if (startdate == enddate) {
-                                return FormatDate(startdate.Value);
-                            } else if (startdate == 0) {
-                                return "Before " + FormatDate(enddate.Value, false);
-                            } else if (enddate == 0) {
-                                return FormatDate(startdate.Value, false);
-                            } else {
-                                return string.Format("{0} to {1}", FormatDate(startdate.Value), FormatDate(enddate.Value));
-                            }
-                        } else if (startdate.HasValue) {
-                            return FormatDate(startdate.Value);
-                        } else if (enddate.HasValue) {
-                            return "Before " + FormatDate(enddate.Value);
-                        }
-                    }
+                    return DateUtils.FormatDates(dateType, row[startDateCol] as int?, row[endDateCol] as int?, row[casualDateCol] as string);
+
                 }
                 return "";
             };

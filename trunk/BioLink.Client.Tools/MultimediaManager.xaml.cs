@@ -34,8 +34,9 @@ namespace BioLink.Client.Tools {
         private bool _IsDragging;
         private Point _startPoint;
 
-        public MultimediaManager(User user) : base(user, "MultimediaManager") {
+        public MultimediaManager(ToolsPlugin plugin, User user) : base(user, "MultimediaManager") {
             InitializeComponent();
+            this.Plugin = plugin;
 
             var service = new SupportService(user);
             _extensions = service.GetMultimediaExtensions();
@@ -436,6 +437,16 @@ namespace BioLink.Client.Tools {
 
         private void DeleteSelected() {
             DeleteMultimedia(lvw.SelectedItems);
+        }
+
+        private void btnLinks_Click(object sender, RoutedEventArgs e) {
+            ShowLinkedItems(lvw.SelectedItem as MultimediaLinkViewModel);
+        }
+
+        public ToolsPlugin Plugin { get; private set; }
+
+        private void ShowLinkedItems(MultimediaLinkViewModel selected) {
+            PluginManager.Instance.AddNonDockableContent(Plugin, new LinkedMultimediaItemsControl(selected.MultimediaID), "Items linked to multimedia " + selected.MultimediaID, SizeToContent.Manual);
         }
 
     }
