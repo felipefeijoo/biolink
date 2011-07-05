@@ -112,9 +112,7 @@ namespace BioLink.Client.Extensibility {
                 }
             }
             if (HasPendingChanges) {
-                using (new OverrideCursor(Cursors.Wait)) {
-                    CommitPendingChanges();
-                }
+                CommitPendingChanges();
             } else {
                 btnApply.IsEnabled = false;
             }
