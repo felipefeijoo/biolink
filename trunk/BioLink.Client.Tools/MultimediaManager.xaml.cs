@@ -128,11 +128,14 @@ namespace BioLink.Client.Tools {
             if (e.LeftButton == MouseButtonState.Pressed && !_IsDragging && !IsMouseOverScrollbar) {
                 Point position = e.GetPosition(listView);
                 if (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance) {
-                    if (listView.SelectedItem != null) {
 
-                        ListViewItem item = lvw.ItemContainerGenerator.ContainerFromItem(listView.SelectedItem) as ListViewItem;
-                        if (item != null) {
-                            StartDrag(e, lvw, item);
+                    var x = listView.InputHitTest(position) as FrameworkElement;
+                    if (x != null && x.DataContext is MultimediaLinkViewModel) {
+                        if (listView.SelectedItem != null) {
+                            ListViewItem item = lvw.ItemContainerGenerator.ContainerFromItem(listView.SelectedItem) as ListViewItem;
+                            if (item != null) {
+                                StartDrag(e, lvw, item);
+                            }
                         }
                     }
                 }
@@ -327,6 +330,12 @@ namespace BioLink.Client.Tools {
             foreach (MenuItem verbItem in verbMenuItems) {
                 builder.AddMenuItem(verbItem);
             }
+
+            if (selected != null) {
+                builder.Separator();
+                builder.New("Show linked items...").Handler(() => { ShowLinkedItems(selected); }).End();
+            }
+
             builder.Separator();
             builder.New("_Add new...").Handler(() => { AddNew(); }).End();
             builder.New("_Delete").Handler(() => { DeleteSelected(); }).End();
@@ -345,16 +354,20 @@ namespace BioLink.Client.Tools {
         }
 
         private void DoFind() {
-            var service = new SupportService(User);
-            var extension = cmbExtension.Text == "(All)" ? "" : cmbExtension.Text;
-            var category = cmbType.Text == "(All)" ? "" : cmbType.Text;
-            var model = service.FindMultimedia(extension, category, txtCriteria.Text);
 
-            _model = new ObservableCollection<MultimediaLinkViewModel>(model.Select((m) => {
-                return new MultimediaLinkViewModel(m);
-            }));
+            using (new OverrideCursor(Cursors.Wait)) {
+                var service = new SupportService(User);
+                var extension = cmbExtension.Text == "(All)" ? "" : cmbExtension.Text;
+                var category = cmbType.Text == "(All)" ? "" : cmbType.Text;
+                var model = service.FindMultimedia(extension, category, txtCriteria.Text);
 
-            lvw.ItemsSource = _model;
+                _model = new ObservableCollection<MultimediaLinkViewModel>(model.Select((m) => {
+                    return new MultimediaLinkViewModel(m);
+                }));
+
+                lvw.ItemsSource = _model;
+                lvw.UpdateLayout();
+            }
         }
 
         private void lvw_SelectionChanged(object sender, SelectionChangedEventArgs e) {
@@ -366,28 +379,38 @@ namespace BioLink.Client.Tools {
 
             if (selected != null) {
                 JobExecutor.QueueJob(() => {
-
-                    if (selected.SizeInBytes > 0) {
+                    BitmapSource image = null;
+                    try {
                         string filename = _tempFileManager.GetContentFileName(selected.MultimediaID, selected.Extension);
+                        selected.TempFilename = filename;
+                        image = GraphicsUtils.LoadImageFromFile(filename);
+                        if (image != null) {
+                            imgPreview.InvokeIfRequired(() => {
+                                imgPreview.Stretch = Stretch.Uniform;
+                                imgPreview.StretchDirection = StretchDirection.DownOnly;
+                                imgPreview.Source = image;
+                                gridInfo.DataContext = image;
+                                FileInfo f = new FileInfo(filename);
 
-                        var image = GraphicsUtils.LoadImageFromFile(filename);
-                        imgPreview.InvokeIfRequired(() => {
-                            imgPreview.Stretch = Stretch.Uniform;
-                            imgPreview.StretchDirection = StretchDirection.DownOnly;
-                            imgPreview.Source = image;
-                            gridInfo.DataContext = image;
-                            FileInfo f = new FileInfo(filename);
-                            lblImageInfo.Content = string.Format("{0}x{1}  {2} DPI  {3}", image.PixelWidth, image.PixelHeight, image.DpiX, ByteConverter.FormatBytes(f.Length));
-                            lblFilename.Content = string.Format("Filename: {0}", filename);
-                        });
-                    } else {
-                        imgPreview.InvokeIfRequired(() => {
-                            imgPreview.Source = null;
-                            lblImageInfo.Content = "No image";
-                            lblFilename.Content = "";
-                        });
+                                if (f.Length != selected.SizeInBytes) {
+                                    selected.SuspendChangeMonitoring = true;
+                                    selected.SizeInBytes = (int) f.Length;
+                                    selected.SuspendChangeMonitoring = false;
+                                }
+
+                                lblImageInfo.Content = string.Format("{0}x{1}  {2} DPI  {3}", image.PixelWidth, image.PixelHeight, image.DpiX, ByteConverter.FormatBytes(f.Length));
+                                lblFilename.Content = string.Format("Filename: {0}", filename);
+                            });
+                        }
+                    } finally {
+                        if (image == null) {
+                            imgPreview.InvokeIfRequired(() => {
+                                imgPreview.Source = null;
+                                lblImageInfo.Content = "No image";
+                                lblFilename.Content = "";
+                            });
+                        }
                     }
-
 
                 });
             } else {
@@ -446,7 +469,10 @@ namespace BioLink.Client.Tools {
         public ToolsPlugin Plugin { get; private set; }
 
         private void ShowLinkedItems(MultimediaLinkViewModel selected) {
-            PluginManager.Instance.AddNonDockableContent(Plugin, new LinkedMultimediaItemsControl(selected.MultimediaID), "Items linked to multimedia " + selected.MultimediaID, SizeToContent.Manual);
+            if (selected != null) {
+                selected.Icon = GraphicsUtils.GenerateThumbnail(selected.TempFilename, 48);
+                PluginManager.Instance.AddNonDockableContent(Plugin, new LinkedMultimediaItemsControl(selected), "Items linked to multimedia " + selected.MultimediaID, SizeToContent.Manual);
+            }
         }
 
     }

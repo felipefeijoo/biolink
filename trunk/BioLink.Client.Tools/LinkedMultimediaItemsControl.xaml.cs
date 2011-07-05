@@ -22,26 +22,55 @@ namespace BioLink.Client.Tools {
     /// Interaction logic for LinkedMultimediaItemsControl.xaml
     /// </summary>
     public partial class LinkedMultimediaItemsControl : UserControl, IIdentifiableContent {
-        public LinkedMultimediaItemsControl(int multimediaId) {
+
+        public LinkedMultimediaItemsControl(MultimediaLinkViewModel viewModel) {
             InitializeComponent();
-            this.MultimediaID = multimediaId;            
+            this.DataContext = viewModel;
+
+            this.MultimediaID = viewModel.MultimediaID;            
             var service = new SupportService(User);
-            var items = service.ListItemsLinkedToMultimedia(multimediaId);
+
+            var mm = service.GetMultimedia(MultimediaID);
+
+            var items = service.ListItemsLinkedToMultimedia(MultimediaID);
             var model = new ObservableCollection<ViewModelBase>();
 
             foreach (MultimediaLinkedItem item in items) {
                 if ( !string.IsNullOrWhiteSpace(item.CategoryName)) {
                     LookupType t;
                     if (Enum.TryParse<LookupType>(item.CategoryName, out t)) {
-                        var viewModel = PluginManager.Instance.GetViewModel(t, item.IntraCatID);
-                        if (viewModel != null) {
-                            model.Add(viewModel);
+                        var vm = PluginManager.Instance.GetViewModel(t, item.IntraCatID);
+                        if (vm!= null) {
+                            model.Add(vm);
                         }
                     }
                 }
             }
 
+            lvw.MouseRightButtonUp += new MouseButtonEventHandler(lvw_MouseRightButtonUp);
+
             lvw.ItemsSource = model;
+        }
+
+        void lvw_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            var selected = lvw.SelectedItem as ViewModelBase;
+            if (selected != null) {
+                var list = new List<ViewModelBase>();
+                list.Add(selected);
+                var commands = PluginManager.Instance.SolicitCommandsForObjects(list);
+                if (commands.Count > 0) {
+                    var builder = new ContextMenuBuilder(null);
+                    foreach (Command loopvar in commands) {
+                        Command cmd = loopvar; // include this in the closure scope, loopvar is outside, hence will always point to the last item...
+                        if (cmd is CommandSeparator) {
+                            builder.Separator();
+                        } else {
+                            builder.New(cmd.Caption).Handler(() => { cmd.CommandAction(selected); }).End();   
+                        }                        
+                    }
+                    lvw.ContextMenu = builder.ContextMenu;
+                }
+            }
         }
 
         public User User { get { return PluginManager.Instance.User; } }
@@ -55,5 +84,13 @@ namespace BioLink.Client.Tools {
         public void RefreshContent() {
             throw new NotImplementedException();
         }
+
+        private void btnClose_Click(object sender, RoutedEventArgs e) {
+            var window = this.FindParentWindow();
+            if (window != null) {
+                window.Close();
+            }
+        }
+
     }
 }
