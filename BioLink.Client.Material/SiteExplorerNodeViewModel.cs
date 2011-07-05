@@ -1,6 +1,9 @@
 ﻿using System;
 using BioLink.Client.Extensibility;
+using BioLink.Client.Utilities;
 using BioLink.Data.Model;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace BioLink.Client.Material {
 
@@ -43,29 +46,25 @@ namespace BioLink.Client.Material {
 
         protected override string RelativeImagePath {
             get {
-                var image = "Region";
-                switch (NodeType) {
-                    case SiteExplorerNodeType.Region:
-                        image = "Region";
-                        break;
-                    case SiteExplorerNodeType.Site:
-                        image = "Site";
-                        break;
-                    case SiteExplorerNodeType.SiteVisit:
-                        image = "SiteVisit";
-                        break;
-                    case SiteExplorerNodeType.Material:
-                        image = "Material";
-                        break;
-                    case SiteExplorerNodeType.SiteGroup:
-                        image = "SiteGroup";
-                        break;
-                    case SiteExplorerNodeType.Trap:
-                        image = "Trap";
-                        break;
-                }
-                return String.Format(@"images\{0}.png", image);
+                return String.Format(@"images\{0}.png", NodeType.ToString());
             }
+        }
+
+        private ImageSource _icon;
+
+        public override System.Windows.Media.ImageSource Icon {
+            get {
+                if (_icon == null) {
+                    _icon = base.Icon;
+                }
+
+                if (IsTemplate) {
+                    _icon = ImageCache.ApplyOverlay(_icon, "pack://application:,,,/BioLink.Client.Extensibility;component/images/TemplateOverlay.png");
+                }
+
+                return _icon;
+            }
+            set { _icon = value; }
         }
 
         public SiteExplorerNodeType NodeType {

@@ -17,7 +17,14 @@ namespace BioLink.Client.Material {
         }
 
         protected override string Title {
-            get { return ElemName; }
+            get { return IsTemplate ? "[Template] " + ElemName : ElemName; }
+        }
+
+        public bool IsTemplate {
+            get {
+                var vm = ViewModel as SiteExplorerNodeViewModel;
+                return vm == null ? false : vm.IsTemplate;
+            }
         }
 
         protected override Data.Model.OwnedDataObject GetModel() {

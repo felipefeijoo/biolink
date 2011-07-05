@@ -146,6 +146,7 @@ namespace BioLink.Client.Material {
                         model.ElemID = site.SiteID;
                         model.Name = site.SiteName;
                         model.RegionID = site.PoliticalRegionID;
+                        model.IsTemplate = site.IsTemplate;
                         return new SiteExplorerNodeViewModel(model);
                     }
                     break;
@@ -154,6 +155,7 @@ namespace BioLink.Client.Material {
                     if (sitevisit != null) {
                         model.ElemID = sitevisit.SiteVisitID;
                         model.Name = sitevisit.SiteName;
+                        model.IsTemplate = sitevisit.IsTemplate;
                         return new SiteExplorerNodeViewModel(model);
                     }
                     break;
@@ -161,7 +163,7 @@ namespace BioLink.Client.Material {
                     var trap = service.GetTrap(objectID);
                     if (trap != null) {
                         model.ElemID = trap.TrapID;
-                        model.Name = trap.TrapName;
+                        model.Name = trap.TrapName;                        
                         return new SiteExplorerNodeViewModel(model);
                     }
                     break;
@@ -170,6 +172,7 @@ namespace BioLink.Client.Material {
                     if (material != null) {
                         model.ElemID = material.MaterialID;
                         model.Name = material.MaterialName;
+                        model.IsTemplate = material.IsTemplate;
                         return new SiteExplorerNodeViewModel(model);
                     }
                     break;
