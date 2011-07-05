@@ -1463,6 +1463,30 @@ namespace BioLink.Data {
             return StoredProcToList("spLabelSetItemList", mapper);
         }
 
+        public void DeleteLabelSetItem(int labelSetItemId) {
+            StoredProcUpdate("spLabelSetItemDelete", _P("intLabelSetItemID", labelSetItemId));
+        }
+
+        public int InsertLabelSetItem(LabelSetItem item) {
+            var retval = ReturnParam("NewLabelSetItemID");
+            StoredProcUpdate("spLabelSetItemInsert",
+                _P("intLabelSetID", item.SetID),
+                _P("intItemID", item.SiteID),
+                _P("vchrItemType", string.IsNullOrWhiteSpace(item.ItemType) ? "Taxon" : item.ItemType),
+                _P("intPrintOrder", item.PrintOrder),
+                _P("intNumCopies", item.NumCopies),
+                retval);
+            return (int)retval.Value;
+        }
+
+        public void UpdateLabelSetItem(LabelSetItem item) {            
+            StoredProcUpdate("spLabelSetItemUpdateOrder",
+                _P("intItemID", item.ItemID),                                
+                _P("intNewOrder", item.PrintOrder),
+                _P("intNumCopies", item.NumCopies)
+            );            
+        }
+
         #endregion
 
     }

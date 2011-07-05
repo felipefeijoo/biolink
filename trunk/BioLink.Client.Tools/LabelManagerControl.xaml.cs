@@ -27,8 +27,77 @@ namespace BioLink.Client.Tools {
 
         public LabelManagerControl(User user) : base(user, "LabelManager") {
             InitializeComponent();
-
             this.DataContextChanged += new DependencyPropertyChangedEventHandler(LabelManagerControl_DataContextChanged);
+
+            lvw.MouseRightButtonUp += new MouseButtonEventHandler(lvw_MouseRightButtonUp);
+        }
+
+        void lvw_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            var selected = lvw.SelectedItem as LabelSetItemViewModel;
+            if (selected != null) {
+                var builder = new ContextMenuBuilder(null);
+
+                builder.New("Select _material...").Handler(() => { SelectMaterial(); }).End();
+                builder.New("Load material by _User ID").Handler(() => { SelectMaterialByUser(); }).End();
+                builder.Separator();
+                builder.New("Remove item from list").Handler(() => RemoveSelectedItem() ).End();
+                builder.Separator();
+                if (selected.ItemType.Equals("site", StringComparison.CurrentCultureIgnoreCase)) {
+                    builder.New("Edit _Site").Handler(() => EditSite()).End();
+                } else if (selected.ItemType.Equals("sitevisit", StringComparison.CurrentCultureIgnoreCase)) {
+                    builder.New("Edit _Site").Handler(() => EditSite()).End();
+                    builder.New("Edit Site _Visit").Handler(() => EditSiteVisit()).End();
+                } else if (selected.ItemType.Equals("material", StringComparison.CurrentCultureIgnoreCase)) {
+                    builder.New("Edit _Site").Handler(() => EditSite()).End();
+                    builder.New("Edit Site _Visit").Handler(() => EditSiteVisit()).End();
+                    builder.New("Edit _Material").Handler(() => EditMaterial()).End();
+                }
+
+                builder.Separator();
+                builder.New("E_xport Label Set").Handler(() => ExportLabelSet()).End();
+
+                lvw.ContextMenu = builder.ContextMenu;
+            }
+        
+        }
+        
+        private void ExportLabelSet() {
+            throw new NotImplementedException();
+        }
+
+        private void EditSite() {
+            var selected = lvw.SelectedItem as LabelSetItemViewModel;
+            if (selected != null) {
+                PluginManager.Instance.EditLookupObject(LookupType.Site, selected.SiteID);
+            }
+        }
+
+        private void EditSiteVisit() {
+            var selected = lvw.SelectedItem as LabelSetItemViewModel;
+            if (selected != null) {
+                PluginManager.Instance.EditLookupObject(LookupType.SiteVisit, selected.VisitID);
+            }
+        }
+
+        private void EditMaterial() {
+            var selected = lvw.SelectedItem as LabelSetItemViewModel;
+            if (selected != null) {
+                PluginManager.Instance.EditLookupObject(LookupType.Material, selected.MaterialID);
+            }
+        }
+
+        private void RemoveSelectedItem() {
+            var selected = lvw.SelectedItem as LabelSetItemViewModel;
+            if (selected != null) {
+            }
+        }
+
+        private void SelectMaterialByUser() {
+            throw new NotImplementedException();
+        }
+
+        private void SelectMaterial() {
+            throw new NotImplementedException();
         }
 
         void LabelManagerControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e) {

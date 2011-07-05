@@ -101,7 +101,11 @@ namespace BioLink.Client.Maps {
 
             List<LayerDescriptor> filenames = Config.GetUser(user, "MapTool." + mode.ToString() + ".Layers", new List<LayerDescriptor>());
             foreach (LayerDescriptor desc in filenames) {
-                AddLayer(desc);
+                try {
+                    AddLayer(desc);
+                } catch (Exception ex) {
+                    ErrorMessage.Show("Failed to load layer: " + desc.Filename + " (" + ex.Message + ")");
+                }
             }
 
             System.Drawing.Color backcolor = Config.GetUser(user, "MapTool." + mode.ToString() + ".MapBackColor", System.Drawing.Color.White);
