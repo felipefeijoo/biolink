@@ -38,11 +38,21 @@ namespace BioLink.Client.Gazetteer {
                 String.Format("{{'Name':'eGaz', 'Header':'eGaz'}}"), String.Format("{{'Name':'ShowEGazConverter', 'Header':'Legacy eGaz file converter'}}")
             ));
 
+            contrib.Add(new MenuWorkspaceContribution(this, "ShowCoordCalculator", (obj, e) => { ShowCoordCalculator(); },
+                String.Format("{{'Name':'Tools', 'Header':'_Tools','InsertAfter':'File'}}"),
+                String.Format("{{'Name':'eGaz', 'Header':'eGaz'}}"), String.Format("{{'Name':'ShowCoordCalculator', 'Header':'_Coordinate calculator'}}")
+            ));
+
+
             _gazetter = new ExplorerWorkspaceContribution<Gazetteer>(this, "Gazetteer", new Gazetteer(this), _R("Gazetteer.Title"), (explorer) => {});
 
             contrib.Add(_gazetter);
 
             return contrib;            
+        }
+
+        private void ShowCoordCalculator() {
+            ShowSingleton("Coordinate Calculator", () => { return new CoordinateCalculator(); });
         }
 
         private void ShowEGazConverter() {

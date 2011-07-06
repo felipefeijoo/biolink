@@ -245,6 +245,12 @@ namespace BioLink.Client.Extensibility {
                 }
             }
 
+            if (content is IPreferredSizeHolder) {
+                var psh = content as IPreferredSizeHolder;
+                form.Height = psh.PreferredHeight;
+                form.Width = psh.PreferredWidth;
+            } 
+
             if (autoSavePosition) {
 
                 Config.RestoreWindowPosition(User, form);

@@ -53,6 +53,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CoordinateCalculator.xaml.cs">
+      <DependentUpon>CoordinateCalculator.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DistanceDirectionControl.xaml.cs">
       <DependentUpon>DistanceDirectionControl.xaml</DependentUpon>
     </Compile>
@@ -88,6 +91,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="CoordinateCalculator.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="DistanceDirectionControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
