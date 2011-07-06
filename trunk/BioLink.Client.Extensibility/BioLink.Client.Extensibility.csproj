@@ -305,6 +305,7 @@
       <DependentUpon>TraitElementControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Traits\TraitViewModel.cs" />
+    <Compile Include="TreeViewDragHelper.cs" />
     <Compile Include="ViewModelBase.cs" />
     <Compile Include="VirtualizingStackPanel.cs" />
     <Compile Include="WatermarkService.cs" />

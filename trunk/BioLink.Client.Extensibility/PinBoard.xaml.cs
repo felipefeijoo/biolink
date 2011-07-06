@@ -26,8 +26,8 @@ namespace BioLink.Client.Extensibility {
     public partial class PinBoard : UserControl {
 
         private ObservableCollection<ViewModelBase> _model = new ObservableCollection<ViewModelBase>();
-        private bool _IsDragging;
-        private Point _startPoint;
+
+        private ListViewDragHelper _dragHelper;
 
         #region Designer Constructor
         public PinBoard() {
@@ -43,8 +43,7 @@ namespace BioLink.Client.Extensibility {
             lvw.MouseRightButtonUp +=new MouseButtonEventHandler((s,e) => { ShowPopupMenu(); } );
             this.AllowDrop = true;
 
-            lvw.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(lvw_PreviewMouseLeftButtonDown);
-            lvw.PreviewMouseMove += new MouseEventHandler(lvw_PreviewMouseMove);
+            _dragHelper = new ListViewDragHelper(lvw, CreateDragData);
 
             // this.GiveFeedback += new GiveFeedbackEventHandler(PinBoard_GiveFeedback);
             this.PreviewDragOver += new DragEventHandler(PinBoard_PreviewDragEnter);
@@ -60,56 +59,21 @@ namespace BioLink.Client.Extensibility {
             myView.GroupDescriptions.Add(new PinnableLookupTypeGroupDescription());
         }
 
-        void lvw_PreviewMouseMove(object sender, MouseEventArgs e) {
-            CommonPreviewMouseMove(e, lvw);
-        }
-
-        void lvw_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
-            _startPoint = e.GetPosition(lvw);
-        }
-
-        private void CommonPreviewMouseMove(MouseEventArgs e, ListView listView) {
-
-            if (_startPoint == null) {
-                return;
-            }
-
-            if (e.LeftButton == MouseButtonState.Pressed && !_IsDragging) {
-                Point position = e.GetPosition(listView);
-                if (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance) {
-                    if (listView.SelectedItem != null) {
-
-                        ListViewItem item = lvw.ItemContainerGenerator.ContainerFromItem(listView.SelectedItem) as ListViewItem;
-                        if (item != null) {
-                            StartDrag(e, lvw, item);
-                        }
-                    }
-                }
-            }
-        }
-
-        private void StartDrag(MouseEventArgs mouseEventArgs, ListView listView, ListViewItem item) {
-
-            var selected = listView.SelectedItem as ViewModelBase;
+        private DataObject CreateDragData(ViewModelBase selected) {
             if (selected != null) {
                 var data = new DataObject("Pinnable", selected);
                 var pinnable = selected.Tag as PinnableObject;
                 data.SetData(PinnableObject.DRAG_FORMAT_NAME, pinnable);
                 data.SetData(DataFormats.Text, selected.DisplayLabel);
 
-                try {
-                    _IsDragging = true;
-                    DragDrop.DoDragDrop(item, data, DragDropEffects.Copy | DragDropEffects.Move | DragDropEffects.Link);
-                } finally {
-                    _IsDragging = false;
-                }
+                return data;
             }
 
-            InvalidateVisual();
+            return null;
         }
 
         void PinBoard_Drop(object sender, DragEventArgs e) {
-            if (!_IsDragging) {
+            if (!_dragHelper.IsDragging) {
                 var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;
                 if (pinnable != null) {
                     Pin(pinnable);
@@ -119,7 +83,7 @@ namespace BioLink.Client.Extensibility {
 
         void PinBoard_PreviewDragEnter(object sender, DragEventArgs e) {
 
-            if (!_IsDragging) {
+            if (!_dragHelper.IsDragging) {
                 var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;
                 if (pinnable != null) {
                     e.Effects = DragDropEffects.Link;
