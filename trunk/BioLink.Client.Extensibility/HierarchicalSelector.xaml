@@ -60,7 +60,7 @@
         <Label Content="Find:" Height="36" HorizontalAlignment="Left" Name="label1" VerticalAlignment="Top" VerticalContentAlignment="Center" />
         <ext:DelayedTriggerTextbox Height="23" Margin="41,7,12,0" x:Name="txtFind" VerticalAlignment="Top"  TypingPaused="txtFind_TypingPaused" KeyUp="txtFind_KeyUp" />
 
-        <ext:VTreeView Grid.Row="1" x:Name="tvwExplorer" MouseRightButtonUp="tvw_MouseRightButtonUp">
+        <ext:VTreeView Grid.Row="1" x:Name="tvwExplorer" MouseRightButtonUp="tvw_MouseRightButtonUp" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard">
 
             <TreeView.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -70,7 +70,7 @@
 
         </ext:VTreeView>
 
-        <ext:VTreeView Grid.Row="1" x:Name="tvwSearchResults" MouseRightButtonUp="tvw_MouseRightButtonUp" Visibility="Collapsed">
+        <ext:VTreeView Grid.Row="1" x:Name="tvwSearchResults" MouseRightButtonUp="tvw_MouseRightButtonUp" Visibility="Collapsed" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard">
 
             <TreeView.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -82,8 +82,8 @@
         
         <Grid Grid.Row="2" Background="{x:Static SystemColors.ControlBrush}">
             <Button Content="_Cancel" Height="23" HorizontalAlignment="Right" Margin="0,6,6,0" Name="btnCancel" VerticalAlignment="Top" Width="75" IsCancel="True" />
-            <Button Content="_Select" Height="23" HorizontalAlignment="Right" Margin="0,6,87,0" Name="btnSelect" VerticalAlignment="Top" Width="75" Click="btnSelect_Click" />
-            <Button Content="_Apply" Height="23" HorizontalAlignment="Right" IsDefault="True" Margin="0,6,168,0" Name="btnApply" VerticalAlignment="Top" Width="75" Click="btnApply_Click" />
+            <Button Content="_Select" Height="23" HorizontalAlignment="Right" Margin="0,6,87,0" Name="btnSelect" VerticalAlignment="Top" Width="75" Click="btnSelect_Click" IsDefault="True" />
+            <Button Content="_Apply" Height="23" HorizontalAlignment="Right" IsDefault="False" Margin="0,6,168,0" Name="btnApply" VerticalAlignment="Top" Width="75" Click="btnApply_Click" />
         </Grid>
     </Grid>
 </ext:ChangeContainerWindow>

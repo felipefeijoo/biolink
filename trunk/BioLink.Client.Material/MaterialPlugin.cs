@@ -201,6 +201,7 @@ namespace BioLink.Client.Material {
                 if (node.NodeType == SiteExplorerNodeType.Site || node.NodeType == SiteExplorerNodeType.SiteVisit || node.NodeType == SiteExplorerNodeType.Material) {
                     list.Add(new Command("Edit in Rapid Data Entry...", (dataobj) => { _explorer.EditRDE(node); }));                    
                 }
+
             }
 
             return list;
@@ -285,6 +286,7 @@ namespace BioLink.Client.Material {
 
             return list.ConvertAll((model) => {
                 var viewModel = (HierarchicalViewModelBase)new SiteExplorerNodeViewModel(model);
+                viewModel.Parent = parent;
                 return viewModel;
             });
 

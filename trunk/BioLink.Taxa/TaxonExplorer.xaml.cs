@@ -1073,7 +1073,7 @@ namespace BioLink.Client.Taxa {
             }
 
             if (child != null) {
-                BringModelToView(tvwAllTaxa, child);
+                tvwAllTaxa.BringModelToView(child);
                 tvwAllTaxa.Focus();
                 child.IsSelected = true;
             }
@@ -1287,69 +1287,69 @@ namespace BioLink.Client.Taxa {
             return candidates;
         }
 
-        public void BringModelToView(TreeView tvw, HierarchicalViewModelBase item) {
-            ItemsControl itemsControl = tvw;
+        //public void BringModelToView(TreeView tvw, HierarchicalViewModelBase item) {
+        //    ItemsControl itemsControl = tvw;
 
-            // Get the stack of parentages...
-            var stack = item.GetParentStack();
+        //    // Get the stack of parentages...
+        //    var stack = item.GetParentStack();
 
-            // Descend through the levels until the desired TreeViewItem is found.
-            while (stack.Count > 0) {
-                HierarchicalViewModelBase model = stack.Pop();
+        //    // Descend through the levels until the desired TreeViewItem is found.
+        //    while (stack.Count > 0) {
+        //        HierarchicalViewModelBase model = stack.Pop();
 
-                if (!model.IsExpanded) {
-                    model.IsExpanded = true;
-                }
+        //        if (!model.IsExpanded) {
+        //            model.IsExpanded = true;
+        //        }
 
-                bool foundContainer = false;
-                int index = (model.Parent == null ? 0 : model.Parent.Children.IndexOf(model));
+        //        bool foundContainer = false;
+        //        int index = (model.Parent == null ? 0 : model.Parent.Children.IndexOf(model));
                 
-                // Access the custom VSP that exposes BringIntoView
-                BLVirtualizingStackPanel itemsHost = FindVisualChild<BLVirtualizingStackPanel>(itemsControl);
-                if (itemsHost != null) {
-                    // Due to virtualization, BringIntoView may not predict the offset correctly the first time.
-                    ItemsControl nextItemsControl = null;
-                    while (nextItemsControl == null) {
-                        foundContainer = true;
-                        itemsHost.BringIntoView(index);
-                        Dispatcher.Invoke(DispatcherPriority.Background, (DispatcherOperationCallback)delegate(object unused) {
-                            nextItemsControl = (ItemsControl)itemsControl.ItemContainerGenerator.ContainerFromIndex(index);
-                            return null;
-                        }, null);
-                    }
+        //        // Access the custom VSP that exposes BringIntoView
+        //        BLVirtualizingStackPanel itemsHost = FindVisualChild<BLVirtualizingStackPanel>(itemsControl);
+        //        if (itemsHost != null) {
+        //            // Due to virtualization, BringIntoView may not predict the offset correctly the first time.
+        //            ItemsControl nextItemsControl = null;
+        //            while (nextItemsControl == null) {
+        //                foundContainer = true;
+        //                itemsHost.BringIntoView(index);
+        //                Dispatcher.Invoke(DispatcherPriority.Background, (DispatcherOperationCallback)delegate(object unused) {
+        //                    nextItemsControl = (ItemsControl)itemsControl.ItemContainerGenerator.ContainerFromIndex(index);
+        //                    return null;
+        //                }, null);
+        //            }
 
-                    itemsControl = nextItemsControl;
-                }
+        //            itemsControl = nextItemsControl;
+        //        }
 
-                if (!foundContainer || (itemsControl == null)) {
-                    // Abort the operation
-                    return;
-                }
-            }
-        }
+        //        if (!foundContainer || (itemsControl == null)) {
+        //            // Abort the operation
+        //            return;
+        //        }
+        //    }
+        //}
 
         public TaxaService Service {
             get { return new TaxaService(User); }
         }
 
-        private T FindVisualChild<T>(Visual visual) where T : Visual {
-            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(visual); i++) {
-                Visual child = (Visual)VisualTreeHelper.GetChild(visual, i);
-                if (child != null) {
-                    T correctlyTyped = child as T;
-                    if (correctlyTyped != null) {
-                        return correctlyTyped;
-                    }
+        //private T FindVisualChild<T>(Visual visual) where T : Visual {
+        //    for (int i = 0; i < VisualTreeHelper.GetChildrenCount(visual); i++) {
+        //        Visual child = (Visual)VisualTreeHelper.GetChild(visual, i);
+        //        if (child != null) {
+        //            T correctlyTyped = child as T;
+        //            if (correctlyTyped != null) {
+        //                return correctlyTyped;
+        //            }
 
-                    T descendent = FindVisualChild<T>(child);
-                    if (descendent != null) {
-                        return descendent;
-                    }
-                }
-            }
+        //            T descendent = FindVisualChild<T>(child);
+        //            if (descendent != null) {
+        //                return descendent;
+        //            }
+        //        }
+        //    }
 
-            return null;
-        }
+        //    return null;
+        //}
 
         public TaxaPlugin Owner { get; private set; }
 
