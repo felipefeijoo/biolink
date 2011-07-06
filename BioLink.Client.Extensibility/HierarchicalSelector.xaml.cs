@@ -43,8 +43,7 @@ namespace BioLink.Client.Extensibility {
                 this.Title = _content.Caption;
             }
             this.SelectedAction = selectAction;
-            LoadTopLevel();
-            RestoreLastExpandedNodes();
+            LoadTopLevel();            
             Loaded += new RoutedEventHandler(HierarchicalSelector_Loaded);
 
             this.ChangeRegistered += new PendingChangedRegisteredHandler(HierarchicalSelector_ChangeRegistered);
@@ -64,6 +63,8 @@ namespace BioLink.Client.Extensibility {
         }
 
         void HierarchicalSelector_Loaded(object sender, RoutedEventArgs e) {
+            UpdateLayout();
+            RestoreLastExpandedNodes();            
             txtFind.Focus();            
         }
 
@@ -306,18 +307,23 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void SaveExpandedNodes() {
-            Config.SetProfile(User, _content.GetType().Name + ".LastSearch", txtFind.Text.Trim());
+            Config.SetProfile(User, "HierarchicalSelector." + _content.GetType().Name + ".LastSearch", txtFind.Text.Trim());
             var model = _model;
             if (!string.IsNullOrWhiteSpace(txtFind.Text)) {
                 model = tvwSearchResults.ItemsSource as ObservableCollection<HierarchicalViewModelBase>;
             }
             var expanded = GetExpandedParentages(model);
-            Config.SetProfile(User, _content.GetType().Name + ".ExpandedParentages", expanded);
+            Config.SetProfile(User, "HierarchicalSelector." + _content.GetType().Name + ".ExpandedParentages", expanded);
+
+            var selected = tvwExplorer.SelectedItem as HierarchicalViewModelBase;
+            if (selected != null) {
+                Config.SetProfile(User, "HierarchicalSelector." + _content.GetType().Name + ".LastSelected", selected.ObjectID.Value);
+            }
         }
 
         private void RestoreLastExpandedNodes() {
 
-            var findstr = Config.GetProfile(User, _content.GetType().Name + ".LastSearch", "");
+            var findstr = Config.GetProfile(User, "HierarchicalSelector." + _content.GetType().Name + ".LastSearch", "");
             var model = _model;
             if (!string.IsNullOrWhiteSpace(findstr)) {
                 txtFind.TimerDisabled = true;
@@ -328,10 +334,39 @@ namespace BioLink.Client.Extensibility {
                 model = tvwSearchResults.ItemsSource as ObservableCollection<HierarchicalViewModelBase>;
             }
 
-            List<string> expanded = Config.GetProfile<List<string>>(User, _content.GetType().Name + ".ExpandedParentages", null);
+            List<string> expanded = Config.GetProfile<List<string>>(User, "HierarchicalSelector." + _content.GetType().Name + ".ExpandedParentages", null);
             if (expanded != null) {
                 ExpandParentages(model, expanded);
             }
+
+            var lastSelectedId = Config.GetProfile<int>(User, "HierarchicalSelector." + _content.GetType().Name + ".LastSelected", -1);
+            if (lastSelectedId >= 0) {
+
+                HierarchicalViewModelBase selected = null;
+                foreach (HierarchicalViewModelBase root in model) {
+
+                    if (root.ObjectID == lastSelectedId) {
+                        selected = root;
+                    } else {
+                        root.Traverse((vm) => {
+                            if (vm.ObjectID == lastSelectedId) {
+                                selected = vm;
+                            }
+                        });
+                    }
+
+                    if (selected != null) {
+                        break;
+                    }
+                }
+
+                if (selected != null) {
+                    selected.IsSelected = true;
+                    tvwExplorer.BringModelToView(selected);
+                }
+            }
+
+
         }
 
         private void tvw_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
