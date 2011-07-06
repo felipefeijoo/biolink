@@ -384,7 +384,7 @@ namespace BioLink.Client.Gazetteer {
 
                 if (selected != null) {
                     _map.DropAnchor(selected.Longitude, selected.Latitude, selected.Name);
-                    if (_offsetControl.IsVisible && _offsetControl.OffsetPlace != null) {
+                    if (_offsetControl.IsVisible && _offsetControl.OffsetPlace != null && !string.IsNullOrWhiteSpace(_offsetControl.OffsetPlace.Offset)) {
                         var offset = _offsetControl.OffsetPlace;
 
                         MapPoint p = new MapPoint();
