@@ -636,6 +636,10 @@ namespace BioLink.Client.Maps {
                     (layer as IDisposable).Dispose();
                 }
             }
+            // Now check if there is a layer label to remove...
+            if (!name.EndsWith(" Labels")) {
+                RemoveLayerByName(string.Format("{0} Labels", name));
+            }
         }
 
         public void HideDistanceAnchor(bool refresh = false) {
@@ -690,8 +694,7 @@ namespace BioLink.Client.Maps {
 
             string labelLayerName = string.Format("{0} Labels", points.Name);
 
-            RemoveLayerByName(points.Name);
-            RemoveLayerByName(labelLayerName);
+            RemoveLayerByName(points.Name);            
 
             VectorLayer shapeFileLayer = new VectorLayer(points.Name, new SharpMap.Data.Providers.GeometryFeatureProvider(table));
 
@@ -725,7 +728,6 @@ namespace BioLink.Client.Maps {
         public void ClearPoints(bool refresh = false) {
 
             RemoveLayerByName("_pointLayer");
-            RemoveLayerByName("_pointLayerLabels");
 
             if (refresh) {
                 mapBox.Refresh();

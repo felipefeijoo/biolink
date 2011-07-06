@@ -124,11 +124,14 @@ namespace BioLink.Client.Gazetteer {
                         txtResults.Text = OffsetPlace.LatitudeString + " " + OffsetPlace.LongitudeString;
                         txtResults.Tag = new PlaceNameViewModel(OffsetPlace);
                     }
-
-                    if (SelectedPlaceNameChanged != null) {
-                        SelectedPlaceNameChanged(OffsetPlace);
-                    }
+                } else {
+                    OffsetPlace = null;
                 }
+
+                if (SelectedPlaceNameChanged != null) {
+                    SelectedPlaceNameChanged(OffsetPlace);
+                }
+
             }
         }
 
@@ -338,7 +341,8 @@ namespace BioLink.Client.Gazetteer {
 
 
         internal void Clear() {
-            txtDistance.Clear();            
+            txtDistance.Clear();
+            OffsetPlace = null;
         }
 
         public event Action<PlaceName> SelectedPlaceNameChanged;

@@ -38,6 +38,7 @@ namespace BioLink.Client.Gazetteer {
         private DistanceDirectionControl _dirDistControl;
         private Action<SelectionResult> _selectionCallback;
         private ObservableCollection<GazetteerFile> _fileMRU;
+        private Timer _mapUpdateTimer;
 
         #region Designer CTOR
         public Gazetteer() {
@@ -84,6 +85,11 @@ namespace BioLink.Client.Gazetteer {
 
             Loaded += new RoutedEventHandler(Gazetteer_Loaded);
 
+            _mapUpdateTimer = new Timer((state) => {
+                // Disable the timer...
+                _mapUpdateTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                UpdateMapAsync();
+            }, null, Timeout.Infinite, Timeout.Infinite);            
         }
 
         void Gazetteer_Loaded(object sender, RoutedEventArgs e) {
@@ -377,30 +383,40 @@ namespace BioLink.Client.Gazetteer {
         }
 
         private void UpdateMap() {
-            var selected = lstResults.SelectedItem as PlaceNameViewModel;
-            if (_map != null) {
+            _mapUpdateTimer.Change(500, Timeout.Infinite);
+        }
+
+        private void UpdateMapAsync() {
+
+            if (_map == null) {
+                return;
+            }
+
+            this.InvokeIfRequired(() => {
+
+                var selected = lstResults.SelectedItem as PlaceNameViewModel;
+                bool drawOffsetPoint = _offsetControl.IsVisible && _offsetControl.OffsetPlace != null && !string.IsNullOrWhiteSpace(_offsetControl.OffsetPlace.Offset);
+                var offset = _offsetControl.OffsetPlace;
+
                 _map.HideAnchor();
                 _map.ClearPoints();
-
                 if (selected != null) {
                     _map.DropAnchor(selected.Longitude, selected.Latitude, selected.Name);
-                    if (_offsetControl.IsVisible && _offsetControl.OffsetPlace != null && !string.IsNullOrWhiteSpace(_offsetControl.OffsetPlace.Offset)) {
-                        var offset = _offsetControl.OffsetPlace;
 
+                    if (drawOffsetPoint) {
                         MapPoint p = new MapPoint();
                         p.Latitude = offset.Latitude;
                         p.Longitude = offset.Longitude;
                         p.Label = string.Format("{0} {1} {2} of {3}", offset.Offset, offset.Units, offset.Direction, offset.Name);
-                        var set = new ListMapPointSet("Offset");
+                        var set = new ListMapPointSet("_pointLayer");
                         set.DrawLabels = true;
                         set.Add(p);
 
                         _map.PlotPoints(set);
-
                     }
+                }
 
-                } 
-            }
+            });
         }
 
         public void BindSelectCallback(Action<SelectionResult> selectionFunc) {
