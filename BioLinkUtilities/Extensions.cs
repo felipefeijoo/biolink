@@ -164,6 +164,16 @@ namespace BioLink.Client.Utilities {
             return obj as TreeViewItem;
         }
 
+        public static ItemType FindAncestorOfType<ItemType>(this FrameworkElement element, FrameworkElement sender) where ItemType : class {
+           Point p = sender.TranslatePoint(new Point(1, 1), element);
+            DependencyObject obj = element.InputHitTest(p) as DependencyObject;
+            while (obj != null && !(obj is ItemType)) {
+                obj = VisualTreeHelper.GetParent(obj);
+            }
+            return obj as ItemType;
+
+        }
+
         public static string Repeat(this string stringToRepeat, int repeat) {
             var builder = new StringBuilder(repeat);
             for (int i = 0; i < repeat; i++) {

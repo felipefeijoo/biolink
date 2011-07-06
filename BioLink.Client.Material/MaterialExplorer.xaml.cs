@@ -18,13 +18,9 @@ using System.Collections.ObjectModel;
 using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Material {
-    /// <summary>
-    /// Interaction logic for UserControl1.xaml
-    /// </summary>
+
     public partial class MaterialExplorer : ChangeContainerControl {
 
-        private bool _IsDragging;
-        private Point _startPoint;
         private MaterialFavorites _favorites;
 
         private ViewModelPlaceholder _siteTemplatesRoot;
@@ -124,11 +120,8 @@ namespace BioLink.Client.Material {
                 cmbFindScope.SelectedIndex = lastSelectedIndex;
             }
 
-            tvwFind.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(tvwFind_PreviewMouseLeftButtonDown);
-            tvwFind.PreviewMouseMove += new MouseEventHandler(tvwFind_PreviewMouseMove);
-
-            tvwMaterial.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(tvwMaterial_PreviewMouseLeftButtonDown);
-            tvwMaterial.PreviewMouseMove += new MouseEventHandler(tvwMaterial_PreviewMouseMove);
+            TreeViewDragHelper.Bind(tvwFind, CreatePinnableDragObject);
+            TreeViewDragHelper.Bind(tvwMaterial, CreatePinnableDragObject);
 
             tvwMaterial.PreviewDragOver += new DragEventHandler(tvwMaterial_PreviewDragOver);
             tvwMaterial.PreviewDragEnter += new DragEventHandler(tvwMaterial_PreviewDragOver);
@@ -346,65 +339,20 @@ namespace BioLink.Client.Material {
 
         }
 
-        void tvwMaterial_PreviewMouseMove(object sender, MouseEventArgs e) {
-            CommonPreviewMouseMove(e, tvwMaterial);
-        }
-
-        void tvwMaterial_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
-            _startPoint = e.GetPosition(tvwMaterial);
-        }
-
-        void tvwFind_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
-            _startPoint = e.GetPosition(tvwFind);
-        }
-
-        void tvwFind_PreviewMouseMove(object sender, MouseEventArgs e) {
-            CommonPreviewMouseMove(e, tvwFind);
-        }
-
-
-        private void CommonPreviewMouseMove(MouseEventArgs e, TreeView treeView) {
-
-            if (_startPoint == null) {
-                return;
-            }
-
-            if (e.LeftButton == MouseButtonState.Pressed && !_IsDragging) {
-                Point position = e.GetPosition(treeView);
-                if (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance) {
-                    if (treeView.SelectedItem != null) {
-                        IInputElement hitelement = treeView.InputHitTest(_startPoint);
-                        TreeViewItem item = treeView.GetTreeViewItemClicked((FrameworkElement)hitelement);
-                        if (item != null) {
-                            StartDrag(e, treeView, item);
-                        }
-                    }
-                }
-            }
-        }
-
-        private void StartDrag(MouseEventArgs mouseEventArgs, TreeView treeView, TreeViewItem item) {
-
-            var selected = treeView.SelectedItem as SiteExplorerNodeViewModel;
-            if (selected != null) {
-                var data = new DataObject("Pinnable", selected);
-                var pinnable = CreatePinnable(selected);
+        private DataObject CreatePinnableDragObject(ViewModelBase selected) {
+            var node = selected as SiteExplorerNodeViewModel;
+            if (node != null) {
+                var data = new DataObject("Pinnable", node);
+                var pinnable = CreatePinnable(node);
                 data.SetData(PinnableObject.DRAG_FORMAT_NAME, pinnable);
                 data.SetData(DataFormats.Text, selected.DisplayLabel);
                 data.SetData("SiteExplorerNodeViewModel", selected);
 
-
-                try {
-                    _IsDragging = true;
-                    DragDrop.DoDragDrop(item, data, DragDropEffects.Copy | DragDropEffects.Move | DragDropEffects.Link);
-                } finally {
-                    _IsDragging = false;
-                }
+                return data;
             }
 
-            InvalidateVisual();
+            return null;
         }
-
 
         private void cmbFindScope_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             Config.SetUser(User, "Material.Find.LastFilter", cmbFindScope.SelectedIndex);
