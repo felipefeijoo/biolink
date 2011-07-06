@@ -93,7 +93,23 @@ namespace BioLink.Client.Extensibility {
             control.CalculateUTM();
         }
 
+        public double Easting { 
+            get { 
+                double n = 0;
+                double.TryParse(txtEasting.Text, out n);
+                return n; 
+            } 
+        }
 
+        public double Northing { 
+            get {
+                double n = 0;
+                double.TryParse(txtNorthing.Text, out n);
+                return n; 
+            } 
+        }
+
+        public string Zone { get { return txtZone.Text; } }
 
     }
 

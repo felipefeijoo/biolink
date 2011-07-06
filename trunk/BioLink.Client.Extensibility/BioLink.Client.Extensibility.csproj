@@ -108,6 +108,7 @@
     <Compile Include="EllipsisTextBox.xaml.cs">
       <DependentUpon>EllipsisTextBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EllipsoidViewModel.cs" />
     <Compile Include="Export\CSVExporter.cs" />
     <Compile Include="DelayedTriggerTextbox.xaml.cs">
       <DependentUpon>DelayedTriggerTextbox.xaml</DependentUpon>
@@ -120,6 +121,7 @@
     </Compile>
     <Compile Include="Export\Excel2003Exporter.cs" />
     <Compile Include="IIconHolder.cs" />
+    <Compile Include="IPreferredSizeHolder.cs" />
     <Compile Include="MultiMedia\FindMultimediaDialog.xaml.cs">
       <DependentUpon>FindMultimediaDialog.xaml</DependentUpon>
     </Compile>

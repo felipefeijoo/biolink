@@ -602,7 +602,7 @@ namespace BioLink.Client.Utilities {
             if (!m.Success) {
                 return;
             } else {
-                ZoneLetter = m.Groups[2].Value[0];
+                ZoneLetter = m.Groups[2].Value.ToUpper()[0];
                 ZoneNumber = Int32.Parse(m.Groups[1].Value);
             }
 
@@ -659,7 +659,7 @@ namespace BioLink.Client.Utilities {
         }
 
         public static Ellipsoid[] ELLIPSOIDS = new Ellipsoid[] {
-	        new Ellipsoid( -1, "Placeholder", 0, 0),			
+	        new Ellipsoid( -1, "", 0, 0),
 	        new Ellipsoid( 1, "Airy", 6377563, 0.00667054),
 	        new Ellipsoid( 2, "Australian National", 6378160, 0.006694542),
 	        new Ellipsoid( 3, "Bessel 1841", 6377397, 0.006674372),
