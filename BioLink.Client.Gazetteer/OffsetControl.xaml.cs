@@ -338,7 +338,7 @@ namespace BioLink.Client.Gazetteer {
 
 
         internal void Clear() {
-            txtDistance.Clear();
+            txtDistance.Clear();            
         }
 
         public event Action<PlaceName> SelectedPlaceNameChanged;
