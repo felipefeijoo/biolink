@@ -668,7 +668,24 @@ namespace BioLink.Client.Material {
                 builder.Separator();
                 builder.New("Refresh").Handler(() => { Refresh(); }).End();
                 tvw.ContextMenu = builder.ContextMenu;
+            } else if (tvw.SelectedItem is ViewModelPlaceholder) {
+                var ph = tvw.SelectedItem as ViewModelPlaceholder;
+                switch (ph.DisplayLabel.ToLower()) {
+                    case "site templates":
+                        builder.New("Add new _Site Template").Handler(() => { AddSiteTemplate(); }).End();
+                        break;
+                    case "site visit templates":
+                        builder.New("Add new Site _Visit Template").Handler(() => { AddSiteVisitTemplate(); }).End();
+                        break;
+                    case "material templates":
+                        builder.New("Add new _Material Template").Handler(() => { AddMaterialTemplate(); }).End();
+                        break;
+                }
 
+                tvw.ContextMenu = builder.ContextMenu;
+            } else if (tvw.SelectedItem == templatesNode) {
+                builder.AddMenuItem(SiteExplorerMenuBuilder.CreateTemplateItems(this));
+                tvw.ContextMenu = builder.ContextMenu;
             } else {
                 tvw.ContextMenu = null;
             }

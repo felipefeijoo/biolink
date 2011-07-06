@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Controls;
 using BioLink.Client.Extensibility;
+using BioLink.Data;
 using BioLink.Data.Model;
 using System.Collections.Generic;
 
@@ -179,7 +180,6 @@ namespace BioLink.Client.Material {
         public static MenuItem CreateTemplateItems(MaterialExplorer explorer) {
             MenuItemBuilder builder = new MenuItemBuilder();
             MenuItem tmp = builder.New("Create Template").MenuItem;
-
             tmp.Items.Add(builder.New("_Site").Handler(() => { explorer.AddSiteTemplate(); }).MenuItem);
             tmp.Items.Add(builder.New("Site _Visit").Handler(() => { explorer.AddSiteVisitTemplate(); }).MenuItem);
             tmp.Items.Add(builder.New("_Material").Handler(() => { explorer.AddMaterialTemplate(); }).MenuItem);
