@@ -16,6 +16,7 @@ using BioLink.Client.Utilities;
 using BioLink.Data.Model;
 using BioLink.Data;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace BioLink.Client.Tools {
     /// <summary>
@@ -42,6 +43,7 @@ namespace BioLink.Client.Tools {
                         var vm = PluginManager.Instance.GetViewModel(t, item.IntraCatID);
                         if (vm!= null) {
                             model.Add(vm);
+                            vm.Tag = t;
                         }
                     }
                 }
@@ -49,7 +51,36 @@ namespace BioLink.Client.Tools {
 
             lvw.MouseRightButtonUp += new MouseButtonEventHandler(lvw_MouseRightButtonUp);
 
+            ListViewDragHelper.Bind(lvw, (dragged) => {
+
+                if (dragged.Tag is LookupType) {
+                    var lookupType = (LookupType) dragged.Tag;
+                    string pluginName = null;
+                    PluginManager.Instance.TraversePlugins((plugin) => {
+                        if (plugin.CanEditObjectType(lookupType)) {
+                            pluginName = plugin.Name;
+                        }
+                    });
+
+                    if (!string.IsNullOrWhiteSpace(pluginName)) {
+                        var data = new DataObject("Pinnable", dragged);
+                        var pinnable = new PinnableObject(pluginName, lookupType, dragged.ObjectID.Value);
+                        data.SetData(PinnableObject.DRAG_FORMAT_NAME, pinnable);
+                        data.SetData(DataFormats.Text, dragged.DisplayLabel);
+                        return data;
+                    }
+                }
+                return null;
+            });
+
             lvw.ItemsSource = model;
+            CollectionView myView = (CollectionView)CollectionViewSource.GetDefaultView(lvw.ItemsSource);
+
+            myView.SortDescriptions.Add(new SortDescription("Tag", ListSortDirection.Ascending));
+            myView.SortDescriptions.Add(new SortDescription("DisplayLabel", ListSortDirection.Ascending));
+
+            myView.GroupDescriptions.Add(new LinkedItemGroupDescription());
+
         }
 
         void lvw_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
@@ -93,4 +124,17 @@ namespace BioLink.Client.Tools {
         }
 
     }
+
+    public class LinkedItemGroupDescription : System.ComponentModel.GroupDescription {
+
+        public override object GroupNameFromItem(object item, int level, System.Globalization.CultureInfo culture) {
+            var vm = item as ViewModelBase;
+            if (vm != null && vm.Tag is LookupType) {
+                return ((LookupType) vm.Tag).ToString();
+            }
+
+            return "Other";
+        }
+    }
+
 }

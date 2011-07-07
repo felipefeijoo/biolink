@@ -216,7 +216,7 @@ namespace BioLink.Client.Extensibility {
 
     }
 
-    class PinnableLookupTypeGroupDescription : System.ComponentModel.GroupDescription {
+    public class PinnableLookupTypeGroupDescription : System.ComponentModel.GroupDescription {
 
         public override object GroupNameFromItem(object item, int level, System.Globalization.CultureInfo culture) {
             var vm = item as ViewModelBase;
@@ -229,9 +229,6 @@ namespace BioLink.Client.Extensibility {
 
             return "Other";
         }
-    }
-
-    class foo  {
     }
 
 }
