@@ -228,6 +228,9 @@
       <DependentUpon>OneToManyControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="OneToManyDetailControl.cs" />
+    <Compile Include="OptionalQuestionWindow.xaml.cs">
+      <DependentUpon>OptionalQuestionWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="OwnershipDetails.xaml.cs">
       <DependentUpon>OwnershipDetails.xaml</DependentUpon>
     </Compile>
@@ -458,6 +461,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="OneToManyControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="OptionalQuestionWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
