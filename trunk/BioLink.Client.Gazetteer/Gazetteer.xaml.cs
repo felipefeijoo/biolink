@@ -31,9 +31,6 @@ namespace BioLink.Client.Gazetteer {
         private GazetterPlugin _owner;
         private int _maximumSearchResults = 1000;
 
-        private Point _startPoint;
-        private bool _IsDragging;
-
         private OffsetControl _offsetControl;
         private DistanceDirectionControl _dirDistControl;
         private Action<SelectionResult> _selectionCallback;
@@ -75,15 +72,14 @@ namespace BioLink.Client.Gazetteer {
 
             lstResults.SelectionChanged += new SelectionChangedEventHandler(lstResults_SelectionChanged);
 
-            lstResults.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(lvw_PreviewMouseLeftButtonDown);
-            lstResults.PreviewMouseMove += new MouseEventHandler(lvw_PreviewMouseMove);
-
             optFindDistDir.Checked += new RoutedEventHandler(optFindDistDir_Checked);
             optFindLatLong.Checked += new RoutedEventHandler(optFindLatLong_Checked);
 
             optFindLatLong.IsChecked = true;
 
             Loaded += new RoutedEventHandler(Gazetteer_Loaded);
+
+            ListBoxDragHelper.Bind(lstResults, CreateDragData);
 
             _mapUpdateTimer = new Timer((state) => {
                 // Disable the timer...
@@ -145,55 +141,18 @@ namespace BioLink.Client.Gazetteer {
 
         }
 
-        void lvw_PreviewMouseMove(object sender, MouseEventArgs e) {
-            CommonPreviewMouseMove(e, lstResults);
-        }
-
-        void lvw_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
-            _startPoint = e.GetPosition(lstResults);
-        }
-
-        private void CommonPreviewMouseMove(MouseEventArgs e, ListBox listView) {
-
-            if (_startPoint == null) {
-                return;
-            }
-
-            if (e.LeftButton == MouseButtonState.Pressed && !_IsDragging) {
-                Point position = e.GetPosition(listView);
-                if (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance) {
-                    if (listView.SelectedItem != null) {
-
-                        ListBoxItem item = listView.ItemContainerGenerator.ContainerFromItem(listView.SelectedItem) as ListBoxItem;
-                        if (item != null) {
-                            StartDrag(e, listView, item);
-                        }
-                    }
-                }
-            }
-        }
-
-        private void StartDrag(MouseEventArgs mouseEventArgs, ListBox listbox, ListBoxItem item) {
-
-            var selected = listbox.SelectedItem as PlaceNameViewModel;
+        private DataObject CreateDragData(ViewModelBase dragged) {
+            var selected = dragged as PlaceNameViewModel;
             if (selected != null) {
                 var data = new DataObject("Pinnable", selected);
-
                 var pinnable = new PinnableObject(GazetterPlugin.GAZETTEER_PLUGIN_NAME, LookupType.PlaceName, 0, selected.Model);
                 data.SetData(PinnableObject.DRAG_FORMAT_NAME, pinnable);
                 data.SetData(DataFormats.Text, selected.DisplayLabel);
-
-                try {
-                    _IsDragging = true;
-                    DragDrop.DoDragDrop(item, data, DragDropEffects.Copy | DragDropEffects.Move | DragDropEffects.Link);
-                } finally {
-                    _IsDragging = false;
-                }
+                return data;
             }
 
-            InvalidateVisual();
+            return null;
         }
-
 
         private void LoadFile(string filename) {
             try {

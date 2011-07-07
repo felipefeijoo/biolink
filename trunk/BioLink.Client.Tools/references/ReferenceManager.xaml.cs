@@ -24,8 +24,6 @@ namespace BioLink.Client.Tools {
     /// </summary>
     public partial class ReferenceManager : DatabaseActionControl, ISelectionHostControl {
 
-        private Point _startPoint;
-        private bool _IsDragging;
         private GridViewColumnHeader _lastHeaderClicked = null;
         private ListSortDirection _lastDirection = ListSortDirection.Ascending;
         private ReferenceFavorites _favorites;
@@ -49,8 +47,7 @@ namespace BioLink.Client.Tools {
 
             lvwResults.PreviewMouseRightButtonUp += new MouseButtonEventHandler(lvwResults_PreviewMouseRightButtonUp);
 
-            lvwResults.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(lvw_PreviewMouseLeftButtonDown);
-            lvwResults.PreviewMouseMove += new MouseEventHandler(lvw_PreviewMouseMove);
+            ListViewDragHelper.Bind(lvwResults, ListViewDragHelper.CreatePinnableGenerator(ToolsPlugin.TOOLS_PLUGIN_NAME, LookupType.Reference));
 
             lvwResults.AddHandler(GridViewColumnHeader.ClickEvent, new RoutedEventHandler(GridViewColumnHeaderClickedHandler));
 
@@ -114,60 +111,6 @@ namespace BioLink.Client.Tools {
             dataView.SortDescriptions.Add(sd);
             dataView.Refresh();
         }
-
-        void lvw_PreviewMouseMove(object sender, MouseEventArgs e) {
-            CommonPreviewMouseMove(e, lvwResults);
-        }
-
-        void lvw_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
-            _startPoint = e.GetPosition(lvwResults);
-        }
-
-        private void CommonPreviewMouseMove(MouseEventArgs e, ListView listView) {
-
-            if (_startPoint == null) {
-                return;
-            }
-
-            if (e.LeftButton == MouseButtonState.Pressed && !_IsDragging) {
-                Point position = e.GetPosition(listView);
-                if (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance) {
-
-                    var x = listView.InputHitTest(position) as FrameworkElement;
-                    if (x != null && x.DataContext is ReferenceSearchResultViewModel) {
-                        if (listView.SelectedItem != null) {
-
-                            ListViewItem item = listView.ItemContainerGenerator.ContainerFromItem(listView.SelectedItem) as ListViewItem;
-                            if (item != null) {
-                                StartDrag(e, listView, item);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private void StartDrag(MouseEventArgs mouseEventArgs, ListView listView, ListViewItem item) {
-
-            var selected = listView.SelectedItem as ReferenceSearchResultViewModel;
-            if (selected != null) {
-                var data = new DataObject("Pinnable", selected);
-
-                var pinnable = new PinnableObject(ToolsPlugin.TOOLS_PLUGIN_NAME, LookupType.Reference, selected.RefID); 
-                data.SetData(PinnableObject.DRAG_FORMAT_NAME, pinnable);
-                data.SetData(DataFormats.Text, selected.DisplayLabel);
-
-                try {
-                    _IsDragging = true;
-                    DragDrop.DoDragDrop(item, data, DragDropEffects.Copy | DragDropEffects.Move | DragDropEffects.Link);
-                } finally {
-                    _IsDragging = false;
-                }
-            }
-
-            InvalidateVisual();
-        }
-
 
         void ReferenceManager_ChangesCommitted(object sender) {
             // Redo the search...

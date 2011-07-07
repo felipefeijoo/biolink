@@ -26,8 +26,6 @@ namespace BioLink.Client.Tools {
         private ObservableCollection<JournalViewModel> _findModel;
         private TabItem _previousPage;
         private JournalBrowsePage _page;
-        private Point _startPoint;
-        private bool _IsDragging;
 
         #region designer ctor
         public JournalManager() {
@@ -48,64 +46,21 @@ namespace BioLink.Client.Tools {
                 AddTabPage(range);
             }
 
-            lstResults.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(lst_PreviewMouseLeftButtonDown);
-            lstResults.PreviewMouseMove += new MouseEventHandler(lst_PreviewMouseMove);
-
-            _page.lst.PreviewMouseLeftButtonDown +=new MouseButtonEventHandler(lst_PreviewMouseLeftButtonDown);
-            _page.lst.PreviewMouseMove +=new MouseEventHandler(lst_PreviewMouseMove);
-
+            ListBoxDragHelper.Bind(lstResults, CreateDragData);
+            ListBoxDragHelper.Bind(_page.lst, CreateDragData);
         }
 
-        void lst_PreviewMouseMove(object sender, MouseEventArgs e) {
-            CommonPreviewMouseMove(e, sender as ListBox);
-        }
-
-        void lst_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
-            _startPoint = e.GetPosition(sender as ListBox);
-        }
-
-        private void CommonPreviewMouseMove(MouseEventArgs e, ListBox listBox) {
-
-            if (_startPoint == null) {
-                return;
-            }
-
-            if (e.LeftButton == MouseButtonState.Pressed && !_IsDragging) {
-                Point position = e.GetPosition(listBox);
-                if (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance) {
-
-                    var x = listBox.InputHitTest(position) as FrameworkElement;
-                    if (x != null && x.DataContext is JournalViewModel) {
-                        if (listBox.SelectedItem != null) {
-                            ListBoxItem item = listBox.ItemContainerGenerator.ContainerFromItem(listBox.SelectedItem) as ListBoxItem;
-                            if (item != null) {
-                                StartDrag(e, listBox, item);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private void StartDrag(MouseEventArgs mouseEventArgs, ListBox listBox, ListBoxItem item) {
-
-            var selected = listBox.SelectedItem as JournalViewModel;
+        private DataObject CreateDragData(ViewModelBase dragged) {
+            var selected = dragged as JournalViewModel;
             if (selected != null) {
                 var data = new DataObject("Pinnable", selected);
 
                 var pinnable = new PinnableObject(ToolsPlugin.TOOLS_PLUGIN_NAME, LookupType.Journal, selected.JournalID);
                 data.SetData(PinnableObject.DRAG_FORMAT_NAME, pinnable);
                 data.SetData(DataFormats.Text, selected.DisplayLabel);
-
-                try {
-                    _IsDragging = true;
-                    DragDrop.DoDragDrop(item, data, DragDropEffects.Copy | DragDropEffects.Move | DragDropEffects.Link);
-                } finally {
-                    _IsDragging = false;
-                }
+                return data;
             }
-
-            InvalidateVisual();
+            return null;
         }
 
         private void AddTabPage(string range) {

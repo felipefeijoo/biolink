@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using BioLink.Client.Utilities;
+using BioLink.Data;
 
 namespace BioLink.Client.Extensibility {
 
@@ -20,6 +21,20 @@ namespace BioLink.Client.Extensibility {
         public static void Bind(TreeView treeView, Func<ViewModelBase, DataObject> dataObjFactory) {
             new TreeViewDragHelper(treeView, dataObjFactory);
         }
+    }
+
+    public class ListBoxDragHelper : GenericDragHelper<ListBox, ListBoxItem> {
+
+        public ListBoxDragHelper(ListBox control, Func<ViewModelBase, DataObject> func) : base(control, func) { }
+
+        protected override ViewModelBase GetSelectedItem(ListBox control) {
+            return control.SelectedItem as ViewModelBase;
+        }
+
+        public static void Bind(ListBox control, Func<ViewModelBase, DataObject> dataObjFactory) {
+            new ListBoxDragHelper(control, dataObjFactory);
+        }
+
     }
 
     public class ListViewDragHelper : GenericDragHelper<ListView, ListViewItem> {
@@ -68,6 +83,18 @@ namespace BioLink.Client.Extensibility {
                     }
                 }
             }
+        }
+
+        public static Func<ViewModelBase, DataObject> CreatePinnableGenerator(string pluginName, LookupType lookupType) {
+
+            return new Func<ViewModelBase, DataObject>((selected) => {
+                var data = new DataObject("Pinnable", selected);
+                var pinnable = new PinnableObject(pluginName, lookupType, selected.ObjectID.Value);
+                data.SetData(PinnableObject.DRAG_FORMAT_NAME, pinnable);
+                data.SetData(DataFormats.Text, selected.DisplayLabel);
+                return data;
+            });
+
         }
 
         void Control_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {

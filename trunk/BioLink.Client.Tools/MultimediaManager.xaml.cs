@@ -31,8 +31,6 @@ namespace BioLink.Client.Tools {
         private List<string> _multimediaTypes;
         private KeyedObjectTempFileManager<int?> _tempFileManager;
         private ObservableCollection<MultimediaLinkViewModel> _model;
-        private bool _IsDragging;
-        private Point _startPoint;
 
         public MultimediaManager(ToolsPlugin plugin, User user) : base(user, "MultimediaManager") {
             InitializeComponent();
@@ -67,13 +65,10 @@ namespace BioLink.Client.Tools {
             });
 
             txtCriteria.KeyUp += new KeyEventHandler(txtCriteria_KeyUp);
-
             lvw.MouseRightButtonUp += new MouseButtonEventHandler(lvw_MouseRightButtonUp);
-
-            lvw.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(lvw_PreviewMouseLeftButtonDown);
-            lvw.PreviewMouseMove += new MouseEventHandler(lvw_PreviewMouseMove);
-
             lvw.KeyUp += new KeyEventHandler(lvw_KeyUp);
+
+            ListViewDragHelper.Bind(lvw, CreateDragData);
         }
 
         void lvw_KeyUp(object sender, KeyEventArgs e) {
@@ -82,81 +77,13 @@ namespace BioLink.Client.Tools {
             }
         }
 
-        void lvw_PreviewMouseMove(object sender, MouseEventArgs e) {
-            CommonPreviewMouseMove(e, lvw);
-        }
+        private DataObject CreateDragData(ViewModelBase dragged) {
 
-        void lvw_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
-            if (IsMouseOverScrollbar) {
-                _startPoint = default(Point);
-                return;
-            }
-
-            _startPoint = e.GetPosition(lvw);
-        }
-
-        bool IsMouseOverScrollbar {
-            get {
-                Point ptMouse = MouseUtilities.GetMousePosition(lvw);
-                HitTestResult res = VisualTreeHelper.HitTest(lvw, ptMouse);
-                if (res == null) {
-                    return false;
-                }
-
-                DependencyObject depObj = res.VisualHit;
-                while (depObj != null) {
-                    if (depObj is ScrollBar) {
-                        return true;
-                    }
-
-                    if (depObj is Visual || depObj is System.Windows.Media.Media3D.Visual3D) {
-                        depObj = VisualTreeHelper.GetParent(depObj);
-                    } else {
-                        depObj = LogicalTreeHelper.GetParent(depObj);
-                    }
-                }
-                return false;
-            }
-        }
-
-        private void CommonPreviewMouseMove(MouseEventArgs e, ListView listView) {
-
-            if (_startPoint == null) {
-                return;
-            }
-
-            if (e.LeftButton == MouseButtonState.Pressed && !_IsDragging && !IsMouseOverScrollbar) {
-                Point position = e.GetPosition(listView);
-                if (Math.Abs(position.X - _startPoint.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(position.Y - _startPoint.Y) > SystemParameters.MinimumVerticalDragDistance) {
-
-                    var x = listView.InputHitTest(position) as FrameworkElement;
-                    if (x != null && x.DataContext is MultimediaLinkViewModel) {
-                        if (listView.SelectedItem != null) {
-                            ListViewItem item = lvw.ItemContainerGenerator.ContainerFromItem(listView.SelectedItem) as ListViewItem;
-                            if (item != null) {
-                                StartDrag(e, lvw, item);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private void StartDrag(MouseEventArgs mouseEventArgs, ListView listView, ListViewItem item) {
-
-            var selected = listView.SelectedItem as MultimediaLinkViewModel;
+            var selected = dragged as MultimediaLinkViewModel;
             if (selected != null) {
-                var data = new DataObject("MultimediaLink", selected.Model);
-
-                try {
-                    _IsDragging = true;
-                    DragDrop.DoDragDrop(item, data, DragDropEffects.Link);
-                } finally {
-                    _IsDragging = false;
-                }
+                return new DataObject("MultimediaLink", selected.Model);
             }
-
-            InvalidateVisual();
+            return null;
         }
 
         void txtCriteria_KeyUp(object sender, KeyEventArgs e) {
