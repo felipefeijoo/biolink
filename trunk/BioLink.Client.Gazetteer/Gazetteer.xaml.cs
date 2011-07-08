@@ -26,7 +26,7 @@ namespace BioLink.Client.Gazetteer {
     /// </summary>
     public partial class Gazetteer : UserControl, IDisposable {
         
-        GazetteerService _service;
+        private GazetteerService _service;
         private ObservableCollection<PlaceNameViewModel> _searchModel = null;
         private GazetterPlugin _owner;
         private int _maximumSearchResults = 1000;
@@ -298,7 +298,7 @@ namespace BioLink.Client.Gazetteer {
 
         public void Dispose() {
             if (_service != null) {
-                Config.SetUser(_owner.User, "gazetteer.lastFile", _service.Filename);
+                Config.SetUser(_owner.User, "gazetteer.lastFile", _service.FileName);
                 Config.SetUser(_owner.User, "gazetteer.recentlyUsedFiles", new List<string>( _fileMRU.Select((m) => {
                     return m.FullPath;
                 })));
@@ -441,6 +441,25 @@ namespace BioLink.Client.Gazetteer {
 
         private void btnDataInfo_Click(object sender, RoutedEventArgs e) {
             ShowGazetteerInfo();
+        }
+
+        public GazetteerService Service { 
+            get { return _service; } 
+        }
+
+        public PlaceName SelectedPlace {
+            get {
+                var selected = lstResults.SelectedItem as PlaceNameViewModel;
+                if (selected != null) {
+                    return selected.Model;
+                }
+
+                return null;
+            }
+        }
+
+        private void btnFindNearestPlace_Click(object sender, RoutedEventArgs e) {
+            _owner.ShowNearestNamedPlace();
         }
 
     }

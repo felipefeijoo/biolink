@@ -59,6 +59,9 @@
     <Compile Include="DistanceDirectionControl.xaml.cs">
       <DependentUpon>DistanceDirectionControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="FindNearestNamePlace.xaml.cs">
+      <DependentUpon>FindNearestNamePlace.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Gazetteer.xaml.cs">
       <DependentUpon>Gazetteer.xaml</DependentUpon>
     </Compile>
@@ -96,6 +99,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="DistanceDirectionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FindNearestNamePlace.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

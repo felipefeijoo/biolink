@@ -38,7 +38,7 @@ namespace BioLink.Client.Maps {
 
 
         private const int RESIZE_TIMEOUT = 0;
-       
+
         private Timer _resizeTimer;
         private Point _distanceAnchor;
         private string _anchorCaption;
@@ -59,8 +59,8 @@ namespace BioLink.Client.Maps {
         public MapControl(MapMode mode, Action<List<RegionDescriptor>> callback = null) {
             InitializeComponent();
             this.Mode = mode;
-            this._callback = callback;                            
-            _resizeTimer = new Timer(new TimerCallback((o)=> {
+            this._callback = callback;
+            _resizeTimer = new Timer(new TimerCallback((o) => {
                 this.InvokeIfRequired(() => {
                     mapBox.Refresh();
                     _resizeTimer.Change(Timeout.Infinite, Timeout.Infinite);
@@ -132,7 +132,7 @@ namespace BioLink.Client.Maps {
 
             btnInfo.Checked += new System.Windows.RoutedEventHandler(btnInfo_Checked);
             btnInfo.Unchecked += new System.Windows.RoutedEventHandler(btnInfo_Unchecked);
-            
+
             Unloaded += new System.Windows.RoutedEventHandler(MapControl_Unloaded);
 
         }
@@ -230,7 +230,7 @@ namespace BioLink.Client.Maps {
 
             var user = PluginManager.Instance.User;
 
-            Config.SetUser(user, "MapTool." + Mode.ToString() + ".Layers", layers);           
+            Config.SetUser(user, "MapTool." + Mode.ToString() + ".Layers", layers);
             var env = new SerializedEnvelope(mapBox.Map.Envelope);
             Config.SetUser(user, "MapTool." + Mode.ToString() + ".LastExtent", env);
             Config.SetUser(user, "MapTool." + Mode.ToString() + ".MapBackColor", mapBox.BackColor);
@@ -242,7 +242,7 @@ namespace BioLink.Client.Maps {
             var menuItem = menu.MenuItems.Add(caption);
             menuItem.Click += new EventHandler((source, e) => {
                 action();
-            });            
+            });
         }
 
         private Dictionary<Int32, FeatureDataRow> FindIDs(List<FeatureDataRowLayerPair> rows, string columnName) {
@@ -269,9 +269,9 @@ namespace BioLink.Client.Maps {
             } else {
                 var service = new MaterialService(PluginManager.Instance.User);
                 List<ViewModelBase> model = null;
-                if (objectType == LookupType.Site) {                    
+                if (objectType == LookupType.Site) {
                     var sites = service.GetRDESites(idMap.Keys.ToArray());
-                    model = sites.ConvertAll((s) => { return (ViewModelBase) new RDESiteViewModel(s); });
+                    model = sites.ConvertAll((s) => { return (ViewModelBase)new RDESiteViewModel(s); });
 
                 } else if (objectType == LookupType.SiteVisit) {
                     var siteVisits = service.GetRDESiteVisits(idMap.Keys.ToArray());
@@ -282,14 +282,14 @@ namespace BioLink.Client.Maps {
                         return l;
                     });
                     var sites = service.GetRDESites(siteIds.ToArray<int>()).ConvertAll((site) => { return new RDESiteViewModel(site); });
-                    var siteMap = sites.ToDictionary( (s) => { return s.SiteID; } );
+                    var siteMap = sites.ToDictionary((s) => { return s.SiteID; });
 
                     model = siteVisits.ConvertAll((sv) => {
                         var vm = new RDESiteVisitViewModel(sv);
                         if (siteMap.ContainsKey(sv.SiteID)) {
                             vm.Site = siteMap[sv.SiteID];
                         }
-                        return (ViewModelBase) vm;
+                        return (ViewModelBase)vm;
                     });
 
                 } else if (objectType == LookupType.Material) {
@@ -304,7 +304,7 @@ namespace BioLink.Client.Maps {
                     });
 
                     // Get the visit records, and convert into a dictionary of SiteVisitID => SiteVisit for easy lookup
-                    var visits = service.GetRDESiteVisits(visitIds.ToArray()).ConvertAll((sv)=> new RDESiteVisitViewModel(sv));
+                    var visits = service.GetRDESiteVisits(visitIds.ToArray()).ConvertAll((sv) => new RDESiteVisitViewModel(sv));
                     var visitMap = visits.ToDictionary((sv) => { return sv.SiteVisitID; });
 
                     // Then get the unique (distinct) list of site ids...
@@ -323,8 +323,8 @@ namespace BioLink.Client.Maps {
                     model = material.ConvertAll((m) => {
                         var vm = new RDEMaterialViewModel(m);
                         vm.SiteVisit = visitMap[vm.SiteVisitID];
-                        vm.SiteVisit.Site = siteMap[vm.SiteVisit.SiteID];                    
-                        return (ViewModelBase) vm;
+                        vm.SiteVisit.Site = siteMap[vm.SiteVisit.SiteID];
+                        return (ViewModelBase)vm;
                     });
                 }
 
@@ -365,20 +365,20 @@ namespace BioLink.Client.Maps {
                         EditObject(materialIDs, LookupType.Material);
                     });
                 }
-                
+
                 if (Mode == MapMode.Normal) {
                     if (_distanceAnchor == null) {
                         BuildMenuItem(menu, "Drop distance anchor", () => {
                             DropDistanceAnchor();
                         });
-                        
+
                     } else {
                         BuildMenuItem(menu, "Hide distance anchor", () => {
                             HideDistanceAnchor();
                             mapBox.Refresh();
                         });
                     }
-                } else {                    
+                } else {
                     var feature = FindRegionFeature(pointClick);
                     if (feature != null) {
                         string regionPath = feature["BLREGHIER"] as string;
@@ -404,16 +404,16 @@ namespace BioLink.Client.Maps {
                 menu.Show(mapBox, evt.Location);
             } else {
 
-                if (mapBox.ActiveTool == MapBox.Tools.None || mapBox.ActiveTool== MapBox.Tools.Pan) {
+                if (mapBox.ActiveTool == MapBox.Tools.None || mapBox.ActiveTool == MapBox.Tools.Pan) {
                     if (Mode == MapMode.RegionSelect && mapBox.ActiveTool == MapBox.Tools.None) {
                         SelectRegion(pointClick);
                     } else {
                         if (btnInfo.IsChecked.ValueOrFalse()) {
                             var rows = Drill(pointClick);
-                            featureInfo.DisplayFeatures(pointClick, rows);   
+                            featureInfo.DisplayFeatures(pointClick, rows);
                         }
                     }
-                }                
+                }
 
             }
         }
@@ -426,10 +426,10 @@ namespace BioLink.Client.Maps {
 
             DrawSelectionLayer();
         }
-        
+
         public void SelectRegionByPath(string regionPath) {
             var node = _regionModel.FindByPath(regionPath);
-            
+
             if (node != null) {
                 node.IsSelected = true;
                 DrawSelectionLayer();
@@ -531,7 +531,7 @@ namespace BioLink.Client.Maps {
             foreach (ILayer layer in mapBox.Map.Layers) {
                 if (layer is VectorLayer) {
                     var vl = layer as VectorLayer;
-                    var shapefile = vl.DataSource as ShapeFile;                    
+                    var shapefile = vl.DataSource as ShapeFile;
                     if (shapefile != null) {
                         using (shapefile) {
                             shapefile.Open();
@@ -573,10 +573,10 @@ namespace BioLink.Client.Maps {
             foreach (ILayer l in mapBox.Map.Layers) {
                 if (l is VectorLayer && !l.LayerName.StartsWith("_")) {
                     var layer = l as VectorLayer;
-                    
+
                     if (bbox != null) {
                         SharpMap.Data.FeatureDataSet ds = new SharpMap.Data.FeatureDataSet();
-                        layer.DataSource.Open();                        
+                        layer.DataSource.Open();
                         layer.DataSource.ExecuteIntersectionQuery(bbox, ds);
                         DataTable tbl = ds.Tables[0] as SharpMap.Data.FeatureDataTable;
                         GisSharpBlog.NetTopologySuite.IO.WKTReader reader = new GisSharpBlog.NetTopologySuite.IO.WKTReader();
@@ -586,7 +586,17 @@ namespace BioLink.Client.Maps {
                         } else {
                             for (int i = 0; i < tbl.Rows.Count; ++i) {
                                 var data = new FeatureDataRowLayerPair { FeatureDataRow = tbl.Rows[i] as FeatureDataRow, Layer = l };
-                                list.Add(data);
+                                if (data.FeatureDataRow.Geometry is MultiPolygon) {
+                                    MultiPolygon mp = data.FeatureDataRow.Geometry as MultiPolygon;
+                                    foreach (SharpMap.Geometries.Polygon p in mp) {
+                                        if (PointInsidePolygon(pos, p)) {
+                                            list.Add(data);
+                                        }
+                                    }
+                                } else {
+                                    list.Add(data);
+                                }
+
                             }
                         }
                     }
@@ -594,6 +604,34 @@ namespace BioLink.Client.Maps {
             }
 
             return list;
+        }
+
+        private bool PointInsidePolygon(Point p, SharpMap.Geometries.Polygon polygon) {
+
+            var points = polygon.ExteriorRing.Vertices;
+            int counter = 0;
+            // double xinters;  
+
+            var p1 = points[0];
+            // for each line segment in the polygon (p[0]-p[1], p[1]-p[2], etc)...
+            for (int i = 1; i <= points.Count; i++) {
+                var p2 = points[i % points.Count];
+                if (p.Y > Math.Min(p1.Y, p2.Y)) {
+                    if (p.Y <= Math.Max(p1.Y, p2.Y)) {
+                        if (p.X <= Math.Max(p1.X, p2.X)) {
+                            if (p1.Y != p2.Y) {
+                                // the x coord when the ray cast from the point intersects with the current line segment
+                                double xinters = (p.Y - p1.Y) * (p2.X - p1.X) / (p2.Y - p1.Y) + p1.X;
+                                if (p1.X == p2.X || p.X <= xinters)
+                                    counter++;
+                            }
+                        }
+                    }
+                }
+                p1 = p2;
+            }
+
+            return !(counter % 2 == 0);
         }
 
         public SharpMap.Data.FeatureDataRow FindGeoNearPoint(SharpMap.Geometries.Point pos, SharpMap.Layers.VectorLayer layer) {
@@ -628,7 +666,7 @@ namespace BioLink.Client.Maps {
             return null;
         }
 
-        private void RemoveLayerByName(string name) {                        
+        private void RemoveLayerByName(string name) {
             ILayer layer = mapBox.Map.GetLayerByName(name);
             if (layer != null) {
                 mapBox.Map.Layers.Remove(layer);
@@ -688,20 +726,20 @@ namespace BioLink.Client.Maps {
                 row["SiteID"] = mp.SiteID;
                 row["SiteVisitID"] = mp.SiteVisitID;
                 row["MaterialID"] = mp.MaterialID;
-                
+
                 table.AddRow(row);
             }
 
             string labelLayerName = string.Format("{0} Labels", points.Name);
 
-            RemoveLayerByName(points.Name);            
+            RemoveLayerByName(points.Name);
 
             VectorLayer shapeFileLayer = new VectorLayer(points.Name, new SharpMap.Data.Providers.GeometryFeatureProvider(table));
 
             shapeFileLayer.SmoothingMode = SmoothingMode.AntiAlias;
 
             shapeFileLayer.Style.Symbol = MapSymbolGenerator.GetSymbolForPointSet(points);
-            
+
             addLayer(shapeFileLayer, false);
 
             if (points.DrawLabels) {
@@ -778,7 +816,7 @@ namespace BioLink.Client.Maps {
             _resizeTimer.Change(RESIZE_TIMEOUT, Timeout.Infinite);
         }
 
-        private void map_Click(object sender, EventArgs ea) {            
+        private void map_Click(object sender, EventArgs ea) {
         }
 
         private void btnZoomToWindow_Checked(object sender, System.Windows.RoutedEventArgs e) {
@@ -838,7 +876,7 @@ namespace BioLink.Client.Maps {
             using (var ds = layer.DataSource as ShapeFile) {
                 ds.Open();
                 for (uint i = 0; i < ds.GetFeatureCount(); ++i) {
-                    var row = ds.GetFeature(i);                    
+                    var row = ds.GetFeature(i);
                     var node = AddNodeFromPath(root, row);
                 }
             }
@@ -850,7 +888,7 @@ namespace BioLink.Client.Maps {
             string[] bits = path.Split('\\');
             var parent = root;
             for (int i = 0; i < bits.Length; ++i) {
-                string bit = bits[i];            
+                string bit = bits[i];
                 var pNode = parent.FindChildByName(bit);
                 if (pNode == null) {
                     // intermediate tree nodes do not have a feature row attached to them...
@@ -944,7 +982,7 @@ namespace BioLink.Client.Maps {
                 if (!root.IsSelected) {
                     root.IsThroughoutRegion = true;
                 }
-                root.IsSelected = true;                
+                root.IsSelected = true;
             }
 
         }
@@ -1023,7 +1061,7 @@ namespace BioLink.Client.Maps {
 
         internal void AddRasterLayer(string filename) {
             string layername = System.IO.Path.GetFileNameWithoutExtension(filename);
-            RemoveLayerByName(layername);            
+            RemoveLayerByName(layername);
             AddLayer(filename);
         }
 

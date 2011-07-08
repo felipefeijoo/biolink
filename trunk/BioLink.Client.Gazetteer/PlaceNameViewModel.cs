@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using BioLink.Client.Extensibility;
+using BioLink.Client.Utilities;
 using BioLink.Data.Model;
 
 namespace BioLink.Client.Gazetteer {
@@ -77,6 +78,12 @@ namespace BioLink.Client.Gazetteer {
             get { return Model.Direction; }
             set { SetProperty(() => Model.Direction, value); }
         }
+
+        public string Position {
+            get { return GeoUtils.FormatCoordinates(Latitude, Longitude); }
+        }
+
+        public double Distance { get; set; }
 
     }
 }
