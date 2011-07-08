@@ -79,6 +79,6 @@
         <Button Height="23" HorizontalAlignment="Right" Margin="0,8,99,0" Name="btnDataInfo" VerticalAlignment="Top" Width="24" Click="btnDataInfo_Click">
             <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/info.png" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" ImageFailed="Image_ImageFailed" />
         </Button>
-        
+        <Button Content="_Find nearest named place..." Height="23" HorizontalAlignment="Left" Margin="99,0,0,12" Name="btnFindNearestPlace" VerticalAlignment="Bottom" Width="173" Click="btnFindNearestPlace_Click" />
     </Grid>
 </UserControl>

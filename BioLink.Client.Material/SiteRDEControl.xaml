@@ -41,7 +41,7 @@
                     <ext:LookupControl Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="5" Height="23" Name="txtPolitical" Text="{Binding PoliticalRegion}" ObjectID="{Binding PoliticalRegionID}" />
                     
                     <Label Grid.Row="2" Content="Latitude:" />
-                    <ext:PositionControl Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="5" HeaderLabels="False" Latitude="{Binding Latitude}" Longitude="{Binding Longitude}" x:Name="ctlPosition" />
+                    <ext:PositionControl Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="5" ShowHeaderLabels="False" Latitude="{Binding Latitude}" Longitude="{Binding Longitude}" x:Name="ctlPosition" />
                     
                     <Label Content="Source:" Grid.Column="6" Grid.Row="2" />
                     <ext:PickListControl Grid.Column="7" Grid.Row="2" Height="23" Name="txtSource" Text="{Binding LLSource}"  />

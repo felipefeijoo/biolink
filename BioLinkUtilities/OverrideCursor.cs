@@ -16,7 +16,7 @@ namespace BioLink.Client.Utilities {
         static Stack<Cursor> _stack = new Stack<Cursor>();
 
         public OverrideCursor(Cursor changeToCursor) {
-            _stack.Push(changeToCursor);
+            _stack.Push(changeToCursor);            
             if (Mouse.OverrideCursor != changeToCursor) {
                 Mouse.OverrideCursor = changeToCursor;
             }

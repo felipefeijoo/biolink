@@ -89,7 +89,7 @@ namespace BioLink.Client.Extensibility {
 
             return new Func<ViewModelBase, DataObject>((selected) => {
                 var data = new DataObject("Pinnable", selected);
-                var pinnable = new PinnableObject(pluginName, lookupType, selected.ObjectID.Value);
+                var pinnable = new PinnableObject(pluginName, lookupType, selected.ObjectID.GetValueOrDefault(0));
                 data.SetData(PinnableObject.DRAG_FORMAT_NAME, pinnable);
                 data.SetData(DataFormats.Text, selected.DisplayLabel);
                 return data;

@@ -13,15 +13,14 @@ namespace BioLink.Client.Gazetteer {
 
     public class GazetteerService : SQLiteServiceBase, IDisposable {
 
-        public string Filename { get; private set; }
 
         public GazetteerService(string file, bool create = false) : base(file, create) {
-            Filename = file;
+            
             if (create) {
-                CreateNewGazFile(Filename);
+                CreateNewGazFile(file);
             } else {
                 if (File.Exists(file) && !create) {
-                    SQLiteConnection connection = new SQLiteConnection(String.Format("Data Source={0}", Filename));
+                    SQLiteConnection connection = new SQLiteConnection(String.Format("Data Source={0}", file));
                     ValidateGazFile(connection);
                 } else {                
                     throw new Exception("Gazetteer file not found!");
@@ -170,6 +169,59 @@ namespace BioLink.Client.Gazetteer {
 
             return result;
         }
+
+        public int CountPlacesInBoundedBox(double x1, double y1, double x2, double y2, string placeType) {
+            int count = 0;
+            try {
+                string sql = "SELECT Count(*) FROM tblGaz WHERE (dblLatitude BETWEEN @y1 AND @y2) AND (dblLongitude BETWEEN @x1 AND @x2)";
+                if (!string.IsNullOrEmpty(placeType)) {
+                    sql += " and tType = @div";
+                }
+                SelectReader(sql, (reader) => {
+                    count = reader.GetInt32(0);
+                }, new SQLiteParameter("@y1", y1), new SQLiteParameter("@y2", y2), new SQLiteParameter("@x1", x1), new SQLiteParameter("@x2", x2), new SQLiteParameter("@div", placeType));
+            } catch (Exception ex) {
+                GlobalExceptionHandler.Handle(ex);
+            }
+
+            return count;
+        }
+
+        public List<PlaceName> GetPlacesInBoundedBox(double x1, double y1, double x2, double y2, string placeType) {
+            var list = new List<PlaceName>();
+            try {
+                string sql = "SELECT tPlace as Name, tType as PlaceType, tDivision as Division, tLatitude as LatitudeString, tLongitude as LongitudeString, dblLatitude as Latitude, dblLongitude as Longitude FROM tblGaz WHERE (dblLatitude BETWEEN @y1 AND @y2) AND (dblLongitude BETWEEN @x1 AND @x2)";
+                if (!string.IsNullOrEmpty(placeType)) {
+                    sql += " and tType = @div";
+                }
+                SelectReader(sql, (reader) => {
+                    PlaceName place = new PlaceName();
+                    MapperBase.ReflectMap(place, reader, null);
+                    list.Add(place);                    
+                }, new SQLiteParameter("@y1", y1), new SQLiteParameter("@y2", y2), new SQLiteParameter("@x1", x1), new SQLiteParameter("@x2", x2), new SQLiteParameter("@div", placeType));
+            } catch (Exception ex) {
+                GlobalExceptionHandler.Handle(ex);
+            }
+
+            return list;
+        }
+
+        public List<string> GetPlaceTypes() {
+            
+            var list = new List<string>();
+            try {
+                var sql = "SELECT DISTINCT tType FROM tblGaz";
+                SelectReader(sql, (reader) => {
+                    list.Add(reader[0] as string);
+                });
+            } catch (Exception ex) {
+                GlobalExceptionHandler.Handle(ex);
+            }
+
+            return list;
+
+        }
+
     }
 
     public class GazetteerInfo {

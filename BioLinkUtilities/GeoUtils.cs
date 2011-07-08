@@ -695,6 +695,10 @@ namespace BioLink.Client.Utilities {
             }
             return null;
         }
+
+        public static string FormatCoordinates(double latitude, double longitude) {
+            return string.Format("{0} {1}", DecDegToDMS(latitude, CoordinateType.Latitude), DecDegToDMS(longitude, CoordinateType.Longitude));
+        }
     }
 
     public class Ellipsoid {

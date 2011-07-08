@@ -16,7 +16,7 @@
         
         <GroupBox x:Name="grpLatLong" Header="Latitude / Longitude" Margin="6">
             <Grid>
-                <my:PositionControl Name="ctlLatLong" HeaderLabels="True" Height="53" Margin="148,6,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="398" />
+                <my:PositionControl Name="ctlLatLong" ShowHeaderLabels="True" Height="53" Margin="148,6,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="398" />
                 <RadioButton Content="Deg. Min. Sec." Height="16" HorizontalAlignment="Left" Margin="6,20,0,0" Name="optDegMinSec" VerticalAlignment="Top" IsChecked="True" Checked="optDegMinSec_Checked" />
                 <RadioButton Content="Decimal degrees" Height="16" HorizontalAlignment="Left" Margin="6,43,0,0" Name="optDecDeg" VerticalAlignment="Top" Checked="optDecDeg_Checked" />
                 <RadioButton Content="Deg. decimal min." Height="16" HorizontalAlignment="Left" Margin="6,65,0,0" Name="optDegDecimalMin" VerticalAlignment="Top" Checked="optDegDecimalMin_Checked" />

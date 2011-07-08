@@ -18,6 +18,7 @@ namespace BioLink.Client.Gazetteer {
 
 
         private GazetteerConverter _gazConverter;
+        private FindNearestNamePlace _nearestNamePlace;
 
         public GazetterPlugin() {
         }
@@ -38,6 +39,11 @@ namespace BioLink.Client.Gazetteer {
                 String.Format("{{'Name':'eGaz', 'Header':'eGaz'}}"), String.Format("{{'Name':'ShowEGazConverter', 'Header':'Legacy eGaz file converter'}}")
             ));
 
+            contrib.Add(new MenuWorkspaceContribution(this, "ShowFindNearestPlace", (obj, e) => { ShowNearestNamedPlace(); },
+                String.Format("{{'Name':'Tools', 'Header':'_Tools','InsertAfter':'File'}}"),
+                String.Format("{{'Name':'eGaz', 'Header':'eGaz'}}"), String.Format("{{'Name':'ShowFindNearestPlace', 'Header':'_Find nearest named place'}}")
+            ));
+
             contrib.Add(new MenuWorkspaceContribution(this, "ShowCoordCalculator", (obj, e) => { ShowCoordCalculator(); },
                 String.Format("{{'Name':'Tools', 'Header':'_Tools','InsertAfter':'File'}}"),
                 String.Format("{{'Name':'eGaz', 'Header':'eGaz'}}"), String.Format("{{'Name':'ShowCoordCalculator', 'Header':'_Coordinate calculator'}}")
@@ -55,7 +61,7 @@ namespace BioLink.Client.Gazetteer {
             ShowSingleton("Coordinate Calculator", () => { return new CoordinateCalculator(); });
         }
 
-        private void ShowEGazConverter() {
+        public void ShowEGazConverter() {
             if (_gazConverter == null) {
                 _gazConverter = new GazetteerConverter();
                 _gazConverter.Owner = PluginManager.Instance.ParentWindow;
@@ -66,7 +72,18 @@ namespace BioLink.Client.Gazetteer {
             }
 
             _gazConverter.Show();
+        }
 
+        public void ShowNearestNamedPlace() {
+            if (_nearestNamePlace== null) {
+                _nearestNamePlace = new FindNearestNamePlace(this);
+                _nearestNamePlace.Owner = PluginManager.Instance.ParentWindow;
+                _nearestNamePlace.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                _nearestNamePlace.Closed += new EventHandler((source, e) => {
+                    _nearestNamePlace = null;
+                });
+            }
+            _nearestNamePlace.Show();
         }
 
         public override bool RequestShutdown() {
@@ -94,6 +111,29 @@ namespace BioLink.Client.Gazetteer {
 
         public override bool CanSelect<T>() {
             return typeof(T).IsAssignableFrom(typeof(PlaceName));
+        }
+
+        public GazetteerService CurrentGazetteer {
+            get {
+                if (_gazetter != null) {
+                    return (_gazetter.Content as Gazetteer).Service;
+                }
+
+                return null;
+            }
+        }
+
+        public PlaceName CurrentSelectedPlace {
+            get {
+                if (_gazetter != null) {
+                    var gaz = _gazetter.Content as Gazetteer;
+                    if (gaz != null) {
+                        return gaz.SelectedPlace;
+                    }
+                }
+
+                return null;
+            }
         }
 
         public override void Select<T>(LookupOptions options, Action<SelectionResult> success) {

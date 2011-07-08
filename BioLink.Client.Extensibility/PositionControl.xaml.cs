@@ -92,26 +92,26 @@ namespace BioLink.Client.Extensibility {
             this.Longitude = lon.Value;
         }
 
-        public bool HeaderLabels {
-            get {
-                return grid.ColumnDefinitions[1].Width.Value != 0;
-            }
+        //public bool HeaderLabels {
+        //    get {
+        //        return grid.ColumnDefinitions[1].Width.Value != 0;
+        //    }
 
-            set {
+        //    set {
 
-                if (value) {
-                    grid.RowDefinitions[0].Height = new GridLength(18);
-                    grid.RowDefinitions[1].Height = new GridLength(2);
-                    grid.ColumnDefinitions[1].Width = new GridLength(4);
-                    lblLon.Visibility = System.Windows.Visibility.Collapsed;
-                } else {
-                    grid.RowDefinitions[0].Height = new GridLength(0);
-                    grid.RowDefinitions[1].Height = new GridLength(0);
-                    grid.ColumnDefinitions[1].Width = new GridLength(68);
-                    lblLon.Visibility = System.Windows.Visibility.Visible;
-                }
-            }
-        }
+        //        if (value) {
+        //            grid.RowDefinitions[0].Height = new GridLength(18);
+        //            grid.RowDefinitions[1].Height = new GridLength(2);
+        //            grid.ColumnDefinitions[1].Width = new GridLength(4);
+        //            lblLon.Visibility = System.Windows.Visibility.Collapsed;
+        //        } else {
+        //            grid.RowDefinitions[0].Height = new GridLength(0);
+        //            grid.RowDefinitions[1].Height = new GridLength(0);
+        //            grid.ColumnDefinitions[1].Width = new GridLength(68);
+        //            lblLon.Visibility = System.Windows.Visibility.Visible;
+        //        }
+        //    }
+        //}
 
         public LatLongInput.LatLongMode Mode {
             get { return lon.Mode; }
@@ -169,6 +169,35 @@ namespace BioLink.Client.Extensibility {
             }
 
         }
+
+        public static readonly DependencyProperty ShowHeaderLabelsProperty = DependencyProperty.Register("ShowHeaderLabels", typeof(bool), typeof(PositionControl), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnShowHeaderLabelsChanged));
+
+        public bool ShowHeaderLabels {
+            get { return (bool)GetValue(ShowHeaderLabelsProperty); }
+            set { SetValue(ShowHeaderLabelsProperty, value); }
+        }
+
+        private static void OnShowHeaderLabelsChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+
+            var control = obj as PositionControl;
+            if (control != null) {
+                bool val = (bool)args.NewValue;
+
+                if (val) {
+                    control.grid.RowDefinitions[0].Height = new GridLength(18);
+                    control.grid.RowDefinitions[1].Height = new GridLength(2);
+                    control.grid.ColumnDefinitions[1].Width = new GridLength(4);
+                    control.lblLon.Visibility = System.Windows.Visibility.Collapsed;
+                } else {
+                    control.grid.RowDefinitions[0].Height = new GridLength(0);
+                    control.grid.RowDefinitions[1].Height = new GridLength(0);
+                    control.grid.ColumnDefinitions[1].Width = new GridLength(68);
+                    control.lblLon.Visibility = System.Windows.Visibility.Visible;
+                }
+            }
+
+        }
+
 
         private void btnEgaz_Click(object sender, RoutedEventArgs e) {
             LaunchGazetteer();
