@@ -186,7 +186,10 @@ namespace BioLink.Client.Material {
             if (placeName.PlaceNameType == PlaceNameType.OffsetAndDirection) {
                 place = string.Format("{0} {1} {2} of {3}", placeName.Offset, placeName.Units, placeName.Direction, placeName.Name);
             }
-            if (this.Question(string.Format("Do you wish to update the locality from '{0}' to '{1}'?", _viewModel.Locality, place), "Update locality?")) {
+
+            var updateLocality = OptionalQuestion.AskOrDefault(this.FindParentWindow(), string.Format("Do you wish to update the locality from '{0}' to '{1}'?", _viewModel.Locality, place), "Material.UpdateLocalityFromEGaz", "Update Locality?");
+
+            if (updateLocality) {
                 if (placeName.PlaceNameType == PlaceNameType.OffsetAndDirection) {
                     optNearestPlace.IsChecked = true;
                     _viewModel.Locality = placeName.Name;

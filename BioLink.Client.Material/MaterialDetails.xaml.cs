@@ -84,16 +84,7 @@ namespace BioLink.Client.Material {
 
         void txtIdentification_ObjectIDChanged(object source, int? objectID) {
 
-            var askQuestion = Config.GetUser<bool>(User, "Material.ShowRecordIDHistoryQuestion", true);
-
-            bool addHistory = false;
-            if (askQuestion) {
-                var frm = new IdentificationHistoryQuestion();
-                frm.Owner = this.FindParentWindow();
-                addHistory = frm.ShowDialog().ValueOrFalse();
-            } else {
-                addHistory = Config.GetUser(User, "Material.DefaultRecordIDHistory", false);
-            }
+            var addHistory = OptionalQuestion.AskOrDefault(this.FindParentWindow(), "Do you wish to record a history of this identification change?", "Material.DefaultRecordIDHistory", "Record ID history?");
 
             if (addHistory) {
                 _historyControl.AddHistoryFromMaterial(_viewModel);

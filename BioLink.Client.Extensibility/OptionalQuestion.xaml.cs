@@ -20,12 +20,28 @@ namespace BioLink.Client.Extensibility {
     /// <summary>
     /// Interaction logic for OptionalQuestionWindow.xaml
     /// </summary>
-    public partial class OptionalQuestionWindow : Window {
+    public partial class OptionalQuestion : Window {
 
-        public OptionalQuestionWindow(string question) {
+        public static bool AskOrDefault(Window parentWindow, string question, string configKey, string windowTitle) {
+            var user = PluginManager.Instance.User;
+            var askQuestion = Config.GetUser(user, configKey + ".AskQuestion", true);
+            if (askQuestion) {
+                var frm = new OptionalQuestion(question, configKey);
+                frm.Owner = parentWindow;
+                frm.Title = windowTitle;
+                frm.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                return frm.ShowDialog().ValueOrFalse();
+            } else {
+                return Config.GetUser(user, configKey, true);
+            }
+        }
+
+        public OptionalQuestion(string question, string configKey) {
             InitializeComponent();
             this.User = PluginManager.Instance.User;
             this.DataContext = this;
+            lblQuestion.Text = question;
+            this.ConfigurationKey = configKey;
         }
 
         public ImageSource MessageBoxImage {
@@ -45,11 +61,9 @@ namespace BioLink.Client.Extensibility {
         }
 
         protected void Remember(bool remember) {
-            Config.SetUser(User, "Material.ShowRecordIDHistoryQuestion", false);
-            Config.SetUser(User, "Material.DefaultRecordIDHistory", remember);
+            Config.SetUser(User, ConfigurationKey + ".AskQuestion", false);
+            Config.SetUser(User, ConfigurationKey, remember);
         }
-
-        protected User User { get; private set; }
 
         private void btnYes_Click(object sender, RoutedEventArgs e) {
             this.DialogResult = true;
@@ -57,6 +71,12 @@ namespace BioLink.Client.Extensibility {
                 Remember(true);
             }
         }
+
+        protected User User { get; private set; }
+
+        protected string ConfigurationKey { get; private set; }
+
+        protected string Question { get; set; }
 
     }
 
