@@ -17,7 +17,9 @@
         </Grid>
         <CheckBox Content="Ask to add an Identification History when material identificaton changes?" Height="16" HorizontalAlignment="Left" Margin="18,12,0,0" Name="chkAskIDHistoryQuestion" VerticalAlignment="Top" Width="510" />
         <CheckBox Content="If not, should an Identification history be created automatically?" Height="16" HorizontalAlignment="Left" Margin="49,34,0,0" Name="chkDefaultIDHistoryCreation" VerticalAlignment="Top" Width="473" />
-        <Label Content="Maximum number of search results:" Height="28" HorizontalAlignment="Left" Margin="12,76,0,0" Name="label1" VerticalAlignment="Top" Width="212" />
-        <TextBox Height="23" HorizontalAlignment="Left" Margin="230,76,0,0" Name="txtMaxSearchResults" VerticalAlignment="Top" Width="81" />
+        <Label Content="Maximum number of search results:" Height="28" HorizontalAlignment="Left" Margin="9,138,0,0" Name="label1" VerticalAlignment="Top" Width="212" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="227,138,0,0" Name="txtMaxSearchResults" VerticalAlignment="Top" Width="81" />
+        <CheckBox Content="Ask to update site locality when a place name is selected from eGaz?" Height="16" HorizontalAlignment="Left" Margin="12,56,0,0" Name="chkAskUpdateLocality" VerticalAlignment="Top" Width="510" />
+        <CheckBox Content="If not, should the locality be updated automatically?" Height="16" HorizontalAlignment="Left" Margin="43,78,0,0" Name="chkUpdateLocality" VerticalAlignment="Top" Width="473" />
     </Grid>
 </Window>

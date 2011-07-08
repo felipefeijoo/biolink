@@ -24,8 +24,12 @@ namespace BioLink.Client.Tools {
         public AdvancedPreferences() {
             InitializeComponent();
 
-            chkAskIDHistoryQuestion.IsChecked = Config.GetUser(User, "Material.ShowRecordIDHistoryQuestion", true);
+            chkAskIDHistoryQuestion.IsChecked = Config.GetUser(User, "Material.DefaultRecordIDHistory.AskQuestion", true);
             chkDefaultIDHistoryCreation.IsChecked = Config.GetUser(User, "Material.DefaultRecordIDHistory", true);
+
+            chkAskUpdateLocality.IsChecked = Config.GetUser(User, "Material.UpdateLocalityFromEGaz.AskQuestion", true);
+            chkUpdateLocality.IsChecked = Config.GetUser(User, "Material.UpdateLocalityFromEGaz", true);
+
             txtMaxSearchResults.Text = Config.GetUser(User, "SearchResults.MaxSearchResults", 2000).ToString();
         }
 
@@ -43,8 +47,12 @@ namespace BioLink.Client.Tools {
         }
 
         private void SavePreferences() {
-            Config.SetUser(User, "Material.ShowRecordIDHistoryQuestion", chkAskIDHistoryQuestion.IsChecked.ValueOrFalse());
+            Config.SetUser(User, "Material.DefaultRecordIDHistory.AskQuestion", chkAskIDHistoryQuestion.IsChecked.ValueOrFalse());
             Config.SetUser(User, "Material.DefaultRecordIDHistory", chkDefaultIDHistoryCreation.IsChecked.ValueOrFalse());
+
+            Config.SetUser(User, "Material.UpdateLocalityFromEGaz.AskQuestion", chkAskUpdateLocality.IsChecked.ValueOrFalse());
+            Config.SetUser(User, "Material.UpdateLocalityFromEGaz", chkUpdateLocality.IsChecked.ValueOrFalse());
+
             int maxResults = 0;
             if (Int32.TryParse(txtMaxSearchResults.Text, out maxResults)) {
                 Config.SetUser(User, "SearchResults.MaxSearchResults", maxResults);

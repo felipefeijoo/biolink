@@ -62,9 +62,6 @@
     <Compile Include="IdentificationHistoryControl.xaml.cs">
       <DependentUpon>IdentificationHistoryControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="IdentificationHistoryQuestion.xaml.cs">
-      <DependentUpon>IdentificationHistoryQuestion.xaml</DependentUpon>
-    </Compile>
     <Compile Include="MaterialDatabaseAction.cs" />
     <Compile Include="MaterialDetails.xaml.cs">
       <DependentUpon>MaterialDetails.xaml</DependentUpon>
@@ -179,10 +176,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="IdentificationHistoryControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="IdentificationHistoryQuestion.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
