@@ -81,7 +81,7 @@ namespace BioLink.Client.Maps {
                 if (_distanceAnchor != null) {
                     // var distance = _distanceAnchor.Distance(_lastMousePos);                    
                     string from = "drop anchor";
-                    string units = "Km";
+                    var units = DistanceUnits.Kilometers;
                     if (!string.IsNullOrEmpty(_anchorCaption)) {
                         from = _anchorCaption;
                     }

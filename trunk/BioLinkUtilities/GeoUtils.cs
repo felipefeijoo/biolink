@@ -105,7 +105,7 @@ namespace BioLink.Client.Utilities {
             ndRadLong2 = nsLong2 * (ndPi / 180) * -1;  // The * -1 is a bug fix
 
             // Get distance between the points in radians
-            nsDistance = GreatCircleArcLength(nsLat1, nsLong1, nsLat2, nsLong2, "R");
+            nsDistance = GreatCircleArcLength(nsLat1, nsLong1, nsLat2, nsLong2, DistanceUnits.None);
 
             if (nsDistance == 0) { // the points are very close together
                 return "-";  // Return nothing
@@ -157,8 +157,18 @@ namespace BioLink.Client.Utilities {
             }
         }
 
-        //BIOLINKCUTILS_API DWORD WINAPI BLGreatCircleArcLength( float fLat1, float fLong1, float fLat2, float fLong2, BSTR bszUnits, float *fRet ) {
-        public static double GreatCircleArcLength(double fLat1, double fLong1, double fLat2, double fLong2, string bszUnits) {
+        public static double GreatCircleArcLength(double fLat1, double fLong1, double fLat2, double fLong2, string units) {
+            var distUnits = DistanceUnits.None;
+            if (units.StartsWith("k", StringComparison.CurrentCultureIgnoreCase)) {
+                distUnits = DistanceUnits.Kilometers;
+            } else if (units.StartsWith("m", StringComparison.CurrentCultureIgnoreCase)) {
+                distUnits = DistanceUnits.Miles;
+            }
+
+            return GreatCircleArcLength(fLat1, fLong1, fLat2, fLong2, distUnits);
+        }
+        
+        public static double GreatCircleArcLength(double fLat1, double fLong1, double fLat2, double fLong2, DistanceUnits units) {
             double dfRadLat1, dfRadLat2;
             double dfRadDeltaLong;
             double dfCosZ, dfACosZ;
@@ -179,13 +189,15 @@ namespace BioLink.Client.Utilities {
                     return 0;
                 } else {
                     dfACosZ = Math.Atan((dfCosZ * -1) / dfDiv) + 1.5708; // Magic Number ?			
-                    switch (Char.ToLower(bszUnits[0])) {
-                        case 'k':
+                    switch (units) {
+                        case DistanceUnits.Kilometers:
                             return (double)dfACosZ * (float)6371.1;	// Mean radius of Earth is 6371.1 KM
-                        case 'm':
+                        case DistanceUnits.Miles:
                             return (double)dfACosZ * (float)3959;	// Mean radius of Earth is 3959 Miles
-                        default:
+                        case DistanceUnits.None:
                             return (double)dfACosZ;					// Users can apply their own Mean Radius to get different units
+                        default:
+                            throw new Exception("Unhandled distance unit type: " + units.ToString());
                     }
                 }
             }
@@ -726,6 +738,12 @@ namespace BioLink.Client.Utilities {
         Point = 1,
         Line = 2,
         Box = 3
+    }
+
+    public enum DistanceUnits {
+        Kilometers,
+        Miles,
+        None
     }
 
     public class DirectionRange {

@@ -64,15 +64,15 @@ namespace BioLink.Client.Gazetteer {
         }
 
         private void optDegMinSec_Checked(object sender, RoutedEventArgs e) {
-            ctlLatLong.Mode = LatLongInput.LatLongMode.DegreesMinutesSeconds;
+            ctlLatLong.Mode = LatLongMode.DegreesMinutesSeconds;
         }
 
         private void optDecDeg_Checked(object sender, RoutedEventArgs e) {
-            ctlLatLong.Mode = LatLongInput.LatLongMode.DecimalDegrees;
+            ctlLatLong.Mode = LatLongMode.DecimalDegrees;
         }
 
         private void optDegDecimalMin_Checked(object sender, RoutedEventArgs e) {
-            ctlLatLong.Mode = LatLongInput.LatLongMode.DegreesDecimalMinutes;
+            ctlLatLong.Mode = LatLongMode.DegreesDecimalMinutes;
         }
 
 

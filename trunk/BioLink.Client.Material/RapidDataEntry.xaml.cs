@@ -113,7 +113,7 @@ namespace BioLink.Client.Material {
             grpSiteVisits.Content = new SiteVisitRDEControl(User);
             grpMaterial.Content = new MaterialRDEControl(User);
 
-            var latLongMode = Config.GetUser(User, CONFIG_LAT_LONG_FORMAT, LatLongInput.LatLongMode.DegreesMinutesSeconds);
+            var latLongMode = Config.GetUser(User, CONFIG_LAT_LONG_FORMAT, LatLongMode.DegreesMinutesSeconds);
             SetLatLongFormat(latLongMode);
 
             // Command Bindings...            
@@ -859,29 +859,29 @@ namespace BioLink.Client.Material {
 
         }
 
-        private void SetLatLongFormat(LatLongInput.LatLongMode mode) {
+        private void SetLatLongFormat(LatLongMode mode) {
             var siteControl = grpSites.Content as SiteRDEControl;
             if (siteControl != null) {
                 siteControl.SetLatLongFormat(mode);
 
-                mnuLLDD.IsChecked = mode == LatLongInput.LatLongMode.DecimalDegrees;
-                mnuLLDMS.IsChecked = mode == LatLongInput.LatLongMode.DegreesMinutesSeconds;
-                mnuLLDDM.IsChecked = mode == LatLongInput.LatLongMode.DegreesDecimalMinutes;
+                mnuLLDD.IsChecked = mode == LatLongMode.DecimalDegrees;
+                mnuLLDMS.IsChecked = mode == LatLongMode.DegreesMinutesSeconds;
+                mnuLLDDM.IsChecked = mode == LatLongMode.DegreesDecimalMinutes;
 
                 Config.SetUser(User, CONFIG_LAT_LONG_FORMAT, mode);
             }
         }
 
         private void mnuLLDMS_Click(object sender, RoutedEventArgs e) {
-            SetLatLongFormat(LatLongInput.LatLongMode.DegreesMinutesSeconds);
+            SetLatLongFormat(LatLongMode.DegreesMinutesSeconds);
         }
 
         private void mnuLLDD_Click(object sender, RoutedEventArgs e) {
-            SetLatLongFormat(LatLongInput.LatLongMode.DecimalDegrees);
+            SetLatLongFormat(LatLongMode.DecimalDegrees);
         }
 
         private void mnuLLDDM_Click(object sender, RoutedEventArgs e) {
-            SetLatLongFormat(LatLongInput.LatLongMode.DegreesDecimalMinutes);
+            SetLatLongFormat(LatLongMode.DegreesDecimalMinutes);
         }
 
         private void mnuLockAtStart_Click(object sender, RoutedEventArgs e) {

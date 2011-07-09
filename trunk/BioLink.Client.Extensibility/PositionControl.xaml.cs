@@ -113,7 +113,7 @@ namespace BioLink.Client.Extensibility {
         //    }
         //}
 
-        public LatLongInput.LatLongMode Mode {
+        public LatLongMode Mode {
             get { return lon.Mode; }
 
             set {

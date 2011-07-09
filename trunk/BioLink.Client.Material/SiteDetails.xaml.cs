@@ -90,9 +90,9 @@ namespace BioLink.Client.Material {
 
             txtPoliticalRegion.BindUser(user, LookupType.Region);
 
-            string llmode = Config.GetUser(User, "SiteDetails.LatLongFormat", LatLongInput.LatLongMode.DegreesMinutesSeconds.ToString());
+            string llmode = Config.GetUser(User, "SiteDetails.LatLongFormat", LatLongMode.DegreesMinutesSeconds.ToString());
             if (!String.IsNullOrEmpty(llmode)) {
-                LatLongInput.LatLongMode mode = (LatLongInput.LatLongMode)Enum.Parse(typeof(LatLongInput.LatLongMode), llmode);
+                LatLongMode mode = (LatLongMode)Enum.Parse(typeof(LatLongMode), llmode);
                 SwitchLatLongFormat(mode);
             }
 
@@ -316,13 +316,13 @@ namespace BioLink.Client.Material {
             if (mnu != null) {
                 var lltype = mnu.Tag as string;
                 if (lltype != null) {
-                    LatLongInput.LatLongMode mode = (LatLongInput.LatLongMode)Enum.Parse(typeof(LatLongInput.LatLongMode), lltype);
+                    LatLongMode mode = (LatLongMode)Enum.Parse(typeof(LatLongMode), lltype);
                     SwitchLatLongFormat(mode);
                 }
             }
         }
 
-        private void SwitchLatLongFormat(LatLongInput.LatLongMode latLongMode) {
+        private void SwitchLatLongFormat(LatLongMode latLongMode) {
             ctlX1.Mode = latLongMode;
             ctlX2.Mode = latLongMode;
             ctlY1.Mode = latLongMode;
@@ -333,13 +333,13 @@ namespace BioLink.Client.Material {
             mnuDMS.IsChecked = false;
 
             switch (latLongMode) {
-                case LatLongInput.LatLongMode.DecimalDegrees:
+                case LatLongMode.DecimalDegrees:
                     mnuDecimalDegrees.IsChecked = true;
                     break;
-                case LatLongInput.LatLongMode.DegreesDecimalMinutes:
+                case LatLongMode.DegreesDecimalMinutes:
                     mnuDDM.IsChecked = true;
                     break;
-                case LatLongInput.LatLongMode.DegreesMinutesSeconds:
+                case LatLongMode.DegreesMinutesSeconds:
                     mnuDMS.IsChecked = true;
                     break;
             }

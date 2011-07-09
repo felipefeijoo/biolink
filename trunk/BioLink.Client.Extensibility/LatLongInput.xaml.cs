@@ -339,14 +339,6 @@ namespace BioLink.Client.Extensibility {
             Longitude
         }
 
-        public enum LatLongMode {
-            DegreesMinutesSeconds,
-            DecimalDegrees,
-            DegreesDecimalMinutes,
-            DegreesDecimalMinutesDirection
-        }
-
-
         internal void Clear() {
             var defaultLongDir = Config.GetGlobal("LatLong.Default.Longitude.Direction", "E");
             var defaultLatDir = Config.GetGlobal("LatLong.Default.Latitude.Direction", "S");
@@ -373,4 +365,12 @@ namespace BioLink.Client.Extensibility {
     }
 
     public delegate void CoordinateValueChangedHandler(object source, double value);
+
+    public enum LatLongMode {
+        DegreesMinutesSeconds,
+        DecimalDegrees,
+        DegreesDecimalMinutes,
+        DegreesDecimalMinutesDirection
+    }
+
 }
