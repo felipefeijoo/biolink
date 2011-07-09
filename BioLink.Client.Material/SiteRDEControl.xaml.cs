@@ -68,7 +68,7 @@ namespace BioLink.Client.Material {
             }
         }
 
-        public void SetLatLongFormat(LatLongInput.LatLongMode mode) {
+        public void SetLatLongFormat(LatLongMode mode) {
             this.ctlPosition.Mode = mode;
         }
 

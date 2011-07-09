@@ -35,8 +35,9 @@ namespace BioLink.Client.Gazetteer {
 
             lblGaz.Content = "Using " + Service.FileName;
 
-            var places = Service.GetPlaceTypes();
-            cmbPlaceType.ItemsSource = places;
+            cmbPlaceType.IsEnabled = false;
+            chkRestrictPlaceType.Checked += new RoutedEventHandler(chkRestrictPlaceType_Checked);
+            chkRestrictPlaceType.Unchecked += new RoutedEventHandler(chkRestrictPlaceType_Unchecked);
 
             if (plugin.CurrentSelectedPlace != null) {
                 var selected = plugin.CurrentSelectedPlace;
@@ -45,6 +46,25 @@ namespace BioLink.Client.Gazetteer {
             }
 
             ListViewDragHelper.Bind(lstResults, CreateDragData);
+
+            var lastMode = Config.GetUser<LatLongMode>(PluginManager.Instance.User, "Gazetteer.NearestNamePlace.LatLongMode", LatLongMode.DegreesMinutesSeconds);
+            SetLatLongMode(lastMode);
+            SetDistanceUnits(Config.GetUser<DistanceUnits>(PluginManager.Instance.User, "Gazetteer.NearestNamePlace.DistanceUnits", DistanceUnits.Kilometers));
+            
+        }
+
+        void chkRestrictPlaceType_Unchecked(object sender, RoutedEventArgs e) {
+            cmbPlaceType.IsEnabled = false;
+        }
+
+        void chkRestrictPlaceType_Checked(object sender, RoutedEventArgs e) {
+            using (new OverrideCursor(Cursors.Wait)) {
+                if (!cmbPlaceType.HasItems) {
+                    var places = Service.GetPlaceTypes();
+                    cmbPlaceType.ItemsSource = places;
+                }
+            }
+            cmbPlaceType.IsEnabled = true;
         }
 
         private DataObject CreateDragData(ViewModelBase dragged) {
@@ -129,7 +149,7 @@ namespace BioLink.Client.Gazetteer {
                     var list = Service.GetPlacesInBoundedBox(x1, y1, x2, y2, division);
                     var model = new List<PlaceNameViewModel>( list.Select((m) => {
                         var vm = new PlaceNameViewModel(m);
-                        vm.Distance = GeoUtils.GreatCircleArcLength(m.Latitude, m.Longitude, latitude, longitude, "km");
+                        vm.Distance = GeoUtils.GreatCircleArcLength(m.Latitude, m.Longitude, latitude, longitude, DistanceUnits);
                         string direction = "";
                         var numPoints = (vm.Distance < 10 ? 16 : 32);
                         direction = GeoUtils.GreatCircleArcDirection(m.Latitude, m.Longitude, latitude, longitude, numPoints);
@@ -141,7 +161,9 @@ namespace BioLink.Client.Gazetteer {
                         return (int) (o1.Distance - o2.Distance);
                     }));
 
-                    model.RemoveRange(maxResults, model.Count - maxResults);
+                    if (model.Count > maxResults) {
+                        model.RemoveRange(maxResults, model.Count - maxResults);
+                    }
 
                     lstResults.InvokeIfRequired(() => {
                         lstResults.ItemsSource = model;
@@ -150,9 +172,9 @@ namespace BioLink.Client.Gazetteer {
                     });
 
                     if (!Cancelled) {
-                        StatusMessage("{0} places retrieved.", list.Count);
+                        StatusMessage("{0} places retrieved.", model.Count);
                     } else {
-                        StatusMessage("{0} places retrieved (Cancelled).", list.Count);
+                        StatusMessage("{0} places retrieved (Cancelled).", model.Count);
                     }
                     
                 } finally {
@@ -184,17 +206,53 @@ namespace BioLink.Client.Gazetteer {
         private void ShowOnMap() {
             var map = PluginManager.Instance.GetMap();
             if (map != null) {
-                var label = GeoUtils.FormatCoordinates(ctlPosition.Latitude, ctlPosition.Longitude);
-                map.Show();                
-                var set = new ListMapPointSet("Named places near " + label);                
-                foreach (PlaceNameViewModel vm in lstResults.ItemsSource) {
-                    set.Add(new MapPoint { Label = vm.Name, Latitude = vm.Latitude, Longitude = vm.Longitude });
-                }
+                if (lstResults.ItemsSource != null) {
+                    var label = GeoUtils.FormatCoordinates(ctlPosition.Latitude, ctlPosition.Longitude);
+                    map.Show();                
+                    var set = new ListMapPointSet("Named places near " + label);                
+                    foreach (PlaceNameViewModel vm in lstResults.ItemsSource) {
+                        set.Add(new MapPoint { Label = vm.Name, Latitude = vm.Latitude, Longitude = vm.Longitude });
+                    }
 
-                map.PlotPoints(set);
-                map.DropAnchor(ctlPosition.Longitude, ctlPosition.Latitude, "");
+                    map.PlotPoints(set);
+                    map.DropAnchor(ctlPosition.Longitude, ctlPosition.Latitude, "");
+                }
             }
         }
+
+
+        private void mnuPositionMode_Click(object sender, RoutedEventArgs e) {
+            var item = sender as MenuItem;
+            if (item != null) {
+                SetLatLongMode((LatLongMode)item.Tag);
+            }
+        }
+
+        private void SetLatLongMode(LatLongMode mode) {
+            ctlPosition.Mode = mode;
+            mnuDecDeg.IsChecked = ((LatLongMode) mnuDecDeg.Tag) == mode;
+            mnuDegDecMin.IsChecked = ((LatLongMode)mnuDegDecMin.Tag) == mode; ;
+            mnuDegDecMinDir.IsChecked = ((LatLongMode)mnuDegDecMinDir.Tag) == mode; ;
+            mnuDMS.IsChecked = ((LatLongMode)mnuDMS.Tag) == mode;
+            Config.SetUser(PluginManager.Instance.User, "Gazetteer.NearestNamePlace.LatLongMode", mode);
+        }
+
+        protected DistanceUnits DistanceUnits { get; private set; }
+
+        private void mnuKilometers_Click(object sender, RoutedEventArgs e) {
+            var item = sender as MenuItem;
+            if (item != null) {
+                SetDistanceUnits((DistanceUnits)item.Tag);
+            }
+        }
+
+        private void SetDistanceUnits(DistanceUnits units) {
+            this.DistanceUnits = units;
+            Config.SetUser<DistanceUnits>(PluginManager.Instance.User, "Gazetteer.NearestNamePlace.DistanceUnits", units);
+            mnuKilometers.IsChecked = units == Utilities.DistanceUnits.Kilometers;
+            mnuMiles.IsChecked = units == Utilities.DistanceUnits.Miles;
+        }
+
 
     }
 }
