@@ -15,11 +15,12 @@
             <Button Content="_Cancel" Height="23" HorizontalAlignment="Right" Margin="0,7,6,0" Name="btnCancel" VerticalAlignment="Top" Width="75" IsCancel="True" Click="btnCancel_Click" />
             <Button Content="_Ok" Height="23" HorizontalAlignment="Right" Margin="0,7,87,0" Name="btnOK" VerticalAlignment="Top" Width="75" Click="btnOK_Click" />
         </Grid>
-        <CheckBox Content="Ask to add an Identification History when material identificaton changes?" Height="16" HorizontalAlignment="Left" Margin="18,12,0,0" Name="chkAskIDHistoryQuestion" VerticalAlignment="Top" Width="510" />
-        <CheckBox Content="If not, should an Identification history be created automatically?" Height="16" HorizontalAlignment="Left" Margin="49,34,0,0" Name="chkDefaultIDHistoryCreation" VerticalAlignment="Top" Width="473" />
+        <CheckBox Content="Ask to add an Identification History when material identificaton changes?" Height="16" HorizontalAlignment="Left" Margin="12,12,0,0" Name="chkAskIDHistoryQuestion" VerticalAlignment="Top" Width="510" />
+        <CheckBox Content="If not, should an Identification history be created automatically?" Height="16" HorizontalAlignment="Left" Margin="43,34,0,0" Name="chkDefaultIDHistoryCreation" VerticalAlignment="Top" Width="473" />
         <Label Content="Maximum number of search results:" Height="28" HorizontalAlignment="Left" Margin="9,138,0,0" Name="label1" VerticalAlignment="Top" Width="212" />
         <TextBox Height="23" HorizontalAlignment="Left" Margin="227,138,0,0" Name="txtMaxSearchResults" VerticalAlignment="Top" Width="81" />
         <CheckBox Content="Ask to update site locality when a place name is selected from eGaz?" Height="16" HorizontalAlignment="Left" Margin="12,56,0,0" Name="chkAskUpdateLocality" VerticalAlignment="Top" Width="510" />
         <CheckBox Content="If not, should the locality be updated automatically?" Height="16" HorizontalAlignment="Left" Margin="43,78,0,0" Name="chkUpdateLocality" VerticalAlignment="Top" Width="473" />
+        <CheckBox Content="Check for duplicate accession numbers when saving new material?" Height="16" HorizontalAlignment="Left" Margin="18,172,0,0" Name="chkCheckDuplicateAccessionNumbers" VerticalAlignment="Top" Width="510" />
     </Grid>
 </Window>

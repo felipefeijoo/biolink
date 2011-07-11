@@ -31,6 +31,8 @@ namespace BioLink.Client.Tools {
             chkUpdateLocality.IsChecked = Config.GetUser(User, "Material.UpdateLocalityFromEGaz", true);
 
             txtMaxSearchResults.Text = Config.GetUser(User, "SearchResults.MaxSearchResults", 2000).ToString();
+
+            chkCheckDuplicateAccessionNumbers.IsChecked = Config.GetGlobal("Material.CheckUniqueAccessionNumbers", true);
         }
 
         public User User {
@@ -57,6 +59,8 @@ namespace BioLink.Client.Tools {
             if (Int32.TryParse(txtMaxSearchResults.Text, out maxResults)) {
                 Config.SetUser(User, "SearchResults.MaxSearchResults", maxResults);
             }
+
+            Config.SetGlobal("Material.CheckUniqueAccessionNumbers", chkCheckDuplicateAccessionNumbers.IsChecked.GetValueOrDefault(true));
         }
     }
 }
