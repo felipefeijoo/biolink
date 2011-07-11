@@ -35,17 +35,17 @@
 
                         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,14,0" Background="{TemplateBinding HeaderBackground}" >
                             <Label Content="{TemplateBinding CurrentPosition}" FontWeight="{TemplateBinding HeaderFontWeight}" Foreground="{TemplateBinding HeaderForeground}" />
-                            <Button Height="18" Width="18" Margin="2,0,0,0" Command="{x:Static ext:ItemsGroupBox.SelectPrevious}" Focusable="False">
+                            <Button Height="18" Width="18" Margin="2,0,0,0" Command="{x:Static ext:ItemsGroupBox.SelectPrevious}" Focusable="False" ToolTip="Previous">
                                 <Image Source="/BioLink.Client.Extensibility;component/images/LeftArrowSmall.png" UseLayoutRounding="true" SnapsToDevicePixels="true" Stretch="None" />
                             </Button>
-                            <Button Height="18" Width="18" Margin="2,0,0,0" Visibility="{TemplateBinding EditButtonVisibility}" Command="{x:Static ext:ItemsGroupBox.Unlock}" Focusable="False">
+                            <Button Height="18" Width="18" Margin="2,0,0,0" Visibility="{TemplateBinding EditButtonVisibility}" Command="{x:Static ext:ItemsGroupBox.Unlock}" Focusable="False" ToolTip="Unlock for editing">
                                 <Image Source="/BioLink.Client.Extensibility;component/images/EditSmall.png" UseLayoutRounding="true" SnapsToDevicePixels="true" Stretch="None" />
                             </Button>
-                            <Button Height="18" Width="18" Margin="2,0,0,0" Visibility="{TemplateBinding AddNewButtonVisibility}" Command="{x:Static ext:ItemsGroupBox.AddNew}" Focusable="False">
+                            <Button Height="18" Width="18" Margin="2,0,0,0" Visibility="{TemplateBinding AddNewButtonVisibility}" Command="{x:Static ext:ItemsGroupBox.AddNew}" Focusable="False" ToolTip="Add new">
                                 <Image Source="/BioLink.Client.Extensibility;component/images/AddNewSmall.png" UseLayoutRounding="true" SnapsToDevicePixels="true" Stretch="None" />
                             </Button>
                             <Button Height="18" Width="18" Margin="2,0,2,0" Command="{x:Static ext:ItemsGroupBox.SelectNext}" Focusable="False">
-                                <Image Source="/BioLink.Client.Extensibility;component/images/RightArrowSmall.png" UseLayoutRounding="true" SnapsToDevicePixels="true" Stretch="None" />
+                                <Image Source="/BioLink.Client.Extensibility;component/images/RightArrowSmall.png" UseLayoutRounding="true" SnapsToDevicePixels="true" Stretch="None" ToolTip="Next"/>
                             </Button>
                         </StackPanel>
                     </Grid>

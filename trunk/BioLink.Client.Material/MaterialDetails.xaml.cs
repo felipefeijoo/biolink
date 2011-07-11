@@ -82,6 +82,28 @@ namespace BioLink.Client.Material {
             }
         }
 
+        public override bool Validate(List<string> messages) {
+
+            if (Config.GetGlobal("Material.CheckUniqueAccessionNumbers", true)) {
+                if (!string.IsNullOrWhiteSpace(_viewModel.AccessionNumber)) {
+
+                    var service = new MaterialService(User);
+
+                    var candidateIds = service.GetMaterialIdsByAccessionNo(_viewModel.AccessionNumber);
+                    var firstDuplicate = candidateIds.FirstOrDefault((id) => {
+                        return id != _viewModel.MaterialID;
+                    });
+
+                    if (firstDuplicate > 0) {
+                        messages.Add("There is already material in the database with Accession number " + _viewModel.AccessionNumber + " (Material ID " + firstDuplicate + ")");
+                    }
+
+                }
+            }
+
+            return messages.Count == 0;
+        }
+
         void txtIdentification_ObjectIDChanged(object source, int? objectID) {
 
             if (!_viewModel.IsTemplate) {

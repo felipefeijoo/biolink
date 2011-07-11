@@ -61,6 +61,35 @@ namespace BioLink.Client.Material {
 
         }
 
+        public override bool Validate(List<string> messages) {
+            if (Config.GetGlobal("Material.CheckUniqueAccessionNumbers", true)) {                
+                if (MaterialControl != null) {
+                    var material = grpMaterial.Items.Select((vm) => {
+                        return vm as RDEMaterialViewModel;
+                    });
+                    if (material.Count() > 0) {
+                        var service = new MaterialService(User);
+                        List<string> accessionNumbers = new List<String>();
+
+                        foreach (RDEMaterialViewModel m in material) {                                   
+                            // Check only new material
+                            if (m.MaterialID < 0 && !string.IsNullOrWhiteSpace(m.AccessionNo)) {
+                                if (accessionNumbers.Contains(m.AccessionNo)) {
+                                    messages.Add("Some of the material you are adding share the same accession number (" + m.AccessionNo + ")");
+                                }
+                                var candidateIds = service.GetMaterialIdsByAccessionNo(m.AccessionNo);
+                                if (candidateIds.Count > 0) {
+                                    messages.Add("There is already material in the database with Accession number " + m.AccessionNo + " (Material ID " + candidateIds[0] + ")");
+                                }
+
+                                accessionNumbers.Add(m.AccessionNo);
+                            }
+                        }
+                    }
+                }
+            }
+            return messages.Count == 0;    
+        }
 
         void RapidDataEntry_ChangesCommitted(object sender) {
             if (ParentNode != null && Explorer != null) {
@@ -134,6 +163,18 @@ namespace BioLink.Client.Material {
             this.FindParentWindow().CommandBindings.Add(new CommandBinding(MovePreviousCmd, ExecutedMovePrevious, CanExecuteMovePrevious));
             this.FindParentWindow().CommandBindings.Add(new CommandBinding(UnlockAllCmd, ExecutedUnlockAll, CanExecuteUnlockAll));
 
+        }
+
+        protected SiteRDEControl SitesControl {
+            get { return grpSites.Content as SiteRDEControl; }
+        }
+
+        protected SiteVisitRDEControl SiteVisitsControl {
+            get { return grpSiteVisits.Content as SiteVisitRDEControl; }
+        }
+
+        protected MaterialRDEControl MaterialControl {
+            get { return grpMaterial.Content as MaterialRDEControl; }
         }
 
         private RDESiteViewModel BuildModel(int objectId, SiteExplorerNodeType objectType) {

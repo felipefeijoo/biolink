@@ -934,6 +934,14 @@ namespace BioLink.Data {
         }
 
         #endregion
+
+        public List<Int32> GetMaterialIdsByAccessionNo(string accessionNumber) {
+            var results =new List<Int32>();
+            SQLReaderForEach("SELECT intMaterialID from tblMaterial WHERE vchrAccessionNo = @accessionNumber", (reader) => {
+                results.Add((Int32)reader[0]);
+            }, _P("@accessionNumber", accessionNumber));
+            return results;
+        }
     }
 
     public enum RDEObjectType {
