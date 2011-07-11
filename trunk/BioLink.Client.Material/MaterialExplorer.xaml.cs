@@ -656,6 +656,16 @@ namespace BioLink.Client.Material {
             }
         }
 
+        internal void RefreshNode(SiteExplorerNodeViewModel parent) {
+            var surrogateModel = new ObservableCollection<HierarchicalViewModelBase>();
+            surrogateModel.Add(parent);
+            var expanded = GetExpandedParentages(surrogateModel);
+            parent.IsChildrenLoaded = false;
+            parent.IsExpanded = false;
+            ExpandParentages(surrogateModel, expanded);
+        }
+
+
         public void ExpandParentages(ObservableCollection<HierarchicalViewModelBase> model, List<string> expanded) {
             if (expanded != null && expanded.Count > 0) {
                 var todo = new Stack<HierarchicalViewModelBase>(model);
@@ -903,6 +913,7 @@ namespace BioLink.Client.Material {
             }
         }
 
+
         public static LookupType GetLookupTypeFromElemType(string elemType) {            
             var nodeType = (SiteExplorerNodeType) Enum.Parse(typeof(SiteExplorerNodeType), elemType);
             return GetLookupTypeFromNodeType(nodeType);
@@ -1002,9 +1013,9 @@ namespace BioLink.Client.Material {
             RapidDataEntry control = null;
 
             if (node != null && (node.NodeType == SiteExplorerNodeType.Site || node.NodeType == SiteExplorerNodeType.SiteVisit || node.NodeType == SiteExplorerNodeType.Material)) {
-                control = new RapidDataEntry(User, node.ElemID, node.NodeType);
+                control = new RapidDataEntry(this, User, node.ElemID, node.NodeType, node);
             } else {
-                control = new RapidDataEntry(User, -1, SiteExplorerNodeType.Site);
+                control = new RapidDataEntry(this, User, -1, SiteExplorerNodeType.Site, null);
             }
 
             PluginManager.Instance.AddNonDockableContent(Owner, control, "RDE", SizeToContent.Manual);            

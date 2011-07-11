@@ -35,7 +35,12 @@ namespace BioLink.Client.Extensibility {
             this.DragOver += new DragEventHandler(PositionControl_DragEnter);
 
             HookLatLongControl(lat);
-            HookLatLongControl(lon);            
+            HookLatLongControl(lon);
+
+            grid.RowDefinitions[0].Height = new GridLength(0);
+            grid.RowDefinitions[1].Height = new GridLength(0);
+            grid.ColumnDefinitions[1].Width = new GridLength(68);
+            lblLon.Visibility = System.Windows.Visibility.Visible;
         }
 
         private void HookLatLongControl(LatLongInput ctl) {
@@ -170,7 +175,7 @@ namespace BioLink.Client.Extensibility {
 
         }
 
-        public static readonly DependencyProperty ShowHeaderLabelsProperty = DependencyProperty.Register("ShowHeaderLabels", typeof(bool), typeof(PositionControl), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnShowHeaderLabelsChanged));
+        public static readonly DependencyProperty ShowHeaderLabelsProperty = DependencyProperty.Register("ShowHeaderLabels", typeof(bool), typeof(PositionControl), new FrameworkPropertyMetadata(false, OnShowHeaderLabelsChanged));
 
         public bool ShowHeaderLabels {
             get { return (bool)GetValue(ShowHeaderLabelsProperty); }

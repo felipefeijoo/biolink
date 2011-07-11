@@ -42,6 +42,7 @@ namespace BioLink.Client.Extensibility {
             set {
                 if (value == true && !IsChildrenLoaded) {
                     if (LazyLoadChildren != null) {
+                        IsChildrenLoaded = true;
                         LazyLoadChildren(this);
                     }
                 }
@@ -51,17 +52,19 @@ namespace BioLink.Client.Extensibility {
         }
 
         public bool IsChildrenLoaded {
-            get {
-                if (Children == null) {
-                    return false;
-                }
+            get;
+            set; 
+            //get {
+            //    if (Children == null) {
+            //        return false;
+            //    }
 
-                if (Children.Count == 1 && Children[0] is ViewModelPlaceholder) {
-                    return false;
-                }
+            //    if (Children.Count == 1 && Children[0] is ViewModelPlaceholder) {
+            //        return false;
+            //    }
 
-                return true;
-            }
+            //    return true;
+            //}
         }
 
         public void TraverseToTop(HierarchicalViewModelAction func) {

@@ -39,7 +39,7 @@ namespace BioLink.Client.Material {
         private AutoFillMode _autoFillMode = AutoFillMode.NoAutoFill;
         private bool _autoNumber = false;
 
-        public RapidDataEntry(User user, int objectId, SiteExplorerNodeType objectType) : base(user, "RDE:" + objectType.ToString() + ":" + objectId) {
+        public RapidDataEntry(MaterialExplorer explorer, User user, int objectId, SiteExplorerNodeType objectType, SiteExplorerNodeViewModel parent) : base(user, "RDE:" + objectType.ToString() + ":" + objectId) {
 
             // Bind input gestures to the commands...
             AddNewSiteCmd.InputGestures.Add(new KeyGesture(Key.T, ModifierKeys.Control));
@@ -53,9 +53,19 @@ namespace BioLink.Client.Material {
 
             _objectId = objectId;
             _objectType = objectType;
+            ParentNode = parent;
+            Explorer = explorer;
 
             this.Loaded += new RoutedEventHandler(RapidDataEntry_Loaded);
+            this.ChangesCommitted += new PendingChangesCommittedHandler(RapidDataEntry_ChangesCommitted);
 
+        }
+
+
+        void RapidDataEntry_ChangesCommitted(object sender) {
+            if (ParentNode != null && Explorer != null) {
+                Explorer.RefreshNode(ParentNode);
+            }
         }
 
         void RapidDataEntry_Loaded(object sender, RoutedEventArgs evt) {
@@ -1066,6 +1076,10 @@ namespace BioLink.Client.Material {
         private void mnuAutoNumber_Click(object sender, RoutedEventArgs e) {
             SetAutoNumber(mnuAutoNumber.IsChecked);
         }
+
+        protected SiteExplorerNodeViewModel ParentNode { get; private set; }
+
+        protected MaterialExplorer Explorer { get; private set; }
 
     }
     
