@@ -1443,7 +1443,7 @@ namespace BioLink.Data {
             var retval = ReturnParam("newLabelSetID");
             StoredProcUpdate("spLabelSetInsert",
                 _P("vchrName", model.Name),
-                _P("vchrDelimitedFields", model.Delimited),
+                _P("txtDelimitedFields", model.Delimited),
                 retval);
 
             return (int) retval.Value;
@@ -1454,7 +1454,7 @@ namespace BioLink.Data {
             StoredProcUpdate("spLabelSetUpdate",
                 _P("intLabelSetID", model.ID),
                 _P("vchrName", model.Name),
-                _P("vchrDelimitedFields", model.Delimited)
+                _P("txtDelimitedFields", model.Delimited)
             );            
         }
 

@@ -23,13 +23,93 @@ namespace BioLink.Client.Tools {
     /// </summary>
     public partial class LabelManagerControl : OneToManyDetailControl {
 
-        private List<LabelSetItem> _items;
+        private List<LabelSetItem> _allItems;
+        private ObservableCollection<LabelSetItemViewModel> _itemModel;
 
         public LabelManagerControl(User user) : base(user, "LabelManager") {
             InitializeComponent();
             this.DataContextChanged += new DependencyPropertyChangedEventHandler(LabelManagerControl_DataContextChanged);
 
             lvw.MouseRightButtonUp += new MouseButtonEventHandler(lvw_MouseRightButtonUp);
+            lvw.AllowDrop = true;
+            lvw.PreviewDragOver += new DragEventHandler(lvw_PreviewDragOver);
+            lvw.Drop += new DragEventHandler(lvw_Drop);
+        }
+
+        void lvw_Drop(object sender, DragEventArgs e) {
+            
+            var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;
+            if (pinnable != null) {
+                var newItem = new LabelSetItem { ItemID = pinnable.ObjectID, ItemType = pinnable.LookupType.ToString(), SetID = CurrentItemSetID };
+                var service = new MaterialService(User);
+                Site site = null;
+                SiteVisit visit = null;
+                Material material = null;
+                switch (pinnable.LookupType) {
+                    case LookupType.Material:
+                        material = service.GetMaterial(pinnable.ObjectID);
+                        visit = service.GetSiteVisit(material.SiteVisitID);
+                        site = service.GetSite(material.SiteID);
+                        break;
+                    case LookupType.SiteVisit:
+                        visit = service.GetSiteVisit(pinnable.ObjectID);
+                        site = service.GetSite(visit.SiteID);
+                        break;
+                    case LookupType.Site:
+                        site = service.GetSite(pinnable.ObjectID);
+                        break;
+                }
+
+                if (material != null) {
+                    newItem.TaxaFullName = material.TaxaDesc;
+                    newItem.AccessionNo = material.AccessionNumber;
+                }
+
+                if (visit != null) {
+                    newItem.Collectors = visit.Collector;
+                    newItem.DateType = visit.DateType;
+                    newItem.CasualDate = visit.CasualTime;
+                    newItem.StartDate = visit.DateStart;
+                    newItem.EndDate = visit.DateEnd;
+                }
+
+                if (site != null) {
+                    newItem.Region = site.PoliticalRegion;
+                    newItem.Local = site.Locality;
+                    newItem.LocalType = site.LocalityType;
+                    newItem.Lat = site.PosY1;
+                    newItem.Long = site.PosX1;
+                    newItem.Lat2 = site.PosY2;
+                    newItem.Long2 = site.PosX2;
+                }
+
+                var vm = new LabelSetItemViewModel(newItem);
+
+                vm.DataChanged += new DataChangedHandler((viewModel) => {
+                    Host.RegisterUniquePendingChange(new UpdateLabelSetItemAction(newItem));
+                });
+
+                Host.RegisterUniquePendingChange(new InsertLabelSetItemAction(newItem));
+                _itemModel.Add(vm);
+                
+
+            }
+        }
+
+        void lvw_PreviewDragOver(object sender, DragEventArgs e) {
+            var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;
+            e.Effects = DragDropEffects.None;
+            if (pinnable != null) {
+                switch (pinnable.LookupType) {
+                    case LookupType.Material:
+                    case LookupType.SiteVisit:
+                    case LookupType.Site:
+                        e.Effects = DragDropEffects.Link;
+                        break;
+                }
+            }
+            e.Handled = true;
+
         }
 
         void lvw_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
@@ -103,19 +183,22 @@ namespace BioLink.Client.Tools {
         void LabelManagerControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e) {
             var selected = e.NewValue as LabelSetViewModel;
             if (selected != null) {
-                var itemlist = _items.FindAll((item) => {
+                CurrentItemSetID = selected.ID;
+                var itemlist = _allItems.FindAll((item) => {
                     return item.SetID == selected.ID;
                 });
-                var lvwModel = new ObservableCollection<LabelSetItemViewModel>(itemlist.Select((m) => {
+                _itemModel = new ObservableCollection<LabelSetItemViewModel>(itemlist.Select((m) => {
                     return new LabelSetItemViewModel(m);
                 }));
 
-                lvw.ItemsSource = lvwModel;
+                lvw.ItemsSource = _itemModel;
 
                 ListCollectionView dataView = CollectionViewSource.GetDefaultView(lvw.ItemsSource) as ListCollectionView;
                 dataView.SortDescriptions.Add(new System.ComponentModel.SortDescription("PrintOrder", System.ComponentModel.ListSortDirection.Ascending));
             }
         }
+
+        private int CurrentItemSetID { get; set; }
 
         public override FrameworkElement FirstControl {
             get { return lvw;  }
@@ -128,7 +211,7 @@ namespace BioLink.Client.Tools {
                 return new LabelSetViewModel(model);
             }));
 
-            _items = service.GetLabelSetItems();
+            _allItems = service.GetLabelSetItems();
 
             return sets;
         }
@@ -172,6 +255,36 @@ namespace BioLink.Client.Tools {
             set { SetProperty(() => Model.Delimited, value); }
         }
 
+    }
+
+    public class InsertLabelSetItemAction : GenericDatabaseAction<LabelSetItem> {
+
+        public InsertLabelSetItemAction(LabelSetItem model) : base(model) { }
+
+        protected override void ProcessImpl(User user) {
+            var service = new SupportService(user);
+            Model.LabelItemID = service.InsertLabelSetItem(Model);
+        }
+    }
+
+    public class UpdateLabelSetItemAction : GenericDatabaseAction<LabelSetItem> {
+
+        public UpdateLabelSetItemAction(LabelSetItem model) : base(model) { }
+
+        protected override void ProcessImpl(User user) {
+            var service = new SupportService(user);
+            service.UpdateLabelSetItem(Model);
+        }
+    }
+
+    public class DeleteLabelSetItemAction : GenericDatabaseAction<LabelSetItem> {
+
+        public DeleteLabelSetItemAction(LabelSetItem model) : base(model) { }
+
+        protected override void ProcessImpl(User user) {
+            var service = new SupportService(user);
+            service.DeleteLabelSetItem(Model.LabelItemID);
+        }
     }
 
     public class DeleteLabelSetAction: GenericDatabaseAction<LabelSet> {
