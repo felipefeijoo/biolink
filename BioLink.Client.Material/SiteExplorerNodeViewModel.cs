@@ -62,6 +62,10 @@ namespace BioLink.Client.Material {
                     _icon = ImageCache.ApplyOverlay(_icon, "pack://application:,,,/BioLink.Client.Extensibility;component/images/TemplateOverlay.png");
                 }
 
+                if (IsDeleted) {
+                    _icon = ImageCache.ApplyOverlay(_icon, "pack://application:,,,/BioLink.Client.Extensibility;component/images/DeletedOverlay.png");
+                }
+
                 return _icon;
             }
             set { _icon = value; }
@@ -110,7 +114,6 @@ namespace BioLink.Client.Material {
         public bool IsTemplate {
             get { return Model.IsTemplate; }
         }
-
 
     }
 }

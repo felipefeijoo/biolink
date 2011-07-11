@@ -640,6 +640,7 @@
     <Resource Include="images\Tick.png" />
     <Resource Include="images\RedLink.png" />
     <Resource Include="images\TemplateOverlay.png" />
+    <Resource Include="images\DeletedOverlay.png" />
     <Content Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>
