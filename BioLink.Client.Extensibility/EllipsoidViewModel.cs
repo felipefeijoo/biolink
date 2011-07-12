@@ -40,7 +40,7 @@ namespace BioLink.Client.Extensibility {
 
         public EllipsoidTooltipContent(EllipsoidViewModel vm) : base(vm.ID, vm) { }
 
-        protected override void GetDetailText(Data.Model.OwnedDataObject model, TextTableBuilder builder) {
+        protected override void GetDetailText(Data.Model.BioLinkDataObject model, TextTableBuilder builder) {
             var e = ViewModel as EllipsoidViewModel;
             if (e != null) {
                 builder.Add("Equatorial Radius", e.EquatorialRadius + "");
@@ -48,7 +48,7 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        protected override Data.Model.OwnedDataObject GetModel() {
+        protected override Data.Model.BioLinkDataObject GetModel() {
             return null;
         }
     }

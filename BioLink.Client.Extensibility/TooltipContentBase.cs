@@ -91,15 +91,15 @@ namespace BioLink.Client.Extensibility {
             get { return ViewModel.Icon; }
         }
 
-        protected virtual FrameworkElement GetDetailContent(OwnedDataObject model) {
+        protected virtual FrameworkElement GetDetailContent(BioLinkDataObject model) {
             var builder = new TextTableBuilder();
             GetDetailText(model, builder);
             return builder.GetAsContent();
         }
 
-        protected abstract void GetDetailText(OwnedDataObject model, TextTableBuilder builder);
+        protected abstract void GetDetailText(BioLinkDataObject model, TextTableBuilder builder);
 
-        protected abstract OwnedDataObject GetModel();
+        protected abstract BioLinkDataObject GetModel();
 
         protected int ObjectID { get; private set; }
 
@@ -120,6 +120,18 @@ namespace BioLink.Client.Extensibility {
         public void Add(string heading, DateTime? value) {
             if (value.HasValue) {
                 AddFormat(heading, "{0:d}", value.Value);
+            }
+        }
+
+        public void Add(string heading, int? value) {
+            if (value.HasValue) {
+                AddFormat(heading, "{0}", value.Value);
+            }
+        }
+
+        public void Add(string heading, double? value) {
+            if (value.HasValue) {
+                AddFormat(heading, "{0}", value.Value);
             }
         }
 

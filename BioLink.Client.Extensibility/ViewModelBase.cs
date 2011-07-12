@@ -218,11 +218,11 @@ namespace BioLink.Client.Extensibility {
         protected OwnedDataObject Model { get; private set; }
 
 
-        protected override OwnedDataObject GetModel() {
+        protected override BioLinkDataObject GetModel() {
             return Model;
         }
 
-        protected override void GetDetailText(OwnedDataObject model, TextTableBuilder builder) {            
+        protected override void GetDetailText(BioLinkDataObject model, TextTableBuilder builder) {            
         }
     }
 

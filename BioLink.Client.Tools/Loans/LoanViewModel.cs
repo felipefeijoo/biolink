@@ -202,7 +202,7 @@ namespace BioLink.Client.Tools {
 
         public LoanTooltipContent(int objectId, ViewModelBase viewModel) : base(objectId, viewModel) { }
 
-        protected override void GetDetailText(OwnedDataObject model, TextTableBuilder builder) {
+        protected override void GetDetailText(BioLinkDataObject model, TextTableBuilder builder) {
             var loan = model as Loan;
             builder.Add("Loan number", loan.LoanNumber);
             builder.Add("Permit number", loan.PermitNumber);
@@ -214,7 +214,7 @@ namespace BioLink.Client.Tools {
             builder.AddFormat("Status", (ViewModel as LoanViewModel).Status);
         }
 
-        protected override OwnedDataObject GetModel() {
+        protected override BioLinkDataObject GetModel() {
             var service = new LoanService(User);
             return service.GetLoan(ObjectID);
         }

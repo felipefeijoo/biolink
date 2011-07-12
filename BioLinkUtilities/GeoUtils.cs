@@ -708,8 +708,11 @@ namespace BioLink.Client.Utilities {
             return null;
         }
 
-        public static string FormatCoordinates(double latitude, double longitude) {
-            return string.Format("{0} {1}", DecDegToDMS(latitude, CoordinateType.Latitude), DecDegToDMS(longitude, CoordinateType.Longitude));
+        public static string FormatCoordinates(double? latitude, double? longitude, string novalue="") {
+            if (latitude.HasValue && longitude.HasValue) {
+                return string.Format("{0} {1}", DecDegToDMS(latitude.Value, CoordinateType.Latitude), DecDegToDMS(longitude.Value, CoordinateType.Longitude));
+            }
+            return novalue;
         }
     }
 

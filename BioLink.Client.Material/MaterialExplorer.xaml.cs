@@ -262,7 +262,9 @@ namespace BioLink.Client.Material {
             }
 
             if (moveAction != null) {
-                source.Parent.Children.Remove(source);
+                if (source.Parent != null) {
+                    source.Parent.Children.Remove(source);
+                }
                 dest.IsChanged = true;
                 dest.IsExpanded = true;
                 dest.Children.Add(source);
