@@ -1471,7 +1471,7 @@ namespace BioLink.Data {
             var retval = ReturnParam("NewLabelSetItemID");
             StoredProcUpdate("spLabelSetItemInsert",
                 _P("intLabelSetID", item.SetID),
-                _P("intItemID", item.SiteID),
+                _P("intItemID", item.ItemID),
                 _P("vchrItemType", string.IsNullOrWhiteSpace(item.ItemType) ? "Taxon" : item.ItemType),
                 _P("intPrintOrder", item.PrintOrder),
                 _P("intNumCopies", item.NumCopies),
@@ -1481,7 +1481,7 @@ namespace BioLink.Data {
 
         public void UpdateLabelSetItem(LabelSetItem item) {            
             StoredProcUpdate("spLabelSetItemUpdateOrder",
-                _P("intItemID", item.ItemID),                                
+                _P("intItemID", item.LabelItemID),                                
                 _P("intNewOrder", item.PrintOrder),
                 _P("intNumCopies", item.NumCopies)
             );            
@@ -1489,6 +1489,17 @@ namespace BioLink.Data {
 
         #endregion
 
+        public List<LabelSetItem> ListLabelSetItemsForUser(string username, DateTime? startdate, DateTime? enddate) {
+
+            var mapper = new GenericMapperBuilder<LabelSetItem>().Ignore("Material").build();
+            return StoredProcToList("spLabelSetItemListUserPeriod", 
+                mapper,
+                _P("vchrUser", username),
+                _P("vchrDateStart", DateUtils.ShortDate(startdate)),
+                _P("vchrDateEnd", DateUtils.ShortDate(enddate))
+            );
+
+        }
     }
 
     public class RefTypeMapping {

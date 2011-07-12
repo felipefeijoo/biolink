@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+             xmlns:model="clr-namespace:BioLink.Data.Model;assembly=BioLink.Data"
              mc:Ignorable="d" 
              d:DesignHeight="354" d:DesignWidth="811">
     <Grid>
@@ -24,7 +25,7 @@
                     <Label Content="Label set name:" Height="23" HorizontalAlignment="Left" Name="label1" VerticalAlignment="Center" Width="106" />
                     <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="112,2,0,0" Name="txrtName" VerticalAlignment="Center" Width="246" Text="{Binding Path=Name}"/>
 
-                    <ListView Grid.Row="1" Margin="6" x:Name="lvw">
+                    <ListView Grid.Row="1" Margin="6,6,6,0" x:Name="lvw">
                         <ListView.Resources>
                             <DataTemplate x:Key="NumCopiesTemplate">
                                 <Grid Margin="0">
@@ -53,11 +54,72 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
+                    <Button Grid.Row="2" Height="23" HorizontalAlignment="Left" Margin="6,7,0,0" Name="btnUp" VerticalAlignment="Top" Width="23" Click="btnUp_Click">
+                        <Button.Content>
+                            <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/UpArrowSmall.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None" />
+                        </Button.Content>
+                    </Button>
+                    <Button Grid.Row="2" Height="23" HorizontalAlignment="Left" Margin="35,7,0,0" Name="btnDown" VerticalAlignment="Top" Width="23" Click="btnDown_Click">
+                        <Image SnapsToDevicePixels="True" Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/DownArrowSmall.png" Stretch="None" UseLayoutRounding="True" />
+                    </Button>
+                    <Button Content="_Delete" Grid.Row="2" Height="23" HorizontalAlignment="Right" Margin="0,7,6,0" Name="btnDelete" VerticalAlignment="Top" Width="75" Click="btnDelete_Click" />
                 </Grid>
             </TabItem>
             
             <TabItem Header="_Export fields">
-                
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="60" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    
+                    <Label Content="Filter:" Height="28" HorizontalAlignment="Left" VerticalAlignment="Top" Width="47" Margin="6,6,0,0" />
+                    <ext:DelayedTriggerTextbox Height="23" VerticalAlignment="Top" Margin="59,6,7,0" x:Name="txtFilter" TypingPaused="txtFilter_TypingPaused" />
+
+                    <ListView x:Name="lstFields" Margin="6,35,6,6" >
+                        <ListView.Resources>
+                            <DataTemplate DataType="{x:Type model:FieldDescriptor}">
+                                <TextBlock Text="{Binding DisplayName}" />
+                            </DataTemplate>
+                        </ListView.Resources>
+                        <ListView.GroupStyle>
+                            <GroupStyle>
+                                <GroupStyle.HeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock FontSize="15" FontWeight="Bold" Text="{Binding Name}"/>
+                                    </DataTemplate>
+                                </GroupStyle.HeaderTemplate>
+                            </GroupStyle>
+                        </ListView.GroupStyle>
+
+                    </ListView>
+                    
+                    <StackPanel Grid.Column="1" Orientation="Vertical" Margin="6">
+                        <Button Height="23" x:Name="btnSelectField" Margin="0,0,0,6" ToolTip="Select field for export" Click="btnSelectField_Click">
+                            <Button.Content>
+                                <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/RightArrowSmall.png" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
+                            </Button.Content>
+                        </Button>
+                        <Button Height="23" x:Name="btnUnselectField" Margin="0,0,0,6" ToolTip="Remove field from selected list" Click="btnUnselectField_Click">
+                            <Button.Content>
+                                <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/LeftArrowSmall.png" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
+                            </Button.Content>
+                        </Button>
+
+                        <Button Height="23" x:Name="btnUnselectAll" Margin="0,0,0,6" ToolTip="Remove field from selected list" Click="btnUnselectAll_Click">
+                            <Button.Content>
+                                <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/DoubleLeftArrowSmall.png" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
+                            </Button.Content>
+                        </Button>
+
+
+                    </StackPanel>
+                    
+                    <ListView Grid.Column="2" Margin="6" x:Name="lvwSelectedFields">
+                        
+                    </ListView>
+                </Grid>
             </TabItem>
         </TabControl>
     </Grid>

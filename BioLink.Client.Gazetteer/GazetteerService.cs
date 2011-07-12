@@ -83,7 +83,7 @@ namespace BioLink.Client.Gazetteer {
                 string sql = "SELECT tPlace as Name, tType as PlaceType, tDivision as Division, tLatitude as LatitudeString, tLongitude as LongitudeString, dblLatitude as Latitude, dblLongitude as Longitude FROM tblGaz WHERE tPlace like @find ORDER BY tDivision, tPlace, tType LIMIT @limit";
                 SelectReader(sql, (reader) => {
                     PlaceName place = new PlaceName();
-                    MapperBase.ReflectMap(place, reader, null);
+                    MapperBase.ReflectMap(place, reader, null, null);
                     list.Add(place);
                 }, new SQLiteParameter("@find", find + "%"), new SQLiteParameter("@limit", maxrows));
             } catch (Exception ex) {
@@ -99,7 +99,7 @@ namespace BioLink.Client.Gazetteer {
                 string sql = "SELECT tPlace as Name, tType as PlaceType, tDivision as Division, tLatitude as LatitudeString, tLongitude as LongitudeString, dblLatitude as Latitude, dblLongitude as Longitude FROM tblGaz WHERE tPlace like @find AND tDivision = @division ORDER BY tDivision, tPlace, tType LIMIT @limit";
                 SelectReader(sql, (reader) => {
                     PlaceName place = new PlaceName();
-                    MapperBase.ReflectMap(place, reader, null);
+                    MapperBase.ReflectMap(place, reader, null, null);
                     list.Add(place);
                 }, new SQLiteParameter("@find", find + "%"), new SQLiteParameter("@limit", maxrows), new SQLiteParameter("@division", limitToDivision));
             } catch (Exception ex) {
@@ -196,7 +196,7 @@ namespace BioLink.Client.Gazetteer {
                 }
                 SelectReader(sql, (reader) => {
                     PlaceName place = new PlaceName();
-                    MapperBase.ReflectMap(place, reader, null);
+                    MapperBase.ReflectMap(place, reader, null, null);
                     list.Add(place);                    
                 }, new SQLiteParameter("@y1", y1), new SQLiteParameter("@y2", y2), new SQLiteParameter("@x1", x1), new SQLiteParameter("@x2", x2), new SQLiteParameter("@div", placeType));
             } catch (Exception ex) {

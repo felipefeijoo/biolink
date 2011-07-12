@@ -49,6 +49,21 @@ namespace BioLink.Data.Model {
             get { return () => this.TaxaID.Value; }
         }
 
+        public string NameQualifier { get; set; }
+        public bool? Shadowed { get; set; }
+        public int? ImportedWithProjectID { get; set; }
+        public string ParentKingdom { get; set; }
+        public string ParentPhylum { get; set; }
+        public string ParentClass { get; set; }
+        public string ParentOrder { get; set; }
+        public string ParentFamily { get; set; }
+        public string ParentGenus { get; set; }
+        public string ParentSpecies { get; set; }
+        public string ParentSubspecies { get; set; }
+        public string RankLong { get; set; }
+        public string KingdomLong { get; set; }
+        public string RankCategory { get; set; }
+
     }
 
     public class TaxonSearchResult : Taxon {

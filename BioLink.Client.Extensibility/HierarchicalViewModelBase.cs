@@ -51,21 +51,7 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        public bool IsChildrenLoaded {
-            get;
-            set; 
-            //get {
-            //    if (Children == null) {
-            //        return false;
-            //    }
-
-            //    if (Children.Count == 1 && Children[0] is ViewModelPlaceholder) {
-            //        return false;
-            //    }
-
-            //    return true;
-            //}
-        }
+        public bool IsChildrenLoaded { get; set; }
 
         public void TraverseToTop(HierarchicalViewModelAction func) {
             HierarchicalViewModelBase p = this;

@@ -15,7 +15,7 @@ namespace BioLink.Data {
 
         public static string KNOWN_TYPE_PREFIXES = "chr,vchr,bit,int,txt,flt,tint,dt,sint,img";
 
-        public static void ReflectMap(object dest, DbDataReader reader, ColumnMapping[] columnMappings, params ConvertingMapper[] columnOverrides) {
+        public static void ReflectMap(object dest, DbDataReader reader, HashSet<string> columnIgnores, ColumnMapping[] columnMappings, params ConvertingMapper[] columnOverrides) {
             PropertyInfo[] props = dest.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
             Dictionary<string, PropertyInfo> propMap = new Dictionary<string, PropertyInfo>();
 
@@ -33,14 +33,12 @@ namespace BioLink.Data {
             }
 
             foreach (PropertyInfo propInfo in props) {
-
-
                 var x = Attribute.GetCustomAttribute(propInfo, typeof(MappingInfo));
                 if (x != null) {
                     var mapping = x as MappingInfo;
                     if (!mapping.Ignore) {
                         propMap[mapping.Column] = propInfo;
-                    }
+                    } 
                 } else if (propInfo.CanWrite) {
                     propMap[propInfo.Name] = propInfo;
                 }
@@ -91,7 +89,9 @@ namespace BioLink.Data {
 
                     target.SetValue(dest, val, null);
                 } else {
-                    Logger.Debug("Could not map field '{0}' to object of type {1}", name, dest.GetType().Name);
+                    if (columnIgnores == null || !columnIgnores.Contains(name)) {
+                        Logger.Debug("Could not map field '{0}' to object of type {1}", name, dest.GetType().Name);
+                    }
                 }
             }
         }
@@ -106,13 +106,13 @@ namespace BioLink.Data {
 
         public static Taxon MapTaxon(SqlDataReader reader, params ConvertingMapper[] overrides) {
             Taxon t = new Taxon();
-            ReflectMap(t, reader, null, overrides);
+            ReflectMap(t, reader, null, null, overrides);
             return t;
         }
 
         public static TaxonSearchResult MapTaxonSearchResult(SqlDataReader reader) {
             TaxonSearchResult t = new TaxonSearchResult();
-            ReflectMap(t, reader, null);
+            ReflectMap(t, reader, null, null);
             return t;
         }
 
@@ -120,7 +120,7 @@ namespace BioLink.Data {
 
         public static TaxonRank MapTaxonRank(SqlDataReader reader) {
             TaxonRank tr = new TaxonRank();
-            ReflectMap(tr, reader, null, _taxonMapper);
+            ReflectMap(tr, reader, null, null, _taxonMapper);
             return tr;
         }
 
@@ -139,9 +139,9 @@ namespace BioLink.Data {
             return Map(reader, new T());
         }
 
-        public T Map(SqlDataReader reader, T t ) {
+        virtual public T Map(SqlDataReader reader, T t ) {
 
-            ReflectMap(t, reader, Mappings, Overrides);
+            ReflectMap(t, reader, ColumnIgnores, Mappings, Overrides);
             if (PostMapAction != null) {
                 PostMapAction(t);
             }
@@ -153,6 +153,8 @@ namespace BioLink.Data {
         public ColumnMapping[] Mappings { get; set; }
 
         public Action<T> PostMapAction { get; set; }
+
+        public HashSet<string> ColumnIgnores { get; set; }
     }
 
     public class GenericMapperBuilder<T> where T : new() {
@@ -160,6 +162,7 @@ namespace BioLink.Data {
         private List<ConvertingMapper> _overrides = new List<ConvertingMapper>();
         private List<ColumnMapping> _mappings = new List<ColumnMapping>();
         private Action<T> _postMapAction;
+        private HashSet<string> _columnIgnores = new HashSet<string>();
 
         public GenericMapperBuilder() {
         }
@@ -200,7 +203,13 @@ namespace BioLink.Data {
             mapper.Overrides = _overrides.ToArray();
             mapper.Mappings = _mappings.ToArray();
             mapper.PostMapAction = _postMapAction;
+            mapper.ColumnIgnores = _columnIgnores;
             return mapper;
+        }
+
+        internal GenericMapperBuilder<T> Ignore(string column) {
+            _columnIgnores.Add(column);
+            return this;
         }
     }
 

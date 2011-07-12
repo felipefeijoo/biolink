@@ -137,10 +137,14 @@ namespace BioLink.Client.Utilities {
                     return date.Substring(0, 6) + "00";
                 }
 
-                return string.Format("{0:0000}{1:00}{2:00}", dt.Year, dt.Month, dt.Day);
+                return DateToBLDate(dt);
             }
 
             return null;
+        }
+
+        public static string DateToBLDate(DateTime dt) {
+            return string.Format("{0:0000}{1:00}{2:00}", dt.Year, dt.Month, dt.Day);
         }
 
         public static int StrToBLTime(string TimeStr) {

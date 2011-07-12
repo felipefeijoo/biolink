@@ -31,14 +31,14 @@ namespace BioLink.Client.Material {
         }
         #endregion
 
-        public SiteDetails(User user, int siteID)
-            : base(user, "Site:" + siteID) {
+        public SiteDetails(User user, int siteID) : base(user, "Site:" + siteID) {
             InitializeComponent();
+            this.SiteID = siteID;
 
             var list = new List<Ellipsoid>(GeoUtils.ELLIPSOIDS);
             cmbDatum.ItemsSource = new ObservableCollection<string>(list.ConvertAll((ellipsoid) => { return ellipsoid.Name; }));
 
-            this.SiteID = siteID;
+
 
             // Radio button checked event handlers
             optNearestPlace.Checked += new RoutedEventHandler((s, e) => {
@@ -55,14 +55,14 @@ namespace BioLink.Client.Material {
                 txtFrom.IsEnabled = false;
             });
 
-            var service = new MaterialService(user);
-            var model = service.GetSite(siteID);
+            var service = new MaterialService(User);
+            var model = service.GetSite(SiteID);
             _viewModel = new SiteViewModel(model);
             this.DataContext = _viewModel;
 
-            tabSite.AddTabItem("Traits", new TraitControl(user, TraitCategoryType.Site, _viewModel));
-            tabSite.AddTabItem("Notes", new NotesControl(user, TraitCategoryType.Site, _viewModel));
-            tabSite.AddTabItem("Multimedia", new MultimediaControl(user, TraitCategoryType.Site, _viewModel));
+            tabSite.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Site, _viewModel));
+            tabSite.AddTabItem("Notes", new NotesControl(User, TraitCategoryType.Site, _viewModel));
+            tabSite.AddTabItem("Multimedia", new MultimediaControl(User, TraitCategoryType.Site, _viewModel));
             tabSite.AddTabItem("Ownership", new OwnershipDetails(_viewModel.Model));
 
             txtPosSource.BindUser(User, PickListType.Phrase, "Source", TraitCategoryType.Site);
@@ -86,9 +86,7 @@ namespace BioLink.Client.Material {
             this.ctlX2.Visibility = System.Windows.Visibility.Hidden;
             this.ctlY2.Visibility = System.Windows.Visibility.Hidden;
 
-            _viewModel.DataChanged += new DataChangedHandler(_viewModel_DataChanged);
-
-            txtPoliticalRegion.BindUser(user, LookupType.Region);
+            txtPoliticalRegion.BindUser(User, LookupType.Region);
 
             string llmode = Config.GetUser(User, "SiteDetails.LatLongFormat", LatLongMode.DegreesMinutesSeconds.ToString());
             if (!String.IsNullOrEmpty(llmode)) {
@@ -122,6 +120,11 @@ namespace BioLink.Client.Material {
             HookLatLongControl(ctlX2);
             HookLatLongControl(ctlY2);
 
+            this.Loaded += new RoutedEventHandler(SiteDetails_Loaded);
+        }
+
+        void SiteDetails_Loaded(object sender, RoutedEventArgs evt) {
+            _viewModel.DataChanged += new DataChangedHandler(_viewModel_DataChanged);
         }
 
         private void HookLatLongControl(LatLongInput ctl) {
