@@ -91,6 +91,10 @@ namespace BioLink.Client.Extensibility {
             SetDate(txt.Text);
         }
 
+        public void SetToToday() {
+            Date = DateUtils.DateToBLDate(DateTime.Now);
+        }
+
         public static string DateToStr(string bldate) {
             if (bldate == null) {
                 return "";
@@ -115,7 +119,7 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        private void SetDate(string str) {
+        public void SetDate(string str) {
 
             if (str == null) {
                 return;
@@ -149,13 +153,13 @@ namespace BioLink.Client.Extensibility {
                             bldate = string.Format("{0:0000}{1:00}00", dt.Year, dt.Month);
                             break;
                         case 3:
-                            bldate = string.Format("{0:0000}{1:00}{2:00}", dt.Year, dt.Month, dt.Day);
+                            bldate = DateUtils.DateToBLDate(dt);
                             break;
                         default:
                             break;
                     }
                 } else {
-                    bldate = string.Format("{0:0000}{1:00}{2:00}", dt.Year, dt.Month, dt.Day);
+                    bldate = DateUtils.DateToBLDate(dt);
                 }
             } else {
                 int year;
@@ -307,7 +311,7 @@ namespace BioLink.Client.Extensibility {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
             var dt = value as DateTime?;
             if (dt != null && dt.HasValue) {
-                return string.Format("{0:0000}{1:00}{2:00}", dt.Value.Year, dt.Value.Month, dt.Value.Day);
+                return DateUtils.DateToBLDate(dt.Value);
             } else {
                 return null;
             }

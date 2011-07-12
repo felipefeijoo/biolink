@@ -87,6 +87,8 @@ namespace BioLink.Data.Model {
 
         public string TypeData { get; set; }
 
+        public int? LoanID { get; set; }
+
 
         protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
             get { return () => this.MaterialID; }
