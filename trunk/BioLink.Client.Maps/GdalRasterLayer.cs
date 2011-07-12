@@ -70,9 +70,9 @@ namespace SharpMap.Layers {
         internal GeoTransform _geoTransform;
         private bool _haveSpot; // spot correction
         private Rectangle _histoBounds;
-        private double _histoBrightness, _histoContrast;
+        private double _histoBrightness = 0, _histoContrast = 0;
         private List<int[]> _histogram; // histogram of image
-        private double[] _histoMean;
+        private double[] _histoMean = null;
         protected Size _imagesize;
 
         private double _innerSpotRadius;

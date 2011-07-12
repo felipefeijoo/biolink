@@ -36,6 +36,7 @@
                         <ListView.ItemContainerStyle>
                             <Style TargetType="ListViewItem">
                                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                <Setter Property="ToolTip" Value="{Binding Path=TooltipContent}" />
                             </Style>
                         </ListView.ItemContainerStyle>
                         <ListView.View>

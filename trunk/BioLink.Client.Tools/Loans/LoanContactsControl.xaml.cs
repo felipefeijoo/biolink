@@ -364,7 +364,7 @@ namespace BioLink.Client.Tools {
 
         public ContactTooltipContent(int contactId, ContactViewModel viewModel) : base(contactId, viewModel) { }
 
-        protected override void GetDetailText(OwnedDataObject model, TextTableBuilder builder) {
+        protected override void GetDetailText(BioLinkDataObject model, TextTableBuilder builder) {
             var viewModel = ViewModel as ContactViewModel;
 
             builder.Add("Job title", viewModel.JobTitle);
@@ -372,7 +372,7 @@ namespace BioLink.Client.Tools {
             builder.Add("Work phone", viewModel.WorkPh);            
         }
 
-        protected override OwnedDataObject GetModel() {
+        protected override BioLinkDataObject GetModel() {
             var service = new LoanService(User);
             return service.GetLoan(ObjectID);
         }

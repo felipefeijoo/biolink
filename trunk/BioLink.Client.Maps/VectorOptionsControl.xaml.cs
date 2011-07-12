@@ -98,7 +98,7 @@ namespace BioLink.Client.Maps {
 
         public RasterLayerTooltipContent(RasterLayerViewModel viewModel) : base(0, viewModel) { }
 
-        protected override void GetDetailText(Data.Model.OwnedDataObject model, TextTableBuilder builder) {
+        protected override void GetDetailText(Data.Model.BioLinkDataObject model, TextTableBuilder builder) {
             var vm = ViewModel as LayerViewModel;
             if (vm != null) {
                 var m = vm.Model as GdalRasterLayer;
@@ -109,7 +109,7 @@ namespace BioLink.Client.Maps {
             }
         }
 
-        protected override Data.Model.OwnedDataObject GetModel() {
+        protected override Data.Model.BioLinkDataObject GetModel() {
             return null;
         }
     }
@@ -119,7 +119,7 @@ namespace BioLink.Client.Maps {
 
         public VectorLayerTooltipContent(VectorLayerViewModel viewModel) : base(0, viewModel) { }
 
-        protected override void GetDetailText(Data.Model.OwnedDataObject model, TextTableBuilder builder) {
+        protected override void GetDetailText(Data.Model.BioLinkDataObject model, TextTableBuilder builder) {
             var vm = ViewModel as LayerViewModel;
             if (vm != null) {
                 var m = vm.Model as VectorLayer;
@@ -130,7 +130,7 @@ namespace BioLink.Client.Maps {
             }
         }
 
-        protected override Data.Model.OwnedDataObject GetModel() {
+        protected override Data.Model.BioLinkDataObject GetModel() {
             return null;
         }
     }

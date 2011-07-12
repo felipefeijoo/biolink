@@ -86,9 +86,12 @@ namespace BioLink.Client.Tools {
             using (new OverrideCursor(Cursors.Wait)) {
                 var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;
                 if (pinnable != null) {
-                    var maxOrder = _itemModel.Max((item) => {
-                        return item.PrintOrder;
-                    });
+                    int maxOrder = 0;
+                    if (_itemModel.Count > 0) {
+                        maxOrder = _itemModel.Max((item) => {
+                            return item.PrintOrder;
+                        });
+                    }
 
                     var newItem = new LabelSetItem { ItemID = pinnable.ObjectID, ItemType = pinnable.LookupType.ToString(), SetID = CurrentItemSetID, PrintOrder = maxOrder + 1, NumCopies = 1 };
                     var service = new MaterialService(User);
@@ -111,11 +114,13 @@ namespace BioLink.Client.Tools {
                     }
 
                     if (material != null) {
+                        newItem.MaterialID = material.MaterialID;
                         newItem.TaxaFullName = material.TaxaDesc;
                         newItem.AccessionNo = material.AccessionNumber;
                     }
 
-                    if (visit != null) {
+                    if (visit != null) {                       
+                        newItem.VisitID = visit.SiteVisitID;
                         newItem.Collectors = visit.Collector;
                         newItem.DateType = visit.DateType;
                         newItem.CasualDate = visit.CasualTime;
@@ -124,6 +129,7 @@ namespace BioLink.Client.Tools {
                     }
 
                     if (site != null) {
+                        newItem.SiteID = site.SiteID;
                         newItem.Region = site.PoliticalRegion;
                         newItem.Local = site.Locality;
                         newItem.LocalType = site.LocalityType;
@@ -195,6 +201,10 @@ namespace BioLink.Client.Tools {
         }
 
         private void EditSite() {
+            if (lvw.SelectedItems.Count != 1) {
+                return;
+            }
+
             var selected = lvw.SelectedItem as LabelSetItemViewModel;
             if (selected != null) {
                 PluginManager.Instance.EditLookupObject(LookupType.Site, selected.SiteID);
@@ -202,6 +212,10 @@ namespace BioLink.Client.Tools {
         }
 
         private void EditSiteVisit() {
+            if (lvw.SelectedItems.Count != 1) {
+                return;
+            }
+
             var selected = lvw.SelectedItem as LabelSetItemViewModel;
             if (selected != null) {
                 PluginManager.Instance.EditLookupObject(LookupType.SiteVisit, selected.VisitID);
@@ -209,6 +223,9 @@ namespace BioLink.Client.Tools {
         }
 
         private void EditMaterial() {
+            if (lvw.SelectedItems.Count != 1) {
+                return;
+            }
             var selected = lvw.SelectedItem as LabelSetItemViewModel;
             if (selected != null) {
                 PluginManager.Instance.EditLookupObject(LookupType.Material, selected.MaterialID);
@@ -304,6 +321,9 @@ namespace BioLink.Client.Tools {
         }
 
         private void MoveSelectedUp() {
+            if (lvw.SelectedItems.Count != 1) {
+                return;
+            }
             var selected = lvw.SelectedItem as LabelSetItemViewModel;
             if (selected != null) {
                 var index = _itemModel.IndexOf(selected);
@@ -321,6 +341,9 @@ namespace BioLink.Client.Tools {
         }
 
         private void MoveSelectedDown() {
+            if (lvw.SelectedItems.Count != 1) {
+                return;
+            }
             var selected = lvw.SelectedItem as LabelSetItemViewModel;
             if (selected != null) {
                 var index = _itemModel.IndexOf(selected);
@@ -337,11 +360,18 @@ namespace BioLink.Client.Tools {
         }
 
         private void DeleteSelected() {
-            var selected = lvw.SelectedItem as LabelSetItemViewModel;
-            if (selected != null) {
-                selected.IsDeleted = true;
-                _itemModel.Remove(selected);
-                Host.RegisterUniquePendingChange(new DeleteLabelSetItemAction(selected.Model));
+            if (lvw.SelectedItems.Count > 0) {
+                // Need to isolate items to delete in a separate list in order to avoid a concurrent modification exception...
+                var killList = new List<LabelSetItemViewModel>();
+                foreach (LabelSetItemViewModel selected in lvw.SelectedItems) {
+                    killList.Add(selected);
+                }                
+
+                foreach (LabelSetItemViewModel selected in killList) {
+                    selected.IsDeleted = true;
+                    _itemModel.Remove(selected);
+                    Host.RegisterUniquePendingChange(new DeleteLabelSetItemAction(selected.Model));
+                }
             }
         }
 
@@ -459,6 +489,42 @@ namespace BioLink.Client.Tools {
     public class LabelSetItemViewModel : GenericViewModelBase<LabelSetItem> {
 
         public LabelSetItemViewModel(LabelSetItem model) : base(model, () => model.LabelItemID) { }
+
+        public override FrameworkElement TooltipContent {
+            get { return new LabelSetItemTooltip(this); }
+        }
+
+        public override string DisplayLabel {
+            get { return string.Format("{0} from {1}", TaxaFullName, Local); }
+        }
+
+        private ImageSource _icon;
+
+        public override ImageSource Icon {
+            get {
+                if (_icon == null) {
+                    ViewModelBase vm = null;
+                    switch (ItemType.ToLower()) {
+                        case "site":
+                            vm = PluginManager.Instance.GetViewModel(LookupType.Site, SiteID);
+                            break;
+                        case "sitevisit":
+                            vm = PluginManager.Instance.GetViewModel(LookupType.SiteVisit, VisitID);
+                            break;
+                        case "material":
+                            vm = PluginManager.Instance.GetViewModel(LookupType.Material, MaterialID);
+                            break;
+                    }
+
+                    if (vm != null) {
+                        _icon = vm.Icon;
+                    }
+
+                }
+                return _icon;
+            }
+            set { _icon = value; }
+        }
 
         public int SetID {
             get { return Model.SetID; }
@@ -614,6 +680,30 @@ namespace BioLink.Client.Tools {
             get { return DateUtils.FormatDates(DateType, StartDate, EndDate, CasualDate); }
         }
 
+    }
+
+    public class LabelSetItemTooltip : TooltipContentBase {
+
+        public LabelSetItemTooltip(LabelSetItemViewModel viewModel) : base(viewModel.LabelItemID, viewModel) { }
+
+        protected override void GetDetailText(BioLinkDataObject model, TextTableBuilder builder) {
+            var item = ViewModel as LabelSetItemViewModel;
+            if (item != null) {
+                
+                builder.Add("Position", GeoUtils.FormatCoordinates(item.Lat, item.Long));
+                builder.Add("Position2", GeoUtils.FormatCoordinates(item.Lat2, item.Long2));
+                builder.Add("Copies", item.NumCopies);
+                builder.Add("Print order", item.PrintOrder);
+                builder.Add("Taxon", item.TaxaFullName);
+                builder.Add("SiteID", item.SiteID);
+                builder.Add("SiteVisitID", item.VisitID);
+                builder.Add("MaterialID", item.MaterialID);
+            }
+        }
+
+        protected override BioLinkDataObject GetModel() {
+            return (ViewModel as LabelSetItemViewModel).Model;
+        }
     }
 
 }

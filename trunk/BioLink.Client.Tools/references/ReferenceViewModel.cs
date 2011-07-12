@@ -184,7 +184,7 @@ namespace BioLink.Client.Tools {
         public ReferenceTooltipContent(int refId, ViewModelBase model) : base(refId, model) {
         }
 
-        protected override void GetDetailText(OwnedDataObject model, TextTableBuilder builder) {
+        protected override void GetDetailText(BioLinkDataObject model, TextTableBuilder builder) {
             var refmodel = model as Reference;
 
             builder.Add("Type", refmodel.RefType);
@@ -194,7 +194,7 @@ namespace BioLink.Client.Tools {
                         
         }
 
-        protected override OwnedDataObject GetModel() {
+        protected override BioLinkDataObject GetModel() {
             var service = new SupportService(User);
             return service.GetReference(ObjectID);
         }

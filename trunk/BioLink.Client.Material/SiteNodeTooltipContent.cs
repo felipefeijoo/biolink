@@ -27,7 +27,7 @@ namespace BioLink.Client.Material {
             }
         }
 
-        protected override Data.Model.OwnedDataObject GetModel() {
+        protected override Data.Model.BioLinkDataObject GetModel() {
             var service = new MaterialService(User);
             OwnedDataObject obj = null;
             switch (ElemType) {
@@ -57,7 +57,7 @@ namespace BioLink.Client.Material {
 
         public string ElemName { get; set; }
 
-        protected override void GetDetailText(OwnedDataObject model, TextTableBuilder builder) {
+        protected override void GetDetailText(BioLinkDataObject model, TextTableBuilder builder) {
             
             if (model != null) {
 

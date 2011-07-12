@@ -15,7 +15,7 @@ namespace BioLink.Client.Extensibility {
 
         public MultimediaLinkTooltip(MultimediaLinkViewModel viewModel) : base(viewModel.ObjectID.Value, viewModel) { }
 
-        protected override System.Windows.FrameworkElement GetDetailContent(OwnedDataObject model) {
+        protected override System.Windows.FrameworkElement GetDetailContent(BioLinkDataObject model) {
             var vm = ViewModel as MultimediaLinkViewModel;
             var grid = new Grid { Margin = new Thickness(3) };
             grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength() });
@@ -30,20 +30,20 @@ namespace BioLink.Client.Extensibility {
             var builder = new TextTableBuilder();
             builder.Add("Type", vm.MultimediaType);
             builder.Add("Caption", RTFUtils.StripMarkup(vm.Caption));
-            
+
             var details = builder.GetAsContent();
             Grid.SetRow(details, 1);
 
             grid.Children.Add(details);
-            
+
             return grid;
         }
 
-        protected override void GetDetailText(Data.Model.OwnedDataObject model, TextTableBuilder builder) {
+        protected override void GetDetailText(Data.Model.BioLinkDataObject model, TextTableBuilder builder) {
             throw new NotImplementedException();
         }
 
-        protected override Data.Model.OwnedDataObject GetModel() {
+        protected override Data.Model.BioLinkDataObject GetModel() {
             var vm = ViewModel as MultimediaLinkViewModel;
             return vm.Model;
         }
