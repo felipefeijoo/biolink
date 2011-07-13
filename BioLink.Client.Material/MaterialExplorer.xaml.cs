@@ -875,7 +875,9 @@ namespace BioLink.Client.Material {
         }
 
         private void ApplyChanges() {
-            CommitPendingChanges();            
+            using (new OverrideCursor(Cursors.Wait)) {
+                CommitPendingChanges();
+            }
         }
 
         private Action<SelectionResult> _selectionCallback;
