@@ -237,9 +237,38 @@ namespace BioLink.Data {
 
 
         public List<Loan> FindLoans(string filter, string what, bool findOpenLoansOnly) {
-            var mapper = new GenericMapperBuilder<Loan>().build();
             filter = filter.Replace("*", "%");
+            if (what.Equals("t", StringComparison.CurrentCultureIgnoreCase)) {
+                return FindLoansByTaxon(filter, findOpenLoansOnly);
+            }
+            var mapper = new GenericMapperBuilder<Loan>().build();            
             var list = StoredProcToList("spLoanFind", mapper, _P("vchrFieldType", what), _P("vchrFieldValue", filter), _P("bitOnlyActiveLoans", findOpenLoansOnly));
+            return list;
+        }
+
+        public List<Loan> FindLoansByTaxon(string taxon, bool findOpenLoansOnly) {
+
+            if (!taxon.EndsWith("%")) {
+                taxon += "%";
+            }
+
+            var sql = @"SELECT DISTINCT L.*, REQ.vchrTitle AS [RequestorTitle], REQ.vchrGivenName AS [RequestorGivenName], REQ.vchrName AS [RequestorName], 
+			            REC.vchrTitle AS [ReceiverTitle], REC.vchrGivenName AS [ReceiverGivenName], REC.vchrName AS [ReceiverName],
+			            ORIG.vchrTitle AS [OriginatorTitle], ORIG.vchrGivenName AS [OriginatorGivenName], ORIG.vchrName AS [OriginatorName]
+		                FROM ((((tblLoan L INNER JOIN tblLoanMaterial LM ON L.intLoanID = LM.intLoanID)
+			                LEFT OUTER JOIN tblContact REQ ON L.intRequestorID = REQ.intContactID)
+			                LEFT OUTER JOIN tblContact REC ON L.intReceiverID = REC.intContactID)
+			                LEFT OUTER JOIN tblContact ORIG ON L.intOriginatorID = ORIG.intContactID)			
+		                    WHERE LM.vchrTaxonName like @taxonName or LM.vchrMaterialDescription like @taxonName";
+
+            if (findOpenLoansOnly) {
+                sql += " AND L.bitLoanClosed = 0";
+            }
+            var mapper = new GenericMapperBuilder<Loan>().build();
+            var list = new List<Loan>();
+            SQLReaderForEach(sql, (reader) => {
+                list.Add(mapper.Map(reader));
+            }, _P("@taxonName", taxon));
             return list;
         }
 
