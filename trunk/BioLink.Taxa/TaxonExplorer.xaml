@@ -129,7 +129,7 @@
                                 
                             </Grid>
                             <Grid Grid.Row="1">
-                                <ext:DragDropScrollViewer>
+                                <ext:DragDropScrollViewer ScrollViewer.HorizontalScrollBarVisibility="Auto">
                                     <ext:VTreeView x:Name="tvwAllTaxa" Margin="0,0,0,0" BorderThickness="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" PreviewMouseMove="TreeView_PreviewMouseMove" PreviewMouseLeftButtonDown="TreeView_PreviewMouseLeftButtonDown" MouseRightButtonUp="TreeView_MouseRightButtonUp" AutoExpandTopLevel="True">
                                         <TreeView.ItemsPanel>
                                             <ItemsPanelTemplate>

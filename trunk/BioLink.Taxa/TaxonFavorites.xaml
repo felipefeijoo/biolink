@@ -18,8 +18,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="36" />
-        </Grid.RowDefinitions>   
-        <ext:DragDropScrollViewer>
+        </Grid.RowDefinitions>
+        <ext:DragDropScrollViewer ScrollViewer.HorizontalScrollBarVisibility="Auto">
             <TreeView Name="tvwFavorites" Margin="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard">
                 <TreeView.Resources>
                     <HierarchicalDataTemplate DataType="{x:Type src:TaxonFavoriteViewModel}" ItemsSource="{Binding Path=Children, Converter={StaticResource TaxonFavoriteSortingConverter}}">

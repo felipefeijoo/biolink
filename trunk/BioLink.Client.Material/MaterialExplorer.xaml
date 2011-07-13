@@ -78,10 +78,11 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="40" />
         </Grid.RowDefinitions>
+        
         <TabControl x:Name="tabMaterial">
             
             <TabItem Header="Contents">
-                <ext:DragDropScrollViewer>
+                <ext:DragDropScrollViewer ScrollViewer.HorizontalScrollBarVisibility="Auto">
                     <ext:VTreeView x:Name="tvwMaterial" BorderThickness="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" MouseRightButtonUp="treeview_MouseRightButtonUp" MouseRightButtonDown="tvwMaterial_MouseRightButtonDown" AutoExpandTopLevel="True">
                     
                         <TreeView.ItemsPanel>
@@ -132,7 +133,7 @@
                     <Label Content="in" Height="28" HorizontalAlignment="Right" Margin="0,5,218,0" Name="label1" VerticalAlignment="Top" />
                     <ComboBox Height="23" HorizontalAlignment="Right" Margin="0,6,87,0" Name="cmbFindScope" VerticalAlignment="Top" Width="120" SelectionChanged="cmbFindScope_SelectionChanged" />                    
                     <Button Content="Find" Height="23" HorizontalAlignment="Right" Margin="0,6,6,0" Name="btnFind" VerticalAlignment="Top" Width="75" Click="btnFind_Click" />
-                    <ext:DragDropScrollViewer Margin="6,39,6,6">
+                    <ext:DragDropScrollViewer Margin="6,39,6,6" ScrollViewer.HorizontalScrollBarVisibility="Auto">
                         <ext:VTreeView  Name="tvwFind" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" MouseRightButtonUp="treeview_MouseRightButtonUp" AllowDrop="True">
 
                             <TreeView.ItemsPanel>
@@ -146,6 +147,7 @@
                 </Grid>
             </TabItem>
         </TabControl>
+        
         <Grid Grid.Row="2" Background="{x:Static SystemColors.ControlBrush}">
             <Button Content="Cancel" Height="23" HorizontalAlignment="Right" Margin="0,8,6,0" Name="btnCancel" VerticalAlignment="Top" Width="75" IsEnabled="False" Click="btnCancel_Click" />
             <Button Content="Apply" Height="23" HorizontalAlignment="Right" Margin="0,8,87,0" Name="btnApply" VerticalAlignment="Top" Width="75" IsEnabled="False" Click="btnApply_Click" />
