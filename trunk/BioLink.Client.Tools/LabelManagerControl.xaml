@@ -78,7 +78,7 @@
                     <Label Content="Filter:" Height="28" HorizontalAlignment="Left" VerticalAlignment="Top" Width="47" Margin="6,6,0,0" />
                     <ext:DelayedTriggerTextbox Height="23" VerticalAlignment="Top" Margin="59,6,7,0" x:Name="txtFilter" TypingPaused="txtFilter_TypingPaused" />
 
-                    <ListView x:Name="lstFields" Margin="6,35,6,6" >
+                    <ListView x:Name="lstFields" Margin="6,35,6,6" MouseDoubleClick="lstFields_MouseDoubleClick" >
                         <ListView.Resources>
                             <DataTemplate DataType="{x:Type model:FieldDescriptor}">
                                 <TextBlock Text="{Binding DisplayName}" />
@@ -118,7 +118,14 @@
                     </StackPanel>
                     
                     <ListView Grid.Column="2" Margin="6" x:Name="lvwSelectedFields">
-                        
+                        <ListView.View>
+                            <GridView>
+                                <GridView.Columns>
+                                    <GridViewColumn Header="Field" Width="250" DisplayMemberBinding="{Binding Path=Field.DisplayName}" HeaderContainerStyle="{StaticResource hcs}" />
+                                    <GridViewColumn Header="Format" Width="100" DisplayMemberBinding="{Binding Path=FormatSpecifier}" HeaderContainerStyle="{StaticResource hcs}" />
+                                </GridView.Columns>
+                            </GridView>
+                        </ListView.View>
                     </ListView>
                 </Grid>
             </TabItem>

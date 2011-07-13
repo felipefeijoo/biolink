@@ -25,6 +25,7 @@ namespace BioLink.Client.Tools {
 
         private List<LabelSetItem> _allItems;
         private ObservableCollection<LabelSetItemViewModel> _itemModel;
+        private List<FieldDescriptor> _fieldModel;
 
         public LabelManagerControl(User user) : base(user, "LabelManager") {
             InitializeComponent();
@@ -37,8 +38,8 @@ namespace BioLink.Client.Tools {
 
             var service = new SupportService(User);
 
-            var fields = service.GetFieldMappings();
-            lstFields.ItemsSource = fields;
+            _fieldModel = service.GetFieldMappings();
+            lstFields.ItemsSource = _fieldModel;
 
             CollectionView myView = (CollectionView)CollectionViewSource.GetDefaultView(lstFields.ItemsSource);
             PropertyGroupDescription groupDescription = new PropertyGroupDescription("Category");
@@ -164,7 +165,6 @@ namespace BioLink.Client.Tools {
                 }
             }
             e.Handled = true;
-
         }
 
         void lvw_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
@@ -268,8 +268,6 @@ namespace BioLink.Client.Tools {
                 
                 _itemModel = new ObservableCollection<LabelSetItemViewModel>(list);
 
-                // ReorderItems();
-
                 foreach (LabelSetItemViewModel item in _itemModel) {
                     item.DataChanged += new DataChangedHandler((vm) => {
                         Host.RegisterUniquePendingChange(new UpdateLabelSetItemAction((vm as LabelSetItemViewModel).Model));
@@ -277,8 +275,56 @@ namespace BioLink.Client.Tools {
                 }
 
                 lvw.ItemsSource = _itemModel;
+
+                // Set Selected export fields...
+                var fieldStr = selected.Delimited;
+                var model = new List<SelectedField>();
+                if (!string.IsNullOrEmpty(fieldStr)) {
+                    char delim = (char) 1;
+                    if (fieldStr.StartsWith(V_1_5_PREFIX)) {
+                        fieldStr = fieldStr.Substring(V_1_5_PREFIX.Length);
+                    } else {
+                        delim = ',';
+                    }
+                    var fields = fieldStr.Split(delim);
+                    foreach (string field in fields) {
+                        string strField = null;
+                        string strFormat = null;
+                        if (field.Contains((char)2)) {
+                            var bits = field.Split((char)2);
+                            strField = bits[0];
+                            strFormat = bits[1];
+                        } else {
+                            strField = field;
+                            strFormat = "";
+                        }
+
+                        var fieldDesc = FindField(strField);
+                        if (fieldDesc != null) {
+                            var selectedField = new SelectedField { Field = fieldDesc, FormatSpecifier = strFormat };
+                            model.Add(selectedField);
+                        }
+
+                    }
+                }
+
+                lvwSelectedFields.ItemsSource = model;
             }
         }
+
+        private FieldDescriptor FindField(string name) {
+            var bits = name.Split('.');
+            if (bits.Length > 1) {
+                var category = bits[0];
+                var fieldName = bits[1];
+                return _fieldModel.Find((f) => {
+                    return f.Category.Equals(category, StringComparison.CurrentCultureIgnoreCase) && f.DisplayName.Equals(fieldName, StringComparison.CurrentCultureIgnoreCase);
+                });
+            }
+            return null;
+        }
+
+        private const string V_1_5_PREFIX = "v1.5:";
 
         private int CurrentItemSetID { get; set; }
 
@@ -398,6 +444,10 @@ namespace BioLink.Client.Tools {
 
         private void txtFilter_TypingPaused(string text) {
             ApplyFilter(text);
+        }
+
+        private void lstFields_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
+            SelectField();
         }
 
     }
@@ -704,6 +754,11 @@ namespace BioLink.Client.Tools {
         protected override BioLinkDataObject GetModel() {
             return (ViewModel as LabelSetItemViewModel).Model;
         }
+    }
+
+    public class SelectedField {
+        public FieldDescriptor Field { get; set; }
+        public string FormatSpecifier { get; set; }
     }
 
 }
