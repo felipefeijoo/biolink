@@ -92,6 +92,8 @@ namespace BioLink.Client.Extensibility {
                 var pinnable = new PinnableObject(pluginName, lookupType, selected.ObjectID.GetValueOrDefault(0));
                 data.SetData(PinnableObject.DRAG_FORMAT_NAME, pinnable);
                 data.SetData(DataFormats.Text, selected.DisplayLabel);
+                data.SetData(DataFormats.UnicodeText, selected.DisplayLabel);
+                data.SetData(DataFormats.StringFormat, selected.DisplayLabel);
                 return data;
             });
 

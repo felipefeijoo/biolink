@@ -505,7 +505,9 @@ namespace BioLink.Client.Taxa {
             if (taxon != null) {
                 DataObject data = new DataObject("Taxon", taxon);
                 data.SetData(PinnableObject.DRAG_FORMAT_NAME, Owner.CreatePinnableTaxon(taxon.TaxaID.Value));
-//                 data.SetData(MapPointSetGenerator.DRAG_FORMAT_NAME, new DelegatingPointSetGenerator<Taxon>(GenerateSpecimenPointSetWithOptions, taxon.Taxon));
+                data.SetData(DataFormats.Text, taxon.TaxaFullName);
+                data.SetData(DataFormats.UnicodeText, taxon.TaxaFullName);
+                data.SetData(DataFormats.StringFormat, taxon.TaxaFullName);
 
                 if (!IsUnlocked) {
                     lblHeader.Visibility = Visibility.Visible;
