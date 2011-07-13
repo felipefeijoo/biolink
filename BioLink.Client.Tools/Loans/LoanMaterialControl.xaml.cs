@@ -53,7 +53,7 @@ namespace BioLink.Client.Tools {
         }
 
         public override ViewModelBase AddNewItem(out DatabaseAction addAction) {            
-            var model = new LoanMaterial() { Returned = false };
+            var model = new LoanMaterial() { Returned = false, NumSpecimens = "1", DateAdded=DateTime.Now };
             addAction = new InsertLoanMaterialAction(model, Loan);
             return new LoanMaterialViewModel(model);
         }
@@ -78,6 +78,24 @@ namespace BioLink.Client.Tools {
 
         public override FrameworkElement FirstControl {
             get { return txtMaterial; }
+        }
+
+        public override bool AcceptDroppedPinnable(PinnableObject pinnable) {
+            return pinnable.LookupType == LookupType.Material;
+        }
+
+        public override void PopulateFromPinnable(ViewModelBase viewModel, PinnableObject pinnable) {
+            var item = viewModel as LoanMaterialViewModel;
+            if (item != null && pinnable.LookupType == LookupType.Material) {
+                var service = new MaterialService(User);
+                var material = service.GetMaterial(pinnable.ObjectID);
+                if (material != null) {
+                    var vm = PluginManager.Instance.GetViewModel(pinnable);
+                    txtMaterial.ObjectID = pinnable.ObjectID;
+                    txtMaterial.Text = vm.DisplayLabel;
+                    txtTaxon.Text = material.TaxaDesc;
+                }
+            }
         }
 
     }
