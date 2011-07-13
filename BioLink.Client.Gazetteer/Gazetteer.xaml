@@ -33,6 +33,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
+    <ScrollViewer HorizontalScrollBarVisibility="Auto">
     <Grid>
         <ComboBox Height="23" Margin="12,8,131,0" Name="cmbFile" VerticalAlignment="Top" Text="{Binding Path=Name}" >
             <ComboBox.ItemTemplate>
@@ -81,4 +82,5 @@
         </Button>
         <Button Content="_Find nearest named place..." Height="23" HorizontalAlignment="Left" Margin="99,0,0,12" Name="btnFindNearestPlace" VerticalAlignment="Bottom" Width="173" Click="btnFindNearestPlace_Click" />
     </Grid>
+    </ScrollViewer>
 </UserControl>

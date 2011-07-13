@@ -11,7 +11,7 @@
                      mc:Ignorable="d" 
                      d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <ext:DragDropScrollViewer>
+        <ext:DragDropScrollViewer ScrollViewer.HorizontalScrollBarVisibility="Auto">
             <ext:VTreeView Name="tvwFavorites" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard">
                 <TreeView.Resources>
                     <HierarchicalDataTemplate DataType="{x:Type mat:SiteFavoriteViewModel}" ItemsSource="{Binding Path=Children}">

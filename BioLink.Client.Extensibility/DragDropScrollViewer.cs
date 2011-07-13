@@ -12,7 +12,7 @@ namespace BioLink.Client.Extensibility {
     public class DragDropScrollViewer : ScrollViewer {
 
         private static readonly double DRAG_INTERVAL = 10; // milliseconds
-        private static readonly double DRAG_ACCELERATION = 0.0005; // pixels per millisecond^2
+        private static readonly double DRAG_ACCELERATION = 0.002; // pixels per millisecond^2
         private static readonly double DRAG_MAX_VELOCITY = 2.0; // pixels per millisecond
         private static readonly double DRAG_INITIAL_VELOCITY = 0.05; // pixels per millisecond
         private static readonly double DRAG_MARGIN = 20.0;
