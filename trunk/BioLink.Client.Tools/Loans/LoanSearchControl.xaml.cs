@@ -82,7 +82,8 @@ namespace BioLink.Client.Tools {
         }
 
         void LoanSearchControl_Loaded(object sender, RoutedEventArgs e) {
-            var options = new Pair<string, string>[] { Pair("Find in all", "A"), Pair("Loan number", "L"), Pair("Permit number", "P"), /* Pair("Taxon name", "T") */ };
+
+            var options = new Pair<string, string>[] { Pair("Find in all (loan fields)", "A"), Pair("Loan number", "L"), Pair("Permit number", "P"), Pair("Taxon name", "T") };
 
             cmbWhat.ItemsSource = options;
             cmbWhat.DisplayMemberPath = "First";
