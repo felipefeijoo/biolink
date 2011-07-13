@@ -16,7 +16,7 @@
         <ListView x:Name="lvw" Grid.Row="1" Margin="6">
             <ListView.Resources>
                 <DataTemplate x:Key="IconColumnTemplate">
-                    <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal" ToolTip="{Binding Path=TooltipContent}" ToolTipService.ShowDuration="30000">
                         <Image Source="{Binding Path=Icon}" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True"/>
                         <TextBlock Text="{Binding Path=FullName}" />
                     </StackPanel>

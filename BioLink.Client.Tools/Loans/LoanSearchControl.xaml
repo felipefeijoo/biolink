@@ -36,8 +36,8 @@
         <ComboBox Grid.Row="1" Height="23" HorizontalAlignment="Right" Margin="0,8,81,0" Name="cmbWhat" VerticalAlignment="Top" Width="117" />
         <Button Content="_Find" Grid.Row="1" Height="23" HorizontalAlignment="Right" Margin="0,8,12,0" Name="btnFind" VerticalAlignment="Top" Width="63" Click="btnFind_Click" />
         <CheckBox Content="Find only open loans" Grid.Row="1" Height="16" HorizontalAlignment="Left" Margin="54,36,0,0" Name="chkFindOnlyOpenLoans" VerticalAlignment="Top" Width="275" />
-        
-        <ListView Grid.Row="2" Margin="6" Name="lvw" MouseDoubleClick="lvw_MouseDoubleClick">
+
+        <ListView Grid.Row="2" Margin="6" Name="lvw" MouseDoubleClick="lvw_MouseDoubleClick" ToolTipService.ShowDuration="30000">
             <ListView.Resources>
                 <DataTemplate x:Key="IconColumnTemplate">
                     <StackPanel Orientation="Horizontal">
@@ -46,6 +46,11 @@
                     </StackPanel>
                 </DataTemplate>
             </ListView.Resources>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">                    
+                    <Setter Property="ToolTip" Value="{Binding Path=TooltipContent}" />
+                </Style>
+            </ListView.ItemContainerStyle>
             <ListView.View>
                 <GridView>
                     <GridView.Columns>

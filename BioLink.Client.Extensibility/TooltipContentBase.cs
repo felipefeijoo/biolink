@@ -159,7 +159,7 @@ namespace BioLink.Client.Extensibility {
             var grid = new Grid();
 
             for (int i = 0; i < _list.Count; ++i) {
-                grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(23) });
+                grid.RowDefinitions.Add(new RowDefinition { /* Height = new GridLength(23) */ });
             }
 
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });            

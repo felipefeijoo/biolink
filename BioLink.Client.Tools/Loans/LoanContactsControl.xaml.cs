@@ -369,7 +369,14 @@ namespace BioLink.Client.Tools {
 
             builder.Add("Job title", viewModel.JobTitle);
             builder.Add("E-mail", viewModel.EMail);
-            builder.Add("Work phone", viewModel.WorkPh);            
+            builder.Add("Work phone", viewModel.WorkPh);
+            builder.Add("Work Fax", viewModel.WorkFax);
+            builder.Add("Home phone", viewModel.HomePh);
+            builder.Add("Institution", viewModel.Institution);
+            builder.Add("Street Address", viewModel.StreetAddress);
+            if (viewModel.StreetAddress == null || !viewModel.StreetAddress.Equals(viewModel.PostalAddress,StringComparison.CurrentCultureIgnoreCase)) {
+                builder.Add("Postal Address", viewModel.PostalAddress);
+            }
         }
 
         protected override BioLinkDataObject GetModel() {
