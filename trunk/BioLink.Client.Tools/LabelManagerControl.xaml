@@ -25,7 +25,7 @@
                     <Label Content="Label set name:" Height="23" HorizontalAlignment="Left" Name="label1" VerticalAlignment="Center" Width="106" />
                     <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="112,2,0,0" Name="txrtName" VerticalAlignment="Center" Width="246" Text="{Binding Path=Name}"/>
 
-                    <ListView Grid.Row="1" Margin="6,6,6,0" x:Name="lvw">
+                    <ListView Grid.Row="1" Margin="6,6,6,0" x:Name="lvw" ToolTipService.ShowDuration="30000">
                         <ListView.Resources>
                             <DataTemplate x:Key="NumCopiesTemplate">
                                 <Grid Margin="0">
