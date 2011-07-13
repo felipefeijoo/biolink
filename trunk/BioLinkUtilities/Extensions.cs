@@ -261,7 +261,25 @@ namespace BioLink.Client.Utilities {
             return null;
         }
 
+        public static Window FindParentWindow(this FrameworkElement control) {
+            if (control is Window) {
+                return control as Window;
+            }
+
+            var p = control.Parent as FrameworkElement;
+            while (!(p is Window) && p != null) {
+                p = p.Parent as FrameworkElement;
+            }
+
+            if (p != null) {
+                return p as Window;
+            }
+            return null;
+        }
+
     }
+
+
 
     public delegate string MessageFormatterFunc(string format, params object[] args);
 

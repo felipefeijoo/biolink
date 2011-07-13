@@ -221,6 +221,9 @@ namespace BioLink.Client.Tools {
                     return new ContactViewModel(m);
                 }));
                 lvwFind.ItemsSource = _findModel;
+                if (list.Count == 0) {
+                    InfoBox.Show("No matching results found.", "No results", this);
+                }
             }
         }
 

@@ -994,7 +994,7 @@ namespace BioLink.Client.Material {
                 tvwFind.UpdateLayout();
 
                 if (resultsCount == 0) {
-                    MessageBox.Show("No matching elements found.", "No results", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    InfoBox.Show("No matching elements found.", "No results", this);
                 }                
             }
 

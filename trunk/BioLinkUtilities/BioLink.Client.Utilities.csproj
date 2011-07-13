@@ -97,6 +97,7 @@
     <Compile Include="IChangeable.cs" />
     <Compile Include="ILazyPopulateControl.cs" />
     <Compile Include="ImageCache.cs" />
+    <Compile Include="InfoBox.cs" />
     <Compile Include="IniFile.cs" />
     <Compile Include="InputBox.xaml.cs">
       <DependentUpon>InputBox.xaml</DependentUpon>

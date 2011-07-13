@@ -79,7 +79,7 @@ namespace BioLink.Client.Tools {
                     this.DialogResult = true;
                     this.Close();                
                 } else {
-                    MessageBox.Show("No matching items found.", "No results", MessageBoxButton.OK, MessageBoxImage.Information);
+                    InfoBox.Show("No matching items found.", "No results", this);
                 }
 
             }

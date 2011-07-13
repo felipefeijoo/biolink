@@ -23,18 +23,6 @@ namespace BioLink.Client.Extensibility {
             return null;
         }
 
-        public static Window FindParentWindow(this FrameworkElement control) {
-            var p = control.Parent as FrameworkElement;
-            while (!(p is Window) && p != null) {
-                p = p.Parent as FrameworkElement;
-            }
-
-            if (p != null) {
-                return p as Window;
-            }
-            return null;
-        }
-
         public static void WaitCursor(this Control control) {
             control.SetCursor(Cursors.Wait);
         }
