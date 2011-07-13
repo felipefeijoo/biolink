@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="306" d:DesignWidth="573">
     <Grid>
         
         <Grid.ColumnDefinitions>
@@ -19,7 +19,7 @@
 
         <GridSplitter ResizeDirection="Columns" Grid.Row="0" Grid.Column="0" Width="8" />
 
-        <ListBox Grid.Column="0" Name="lst" Margin="0,0,8,0" MinWidth="180">
+        <ListBox Grid.Column="0" Name="lst" Margin="0,0,8,0" MinWidth="180" AllowDrop="True">
             <ListBox.Resources>
                 <DataTemplate DataType="{x:Type ext:ViewModelBase}">
                     <StackPanel Orientation="Horizontal">

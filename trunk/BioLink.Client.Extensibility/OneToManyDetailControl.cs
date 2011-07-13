@@ -54,5 +54,13 @@ namespace BioLink.Client.Extensibility {
 
         #endregion
 
+
+        public virtual bool AcceptDroppedPinnable(PinnableObject pinnable) {
+            return false;
+        }
+
+        public virtual void PopulateFromPinnable(ViewModelBase viewModel, PinnableObject pinnable) {
+        }
+
     }
 }

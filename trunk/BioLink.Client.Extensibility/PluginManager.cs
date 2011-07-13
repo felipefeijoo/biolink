@@ -569,6 +569,13 @@ namespace BioLink.Client.Extensibility {
             return true;
         }
 
+        public ViewModelBase GetViewModel(PinnableObject pinnable) {
+            if (pinnable != null) {
+                return GetViewModel(pinnable.LookupType, pinnable.ObjectID);
+            }
+            return null;
+        }
+
         public ViewModelBase GetViewModel(LookupType t, int objectId) {
 
             var candidates = new List<ViewModelBase>();

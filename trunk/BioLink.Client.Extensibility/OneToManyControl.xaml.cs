@@ -45,6 +45,32 @@ namespace BioLink.Client.Extensibility {
             detailsGrid.IsEnabled = false;
 
             ChangesCommitted += new PendingChangesCommittedHandler(OneToManyControl_ChangesCommitted);
+
+            lst.PreviewDragEnter += new DragEventHandler(lst_PreviewDragOver);
+            lst.PreviewDragOver += new DragEventHandler(lst_PreviewDragOver);
+            lst.Drop += new DragEventHandler(lst_Drop);
+
+        }
+
+        void lst_Drop(object sender, DragEventArgs e) {
+            var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;            
+            if (pinnable != null) {
+                var viewModel = AddNew();
+                if (viewModel != null) {
+                    _control.PopulateFromPinnable(viewModel, pinnable);
+                }
+            }                            
+            
+        }
+
+        void lst_PreviewDragOver(object sender, DragEventArgs e) {
+            var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;
+            e.Effects = DragDropEffects.None;
+            if (pinnable != null) {
+                if (_control.AcceptDroppedPinnable(pinnable)) {
+                    e.Effects = DragDropEffects.Link;
+                }
+            }                            
         }
 
         void OneToManyControl_ChangesCommitted(object sender) {
@@ -91,7 +117,7 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        private void AddNew() {
+        private ViewModelBase AddNew() {
             if (_control != null) {
                 DatabaseAction action = null;
                 var viewModel = _control.AddNewItem(out action);
@@ -110,7 +136,10 @@ namespace BioLink.Client.Extensibility {
                         }
                     }
                 }
+                return viewModel;
             }
+
+            return null;
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e) {
