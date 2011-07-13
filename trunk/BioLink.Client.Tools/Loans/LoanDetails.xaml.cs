@@ -32,7 +32,13 @@ namespace BioLink.Client.Tools {
             this.Plugin = plugin;
             this.LoanID = loanID;
             this.ChangeContainerSet += new Action(LoanDetails_ChangeContainerSet);
+            this.ChangesCommitted += new PendingChangesCommittedHandler(LoanDetails_ChangesCommitted);
             
+        }
+
+        void LoanDetails_ChangesCommitted(object sender) {
+            // Keep the loan id in sync with the view model (in the case of new loans).
+            LoanID = _viewModel.LoanID;
         }
 
         public override void Dispose() {
@@ -126,6 +132,11 @@ namespace BioLink.Client.Tools {
         }
 
         private void ShowLoanForms() {
+
+            if (LoanID < 0 || HasPendingChanges) {
+                ErrorMessage.Show("You must save/apply any changes to this loan before generating forms");
+                return;
+            }
 
             if (_loanFormGenerator == null) {
                 _loanFormGenerator = new GenerateLoanFormControl(User, Plugin, LoanID);
