@@ -17,7 +17,7 @@ namespace BioLink.Data {
         #region Reports
 
         public DataMatrix GetMaterialForTrap(int trapID) {
-            return StoredProcDataMatrix("spMaterialListForTrap", _P("intTrapID", trapID));
+            return StoredProcDataMatrix("spMaterialListForTrap", null, _P("intTrapID", trapID));
         }
 
         public DataMatrix GetTaxaForSites(bool includeLocations, string itemType, int itemID, int biotaID, string criteriaText) {

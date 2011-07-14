@@ -259,7 +259,7 @@ namespace BioLink.Data {
 			                LEFT OUTER JOIN tblContact REQ ON L.intRequestorID = REQ.intContactID)
 			                LEFT OUTER JOIN tblContact REC ON L.intReceiverID = REC.intContactID)
 			                LEFT OUTER JOIN tblContact ORIG ON L.intOriginatorID = ORIG.intContactID)			
-		                    WHERE LM.vchrTaxonName like @taxonName or LM.vchrMaterialDescription like @taxonName";
+		                    WHERE (LM.vchrTaxonName like @taxonName or LM.vchrMaterialDescription like @taxonName)";
 
             if (findOpenLoansOnly) {
                 sql += " AND L.bitLoanClosed = 0";

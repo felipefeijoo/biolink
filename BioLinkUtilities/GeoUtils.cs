@@ -8,6 +8,8 @@ namespace BioLink.Client.Utilities {
 
     public static class GeoUtils {
 
+        public const string DEGREE_SYMBOL = "°";
+
         private static DirectionRange[] FourPoints = new DirectionRange[] {
             new DirectionRange(0,45, "N"),
             new DirectionRange(45, 135, "E"),
@@ -218,7 +220,7 @@ namespace BioLink.Client.Utilities {
 
             for (i = lStrLen - 1; i >= 0; i--) {
 
-                if ("NSEW:;'\"°".Contains(Char.ToUpper(szIn[i]))) {
+                if (("NSEW:;'\"" + DEGREE_SYMBOL).Contains(Char.ToUpper(szIn[i]))) {
                     isDMS = true;
 
                     if ("NSEW".Contains(Char.ToUpper(szIn[i]))) {
@@ -325,7 +327,7 @@ namespace BioLink.Client.Utilities {
         /// <param name="coordType"></param>
         /// <param name="format"></param>
         /// <returns></returns>
-        public static string DecDegToDMS(double decdeg, CoordinateType coordType, String format = "%D°%m'%s\"%r") {
+        public static string DecDegToDMS(double decdeg, CoordinateType coordType, String format = "%D" + DEGREE_SYMBOL + "%m'%s\"%r") {
 
             var absDecDeg = Math.Abs(decdeg);
             int iDegrees = (int)Math.Floor(absDecDeg);

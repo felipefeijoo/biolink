@@ -265,20 +265,20 @@ namespace BioLink.Data {
         }
 
         public DataMatrix GetStatistics(int taxonId) {
-            return StoredProcDataMatrix("spBiotaStatistics", _P("intBiotaId", taxonId));
+            return StoredProcDataMatrix("spBiotaStatistics", null, _P("intBiotaId", taxonId));
         }
 
         public DataMatrix GetMaterialForTaxon(int taxonId) {
-            return StoredProcDataMatrix("spMaterialListForTaxon", _P("intBiotaId", taxonId));
+            return StoredProcDataMatrix("spMaterialListForTaxon", null, _P("intBiotaId", taxonId));
         }
 
         public DataMatrix GetTaxonTypes(int taxonId) {
-            return StoredProcDataMatrix("spBiotaListTypes", _P("BiotaID", taxonId));
+            return StoredProcDataMatrix("spBiotaListTypes", null, _P("BiotaID", taxonId));
         }
 
         public DataMatrix GetAssociatesForTaxa(int regionID, params int[] taxonIds) {
             var strTaxonIDS = taxonIds.Join(",");
-            return StoredProcDataMatrix("spAssociatesListForTaxon", _P("intPoliticalRegionID", regionID), _P("vchrBiotaID", strTaxonIDS));
+            return StoredProcDataMatrix("spAssociatesListForTaxon", null, _P("intPoliticalRegionID", regionID), _P("vchrBiotaID", strTaxonIDS));
         }
 
         public List<Kingdom> GetKingdomList() {

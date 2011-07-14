@@ -213,22 +213,37 @@ namespace BioLink.Data {
             return table;
         }
 
-        internal DataMatrix StoredProcDataMatrix(string proc, params SqlParameter[] @params) {
+        internal DataMatrix StoredProcDataMatrix(string proc, Dictionary<string, ColumnDataFormatter> formatterMap, params SqlParameter[] @params) {
 
             DataMatrix matrix = null;
+            ColumnDataFormatter[] formatters = null;
             StoredProcReaderForEach(proc, (reader) => {
 
                 if (matrix == null) {
+
+                    var defaultFormatter = new ColumnDataFormatter((name, value) => {
+                        return value;
+                    });
+
+                    // Set up formatter array...
+                    formatters = new ColumnDataFormatter[reader.FieldCount];
+
                     matrix = new DataMatrix();
                     for (int i = 0; i < reader.FieldCount; ++i) {
-                        matrix.Columns.Add(new MatrixColumn { Name=reader.GetName(i) });
+                        var columnName = reader.GetName(i);
+                        matrix.Columns.Add(new MatrixColumn { Name = columnName});
+                        if (formatterMap != null && formatterMap.ContainsKey(columnName)) {
+                            formatters[i] = formatterMap[columnName];
+                        } else {
+                            formatters[i] = defaultFormatter;
+                        }
                     }
                 }
 
                 MatrixRow row = matrix.AddRow();
                 for (int i = 0; i < reader.FieldCount; ++i) {
-                    if (!reader.IsDBNull(i)) {
-                        row[i] = reader[i];
+                    if (!reader.IsDBNull(i)) {                        
+                        row[i] = formatters[i](reader[i], reader);
                     }
                 }
                 
@@ -336,5 +351,7 @@ namespace BioLink.Data {
             return (T)value;
         }
     }
+
+    public delegate object ColumnDataFormatter(object data, SqlDataReader reader);
 
 }

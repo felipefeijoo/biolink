@@ -11,6 +11,7 @@ namespace BioLink.Client.Utilities {
     public static class DateUtils {
 
         private static ReadOnlyCollection<string> ROMAN_MONTHS = new List<string> { "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x", "xi", "xii" }.AsReadOnly();
+        private static ReadOnlyCollection<string> JULIAN_MONTHS = new List<string> { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" }.AsReadOnly();
 
         private static Regex BLDateRegex = new Regex(@"^(\d\d\d\d)(\d\d)(\d\d)$");
 
@@ -31,6 +32,22 @@ namespace BioLink.Client.Utilities {
             }
             return datestr;
         }
+
+        public static string RomanMonth(int month) {
+            if (month >= 0 && month < ROMAN_MONTHS.Count) {
+                return ROMAN_MONTHS[month - 1];
+            }
+            return "???";
+        }
+
+        public static string MidMonth(int month) {
+            if (month >= 0 && month < JULIAN_MONTHS.Count) {
+                return JULIAN_MONTHS[month - 1].Substring(0,3);
+            }
+            return "???";
+
+        }
+
 
         public static string BLDateToStr(int? bldate, string @default = "") {
             if (!bldate.HasValue) {
@@ -203,6 +220,28 @@ namespace BioLink.Client.Utilities {
             return "";
         }
 
+
+
+        public static bool BLDateComponents(string bldate, out int day, out int month, out int year) {
+            day = 0;
+            month = 0;
+            year = 0;
+            string message;
+
+            if (!IsValidBLDate(bldate, out message)) {
+                return false;
+            }
+
+            Match m = BLDateRegex.Match(bldate);
+            if (m.Success) {
+                year = Int32.Parse(m.Groups[1].Value);
+                month = Int32.Parse(m.Groups[2].Value);
+                day = Int32.Parse(m.Groups[3].Value);
+                return true;
+            }
+
+            return false;
+        }
 
     }
 

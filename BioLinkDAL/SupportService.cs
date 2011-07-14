@@ -8,6 +8,7 @@ using System.Data.SqlClient;
 using System.Reflection;
 using System.Data;
 using BioLink.Client.Utilities;
+using Microsoft.VisualBasic;
 
 namespace BioLink.Data {
 
@@ -1216,7 +1217,124 @@ namespace BioLink.Data {
 
         public DataMatrix ExecuteQuery(IEnumerable<QueryCriteria> criteria, bool distinct) {
             var query = QuerySQLGenerator.GenerateSQL(User, criteria, distinct);
-            return StoredProcDataMatrix("spQuerySelect", _P("txtSELECT", query.SelectHidden), _P("txtFROM", query.From), _P("txtWHERE", query.Where));
+            return StoredProcDataMatrix("spQuerySelect", null, _P("txtSELECT", query.SelectHidden), _P("txtFROM", query.From), _P("txtWHERE", query.Where));
+        }
+
+        public static object FormatDate(object dateObj, string formatOption) {
+
+            if (dateObj == null) {
+                return "";
+            }
+
+            if (string.IsNullOrEmpty(formatOption)) {
+                return dateObj;
+            }
+
+            DateTime? dt = null;
+            int day = 0, month = 0, year = 0;
+            bool isBLDate = false;
+
+            if (Information.IsDate(dateObj)) {
+                dt = DateAndTime.DateValue(dateObj.ToString());
+            } else {                
+                if (DateUtils.BLDateComponents(dateObj.ToString(), out day, out month, out year)) {
+                    isBLDate = true;
+                    dt = DateAndTime.DateValue(day + " " + DateUtils.MidMonth(month) + ", " + year);
+                }
+            }
+
+            // Can we use c# formatting?
+            if (formatOption.StartsWith("{0") && formatOption.EndsWith("}")) {
+                if (dt.HasValue) {
+                    return string.Format(formatOption, dt);
+                }
+            } else {
+                if (dt.HasValue) {
+                    string format = formatOption.Replace("RM", "" + (char)1);
+                    if (isBLDate) {
+                        // Determine from the date components if any are not specified. If any of these
+                        // are not specified, remove the potential formatting elements from the format
+                        // string. Actual day and month values need to be supplied in order to use the built in Format function                        
+                        if (day == 0) {
+                            format = format.Replace("d", "");
+                            format = format.Replace("w", "");
+                            day = 1;
+                        }
+
+                        if (month == 0) {
+                            format = format.Replace("m", "");
+                            format = format.Replace("q", "");
+                            month = 1;
+                        }
+
+                        format = format.Replace("\\", "\\\\");
+                        format = format.Replace(".", "\\.");
+                    }
+
+                    var final = Strings.Format(dt.Value, format);
+                    if (final.Contains((char)1)) {
+                        final = final.Replace("" + (char)1, DateUtils.RomanMonth(DateAndTime.Month(dt.Value)));
+                    }
+                    return final;
+                }
+            }
+
+            return dateObj.ToString();
+        }
+
+        public const string COORD_FORMAT_DMS = "dms";
+        public const string COORD_FORMAT_DECIMAL_DEGREES = "decimal";
+        public const string COORD_FORMAT_DEGREES_DECIMAL_MINUTES = "degrees decimal minutes";
+
+        public static object FormatCoordinate(object coordObj, string formatOption, CoordinateType coordType) {
+
+            if (coordObj == null) {
+                return "";
+            }
+
+            double value = 0;
+            if (double.TryParse(coordObj.ToString(), out value)) {
+                switch (formatOption.ToLower()) {
+                    case COORD_FORMAT_DMS:
+                        return GeoUtils.DecDegToDMS(value, coordType);
+                    case COORD_FORMAT_DECIMAL_DEGREES:
+                        return value;
+                    case COORD_FORMAT_DEGREES_DECIMAL_MINUTES:
+                        int deg;
+                        double min;
+                        GeoUtils.DecDegToDDecM(value, out deg, out min);
+                        return string.Format("{0}{1}{2}", deg, GeoUtils.DEGREE_SYMBOL, min);
+                }
+            }
+
+            return coordObj.ToString();
+
+        }
+
+        private Dictionary<string, ColumnDataFormatter> BuildFormatters(IEnumerable<QueryCriteria> criteria) {
+            var m = new Dictionary<string, ColumnDataFormatter>();
+
+            foreach (QueryCriteria c in criteria) {
+                string alias = c.Alias;
+                if (string.IsNullOrEmpty(alias)) {
+                    alias = c.Field.DisplayName;
+                }
+
+                if (!string.IsNullOrEmpty(c.Field.Format) && !string.IsNullOrEmpty(c.FormatOption)) {
+                    switch (c.Field.Format.ToLower()) {
+                        case "date":
+                            m[alias] = new ColumnDataFormatter((value, reader) => { return FormatDate(value, c.FormatOption); });
+                            break;
+                        case "latitude":
+                        case "longitude":
+                            var coordType = (CoordinateType)Enum.Parse(typeof(CoordinateType), c.Field.Format);
+                            m[alias] = new ColumnDataFormatter((value, reader) => { return FormatCoordinate(value, c.FormatOption, coordType); });
+                            break;
+                    }
+                }
+            }
+
+            return m;
         }
 
         #endregion
@@ -1453,7 +1571,7 @@ namespace BioLink.Data {
             
             StoredProcUpdate("spLabelSetUpdate",
                 _P("intLabelSetID", model.ID),
-                _P("vchrName", model.Name),
+                _P("vchrLabelSetName", model.Name),
                 _P("txtDelimitedFields", model.Delimited)
             );            
         }
