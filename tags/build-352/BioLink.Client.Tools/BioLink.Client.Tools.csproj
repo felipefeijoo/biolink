@@ -1,0 +1,514 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{074D0242-D833-46C6-A486-C2A3B0F189F5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BioLink.Client.Tools</RootNamespace>
+    <AssemblyName>BioLink.Client.Tools</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Accessibility">
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Newtonsoft.Json, Version=3.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\shared\lib\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="PresentationUI, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="SharpMap.Extensions">
+      <HintPath>..\shared\lib\SharpMap.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="UIAutomationTypes" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="administration\AdministrationComponent.cs" />
+    <Compile Include="administration\AdministrationControl.xaml.cs">
+      <DependentUpon>AdministrationControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AdvancedPreferences.xaml.cs">
+      <DependentUpon>AdvancedPreferences.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CoordinateFormattingOptions.xaml.cs">
+      <DependentUpon>CoordinateFormattingOptions.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DateFormattingOptions.xaml.cs">
+      <DependentUpon>DateFormattingOptions.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LabelManagerControl.xaml.cs">
+      <DependentUpon>LabelManagerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LinkedMultimediaItemsControl.xaml.cs">
+      <DependentUpon>LinkedMultimediaItemsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MaterialByUserWindow.xaml.cs">
+      <DependentUpon>MaterialByUserWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modelling\BoxCarDistributionModel.cs" />
+    <Compile Include="Loans\GenerateLoanFormControl.xaml.cs">
+      <DependentUpon>GenerateLoanFormControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Loans\LoanRemindersControl.xaml.cs">
+      <DependentUpon>LoanRemindersControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Loans\ContactActions.cs" />
+    <Compile Include="Loans\ContactBrowsePage.xaml.cs">
+      <DependentUpon>ContactBrowsePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Loans\ContactDetails.xaml.cs">
+      <DependentUpon>ContactDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modelling\DistributionModel.cs" />
+    <Compile Include="Modelling\EditPointWindow.xaml.cs">
+      <DependentUpon>EditPointWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modelling\EnvironmentalLayer.cs" />
+    <Compile Include="Modelling\GowerMetricModel.cs" />
+    <Compile Include="Modelling\GridLayerFileViewModel.cs" />
+    <Compile Include="Modelling\GridLayerProperties.xaml.cs">
+      <DependentUpon>GridLayerProperties.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="import\ImportCache.cs" />
+    <Compile Include="import\ImportFilterSelection.xaml.cs">
+      <DependentUpon>ImportFilterSelection.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="import\ImportMappingPage.xaml.cs">
+      <DependentUpon>ImportMappingPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="import\ImportPage.xaml.cs">
+      <DependentUpon>ImportPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="import\ImportProcessor.cs" />
+    <Compile Include="import\ImportReferencesProcessor.cs" />
+    <Compile Include="import\ImportWizard.xaml.cs">
+      <DependentUpon>ImportWizard.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="journals\JournalBrowsePage.xaml.cs">
+      <DependentUpon>JournalBrowsePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="journals\JournalDatabaseActions.cs" />
+    <Compile Include="journals\JournalDetails.xaml.cs">
+      <DependentUpon>JournalDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="journals\JournalManager.xaml.cs">
+      <DependentUpon>JournalManager.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="journals\JournalViewModel.cs" />
+    <Compile Include="import\MaterialImportProcessor.cs" />
+    <Compile Include="administration\NameListAdminControl.xaml.cs">
+      <DependentUpon>NameListAdminControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="administration\TraitTypesControl.xaml.cs">
+      <DependentUpon>TraitTypesControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modelling\LayerImageGenerator.cs" />
+    <Compile Include="Loans\LoanContactsControl.xaml.cs">
+      <DependentUpon>LoanContactsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Loans\LoanCorrespondenceControl.xaml.cs">
+      <DependentUpon>LoanCorrespondenceControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Loans\LoanDetails.xaml.cs">
+      <DependentUpon>LoanDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Loans\LoanMaterialControl.xaml.cs">
+      <DependentUpon>LoanMaterialControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Loans\LoanSearchControl.xaml.cs">
+      <DependentUpon>LoanSearchControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Loans\LoansForContact.xaml.cs">
+      <DependentUpon>LoansForContact.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Loans\LoanViewModel.cs" />
+    <Compile Include="Modelling\ModellingTool.xaml.cs">
+      <DependentUpon>ModellingTool.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modelling\ModelPoint.cs" />
+    <Compile Include="MultimediaManager.xaml.cs">
+      <DependentUpon>MultimediaManager.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Loans\OverdueLoansControl.xaml.cs">
+      <DependentUpon>OverdueLoansControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modelling\PointSetDisplayOptionsWindow.xaml.cs">
+      <DependentUpon>PointSetDisplayOptionsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modelling\PointSetsControl.xaml.cs">
+      <DependentUpon>PointSetsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modelling\SingleModelOptionsControl.xaml.cs">
+      <DependentUpon>SingleModelOptionsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modelling\SpeciesRichnessOptions.xaml.cs">
+      <DependentUpon>SpeciesRichnessOptions.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SpecializedMultimediaManager.xaml.cs">
+      <DependentUpon>SpecializedMultimediaManager.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="usermanager\PermissionProperties.xaml.cs">
+      <DependentUpon>PermissionProperties.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="phrases\PhraseDatabaseAction.cs" />
+    <Compile Include="phrases\PhraseManager.xaml.cs">
+      <DependentUpon>PhraseManager.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="phrases\PhraseViewModel.cs" />
+    <Compile Include="querytool\QueryTool.xaml.cs">
+      <DependentUpon>QueryTool.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="references\ReferenceFavorites.xaml.cs">
+      <DependentUpon>ReferenceFavorites.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="references\ReferenceFavoriteViewModel.cs" />
+    <Compile Include="references\BookDetails.xaml.cs">
+      <DependentUpon>BookDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="references\BookSectionDetails.xaml.cs">
+      <DependentUpon>BookSectionDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="references\InternetURLDetails.xaml.cs">
+      <DependentUpon>InternetURLDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="references\JournalReferenceDetails.xaml.cs">
+      <DependentUpon>JournalReferenceDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="references\JournalSectionDetails.xaml.cs">
+      <DependentUpon>JournalSectionDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="references\MiscDetails.xaml.cs">
+      <DependentUpon>MiscDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="references\ReferenceDatabaseAction.cs" />
+    <Compile Include="references\ReferenceDetail.xaml.cs">
+      <DependentUpon>ReferenceDetail.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="references\ReferenceManager.xaml.cs">
+      <DependentUpon>ReferenceManager.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="references\ReferenceViewModel.cs" />
+    <Compile Include="references\TaxonRefLinkDatabaseActions.cs" />
+    <Compile Include="references\TaxonRefLinksControl.xaml.cs">
+      <DependentUpon>TaxonRefLinksControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="references\TaxonRefLinkViewModel.cs" />
+    <Compile Include="querytool\SQLViewer.xaml.cs">
+      <DependentUpon>SQLViewer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ToolsPlugin.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="usermanager\UserManager.xaml.cs">
+      <DependentUpon>UserManager.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="usermanager\UserProperties.xaml.cs">
+      <DependentUpon>UserProperties.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Reports\UserStatsReport.cs" />
+    <Compile Include="Reports\UserStatsReportOptions.xaml.cs">
+      <DependentUpon>UserStatsReportOptions.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BioLink.Client.Extensibility\BioLink.Client.Extensibility.csproj">
+      <Project>{044BD5B6-6213-4B50-9CE9-110FC3A43479}</Project>
+      <Name>BioLink.Client.Extensibility</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BioLinkDAL\BioLink.Data.csproj">
+      <Project>{E74AFE93-4A44-43F6-8F94-03E457321ABC}</Project>
+      <Name>BioLink.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BioLinkUtilities\BioLink.Client.Utilities.csproj">
+      <Project>{85A21739-BE1C-4A09-9BF6-145A6162929E}</Project>
+      <Name>BioLink.Client.Utilities</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="StringResources.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="administration\AdministrationControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AdvancedPreferences.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CoordinateFormattingOptions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DateFormattingOptions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LabelManagerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LinkedMultimediaItemsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Loans\GenerateLoanFormControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Loans\LoanRemindersControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Loans\ContactBrowsePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Loans\ContactDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MaterialByUserWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modelling\EditPointWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modelling\GridLayerProperties.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="import\ImportFilterSelection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="import\ImportMappingPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="import\ImportPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="import\ImportWizard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="journals\JournalBrowsePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="journals\JournalDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="journals\JournalManager.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="administration\NameListAdminControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="administration\TraitTypesControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Loans\LoanContactsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Loans\LoanCorrespondenceControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Loans\LoanDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Loans\LoanMaterialControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Loans\LoanSearchControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Loans\LoansForContact.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modelling\ModellingTool.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MultimediaManager.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Loans\OverdueLoansControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modelling\PointSetDisplayOptionsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modelling\PointSetsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modelling\SingleModelOptionsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modelling\SpeciesRichnessOptions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SpecializedMultimediaManager.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="usermanager\PermissionProperties.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="phrases\PhraseManager.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="querytool\QueryTool.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="references\ReferenceFavorites.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="references\BookDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="references\BookSectionDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="references\InternetURLDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="references\JournalReferenceDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="references\JournalSectionDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="references\MiscDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="references\ReferenceDetail.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="references\ReferenceManager.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="references\TaxonRefLinksControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="querytool\SQLViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="usermanager\UserManager.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="usermanager\UserProperties.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Reports\UserStatsReportOptions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Phrase.png" />
+    <Resource Include="images\Phrase_fixed.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Reference.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Journal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Speckle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\GridLayer.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>mkdir "$(SolutionDir)\BiolinkApplication\bin\Debug"
+copy "$(TargetPath)" "$(SolutionDir)\BiolinkApplication\bin\Debug"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
