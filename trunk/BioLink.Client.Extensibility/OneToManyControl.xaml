@@ -14,7 +14,7 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
-            <RowDefinition Height="40" />
+            <RowDefinition Height="29" />
         </Grid.RowDefinitions>
 
         <GridSplitter ResizeDirection="Columns" Grid.Row="0" Grid.Column="0" Width="8" />
@@ -34,8 +34,8 @@
 
         </Grid>
 
-        <Button Content="_Delete" Grid.Row="1" Height="23" HorizontalAlignment="Left" Margin="81,5,0,0" Name="btnDelete" VerticalAlignment="Top" Width="75" Click="btnDelete_Click" />
-        <Button Content="_Add new" Height="23" HorizontalAlignment="Left" Margin="0,5,0,0" Name="btnAdd" VerticalAlignment="Top" Width="75" Grid.Row="1" Click="btnAdd_Click" />
+        <Button Content="_Delete" Grid.Row="1" Height="23" HorizontalAlignment="Left" Margin="81,0,0,0" Name="btnDelete" VerticalAlignment="Bottom" Width="75" Click="btnDelete_Click" />
+        <Button Content="_Add new" HorizontalAlignment="Left" Name="btnAdd" Width="75" Grid.Row="1" Click="btnAdd_Click" Height="23" VerticalAlignment="Bottom" />
     </Grid>
     
 </ext:DatabaseActionControl>

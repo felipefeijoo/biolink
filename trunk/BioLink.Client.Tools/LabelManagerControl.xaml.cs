@@ -23,6 +23,8 @@ namespace BioLink.Client.Tools {
     /// </summary>
     public partial class LabelManagerControl : OneToManyDetailControl {
 
+        private const string V_1_5_PREFIX = "v1.5:";
+
         private List<LabelSetItem> _allItems;
         private ObservableCollection<LabelSetItemViewModel> _itemModel;
         private List<FieldDescriptor> _fieldModel;
@@ -39,17 +41,60 @@ namespace BioLink.Client.Tools {
             var service = new SupportService(User);
 
             _fieldModel = service.GetFieldMappings();
-            lstFields.ItemsSource = _fieldModel;
+            lvwFields.ItemsSource = _fieldModel;
 
-            CollectionView myView = (CollectionView)CollectionViewSource.GetDefaultView(lstFields.ItemsSource);
+            lvwSelectedFields.MouseRightButtonUp += new MouseButtonEventHandler(lvwSelectedFields_MouseRightButtonUp);
+
+            CollectionView myView = (CollectionView)CollectionViewSource.GetDefaultView(lvwFields.ItemsSource);
             PropertyGroupDescription groupDescription = new PropertyGroupDescription("Category");
             myView.GroupDescriptions.Add(groupDescription);
 
         }
 
+        void lvwSelectedFields_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            var selected = lvwSelectedFields.SelectedItem as SelectedField;
+            if (selected != null) {
+                var builder = new ContextMenuBuilder(null);
+                builder.New("Format options").Handler(() => { ShowFormatOptions(selected); }).End();
+
+                lvwSelectedFields.ContextMenu = builder.ContextMenu;
+            }
+        }
+
+        private void ShowFormatOptions(SelectedField field) {
+            if (string.IsNullOrWhiteSpace(field.Field.Format)) {
+                InfoBox.Show("There are no formatting options available for this field", "No formatting options", this);
+                return;
+            }
+
+            switch (field.Field.Format.ToLower()) {
+                case "date":
+                    var datefrm = new DateFormattingOptions(field.FormatSpecifier);
+                    datefrm.Owner = this.FindParentWindow();
+                    datefrm.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                    if (datefrm.ShowDialog().ValueOrFalse()) {
+                        field.FormatSpecifier = datefrm.FormatOption;                        
+                    }
+                    break;
+                case "latitude":
+                case "longitude":
+                    var coordType = (CoordinateType)Enum.Parse(typeof(CoordinateType), field.Field.Format);
+                    var coordfrm = new CoordinateFormattingOptions(coordType, field.FormatSpecifier);
+                    coordfrm.Owner = this.FindParentWindow();
+                    if (coordfrm.ShowDialog().ValueOrFalse()) {
+                        field.FormatSpecifier = coordfrm.FormatSpecifier;                        
+                    }
+
+                    break;
+                default:
+                    throw new Exception("Unhandled data format type: " + field.Field.Format);
+            }
+            CurrentLabelSet.Delimited = BuildDelimitedFields(lvwSelectedFields.ItemsSource as ObservableCollection<SelectedField>);
+        }
+
         private void ApplyFilter(string text) {
 
-            ListCollectionView dataView = CollectionViewSource.GetDefaultView(lstFields.ItemsSource) as ListCollectionView;
+            ListCollectionView dataView = CollectionViewSource.GetDefaultView(lvwFields.ItemsSource) as ListCollectionView;
 
             if (String.IsNullOrEmpty(text)) {
                 dataView.Filter = null;
@@ -251,8 +296,14 @@ namespace BioLink.Client.Tools {
             frm.ShowDialog().ValueOrFalse();
         }
 
+        protected LabelSetViewModel CurrentLabelSet {
+            get { return DataContext as LabelSetViewModel; }
+        }
+
         void LabelManagerControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e) {
+
             var selected = e.NewValue as LabelSetViewModel;
+
             if (selected != null) {
                 CurrentItemSetID = selected.ID;
                 var itemlist = _allItems.FindAll((item) => {
@@ -278,7 +329,7 @@ namespace BioLink.Client.Tools {
 
                 // Set Selected export fields...
                 var fieldStr = selected.Delimited;
-                var model = new List<SelectedField>();
+                var model = new ObservableCollection<SelectedField>();
                 if (!string.IsNullOrEmpty(fieldStr)) {
                     char delim = (char) 1;
                     if (fieldStr.StartsWith(V_1_5_PREFIX)) {
@@ -323,8 +374,6 @@ namespace BioLink.Client.Tools {
             }
             return null;
         }
-
-        private const string V_1_5_PREFIX = "v1.5:";
 
         private int CurrentItemSetID { get; set; }
 
@@ -434,12 +483,51 @@ namespace BioLink.Client.Tools {
         }
 
         private void SelectField() {
+            var field = lvwFields.SelectedItem as FieldDescriptor;
+            if (field != null) {
+                var selectedFields = lvwSelectedFields.ItemsSource as ObservableCollection<SelectedField>;
+                if (selectedFields != null) {
+                    var exisiting = selectedFields.FirstOrDefault((sf) => {
+                        return sf.Field == field;
+                    });
+                    if (exisiting == null) {
+                        selectedFields.Add(new SelectedField { Field = field, FormatSpecifier = "" });
+                        CurrentLabelSet.Delimited = BuildDelimitedFields(selectedFields);
+                    }
+                }
+            }
+        }
+
+        private string BuildDelimitedFields(ObservableCollection<SelectedField> selectedFields) {
+            var sb = new StringBuilder(V_1_5_PREFIX);
+            foreach (SelectedField fd in selectedFields) {
+                sb.Append((char)1);
+                sb.Append(fd.Field.Category);
+                sb.Append(".");
+                sb.Append(fd.Field.DisplayName);
+                if (!string.IsNullOrEmpty(fd.FormatSpecifier)) {
+                    sb.Append((char)2);
+                    sb.Append(fd.FormatSpecifier);
+                }
+            }
+            return sb.ToString();
         }
 
         private void UnselectField() {
+            var selected = lvwSelectedFields.SelectedItem as SelectedField;
+            var selectedFields = lvwSelectedFields.ItemsSource as ObservableCollection<SelectedField>;
+            if (selected != null && selectedFields != null) {
+                selectedFields.Remove(selected);
+                CurrentLabelSet.Delimited = BuildDelimitedFields(selectedFields);
+            }
         }
 
         private void UnselectAll() {
+            var selectedFields = lvwSelectedFields.ItemsSource as ObservableCollection<SelectedField>;
+            if (selectedFields != null) {
+                selectedFields.Clear();
+                CurrentLabelSet.Delimited = BuildDelimitedFields(selectedFields);
+            }
         }
 
         private void txtFilter_TypingPaused(string text) {
@@ -756,9 +844,26 @@ namespace BioLink.Client.Tools {
         }
     }
 
-    public class SelectedField {
+    public class SelectedField : ViewModelBase {
+
+        private string _formatSpecifier;
+
+        public SelectedField() : base() { }
+
+        public override int? ObjectID {
+            get { return null; }
+        }
+
         public FieldDescriptor Field { get; set; }
-        public string FormatSpecifier { get; set; }
+
+        public string FormatSpecifier {
+            get { return _formatSpecifier; }
+            set { SetProperty("FormatSpecifier", ref _formatSpecifier, value); }
+        }
+
+        public string FieldLabel {
+            get { return string.Format("{0}.{1}", Field.Category, Field.DisplayName); }
+        }
     }
 
 }

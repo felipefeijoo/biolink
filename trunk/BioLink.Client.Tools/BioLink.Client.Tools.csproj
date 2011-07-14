@@ -66,6 +66,12 @@
     <Compile Include="AdvancedPreferences.xaml.cs">
       <DependentUpon>AdvancedPreferences.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CoordinateFormattingOptions.xaml.cs">
+      <DependentUpon>CoordinateFormattingOptions.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DateFormattingOptions.xaml.cs">
+      <DependentUpon>DateFormattingOptions.xaml</DependentUpon>
+    </Compile>
     <Compile Include="LabelManagerControl.xaml.cs">
       <DependentUpon>LabelManagerControl.xaml</DependentUpon>
     </Compile>
@@ -265,6 +271,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="AdvancedPreferences.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CoordinateFormattingOptions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DateFormattingOptions.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
