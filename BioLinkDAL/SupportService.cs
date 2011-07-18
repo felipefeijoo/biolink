@@ -1585,6 +1585,45 @@ namespace BioLink.Data {
             StoredProcUpdate("spLabelSetItemDelete", _P("intLabelSetItemID", labelSetItemId));
         }
 
+        public DataMatrix ExtractLabelData(List<LabelSetItem> items, List<QueryCriteria> criteria) {
+
+            var types = new string[] { "Site", "SiteVisit", "Material" };
+            var matrix = new DataMatrix[types.Length];            
+            
+            for (int i = 0; i < types.Length; ++i) {            
+                matrix[i] = ExecuteLabelSetQuery(items, criteria, types[i]);            
+            }
+
+            return null;
+        }
+
+        private DataMatrix ExecuteLabelSetQuery(List<LabelSetItem> items, List<QueryCriteria> criteria, string elemType) {
+            var idList = new List<Int32>();
+            foreach (LabelSetItem item in items) {
+                int id = 0;
+                switch (elemType) {
+                    case "Site":
+                    case "Region":
+                        id = item.SiteID;
+                        break;
+                    case "SiteVisit":
+                        id = item.VisitID;
+                        break;
+                    case "Material":                        
+                        id = item.MaterialID;
+                        break;
+                }
+
+                if (id != 0) {
+                    idList.Add(id);
+                }
+            }
+
+
+            return null;
+        }
+
+
         public int InsertLabelSetItem(LabelSetItem item) {
             var retval = ReturnParam("NewLabelSetItemID");
             StoredProcUpdate("spLabelSetItemInsert",

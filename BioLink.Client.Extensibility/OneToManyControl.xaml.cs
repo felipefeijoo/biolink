@@ -190,6 +190,11 @@ namespace BioLink.Client.Extensibility {
 
         }
 
+        public void AddButtonRHS(FrameworkElement control) {
+            control.Margin = new Thickness(6, 0, 0, 0);
+            pnlButtonsRHS.Children.Add(control);
+        }
+
         public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(OneToManyControl), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnIsReadOnlyChanged));
 
         public bool IsReadOnly {

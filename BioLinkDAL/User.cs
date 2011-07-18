@@ -295,12 +295,13 @@ namespace BioLink.Data {
                 return password.Replace(';', '_');
             } else {
                 var s = new StringBuilder();
-                // perform the crunch to get an ascii first up                
-                s.Append(Strings.Chr((byte)(((Strings.Asc('0') * 34) % 26) + 1) + Strings.Asc('a')));  // Chr((((Asc(InStr(password, i)) * 34) Mod 26) + 1) + Asc("a"))
+                // perform the crunch to get an ascii first up                  
+                var instr = String.Format("{0}", Strings.InStr(password, string.Format("{0}", 0)));
+                s.Append(Strings.Chr((byte)(((Strings.Asc(instr[0]) * 34) % 26) + 1) + Strings.Asc('a')));  // Chr((((Asc(InStr(password, i)) * 34) Mod 26) + 1) + Asc("a"))
                 // perform the crunch to get an alpha numeric
                 for (int i = 1; i < password.Length; ++i) {
                     // s.Append((char) (((password[i] * 23) % (10 + i) + 1) + (int) 'A'));         //    ManglePassword = ManglePassword & Chr((((Asc(InStr(password, i)) * 23) Mod (10 + i)) + 1) + Asc("A"))
-                    var instr = String.Format("{0}", Strings.InStr(password, string.Format("{0}", i + 1)));
+                    instr = String.Format("{0}", Strings.InStr(password, string.Format("{0}", i + 1)));
                     var lMagicNumber = ((Strings.Asc(instr[0]) * 23) % (62 - password.Length + (i + 1))); // ((Asc(InStr(password, i)) * 23) Mod (62 - Len(password) + i))
                     if (lMagicNumber >= 0 && lMagicNumber <= 31) {
                         s.Append(Strings.Chr(lMagicNumber + 1));
