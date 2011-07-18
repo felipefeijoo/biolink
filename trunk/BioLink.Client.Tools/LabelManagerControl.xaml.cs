@@ -49,10 +49,40 @@ namespace BioLink.Client.Tools {
             PropertyGroupDescription groupDescription = new PropertyGroupDescription("Category");
             myView.GroupDescriptions.Add(groupDescription);
 
+            Loaded += new RoutedEventHandler(LabelManagerControl_Loaded);
+
+        }
+
+        void LabelManagerControl_Loaded(object sender, RoutedEventArgs e) {
+            var exportButton = new Button { Content = "_Export", Height = 23, Width = 80 };
+            exportButton.Click += new RoutedEventHandler(exportButton_Click);
+
+            Host.AddButtonRHS(exportButton);
+        }
+
+        void exportButton_Click(object sender, RoutedEventArgs e) {
+            ExportData();
+        }
+
+        private void ExportData() {
+            var service = new SupportService(User);
+            var items = new List<LabelSetItem>(_itemModel.Select(vm => vm.Model));
+            if (items.Count == 0) {
+                ErrorMessage.Show("There are no items to export!");
+                return;
+            }
+            var selectedFields = lvwSelectedFields.ItemsSource as ObservableCollection<QueryCriteriaViewModel>;
+            if (selectedFields.Count == 0) {
+                ErrorMessage.Show("No fields have been selected for export.");
+                return;
+            }
+                 
+            var criteria = new List<QueryCriteria>(selectedFields.Select(vm => vm.Model));
+            var matrix = service.ExtractLabelData(items, criteria);
         }
 
         void lvwSelectedFields_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
-            var selected = lvwSelectedFields.SelectedItem as SelectedField;
+            var selected = lvwSelectedFields.SelectedItem as QueryCriteriaViewModel;
             if (selected != null) {
                 var builder = new ContextMenuBuilder(null);
                 builder.New("Format options").Handler(() => { ShowFormatOptions(selected); }).End();
@@ -61,7 +91,7 @@ namespace BioLink.Client.Tools {
             }
         }
 
-        private void ShowFormatOptions(SelectedField field) {
+        private void ShowFormatOptions(QueryCriteriaViewModel field) {
             if (string.IsNullOrWhiteSpace(field.Field.Format)) {
                 InfoBox.Show("There are no formatting options available for this field", "No formatting options", this);
                 return;
@@ -69,27 +99,27 @@ namespace BioLink.Client.Tools {
 
             switch (field.Field.Format.ToLower()) {
                 case "date":
-                    var datefrm = new DateFormattingOptions(field.FormatSpecifier);
+                    var datefrm = new DateFormattingOptions(field.FormatOption);
                     datefrm.Owner = this.FindParentWindow();
                     datefrm.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                     if (datefrm.ShowDialog().ValueOrFalse()) {
-                        field.FormatSpecifier = datefrm.FormatOption;                        
+                        field.FormatOption = datefrm.FormatOption;                        
                     }
                     break;
                 case "latitude":
                 case "longitude":
                     var coordType = (CoordinateType)Enum.Parse(typeof(CoordinateType), field.Field.Format);
-                    var coordfrm = new CoordinateFormattingOptions(coordType, field.FormatSpecifier);
+                    var coordfrm = new CoordinateFormattingOptions(coordType, field.FormatOption);
                     coordfrm.Owner = this.FindParentWindow();
                     if (coordfrm.ShowDialog().ValueOrFalse()) {
-                        field.FormatSpecifier = coordfrm.FormatSpecifier;                        
+                        field.FormatOption = coordfrm.FormatSpecifier;                        
                     }
 
                     break;
                 default:
                     throw new Exception("Unhandled data format type: " + field.Field.Format);
             }
-            CurrentLabelSet.Delimited = BuildDelimitedFields(lvwSelectedFields.ItemsSource as ObservableCollection<SelectedField>);
+            CurrentLabelSet.Delimited = BuildDelimitedFields(lvwSelectedFields.ItemsSource as ObservableCollection<QueryCriteriaViewModel>);
         }
 
         private void ApplyFilter(string text) {
@@ -329,7 +359,7 @@ namespace BioLink.Client.Tools {
 
                 // Set Selected export fields...
                 var fieldStr = selected.Delimited;
-                var model = new ObservableCollection<SelectedField>();
+                var model = new ObservableCollection<QueryCriteriaViewModel>();
                 if (!string.IsNullOrEmpty(fieldStr)) {
                     char delim = (char) 1;
                     if (fieldStr.StartsWith(V_1_5_PREFIX)) {
@@ -352,8 +382,9 @@ namespace BioLink.Client.Tools {
 
                         var fieldDesc = FindField(strField);
                         if (fieldDesc != null) {
-                            var selectedField = new SelectedField { Field = fieldDesc, FormatSpecifier = strFormat };
-                            model.Add(selectedField);
+                            var selectedField = new QueryCriteria { Field = fieldDesc, FormatOption = strFormat, Output = true };
+                            var viewModel = new QueryCriteriaViewModel(selectedField);
+                            model.Add(viewModel);
                         }
 
                     }
@@ -485,37 +516,37 @@ namespace BioLink.Client.Tools {
         private void SelectField() {
             var field = lvwFields.SelectedItem as FieldDescriptor;
             if (field != null) {
-                var selectedFields = lvwSelectedFields.ItemsSource as ObservableCollection<SelectedField>;
+                var selectedFields = lvwSelectedFields.ItemsSource as ObservableCollection<QueryCriteriaViewModel>;
                 if (selectedFields != null) {
                     var exisiting = selectedFields.FirstOrDefault((sf) => {
                         return sf.Field == field;
                     });
                     if (exisiting == null) {
-                        selectedFields.Add(new SelectedField { Field = field, FormatSpecifier = "" });
+                        selectedFields.Add(new QueryCriteriaViewModel( new QueryCriteria { Field = field, FormatOption = "" }));
                         CurrentLabelSet.Delimited = BuildDelimitedFields(selectedFields);
                     }
                 }
             }
         }
 
-        private string BuildDelimitedFields(ObservableCollection<SelectedField> selectedFields) {
+        private string BuildDelimitedFields(ObservableCollection<QueryCriteriaViewModel> selectedFields) {
             var sb = new StringBuilder(V_1_5_PREFIX);
-            foreach (SelectedField fd in selectedFields) {
+            foreach (QueryCriteriaViewModel fd in selectedFields) {
                 sb.Append((char)1);
                 sb.Append(fd.Field.Category);
                 sb.Append(".");
                 sb.Append(fd.Field.DisplayName);
-                if (!string.IsNullOrEmpty(fd.FormatSpecifier)) {
+                if (!string.IsNullOrEmpty(fd.FormatOption)) {
                     sb.Append((char)2);
-                    sb.Append(fd.FormatSpecifier);
+                    sb.Append(fd.FormatOption);
                 }
             }
             return sb.ToString();
         }
 
         private void UnselectField() {
-            var selected = lvwSelectedFields.SelectedItem as SelectedField;
-            var selectedFields = lvwSelectedFields.ItemsSource as ObservableCollection<SelectedField>;
+            var selected = lvwSelectedFields.SelectedItem as QueryCriteriaViewModel;
+            var selectedFields = lvwSelectedFields.ItemsSource as ObservableCollection<QueryCriteriaViewModel>;
             if (selected != null && selectedFields != null) {
                 selectedFields.Remove(selected);
                 CurrentLabelSet.Delimited = BuildDelimitedFields(selectedFields);
@@ -523,7 +554,7 @@ namespace BioLink.Client.Tools {
         }
 
         private void UnselectAll() {
-            var selectedFields = lvwSelectedFields.ItemsSource as ObservableCollection<SelectedField>;
+            var selectedFields = lvwSelectedFields.ItemsSource as ObservableCollection<QueryCriteriaViewModel>;
             if (selectedFields != null) {
                 selectedFields.Clear();
                 CurrentLabelSet.Delimited = BuildDelimitedFields(selectedFields);
@@ -841,28 +872,6 @@ namespace BioLink.Client.Tools {
 
         protected override BioLinkDataObject GetModel() {
             return (ViewModel as LabelSetItemViewModel).Model;
-        }
-    }
-
-    public class SelectedField : ViewModelBase {
-
-        private string _formatSpecifier;
-
-        public SelectedField() : base() { }
-
-        public override int? ObjectID {
-            get { return null; }
-        }
-
-        public FieldDescriptor Field { get; set; }
-
-        public string FormatSpecifier {
-            get { return _formatSpecifier; }
-            set { SetProperty("FormatSpecifier", ref _formatSpecifier, value); }
-        }
-
-        public string FieldLabel {
-            get { return string.Format("{0}.{1}", Field.Category, Field.DisplayName); }
         }
     }
 

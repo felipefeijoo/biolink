@@ -180,6 +180,7 @@
     <Compile Include="Modelling\SpeciesRichnessOptions.xaml.cs">
       <DependentUpon>SpeciesRichnessOptions.xaml</DependentUpon>
     </Compile>
+    <Compile Include="QueryCriteriaViewModel.cs" />
     <Compile Include="SpecializedMultimediaManager.xaml.cs">
       <DependentUpon>SpecializedMultimediaManager.xaml</DependentUpon>
     </Compile>
