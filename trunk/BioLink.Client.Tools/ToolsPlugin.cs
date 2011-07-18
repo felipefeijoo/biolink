@@ -196,7 +196,7 @@ namespace BioLink.Client.Tools {
         }
 
         public ControlHostWindow ShowLabelManager() {
-            return ShowSingleton("Label Manager", () => new OneToManyControl(new LabelManagerControl(User)) { Margin = new Thickness(6) });
+            return ShowSingleton("Label Manager", () => new OneToManyControl(new LabelManagerControl(this, User)) { Margin = new Thickness(6) });
         }
 
         public void ShowPhraseManager() {

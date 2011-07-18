@@ -7,7 +7,13 @@
              mc:Ignorable="d" 
              
              d:DesignHeight="316" d:DesignWidth="513">
-    <Grid>
+    <Grid x:Name="viewerGrid">
+        
+        <Grid.Resources>
+            <Style x:Key="hcs" TargetType="{x:Type GridViewColumnHeader}">
+                <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
+            </Style>
+        </Grid.Resources>
 
         <Grid.RowDefinitions>
             <RowDefinition Height="28" />

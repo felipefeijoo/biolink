@@ -126,13 +126,13 @@ namespace BioLink.Client.Extensibility {
                     double lon = lonObj == null ? 0 : (double) lonObj;
                     var mp = new MapPoint(lat, lon);
 
-                    if (_siteIndex >= 0) {
+                    if (_siteIndex >= 0 && row[_siteIndex] != null) {
                         mp.SiteID = (int)row[_siteIndex];
                     }
-                    if (_siteVisitIndex >= 0) {
+                    if (_siteVisitIndex >= 0 && row[_siteVisitIndex] != null) {
                         mp.SiteVisitID = (int)row[_siteVisitIndex];
                     }
-                    if (_materialIndex >= 0) {
+                    if (_materialIndex >= 0 && row[_materialIndex] != null) {
                         mp.MaterialID = (int)row[_materialIndex];
                     }
 
