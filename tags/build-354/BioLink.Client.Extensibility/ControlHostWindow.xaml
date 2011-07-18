@@ -1,0 +1,36 @@
+﻿<src:ChangeContainerWindow x:Class="BioLink.Client.Extensibility.ControlHostWindow"
+       
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:src="clr-namespace:BioLink.Client.Extensibility"
+             mc:Ignorable="d" 
+             d:DesignHeight="349" d:DesignWidth="651" WindowStartupLocation="CenterOwner" UseLayoutRounding="True" Closing="Window_Closing" Icon="/BioLink.Client.Extensibility;component/images/Biolink.ico" SizeToContent="WidthAndHeight">
+    <Grid x:Name="grid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="36" />
+            <RowDefinition Height="0" />
+        </Grid.RowDefinitions>        
+        <Grid Grid.Row="0" x:Name="ControlHost"></Grid>
+        <Grid Grid.Row="1" Background="{x:Static SystemColors.ControlBrush}" x:Name="buttonBar">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal" x:Name="CustomButtonBar" Grid.Column="0">
+                <ToggleButton Content="?" Height="23" Name="btnDebug" VerticalAlignment="Center" Width="23" Click="btnDebug_Click" Margin="6,0,3,0"/>
+            </StackPanel>
+            
+            <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
+                <Button Content="_Select" Height="23" Name="btnSelect" VerticalAlignment="Center" Width="75" Visibility="Hidden" Margin="3"/>
+                <Button x:FieldModifier="public" Content="OK" Height="23" Name="btnOk" VerticalAlignment="Center" Width="75" IsDefault="False" Click="btnOk_Click" Margin="3"/>
+                <Button Content="_Apply" Height="23" Name="btnApply" VerticalAlignment="Center" IsEnabled="False" Click="btnApply_Click" Width="75" Margin="3"/>
+                <Button Content="Cancel" Name="btnCancel" Height="23" VerticalAlignment="Center" Width="75" IsCancel="True" Click="btnCancel_Click" Margin="3,0,6,0"/>
+            </StackPanel>
+            
+        </Grid>
+        <ListBox Grid.Row="2" Name="lstPendingChanges" />
+    </Grid>
+</src:ChangeContainerWindow>
