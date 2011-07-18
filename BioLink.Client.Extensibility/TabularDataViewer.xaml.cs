@@ -37,9 +37,11 @@ namespace BioLink.Client.Extensibility {
                 columns = GenerateDefaultColumns(data);
             }
 
+            var hcs = viewerGrid.Resources["hcs"] as Style;
+
             foreach (DisplayColumnDefinition c in columns) {
                 DisplayColumnDefinition coldef = c;
-                var column = new GridViewColumn { Header = BuildColumnHeader(coldef), DisplayMemberBinding = new Binding(String.Format("[{0}]", data.IndexOf(coldef.ColumnName))) };
+                var column = new GridViewColumn { Header = BuildColumnHeader(coldef), DisplayMemberBinding = new Binding(String.Format("[{0}]", data.IndexOf(coldef.ColumnName))) , HeaderContainerStyle = hcs};
                 view.Columns.Add(column);
             }
             
@@ -66,16 +68,36 @@ namespace BioLink.Client.Extensibility {
         //    PluginManager.Instance.EditLookupObject(LookupType.Site, siteID);
         //}
 
+        private void AddMapItems(ContextMenuBuilder builder, params string[] colAliases) {
+            foreach (string colpair in colAliases) {
+                var bits = colpair.Split(',');
+                if (bits.Length == 2) {
+                    if (Data.ContainsColumn(bits[0]) && Data.ContainsColumn(bits[1])) {
+                        var latColName = bits[0];
+                        var longColName = bits[1];
+                        if (!string.IsNullOrEmpty(longColName) && !string.IsNullOrEmpty(latColName)) {
+                            if (builder.ContextMenu.HasItems) {
+                                builder.Separator();
+                            }
+                            builder.New("Plot selected rows on Map").Handler(() => { PlotSelected(longColName, latColName); }).End();
+                            builder.New("Plot all rows on Map").Handler(() => { PlotAll(longColName, latColName); }).End();
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
         void lvw_MouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e) {
 
             var row = lvw.SelectedItem as MatrixRow;
             if (row != null) {
                 ContextMenuBuilder builder = new ContextMenuBuilder(null);
 
-                AddLookupItem(builder, LookupType.Site, "SiteID", "intSiteID");
-                AddLookupItem(builder, LookupType.SiteVisit, "SiteVisitID", "intSiteVisitID");
-                AddLookupItem(builder, LookupType.Material, "MaterialID", "intMaterialID");
-                AddLookupItem(builder, LookupType.Taxon, "BiotaID", "intBiotaID");
+                AddLookupItem(builder, LookupType.Site, "SiteID", "intSiteID", "Site Identifier");
+                AddLookupItem(builder, LookupType.SiteVisit, "SiteVisitID", "intSiteVisitID", "Visit Identifier");
+                AddLookupItem(builder, LookupType.Material, "MaterialID", "intMaterialID", "Material Identifier");
+                AddLookupItem(builder, LookupType.Taxon, "BiotaID", "intBiotaID", "Taxon Identifier");
 
                 string latColName = null;
                 string longColName = null;
@@ -90,13 +112,7 @@ namespace BioLink.Client.Extensibility {
                     }
                 }
 
-                if (!string.IsNullOrEmpty(longColName) && !string.IsNullOrEmpty(latColName)) {
-                    if (builder.ContextMenu.HasItems) {
-                        builder.Separator();
-                        builder.New("Plot selected rows on Map").Handler(() => { PlotSelected(longColName, latColName); }).End();
-                        builder.New("Plot all rows on Map").Handler(() => { PlotAll(longColName, latColName); }).End();
-                    }
-                }
+                AddMapItems(builder, "Lat,Long", "Latitude,Longitude", "Y,X", "Y1,X1");
 
                 if (builder.ContextMenu.HasItems) {
                     builder.Separator();
@@ -127,12 +143,28 @@ namespace BioLink.Client.Extensibility {
             Plot(null, longColName, latColName);
         }
 
-        private void Plot(int[] selectedRowIndexes = null, string longColName = "Long", string latColName = "Lat") {
+        private string FindColumnFromAlias(string @default, params string[] aliases) {
+
+            foreach (string alias in aliases) {
+                if (Data.ContainsColumn(alias)) {
+                    return alias;
+                }
+            }
+
+            return @default;
+        }
+
+        private void Plot(int[] selectedRowIndexes, string longColName, string latColName) {
             var map = PluginManager.Instance.GetMap();
             if (map != null) {
                 var set = new MatrixMapPointSet(_report.Name, Data, selectedRowIndexes);
                 set.LongitudeColumn = longColName;
-                set.LatitudeColumn = latColName;                
+                set.LatitudeColumn = latColName;
+
+                set.SiteIDColumn = FindColumnFromAlias(set.SiteIDColumn, "SiteID", "intSiteID", "Site Identifier");
+                set.SiteVisitIDColumn = FindColumnFromAlias(set.SiteVisitIDColumn, "SiteVisitID", "intSiteVisitID", "Visit Identifier");
+                set.MaterialIDColumn = FindColumnFromAlias(set.MaterialIDColumn, "MaterialID", "intMaterialID", "Material Identifier");
+
                 map.Show();
                 map.PlotPoints(set);
             }
@@ -213,6 +245,7 @@ namespace BioLink.Client.Extensibility {
 
         private object BuildColumnHeader(DisplayColumnDefinition coldef) {
             TextBlock t = new TextBlock();
+            t.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
             t.TextAlignment = TextAlignment.Left;
             t.Tag = coldef;
             t.Text = coldef.DisplayName;

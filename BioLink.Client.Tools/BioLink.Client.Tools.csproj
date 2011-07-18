@@ -75,6 +75,7 @@
     <Compile Include="LabelManagerControl.xaml.cs">
       <DependentUpon>LabelManagerControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="LabelSetReport.cs" />
     <Compile Include="LinkedMultimediaItemsControl.xaml.cs">
       <DependentUpon>LinkedMultimediaItemsControl.xaml</DependentUpon>
     </Compile>

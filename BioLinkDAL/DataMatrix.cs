@@ -67,6 +67,30 @@ namespace BioLink.Data {
                 Rows.RemoveAt(rowIndex);
             }
         }
+
+        public MatrixRow FindRow(string columnName, object value) {
+            var index = IndexOf(columnName);
+            if (index >= 0) {
+                return FindRow((row) => {
+                    var candidateValue = row[index];
+                    return  candidateValue == null ? false : candidateValue.Equals(value);
+                });
+            }
+
+            return null;
+        }
+
+        public MatrixRow FindRow(Predicate<MatrixRow> predicate) {
+            if (predicate != null) {
+                foreach (MatrixRow candidate in Rows) {
+                    if (predicate(candidate)) {
+                        return candidate;
+                    }
+                }
+            };
+
+            return null;
+        }
     }
 
     public class MatrixRow {
@@ -112,10 +136,10 @@ namespace BioLink.Data {
             return null;
         }
 
-        public void ForEach(System.Func<object, bool> func) {
+        public void ForEach(System.Func<int, object, bool> func) {
             for (int i = 0; i < _matrix.Columns.Count; ++i) {
                 object val = this[i];
-                if (!func(val)) {
+                if (!func(i, val)) {
                     break;
                 }
             }

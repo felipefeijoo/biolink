@@ -10,8 +10,20 @@ namespace BioLink.Client.Extensibility.Export {
 
     public class KMLExporter : TabularDataExporter {
 
+        private Pair<string, string>[] _recognizedColumns = { 
+            new Pair<string,string>("Lat", "Long"), 
+            new Pair<string,string>("Latitude", "Longitude"),
+            new Pair<string,string>("Y", "X"),
+            new Pair<string,string>("Y1", "X1"),
+        };
+
         public override bool CanExport(Data.DataMatrix matrix) {
-            return (matrix.ContainsColumn("Lat") && matrix.ContainsColumn("Long"));
+            foreach (Pair<string,string> p in _recognizedColumns) {
+                if (matrix.ContainsColumn(p.First) && matrix.ContainsColumn(p.Second)) {
+                    return true;
+                }
+            }
+            return false;            
         }
 
         protected override object GetOptions(System.Windows.Window parentWindow, DataMatrix matrix) {
@@ -39,8 +51,22 @@ namespace BioLink.Client.Extensibility.Export {
 
                 ProgressStart("Exporting points to '" + filename + "'");
 
-                int latIndex = matrix.IndexOf("Lat");
-                int lonIndex = matrix.IndexOf("Long");
+                int latIndex = -1;
+                int lonIndex = -1;
+
+
+                foreach (Pair<string, string> p in _recognizedColumns) {
+                    if (matrix.ContainsColumn(p.First) && matrix.ContainsColumn(p.Second)) {
+                        latIndex = matrix.IndexOf(p.First);
+                        lonIndex = matrix.IndexOf(p.Second);
+                    }
+                }
+
+                if (latIndex < 0 || lonIndex < 0) {
+                    ErrorMessage.Show("Failed to located Latitude and/or Longitude columns in data set!");
+                    return;
+                }
+
                 int nameIndex = matrix.IndexOf(opt.LabelColumn);
 
                 int rowCount = 0;
@@ -124,3 +150,4 @@ namespace BioLink.Client.Extensibility.Export {
 
     }
 }
+

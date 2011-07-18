@@ -29,8 +29,11 @@ namespace BioLink.Client.Tools {
         private ObservableCollection<LabelSetItemViewModel> _itemModel;
         private List<FieldDescriptor> _fieldModel;
 
-        public LabelManagerControl(User user) : base(user, "LabelManager") {
+        public ToolsPlugin Plugin { get; private set; }
+
+        public LabelManagerControl(ToolsPlugin plugin, User user) : base(user, "LabelManager") {
             InitializeComponent();
+            Plugin = plugin;
             this.DataContextChanged += new DependencyPropertyChangedEventHandler(LabelManagerControl_DataContextChanged);
 
             lvw.MouseRightButtonUp += new MouseButtonEventHandler(lvw_MouseRightButtonUp);
@@ -78,7 +81,8 @@ namespace BioLink.Client.Tools {
             }
                  
             var criteria = new List<QueryCriteria>(selectedFields.Select(vm => vm.Model));
-            var matrix = service.ExtractLabelData(items, criteria);
+            var report = new LabelSetReport(User, CurrentLabelSet.Model, items, criteria);
+            PluginManager.Instance.RunReport(Plugin, report);
         }
 
         void lvwSelectedFields_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {

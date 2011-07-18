@@ -217,13 +217,14 @@ namespace BioLink.Data {
 
             DataMatrix matrix = null;
             ColumnDataFormatter[] formatters = null;
+
+            var defaultFormatter = new ColumnDataFormatter((value, rdr) => {
+                return value;
+            });
+
             StoredProcReaderForEach(proc, (reader) => {
 
                 if (matrix == null) {
-
-                    var defaultFormatter = new ColumnDataFormatter((name, value) => {
-                        return value;
-                    });
 
                     // Set up formatter array...
                     formatters = new ColumnDataFormatter[reader.FieldCount];
