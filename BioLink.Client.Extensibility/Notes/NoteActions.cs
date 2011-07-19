@@ -8,9 +8,9 @@ using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Extensibility {
 
-    public class DeleteNoteAction : GenericDatabaseCommand<Note> {
+    public class DeleteNoteCommand : GenericDatabaseCommand<Note> {
     
-        public DeleteNoteAction(Note model, ViewModelBase owner) : base(model) {
+        public DeleteNoteCommand(Note model, ViewModelBase owner) : base(model) {
             this.Owner = owner;
         }
 
@@ -21,11 +21,16 @@ namespace BioLink.Client.Extensibility {
         }
 
         protected ViewModelBase Owner { get; set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 
-    public class InsertNoteAction : GenericDatabaseCommand<Note> {
+    public class InsertNoteCommand : GenericDatabaseCommand<Note> {
 
-        public InsertNoteAction(Note model, ViewModelBase owner) : base(model) {
+        public InsertNoteCommand(Note model, ViewModelBase owner) : base(model) {
             this.Owner = owner;
         }
 
@@ -37,11 +42,15 @@ namespace BioLink.Client.Extensibility {
 
         protected ViewModelBase Owner { get; private set; }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 
-    public class UpdateNoteAction : GenericDatabaseCommand<Note> {
+    public class UpdateNoteCommand : GenericDatabaseCommand<Note> {
 
-        public UpdateNoteAction(Note model, ViewModelBase owner) : base(model) {
+        public UpdateNoteCommand(Note model, ViewModelBase owner) : base(model) {
             this.Owner = owner;
         }
 
@@ -52,5 +61,10 @@ namespace BioLink.Client.Extensibility {
         }
 
         protected ViewModelBase Owner { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 }

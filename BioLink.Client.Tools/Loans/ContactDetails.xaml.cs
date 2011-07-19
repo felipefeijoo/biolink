@@ -38,7 +38,7 @@ namespace BioLink.Client.Tools {
             if (_contactId < 0) {
                 model = new Contact();
                 model.ContactID = _contactId;
-                RegisterUniquePendingChange(new InsertContactAction(model));
+                RegisterUniquePendingChange(new InsertContactCommand(model));
             } else {
                 var service = new LoanService(User);
                 model = service.GetContact(_contactId);
@@ -66,7 +66,7 @@ namespace BioLink.Client.Tools {
 
         void viewModel_DataChanged(ChangeableModelBase viewmodel) {
             if (_viewModel.ContactID >= 0) {
-                RegisterUniquePendingChange(new UpdateContactAction(_viewModel.Model));
+                RegisterUniquePendingChange(new UpdateContactCommand(_viewModel.Model));
             }
         }
 

@@ -35,7 +35,7 @@ namespace BioLink.Client.Tools {
 
         public override ViewModelBase AddNewItem(out DatabaseCommand addAction) {
             var model = new LoanReminder() { Closed = false };
-            addAction = new InsertLoanReminderAction(model, Loan);
+            addAction = new InsertLoanReminderCommand(model, Loan);
             return new LoanReminderViewModel(model);
         }
 
@@ -43,7 +43,7 @@ namespace BioLink.Client.Tools {
         public override DatabaseCommand PrepareDeleteAction(ViewModelBase viewModel) {
             var rc = viewModel as LoanReminderViewModel;
             if (rc != null) {
-                return new DeleteLoanReminderAction(rc.Model);
+                return new DeleteLoanReminderCommand(rc.Model);
             }
             return null;
         }
@@ -59,7 +59,7 @@ namespace BioLink.Client.Tools {
         public override DatabaseCommand PrepareUpdateAction(ViewModelBase viewModel) {
             var rc = viewModel as LoanReminderViewModel;
             if (rc != null) {
-                return new UpdateLoanReminderAction(rc.Model);
+                return new UpdateLoanReminderCommand(rc.Model);
             }
             return null;
         }
@@ -71,9 +71,9 @@ namespace BioLink.Client.Tools {
         protected Loan Loan { get; private set; }
     }
 
-    public class InsertLoanReminderAction : GenericDatabaseCommand<LoanReminder> {
+    public class InsertLoanReminderCommand : GenericDatabaseCommand<LoanReminder> {
 
-        public InsertLoanReminderAction(LoanReminder model, Loan loan) : base(model) {
+        public InsertLoanReminderCommand(LoanReminder model, Loan loan) : base(model) {
             this.Loan = loan;
         }
 
@@ -84,26 +84,39 @@ namespace BioLink.Client.Tools {
         }
 
         protected Loan Loan { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
     }
 
-    public class UpdateLoanReminderAction : GenericDatabaseCommand<LoanReminder> {
+    public class UpdateLoanReminderCommand : GenericDatabaseCommand<LoanReminder> {
 
-        public UpdateLoanReminderAction(LoanReminder model) : base(model) { }
+        public UpdateLoanReminderCommand(LoanReminder model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new LoanService(user);
             service.UpdateLoanReminder(Model);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
     }
 
-    public class DeleteLoanReminderAction : GenericDatabaseCommand<LoanReminder> {
+    public class DeleteLoanReminderCommand : GenericDatabaseCommand<LoanReminder> {
 
-        public DeleteLoanReminderAction(LoanReminder model) : base(model) { }
+        public DeleteLoanReminderCommand(LoanReminder model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new LoanService(user);
             service.DeleteLoanReminder(Model.LoanReminderID);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 
     public class LoanReminderViewModel : GenericViewModelBase<LoanReminder> {

@@ -135,7 +135,7 @@ namespace BioLink.Client.Tools {
 
             loan.IsDeleted = true;
             _model.Remove(loan);
-            RegisterUniquePendingChange(new DeleteLoanAction(loan.Model));
+            RegisterUniquePendingChange(new DeleteLoanCommand(loan.Model));
         }
 
         private void btnFind_Click(object sender, RoutedEventArgs e) {

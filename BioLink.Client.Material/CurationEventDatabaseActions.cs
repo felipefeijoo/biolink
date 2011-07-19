@@ -8,9 +8,9 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Material {
 
-    public class InsertCurationEventAction : GenericDatabaseCommand<CurationEvent> {
+    public class InsertCurationEventCommand : GenericDatabaseCommand<CurationEvent> {
 
-        public InsertCurationEventAction(CurationEvent model)
+        public InsertCurationEventCommand(CurationEvent model)
             : base(model) {
         }
 
@@ -18,11 +18,16 @@ namespace BioLink.Client.Material {
             var service = new MaterialService(user);
             Model.CurationEventID = service.InsertCurationEvent(Model);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_MATERIAL, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
-    public class UpdateCurationEventAction : GenericDatabaseCommand<CurationEvent> {
+    public class UpdateCurationEventCommand : GenericDatabaseCommand<CurationEvent> {
 
-        public UpdateCurationEventAction(CurationEvent model)
+        public UpdateCurationEventCommand(CurationEvent model)
             : base(model) {
         }
 
@@ -30,10 +35,15 @@ namespace BioLink.Client.Material {
             var service = new MaterialService(user);
             service.UpdateCurationEvent(Model);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_MATERIAL, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
-    public class DeleteCurationEventAction : GenericDatabaseCommand<CurationEvent> {
-        public DeleteCurationEventAction(CurationEvent model)
+    public class DeleteCurationEventCommand : GenericDatabaseCommand<CurationEvent> {
+        public DeleteCurationEventCommand(CurationEvent model)
             : base(model) {
         }
 
@@ -41,6 +51,11 @@ namespace BioLink.Client.Material {
             var service = new MaterialService(user);
             service.DeleteCurationEvent(Model.CurationEventID);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_MATERIAL, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
 }

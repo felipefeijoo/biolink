@@ -77,7 +77,7 @@ namespace BioLink.Client.Extensibility {
                     this.InvokeIfRequired(() => {
                         viewmodel = new MultimediaLinkViewModel(item);
                         viewmodel.DataChanged += new DataChangedHandler((m) => {
-                            RegisterUniquePendingChange(new UpdateMultimediaLinkAction(viewmodel.Model, CategoryType));
+                            RegisterUniquePendingChange(new UpdateMultimediaLinkCommand(viewmodel.Model, CategoryType));
                         });
                     });
                     return viewmodel;
@@ -198,8 +198,8 @@ namespace BioLink.Client.Extensibility {
                                 viewModel.Thumbnail = GraphicsUtils.GenerateThumbnail(filename, THUMB_SIZE);
                                 _tempFileManager.CopyToTempFile(viewModel.MultimediaID, filename);
                                 _model.Add(viewModel);
-                                RegisterPendingChange(new InsertMultimediaAction(model, _tempFileManager.GetContentFileName(viewModel.MultimediaID, finfo.Extension.Substring(1))));
-                                RegisterPendingChange(new InsertMultimediaLinkAction(model, CategoryType, Owner));
+                                RegisterPendingChange(new InsertMultimediaCommand(model, _tempFileManager.GetContentFileName(viewModel.MultimediaID, finfo.Extension.Substring(1))));
+                                RegisterPendingChange(new InsertMultimediaLinkCommand(model, CategoryType, Owner));
                                 break;
                             case MultimediaDuplicateAction.UseExisting:
                                 // Link to existing multimedia                                
@@ -211,7 +211,7 @@ namespace BioLink.Client.Extensibility {
                                 viewModel = new MultimediaLinkViewModel(model);
                                 GenerateThumbnail(viewModel, THUMB_SIZE);
                                 _model.Add(viewModel);
-                                RegisterPendingChange(new InsertMultimediaLinkAction(model, CategoryType, Owner));
+                                RegisterPendingChange(new InsertMultimediaLinkCommand(model, CategoryType, Owner));
                                 break;
                             case MultimediaDuplicateAction.ReplaceExisting:
                                 // register an update for the multimedia,
@@ -226,8 +226,8 @@ namespace BioLink.Client.Extensibility {
                                 GenerateThumbnail(viewModel, THUMB_SIZE);
                                 _model.Add(viewModel);
                                 _tempFileManager.CopyToTempFile(viewModel.MultimediaID, filename);
-                                RegisterPendingChange(new UpdateMultimediaBytesAction(model, filename));
-                                RegisterPendingChange(new InsertMultimediaLinkAction(model, CategoryType, Owner));
+                                RegisterPendingChange(new UpdateMultimediaBytesCommand(model, filename));
+                                RegisterPendingChange(new InsertMultimediaLinkCommand(model, CategoryType, Owner));
                                 break;
                         }
 
@@ -281,16 +281,16 @@ namespace BioLink.Client.Extensibility {
             if (selected != null) {
                 if (this.Question("Are you sure you wish to delete item '" + selected.Name + "'", "Delete item?")) {
                     if (selected.MultimediaLinkID >= 0) {
-                        RegisterPendingChange(new DeleteMultimediaLinkAction(selected.Model));
+                        RegisterPendingChange(new DeleteMultimediaLinkCommand(selected.Model));
                     } else {
                         ClearMatchingPendingChanges((action) => {
-                            if (action is InsertMultimediaAction) {
-                                var candidate = action as InsertMultimediaAction;
+                            if (action is InsertMultimediaCommand) {
+                                var candidate = action as InsertMultimediaCommand;
                                 if (candidate.Model.MultimediaLinkID == selected.MultimediaLinkID) {
                                     return true;
                                 }
-                            } else if (action is InsertMultimediaLinkAction) {
-                                var candidate = action as InsertMultimediaLinkAction;
+                            } else if (action is InsertMultimediaLinkCommand) {
+                                var candidate = action as InsertMultimediaLinkCommand;
                                 if (candidate.Model.MultimediaLinkID == selected.MultimediaLinkID) {
                                     return true;
                                 }
@@ -361,7 +361,7 @@ namespace BioLink.Client.Extensibility {
                 var viewModel = new MultimediaLinkViewModel(model);
                 GenerateThumbnail(viewModel, THUMB_SIZE);
                 _model.Add(viewModel);
-                RegisterPendingChange(new InsertMultimediaLinkAction(model, CategoryType, Owner));
+                RegisterPendingChange(new InsertMultimediaLinkCommand(model, CategoryType, Owner));
             }
 
         }

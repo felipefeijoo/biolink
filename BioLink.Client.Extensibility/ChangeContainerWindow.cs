@@ -101,30 +101,33 @@ namespace BioLink.Client.Extensibility {
             get { return _pendingChanges != null && _pendingChanges.Count > 0; }
         }
 
-        public void RegisterPendingChange(DatabaseCommand action, object contributer) {
-            if (action != null) {
-                _pendingChanges.Add(action);
+        public void RegisterPendingChange(DatabaseCommand command, object contributer) {
+            if (command != null) {
+
+                command.CheckPermissions(User);
+
+                _pendingChanges.Add(command);
                 if (contributer is IChangeContainerObserver && !_observers.Contains(contributer)) {
                     _observers.Add(contributer as IChangeContainerObserver);
                 }
                 if (ChangeRegistered != null) {
-                    ChangeRegistered(this, action);
+                    ChangeRegistered(this, command);
                 }
             }
         }
 
-        public bool RegisterUniquePendingChange(DatabaseCommand action, object contributer) {
+        public bool RegisterUniquePendingChange(DatabaseCommand command, object contributer) {
             foreach (DatabaseCommand existingaction in _pendingChanges) {
-                if (existingaction.Equals(action)) {
+                if (existingaction.Equals(command)) {
                     return false;
                 }
             }
-            RegisterPendingChange(action, contributer);
+            RegisterPendingChange(command, contributer);
             return true;
         }
 
-        public void RegisterPendingChanges(List<DatabaseCommand> actions, object contributer) {
-            foreach (DatabaseCommand action in actions) {
+        public void RegisterPendingChanges(List<DatabaseCommand> commands, object contributer) {
+            foreach (DatabaseCommand action in commands) {
                 RegisterPendingChange(action, contributer);
             }
         }
@@ -185,8 +188,8 @@ namespace BioLink.Client.Extensibility {
                 commitTrans = true;
             }
             try {
-                foreach (DatabaseCommand action in _pendingChanges) {
-                    action.Process(User);
+                foreach (DatabaseCommand command in _pendingChanges) {
+                    command.Process(User);
                 }
 
                 if (commitTrans) {

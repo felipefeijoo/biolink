@@ -8,20 +8,23 @@ using BioLink.Client.Extensibility;
 
 namespace BioLink.Client.Material {
 
-    public class RenameMaterialAction : GenericDatabaseCommand<SiteExplorerNode> {
+    public class RenameMaterialCommand : GenericDatabaseCommand<SiteExplorerNode> {
 
-        public RenameMaterialAction(SiteExplorerNode model) : base(model) { }
+        public RenameMaterialCommand(SiteExplorerNode model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
             service.RenameMaterial(Model.ElemID, Model.Name);
         }
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_MATERIAL, PERMISSION_MASK.UPDATE);
+        }
 
     }
 
-    public class InsertMaterialAction : AbstractSiteExplorerAction {
+    public class InsertMaterialCommand : AbstractSiteExplorerCommand {
 
-        public InsertMaterialAction(SiteExplorerNode model, SiteExplorerNodeViewModel viewModel, int templateID = 0) : base(model, viewModel) {
+        public InsertMaterialCommand(SiteExplorerNode model, SiteExplorerNodeViewModel viewModel, int templateID = 0) : base(model, viewModel) {
             this.TemplateID = templateID;
         }
 
@@ -32,11 +35,16 @@ namespace BioLink.Client.Material {
         }
 
         public int TemplateID { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_MATERIAL, PERMISSION_MASK.INSERT);
+        }
+
     }
 
-    public class DeleteMaterialAction : DatabaseCommand {
+    public class DeleteMaterialCommand : DatabaseCommand {
 
-        public DeleteMaterialAction(int materialId) {
+        public DeleteMaterialCommand(int materialId) {
             this.MaterialID = materialId;
         }
 
@@ -46,21 +54,31 @@ namespace BioLink.Client.Material {
         }
 
         public int MaterialID { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_MATERIAL, PERMISSION_MASK.INSERT);
+        }
+
     }
 
-    public class UpdateMaterialAction : GenericDatabaseCommand<BioLink.Data.Model.Material> {
+    public class UpdateMaterialCommand : GenericDatabaseCommand<BioLink.Data.Model.Material> {
 
-        public UpdateMaterialAction(BioLink.Data.Model.Material model) : base(model) { }
+        public UpdateMaterialCommand(BioLink.Data.Model.Material model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
             service.UpdateMaterial(Model);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_MATERIAL, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
-    public class MergeMaterialAction : GenericDatabaseCommand<SiteExplorerNode> {
+    public class MergeMaterialCommand : GenericDatabaseCommand<SiteExplorerNode> {
 
-        public MergeMaterialAction(SiteExplorerNode source, SiteExplorerNode dest)
+        public MergeMaterialCommand(SiteExplorerNode source, SiteExplorerNode dest)
             : base(source) {
             Dest = dest;
         }
@@ -71,10 +89,15 @@ namespace BioLink.Client.Material {
         }
 
         public SiteExplorerNode Dest { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_EXPLORER, PERMISSION_MASK.ALLOW);
+        }
+
     }
 
-    public class MoveMaterialAction : GenericDatabaseCommand<SiteExplorerNode> {
-        public MoveMaterialAction(SiteExplorerNode model, SiteExplorerNode dest)
+    public class MoveMaterialCommand : GenericDatabaseCommand<SiteExplorerNode> {
+        public MoveMaterialCommand(SiteExplorerNode model, SiteExplorerNode dest)
             : base(model) {
             this.Destination = dest;
         }
@@ -85,10 +108,15 @@ namespace BioLink.Client.Material {
         }
 
         public SiteExplorerNode Destination { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_EXPLORER, PERMISSION_MASK.ALLOW);
+        }
+
     }
 
-    public class InsertMaterialTemplateAction : GenericDatabaseCommand<SiteExplorerNode> {
-        public InsertMaterialTemplateAction(SiteExplorerNode model)
+    public class InsertMaterialTemplateCommand : GenericDatabaseCommand<SiteExplorerNode> {
+        public InsertMaterialTemplateCommand(SiteExplorerNode model)
             : base(model) {
         }
 
@@ -96,11 +124,16 @@ namespace BioLink.Client.Material {
             var service = new MaterialService(user);
             Model.ElemID = service.InsertMaterialTemplate();
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_MATERIAL, PERMISSION_MASK.INSERT);
+        }
+
     }
 
-    public class InsertRDEMaterialAction : GenericDatabaseCommand<RDEMaterial> {
+    public class InsertRDEMaterialCommand : GenericDatabaseCommand<RDEMaterial> {
 
-        public InsertRDEMaterialAction(RDEMaterial model, RDESiteVisit owner) : base(model) {
+        public InsertRDEMaterialCommand(RDEMaterial model, RDESiteVisit owner) : base(model) {
             this.Owner = owner;
         }
 
@@ -111,11 +144,16 @@ namespace BioLink.Client.Material {
         }
 
         protected RDESiteVisit Owner { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_MATERIAL, PERMISSION_MASK.INSERT);
+        }
+
     }
 
-    public class UpdateRDEMaterialAction : GenericDatabaseCommand<RDEMaterial> {
+    public class UpdateRDEMaterialCommand : GenericDatabaseCommand<RDEMaterial> {
 
-        public UpdateRDEMaterialAction(RDEMaterial model) : base(model) { }
+        public UpdateRDEMaterialCommand(RDEMaterial model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
@@ -158,11 +196,15 @@ namespace BioLink.Client.Material {
             return m;
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_MATERIAL, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
-    public class MoveRDEMaterialAction : GenericDatabaseCommand<RDEMaterial> {
+    public class MoveRDEMaterialCommand : GenericDatabaseCommand<RDEMaterial> {
 
-        public MoveRDEMaterialAction(RDEMaterial model, RDESiteVisit newParent) : base(model) {
+        public MoveRDEMaterialCommand(RDEMaterial model, RDESiteVisit newParent) : base(model) {
             this.NewParent = newParent;
         }
 
@@ -172,6 +214,11 @@ namespace BioLink.Client.Material {
         }
 
         protected RDESiteVisit NewParent { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_MATERIAL, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
 

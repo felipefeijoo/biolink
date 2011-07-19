@@ -7,9 +7,9 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Extensibility {
 
-    public class InsertAssociateAction : GenericDatabaseCommand<Associate> {
+    public class InsertAssociateCommand : GenericDatabaseCommand<Associate> {
 
-        public InsertAssociateAction(Associate model, ViewModelBase owner) : base(model) {
+        public InsertAssociateCommand(Associate model, ViewModelBase owner) : base(model) {
             this.Owner = owner;
         }
 
@@ -36,12 +36,17 @@ namespace BioLink.Client.Extensibility {
             return string.Format("Insert Associate: Name={0}", Model.AssocName);
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_MATERIAL, PERMISSION_MASK.UPDATE);
+            required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
+        }
+
         protected ViewModelBase Owner { get; private set; }
 
     }
 
-    public class UpdateAssociateAction : GenericDatabaseCommand<Associate> {
-        public UpdateAssociateAction(Associate model)
+    public class UpdateAssociateCommand : GenericDatabaseCommand<Associate> {
+        public UpdateAssociateCommand(Associate model)
             : base(model) {
         }
 
@@ -67,10 +72,16 @@ namespace BioLink.Client.Extensibility {
             return string.Format("Update Associate: Name={0}", Model.AssocName);
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_MATERIAL, PERMISSION_MASK.UPDATE);
+            required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
-    public class DeleteAssociateAction : GenericDatabaseCommand<Associate> {
-        public DeleteAssociateAction(Associate model)
+    public class DeleteAssociateCommand : GenericDatabaseCommand<Associate> {
+
+        public DeleteAssociateCommand(Associate model)
             : base(model) {
         }
 
@@ -78,5 +89,11 @@ namespace BioLink.Client.Extensibility {
             var service = new SupportService(user);
             service.DeleteAssociate(Model.AssociateID);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_MATERIAL, PERMISSION_MASK.UPDATE);
+            required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
+        }
+
     }
 }

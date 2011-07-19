@@ -160,7 +160,7 @@ namespace BioLink.Client.Tools {
                         _findModel.Remove(model);
                     }
 
-                    RegisterPendingChange(new DeleteJournalAction(model.Model));
+                    RegisterPendingChange(new DeleteJournalCommand(model.Model));
                 }
             } else {
                 ErrorMessage.Show("You cannot delete this Journal at this time. This is most probably because this Journal is cited in one or more References.");

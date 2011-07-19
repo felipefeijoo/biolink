@@ -94,7 +94,7 @@ namespace BioLink.Client.Extensibility {
 
             _model.Remove(note);
             if (note.NoteID >= 0) {
-                RegisterPendingChange(new DeleteNoteAction(note.Model, Owner));
+                RegisterPendingChange(new DeleteNoteCommand(note.Model, Owner));
             }
             RedrawNotes();
         }
@@ -111,7 +111,7 @@ namespace BioLink.Client.Extensibility {
             var note = viewmodel as NoteViewModel;
             if (note != null) {
                 if (note.NoteID >= 0) {
-                    RegisterUniquePendingChange(new UpdateNoteAction(note.Model, Owner));
+                    RegisterUniquePendingChange(new UpdateNoteCommand(note.Model, Owner));
                 }
             }
         }
@@ -149,7 +149,7 @@ namespace BioLink.Client.Extensibility {
 
                 NoteViewModel viewModel = new NoteViewModel(note);
                 _model.Add(viewModel);
-                RegisterUniquePendingChange(new InsertNoteAction(note, Owner));
+                RegisterUniquePendingChange(new InsertNoteCommand(note, Owner));
                 RedrawNotes(viewModel);
             }
         }

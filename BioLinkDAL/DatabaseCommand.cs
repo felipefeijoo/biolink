@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using BioLink.Data;
 using BioLink.Data.Model;
+using BioLink.Client.Utilities;
 
 namespace BioLink.Data {
 
@@ -13,9 +14,23 @@ namespace BioLink.Data {
     /// </summary>
     public abstract class DatabaseCommand {
 
+        public DatabaseCommand() {
+        }
+
         public void Process(User user) {
+            CheckPermissions(user);
             ProcessImpl(user);
         }
+
+        public void CheckPermissions(User user) {
+            var required = new PermissionBuilder();
+            BindPermissions(required);
+            foreach (RequiredPermission mask in required.Permissions) {
+                user.CheckPermission(mask.Category, mask.Mask, "You do not have permission to perform this action.");
+            }            
+        }
+
+        protected abstract void BindPermissions(PermissionBuilder required);
 
         protected abstract void ProcessImpl(User user);
 
@@ -51,5 +66,38 @@ namespace BioLink.Data {
         }
 
     }
+
+    public class RequiredPermission {
+
+        public RequiredPermission(PermissionCategory category, PERMISSION_MASK mask) {
+            this.Category = category;
+            this.Mask = mask;
+        }
+
+        public PermissionCategory Category { get; private set; }
+        public PERMISSION_MASK Mask { get; private set; }
+    }
+
+    public class PermissionBuilder {
+
+        private List<RequiredPermission> _required = new List<RequiredPermission>();
+
+        public PermissionBuilder Add(PermissionCategory category, PERMISSION_MASK mask) {
+            _required.Add(new RequiredPermission(category, mask));
+            return this;
+        }
+
+        /// <summary>
+        /// Placeholder to help find commands that have no required permissions...
+        /// </summary>
+        /// <returns></returns>
+        public PermissionBuilder None() {
+            _required.Clear();
+            return this;
+        }
+
+        public IEnumerable<RequiredPermission> Permissions { get { return _required; } }
+    }
+
 
 }

@@ -222,10 +222,10 @@ namespace BioLink.Client.Tools {
                     var vm = new LabelSetItemViewModel(newItem);
 
                     vm.DataChanged += new DataChangedHandler((viewModel) => {
-                        Host.RegisterUniquePendingChange(new UpdateLabelSetItemAction(newItem));
+                        Host.RegisterUniquePendingChange(new UpdateLabelSetItemCommand(newItem));
                     });
 
-                    Host.RegisterUniquePendingChange(new InsertLabelSetItemAction(newItem));
+                    Host.RegisterUniquePendingChange(new InsertLabelSetItemCommand(newItem));
                     _itemModel.Add(vm);
                 }
             }
@@ -319,7 +319,7 @@ namespace BioLink.Client.Tools {
                     _itemModel.Add(vm);
                     item.SetID = CurrentItemSetID;
                     item.NumCopies = 1;
-                    Host.RegisterUniquePendingChange(new InsertLabelSetItemAction(item));
+                    Host.RegisterUniquePendingChange(new InsertLabelSetItemCommand(item));
                 }
 
                 ReorderItems();
@@ -355,7 +355,7 @@ namespace BioLink.Client.Tools {
 
                 foreach (LabelSetItemViewModel item in _itemModel) {
                     item.DataChanged += new DataChangedHandler((vm) => {
-                        Host.RegisterUniquePendingChange(new UpdateLabelSetItemAction((vm as LabelSetItemViewModel).Model));
+                        Host.RegisterUniquePendingChange(new UpdateLabelSetItemCommand((vm as LabelSetItemViewModel).Model));
                     });
                 }
 
@@ -429,16 +429,16 @@ namespace BioLink.Client.Tools {
         }
 
         public override DatabaseCommand PrepareDeleteAction(ViewModelBase viewModel) {
-            return new DeleteLabelSetAction((viewModel as LabelSetViewModel).Model);
+            return new DeleteLabelSetCommand((viewModel as LabelSetViewModel).Model);
         }
 
         public override DatabaseCommand PrepareUpdateAction(ViewModelBase viewModel) {
-            return new UpdateLabelSetAction((viewModel as LabelSetViewModel).Model);
+            return new UpdateLabelSetCommand((viewModel as LabelSetViewModel).Model);
         }
 
         public override ViewModelBase AddNewItem(out DatabaseCommand addAction) {
             var model = new LabelSet { Name = "New set" };
-            addAction = new InsertLabelSetAction(model);
+            addAction = new InsertLabelSetCommand(model);
             return new LabelSetViewModel(model);
         }
 
@@ -500,7 +500,7 @@ namespace BioLink.Client.Tools {
                 foreach (LabelSetItemViewModel selected in killList) {
                     selected.IsDeleted = true;
                     _itemModel.Remove(selected);
-                    Host.RegisterUniquePendingChange(new DeleteLabelSetItemAction(selected.Model));
+                    Host.RegisterUniquePendingChange(new DeleteLabelSetItemCommand(selected.Model));
                 }
             }
         }
@@ -600,63 +600,93 @@ namespace BioLink.Client.Tools {
 
     }
 
-    public class InsertLabelSetItemAction : GenericDatabaseCommand<LabelSetItem> {
+    public class InsertLabelSetItemCommand : GenericDatabaseCommand<LabelSetItem> {
 
-        public InsertLabelSetItemAction(LabelSetItem model) : base(model) { }
+        public InsertLabelSetItemCommand(LabelSetItem model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);
             Model.LabelItemID = service.InsertLabelSetItem(Model);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 
-    public class UpdateLabelSetItemAction : GenericDatabaseCommand<LabelSetItem> {
+    public class UpdateLabelSetItemCommand : GenericDatabaseCommand<LabelSetItem> {
 
-        public UpdateLabelSetItemAction(LabelSetItem model) : base(model) { }
+        public UpdateLabelSetItemCommand(LabelSetItem model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);
             service.UpdateLabelSetItem(Model);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 
-    public class DeleteLabelSetItemAction : GenericDatabaseCommand<LabelSetItem> {
+    public class DeleteLabelSetItemCommand : GenericDatabaseCommand<LabelSetItem> {
 
-        public DeleteLabelSetItemAction(LabelSetItem model) : base(model) { }
+        public DeleteLabelSetItemCommand(LabelSetItem model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);
             service.DeleteLabelSetItem(Model.LabelItemID);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 
-    public class DeleteLabelSetAction: GenericDatabaseCommand<LabelSet> {
+    public class DeleteLabelSetCommand: GenericDatabaseCommand<LabelSet> {
 
-        public DeleteLabelSetAction(LabelSet model) : base(model) { }
+        public DeleteLabelSetCommand(LabelSet model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);
             service.DeleteLabelSet(Model.ID);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 
-    public class InsertLabelSetAction : GenericDatabaseCommand<LabelSet> {
+    public class InsertLabelSetCommand : GenericDatabaseCommand<LabelSet> {
 
-        public InsertLabelSetAction(LabelSet model) : base(model) { }
+        public InsertLabelSetCommand(LabelSet model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);
             Model.ID = service.InsertLabelSet(Model);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 
-    public class UpdateLabelSetAction : GenericDatabaseCommand<LabelSet> {
-        public UpdateLabelSetAction(LabelSet model) : base(model) { }
+    public class UpdateLabelSetCommand : GenericDatabaseCommand<LabelSet> {
+        public UpdateLabelSetCommand(LabelSet model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);
             service.UpdateLabelSet(Model);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 
     public class LabelSetItemViewModel : GenericViewModelBase<LabelSetItem> {

@@ -103,7 +103,7 @@ namespace BioLink.Client.Taxa {
                     taxon.Epithet = name.Epithet;
                     taxon.YearOfPub = name.Year;
                     taxon.ChgComb = name.ChangeCombination;
-                    return new UpdateTaxonDatabaseAction(taxon.Taxon);                    
+                    return new UpdateTaxonCommand(taxon.Taxon);                    
                 } else {
                     ErrorMessage.Show("Please enter at least the epithet, with author and year where appropriate.");                    
                 }

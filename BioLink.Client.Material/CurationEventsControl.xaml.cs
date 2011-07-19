@@ -79,7 +79,7 @@ namespace BioLink.Client.Material {
         void viewModel_DataChanged(ChangeableModelBase viewmodel) {
             var e = viewmodel as CurationEventViewModel;
             if (e != null) {
-                RegisterUniquePendingChange(new UpdateCurationEventAction(e.Model));
+                RegisterUniquePendingChange(new UpdateCurationEventCommand(e.Model));
             }
         }
 
@@ -91,7 +91,7 @@ namespace BioLink.Client.Material {
             var selected = lstEvents.SelectedItem as CurationEventViewModel;
             if (selected != null) {
                 _model.Remove(selected);
-                RegisterPendingChange(new DeleteCurationEventAction(selected.Model));
+                RegisterPendingChange(new DeleteCurationEventCommand(selected.Model));
             }
         }
 
@@ -110,7 +110,7 @@ namespace BioLink.Client.Material {
 
             lstEvents.SelectedItem = viewModel;
 
-            RegisterPendingChange(new InsertCurationEventAction(model));
+            RegisterPendingChange(new InsertCurationEventCommand(model));
         }
 
         public bool IsPopulated {

@@ -106,7 +106,7 @@ namespace BioLink.Client.Tools {
 
             viewModel.IsRenaming = true;
             _typeData.Add(model);
-            RegisterPendingChange(new InsertTypeDataAction(model, Type));
+            RegisterPendingChange(new InsertTypeDataCommand(model, Type));
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e) {
@@ -119,7 +119,7 @@ namespace BioLink.Client.Tools {
             if (selected != null) {
                 _currentCategoryModel.Remove(selected);
                 _typeData.Remove(selected.Model);
-                RegisterPendingChange(new DeleteTypeDataAction(selected.Model, Type));
+                RegisterPendingChange(new DeleteTypeDataCommand(selected.Model, Type));
             }
 
         }
@@ -133,7 +133,7 @@ namespace BioLink.Client.Tools {
             if (selected != null) {
                 selected.Description = text;
                 if (selected.ID >= 0) {
-                    RegisterUniquePendingChange(new UpdateTypeDataAction(selected.Model, Type));
+                    RegisterUniquePendingChange(new UpdateTypeDataCommand(selected.Model, Type));
                 }
             }
         }

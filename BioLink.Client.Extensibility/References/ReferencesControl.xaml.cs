@@ -52,7 +52,7 @@ namespace BioLink.Client.Extensibility {
             _model = new ObservableCollection<RefLinkViewModel>(list.ConvertAll((rl) => {
                 var vm = new RefLinkViewModel(rl);
                 vm.DataChanged += new DataChangedHandler((changed) => {
-                    RegisterUniquePendingChange(new UpdateRefLinkAction(vm.Model, Category.ToString()));
+                    RegisterUniquePendingChange(new UpdateRefLinkCommand(vm.Model, Category.ToString()));
                 });
                 return vm;
             }));
@@ -118,7 +118,7 @@ namespace BioLink.Client.Extensibility {
         private void DeleteSelectedRefLink() {
             var item = lstReferences.SelectedItem as RefLinkViewModel;
             if (item != null) {
-                RegisterPendingChange(new DeleteRefLinkAction(item.Model));
+                RegisterPendingChange(new DeleteRefLinkCommand(item.Model));
                 _model.Remove(item);
             }
         }
@@ -135,7 +135,7 @@ namespace BioLink.Client.Extensibility {
                 data.RefLinkID = -1;
                 data.RefLinkType = refLinkType;
                 data.IntraCatID = IntraCategoryID;
-                RegisterPendingChange(new InsertRefLinkAction(data, Category.ToString()));
+                RegisterPendingChange(new InsertRefLinkCommand(data, Category.ToString()));
 
                 var viewModel = new RefLinkViewModel(data);
                 viewModel.RefCode = NextNewName("<New {0}>", _model, () => viewModel.RefCode);

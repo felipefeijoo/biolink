@@ -23,6 +23,10 @@ namespace BioLink.Data {
             return string.Format("Delete Favorite: ID={0}", FavoriteID);
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 
     public class InsertFavoriteGroupCommand : GenericDatabaseCommand<Favorite> {
@@ -41,6 +45,9 @@ namespace BioLink.Data {
             return string.Format("Insert Favorite Group: Name={0}, IsGlobal={1}", Model.GroupName, Model.IsGlobal);
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
 
     }
 
@@ -55,6 +62,11 @@ namespace BioLink.Data {
 
         public override string ToString() {
             return string.Format("Rename Favorite Group: ID={0}, GroupName={1}", Model.FavoriteID, Model.GroupName);
+        }
+
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
         }
 
     }
@@ -97,6 +109,10 @@ namespace BioLink.Data {
             return string.Format("Move Favorite: ID={0}, NewParentID={1}", Model.FavoriteID, NewParent.FavoriteID);
         }
 
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
     }
 
     public class InsertTaxonFavoriteCommand : GenericDatabaseCommand<TaxonFavorite> {
@@ -115,6 +131,10 @@ namespace BioLink.Data {
             return string.Format("Insert Taxon Favorite: TaxaID={0}, IsGlobal={1}", Model.TaxaID, Model.IsGlobal);
         }
 
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
     }
 
     public class InsertSiteFavoriteCommand : GenericDatabaseCommand<SiteFavorite> {
@@ -134,6 +154,10 @@ namespace BioLink.Data {
         }
 
 
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
     }
 
     public class InsertReferenceFavoriteCommand : GenericDatabaseCommand<ReferenceFavorite> {
@@ -150,6 +174,10 @@ namespace BioLink.Data {
 
         public override string ToString() {
             return string.Format("Insert Reference Favorite: RefID={0}, IsGlobal={1}", Model.RefID, Model.IsGlobal);
+        }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
         }
 
     }

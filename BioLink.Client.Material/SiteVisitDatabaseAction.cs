@@ -8,20 +8,24 @@ using BioLink.Client.Extensibility;
 
 namespace BioLink.Client.Material {
 
-    public class RenameSiteVisitAction : GenericDatabaseCommand<SiteExplorerNode> {
+    public class RenameSiteVisitCommand : GenericDatabaseCommand<SiteExplorerNode> {
 
-        public RenameSiteVisitAction(SiteExplorerNode model) : base(model) { }
+        public RenameSiteVisitCommand(SiteExplorerNode model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
             service.RenameSiteVisit(Model.ElemID, Model.Name);
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_SITEVISIT, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
-    public class DeleteSiteVisitAction : DatabaseCommand {
+    public class DeleteSiteVisitCommand : DatabaseCommand {
 
-        public DeleteSiteVisitAction(int siteVisitID) {
+        public DeleteSiteVisitCommand(int siteVisitID) {
             this.SiteVisitID = siteVisitID;
         }
 
@@ -31,11 +35,16 @@ namespace BioLink.Client.Material {
         }
 
         public int SiteVisitID { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_SITEVISIT, PERMISSION_MASK.DELETE);
+        }
+
     }
 
-    public class InsertSiteVisitAction : AbstractSiteExplorerAction {
+    public class InsertSiteVisitCommand : AbstractSiteExplorerCommand {
 
-        public InsertSiteVisitAction(SiteExplorerNode model, SiteExplorerNodeViewModel viewModel, int templateId = -1) : base(model, viewModel) {
+        public InsertSiteVisitCommand(SiteExplorerNode model, SiteExplorerNodeViewModel viewModel, int templateId = -1) : base(model, viewModel) {
             TemplateID = templateId;
         }
 
@@ -46,10 +55,15 @@ namespace BioLink.Client.Material {
         }
 
         public int TemplateID { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_SITEVISIT, PERMISSION_MASK.INSERT);
+        }
+
     }
 
-    public class UpdateSiteVisitAction : GenericDatabaseCommand<SiteVisit> {
-        public UpdateSiteVisitAction(SiteVisit model)
+    public class UpdateSiteVisitCommand : GenericDatabaseCommand<SiteVisit> {
+        public UpdateSiteVisitCommand(SiteVisit model)
             : base(model) {
         }
 
@@ -63,11 +77,15 @@ namespace BioLink.Client.Material {
             service.UpdateSiteVisit(Model);
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_SITEVISIT, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
-    public class MergeSiteVisitAction : GenericDatabaseCommand<SiteExplorerNode> {
+    public class MergeSiteVisitCommand : GenericDatabaseCommand<SiteExplorerNode> {
 
-        public MergeSiteVisitAction(SiteExplorerNode source, SiteExplorerNode dest)
+        public MergeSiteVisitCommand(SiteExplorerNode source, SiteExplorerNode dest)
             : base(source) {
             Dest = dest;
         }
@@ -78,11 +96,16 @@ namespace BioLink.Client.Material {
         }
 
         public SiteExplorerNode Dest { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_EXPLORER, PERMISSION_MASK.ALLOW);
+        }
+
     }
 
-    public class MoveSiteVisitAction : GenericDatabaseCommand<SiteExplorerNode> {
+    public class MoveSiteVisitCommand : GenericDatabaseCommand<SiteExplorerNode> {
 
-        public MoveSiteVisitAction(SiteExplorerNode source, SiteExplorerNode dest)
+        public MoveSiteVisitCommand(SiteExplorerNode source, SiteExplorerNode dest)
             : base(source) {
             Dest = dest;
         }
@@ -93,10 +116,15 @@ namespace BioLink.Client.Material {
         }
 
         public SiteExplorerNode Dest { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_EXPLORER, PERMISSION_MASK.ALLOW);
+        }
+
     }
 
-    public class InsertSiteVisitTemplateAction : GenericDatabaseCommand<SiteExplorerNode> {
-        public InsertSiteVisitTemplateAction(SiteExplorerNode model)
+    public class InsertSiteVisitTemplateCommand : GenericDatabaseCommand<SiteExplorerNode> {
+        public InsertSiteVisitTemplateCommand(SiteExplorerNode model)
             : base(model) {
         }
 
@@ -104,11 +132,16 @@ namespace BioLink.Client.Material {
             var service = new MaterialService(user);
             Model.ElemID = service.InsertSiteVisitTemplate();
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_SITEVISIT, PERMISSION_MASK.INSERT);
+        }
+
     }
 
-    public class InsertRDESiteVisitAction : GenericDatabaseCommand<RDESiteVisit> {
+    public class InsertRDESiteVisitCommand : GenericDatabaseCommand<RDESiteVisit> {
 
-        public InsertRDESiteVisitAction(RDESiteVisit model, RDESite owner) : base(model) {
+        public InsertRDESiteVisitCommand(RDESiteVisit model, RDESite owner) : base(model) {
             this.Owner = owner;
         }
 
@@ -118,13 +151,17 @@ namespace BioLink.Client.Material {
             Model.SiteVisitID = service.InsertSiteVisit(Model.SiteID);
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_SITEVISIT, PERMISSION_MASK.INSERT);
+        }
+
         protected RDESite Owner { get; private set; }
 
     }
 
-    public class UpdateRDESiteVisitAction : GenericDatabaseCommand<RDESiteVisit> {
+    public class UpdateRDESiteVisitCommand : GenericDatabaseCommand<RDESiteVisit> {
 
-        public UpdateRDESiteVisitAction(RDESiteVisit model) : base(model) { }
+        public UpdateRDESiteVisitCommand(RDESiteVisit model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
@@ -157,6 +194,11 @@ namespace BioLink.Client.Material {
 
             return visit;
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_SITEVISIT, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
 }

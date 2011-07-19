@@ -153,7 +153,7 @@ namespace BioLink.Client.Tools {
                 }
             }));
             
-            RegisterPendingChange(new AddPhraseAction(phrase));
+            RegisterPendingChange(new InsertPhraseCommand(phrase));
 
             viewModel.IsRenaming = true;
         }
@@ -164,7 +164,7 @@ namespace BioLink.Client.Tools {
             }
 
             if (this.Question(String.Format("Are you sure you want to delete the phrase \"{0}\"?", phrase.PhraseText), "Delete phrase?")) {
-                RegisterPendingChange(new DeletePhraseAction(phrase.Model));
+                RegisterPendingChange(new DeletePhraseCommand(phrase.Model));
                 phrase.IsDeleted = true;                
             }
         }
@@ -188,7 +188,7 @@ namespace BioLink.Client.Tools {
 
         private void PhraseText_EditingComplete(object sender, string text) {
             PhraseViewModel vm = (sender as EditableTextBlock).ViewModel as PhraseViewModel;
-            RegisterPendingChange(new RenamePhraseAction(vm.Model, text));
+            RegisterPendingChange(new RenamePhraseCommand(vm.Model, text));
         }
 
         private void PhraseText_EditingCancelled(object sender, string oldtext) {
@@ -254,7 +254,7 @@ namespace BioLink.Client.Tools {
             }
 
             if (this.Question(String.Format("Are you sure you want to delete the phrase category \"{0}\"?", category.Category), "Delete category?")) {
-                RegisterPendingChange(new DeletePhraseCategoryAction(category.Model));
+                RegisterPendingChange(new DeletePhraseCategoryCommand(category.Model));
                 category.IsDeleted = true;
             }
 

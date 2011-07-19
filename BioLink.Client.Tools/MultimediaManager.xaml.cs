@@ -130,7 +130,7 @@ namespace BioLink.Client.Tools {
                                 viewModel = new MultimediaLinkViewModel(model);
                                 _tempFileManager.CopyToTempFile(viewModel.MultimediaID, filename);
                                 _model.Add(viewModel);
-                                RegisterPendingChange(new InsertMultimediaAction(model, _tempFileManager.GetContentFileName(viewModel.MultimediaID, finfo.Extension.Substring(1))));
+                                RegisterPendingChange(new InsertMultimediaCommand(model, _tempFileManager.GetContentFileName(viewModel.MultimediaID, finfo.Extension.Substring(1))));
                                 break;
                             case MultimediaDuplicateAction.UseExisting:
                                 // Should never get here!
@@ -147,7 +147,7 @@ namespace BioLink.Client.Tools {
                                 viewModel = new MultimediaLinkViewModel(model);
                                 _model.Add(viewModel);
                                 _tempFileManager.CopyToTempFile(viewModel.MultimediaID, filename);
-                                RegisterPendingChange(new UpdateMultimediaBytesAction(model, filename));
+                                RegisterPendingChange(new UpdateMultimediaBytesCommand(model, filename));
                                 break;
                         }
 
@@ -200,7 +200,7 @@ namespace BioLink.Client.Tools {
 
                         foreach (MultimediaLinkViewModel item in candidateList) {
                             _model.Remove(item);
-                            RegisterUniquePendingChange(new DeleteMultimedia(item.MultimediaID));
+                            RegisterUniquePendingChange(new DeleteMultimediaCommand(item.MultimediaID));
                         }
                     }
                 }
@@ -220,7 +220,7 @@ namespace BioLink.Client.Tools {
                     _model[index].IsSelected = true;
                 }
 
-                RegisterUniquePendingChange(new DeleteMultimedia(selected.MultimediaID));
+                RegisterUniquePendingChange(new DeleteMultimediaCommand(selected.MultimediaID));
             }
         }
 
@@ -404,9 +404,9 @@ namespace BioLink.Client.Tools {
 
     }
 
-    public class DeleteMultimedia : DatabaseCommand {
+    public class DeleteMultimediaCommand : DatabaseCommand {
 
-        public DeleteMultimedia(int multimediaID) {
+        public DeleteMultimediaCommand(int multimediaID) {
             this.MultimediaID = multimediaID;
         }
 
@@ -416,5 +416,10 @@ namespace BioLink.Client.Tools {
         }
 
         protected int MultimediaID { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 }

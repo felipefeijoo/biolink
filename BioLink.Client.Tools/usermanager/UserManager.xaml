@@ -41,7 +41,7 @@
                 <ListView Margin="6,35,102,10" x:Name="lvwUsers" MouseDoubleClick="lvwUsers_MouseDoubleClick">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Width="80" Header="User Name" HeaderContainerStyle="{StaticResource hcs}">
+                            <GridViewColumn Width="100" Header="User Name" HeaderContainerStyle="{StaticResource hcs}">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
@@ -51,7 +51,7 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Width="80" Header="Group" DisplayMemberBinding="{Binding Group}" HeaderContainerStyle="{StaticResource hcs}" />
+                            <GridViewColumn Width="120" Header="Group" DisplayMemberBinding="{Binding Group}" HeaderContainerStyle="{StaticResource hcs}" />
                             <GridViewColumn Width="150" Header="Full Name" DisplayMemberBinding="{Binding FullName}" HeaderContainerStyle="{StaticResource hcs}" />
                             <GridViewColumn Width="150" Header="Description" DisplayMemberBinding="{Binding Description}" HeaderContainerStyle="{StaticResource hcs}" />
                             <GridViewColumn Width="100" Header="Can Create Users" DisplayMemberBinding="{Binding CanCreateUsers}" HeaderContainerStyle="{StaticResource hcs}" />

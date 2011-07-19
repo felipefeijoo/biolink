@@ -9,20 +9,25 @@ using System.Collections.ObjectModel;
 
 namespace BioLink.Client.Taxa {
 
-    public class UpdateDistQualDatabaseAction : GenericDatabaseCommand<Taxon> {
+    public class UpdateDistQualDatabaseCommand : GenericDatabaseCommand<Taxon> {
 
-        public UpdateDistQualDatabaseAction(Taxon model) : base(model) { }
+        public UpdateDistQualDatabaseCommand(Taxon model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             new TaxaService(user).UpdateDistributionQualification(Model.TaxaID, Model.DistQual);            
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
-    public class SaveDistributionRegionsAction : GenericDatabaseCommand<Taxon> {
+    public class SaveDistributionRegionsCommand : GenericDatabaseCommand<Taxon> {
 
         private ObservableCollection<HierarchicalViewModelBase> _regionTree;
 
-        public SaveDistributionRegionsAction(Taxon taxon, ObservableCollection<HierarchicalViewModelBase> regionTree) : base(taxon) {
+        public SaveDistributionRegionsCommand(Taxon taxon, ObservableCollection<HierarchicalViewModelBase> regionTree) : base(taxon) {
             _regionTree = regionTree;
         }
 
@@ -43,7 +48,11 @@ namespace BioLink.Client.Taxa {
             foreach (DistributionViewModel dvm in list) {
                 service.InsertBiotaDist(Model.TaxaID, dvm.Model);
             }
-
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
+        }
+
     }
 }

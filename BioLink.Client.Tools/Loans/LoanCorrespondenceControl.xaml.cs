@@ -33,7 +33,7 @@ namespace BioLink.Client.Tools {
 
         public override ViewModelBase AddNewItem(out DatabaseCommand addAction) {
             var model = new LoanCorrespondence() {  };
-            addAction = new InsertLoanCorrespondenceAction(model, Loan);
+            addAction = new InsertLoanCorrespondenceCommand(model, Loan);
             return new LoanCorrespondenceViewModel(model);
         }
 
@@ -41,7 +41,7 @@ namespace BioLink.Client.Tools {
         public override DatabaseCommand PrepareDeleteAction(ViewModelBase viewModel) {
             var lc = viewModel as LoanCorrespondenceViewModel;
             if (lc != null) {
-                return new DeleteLoanCorrespondenceAction(lc.Model);
+                return new DeleteLoanCorrespondenceCommand(lc.Model);
             }
             return null;
         }
@@ -57,7 +57,7 @@ namespace BioLink.Client.Tools {
         public override DatabaseCommand PrepareUpdateAction(ViewModelBase viewModel) {
             var lc = viewModel as LoanCorrespondenceViewModel;
             if (lc != null) {
-                return new UpdateLoanCorrespondenceAction(lc.Model);
+                return new UpdateLoanCorrespondenceCommand(lc.Model);
             }
             return null;            
         }
@@ -70,9 +70,9 @@ namespace BioLink.Client.Tools {
 
     }
 
-    public class InsertLoanCorrespondenceAction : GenericDatabaseCommand<LoanCorrespondence> {
+    public class InsertLoanCorrespondenceCommand : GenericDatabaseCommand<LoanCorrespondence> {
 
-        public InsertLoanCorrespondenceAction(LoanCorrespondence model, Loan loan) : base(model) {
+        public InsertLoanCorrespondenceCommand(LoanCorrespondence model, Loan loan) : base(model) {
             Loan = loan;
         }
 
@@ -82,26 +82,40 @@ namespace BioLink.Client.Tools {
             service.InsertLoanCorrespondence(Model);
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
         protected Loan Loan { get; private set; }
     }
 
-    public class UpdateLoanCorrespondenceAction : GenericDatabaseCommand<LoanCorrespondence> {
-        public UpdateLoanCorrespondenceAction(LoanCorrespondence model) : base(model) { }
+    public class UpdateLoanCorrespondenceCommand : GenericDatabaseCommand<LoanCorrespondence> {
+        public UpdateLoanCorrespondenceCommand(LoanCorrespondence model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new LoanService(user);
             service.UpdateLoanCorrespondence(Model);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 
-    public class DeleteLoanCorrespondenceAction : GenericDatabaseCommand<LoanCorrespondence> {
+    public class DeleteLoanCorrespondenceCommand : GenericDatabaseCommand<LoanCorrespondence> {
 
-        public DeleteLoanCorrespondenceAction(LoanCorrespondence model) : base(model) { }
+        public DeleteLoanCorrespondenceCommand(LoanCorrespondence model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new LoanService(user);
             service.DeleteLoanCorrespondence(Model.LoanCorrespondenceID);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 
     public class LoanCorrespondenceViewModel : GenericViewModelBase<LoanCorrespondence> {

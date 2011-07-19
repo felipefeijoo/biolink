@@ -119,10 +119,10 @@ namespace BioLink.Client.Tools {
             DatabaseCommand action = null;
             switch (_type) {
                 case "trait":
-                    action = new DeleteTraitFromOwnerAction(ownerInfo.ObjectID.Value);
+                    action = new DeleteTraitFromOwnerCommand(ownerInfo.ObjectID.Value);
                     break;
                 case "note":
-                    action = new DeleteNoteFromOwnerAction(ownerInfo.ObjectID.Value);
+                    action = new DeleteNoteFromOwnerCommand(ownerInfo.ObjectID.Value);
                     break;
                 default:
                     throw new NotImplementedException("Deleting type data for type: " + _type + " is currently unsupported!");
@@ -196,7 +196,7 @@ namespace BioLink.Client.Tools {
             if (selected != null) {
                 _currentCategoryModel.Remove(selected);
                 _typeData.Remove(selected.Model);
-                RegisterPendingChange(new DeleteTypeDataAction(selected.Model, _type));
+                RegisterPendingChange(new DeleteTypeDataCommand(selected.Model, _type));
             }
 
         }
@@ -218,7 +218,7 @@ namespace BioLink.Client.Tools {
 
             viewModel.IsRenaming = true;
             _typeData.Add(model);
-            RegisterPendingChange(new InsertTypeDataAction(model, _type));            
+            RegisterPendingChange(new InsertTypeDataCommand(model, _type));            
         }
 
         private void btnAddNew_Click(object sender, RoutedEventArgs e) {
@@ -235,7 +235,7 @@ namespace BioLink.Client.Tools {
             if (selected != null) {
                 selected.Description = text;
                 if (selected.ID >= 0) {
-                    RegisterUniquePendingChange(new UpdateTypeDataAction(selected.Model, _type));
+                    RegisterUniquePendingChange(new UpdateTypeDataCommand(selected.Model, _type));
                 }
             }
         }
@@ -264,8 +264,8 @@ namespace BioLink.Client.Tools {
 
     }
 
-    public abstract class TypeDataAction : GenericDatabaseCommand<TypeData> {
-        public TypeDataAction(TypeData model, string type) : base(model) {
+    public abstract class TypeDataCommand : GenericDatabaseCommand<TypeData> {
+        public TypeDataCommand(TypeData model, string type) : base(model) {
             this.Type = type;
         }
 
@@ -273,31 +273,39 @@ namespace BioLink.Client.Tools {
 
     }
 
-    public class UpdateTypeDataAction : TypeDataAction {
+    public class UpdateTypeDataCommand : TypeDataCommand {
 
-        public UpdateTypeDataAction(TypeData model, string type) : base(model, type) { }
+        public UpdateTypeDataCommand(TypeData model, string type) : base(model, type) { }
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);
             service.UpdateTypeData(Type, Model.ID, Model.Description);
         }
 
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
     }
 
-    public class InsertTypeDataAction : TypeDataAction {
+    public class InsertTypeDataCommand : TypeDataCommand {
 
-        public InsertTypeDataAction(TypeData model, string type) : base(model, type) { }
+        public InsertTypeDataCommand(TypeData model, string type) : base(model, type) { }
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);
             Model.ID = service.InsertTypeData(Type, Model.Category, Model.Description);
         }
 
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
     }
 
-    public class DeleteTypeDataAction : TypeDataAction {
+    public class DeleteTypeDataCommand : TypeDataCommand {
 
-        public DeleteTypeDataAction(TypeData model, string type) : base(model, type) { }
+        public DeleteTypeDataCommand(TypeData model, string type) : base(model, type) { }
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);
@@ -305,11 +313,15 @@ namespace BioLink.Client.Tools {
                 service.DeleteTypeData(Type, Model.ID);
             }
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
     }
 
-    public class DeleteTraitFromOwnerAction : DatabaseCommand {
+    public class DeleteTraitFromOwnerCommand : DatabaseCommand {
 
-        public DeleteTraitFromOwnerAction(int traitID) {
+        public DeleteTraitFromOwnerCommand(int traitID) {
             this.TraitID = traitID;
         }
 
@@ -323,11 +335,15 @@ namespace BioLink.Client.Tools {
         public override string ToString() {
             return string.Format("Delete Trait (TraitID={0})", TraitID);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
     }
 
-    public class DeleteNoteFromOwnerAction : DatabaseCommand {
+    public class DeleteNoteFromOwnerCommand : DatabaseCommand {
 
-        public DeleteNoteFromOwnerAction(int noteID) {
+        public DeleteNoteFromOwnerCommand(int noteID) {
             this.NoteID = noteID;
         }
 
@@ -342,6 +358,9 @@ namespace BioLink.Client.Tools {
             return string.Format("Delete Note (NoteID={0})", NoteID);
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
     }
 
 

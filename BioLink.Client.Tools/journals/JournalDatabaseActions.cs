@@ -8,9 +8,9 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Tools {
 
-    public class InsertJournalAction : GenericDatabaseCommand<Journal> {
+    public class InsertJournalCommand : GenericDatabaseCommand<Journal> {
 
-        public InsertJournalAction(Journal model)
+        public InsertJournalCommand(Journal model)
             : base(model) {
         }
 
@@ -18,11 +18,16 @@ namespace BioLink.Client.Tools {
             var service = new SupportService(user);
             Model.JournalID = service.InsertJournal(Model);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SUPPORT_JOURNALS, PERMISSION_MASK.INSERT);
+        }
+
     }
 
-    public class UpdateJournalAction : GenericDatabaseCommand<Journal> {
+    public class UpdateJournalCommand : GenericDatabaseCommand<Journal> {
 
-        public UpdateJournalAction(Journal model)
+        public UpdateJournalCommand(Journal model)
             : base(model) {
         }
 
@@ -30,11 +35,16 @@ namespace BioLink.Client.Tools {
             var service = new SupportService(user);
             service.UpdateJournal(Model);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SUPPORT_JOURNALS, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
-    public class DeleteJournalAction : GenericDatabaseCommand<Journal> {
+    public class DeleteJournalCommand : GenericDatabaseCommand<Journal> {
 
-        public DeleteJournalAction(Journal model)
+        public DeleteJournalCommand(Journal model)
             : base(model) {
         }
 
@@ -42,5 +52,10 @@ namespace BioLink.Client.Tools {
             var service = new SupportService(user);
             service.DeleteJournal(Model.JournalID);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SUPPORT_JOURNALS, PERMISSION_MASK.DELETE);
+        }
+
     }
 }

@@ -7,19 +7,24 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Taxa {
 
-    public class UpdateGenusAvailableNameAction : GenericDatabaseCommand<GenusAvailableName> {
+    public class UpdateGenusAvailableNameCommand : GenericDatabaseCommand<GenusAvailableName> {
 
-        public UpdateGenusAvailableNameAction(GenusAvailableName model) : base(model) { }
+        public UpdateGenusAvailableNameCommand(GenusAvailableName model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new TaxaService(user);
             service.InsertOrUpdateGenusAvailableName(Model);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
-    public class DeleteGANIncludedSpeciesAction : GenericDatabaseCommand<GANIncludedSpecies> {
+    public class DeleteGANIncludedSpeciesCommand : GenericDatabaseCommand<GANIncludedSpecies> {
 
-        public DeleteGANIncludedSpeciesAction(GANIncludedSpecies model) 
+        public DeleteGANIncludedSpeciesCommand(GANIncludedSpecies model) 
             : base(model) {
         }
 
@@ -27,11 +32,16 @@ namespace BioLink.Client.Taxa {
             var service = new TaxaService(user);
             service.DeleteGANIncludedSpecies(Model.GANISID);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
-    public class InsertGANIncludedSpeciesAction : GenericDatabaseCommand<GANIncludedSpecies> {
+    public class InsertGANIncludedSpeciesCommand : GenericDatabaseCommand<GANIncludedSpecies> {
 
-        public InsertGANIncludedSpeciesAction(GANIncludedSpecies model)
+        public InsertGANIncludedSpeciesCommand(GANIncludedSpecies model)
             : base(model) {
         }
 
@@ -40,11 +50,15 @@ namespace BioLink.Client.Taxa {
             service.InsertGANIncludedSpecies(Model);
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
-    public class UpdateGANIncludedSpeciesAction : GenericDatabaseCommand<GANIncludedSpecies> {
+    public class UpdateGANIncludedSpeciesCommand : GenericDatabaseCommand<GANIncludedSpecies> {
 
-        public UpdateGANIncludedSpeciesAction(GANIncludedSpecies model)
+        public UpdateGANIncludedSpeciesCommand(GANIncludedSpecies model)
             : base(model) {
         }
 
@@ -52,5 +66,10 @@ namespace BioLink.Client.Taxa {
             var service = new TaxaService(user);
             service.UpdateGANIncludedSpecies(Model);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
+        }
+
     }
 }

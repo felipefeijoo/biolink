@@ -224,7 +224,7 @@ namespace BioLink.Client.Tools {
 
             ReloadModel();
             string username = frm.txtUsername.Text;
-            var newItem = _users.First((m) => {
+            var newItem = _users.FirstOrDefault((m) => {
                 return m.Username.Equals(username);
             });
 

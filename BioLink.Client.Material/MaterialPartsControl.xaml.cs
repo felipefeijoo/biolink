@@ -113,7 +113,7 @@ namespace BioLink.Client.Material {
         void viewmodel_DataChanged(ChangeableModelBase viewmodel) {
             var part = viewmodel as MaterialPartViewModel;
             if (part != null) {
-                RegisterUniquePendingChange(new UpdateMaterialPartAction(part.Model));
+                RegisterUniquePendingChange(new UpdateMaterialPartCommand(part.Model));
             }
         }
 
@@ -135,14 +135,14 @@ namespace BioLink.Client.Material {
             _model.Add(viewModel);
             lst.SelectedItem = viewModel;
 
-            RegisterPendingChange(new InsertMaterialPartAction(part, Owner));
+            RegisterPendingChange(new InsertMaterialPartCommand(part, Owner));
         }
 
         private void DeleteSelected() {
             var part = lst.SelectedItem as MaterialPartViewModel;
             if (part != null) {
                 _model.Remove(part);
-                RegisterUniquePendingChange(new DeleteMaterialPartAction(part.Model));
+                RegisterUniquePendingChange(new DeleteMaterialPartCommand(part.Model));
             }
         }
 

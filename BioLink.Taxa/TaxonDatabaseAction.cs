@@ -9,12 +9,12 @@ using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Taxa {
 
-    public abstract class TaxonDatabaseAction : DatabaseCommand {
+    public abstract class TaxonDatabaseCommand : DatabaseCommand {
     }
 
-    public class MoveTaxonDatabaseAction : TaxonDatabaseAction {
+    public class MoveTaxonDatabaseCommand : TaxonDatabaseCommand {
 
-        public MoveTaxonDatabaseAction(TaxonViewModel taxon, TaxonViewModel newParent) {
+        public MoveTaxonDatabaseCommand(TaxonViewModel taxon, TaxonViewModel newParent) {
             this.Taxon = taxon;
             this.NewParent = newParent;
         }
@@ -30,12 +30,21 @@ namespace BioLink.Client.Taxa {
         public override string ToString() {
             return String.Format("Move: {0} to {1}", Taxon, NewParent);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPIN_EXPLORER, PERMISSION_MASK.ALLOW);
+        }
+
     }
 
-    public class UpdateTaxonDatabaseAction : TaxonDatabaseAction {
+    public class UpdateTaxonCommand : TaxonDatabaseCommand {
 
-        public UpdateTaxonDatabaseAction(Taxon taxon) {
+        public UpdateTaxonCommand(Taxon taxon) {
             this.Taxon = taxon;
+        }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
         }
 
         public Taxon Taxon { get; private set; }
@@ -75,7 +84,7 @@ namespace BioLink.Client.Taxa {
         }
 
         public override bool Equals(object obj) {
-            UpdateTaxonDatabaseAction other = obj as UpdateTaxonDatabaseAction;
+            UpdateTaxonCommand other = obj as UpdateTaxonCommand;
             if (other != null) {
                 return other.Taxon.TaxaID == this.Taxon.TaxaID;
             }
@@ -88,9 +97,9 @@ namespace BioLink.Client.Taxa {
 
     }
 
-    public class MergeTaxonDatabaseAction : TaxonDatabaseAction {
+    public class MergeTaxonDatabaseCommand : TaxonDatabaseCommand {
 
-        public MergeTaxonDatabaseAction(TaxonViewModel source, TaxonViewModel target, bool createNewIDRecord) {
+        public MergeTaxonDatabaseCommand(TaxonViewModel source, TaxonViewModel target, bool createNewIDRecord) {
             this.Source = source;
             this.Target = target;
             this.CreateNewIDRecord = createNewIDRecord;
@@ -110,12 +119,15 @@ namespace BioLink.Client.Taxa {
             return String.Format("Merging: {0} with {1}", Source, Target);
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPIN_EXPLORER, PERMISSION_MASK.ALLOW);
+        }
 
     }
 
-    public class DeleteTaxonDatabaseAction : TaxonDatabaseAction {
+    public class DeleteTaxonDatabaseCommand : TaxonDatabaseCommand {
         
-        public DeleteTaxonDatabaseAction(TaxonViewModel taxon) {
+        public DeleteTaxonDatabaseCommand(TaxonViewModel taxon) {
             this.Taxon = taxon;
         }
 
@@ -130,11 +142,15 @@ namespace BioLink.Client.Taxa {
             return String.Format("Deleting: {0} ", Taxon);
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.DELETE);
+        }
+
     }
 
-    public class InsertTaxonDatabaseAction : TaxonDatabaseAction {
+    public class InsertTaxonDatabaseCommand : TaxonDatabaseCommand {
 
-        public InsertTaxonDatabaseAction(TaxonViewModel taxon) {
+        public InsertTaxonDatabaseCommand(TaxonViewModel taxon) {
             this.Taxon = taxon;
         }
 
@@ -155,6 +171,9 @@ namespace BioLink.Client.Taxa {
             return String.Format("Inserting: {0}", Taxon);
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.INSERT);
+        }
 
     }
 

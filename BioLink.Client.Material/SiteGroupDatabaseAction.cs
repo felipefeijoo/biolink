@@ -8,20 +8,24 @@ using BioLink.Client.Extensibility;
 
 namespace BioLink.Client.Material {
 
-    public class RenameSiteGroupAction : GenericDatabaseCommand<SiteExplorerNode> {
+    public class RenameSiteGroupCommand : GenericDatabaseCommand<SiteExplorerNode> {
 
-        public RenameSiteGroupAction(SiteExplorerNode model) : base(model) { }
+        public RenameSiteGroupCommand(SiteExplorerNode model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
             service.RenameSiteGroup(Model.ElemID, Model.Name);
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_SITEGROUP, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
-    public abstract class AbstractSiteExplorerAction : GenericDatabaseCommand<SiteExplorerNode> {
+    public abstract class AbstractSiteExplorerCommand : GenericDatabaseCommand<SiteExplorerNode> {
 
-        public AbstractSiteExplorerAction(SiteExplorerNode model, SiteExplorerNodeViewModel viewModel) : base(model) {
+        public AbstractSiteExplorerCommand(SiteExplorerNode model, SiteExplorerNodeViewModel viewModel) : base(model) {
             this.ViewModel = viewModel;
         }
 
@@ -55,9 +59,9 @@ namespace BioLink.Client.Material {
 
     }
 
-    public class InsertSiteGroupAction : AbstractSiteExplorerAction {
+    public class InsertSiteGroupCommand : AbstractSiteExplorerCommand {
 
-        public InsertSiteGroupAction(SiteExplorerNode model, SiteExplorerNodeViewModel viewModel) : base(model, viewModel) { }
+        public InsertSiteGroupCommand(SiteExplorerNode model, SiteExplorerNodeViewModel viewModel) : base(model, viewModel) { }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
@@ -77,11 +81,15 @@ namespace BioLink.Client.Material {
             base.UpdateChildrenParentID();
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_SITEGROUP, PERMISSION_MASK.INSERT);
+        }
+
     }
 
-    public class DeleteSiteGroupAction : DatabaseCommand {
+    public class DeleteSiteGroupCommand : DatabaseCommand {
 
-        public DeleteSiteGroupAction(int siteGroupID) {
+        public DeleteSiteGroupCommand(int siteGroupID) {
             this.SiteGroupID = siteGroupID;
         }
 
@@ -91,11 +99,16 @@ namespace BioLink.Client.Material {
         }
 
         public int SiteGroupID { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_SITEGROUP, PERMISSION_MASK.DELETE);
+        }
+
     }
 
-    public class MergeSiteGroupAction : GenericDatabaseCommand<SiteExplorerNode> {
+    public class MergeSiteGroupCommand : GenericDatabaseCommand<SiteExplorerNode> {
 
-        public MergeSiteGroupAction(SiteExplorerNode source, SiteExplorerNode dest) 
+        public MergeSiteGroupCommand(SiteExplorerNode source, SiteExplorerNode dest) 
             : base(source) {
             Dest = dest;
         }
@@ -106,11 +119,16 @@ namespace BioLink.Client.Material {
         }
 
         public SiteExplorerNode Dest { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_EXPLORER, PERMISSION_MASK.ALLOW);
+        }
+
     }
 
-    public class MoveSiteGroupAction : GenericDatabaseCommand<SiteExplorerNode> {
+    public class MoveSiteGroupCommand : GenericDatabaseCommand<SiteExplorerNode> {
 
-        public MoveSiteGroupAction(SiteExplorerNode source, SiteExplorerNode newParent)
+        public MoveSiteGroupCommand(SiteExplorerNode source, SiteExplorerNode newParent)
             : base(source) {
                 NewParent = newParent;
         }
@@ -131,6 +149,11 @@ namespace BioLink.Client.Material {
 
 
         public SiteExplorerNode NewParent { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_EXPLORER, PERMISSION_MASK.ALLOW);
+        }
+
     }
 
 }

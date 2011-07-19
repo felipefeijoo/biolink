@@ -49,7 +49,7 @@ namespace BioLink.Client.Material {
         }
 
         void viewModel_DataChanged(ChangeableModelBase viewmodel) {
-            RegisterUniquePendingChange(new UpdateTrapAction((viewmodel as TrapViewModel).Model));
+            RegisterUniquePendingChange(new UpdateTrapCommand((viewmodel as TrapViewModel).Model));
         }
 
     }

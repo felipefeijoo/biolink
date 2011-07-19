@@ -8,20 +8,24 @@ using BioLink.Client.Extensibility;
 
 namespace BioLink.Client.Material {
 
-    public class RenameTrapAction : GenericDatabaseCommand<SiteExplorerNode> {
+    public class RenameTrapCommand : GenericDatabaseCommand<SiteExplorerNode> {
 
-        public RenameTrapAction(SiteExplorerNode model) : base(model) { }
+        public RenameTrapCommand(SiteExplorerNode model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
             service.RenameTrap(Model.ElemID, Model.Name);
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_TRAP, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
-    public class DeleteTrapAction : DatabaseCommand {
+    public class DeleteTrapCommand : DatabaseCommand {
 
-        public DeleteTrapAction(int trapId) {
+        public DeleteTrapCommand(int trapId) {
             this.TrapID = trapId;
         }
 
@@ -31,22 +35,32 @@ namespace BioLink.Client.Material {
         }
 
         public int TrapID { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_TRAP, PERMISSION_MASK.DELETE);
+        }
+
     }
 
-    public class InsertTrapAction : AbstractSiteExplorerAction {
+    public class InsertTrapCommand : AbstractSiteExplorerCommand {
 
-        public InsertTrapAction(SiteExplorerNode model, SiteExplorerNodeViewModel viewModel) : base(model, viewModel) { }
+        public InsertTrapCommand(SiteExplorerNode model, SiteExplorerNodeViewModel viewModel) : base(model, viewModel) { }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
             Model.ElemID = service.InsertTrap(Model.ParentID, Model.Name);
             UpdateChildrenParentID();
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_TRAP, PERMISSION_MASK.INSERT);
+        }
+
     }
 
-    public class UpdateTrapAction : GenericDatabaseCommand<Trap> {
+    public class UpdateTrapCommand : GenericDatabaseCommand<Trap> {
 
-        public UpdateTrapAction(Trap trap)
+        public UpdateTrapCommand(Trap trap)
             : base(trap) {
         }
 
@@ -54,11 +68,16 @@ namespace BioLink.Client.Material {
             var service = new MaterialService(user);
             service.UpdateTrap(Model);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_TRAP, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
-    public class MergeTrapAction : GenericDatabaseCommand<SiteExplorerNode> {
+    public class MergeTrapCommand : GenericDatabaseCommand<SiteExplorerNode> {
 
-        public MergeTrapAction(SiteExplorerNode source, SiteExplorerNode dest)
+        public MergeTrapCommand(SiteExplorerNode source, SiteExplorerNode dest)
             : base(source) {
             Dest = dest;
         }
@@ -69,11 +88,16 @@ namespace BioLink.Client.Material {
         }
 
         public SiteExplorerNode Dest { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_EXPLORER, PERMISSION_MASK.ALLOW);
+        }
+
     }
 
-    public class MoveTrapAction : GenericDatabaseCommand<SiteExplorerNode> {
+    public class MoveTrapCommand : GenericDatabaseCommand<SiteExplorerNode> {
 
-        public MoveTrapAction(SiteExplorerNode source, SiteExplorerNode dest)
+        public MoveTrapCommand(SiteExplorerNode source, SiteExplorerNode dest)
             : base(source) {
             Dest = dest;
         }
@@ -84,10 +108,11 @@ namespace BioLink.Client.Material {
         }
 
         public SiteExplorerNode Dest { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_EXPLORER, PERMISSION_MASK.ALLOW);
+        }
+
     }
-
-
-
-    
 
 }

@@ -7,18 +7,18 @@ using BioLink.Data;
 
 namespace BioLink.Client.Tools {
 
-    abstract class PhraseDatabaseAction : DatabaseCommand {
+    abstract class PhraseDatabaseCommand : DatabaseCommand {
 
-        protected PhraseDatabaseAction(Phrase phrase) {
+        protected PhraseDatabaseCommand(Phrase phrase) {
             this.Phrase = phrase;
         }
 
         public Phrase Phrase { get; private set; }
     }
 
-    class RenamePhraseAction : PhraseDatabaseAction {
+    class RenamePhraseCommand : PhraseDatabaseCommand {
 
-        public RenamePhraseAction(Phrase phrase, string newvalue)
+        public RenamePhraseCommand(Phrase phrase, string newvalue)
             : base(phrase) {
             this.NewValue = newvalue;
         }
@@ -28,12 +28,17 @@ namespace BioLink.Client.Tools {
             service.RenamePhrase(Phrase.PhraseID, NewValue);
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SUPPORT_PHRASES, PERMISSION_MASK.UPDATE);
+        }
+
+
         public string NewValue { get; set; }
     }
 
-    class DeletePhraseAction : PhraseDatabaseAction {
+    class DeletePhraseCommand : PhraseDatabaseCommand {
 
-        public DeletePhraseAction(Phrase phrase)
+        public DeletePhraseCommand(Phrase phrase)
             : base(phrase) {
         }
 
@@ -41,10 +46,15 @@ namespace BioLink.Client.Tools {
             var service = new SupportService(user);
             service.DeletePhrase(Phrase.PhraseID);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SUPPORT_PHRASES, PERMISSION_MASK.DELETE);
+        }
+
     }
 
-    class AddPhraseAction : PhraseDatabaseAction {
-        public AddPhraseAction(Phrase phrase)
+    class InsertPhraseCommand : PhraseDatabaseCommand {
+        public InsertPhraseCommand(Phrase phrase)
             : base(phrase) {
         }
 
@@ -53,11 +63,16 @@ namespace BioLink.Client.Tools {
             service.AddPhrase(this.Phrase);
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SUPPORT_PHRASES, PERMISSION_MASK.INSERT);
+        }
+
+
     }
 
-    class DeletePhraseCategoryAction : DatabaseCommand {
+    class DeletePhraseCategoryCommand : DatabaseCommand {
 
-        public DeletePhraseCategoryAction(PhraseCategory category) {
+        public DeletePhraseCategoryCommand(PhraseCategory category) {
             this.PhraseCategory = category;
         }
 
@@ -67,6 +82,11 @@ namespace BioLink.Client.Tools {
         }
 
         public PhraseCategory PhraseCategory { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SUPPORT_PHRASECATEGORIES, PERMISSION_MASK.DELETE);
+        }
+
     }
 
 }

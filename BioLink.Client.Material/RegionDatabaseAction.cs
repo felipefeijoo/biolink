@@ -7,19 +7,24 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Material {
 
-    public class RenameRegionAction : GenericDatabaseCommand<SiteExplorerNode> {
+    public class RenameRegionCommand : GenericDatabaseCommand<SiteExplorerNode> {
 
-        public RenameRegionAction(SiteExplorerNode model) : base(model) { }
+        public RenameRegionCommand(SiteExplorerNode model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
             service.RenameRegion(Model.ElemID, Model.Name);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_REGION, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
-    public class InsertRegionAction : GenericDatabaseCommand<SiteExplorerNode> {
+    public class InsertRegionCommand : GenericDatabaseCommand<SiteExplorerNode> {
 
-        public InsertRegionAction(SiteExplorerNode model, SiteExplorerNodeViewModel viewModel) : base(model) {
+        public InsertRegionCommand(SiteExplorerNode model, SiteExplorerNodeViewModel viewModel) : base(model) {
             this.ViewModel = viewModel;
         }
 
@@ -32,13 +37,17 @@ namespace BioLink.Client.Material {
             }
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_REGION, PERMISSION_MASK.INSERT);
+        }
+
         protected SiteExplorerNodeViewModel ViewModel { get; private set; }
 
     }
 
-    public class DeleteRegionAction : DatabaseCommand {
+    public class DeleteRegionCommand : DatabaseCommand {
 
-        public DeleteRegionAction(int regionID) {
+        public DeleteRegionCommand(int regionID) {
             this.RegionID = regionID;
         }
 
@@ -48,11 +57,16 @@ namespace BioLink.Client.Material {
         }
 
         public int RegionID { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_REGION, PERMISSION_MASK.DELETE);
+        }
+
     }
 
-    public class MoveRegionAction : GenericDatabaseCommand<SiteExplorerNode> {
+    public class MoveRegionCommand : GenericDatabaseCommand<SiteExplorerNode> {
 
-        public MoveRegionAction(SiteExplorerNode source, SiteExplorerNode dest)
+        public MoveRegionCommand(SiteExplorerNode source, SiteExplorerNode dest)
             : base(source) {
             this.Destination = dest;
         }
@@ -63,6 +77,11 @@ namespace BioLink.Client.Material {
         }
 
         public SiteExplorerNode Destination { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_EXPLORER, PERMISSION_MASK.ALLOW);
+        }
+
     }
 
 }

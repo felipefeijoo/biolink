@@ -77,13 +77,13 @@ namespace BioLink.Client.Extensibility {
         private void AddTraitEditor(TraitViewModel model) {
             var itemControl = new TraitElementControl(User, model, TraitCategory);
             itemControl.TraitChanged += new TraitElementControl.TraitEventHandler((source, trait) => {
-                RegisterUniquePendingChange(new UpdateTraitDatabaseAction(trait.Model, Owner));
+                RegisterUniquePendingChange(new UpdateTraitDatabaseCommand(trait.Model, Owner));
             });
 
             itemControl.TraitDeleted += new TraitElementControl.TraitEventHandler((source, trait) => {
                 _model.Remove(trait);
                 ReloadTraitPanel();
-                RegisterPendingChange(new DeleteTraitDatabaseAction(trait.Model, Owner));                
+                RegisterPendingChange(new DeleteTraitDatabaseCommand(trait.Model, Owner));                
             });
 
             itemControl.IsReadOnly = this.IsReadOnly;
@@ -123,7 +123,7 @@ namespace BioLink.Client.Extensibility {
 
                     TraitViewModel viewModel = new TraitViewModel(t);
                     _model.Add(viewModel);
-                    RegisterUniquePendingChange(new UpdateTraitDatabaseAction(t, Owner));
+                    RegisterUniquePendingChange(new UpdateTraitDatabaseCommand(t, Owner));
                     ReloadTraitPanel();
 
                     SelectTrait(viewModel);
