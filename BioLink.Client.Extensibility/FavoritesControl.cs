@@ -227,27 +227,29 @@ namespace BioLink.Client.Extensibility {
         }
 
         void viewModel_LazyLoadChildren(HierarchicalViewModelBase item) {
-            var vm = item as FavoriteViewModel<T>;
-            if (vm != null) {
-                if (vm.IsGroup) {
-                    // Load the children of this favorites group...
-                    var list = Provider.GetFavoritesForParent(vm.FavoriteID, vm.IsGlobal);
-                    vm.Children.Clear();
-                    list.ForEach((model) => {
-                        var viewModel = Provider.CreateViewModel(model);
-                        viewModel.Parent = item;
-                        if (model.NumChildren > 0) {
-                            viewModel.LazyLoadChildren += new HierarchicalViewModelAction(viewModel_LazyLoadChildren);
-                            viewModel.Children.Add(new ViewModelPlaceholder("Loading..."));
-                        }
-                        vm.Children.Add(viewModel);
-                    });
+            using (new OverrideCursor(Cursors.Wait)) {
+                var vm = item as FavoriteViewModel<T>;
+                if (vm != null) {
+                    if (vm.IsGroup) {
+                        // Load the children of this favorites group...
+                        var list = Provider.GetFavoritesForParent(vm.FavoriteID, vm.IsGlobal);
+                        vm.Children.Clear();
+                        list.ForEach((model) => {
+                            var viewModel = Provider.CreateViewModel(model);
+                            viewModel.Parent = item;
+                            if (model.NumChildren > 0) {
+                                viewModel.LazyLoadChildren += new HierarchicalViewModelAction(viewModel_LazyLoadChildren);
+                                viewModel.Children.Add(new ViewModelPlaceholder("Loading..."));
+                            }
+                            vm.Children.Add(viewModel);
+                        });
+                    } else {
+                        DecorateChildViewModels(item, Provider.GetChildViewModels(vm));
+                    }
                 } else {
-                    DecorateChildViewModels(item, Provider.GetChildViewModels(vm));
-                }
-            } else {
-                if (item is V) {
-                    DecorateChildViewModels(item, Provider.GetChildViewModels((V) item));
+                    if (item is V) {
+                        DecorateChildViewModels(item, Provider.GetChildViewModels((V)item));
+                    }
                 }
             }
         }

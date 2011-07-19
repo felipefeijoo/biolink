@@ -20,6 +20,25 @@ namespace BioLink.Client.Extensibility {
         private DispatcherTimer _dragScrollTimer = null;
         private double _dragVelocity;
 
+        public DragDropScrollViewer() {
+            Loaded += new RoutedEventHandler(DragDropScrollViewer_Loaded);
+        }
+
+        void DragDropScrollViewer_Loaded(object sender, RoutedEventArgs e) {
+            var child = Content as FrameworkElement;
+
+            if (child != null) {
+                child.AddHandler(MouseWheelEvent, new RoutedEventHandler(MouseWheelHandler), true);
+            }
+        }
+
+        private void MouseWheelHandler(object sender, RoutedEventArgs e) {
+            MouseWheelEventArgs wheelArgs = (MouseWheelEventArgs)e;
+            //double x = (double)wheelArgs.Delta;
+            //double y = VerticalOffset;
+            ScrollToVerticalOffset(VerticalOffset - wheelArgs.Delta);
+        }
+
         protected override void OnPreviewQueryContinueDrag(QueryContinueDragEventArgs args) {
             base.OnPreviewQueryContinueDrag(args);
 
