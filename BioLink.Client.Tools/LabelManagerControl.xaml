@@ -70,7 +70,7 @@
             <TabItem Header="_Export fields">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="240" />
                         <ColumnDefinition Width="60" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
@@ -122,7 +122,7 @@
                             <GridView>
                                 <GridView.Columns>
                                     <GridViewColumn Header="Field" Width="250" DisplayMemberBinding="{Binding Path=FieldLabel}" HeaderContainerStyle="{StaticResource hcs}" />
-                                    <GridViewColumn Header="Format" Width="100" DisplayMemberBinding="{Binding Path=FormatSpecifier}" HeaderContainerStyle="{StaticResource hcs}" />
+                                    <GridViewColumn Header="Format" Width="100" DisplayMemberBinding="{Binding Path=FormatOption}" HeaderContainerStyle="{StaticResource hcs}" />
                                 </GridView.Columns>
                             </GridView>
                         </ListView.View>

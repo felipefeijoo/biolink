@@ -11,9 +11,6 @@ namespace BioLink.Data {
 
     public class ImportService : BioLinkService {
 
-        private static Regex _DegDecMRegex = new Regex(@"^(\d+).*?([\d.]+)'*\s*(N|S|E|W|n|e|s|w)\s*$");
-        private static Regex _DMSRegex = new Regex(@"^(\d+)[^\d]+(\d+)\s*""\s*(\d+)\s*'\s*(N|S|E|W|n|e|s|w)\s*$");
-
         private static Regex _UTMZoneRegex = new Regex(@"^(\d+)([A-HJ-NP-Za-hj-np-z]{1})$");
         private static Regex _UnitRangeSingleUnitsRegex = new Regex(@"^([\d\.]+)\s*([^\d]+)$");
         private static Regex _UnitRangeRegex = new Regex(@"^([\d\.]+)\s*[-]\s*([\d\.]+)\s*([^\d]*)$");
@@ -420,28 +417,9 @@ namespace BioLink.Data {
 
         public static bool CoordinateValidator(string value, ConvertingValidatorResult result) {
 
-            // First try decimal degrees...
-            if (value.IsNumeric()) {
-                return result.Success(Double.Parse(value));
-            }
-
-            // next try Degrees*minutes'Seconds", where * can be anything
-
-            var matcher = _DMSRegex.Match(value);
-            if (matcher.Success) {
-                int degrees = Int32.Parse(matcher.Groups[1].Value);
-                int minutes = Int32.Parse(matcher.Groups[2].Value);
-                int seconds = Int32.Parse(matcher.Groups[3].Value);
-                string dir = matcher.Groups[4].Value;
-                return result.Success(GeoUtils.DMSToDecDeg(degrees, minutes, seconds, dir));
-            }
-
-            matcher = _DegDecMRegex.Match(value);
-            if (matcher.Success) {
-                int degrees = Int32.Parse(matcher.Groups[1].Value);
-                double minutes = Double.Parse(matcher.Groups[2].Value);
-                string dir = matcher.Groups[3].Value;
-                return result.Success(GeoUtils.DDecMDirToDecDeg(degrees, minutes, dir));
+            double? coord = GeoUtils.ParseCoordinate(value);
+            if (coord.HasValue) {
+                return result.Success(coord.Value);
             }
 
             return result.Fail("Invalid coordinate format");

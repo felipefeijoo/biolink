@@ -6,6 +6,7 @@ using System.Windows.Media;
 using BioLink.Data;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Extensibility {
 
@@ -120,11 +121,7 @@ namespace BioLink.Client.Extensibility {
                     }
 
                     MatrixRow row = _set._data.Rows[realIndex];
-                    var latObj = row[_latIndex];
-                    var lonObj = row[_lonIndex];                    
-                    double lat = latObj == null ? 0 : (double) latObj;
-                    double lon = lonObj == null ? 0 : (double) lonObj;
-                    var mp = new MapPoint(lat, lon);
+                    var mp = new MapPoint(GeoUtils.ParseCoordinate(row[_latIndex]).GetValueOrDefault(0), GeoUtils.ParseCoordinate(row[_lonIndex]).GetValueOrDefault(0));
 
                     if (_siteIndex >= 0 && row[_siteIndex] != null) {
                         mp.SiteID = (int)row[_siteIndex];
