@@ -110,34 +110,35 @@ namespace BioLink.Client.Tools {
         }
 
         void vm_LazyLoadChildren(HierarchicalViewModelBase item) {
-            var groupNode = item as GroupViewModel;
-            if (groupNode != null) {
-                item.Children.Clear();
-                var service = new SupportService(User);
-                var permissions = service.GetPermissions(groupNode.GroupID);
+            using (new OverrideCursor(Cursors.Wait)) {
+                var groupNode = item as GroupViewModel;
+                if (groupNode != null) {
+                    item.Children.Clear();
+                    var service = new SupportService(User);
+                    var permissions = service.GetPermissions(groupNode.GroupID);
 
-                var permGroupNodes = new Dictionary<string, PermissionGroupViewModel>();
+                    var permGroupNodes = new Dictionary<string, PermissionGroupViewModel>();
 
-                foreach (PermissionMask perm in Enum.GetValues(typeof(PermissionMask))) {
-                    String desc = PermissionGroups.GetDescriptionForPermission(perm);
-                    PermissionGroupViewModel permGroupNode = null;
-                    if (!permGroupNodes.ContainsKey(desc)) {
-                        permGroupNode = new PermissionGroupViewModel(desc);
-                        item.Children.Insert(0, permGroupNode);
-                        permGroupNodes[desc] = permGroupNode;
-                    } else {
-                        permGroupNode = permGroupNodes[desc];
+                    foreach (PermissionMask perm in Enum.GetValues(typeof(PermissionMask))) {
+                        String desc = PermissionGroups.GetDescriptionForPermission(perm);
+                        PermissionGroupViewModel permGroupNode = null;
+                        if (!permGroupNodes.ContainsKey(desc)) {
+                            permGroupNode = new PermissionGroupViewModel(desc);
+                            item.Children.Insert(0, permGroupNode);
+                            permGroupNodes[desc] = permGroupNode;
+                        } else {
+                            permGroupNode = permGroupNodes[desc];
+                        }
+
+                        var permission = permissions.FirstOrDefault((p) => {
+                            return p.PermissionID == (int)perm;
+                        });
+
+                        var mask = permission == null ? 0 : permission.Mask1;
+
+                        permGroupNode.Children.Add(new PermissionViewModel(groupNode.GroupID, perm, mask));
                     }
-
-                    var permission = permissions.FirstOrDefault((p) => {
-                        return p.PermissionID == (int)perm;
-                    });
-
-                    var mask = permission == null ? 0 : permission.Mask1;
-
-                    permGroupNode.Children.Add(new PermissionViewModel(groupNode.GroupID, perm, mask));
                 }
-
             }
 
         }

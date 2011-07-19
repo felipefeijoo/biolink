@@ -222,45 +222,49 @@ namespace BioLink.Client.Taxa {
         }
 
         public ObservableCollection<HierarchicalViewModelBase> LoadTaxonViewModel() {
-            List<Taxon> taxa = Service.GetTopLevelTaxa();
+            using (new OverrideCursor(Cursors.Wait)) {
+                List<Taxon> taxa = Service.GetTopLevelTaxa();
 
-            Taxon root = new Taxon();
-            root.TaxaID = 0;
-            root.TaxaParentID = -1;
-            root.Epithet = _R("TaxonExplorer.explorer.root");
+                Taxon root = new Taxon();
+                root.TaxaID = 0;
+                root.TaxaParentID = -1;
+                root.Epithet = _R("TaxonExplorer.explorer.root");
 
-            TaxonViewModel rootNode = new TaxonViewModel(null, root, GenerateTaxonDisplayLabel, true);
+                TaxonViewModel rootNode = new TaxonViewModel(null, root, GenerateTaxonDisplayLabel, true);
 
-            taxa.ForEach((taxon) => {
-                TaxonViewModel item = new TaxonViewModel(rootNode, taxon, GenerateTaxonDisplayLabel);
-                if (item.NumChildren > 0) {
-                    item.LazyLoadChildren += new HierarchicalViewModelAction(item_LazyLoadChildren);
-                    item.Children.Add(new ViewModelPlaceholder(_R("TaxonExplorer.explorer.loading", item.Epithet)));
-                }
-                rootNode.Children.Add(item);
-            });
+                taxa.ForEach((taxon) => {
+                    TaxonViewModel item = new TaxonViewModel(rootNode, taxon, GenerateTaxonDisplayLabel);
+                    if (item.NumChildren > 0) {
+                        item.LazyLoadChildren += new HierarchicalViewModelAction(item_LazyLoadChildren);
+                        item.Children.Add(new ViewModelPlaceholder(_R("TaxonExplorer.explorer.loading", item.Epithet)));
+                    }
+                    rootNode.Children.Add(item);
+                });
 
-            ObservableCollection<HierarchicalViewModelBase> model = new ObservableCollection<HierarchicalViewModelBase>();
-            model.Add(rootNode);
-            rootNode.IsExpanded = true;
-            return model;
+                ObservableCollection<HierarchicalViewModelBase> model = new ObservableCollection<HierarchicalViewModelBase>();
+                model.Add(rootNode);
+                rootNode.IsExpanded = true;
+                return model;
+            }
         }
 
         void item_LazyLoadChildren(HierarchicalViewModelBase item) {
 
-            item.Children.Clear();
+            using (new OverrideCursor(Cursors.Wait)) {
+                item.Children.Clear();
 
-            if (item is TaxonViewModel) {
-                TaxonViewModel tvm = item as TaxonViewModel;
-                Debug.Assert(tvm.TaxaID.HasValue, "TaxonViewModel has no favorites id!");
-                List<Taxon> taxa = Service.GetTaxaForParent(tvm.TaxaID.Value);
-                foreach (Taxon taxon in taxa) {
-                    TaxonViewModel child = new TaxonViewModel(tvm, taxon, GenerateTaxonDisplayLabel);
-                    if (child.NumChildren > 0) {
-                        child.LazyLoadChildren += new HierarchicalViewModelAction(item_LazyLoadChildren);
-                        child.Children.Add(new ViewModelPlaceholder("Loading..."));
+                if (item is TaxonViewModel) {
+                    TaxonViewModel tvm = item as TaxonViewModel;
+                    Debug.Assert(tvm.TaxaID.HasValue, "TaxonViewModel has no favorites id!");
+                    List<Taxon> taxa = Service.GetTaxaForParent(tvm.TaxaID.Value);
+                    foreach (Taxon taxon in taxa) {
+                        TaxonViewModel child = new TaxonViewModel(tvm, taxon, GenerateTaxonDisplayLabel);
+                        if (child.NumChildren > 0) {
+                            child.LazyLoadChildren += new HierarchicalViewModelAction(item_LazyLoadChildren);
+                            child.Children.Add(new ViewModelPlaceholder("Loading..."));
+                        }
+                        item.Children.Add(child);
                     }
-                    item.Children.Add(child);
                 }
             }
         }

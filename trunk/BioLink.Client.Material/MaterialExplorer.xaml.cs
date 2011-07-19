@@ -188,9 +188,11 @@ namespace BioLink.Client.Material {
             templateRoot.Children.Add(new ViewModelPlaceholder("Loading..."));
             
             templateRoot.LazyLoadChildren += new HierarchicalViewModelAction((parent) => {
-                parent.Children.Clear();
-                foreach (SiteExplorerNodeViewModel child in getTemplates()) {
-                    parent.Children.Add(child);
+                using (new OverrideCursor(Cursors.Wait)) {
+                    parent.Children.Clear();
+                    foreach (SiteExplorerNodeViewModel child in getTemplates()) {
+                        parent.Children.Add(child);
+                    }
                 }
             });
             return templateRoot;
@@ -469,15 +471,17 @@ namespace BioLink.Client.Material {
         }
 
         void viewModel_LazyLoadChildren(HierarchicalViewModelBase item) {
-            var parent = item as SiteExplorerNodeViewModel;
-            if (parent != null) {
-                parent.Children.Clear();
-                var service = new MaterialService(User);
-                var list = service.GetExplorerElementsForParent(parent.ElemID, parent.ElemType);
-                var viewModel = BuildExplorerModel(list, parent.IsFindViewModel);
-                foreach (HierarchicalViewModelBase childViewModel in viewModel) {
-                    childViewModel.Parent = parent;
-                    parent.Children.Add(childViewModel);
+            using (new OverrideCursor(Cursors.Wait)) {
+                var parent = item as SiteExplorerNodeViewModel;
+                if (parent != null) {
+                    parent.Children.Clear();
+                    var service = new MaterialService(User);
+                    var list = service.GetExplorerElementsForParent(parent.ElemID, parent.ElemType);
+                    var viewModel = BuildExplorerModel(list, parent.IsFindViewModel);
+                    foreach (HierarchicalViewModelBase childViewModel in viewModel) {
+                        childViewModel.Parent = parent;
+                        parent.Children.Add(childViewModel);
+                    }
                 }
             }
         }
