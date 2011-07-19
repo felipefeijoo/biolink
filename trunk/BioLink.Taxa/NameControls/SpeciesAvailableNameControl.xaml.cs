@@ -52,7 +52,7 @@ namespace BioLink.Client.Taxa {
             _model = new SpeciesAvailableNameViewModel(data);
 
             _model.DataChanged += new DataChangedHandler((changed) => {
-                RegisterUniquePendingChange(new UpdateSanDatabaseAction(_model.Model));
+                RegisterUniquePendingChange(new UpdateSanDatabaseCommand(_model.Model));
             });
 
             cmbPrimaryType.SelectionChanged += new SelectionChangedEventHandler((source, e) => {
@@ -75,7 +75,7 @@ namespace BioLink.Client.Taxa {
                 var viewmodel = new SANTypeDataViewModel(d);
                 viewmodel.DataChanged +=new DataChangedHandler((changed) => {
                     if (viewmodel.SANTypeDataID >= 0) {
-                        RegisterUniquePendingChange(new UpdateSANTypeDataAction(viewmodel.Model));
+                        RegisterUniquePendingChange(new UpdateSANTypeDataCommand(viewmodel.Model));
                     }
                     // todo
                 });
@@ -119,7 +119,7 @@ namespace BioLink.Client.Taxa {
             viewModel.Museum = NextNewName("<New {0}>", _typeData, () => viewModel.Museum);            
             _typeData.Add(viewModel);
             lstTypeData.SelectedItem = viewModel;
-            RegisterPendingChange(new InsertSANTypeDataAction(td));
+            RegisterPendingChange(new InsertSANTypeDataCommand(td));
         }
 
         private void btnAddNew_Click(object sender, RoutedEventArgs e) {
@@ -134,7 +134,7 @@ namespace BioLink.Client.Taxa {
             var td = lstTypeData.SelectedItem as SANTypeDataViewModel;
             if (td != null) {
                 if (_typeData.Remove(td)) {
-                    RegisterPendingChange(new DeleteSANTypeDataAction(td.Model));
+                    RegisterPendingChange(new DeleteSANTypeDataCommand(td.Model));
                 }
             }
         }

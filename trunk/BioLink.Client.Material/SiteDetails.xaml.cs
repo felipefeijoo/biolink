@@ -299,7 +299,7 @@ namespace BioLink.Client.Material {
         }
 
         void _viewModel_DataChanged(ChangeableModelBase viewmodel) {
-            RegisterUniquePendingChange(new UpdateSiteAction(_viewModel.Model));
+            RegisterUniquePendingChange(new UpdateSiteCommand(_viewModel.Model));
         }
 
         private void mnuDecimalDegrees_Click(object sender, RoutedEventArgs e) {

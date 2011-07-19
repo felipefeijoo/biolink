@@ -74,7 +74,7 @@ namespace BioLink.Client.Material {
         }
 
         void viewModel_DataChanged(ChangeableModelBase viewmodel) {
-            RegisterUniquePendingChange(new UpdateMaterialIdentificationAction((viewmodel as MaterialIdentificationViewModel).Model));
+            RegisterUniquePendingChange(new UpdateMaterialIdentificationCommand((viewmodel as MaterialIdentificationViewModel).Model));
         }
 
         public int MaterialID { get; private set; }
@@ -97,14 +97,14 @@ namespace BioLink.Client.Material {
 
             lst.SelectedItem = viewmodel;
 
-            RegisterUniquePendingChange(new InsertMaterialIdentificationAction(viewmodel.Model));
+            RegisterUniquePendingChange(new InsertMaterialIdentificationCommand(viewmodel.Model));
         }
 
         private void DeleteSelected() {
             var selected = lst.SelectedItem as MaterialIdentificationViewModel;
             if (selected != null) {
                 _model.Remove(selected);
-                RegisterPendingChange(new DeleteMaterialIdentificationAction(selected.Model));
+                RegisterPendingChange(new DeleteMaterialIdentificationCommand(selected.Model));
             }
         }
 
@@ -124,7 +124,7 @@ namespace BioLink.Client.Material {
 
             var viewmodel = new MaterialIdentificationViewModel(model);
             _model.Add(viewmodel);
-            RegisterUniquePendingChange(new InsertMaterialIdentificationAction(viewmodel.Model));            
+            RegisterUniquePendingChange(new InsertMaterialIdentificationCommand(viewmodel.Model));            
         }
     }
 
@@ -205,32 +205,47 @@ namespace BioLink.Client.Material {
 
     }
 
-    public class UpdateMaterialIdentificationAction : GenericDatabaseCommand<MaterialIdentification> {
+    public class UpdateMaterialIdentificationCommand : GenericDatabaseCommand<MaterialIdentification> {
 
-        public UpdateMaterialIdentificationAction(MaterialIdentification model) : base(model) { }
+        public UpdateMaterialIdentificationCommand(MaterialIdentification model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
             service.UpdateMaterialIdentification(Model);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_MATERIAL, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
-    public class InsertMaterialIdentificationAction : GenericDatabaseCommand<MaterialIdentification> {
-        public InsertMaterialIdentificationAction(MaterialIdentification model) : base(model) { }
+    public class InsertMaterialIdentificationCommand : GenericDatabaseCommand<MaterialIdentification> {
+        public InsertMaterialIdentificationCommand(MaterialIdentification model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
             Model.MaterialIdentID = service.InsertMaterialIdentification(Model);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_MATERIAL, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
-    public class DeleteMaterialIdentificationAction : GenericDatabaseCommand<MaterialIdentification> {
-        public DeleteMaterialIdentificationAction(MaterialIdentification model) : base(model) { }
+    public class DeleteMaterialIdentificationCommand : GenericDatabaseCommand<MaterialIdentification> {
+        public DeleteMaterialIdentificationCommand(MaterialIdentification model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
             service.DeleteMaterialIdentification(Model.MaterialIdentID);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_MATERIAL, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
 }

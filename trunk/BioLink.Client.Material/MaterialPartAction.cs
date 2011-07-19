@@ -8,9 +8,9 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Material {
 
-    public class InsertMaterialPartAction : GenericDatabaseCommand<MaterialPart> {
+    public class InsertMaterialPartCommand : GenericDatabaseCommand<MaterialPart> {
 
-        public InsertMaterialPartAction(MaterialPart model, ViewModelBase owner) : base(model) {
+        public InsertMaterialPartCommand(MaterialPart model, ViewModelBase owner) : base(model) {
             this.Owner = owner;
         }
 
@@ -58,12 +58,17 @@ namespace BioLink.Client.Material {
             return b.ToString();
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_MATERIAL, PERMISSION_MASK.UPDATE);
+        }
+
+
         protected ViewModelBase Owner { get; private set; }
     }
 
-    public class UpdateMaterialPartAction : GenericDatabaseCommand<MaterialPart> {
+    public class UpdateMaterialPartCommand : GenericDatabaseCommand<MaterialPart> {
 
-        public UpdateMaterialPartAction(MaterialPart model)
+        public UpdateMaterialPartCommand(MaterialPart model)
             : base(model) {
         }
 
@@ -71,15 +76,20 @@ namespace BioLink.Client.Material {
             var service = new MaterialService(user);
 
             if (String.IsNullOrWhiteSpace(Model.PartName)) {
-                Model.PartName = InsertMaterialPartAction.GeneratePartName(Model);
+                Model.PartName = InsertMaterialPartCommand.GeneratePartName(Model);
             }
             service.UpdateMaterialPart(Model);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_MATERIAL, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
-    public class DeleteMaterialPartAction : GenericDatabaseCommand<MaterialPart> {
+    public class DeleteMaterialPartCommand : GenericDatabaseCommand<MaterialPart> {
 
-        public DeleteMaterialPartAction(MaterialPart model)
+        public DeleteMaterialPartCommand(MaterialPart model)
             : base(model) {
         }
 
@@ -87,6 +97,11 @@ namespace BioLink.Client.Material {
             var service = new MaterialService(user);
             service.DeleteMaterialPart(Model.MaterialPartID);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_MATERIAL, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
 }

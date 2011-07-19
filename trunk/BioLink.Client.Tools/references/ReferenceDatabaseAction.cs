@@ -8,9 +8,9 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Tools {
 
-    public class UpdateReferenceAction : GenericDatabaseCommand<Reference> {
+    public class UpdateReferenceCommand : GenericDatabaseCommand<Reference> {
 
-        public UpdateReferenceAction(Reference model)
+        public UpdateReferenceCommand(Reference model)
             : base(model) {
         }
 
@@ -18,11 +18,15 @@ namespace BioLink.Client.Tools {
             var service = new SupportService(user);
             service.UpdateReference(Model);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SUPPORT_REFS, PERMISSION_MASK.UPDATE);
+        }
     }
 
-    public class InsertReferenceAction : GenericDatabaseCommand<Reference> {
+    public class InsertReferenceCommand : GenericDatabaseCommand<Reference> {
 
-        public InsertReferenceAction(Reference model)
+        public InsertReferenceCommand(Reference model)
             : base(model) {
         }
 
@@ -30,11 +34,16 @@ namespace BioLink.Client.Tools {
             var service = new SupportService(user);
             Model.RefID = service.InsertReference(Model);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SUPPORT_REFS, PERMISSION_MASK.INSERT);
+        }
+
     }
 
-    public class DeleteReferenceAction : DatabaseCommand {
+    public class DeleteReferenceCommand : DatabaseCommand {
 
-        public DeleteReferenceAction(int refID) {
+        public DeleteReferenceCommand(int refID) {
             this.RefID = refID;
         }
 
@@ -44,8 +53,8 @@ namespace BioLink.Client.Tools {
         }
 
         public override bool Equals(object obj) {
-            if (obj is DeleteReferenceAction) {
-                var other = obj as DeleteReferenceAction;
+            if (obj is DeleteReferenceCommand) {
+                var other = obj as DeleteReferenceCommand;
                 if (other.RefID == this.RefID) {
                     return true;
                 }
@@ -58,5 +67,10 @@ namespace BioLink.Client.Tools {
         }
 
         public int RefID { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SUPPORT_REFS, PERMISSION_MASK.DELETE);
+        }
+
     }
 }

@@ -74,7 +74,7 @@ namespace BioLink.Client.Tools {
                 if (this.Question("Do you wish BioLink to automatically create a 'Loan due' reminder for this loan?", "Create automatic reminder")) {
                     HardDateConverter c = new HardDateConverter();
                     var reminder = new LoanReminder { LoanID = LoanID, Date = _viewModel.DateDue.Value, Description = "This loan was due back today", Closed = false};
-                    RegisterPendingChange(new InsertLoanReminderAction(reminder, _viewModel.Model));
+                    RegisterPendingChange(new InsertLoanReminderCommand(reminder, _viewModel.Model));
                     _reminders.GetModel().Add(new LoanReminderViewModel(reminder));
                 }
             }
@@ -98,7 +98,7 @@ namespace BioLink.Client.Tools {
                 model = service.GetLoan(LoanID);
             } else {
                 model = new Loan { LoanClosed = false };
-                RegisterUniquePendingChange(new InsertLoanAction(model));
+                RegisterUniquePendingChange(new InsertLoanCommand(model));
             }
 
             if (model != null) {
@@ -152,7 +152,7 @@ namespace BioLink.Client.Tools {
 
         void viewModel_DataChanged(ChangeableModelBase viewmodel) {
             if (_viewModel.LoanID >= 0) {
-                RegisterUniquePendingChange(new UpdateLoanAction(_viewModel.Model));
+                RegisterUniquePendingChange(new UpdateLoanCommand(_viewModel.Model));
             }
         }
 
@@ -171,24 +171,33 @@ namespace BioLink.Client.Tools {
 
     }
 
-    public class UpdateLoanAction : GenericDatabaseCommand<Loan> {
+    public class UpdateLoanCommand : GenericDatabaseCommand<Loan> {
 
-        public UpdateLoanAction(Loan model) : base(model) { }
+        public UpdateLoanCommand(Loan model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new LoanService(user);
             service.UpdateLoan(Model);
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 
-    public class InsertLoanAction : GenericDatabaseCommand<Loan> {
+    public class InsertLoanCommand : GenericDatabaseCommand<Loan> {
 
-        public InsertLoanAction(Loan model) : base(model) { }
+        public InsertLoanCommand(Loan model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new LoanService(user);
             Model.LoanID = service.InsertLoan(Model);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 }

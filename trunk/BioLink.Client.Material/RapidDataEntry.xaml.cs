@@ -187,7 +187,7 @@ namespace BioLink.Client.Material {
             if (objectId < 0) {
                 root = CreateSiteViewModel(new RDESite());
                 root.Locked = false;
-                RegisterPendingChange(new InsertRDESiteAction(root.Model));
+                RegisterPendingChange(new InsertRDESiteCommand(root.Model));
                 var siteVisit = AddNewSiteVisit(root);
                 var newMaterial = AddNewMaterial(siteVisit);
                 return root;
@@ -299,14 +299,14 @@ namespace BioLink.Client.Material {
         void associate_DataChanged(ChangeableModelBase viewmodel) {
             var assoc = viewmodel as AssociateViewModel;
             if (assoc != null) {
-                RegisterUniquePendingChange(new UpdateAssociateAction(assoc.Model));
+                RegisterUniquePendingChange(new UpdateAssociateCommand(assoc.Model));
             }
         }
 
         void SubPart_DataChanged(ChangeableModelBase viewmodel) {
             var subpart = viewmodel as MaterialPartViewModel;
             if (subpart != null) {
-                RegisterUniquePendingChange(new UpdateMaterialPartAction(subpart.Model));
+                RegisterUniquePendingChange(new UpdateMaterialPartCommand(subpart.Model));
             }
         }
 
@@ -352,21 +352,21 @@ namespace BioLink.Client.Material {
         void materialViewModel_DataChanged(ChangeableModelBase viewmodel) {
             var material = viewmodel as RDEMaterialViewModel;
             if (material != null) {
-                RegisterUniquePendingChange(new UpdateRDEMaterialAction(material.Model));
+                RegisterUniquePendingChange(new UpdateRDEMaterialCommand(material.Model));
             }
         }
 
         void siteVisitViewModel_DataChanged(ChangeableModelBase viewmodel) {
             var siteVisit = viewmodel as RDESiteVisitViewModel;
             if (siteVisit != null) {
-                RegisterUniquePendingChange(new UpdateRDESiteVisitAction(siteVisit.Model));
+                RegisterUniquePendingChange(new UpdateRDESiteVisitCommand(siteVisit.Model));
             }
         }
 
         void siteViewModel_DataChanged(ChangeableModelBase viewmodel) {
             var site = viewmodel as RDESiteViewModel;
             if (site != null) {
-                RegisterUniquePendingChange(new UpdateRDESiteAction(site.Model));
+                RegisterUniquePendingChange(new UpdateRDESiteCommand(site.Model));
             }
         }
 
@@ -511,13 +511,13 @@ namespace BioLink.Client.Material {
             var siteViewModel = new RDESiteViewModel(site);            
             siteViewModel.DataChanged += new DataChangedHandler(siteViewModel_DataChanged);
 
-            RegisterPendingChange(new InsertRDESiteAction(site));
-            RegisterUniquePendingChange(new UpdateRDESiteAction(site));
+            RegisterPendingChange(new InsertRDESiteCommand(site));
+            RegisterUniquePendingChange(new UpdateRDESiteCommand(site));
 
             if (traits != null && traits.Count > 0) {
                 foreach (Trait t in traits) {
                     siteViewModel.Traits.Add(t);
-                    RegisterPendingChange(new UpdateTraitDatabaseAction(t, siteViewModel));
+                    RegisterPendingChange(new UpdateTraitDatabaseCommand(t, siteViewModel));
                 }
             }
 
@@ -589,8 +589,8 @@ namespace BioLink.Client.Material {
             site.SiteVisits.Add(siteVisit);
 
             siteVisit.DataChanged +=new DataChangedHandler(siteVisitViewModel_DataChanged);
-            RegisterPendingChange(new InsertRDESiteVisitAction(siteVisit.Model, site.Model));
-            RegisterPendingChange(new UpdateRDESiteVisitAction(siteVisit.Model));
+            RegisterPendingChange(new InsertRDESiteVisitCommand(siteVisit.Model, site.Model));
+            RegisterPendingChange(new UpdateRDESiteVisitCommand(siteVisit.Model));
             return siteVisit;
         }
 
@@ -607,13 +607,13 @@ namespace BioLink.Client.Material {
                 var material = CreateNewMaterial(out traits, out associates, out subparts);
                 var materialViewModel = new RDEMaterialViewModel(material);
 
-                RegisterPendingChange(new InsertRDEMaterialAction(material, siteVisit.Model));
-                RegisterUniquePendingChange(new UpdateRDEMaterialAction(material));
+                RegisterPendingChange(new InsertRDEMaterialCommand(material, siteVisit.Model));
+                RegisterUniquePendingChange(new UpdateRDEMaterialCommand(material));
 
                 if (traits != null && traits.Count > 0) {
                     foreach (Trait t in traits) {
                         materialViewModel.Traits.Add(t);
-                        RegisterPendingChange(new UpdateTraitDatabaseAction(t, materialViewModel));
+                        RegisterPendingChange(new UpdateTraitDatabaseCommand(t, materialViewModel));
                     }
                 }
 
@@ -622,7 +622,7 @@ namespace BioLink.Client.Material {
                         var vm = new AssociateViewModel(a);
                         vm.DataChanged += new DataChangedHandler(associate_DataChanged);
                         materialViewModel.Associates.Add(vm);
-                        RegisterPendingChange(new InsertAssociateAction(a, materialViewModel));
+                        RegisterPendingChange(new InsertAssociateCommand(a, materialViewModel));
                     }
                 }
 
@@ -631,7 +631,7 @@ namespace BioLink.Client.Material {
                         var vm = new MaterialPartViewModel(subpart);
                         vm.DataChanged +=new DataChangedHandler(SubPart_DataChanged);
                         materialViewModel.SubParts.Add(vm);
-                        RegisterPendingChange(new InsertMaterialPartAction(subpart, materialViewModel));
+                        RegisterPendingChange(new InsertMaterialPartCommand(subpart, materialViewModel));
                     }
                 } else {
                     // Add one subpart...
@@ -639,7 +639,7 @@ namespace BioLink.Client.Material {
                     subpart.MaterialPartID = -1;
                     subpart.PartName = "<New>";
                     materialViewModel.SubParts.Add(subpart);
-                    RegisterPendingChange(new InsertMaterialPartAction(subpart.Model, materialViewModel));
+                    RegisterPendingChange(new InsertMaterialPartCommand(subpart.Model, materialViewModel));
                 }
                
                 materialViewModel.SiteVisit = siteVisit;
@@ -887,7 +887,7 @@ namespace BioLink.Client.Material {
                 var newParent = grpSiteVisits.SelectedItem as RDESiteVisitViewModel;
                 mat.SiteVisit = newParent;
                 // mat.SiteVisitID = newParent.SiteVisitID;
-                RegisterPendingChange(new MoveRDEMaterialAction(mat.Model, newParent.Model));
+                RegisterPendingChange(new MoveRDEMaterialCommand(mat.Model, newParent.Model));
             }
         }
 
@@ -905,7 +905,7 @@ namespace BioLink.Client.Material {
                 var newParent = grpSiteVisits.SelectedItem as RDESiteVisitViewModel;
                 mat.SiteVisit = newParent;
                 // mat.SiteVisitID = newParent.SiteVisitID;
-                RegisterPendingChange(new MoveRDEMaterialAction(mat.Model, newParent.Model));
+                RegisterPendingChange(new MoveRDEMaterialCommand(mat.Model, newParent.Model));
             }
 
         }

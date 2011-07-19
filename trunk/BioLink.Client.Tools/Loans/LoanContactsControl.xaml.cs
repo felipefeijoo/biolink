@@ -195,7 +195,7 @@ namespace BioLink.Client.Tools {
 
             if (this.Question("Are you sure you wish to permanently delete this contact?", "Delete '" + contact.FullName + "'?")) {
                 contact.IsDeleted = true;
-                RegisterPendingChange(new DeleteContactAction(contact.Model));
+                RegisterPendingChange(new DeleteContactCommand(contact.Model));
                 if (_findModel.Contains(contact)) {
                     _findModel.Remove(contact);
                 }

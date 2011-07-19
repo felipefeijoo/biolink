@@ -7,9 +7,9 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Extensibility {
 
-    public abstract class RefLinkDatabaseAction : GenericDatabaseCommand<RefLink> {
+    public abstract class RefLinkDatabaseCommand : GenericDatabaseCommand<RefLink> {
 
-        public RefLinkDatabaseAction(RefLink model, string categoryName)
+        public RefLinkDatabaseCommand(RefLink model, string categoryName)
             : base(model) {
             this.CategoryName = categoryName;
         }
@@ -22,9 +22,9 @@ namespace BioLink.Client.Extensibility {
 
     }
 
-    public class UpdateRefLinkAction : RefLinkDatabaseAction {
+    public class UpdateRefLinkCommand : RefLinkDatabaseCommand {
 
-        public UpdateRefLinkAction(RefLink model, string categoryName)
+        public UpdateRefLinkCommand(RefLink model, string categoryName)
             : base(model, categoryName) {
         }
 
@@ -33,11 +33,15 @@ namespace BioLink.Client.Extensibility {
             service.UpdateRefLink(Model, CategoryName);
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 
-    public class InsertRefLinkAction : RefLinkDatabaseAction {
+    public class InsertRefLinkCommand : RefLinkDatabaseCommand {
 
-        public InsertRefLinkAction(RefLink model, string categoryName)
+        public InsertRefLinkCommand(RefLink model, string categoryName)
             : base(model, categoryName) {
         }
 
@@ -46,11 +50,15 @@ namespace BioLink.Client.Extensibility {
             service.InsertRefLink(Model, CategoryName);
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 
-    public class DeleteRefLinkAction : GenericDatabaseCommand<RefLink> {
+    public class DeleteRefLinkCommand : GenericDatabaseCommand<RefLink> {
 
-        public DeleteRefLinkAction(RefLink model) : base(model) { }
+        public DeleteRefLinkCommand(RefLink model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);
@@ -58,5 +66,10 @@ namespace BioLink.Client.Extensibility {
         }
 
         public int RefLinkID { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 }

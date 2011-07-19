@@ -45,7 +45,7 @@ namespace BioLink.Client.Taxa {
             Move(Source, Target);
         }
 
-        protected List<DatabaseCommand> Actions(params TaxonDatabaseAction[] actions) {
+        protected List<DatabaseCommand> Actions(params TaxonDatabaseCommand[] actions) {
             return new List<DatabaseCommand>(actions);
         }
 
@@ -58,7 +58,7 @@ namespace BioLink.Client.Taxa {
 
         protected override List<DatabaseCommand> ProcessImpl() {
             MoveSourceToTarget();
-            return Actions(new MoveTaxonDatabaseAction(Context.Source, Context.Target));            
+            return Actions(new MoveTaxonDatabaseCommand(Context.Source, Context.Target));            
         }
 
     }
@@ -87,14 +87,14 @@ namespace BioLink.Client.Taxa {
             // Convert this source element to the target child element
             Source.ElemType = ConvertRank.Code;
 
-            dbActions.Add(new MoveTaxonDatabaseAction(Context.Source, Context.Target));
-            dbActions.Add(new UpdateTaxonDatabaseAction(Context.Source.Taxon));
+            dbActions.Add(new MoveTaxonDatabaseCommand(Context.Source, Context.Target));
+            dbActions.Add(new UpdateTaxonCommand(Context.Source.Taxon));
 
             // Now convert available names to the new rank...
             foreach (TaxonViewModel child in Source.Children) {
                 if (child.AvailableName.GetValueOrDefault(false) || child.LiteratureName.GetValueOrDefault(false)) {
                     child.ElemType = ConvertRank.Code;
-                    dbActions.Add(new UpdateTaxonDatabaseAction(child.Taxon));
+                    dbActions.Add(new UpdateTaxonCommand(child.Taxon));
                 }
             }
 
@@ -141,12 +141,12 @@ namespace BioLink.Client.Taxa {
             // Now we move each child over to the new current...
             foreach (TaxonViewModel child in movelist) {
                 Move(child, Target);
-                actions.Add(new MoveTaxonDatabaseAction(child, Target));
+                actions.Add(new MoveTaxonDatabaseCommand(child, Target));
             }
 
             Target.IsChanged = true;
 
-            actions.Add(new MergeTaxonDatabaseAction(Source, Target, _createNewIdRecord));
+            actions.Add(new MergeTaxonDatabaseCommand(Source, Target, _createNewIdRecord));
 
             return actions;
         }

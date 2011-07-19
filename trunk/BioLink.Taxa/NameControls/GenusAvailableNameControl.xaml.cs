@@ -50,7 +50,7 @@ namespace BioLink.Client.Taxa {
 
             this.DataContext = _model;
             _model.DataChanged += new DataChangedHandler((vm) => {
-                RegisterUniquePendingChange(new UpdateGenusAvailableNameAction(_model.Model));
+                RegisterUniquePendingChange(new UpdateGenusAvailableNameCommand(_model.Model));
                 EnableTabs();
             });
 
@@ -74,7 +74,7 @@ namespace BioLink.Client.Taxa {
                     if (d.GANISID < 0) {
                         // don'note need to do anything, because the pending insert will use the most recent changes
                     } else {
-                        RegisterUniquePendingChange(new UpdateGANIncludedSpeciesAction(d));
+                        RegisterUniquePendingChange(new UpdateGANIncludedSpeciesCommand(d));
                     }
 
                 });
@@ -123,7 +123,7 @@ namespace BioLink.Client.Taxa {
             if (item != null) {
                 if (this.Question("Are you sure you wish to delete included species '" + item.IncludedSpecies + "'", "Delete included species?")) {
                     // Delete
-                    RegisterPendingChange(new DeleteGANIncludedSpeciesAction(item.Model));
+                    RegisterPendingChange(new DeleteGANIncludedSpeciesCommand(item.Model));
                     _includedSpecies.Remove(item);
                 }
             }
@@ -140,7 +140,7 @@ namespace BioLink.Client.Taxa {
             data.IncludedSpecies = "<Included Species>";
             var vm = new GANIncludedSpeciesViewModel(data);
             _includedSpecies.Add(vm);
-            RegisterPendingChange(new InsertGANIncludedSpeciesAction(data));
+            RegisterPendingChange(new InsertGANIncludedSpeciesCommand(data));
         }
 
     }

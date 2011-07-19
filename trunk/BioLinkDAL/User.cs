@@ -71,7 +71,7 @@ namespace BioLink.Data {
                 return true;
             }
 
-            if (_permissions.ContainsKey(perm)) {
+            if (_permissions != null && _permissions.ContainsKey(perm)) {
                 var val = _permissions[perm];
                 return (val.Mask1 & (int)mask) != 0;
             }
@@ -240,10 +240,12 @@ namespace BioLink.Data {
         }
 
         public int GetPermissionMask(PermissionCategory PermissionID) {
+
             if (Username.Equals("sa", StringComparison.CurrentCultureIgnoreCase)) {
                 return 0xFFFFFF;
             }
-            if (_permissions.ContainsKey(PermissionID)) {
+
+            if (_permissions != null && _permissions.ContainsKey(PermissionID)) {
                 return _permissions[PermissionID].Mask1;
             }
 

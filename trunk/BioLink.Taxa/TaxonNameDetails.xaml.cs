@@ -74,7 +74,7 @@ namespace BioLink.Client.Taxa {
         }
 
         void _model_DataChanged(ChangeableModelBase model) {
-            RegisterUniquePendingChange(new UpdateTaxonDatabaseAction(_model.Taxon));
+            RegisterUniquePendingChange(new UpdateTaxonCommand(_model.Taxon));
         }
 
     }

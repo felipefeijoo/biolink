@@ -380,14 +380,14 @@ namespace BioLink.Client.Material {
             viewModel.IsSelected = true;
             viewModel.IsRenaming = true;
 
-            return new InsertRegionAction(viewModel.Model, viewModel);
+            return new InsertRegionCommand(viewModel.Model, viewModel);
         }
 
         public DatabaseCommand RenameItem(HierarchicalViewModelBase selectedItem, string newName) {
             var item = selectedItem as SiteExplorerNodeViewModel;
             if (item != null) {
                 item.Name = newName;
-                return new RenameRegionAction(item.Model);
+                return new RenameRegionCommand(item.Model);
             }
             return null;
         }
@@ -395,7 +395,7 @@ namespace BioLink.Client.Material {
         public DatabaseCommand DeleteItem(HierarchicalViewModelBase selectedItem) {
             var item = selectedItem as SiteExplorerNodeViewModel;
             if (item != null) {                
-                return new DeleteRegionAction(item.ElemID);
+                return new DeleteRegionCommand(item.ElemID);
             }
             return null;
         }

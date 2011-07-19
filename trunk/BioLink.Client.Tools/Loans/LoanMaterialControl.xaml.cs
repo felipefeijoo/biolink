@@ -54,13 +54,13 @@ namespace BioLink.Client.Tools {
 
         public override ViewModelBase AddNewItem(out DatabaseCommand addAction) {            
             var model = new LoanMaterial() { Returned = false, NumSpecimens = "1", DateAdded=DateTime.Now };
-            addAction = new InsertLoanMaterialAction(model, Loan);
+            addAction = new InsertLoanMaterialCommand(model, Loan);
             return new LoanMaterialViewModel(model);
         }
 
 
         public override DatabaseCommand PrepareDeleteAction(ViewModelBase viewModel) {
-            return new DeleteLoanMaterialAction((viewModel as LoanMaterialViewModel).Model);
+            return new DeleteLoanMaterialCommand((viewModel as LoanMaterialViewModel).Model);
         }
 
         public override List<ViewModelBase> LoadModel() {
@@ -73,7 +73,7 @@ namespace BioLink.Client.Tools {
         }
 
         public override DatabaseCommand PrepareUpdateAction(ViewModelBase viewModel) {
-            return new UpdateLoanMaterialAction((viewModel as LoanMaterialViewModel).Model);
+            return new UpdateLoanMaterialCommand((viewModel as LoanMaterialViewModel).Model);
         }
 
         public override FrameworkElement FirstControl {
@@ -100,20 +100,24 @@ namespace BioLink.Client.Tools {
 
     }
 
-    public class DeleteLoanMaterialAction : GenericDatabaseCommand<LoanMaterial> {
+    public class DeleteLoanMaterialCommand : GenericDatabaseCommand<LoanMaterial> {
 
-        public DeleteLoanMaterialAction(LoanMaterial model) : base(model) { }
+        public DeleteLoanMaterialCommand(LoanMaterial model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new LoanService(user);
             service.DeleteLoanMaterial(Model.LoanMaterialID);
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 
-    public class InsertLoanMaterialAction : GenericDatabaseCommand<LoanMaterial> {
+    public class InsertLoanMaterialCommand : GenericDatabaseCommand<LoanMaterial> {
 
-        public InsertLoanMaterialAction(LoanMaterial model, Loan loan) : base(model) {
+        public InsertLoanMaterialCommand(LoanMaterial model, Loan loan) : base(model) {
             Loan = loan;
         }
 
@@ -123,16 +127,25 @@ namespace BioLink.Client.Tools {
             Model.LoanMaterialID = service.InsertLoanMaterial(Model);
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
         private Loan Loan { get; set; }
     }
 
-    public class UpdateLoanMaterialAction : GenericDatabaseCommand<LoanMaterial> {
-        public UpdateLoanMaterialAction(LoanMaterial model) : base(model) { }
+    public class UpdateLoanMaterialCommand : GenericDatabaseCommand<LoanMaterial> {
+        public UpdateLoanMaterialCommand(LoanMaterial model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new LoanService(user);
             service.UpdateLoanMaterial(Model);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 
     public class LoanMaterialViewModel : GenericViewModelBase<LoanMaterial> {

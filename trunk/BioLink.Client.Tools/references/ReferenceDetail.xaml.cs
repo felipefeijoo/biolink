@@ -135,7 +135,7 @@ namespace BioLink.Client.Tools {
 
         void ReferenceDetail_Loaded(object sender, RoutedEventArgs e) {
             if (_viewModel != null && _viewModel.RefID < 0) {
-                RegisterUniquePendingChange(new InsertReferenceAction(_viewModel.Model));
+                RegisterUniquePendingChange(new InsertReferenceCommand(_viewModel.Model));
                 txtRefCode.Focus();
             }
         }
@@ -143,7 +143,7 @@ namespace BioLink.Client.Tools {
         void viewModel_DataChanged(ChangeableModelBase viewmodel) {
             var r = viewmodel as ReferenceViewModel;
             if (r != null) {
-                RegisterUniquePendingChange(new UpdateReferenceAction(r.Model));
+                RegisterUniquePendingChange(new UpdateReferenceCommand(r.Model));
                 r.FullRTF = AttachRTFHeaders(BuildRefRTF(r.Model));
                 r.FullText = txtPreview.PlainText;
             }

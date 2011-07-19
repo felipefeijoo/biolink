@@ -161,7 +161,7 @@ namespace BioLink.Client.Tools {
 
         public void DeleteReference(int refID, String refCode) {
             if (this.Question(string.Format("Are you sure you wish to permanently delete the reference '{0}'?", refCode), "Delete Reference?")) {
-                RegisterUniquePendingChange(new DeleteReferenceAction(refID));
+                RegisterUniquePendingChange(new DeleteReferenceCommand(refID));
             }
         }
 

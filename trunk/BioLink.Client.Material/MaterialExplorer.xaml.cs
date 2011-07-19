@@ -244,22 +244,22 @@ namespace BioLink.Client.Material {
 
             switch (source.NodeType) {
                 case SiteExplorerNodeType.Site:
-                    moveAction = new MoveSiteAction(source.Model, dest.Model);
+                    moveAction = new MoveSiteCommand(source.Model, dest.Model);
                     break;
                 case SiteExplorerNodeType.SiteGroup:
-                    moveAction = new MoveSiteGroupAction(source.Model, dest.Model);
+                    moveAction = new MoveSiteGroupCommand(source.Model, dest.Model);
                     break;
                 case SiteExplorerNodeType.Region:
-                    moveAction = new MoveRegionAction(source.Model, dest.Model);
+                    moveAction = new MoveRegionCommand(source.Model, dest.Model);
                     break;
                 case SiteExplorerNodeType.SiteVisit:
-                    moveAction = new MoveSiteVisitAction(source.Model, dest.Model);
+                    moveAction = new MoveSiteVisitCommand(source.Model, dest.Model);
                     break;
                 case SiteExplorerNodeType.Material:
-                    moveAction = new MoveMaterialAction(source.Model, dest.Model);
+                    moveAction = new MoveMaterialCommand(source.Model, dest.Model);
                     break;
                 case SiteExplorerNodeType.Trap:
-                    moveAction = new MoveTrapAction(source.Model, dest.Model);
+                    moveAction = new MoveTrapCommand(source.Model, dest.Model);
                     break;
             }
 
@@ -281,7 +281,7 @@ namespace BioLink.Client.Material {
                 newNode.IsChanged = true;
                 foreach (SiteExplorerNodeViewModel other in frm.SelectedNodes) {
                     other.IsDeleted = true;
-                    RegisterPendingChange(new MergeSiteAction(other.Model, newNode.Model), this);
+                    RegisterPendingChange(new MergeSiteCommand(other.Model, newNode.Model), this);
                 }
             }
         }
@@ -290,16 +290,16 @@ namespace BioLink.Client.Material {
             DatabaseCommand mergeAction = null;
             switch (oldNode.NodeType) {
                 case SiteExplorerNodeType.SiteGroup:
-                    mergeAction = new MergeSiteGroupAction(oldNode.Model, newNode.Model);
+                    mergeAction = new MergeSiteGroupCommand(oldNode.Model, newNode.Model);
                     break;
                 case SiteExplorerNodeType.SiteVisit:
-                    mergeAction = new MergeSiteVisitAction(oldNode.Model, newNode.Model);
+                    mergeAction = new MergeSiteVisitCommand(oldNode.Model, newNode.Model);
                     break;
                 case SiteExplorerNodeType.Material:
-                    mergeAction = new MergeMaterialAction(oldNode.Model, newNode.Model);
+                    mergeAction = new MergeMaterialCommand(oldNode.Model, newNode.Model);
                     break;
                 case SiteExplorerNodeType.Trap:
-                    mergeAction = new MergeTrapAction(oldNode.Model, newNode.Model);
+                    mergeAction = new MergeTrapCommand(oldNode.Model, newNode.Model);
                     break;
             }
 
@@ -524,17 +524,17 @@ namespace BioLink.Client.Material {
             if (selected != null) {
                 switch (selected.NodeType) {
                     case SiteExplorerNodeType.Region:
-                        return new RenameRegionAction(selected.Model);
+                        return new RenameRegionCommand(selected.Model);
                     case SiteExplorerNodeType.SiteGroup:
-                        return new RenameSiteGroupAction(selected.Model);
+                        return new RenameSiteGroupCommand(selected.Model);
                     case SiteExplorerNodeType.Site:
-                        return new RenameSiteAction(selected.Model);
+                        return new RenameSiteCommand(selected.Model);
                     case SiteExplorerNodeType.SiteVisit:
-                        return new RenameSiteVisitAction(selected.Model);
+                        return new RenameSiteVisitCommand(selected.Model);
                     case SiteExplorerNodeType.Trap:
-                        return new RenameTrapAction(selected.Model);
+                        return new RenameTrapCommand(selected.Model);
                     case SiteExplorerNodeType.Material:
-                        return new RenameMaterialAction(selected.Model);
+                        return new RenameMaterialCommand(selected.Model);
                 }
             }
             return null;
@@ -722,44 +722,44 @@ namespace BioLink.Client.Material {
         }
 
         internal SiteExplorerNodeViewModel AddRegion(HierarchicalViewModelBase parent) {
-            return AddNewNode(parent, SiteExplorerNodeType.Region, (viewModel) => { return new InsertRegionAction(viewModel.Model, viewModel); });
+            return AddNewNode(parent, SiteExplorerNodeType.Region, (viewModel) => { return new InsertRegionCommand(viewModel.Model, viewModel); });
         }
 
         internal SiteExplorerNodeViewModel AddSiteGroup(SiteExplorerNodeViewModel parent) {
-            return AddNewNode(parent, SiteExplorerNodeType.SiteGroup, (viewModel) => { return new InsertSiteGroupAction(viewModel.Model, viewModel); });
+            return AddNewNode(parent, SiteExplorerNodeType.SiteGroup, (viewModel) => { return new InsertSiteGroupCommand(viewModel.Model, viewModel); });
         }
 
         internal SiteExplorerNodeViewModel AddSite(SiteExplorerNodeViewModel parent, int templateId = 0) {
-            return AddNewNode(parent, SiteExplorerNodeType.Site, (viewModel) => { return new InsertSiteAction(viewModel.Model, viewModel, templateId); });
+            return AddNewNode(parent, SiteExplorerNodeType.Site, (viewModel) => { return new InsertSiteCommand(viewModel.Model, viewModel, templateId); });
         }
 
         internal void AddSiteVisit(SiteExplorerNodeViewModel parent, int templateId = 0) {
-            AddNewNode(parent, SiteExplorerNodeType.SiteVisit, (viewModel) => { return new InsertSiteVisitAction(viewModel.Model, viewModel, templateId); });
+            AddNewNode(parent, SiteExplorerNodeType.SiteVisit, (viewModel) => { return new InsertSiteVisitCommand(viewModel.Model, viewModel, templateId); });
         }
 
         internal void AddTrap(SiteExplorerNodeViewModel parent) {
-            AddNewNode(parent, SiteExplorerNodeType.Trap, (viewModel) => { return new InsertTrapAction(viewModel.Model, viewModel); });
+            AddNewNode(parent, SiteExplorerNodeType.Trap, (viewModel) => { return new InsertTrapCommand(viewModel.Model, viewModel); });
         }
 
         internal void AddMaterial(SiteExplorerNodeViewModel parent, int templateId = 0) {
-            AddNewNode(parent, SiteExplorerNodeType.Material, (viewModel) => { return new InsertMaterialAction(viewModel.Model, viewModel, templateId); });
+            AddNewNode(parent, SiteExplorerNodeType.Material, (viewModel) => { return new InsertMaterialCommand(viewModel.Model, viewModel, templateId); });
         }
 
         internal void AddSiteTemplate() {
             AddNewNode(_siteTemplatesRoot, SiteExplorerNodeType.Site, (viewModel) => {
-                return new InsertSiteTemplateAction(viewModel.Model); 
+                return new InsertSiteTemplateCommand(viewModel.Model); 
             });
         }
 
         internal void AddSiteVisitTemplate() {
             AddNewNode(_siteVisitTemplatesRoot, SiteExplorerNodeType.SiteVisit, (viewModel) => {
-                return new InsertSiteVisitTemplateAction(viewModel.Model);
+                return new InsertSiteVisitTemplateCommand(viewModel.Model);
             });
         }
 
         internal void AddMaterialTemplate() {
             AddNewNode(_materialTemplatesRoot, SiteExplorerNodeType.Material, (viewModel) => {
-                return new InsertMaterialTemplateAction(viewModel.Model);
+                return new InsertMaterialTemplateCommand(viewModel.Model);
             });
 
         }
@@ -839,27 +839,27 @@ namespace BioLink.Client.Material {
         }
 
         internal void DeleteRegion(SiteExplorerNodeViewModel region) {
-            DeleteNode(region, () => { return new DeleteRegionAction(region.ElemID); });
+            DeleteNode(region, () => { return new DeleteRegionCommand(region.ElemID); });
         }
 
         internal void DeleteSiteGroup(SiteExplorerNodeViewModel group) {
-            DeleteNode(group, () => { return new DeleteSiteGroupAction(group.ElemID); });
+            DeleteNode(group, () => { return new DeleteSiteGroupCommand(group.ElemID); });
         }
 
         internal void DeleteSite(SiteExplorerNodeViewModel group) {
-            DeleteNode(group, () => { return new DeleteSiteAction(group.ElemID); });
+            DeleteNode(group, () => { return new DeleteSiteCommand(group.ElemID); });
         }
 
         internal void DeleteSiteVisit(SiteExplorerNodeViewModel group) {
-            DeleteNode(group, () => { return new DeleteSiteVisitAction(group.ElemID); });
+            DeleteNode(group, () => { return new DeleteSiteVisitCommand(group.ElemID); });
         }
 
         internal void DeleteTrap(SiteExplorerNodeViewModel trap) {
-            DeleteNode(trap, () => { return new DeleteTrapAction(trap.ElemID); });
+            DeleteNode(trap, () => { return new DeleteTrapCommand(trap.ElemID); });
         }
 
         internal void DeleteMaterial(SiteExplorerNodeViewModel material) {
-            DeleteNode(material, () => { return new DeleteMaterialAction(material.ElemID); });
+            DeleteNode(material, () => { return new DeleteMaterialCommand(material.ElemID); });
         }
 
         private void tvwMaterial_MouseRightButtonDown(object sender, MouseButtonEventArgs e) {

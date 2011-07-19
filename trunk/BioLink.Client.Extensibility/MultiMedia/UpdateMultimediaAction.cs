@@ -4,30 +4,40 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Extensibility {
 
-    public class UpdateMultimediaAction : GenericDatabaseCommand<Multimedia> {
+    public class UpdateMultimediaCommand : GenericDatabaseCommand<Multimedia> {
 
-        public UpdateMultimediaAction(Multimedia model) : base(model) { }
+        public UpdateMultimediaCommand(Multimedia model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);
             service.UpdateMultimedia(Model.MultimediaID, Model.Name, Model.Number, Model.Artist, Model.DateRecorded, Model.Owner, Model.Copyright);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 
-    public class DeleteMultimediaLinkAction : GenericDatabaseCommand<MultimediaLink> {
+    public class DeleteMultimediaLinkCommand : GenericDatabaseCommand<MultimediaLink> {
 
-        public DeleteMultimediaLinkAction(MultimediaLink model) : base(model) { }
+        public DeleteMultimediaLinkCommand(MultimediaLink model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);
             service.DeleteMultimediaLink(Model.MultimediaLinkID);
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
+
     }
 
-    public class InsertMultimediaAction : GenericDatabaseCommand<MultimediaLink> {
+    public class InsertMultimediaCommand : GenericDatabaseCommand<MultimediaLink> {
 
-        public InsertMultimediaAction(MultimediaLink model, string filename) : base(model) {
+        public InsertMultimediaCommand(MultimediaLink model, string filename) : base(model) {
             this.Filename = filename;
         }
 
@@ -38,12 +48,17 @@ namespace BioLink.Client.Extensibility {
             Model.MultimediaID = newId;
         }
 
-        public string Filename { get; private set; }        
+        public string Filename { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 
-    public class InsertMultimediaLinkAction : GenericDatabaseCommand<MultimediaLink> {
+    public class InsertMultimediaLinkCommand : GenericDatabaseCommand<MultimediaLink> {
 
-        public InsertMultimediaLinkAction(MultimediaLink model, TraitCategoryType category, ViewModelBase owner) : base(model) {
+        public InsertMultimediaLinkCommand(MultimediaLink model, TraitCategoryType category, ViewModelBase owner) : base(model) {
             this.Category = category;
             this.Owner = owner;
         }
@@ -58,11 +73,16 @@ namespace BioLink.Client.Extensibility {
         public TraitCategoryType Category { get; private set; }
 
         public ViewModelBase Owner{ get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 
-    public class UpdateMultimediaLinkAction : GenericDatabaseCommand<MultimediaLink> {
+    public class UpdateMultimediaLinkCommand : GenericDatabaseCommand<MultimediaLink> {
 
-        public UpdateMultimediaLinkAction(MultimediaLink model, TraitCategoryType category)
+        public UpdateMultimediaLinkCommand(MultimediaLink model, TraitCategoryType category)
             : base(model) {
         }
 
@@ -72,11 +92,16 @@ namespace BioLink.Client.Extensibility {
         }
 
         public TraitCategoryType TraitCategory { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 
-    public class UpdateMultimediaBytesAction : GenericDatabaseCommand<MultimediaLink> {
+    public class UpdateMultimediaBytesCommand : GenericDatabaseCommand<MultimediaLink> {
 
-        public UpdateMultimediaBytesAction(MultimediaLink model, string filename)
+        public UpdateMultimediaBytesCommand(MultimediaLink model, string filename)
             : base(model) {
             this.Filename = filename;
         }
@@ -88,6 +113,11 @@ namespace BioLink.Client.Extensibility {
         }
 
         public string Filename { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 
 }

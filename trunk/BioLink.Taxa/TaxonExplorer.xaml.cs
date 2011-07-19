@@ -726,7 +726,7 @@ namespace BioLink.Client.Taxa {
         }
 
         private bool InsertUniquePendingUpdate(TaxonViewModel taxon) {
-            return RegisterUniquePendingChange(new UpdateTaxonDatabaseAction(taxon.Taxon));
+            return RegisterUniquePendingChange(new UpdateTaxonCommand(taxon.Taxon));
         }
        
         private void ShiftTaxon(TaxonViewModel taxon, System.Func<int, int> action) {
@@ -904,7 +904,7 @@ namespace BioLink.Client.Taxa {
                     RenameTaxon(viewModel);
                 }
 
-                RegisterPendingChange(new InsertTaxonDatabaseAction(viewModel));
+                RegisterPendingChange(new InsertTaxonDatabaseCommand(viewModel));
 
             } catch (Exception ex) {
                 ErrorMessage.Show(ex.Message);
@@ -934,7 +934,7 @@ namespace BioLink.Client.Taxa {
                                 newUnplaced.Children.Add(child);
                                 child.TaxaParentID = newUnplaced.TaxaID;
                                 child.Parent = newUnplaced;
-                                RegisterPendingChange(new MoveTaxonDatabaseAction(child, newUnplaced));
+                                RegisterPendingChange(new MoveTaxonDatabaseCommand(child, newUnplaced));
                             }
                         }
                         parent.Children.Clear();
@@ -1008,7 +1008,7 @@ namespace BioLink.Client.Taxa {
                 // First the UI bit...                
                 MarkItemAsDeleted(taxon);
                 // And schedule the database bit...                                
-                RegisterPendingChange(new DeleteTaxonDatabaseAction(taxon));
+                RegisterPendingChange(new DeleteTaxonDatabaseCommand(taxon));
             }
         }
 

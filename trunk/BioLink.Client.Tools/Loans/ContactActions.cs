@@ -9,34 +9,48 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Tools {
 
-    public class UpdateContactAction : GenericDatabaseCommand<Contact> {
+    public class UpdateContactCommand : GenericDatabaseCommand<Contact> {
 
-        public UpdateContactAction(Contact model) : base(model) { }
+        public UpdateContactCommand(Contact model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new LoanService(user);
             service.UpdateContact(Model);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 
-    public class DeleteContactAction : GenericDatabaseCommand<Contact> {
+    public class DeleteContactCommand : GenericDatabaseCommand<Contact> {
 
-        public DeleteContactAction(Contact contact) : base(contact) { }
+        public DeleteContactCommand(Contact contact) : base(contact) { }
 
         protected override void ProcessImpl(User user) {
             var service = new LoanService(user);
             service.DeleteContact(Model.ContactID);            
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
         
     }
 
-    public class InsertContactAction : GenericDatabaseCommand<Contact> {
+    public class InsertContactCommand : GenericDatabaseCommand<Contact> {
 
-        public InsertContactAction(Contact model) : base(model) { }
+        public InsertContactCommand(Contact model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new LoanService(user);
             Model.ContactID = service.InsertContact(Model);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 }

@@ -50,7 +50,7 @@ namespace BioLink.Client.Taxa {
             grpDist.IsEnabled = false;
 
             taxon.DataChanged += new DataChangedHandler((t) => {
-                RegisterUniquePendingChange(new UpdateDistQualDatabaseAction(taxon.Taxon));
+                RegisterUniquePendingChange(new UpdateDistQualDatabaseCommand(taxon.Taxon));
             });
             
         }
@@ -119,7 +119,7 @@ namespace BioLink.Client.Taxa {
                 foreach (HierarchicalViewModelBase item in newModel) {
                     _model.Add(item);
                 }
-                RegisterUniquePendingChange(new SaveDistributionRegionsAction(Taxon.Taxon, _model));
+                RegisterUniquePendingChange(new SaveDistributionRegionsCommand(Taxon.Taxon, _model));
                 ExpandAll(_model);
             });
         }
@@ -136,7 +136,7 @@ namespace BioLink.Client.Taxa {
                         current = new DistributionViewModel(model, bit);                        
                         current.Parent = parent;                        
                         current.DataChanged += new DataChangedHandler((d) => {
-                            RegisterUniquePendingChange(new SaveDistributionRegionsAction(Taxon.Taxon, _model));
+                            RegisterUniquePendingChange(new SaveDistributionRegionsCommand(Taxon.Taxon, _model));
                         });
                     } else {
                         current = new DistributionPlaceholder(bit);
@@ -186,7 +186,7 @@ namespace BioLink.Client.Taxa {
         private void DeleteCurrentRegion() {
             var item = tvwDist.SelectedItem as DistributionViewModel;
             item.Parent.Children.Remove(item);
-            RegisterUniquePendingChange(new SaveDistributionRegionsAction(Taxon.Taxon, _model));
+            RegisterUniquePendingChange(new SaveDistributionRegionsCommand(Taxon.Taxon, _model));
         }
 
     }

@@ -8,9 +8,9 @@ using BioLink.Data;
 
 namespace BioLink.Client.Tools {
 
-    public class UpdateTaxonRefLinkAction : GenericDatabaseCommand<TaxonRefLink> {
+    public class UpdateTaxonRefLinkCommand : GenericDatabaseCommand<TaxonRefLink> {
 
-        public UpdateTaxonRefLinkAction(TaxonRefLink model)
+        public UpdateTaxonRefLinkCommand(TaxonRefLink model)
             : base(model) {
         }
 
@@ -19,11 +19,15 @@ namespace BioLink.Client.Tools {
             service.UpdateTaxonRefLink(Model);
         }
 
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
+        }
     }
 
-    public class InsertTaxonRefLinkAction : GenericDatabaseCommand<TaxonRefLink> {
+    public class InsertTaxonRefLinkCommand : GenericDatabaseCommand<TaxonRefLink> {
 
-        public InsertTaxonRefLinkAction(TaxonRefLink model)
+        public InsertTaxonRefLinkCommand(TaxonRefLink model)
             : base(model) {
         }
 
@@ -42,10 +46,14 @@ namespace BioLink.Client.Tools {
             Model.RefLinkID = service.InsertRefLink(reflink, TraitCategoryType.Taxon.ToString());
         }
 
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
+        }
     }
 
-    public class DeleteTaxonRefLinkAction : GenericDatabaseCommand<TaxonRefLink> {
-        public DeleteTaxonRefLinkAction(TaxonRefLink model)
+    public class DeleteTaxonRefLinkCommand : GenericDatabaseCommand<TaxonRefLink> {
+        public DeleteTaxonRefLinkCommand(TaxonRefLink model)
             : base(model) {
         }
 
@@ -55,5 +63,10 @@ namespace BioLink.Client.Tools {
                 service.DeleteRefLink(Model.RefLinkID);
             }
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
+        }
+
     }
 }

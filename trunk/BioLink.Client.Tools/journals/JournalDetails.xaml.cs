@@ -73,11 +73,11 @@ namespace BioLink.Client.Tools {
         }
 
         void JournalDetails_Loaded(object sender, RoutedEventArgs e) {
-            RegisterPendingChange(new InsertJournalAction(_viewModel.Model));
+            RegisterPendingChange(new InsertJournalCommand(_viewModel.Model));
         }
 
         void viewModel_DataChanged(ChangeableModelBase viewmodel) {
-            RegisterUniquePendingChange(new UpdateJournalAction((viewmodel as JournalViewModel).Model));
+            RegisterUniquePendingChange(new UpdateJournalCommand((viewmodel as JournalViewModel).Model));
         }
 
     }

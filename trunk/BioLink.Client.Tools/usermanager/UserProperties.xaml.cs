@@ -85,10 +85,12 @@ namespace BioLink.Client.Tools {
                         service.InsertUser(_model.Model);
                     } else {
                         service.UpdateUser(_model.Model);
-                        if (!string.IsNullOrEmpty(txtPassword.Password)) {
-                            service.UpdateUserPassword(_model.UserName, txtPassword.Password);
-                        }
                     }
+
+                    if (!string.IsNullOrEmpty(txtPassword.Password)) {
+                        service.UpdateUserPassword(_model.UserName, txtPassword.Password);
+                    }
+
                     this.DialogResult = true;
                     this.Close();
                 }
@@ -131,34 +133,49 @@ namespace BioLink.Client.Tools {
 
     }
 
-    public class InsertBiolinkUserAction : GenericDatabaseCommand<BiolinkUser> {
+    public class InsertBiolinkUserCommand : GenericDatabaseCommand<BiolinkUser> {
 
-        public InsertBiolinkUserAction(BiolinkUser model) : base(model) { }
+        public InsertBiolinkUserCommand(BiolinkUser model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);
             service.InsertUser(Model);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.USERMANAGER_USER, PERMISSION_MASK.INSERT);
+        }
+
     }
 
-    public class UpdateBiolinkUserAction : GenericDatabaseCommand<BiolinkUser> {
+    public class UpdateBiolinkUserCommand : GenericDatabaseCommand<BiolinkUser> {
 
-        public UpdateBiolinkUserAction(BiolinkUser model) : base(model) { }
+        public UpdateBiolinkUserCommand(BiolinkUser model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);
             service.UpdateUser(Model);                        
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.USERMANAGER_USER, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
-    public class DeleteBiolinkUser : GenericDatabaseCommand<BiolinkUser> {
+    public class DeleteBiolinkUserCommand : GenericDatabaseCommand<BiolinkUser> {
 
-        public DeleteBiolinkUser(BiolinkUser model) : base(model) { }
+        public DeleteBiolinkUserCommand(BiolinkUser model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);
             service.DeleteUser(Model.UserName);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.USERMANAGER_USER, PERMISSION_MASK.DELETE);
+        }
+
     }
 
     public class BiolinkUserViewModel : GenericViewModelBase<BiolinkUser> {

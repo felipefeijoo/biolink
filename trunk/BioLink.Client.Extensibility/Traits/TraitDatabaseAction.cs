@@ -16,9 +16,9 @@ namespace BioLink.Client.Extensibility {
         
     }
 
-    public class UpdateTraitDatabaseAction : TraitDatabaseActionBase {
+    public class UpdateTraitDatabaseCommand : TraitDatabaseActionBase {
 
-        public UpdateTraitDatabaseAction(Trait trait, ViewModelBase owner) : base(trait, owner) { }
+        public UpdateTraitDatabaseCommand(Trait trait, ViewModelBase owner) : base(trait, owner) { }
 
         protected override void ProcessImpl(User user) {
             SupportService service = new SupportService(user);
@@ -27,7 +27,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         public override bool Equals(object obj) {
-            var other = obj as UpdateTraitDatabaseAction;
+            var other = obj as UpdateTraitDatabaseCommand;
             if (other != null) {
                 return Trait == other.Trait;
             }
@@ -42,11 +42,15 @@ namespace BioLink.Client.Extensibility {
             return string.Format("Insert/Update Trait: ID={0} Cat={1} Value={2}", Trait.TraitID, Trait.Category, Trait.Value);
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 
-    public class DeleteTraitDatabaseAction : TraitDatabaseActionBase {
+    public class DeleteTraitDatabaseCommand : TraitDatabaseActionBase {
 
-        public DeleteTraitDatabaseAction(Trait trait, ViewModelBase owner) : base(trait, owner) { }
+        public DeleteTraitDatabaseCommand(Trait trait, ViewModelBase owner) : base(trait, owner) { }
 
         protected override void ProcessImpl(User user) {
             SupportService service = new SupportService(user);
@@ -55,6 +59,10 @@ namespace BioLink.Client.Extensibility {
 
         public override string ToString() {
             return string.Format("Delete Trait: ID={0} Cat={1} Value={2}", Trait.TraitID, Trait.Category, Trait.Value);
+        }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
         }
 
     }

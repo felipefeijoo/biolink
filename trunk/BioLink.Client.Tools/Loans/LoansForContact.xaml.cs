@@ -125,7 +125,7 @@ namespace BioLink.Client.Tools {
 
             loan.IsDeleted = true;
             _model.Remove(loan);
-            RegisterUniquePendingChange(new DeleteLoanAction(loan.Model));
+            RegisterUniquePendingChange(new DeleteLoanCommand(loan.Model));
         }
 
         private void btnRefresh_Click(object sender, RoutedEventArgs e) {
@@ -134,13 +134,18 @@ namespace BioLink.Client.Tools {
 
     }
 
-    public class DeleteLoanAction : GenericDatabaseCommand<Loan> {
+    public class DeleteLoanCommand : GenericDatabaseCommand<Loan> {
 
-        public DeleteLoanAction(Loan model) : base(model) { }
+        public DeleteLoanCommand(Loan model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new LoanService(user);
             service.DeleteLoan(Model.LoanID);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.None();
+        }
+
     }
 }

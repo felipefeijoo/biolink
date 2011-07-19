@@ -48,7 +48,7 @@ namespace BioLink.Client.Material {
         }
 
         void model_DataChanged(ChangeableModelBase viewmodel) {
-            RegisterUniquePendingChange(new UpdateRegionAction(_viewModel.Model));
+            RegisterUniquePendingChange(new UpdateRegionCommand(_viewModel.Model));
         }
 
         #region Properties
@@ -62,15 +62,19 @@ namespace BioLink.Client.Material {
         #endregion
     }
 
-    public class UpdateRegionAction : GenericDatabaseCommand<Region> {
+    public class UpdateRegionCommand : GenericDatabaseCommand<Region> {
 
-        public UpdateRegionAction(Region model)
+        public UpdateRegionCommand(Region model)
             : base(model) {
         }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
             service.UpdateRegion(Model.PoliticalRegionID, Model.Name, Model.Rank);
+        }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_REGION, PERMISSION_MASK.UPDATE);
         }
 
     }

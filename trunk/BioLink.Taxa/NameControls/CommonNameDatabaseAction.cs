@@ -7,9 +7,9 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Taxa {
 
-    public class UpdateCommonNameAction : GenericDatabaseCommand<CommonName> {
+    public class UpdateCommonNameCommand : GenericDatabaseCommand<CommonName> {
 
-        public UpdateCommonNameAction(CommonName model)
+        public UpdateCommonNameCommand(CommonName model)
             : base(model) {
         }
 
@@ -18,11 +18,16 @@ namespace BioLink.Client.Taxa {
             service.UpdateCommonName(Model);
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
+        }
+
+
     }
 
-    public class InsertCommonNameAction : GenericDatabaseCommand<CommonName> {
+    public class InsertCommonNameCommand : GenericDatabaseCommand<CommonName> {
 
-        public InsertCommonNameAction(CommonName model)
+        public InsertCommonNameCommand(CommonName model)
             : base(model) {
         }
 
@@ -30,11 +35,16 @@ namespace BioLink.Client.Taxa {
             var service = new TaxaService(user);
             service.InsertCommonName(Model);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
-    public class DeleteCommonNameAction : GenericDatabaseCommand<CommonName> {
+    public class DeleteCommonNameCommand : GenericDatabaseCommand<CommonName> {
 
-        public DeleteCommonNameAction(CommonName model)
+        public DeleteCommonNameCommand(CommonName model)
             : base(model) {
         }
 
@@ -42,6 +52,11 @@ namespace BioLink.Client.Taxa {
             var service = new TaxaService(user);
             service.DeleteCommonName(Model.CommonNameID);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
 

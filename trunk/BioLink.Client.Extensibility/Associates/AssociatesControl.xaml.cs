@@ -112,14 +112,14 @@ namespace BioLink.Client.Extensibility {
             model.Direction = "FromTo";
 
             var viewModel = new AssociateViewModel(model);
-            addAction = new InsertAssociateAction(model, Owner);
+            addAction = new InsertAssociateCommand(model, Owner);
             return viewModel;
         }
 
         public override DatabaseCommand PrepareDeleteAction(ViewModelBase viewModel) {
             var a = viewModel as AssociateViewModel;
             if (a != null) {
-                return new DeleteAssociateAction(a.Model);
+                return new DeleteAssociateCommand(a.Model);
             }
             return null;
         }
@@ -127,7 +127,7 @@ namespace BioLink.Client.Extensibility {
         public override DatabaseCommand PrepareUpdateAction(ViewModelBase viewModel) {
             var a = viewModel as AssociateViewModel;
             if (a != null) {
-                return new UpdateAssociateAction(a.Model);
+                return new UpdateAssociateCommand(a.Model);
             }
             return null;
         }

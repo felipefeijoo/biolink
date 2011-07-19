@@ -57,7 +57,7 @@ namespace BioLink.Client.Taxa {
             _model = new ObservableCollection<CommonNameViewModel>(list.ConvertAll(name => {
                 var vm = new CommonNameViewModel(name);
                 vm.DataChanged += new DataChangedHandler((x) => {
-                    RegisterPendingChange(new UpdateCommonNameAction(vm.Model));
+                    RegisterPendingChange(new UpdateCommonNameCommand(vm.Model));
                 });
                 return vm;
             }));
@@ -82,7 +82,7 @@ namespace BioLink.Client.Taxa {
             _model.Add(viewModel);
             lstNames.SelectedItem = viewModel;
             lstNames.ScrollIntoView(viewModel);
-            RegisterPendingChange(new InsertCommonNameAction(data));
+            RegisterPendingChange(new InsertCommonNameCommand(data));
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e) {
@@ -92,7 +92,7 @@ namespace BioLink.Client.Taxa {
         private void DeleteSelectedName() {
             var name = lstNames.SelectedItem as CommonNameViewModel;
             if (name != null) {
-                RegisterPendingChange(new DeleteCommonNameAction(name.Model));
+                RegisterPendingChange(new DeleteCommonNameCommand(name.Model));
                 _model.Remove(name);
             }
         }

@@ -46,7 +46,7 @@ namespace BioLink.Client.Material {
         }
 
         void viewModel_DataChanged(ChangeableModelBase viewmodel) {
-            RegisterUniquePendingChange(new UpdateSiteVisitAction((viewmodel as SiteVisitViewModel).Model));
+            RegisterUniquePendingChange(new UpdateSiteVisitCommand((viewmodel as SiteVisitViewModel).Model));
         }
 
     }

@@ -41,7 +41,7 @@ namespace BioLink.Client.Extensibility {
             _model = new ObservableCollection<AutoNumberViewModel>(list.ConvertAll((model) => {
                 var viewmodel = new AutoNumberViewModel(model);
                 viewmodel.DataChanged += new DataChangedHandler((m) => {
-                    RegisterUniquePendingChange(new UpdateAutoNumberAction(model));
+                    RegisterUniquePendingChange(new UpdateAutoNumberCommand(model));
                 });
                 return viewmodel;
             }));
@@ -73,7 +73,7 @@ namespace BioLink.Client.Extensibility {
             model.Category = AutoNumberCategory;
             model.Name = "<New Autonumber>";
 
-            RegisterPendingChange(new InsertAutoNumberAction(model));
+            RegisterPendingChange(new InsertAutoNumberCommand(model));
 
             var viewmodel = new AutoNumberViewModel(model);
             _model.Add(viewmodel);
@@ -86,7 +86,7 @@ namespace BioLink.Client.Extensibility {
         private void DeleteCurrent() {
             var selected = lst.SelectedItem as AutoNumberViewModel;
             if (selected != null) {
-                RegisterUniquePendingChange(new DeleteAutoNumberAction(selected.Model));
+                RegisterUniquePendingChange(new DeleteAutoNumberCommand(selected.Model));
                 _model.Remove(selected);
             }
         }
@@ -102,9 +102,9 @@ namespace BioLink.Client.Extensibility {
 
     }
 
-    public class DeleteAutoNumberAction : GenericDatabaseCommand<AutoNumber> {
+    public class DeleteAutoNumberCommand : GenericDatabaseCommand<AutoNumber> {
 
-        public DeleteAutoNumberAction(AutoNumber model)
+        public DeleteAutoNumberCommand(AutoNumber model)
             : base(model) {
         }
 
@@ -112,11 +112,16 @@ namespace BioLink.Client.Extensibility {
             var service = new SupportService(user);
             service.DeleteAutoNumberCategory(Model.AutoNumberCatID);            
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SUPPORT_CATEGORIES, PERMISSION_MASK.DELETE);            
+        }
+
     }
 
-    public class InsertAutoNumberAction : GenericDatabaseCommand<AutoNumber> {
+    public class InsertAutoNumberCommand : GenericDatabaseCommand<AutoNumber> {
 
-        public InsertAutoNumberAction(AutoNumber model)
+        public InsertAutoNumberCommand(AutoNumber model)
             : base(model) {
         }
 
@@ -125,10 +130,15 @@ namespace BioLink.Client.Extensibility {
             service.InsertAutoNumber(Model.Category, Model.Name, Model.Prefix, Model.Postfix, Model.NumLeadingZeros, Model.EnsureUnique);
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SUPPORT_CATEGORIES, PERMISSION_MASK.INSERT);
+        }
+
     }
 
-    public class UpdateAutoNumberAction : GenericDatabaseCommand<AutoNumber> {
-        public UpdateAutoNumberAction(AutoNumber model)
+    public class UpdateAutoNumberCommand : GenericDatabaseCommand<AutoNumber> {
+
+        public UpdateAutoNumberCommand(AutoNumber model)
             : base(model) {
         }
 
@@ -136,5 +146,10 @@ namespace BioLink.Client.Extensibility {
             var service = new SupportService(user);
             service.UpdateAutoNumber(Model.AutoNumberCatID, Model.Name, Model.Prefix, Model.Postfix, Model.NumLeadingZeros, Model.EnsureUnique);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SUPPORT_CATEGORIES, PERMISSION_MASK.UPDATE);
+        }
+
     }
 }

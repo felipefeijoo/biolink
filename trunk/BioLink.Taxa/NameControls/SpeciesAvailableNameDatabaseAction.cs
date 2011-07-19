@@ -9,9 +9,9 @@ using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Taxa {
 
-    public class UpdateSanDatabaseAction : GenericDatabaseCommand<SpeciesAvailableName> {
+    public class UpdateSanDatabaseCommand : GenericDatabaseCommand<SpeciesAvailableName> {
 
-        public UpdateSanDatabaseAction(SpeciesAvailableName name)
+        public UpdateSanDatabaseCommand(SpeciesAvailableName name)
             : base(name) {
         }
 
@@ -19,11 +19,16 @@ namespace BioLink.Client.Taxa {
             var service = new TaxaService(user);
             service.InsertOrUpdateSpeciesAvailableName(Model);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
-    public class UpdateSANTypeDataAction : GenericDatabaseCommand<SANTypeData> {
+    public class UpdateSANTypeDataCommand : GenericDatabaseCommand<SANTypeData> {
 
-        public UpdateSANTypeDataAction(SANTypeData model)
+        public UpdateSANTypeDataCommand(SANTypeData model)
             : base(model) {
         }
 
@@ -32,11 +37,16 @@ namespace BioLink.Client.Taxa {
             var service = new TaxaService(user);
             service.UpdateSANTypeData(Model);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
-    public class InsertSANTypeDataAction : GenericDatabaseCommand<SANTypeData> {
+    public class InsertSANTypeDataCommand : GenericDatabaseCommand<SANTypeData> {
 
-        public InsertSANTypeDataAction(SANTypeData model)
+        public InsertSANTypeDataCommand(SANTypeData model)
             : base(model) {
         }
 
@@ -45,11 +55,16 @@ namespace BioLink.Client.Taxa {
             var service = new TaxaService(user);
             service.InsertSANTypeData(Model);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
-    public class DeleteSANTypeDataAction : GenericDatabaseCommand<SANTypeData> {
+    public class DeleteSANTypeDataCommand : GenericDatabaseCommand<SANTypeData> {
 
-        public DeleteSANTypeDataAction(SANTypeData model)
+        public DeleteSANTypeDataCommand(SANTypeData model)
             : base(model) {
         }
 
@@ -58,6 +73,11 @@ namespace BioLink.Client.Taxa {
             var service = new TaxaService(user);
             service.DeleteSANTypeData(Model.SANTypeDataID);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
 }

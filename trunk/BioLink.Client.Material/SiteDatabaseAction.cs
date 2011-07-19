@@ -8,19 +8,24 @@ using BioLink.Client.Extensibility;
 
 namespace BioLink.Client.Material {
 
-    public class RenameSiteAction : GenericDatabaseCommand<SiteExplorerNode> {
+    public class RenameSiteCommand : GenericDatabaseCommand<SiteExplorerNode> {
 
-        public RenameSiteAction(SiteExplorerNode model) : base(model) { }
+        public RenameSiteCommand(SiteExplorerNode model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
             service.RenameSite(Model.ElemID, Model.Name);
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_SITE, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
-    public class UpdateSiteAction : GenericDatabaseCommand<Site> {
+    public class UpdateSiteCommand : GenericDatabaseCommand<Site> {
 
-        public UpdateSiteAction(Site model)
+        public UpdateSiteCommand(Site model)
             : base(model) {
         }
 
@@ -29,11 +34,16 @@ namespace BioLink.Client.Material {
             service.UpdateSite(Model);
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_SITE, PERMISSION_MASK.UPDATE);
+        }
+
+
     }
 
-    public class InsertSiteAction : AbstractSiteExplorerAction {
+    public class InsertSiteCommand : AbstractSiteExplorerCommand {
 
-        public InsertSiteAction(SiteExplorerNode model, SiteExplorerNodeViewModel viewModel, int templateId = 0) : base(model, viewModel) {
+        public InsertSiteCommand(SiteExplorerNode model, SiteExplorerNodeViewModel viewModel, int templateId = 0) : base(model, viewModel) {
             this.TemplateID = templateId;
         }
 
@@ -44,10 +54,15 @@ namespace BioLink.Client.Material {
         }
 
         public int TemplateID { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_SITE, PERMISSION_MASK.INSERT);
+        }
+
     }
 
-    public class InsertSiteTemplateAction : GenericDatabaseCommand<SiteExplorerNode> {
-        public InsertSiteTemplateAction(SiteExplorerNode model)
+    public class InsertSiteTemplateCommand : GenericDatabaseCommand<SiteExplorerNode> {
+        public InsertSiteTemplateCommand(SiteExplorerNode model)
             : base(model) {
         }
 
@@ -55,10 +70,15 @@ namespace BioLink.Client.Material {
             var service = new MaterialService(user);
             Model.ElemID = service.InsertSiteTemplate();
         }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_SITE, PERMISSION_MASK.INSERT);
+        }
+
     }
 
-    public class DeleteSiteAction : DatabaseCommand {
-        public DeleteSiteAction(int siteID) {
+    public class DeleteSiteCommand : DatabaseCommand {
+        public DeleteSiteCommand(int siteID) {
             this.SiteID = siteID;            
         }
 
@@ -67,14 +87,17 @@ namespace BioLink.Client.Material {
             service.DeleteSite(SiteID);
         }
 
-
         public int SiteID { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_SITE, PERMISSION_MASK.DELETE);
+        }
         
     }
 
-    public class MergeSiteAction : GenericDatabaseCommand<SiteExplorerNode> {
+    public class MergeSiteCommand : GenericDatabaseCommand<SiteExplorerNode> {
 
-        public MergeSiteAction(SiteExplorerNode model, SiteExplorerNode dest)
+        public MergeSiteCommand(SiteExplorerNode model, SiteExplorerNode dest)
             : base(model) {
             this.Destination = dest;
         }
@@ -87,12 +110,16 @@ namespace BioLink.Client.Material {
 
         public SiteExplorerNode Destination { get; set; }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_EXPLORER, PERMISSION_MASK.ALLOW);
+        }
+
     }
 
 
-    public class MoveSiteAction : GenericDatabaseCommand<SiteExplorerNode> {
+    public class MoveSiteCommand : GenericDatabaseCommand<SiteExplorerNode> {
 
-        public MoveSiteAction(SiteExplorerNode model, SiteExplorerNode dest)
+        public MoveSiteCommand(SiteExplorerNode model, SiteExplorerNode dest)
             : base(model) {
             this.Destination = dest;
         }
@@ -113,23 +140,30 @@ namespace BioLink.Client.Material {
 
         public SiteExplorerNode Destination { get; set; }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_EXPLORER, PERMISSION_MASK.ALLOW);
+        }
        
     }
 
-    public class InsertRDESiteAction : GenericDatabaseCommand<RDESite> {
+    public class InsertRDESiteCommand : GenericDatabaseCommand<RDESite> {
 
-        public InsertRDESiteAction(RDESite model) : base(model) { }
+        public InsertRDESiteCommand(RDESite model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
             Model.SiteID = service.InsertSite(Model.PoliticalRegionID.GetValueOrDefault(-1), -1);
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_SITE, PERMISSION_MASK.INSERT);
+        }
+
     }
 
-    public class UpdateRDESiteAction : GenericDatabaseCommand<RDESite> {
+    public class UpdateRDESiteCommand : GenericDatabaseCommand<RDESite> {
 
-        public UpdateRDESiteAction(RDESite model) : base(model) { }
+        public UpdateRDESiteCommand(RDESite model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
@@ -173,7 +207,9 @@ namespace BioLink.Client.Material {
             return site;
         }
 
-
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_SITE, PERMISSION_MASK.UPDATE);
+        }
 
     }
 

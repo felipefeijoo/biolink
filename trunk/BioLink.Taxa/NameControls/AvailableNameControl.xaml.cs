@@ -49,7 +49,7 @@ namespace BioLink.Client.Taxa {
             this.DataContext = _model;
 
             _model.DataChanged += new DataChangedHandler((vm) => {
-                RegisterUniquePendingChange(new UpdateAvailableNameAction(_model.Model));
+                RegisterUniquePendingChange(new UpdateAvailableNameCommand(_model.Model));
             });
 
         }
@@ -59,15 +59,19 @@ namespace BioLink.Client.Taxa {
         }
     }
 
-    public class UpdateAvailableNameAction : GenericDatabaseCommand<AvailableName> {
+    public class UpdateAvailableNameCommand : GenericDatabaseCommand<AvailableName> {
 
-        public UpdateAvailableNameAction(AvailableName model)
+        public UpdateAvailableNameCommand(AvailableName model)
             : base(model) {
         }
 
         protected override void ProcessImpl(User user) {
             var service = new TaxaService(user);
             service.InsertOrUpdateAvailableName(Model);
+        }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
         }
 
     }
