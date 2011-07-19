@@ -1216,8 +1216,9 @@ namespace BioLink.Data {
         }
 
         public DataMatrix ExecuteQuery(IEnumerable<QueryCriteria> criteria, bool distinct) {
+            var formatters = BuildFormatters(criteria);
             var query = QuerySQLGenerator.GenerateSQL(User, criteria, distinct);
-            return StoredProcDataMatrix("spQuerySelect", null, _P("txtSELECT", query.SelectHidden), _P("txtFROM", query.From), _P("txtWHERE", query.Where));
+            return StoredProcDataMatrix("spQuerySelect", formatters, _P("txtSELECT", query.SelectHidden), _P("txtFROM", query.From), _P("txtWHERE", query.Where));
         }
 
         public static object FormatDate(object dateObj, string formatOption) {
@@ -1290,6 +1291,10 @@ namespace BioLink.Data {
 
             if (coordObj == null) {
                 return "";
+            }
+
+            if (string.IsNullOrEmpty(formatOption)) {
+                formatOption = COORD_FORMAT_DMS;
             }
 
             double value = 0;

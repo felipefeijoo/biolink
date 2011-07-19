@@ -29,25 +29,25 @@ namespace BioLink.Client.Extensibility {
         }
 
         void PositionChanged(object sender, TextChangedEventArgs e) {
-            _selfChange = true;
-            double lat, lon;
-            var ellipsoid = GeoUtils.FindEllipsoidByName(Datum);
-            if (ellipsoid != null) {
-                double easting, northing;
-                if (double.TryParse(txtEasting.Text, out easting) && double.TryParse(txtNorthing.Text, out northing)) {
-                    GeoUtils.UTMToLatLong(ellipsoid, northing, easting, txtZone.Text, out lat, out lon);
-                    this.X = lon;
-                    this.Y = lat;
+            if (!_selfChange) {
+                double lat, lon;
+                var ellipsoid = GeoUtils.FindEllipsoidByName(Datum);
+                if (ellipsoid != null) {
+                    double easting, northing;
+                    if (double.TryParse(txtEasting.Text, out easting) && double.TryParse(txtNorthing.Text, out northing)) {
+                        GeoUtils.UTMToLatLong(ellipsoid, northing, easting, txtZone.Text, out lat, out lon);
+                        this.X = lon;
+                        this.Y = lat;
+                    }
                 }
             }
-            _selfChange = false;
         }
 
         private void CalculateUTM() {
             double easting, northing;
             string zone;
             var ellipsoid = GeoUtils.FindEllipsoidByName(Datum);
-            if (ellipsoid != null && !_selfChange) {
+            if (ellipsoid != null) {
                 GeoUtils.LatLongToUTM(ellipsoid, Y, X, out northing, out easting, out zone);
                 _selfChange = true;
                 txtEasting.Text = string.Format("{0:0.00}", easting);
@@ -66,7 +66,9 @@ namespace BioLink.Client.Extensibility {
 
         private static void OnXChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
             var control = (EastingsNorthingsControl) obj;
-            control.CalculateUTM();
+            if (control != null && !control._selfChange) {
+                control.CalculateUTM();
+            }
         }
 
         public static readonly DependencyProperty YProperty = DependencyProperty.Register("Y", typeof(double), typeof(EastingsNorthingsControl), new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnYChanged)));
@@ -78,7 +80,9 @@ namespace BioLink.Client.Extensibility {
 
         private static void OnYChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
             var control = (EastingsNorthingsControl)obj;
-            control.CalculateUTM();
+            if (control != null && !control._selfChange) {
+                control.CalculateUTM();
+            }
         }
 
         public static readonly DependencyProperty DatumProperty = DependencyProperty.Register("Datum", typeof(string), typeof(EastingsNorthingsControl), new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnDatumChanged)));

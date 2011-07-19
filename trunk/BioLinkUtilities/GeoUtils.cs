@@ -8,6 +8,10 @@ namespace BioLink.Client.Utilities {
 
     public static class GeoUtils {
 
+        private static Regex _DegDecMRegex = new Regex(@"^(\d+).*?([\d.]+)'*\s*(N|S|E|W|n|e|s|w)\s*$");
+        private static Regex _DMSRegex = new Regex("^(\\d+).*?([\\d.]+)'.*?([\\d.]+)\"*\\s*(N|S|E|W|n|e|s|w)\\s*$");
+
+
         public const string DEGREE_SYMBOL = "°";
 
         private static DirectionRange[] FourPoints = new DirectionRange[] {
@@ -86,6 +90,48 @@ namespace BioLink.Client.Utilities {
                 new DirectionRange(354.375,361,"N")
         };
 
+        /// <summary>
+        /// Attempts to extract a coordinate value as decimal from a variety of possible formats...
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static double? ParseCoordinate(object value) {
+
+            if (value == null) {
+                return null;
+            }
+
+            if (value is double) {
+                return (double) value;
+            }
+
+            var str = value.ToString();
+
+            // First try decimal degrees...
+            if (str.IsNumeric()) {
+                return Double.Parse(str);
+            }
+
+            // next try Degrees*minutes'Seconds", where * can be anything
+            var matcher = _DMSRegex.Match(str);
+            if (matcher.Success) {
+                int degrees = Int32.Parse(matcher.Groups[1].Value);
+                int minutes = Int32.Parse(matcher.Groups[2].Value);
+                int seconds = Int32.Parse(matcher.Groups[3].Value);
+                string dir = matcher.Groups[4].Value;
+                return GeoUtils.DMSToDecDeg(degrees, minutes, seconds, dir);
+            }
+
+            matcher = _DegDecMRegex.Match(str);
+            if (matcher.Success) {
+                int degrees = Int32.Parse(matcher.Groups[1].Value);
+                double minutes = Double.Parse(matcher.Groups[2].Value);
+                string dir = matcher.Groups[3].Value;
+                return GeoUtils.DDecMDirToDecDeg(degrees, minutes, dir);
+            }
+
+            return null;
+        }
 
         public static string GreatCircleArcDirection(double nsLat1, double nsLong1, double nsLat2, double nsLong2, int niNumberOfPoints) {
             // Calculate the Great Circle Arc direction between two points
