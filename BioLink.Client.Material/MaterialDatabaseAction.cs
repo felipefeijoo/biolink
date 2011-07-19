@@ -8,7 +8,7 @@ using BioLink.Client.Extensibility;
 
 namespace BioLink.Client.Material {
 
-    public class RenameMaterialAction : GenericDatabaseAction<SiteExplorerNode> {
+    public class RenameMaterialAction : GenericDatabaseCommand<SiteExplorerNode> {
 
         public RenameMaterialAction(SiteExplorerNode model) : base(model) { }
 
@@ -34,7 +34,7 @@ namespace BioLink.Client.Material {
         public int TemplateID { get; private set; }
     }
 
-    public class DeleteMaterialAction : DatabaseAction {
+    public class DeleteMaterialAction : DatabaseCommand {
 
         public DeleteMaterialAction(int materialId) {
             this.MaterialID = materialId;
@@ -48,7 +48,7 @@ namespace BioLink.Client.Material {
         public int MaterialID { get; private set; }
     }
 
-    public class UpdateMaterialAction : GenericDatabaseAction<BioLink.Data.Model.Material> {
+    public class UpdateMaterialAction : GenericDatabaseCommand<BioLink.Data.Model.Material> {
 
         public UpdateMaterialAction(BioLink.Data.Model.Material model) : base(model) { }
 
@@ -58,7 +58,7 @@ namespace BioLink.Client.Material {
         }
     }
 
-    public class MergeMaterialAction : GenericDatabaseAction<SiteExplorerNode> {
+    public class MergeMaterialAction : GenericDatabaseCommand<SiteExplorerNode> {
 
         public MergeMaterialAction(SiteExplorerNode source, SiteExplorerNode dest)
             : base(source) {
@@ -73,7 +73,7 @@ namespace BioLink.Client.Material {
         public SiteExplorerNode Dest { get; private set; }
     }
 
-    public class MoveMaterialAction : GenericDatabaseAction<SiteExplorerNode> {
+    public class MoveMaterialAction : GenericDatabaseCommand<SiteExplorerNode> {
         public MoveMaterialAction(SiteExplorerNode model, SiteExplorerNode dest)
             : base(model) {
             this.Destination = dest;
@@ -87,7 +87,7 @@ namespace BioLink.Client.Material {
         public SiteExplorerNode Destination { get; private set; }
     }
 
-    public class InsertMaterialTemplateAction : GenericDatabaseAction<SiteExplorerNode> {
+    public class InsertMaterialTemplateAction : GenericDatabaseCommand<SiteExplorerNode> {
         public InsertMaterialTemplateAction(SiteExplorerNode model)
             : base(model) {
         }
@@ -98,7 +98,7 @@ namespace BioLink.Client.Material {
         }
     }
 
-    public class InsertRDEMaterialAction : GenericDatabaseAction<RDEMaterial> {
+    public class InsertRDEMaterialAction : GenericDatabaseCommand<RDEMaterial> {
 
         public InsertRDEMaterialAction(RDEMaterial model, RDESiteVisit owner) : base(model) {
             this.Owner = owner;
@@ -113,7 +113,7 @@ namespace BioLink.Client.Material {
         protected RDESiteVisit Owner { get; private set; }
     }
 
-    public class UpdateRDEMaterialAction : GenericDatabaseAction<RDEMaterial> {
+    public class UpdateRDEMaterialAction : GenericDatabaseCommand<RDEMaterial> {
 
         public UpdateRDEMaterialAction(RDEMaterial model) : base(model) { }
 
@@ -160,7 +160,7 @@ namespace BioLink.Client.Material {
 
     }
 
-    public class MoveRDEMaterialAction : GenericDatabaseAction<RDEMaterial> {
+    public class MoveRDEMaterialAction : GenericDatabaseCommand<RDEMaterial> {
 
         public MoveRDEMaterialAction(RDEMaterial model, RDESiteVisit newParent) : base(model) {
             this.NewParent = newParent;

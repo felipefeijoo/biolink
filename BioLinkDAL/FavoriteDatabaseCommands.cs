@@ -6,9 +6,9 @@ using BioLink.Data.Model;
 
 namespace BioLink.Data {
 
-    public class DeleteFavoriteAction : DatabaseAction {
+    public class DeleteFavoriteCommand : DatabaseCommand {
 
-        public DeleteFavoriteAction(int favoriteId) {
+        public DeleteFavoriteCommand(int favoriteId) {
             this.FavoriteID = favoriteId;
         }
 
@@ -25,9 +25,9 @@ namespace BioLink.Data {
 
     }
 
-    public class InsertFavoriteGroupAction : GenericDatabaseAction<Favorite> {
+    public class InsertFavoriteGroupCommand : GenericDatabaseCommand<Favorite> {
 
-        public InsertFavoriteGroupAction(Favorite model)
+        public InsertFavoriteGroupCommand(Favorite model)
             : base(model) {
         }
 
@@ -44,9 +44,9 @@ namespace BioLink.Data {
 
     }
 
-    public class RenameFavoriteGroupAction : GenericDatabaseAction<Favorite> {
+    public class RenameFavoriteGroupCommand : GenericDatabaseCommand<Favorite> {
 
-        public RenameFavoriteGroupAction(Favorite model) : base(model) { }
+        public RenameFavoriteGroupCommand(Favorite model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);            
@@ -59,9 +59,9 @@ namespace BioLink.Data {
 
     }
 
-    public class MoveFavoriteAction : GenericDatabaseAction<Favorite> {
+    public class MoveFavoriteCommand : GenericDatabaseCommand<Favorite> {
 
-        public MoveFavoriteAction(Favorite model, Favorite newParent) : base(model) {
+        public MoveFavoriteCommand(Favorite model, Favorite newParent) : base(model) {
             this.NewParent = newParent;
         }
 
@@ -99,9 +99,9 @@ namespace BioLink.Data {
 
     }
 
-    public class InsertTaxonFavoriteAction : GenericDatabaseAction<TaxonFavorite> {
+    public class InsertTaxonFavoriteCommand : GenericDatabaseCommand<TaxonFavorite> {
 
-        public InsertTaxonFavoriteAction(TaxonFavorite model)
+        public InsertTaxonFavoriteCommand(TaxonFavorite model)
             : base(model) {
         }
 
@@ -117,9 +117,9 @@ namespace BioLink.Data {
 
     }
 
-    public class InsertSiteFavoriteAction : GenericDatabaseAction<SiteFavorite> {
+    public class InsertSiteFavoriteCommand : GenericDatabaseCommand<SiteFavorite> {
 
-        public InsertSiteFavoriteAction(SiteFavorite model)
+        public InsertSiteFavoriteCommand(SiteFavorite model)
             : base(model) {
         }
 
@@ -136,9 +136,9 @@ namespace BioLink.Data {
 
     }
 
-    public class InsertReferenceFavoriteAction : GenericDatabaseAction<ReferenceFavorite> {
+    public class InsertReferenceFavoriteCommand : GenericDatabaseCommand<ReferenceFavorite> {
 
-        public InsertReferenceFavoriteAction(ReferenceFavorite model)
+        public InsertReferenceFavoriteCommand(ReferenceFavorite model)
             : base(model) {
         }
 

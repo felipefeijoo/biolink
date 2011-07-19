@@ -205,7 +205,7 @@ namespace BioLink.Client.Material {
 
     }
 
-    public class UpdateMaterialIdentificationAction : GenericDatabaseAction<MaterialIdentification> {
+    public class UpdateMaterialIdentificationAction : GenericDatabaseCommand<MaterialIdentification> {
 
         public UpdateMaterialIdentificationAction(MaterialIdentification model) : base(model) { }
 
@@ -215,7 +215,7 @@ namespace BioLink.Client.Material {
         }
     }
 
-    public class InsertMaterialIdentificationAction : GenericDatabaseAction<MaterialIdentification> {
+    public class InsertMaterialIdentificationAction : GenericDatabaseCommand<MaterialIdentification> {
         public InsertMaterialIdentificationAction(MaterialIdentification model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
@@ -224,7 +224,7 @@ namespace BioLink.Client.Material {
         }
     }
 
-    public class DeleteMaterialIdentificationAction : GenericDatabaseAction<MaterialIdentification> {
+    public class DeleteMaterialIdentificationAction : GenericDatabaseCommand<MaterialIdentification> {
         public DeleteMaterialIdentificationAction(MaterialIdentification model) : base(model) { }
 
         protected override void ProcessImpl(User user) {

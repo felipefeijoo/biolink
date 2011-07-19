@@ -116,7 +116,7 @@ namespace BioLink.Client.Tools {
         }
 
         private void DeleteTypeDataFromOwner(TypeDataOwnerInfo ownerInfo) {
-            DatabaseAction action = null;
+            DatabaseCommand action = null;
             switch (_type) {
                 case "trait":
                     action = new DeleteTraitFromOwnerAction(ownerInfo.ObjectID.Value);
@@ -264,7 +264,7 @@ namespace BioLink.Client.Tools {
 
     }
 
-    public abstract class TypeDataAction : GenericDatabaseAction<TypeData> {
+    public abstract class TypeDataAction : GenericDatabaseCommand<TypeData> {
         public TypeDataAction(TypeData model, string type) : base(model) {
             this.Type = type;
         }
@@ -307,7 +307,7 @@ namespace BioLink.Client.Tools {
         }
     }
 
-    public class DeleteTraitFromOwnerAction : DatabaseAction {
+    public class DeleteTraitFromOwnerAction : DatabaseCommand {
 
         public DeleteTraitFromOwnerAction(int traitID) {
             this.TraitID = traitID;
@@ -325,7 +325,7 @@ namespace BioLink.Client.Tools {
         }
     }
 
-    public class DeleteNoteFromOwnerAction : DatabaseAction {
+    public class DeleteNoteFromOwnerAction : DatabaseCommand {
 
         public DeleteNoteFromOwnerAction(int noteID) {
             this.NoteID = noteID;

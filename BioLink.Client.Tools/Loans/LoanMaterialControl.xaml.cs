@@ -52,14 +52,14 @@ namespace BioLink.Client.Tools {
             }
         }
 
-        public override ViewModelBase AddNewItem(out DatabaseAction addAction) {            
+        public override ViewModelBase AddNewItem(out DatabaseCommand addAction) {            
             var model = new LoanMaterial() { Returned = false, NumSpecimens = "1", DateAdded=DateTime.Now };
             addAction = new InsertLoanMaterialAction(model, Loan);
             return new LoanMaterialViewModel(model);
         }
 
 
-        public override DatabaseAction PrepareDeleteAction(ViewModelBase viewModel) {
+        public override DatabaseCommand PrepareDeleteAction(ViewModelBase viewModel) {
             return new DeleteLoanMaterialAction((viewModel as LoanMaterialViewModel).Model);
         }
 
@@ -72,7 +72,7 @@ namespace BioLink.Client.Tools {
             return model;
         }
 
-        public override DatabaseAction PrepareUpdateAction(ViewModelBase viewModel) {
+        public override DatabaseCommand PrepareUpdateAction(ViewModelBase viewModel) {
             return new UpdateLoanMaterialAction((viewModel as LoanMaterialViewModel).Model);
         }
 
@@ -100,7 +100,7 @@ namespace BioLink.Client.Tools {
 
     }
 
-    public class DeleteLoanMaterialAction : GenericDatabaseAction<LoanMaterial> {
+    public class DeleteLoanMaterialAction : GenericDatabaseCommand<LoanMaterial> {
 
         public DeleteLoanMaterialAction(LoanMaterial model) : base(model) { }
 
@@ -111,7 +111,7 @@ namespace BioLink.Client.Tools {
 
     }
 
-    public class InsertLoanMaterialAction : GenericDatabaseAction<LoanMaterial> {
+    public class InsertLoanMaterialAction : GenericDatabaseCommand<LoanMaterial> {
 
         public InsertLoanMaterialAction(LoanMaterial model, Loan loan) : base(model) {
             Loan = loan;
@@ -126,7 +126,7 @@ namespace BioLink.Client.Tools {
         private Loan Loan { get; set; }
     }
 
-    public class UpdateLoanMaterialAction : GenericDatabaseAction<LoanMaterial> {
+    public class UpdateLoanMaterialAction : GenericDatabaseCommand<LoanMaterial> {
         public UpdateLoanMaterialAction(LoanMaterial model) : base(model) { }
 
         protected override void ProcessImpl(User user) {

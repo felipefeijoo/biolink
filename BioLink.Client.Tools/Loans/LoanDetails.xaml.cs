@@ -171,7 +171,7 @@ namespace BioLink.Client.Tools {
 
     }
 
-    public class UpdateLoanAction : GenericDatabaseAction<Loan> {
+    public class UpdateLoanAction : GenericDatabaseCommand<Loan> {
 
         public UpdateLoanAction(Loan model) : base(model) { }
 
@@ -182,7 +182,7 @@ namespace BioLink.Client.Tools {
 
     }
 
-    public class InsertLoanAction : GenericDatabaseAction<Loan> {
+    public class InsertLoanAction : GenericDatabaseCommand<Loan> {
 
         public InsertLoanAction(Loan model) : base(model) { }
 

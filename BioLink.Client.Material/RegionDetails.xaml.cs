@@ -62,7 +62,7 @@ namespace BioLink.Client.Material {
         #endregion
     }
 
-    public class UpdateRegionAction : GenericDatabaseAction<Region> {
+    public class UpdateRegionAction : GenericDatabaseCommand<Region> {
 
         public UpdateRegionAction(Region model)
             : base(model) {

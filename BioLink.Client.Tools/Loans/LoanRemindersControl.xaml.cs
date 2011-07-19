@@ -33,14 +33,14 @@ namespace BioLink.Client.Tools {
             this.Loan = loan;
         }
 
-        public override ViewModelBase AddNewItem(out DatabaseAction addAction) {
+        public override ViewModelBase AddNewItem(out DatabaseCommand addAction) {
             var model = new LoanReminder() { Closed = false };
             addAction = new InsertLoanReminderAction(model, Loan);
             return new LoanReminderViewModel(model);
         }
 
 
-        public override DatabaseAction PrepareDeleteAction(ViewModelBase viewModel) {
+        public override DatabaseCommand PrepareDeleteAction(ViewModelBase viewModel) {
             var rc = viewModel as LoanReminderViewModel;
             if (rc != null) {
                 return new DeleteLoanReminderAction(rc.Model);
@@ -56,7 +56,7 @@ namespace BioLink.Client.Tools {
             }));
         }
 
-        public override DatabaseAction PrepareUpdateAction(ViewModelBase viewModel) {
+        public override DatabaseCommand PrepareUpdateAction(ViewModelBase viewModel) {
             var rc = viewModel as LoanReminderViewModel;
             if (rc != null) {
                 return new UpdateLoanReminderAction(rc.Model);
@@ -71,7 +71,7 @@ namespace BioLink.Client.Tools {
         protected Loan Loan { get; private set; }
     }
 
-    public class InsertLoanReminderAction : GenericDatabaseAction<LoanReminder> {
+    public class InsertLoanReminderAction : GenericDatabaseCommand<LoanReminder> {
 
         public InsertLoanReminderAction(LoanReminder model, Loan loan) : base(model) {
             this.Loan = loan;
@@ -86,7 +86,7 @@ namespace BioLink.Client.Tools {
         protected Loan Loan { get; private set; }
     }
 
-    public class UpdateLoanReminderAction : GenericDatabaseAction<LoanReminder> {
+    public class UpdateLoanReminderAction : GenericDatabaseCommand<LoanReminder> {
 
         public UpdateLoanReminderAction(LoanReminder model) : base(model) { }
 
@@ -96,7 +96,7 @@ namespace BioLink.Client.Tools {
         }
     }
 
-    public class DeleteLoanReminderAction : GenericDatabaseAction<LoanReminder> {
+    public class DeleteLoanReminderAction : GenericDatabaseCommand<LoanReminder> {
 
         public DeleteLoanReminderAction(LoanReminder model) : base(model) { }
 

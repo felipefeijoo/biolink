@@ -9,7 +9,7 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Tools {
 
-    public class UpdateContactAction : GenericDatabaseAction<Contact> {
+    public class UpdateContactAction : GenericDatabaseCommand<Contact> {
 
         public UpdateContactAction(Contact model) : base(model) { }
 
@@ -19,7 +19,7 @@ namespace BioLink.Client.Tools {
         }
     }
 
-    public class DeleteContactAction : GenericDatabaseAction<Contact> {
+    public class DeleteContactAction : GenericDatabaseCommand<Contact> {
 
         public DeleteContactAction(Contact contact) : base(contact) { }
 
@@ -30,7 +30,7 @@ namespace BioLink.Client.Tools {
         
     }
 
-    public class InsertContactAction : GenericDatabaseAction<Contact> {
+    public class InsertContactAction : GenericDatabaseCommand<Contact> {
 
         public InsertContactAction(Contact model) : base(model) { }
 

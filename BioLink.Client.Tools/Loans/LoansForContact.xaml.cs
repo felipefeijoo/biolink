@@ -134,7 +134,7 @@ namespace BioLink.Client.Tools {
 
     }
 
-    public class DeleteLoanAction : GenericDatabaseAction<Loan> {
+    public class DeleteLoanAction : GenericDatabaseCommand<Loan> {
 
         public DeleteLoanAction(Loan model) : base(model) { }
 

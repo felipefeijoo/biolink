@@ -8,7 +8,7 @@ using BioLink.Client.Extensibility;
 
 namespace BioLink.Client.Material {
 
-    public class RenameSiteVisitAction : GenericDatabaseAction<SiteExplorerNode> {
+    public class RenameSiteVisitAction : GenericDatabaseCommand<SiteExplorerNode> {
 
         public RenameSiteVisitAction(SiteExplorerNode model) : base(model) { }
 
@@ -19,7 +19,7 @@ namespace BioLink.Client.Material {
 
     }
 
-    public class DeleteSiteVisitAction : DatabaseAction {
+    public class DeleteSiteVisitAction : DatabaseCommand {
 
         public DeleteSiteVisitAction(int siteVisitID) {
             this.SiteVisitID = siteVisitID;
@@ -48,7 +48,7 @@ namespace BioLink.Client.Material {
         public int TemplateID { get; private set; }
     }
 
-    public class UpdateSiteVisitAction : GenericDatabaseAction<SiteVisit> {
+    public class UpdateSiteVisitAction : GenericDatabaseCommand<SiteVisit> {
         public UpdateSiteVisitAction(SiteVisit model)
             : base(model) {
         }
@@ -65,7 +65,7 @@ namespace BioLink.Client.Material {
 
     }
 
-    public class MergeSiteVisitAction : GenericDatabaseAction<SiteExplorerNode> {
+    public class MergeSiteVisitAction : GenericDatabaseCommand<SiteExplorerNode> {
 
         public MergeSiteVisitAction(SiteExplorerNode source, SiteExplorerNode dest)
             : base(source) {
@@ -80,7 +80,7 @@ namespace BioLink.Client.Material {
         public SiteExplorerNode Dest { get; private set; }
     }
 
-    public class MoveSiteVisitAction : GenericDatabaseAction<SiteExplorerNode> {
+    public class MoveSiteVisitAction : GenericDatabaseCommand<SiteExplorerNode> {
 
         public MoveSiteVisitAction(SiteExplorerNode source, SiteExplorerNode dest)
             : base(source) {
@@ -95,7 +95,7 @@ namespace BioLink.Client.Material {
         public SiteExplorerNode Dest { get; private set; }
     }
 
-    public class InsertSiteVisitTemplateAction : GenericDatabaseAction<SiteExplorerNode> {
+    public class InsertSiteVisitTemplateAction : GenericDatabaseCommand<SiteExplorerNode> {
         public InsertSiteVisitTemplateAction(SiteExplorerNode model)
             : base(model) {
         }
@@ -106,7 +106,7 @@ namespace BioLink.Client.Material {
         }
     }
 
-    public class InsertRDESiteVisitAction : GenericDatabaseAction<RDESiteVisit> {
+    public class InsertRDESiteVisitAction : GenericDatabaseCommand<RDESiteVisit> {
 
         public InsertRDESiteVisitAction(RDESiteVisit model, RDESite owner) : base(model) {
             this.Owner = owner;
@@ -122,7 +122,7 @@ namespace BioLink.Client.Material {
 
     }
 
-    public class UpdateRDESiteVisitAction : GenericDatabaseAction<RDESiteVisit> {
+    public class UpdateRDESiteVisitAction : GenericDatabaseCommand<RDESiteVisit> {
 
         public UpdateRDESiteVisitAction(RDESiteVisit model) : base(model) { }
 

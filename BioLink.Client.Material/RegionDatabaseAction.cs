@@ -7,7 +7,7 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Material {
 
-    public class RenameRegionAction : GenericDatabaseAction<SiteExplorerNode> {
+    public class RenameRegionAction : GenericDatabaseCommand<SiteExplorerNode> {
 
         public RenameRegionAction(SiteExplorerNode model) : base(model) { }
 
@@ -17,7 +17,7 @@ namespace BioLink.Client.Material {
         }
     }
 
-    public class InsertRegionAction : GenericDatabaseAction<SiteExplorerNode> {
+    public class InsertRegionAction : GenericDatabaseCommand<SiteExplorerNode> {
 
         public InsertRegionAction(SiteExplorerNode model, SiteExplorerNodeViewModel viewModel) : base(model) {
             this.ViewModel = viewModel;
@@ -36,7 +36,7 @@ namespace BioLink.Client.Material {
 
     }
 
-    public class DeleteRegionAction : DatabaseAction {
+    public class DeleteRegionAction : DatabaseCommand {
 
         public DeleteRegionAction(int regionID) {
             this.RegionID = regionID;
@@ -50,7 +50,7 @@ namespace BioLink.Client.Material {
         public int RegionID { get; private set; }
     }
 
-    public class MoveRegionAction : GenericDatabaseAction<SiteExplorerNode> {
+    public class MoveRegionAction : GenericDatabaseCommand<SiteExplorerNode> {
 
         public MoveRegionAction(SiteExplorerNode source, SiteExplorerNode dest)
             : base(source) {

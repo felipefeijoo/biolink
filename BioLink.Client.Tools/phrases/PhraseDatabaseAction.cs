@@ -7,7 +7,7 @@ using BioLink.Data;
 
 namespace BioLink.Client.Tools {
 
-    abstract class PhraseDatabaseAction : DatabaseAction {
+    abstract class PhraseDatabaseAction : DatabaseCommand {
 
         protected PhraseDatabaseAction(Phrase phrase) {
             this.Phrase = phrase;
@@ -55,7 +55,7 @@ namespace BioLink.Client.Tools {
 
     }
 
-    class DeletePhraseCategoryAction : DatabaseAction {
+    class DeletePhraseCategoryAction : DatabaseCommand {
 
         public DeletePhraseCategoryAction(PhraseCategory category) {
             this.PhraseCategory = category;

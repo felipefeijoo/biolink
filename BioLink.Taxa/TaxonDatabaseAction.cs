@@ -9,7 +9,7 @@ using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Taxa {
 
-    public abstract class TaxonDatabaseAction : DatabaseAction {
+    public abstract class TaxonDatabaseAction : DatabaseCommand {
     }
 
     public class MoveTaxonDatabaseAction : TaxonDatabaseAction {

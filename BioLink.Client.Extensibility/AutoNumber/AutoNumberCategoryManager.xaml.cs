@@ -102,7 +102,7 @@ namespace BioLink.Client.Extensibility {
 
     }
 
-    public class DeleteAutoNumberAction : GenericDatabaseAction<AutoNumber> {
+    public class DeleteAutoNumberAction : GenericDatabaseCommand<AutoNumber> {
 
         public DeleteAutoNumberAction(AutoNumber model)
             : base(model) {
@@ -114,7 +114,7 @@ namespace BioLink.Client.Extensibility {
         }
     }
 
-    public class InsertAutoNumberAction : GenericDatabaseAction<AutoNumber> {
+    public class InsertAutoNumberAction : GenericDatabaseCommand<AutoNumber> {
 
         public InsertAutoNumberAction(AutoNumber model)
             : base(model) {
@@ -127,7 +127,7 @@ namespace BioLink.Client.Extensibility {
 
     }
 
-    public class UpdateAutoNumberAction : GenericDatabaseAction<AutoNumber> {
+    public class UpdateAutoNumberAction : GenericDatabaseCommand<AutoNumber> {
         public UpdateAutoNumberAction(AutoNumber model)
             : base(model) {
         }

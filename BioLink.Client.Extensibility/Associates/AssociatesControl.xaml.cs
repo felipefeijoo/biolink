@@ -104,7 +104,7 @@ namespace BioLink.Client.Extensibility {
 
         }
 
-        public override ViewModelBase AddNewItem(out DatabaseAction addAction) {
+        public override ViewModelBase AddNewItem(out DatabaseCommand addAction) {
             var model = new Associate();
             model.AssociateID = -1;
             model.FromIntraCatID = Owner.ObjectID.Value;
@@ -116,7 +116,7 @@ namespace BioLink.Client.Extensibility {
             return viewModel;
         }
 
-        public override DatabaseAction PrepareDeleteAction(ViewModelBase viewModel) {
+        public override DatabaseCommand PrepareDeleteAction(ViewModelBase viewModel) {
             var a = viewModel as AssociateViewModel;
             if (a != null) {
                 return new DeleteAssociateAction(a.Model);
@@ -124,7 +124,7 @@ namespace BioLink.Client.Extensibility {
             return null;
         }
 
-        public override DatabaseAction PrepareUpdateAction(ViewModelBase viewModel) {
+        public override DatabaseCommand PrepareUpdateAction(ViewModelBase viewModel) {
             var a = viewModel as AssociateViewModel;
             if (a != null) {
                 return new UpdateAssociateAction(a.Model);

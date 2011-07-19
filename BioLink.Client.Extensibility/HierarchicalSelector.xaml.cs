@@ -460,11 +460,11 @@ namespace BioLink.Client.Extensibility {
 
         SelectionResult CreateSelectionResult(HierarchicalViewModelBase selectedItem);
 
-        DatabaseAction AddNewItem(HierarchicalViewModelBase selectedItem);
+        DatabaseCommand AddNewItem(HierarchicalViewModelBase selectedItem);
 
-        DatabaseAction RenameItem(HierarchicalViewModelBase selectedItem, string newName);
+        DatabaseCommand RenameItem(HierarchicalViewModelBase selectedItem, string newName);
 
-        DatabaseAction DeleteItem(HierarchicalViewModelBase selectedItem);
+        DatabaseCommand DeleteItem(HierarchicalViewModelBase selectedItem);
 
 
         int? GetElementIDForViewModel(HierarchicalViewModelBase item);

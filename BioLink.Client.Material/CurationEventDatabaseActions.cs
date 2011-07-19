@@ -8,7 +8,7 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Material {
 
-    public class InsertCurationEventAction : GenericDatabaseAction<CurationEvent> {
+    public class InsertCurationEventAction : GenericDatabaseCommand<CurationEvent> {
 
         public InsertCurationEventAction(CurationEvent model)
             : base(model) {
@@ -20,7 +20,7 @@ namespace BioLink.Client.Material {
         }
     }
 
-    public class UpdateCurationEventAction : GenericDatabaseAction<CurationEvent> {
+    public class UpdateCurationEventAction : GenericDatabaseCommand<CurationEvent> {
 
         public UpdateCurationEventAction(CurationEvent model)
             : base(model) {
@@ -32,7 +32,7 @@ namespace BioLink.Client.Material {
         }
     }
 
-    public class DeleteCurationEventAction : GenericDatabaseAction<CurationEvent> {
+    public class DeleteCurationEventAction : GenericDatabaseCommand<CurationEvent> {
         public DeleteCurationEventAction(CurationEvent model)
             : base(model) {
         }

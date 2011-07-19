@@ -8,7 +8,7 @@ using BioLink.Data;
 
 namespace BioLink.Client.Tools {
 
-    public class UpdateTaxonRefLinkAction : GenericDatabaseAction<TaxonRefLink> {
+    public class UpdateTaxonRefLinkAction : GenericDatabaseCommand<TaxonRefLink> {
 
         public UpdateTaxonRefLinkAction(TaxonRefLink model)
             : base(model) {
@@ -21,7 +21,7 @@ namespace BioLink.Client.Tools {
 
     }
 
-    public class InsertTaxonRefLinkAction : GenericDatabaseAction<TaxonRefLink> {
+    public class InsertTaxonRefLinkAction : GenericDatabaseCommand<TaxonRefLink> {
 
         public InsertTaxonRefLinkAction(TaxonRefLink model)
             : base(model) {
@@ -44,7 +44,7 @@ namespace BioLink.Client.Tools {
 
     }
 
-    public class DeleteTaxonRefLinkAction : GenericDatabaseAction<TaxonRefLink> {
+    public class DeleteTaxonRefLinkAction : GenericDatabaseCommand<TaxonRefLink> {
         public DeleteTaxonRefLinkAction(TaxonRefLink model)
             : base(model) {
         }

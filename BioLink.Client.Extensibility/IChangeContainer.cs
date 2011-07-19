@@ -10,21 +10,21 @@ namespace BioLink.Client.Extensibility {
 
     public interface IChangeContainer {
 
-        void RegisterPendingChange(DatabaseAction change, object contributer);
+        void RegisterPendingChange(DatabaseCommand change, object contributer);
 
-        bool RegisterUniquePendingChange(DatabaseAction change, object contributer);
+        bool RegisterUniquePendingChange(DatabaseCommand change, object contributer);
 
-        void RegisterPendingChanges(List<DatabaseAction> actions, object contributer);
+        void RegisterPendingChanges(List<DatabaseCommand> actions, object contributer);
 
         void CommitPendingChanges(Action successAction = null);
 
         void ClearPendingChanges();
 
-        void ClearMatchingPendingChanges(Predicate<DatabaseAction> predicate);
+        void ClearMatchingPendingChanges(Predicate<DatabaseCommand> predicate);
 
         bool HasPendingChanges { get; }
 
-        ObservableCollection<DatabaseAction> PendingChanges { get; }
+        ObservableCollection<DatabaseCommand> PendingChanges { get; }
     }
 
     public interface IChangeContainerObserver {

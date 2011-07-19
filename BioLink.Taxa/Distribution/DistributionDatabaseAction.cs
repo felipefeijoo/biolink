@@ -9,7 +9,7 @@ using System.Collections.ObjectModel;
 
 namespace BioLink.Client.Taxa {
 
-    public class UpdateDistQualDatabaseAction : GenericDatabaseAction<Taxon> {
+    public class UpdateDistQualDatabaseAction : GenericDatabaseCommand<Taxon> {
 
         public UpdateDistQualDatabaseAction(Taxon model) : base(model) { }
 
@@ -18,7 +18,7 @@ namespace BioLink.Client.Taxa {
         }
     }
 
-    public class SaveDistributionRegionsAction : GenericDatabaseAction<Taxon> {
+    public class SaveDistributionRegionsAction : GenericDatabaseCommand<Taxon> {
 
         private ObservableCollection<HierarchicalViewModelBase> _regionTree;
 

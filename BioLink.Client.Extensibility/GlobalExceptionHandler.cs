@@ -19,7 +19,7 @@ namespace BioLink.Client.Extensibility {
                     if (!string.IsNullOrEmpty(npex.DeniedMessage)) {
                         txt = npex.DeniedMessage;
                     }
-                    string caption = string.Format("Permission Error [{0} {1}]", npex.RequestedPermission, npex.RequestedMask);
+                    string caption = string.Format("Permission Error [{0} {1}]", npex.PermissionCategory, npex.RequestedMask);
                     MessageBox.Show(txt, caption, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 } else if (ex is System.ArgumentNullException && ex.Message == "Value cannot be null.\r\nParameter name: d") {
                     // ignore this for now... see: http://connect.microsoft.com/VisualStudio/feedback/details/561752/datagrid-crash-when-applying-scaletransform-to-datagridcell

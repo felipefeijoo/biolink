@@ -428,15 +428,15 @@ namespace BioLink.Client.Tools {
             return sets;
         }
 
-        public override DatabaseAction PrepareDeleteAction(ViewModelBase viewModel) {
+        public override DatabaseCommand PrepareDeleteAction(ViewModelBase viewModel) {
             return new DeleteLabelSetAction((viewModel as LabelSetViewModel).Model);
         }
 
-        public override DatabaseAction PrepareUpdateAction(ViewModelBase viewModel) {
+        public override DatabaseCommand PrepareUpdateAction(ViewModelBase viewModel) {
             return new UpdateLabelSetAction((viewModel as LabelSetViewModel).Model);
         }
 
-        public override ViewModelBase AddNewItem(out DatabaseAction addAction) {
+        public override ViewModelBase AddNewItem(out DatabaseCommand addAction) {
             var model = new LabelSet { Name = "New set" };
             addAction = new InsertLabelSetAction(model);
             return new LabelSetViewModel(model);
@@ -600,7 +600,7 @@ namespace BioLink.Client.Tools {
 
     }
 
-    public class InsertLabelSetItemAction : GenericDatabaseAction<LabelSetItem> {
+    public class InsertLabelSetItemAction : GenericDatabaseCommand<LabelSetItem> {
 
         public InsertLabelSetItemAction(LabelSetItem model) : base(model) { }
 
@@ -610,7 +610,7 @@ namespace BioLink.Client.Tools {
         }
     }
 
-    public class UpdateLabelSetItemAction : GenericDatabaseAction<LabelSetItem> {
+    public class UpdateLabelSetItemAction : GenericDatabaseCommand<LabelSetItem> {
 
         public UpdateLabelSetItemAction(LabelSetItem model) : base(model) { }
 
@@ -620,7 +620,7 @@ namespace BioLink.Client.Tools {
         }
     }
 
-    public class DeleteLabelSetItemAction : GenericDatabaseAction<LabelSetItem> {
+    public class DeleteLabelSetItemAction : GenericDatabaseCommand<LabelSetItem> {
 
         public DeleteLabelSetItemAction(LabelSetItem model) : base(model) { }
 
@@ -630,7 +630,7 @@ namespace BioLink.Client.Tools {
         }
     }
 
-    public class DeleteLabelSetAction: GenericDatabaseAction<LabelSet> {
+    public class DeleteLabelSetAction: GenericDatabaseCommand<LabelSet> {
 
         public DeleteLabelSetAction(LabelSet model) : base(model) { }
 
@@ -640,7 +640,7 @@ namespace BioLink.Client.Tools {
         }
     }
 
-    public class InsertLabelSetAction : GenericDatabaseAction<LabelSet> {
+    public class InsertLabelSetAction : GenericDatabaseCommand<LabelSet> {
 
         public InsertLabelSetAction(LabelSet model) : base(model) { }
 
@@ -650,7 +650,7 @@ namespace BioLink.Client.Tools {
         }
     }
 
-    public class UpdateLabelSetAction : GenericDatabaseAction<LabelSet> {
+    public class UpdateLabelSetAction : GenericDatabaseCommand<LabelSet> {
         public UpdateLabelSetAction(LabelSet model) : base(model) { }
 
         protected override void ProcessImpl(User user) {

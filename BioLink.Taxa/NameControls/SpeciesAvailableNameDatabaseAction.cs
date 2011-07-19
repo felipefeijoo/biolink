@@ -9,7 +9,7 @@ using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Taxa {
 
-    public class UpdateSanDatabaseAction : GenericDatabaseAction<SpeciesAvailableName> {
+    public class UpdateSanDatabaseAction : GenericDatabaseCommand<SpeciesAvailableName> {
 
         public UpdateSanDatabaseAction(SpeciesAvailableName name)
             : base(name) {
@@ -21,7 +21,7 @@ namespace BioLink.Client.Taxa {
         }
     }
 
-    public class UpdateSANTypeDataAction : GenericDatabaseAction<SANTypeData> {
+    public class UpdateSANTypeDataAction : GenericDatabaseCommand<SANTypeData> {
 
         public UpdateSANTypeDataAction(SANTypeData model)
             : base(model) {
@@ -34,7 +34,7 @@ namespace BioLink.Client.Taxa {
         }
     }
 
-    public class InsertSANTypeDataAction : GenericDatabaseAction<SANTypeData> {
+    public class InsertSANTypeDataAction : GenericDatabaseCommand<SANTypeData> {
 
         public InsertSANTypeDataAction(SANTypeData model)
             : base(model) {
@@ -47,7 +47,7 @@ namespace BioLink.Client.Taxa {
         }
     }
 
-    public class DeleteSANTypeDataAction : GenericDatabaseAction<SANTypeData> {
+    public class DeleteSANTypeDataAction : GenericDatabaseCommand<SANTypeData> {
 
         public DeleteSANTypeDataAction(SANTypeData model)
             : base(model) {

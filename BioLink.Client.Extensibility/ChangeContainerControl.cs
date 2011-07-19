@@ -41,15 +41,15 @@ namespace BioLink.Client.Extensibility {
             get { return _impl.HasPendingChanges; }
         }
 
-        public void RegisterPendingChange(DatabaseAction action, object contributer) {
+        public void RegisterPendingChange(DatabaseCommand action, object contributer) {
             _impl.RegisterPendingChange(action, contributer);
         }
 
-        public bool RegisterUniquePendingChange(DatabaseAction action, object contributer) {
+        public bool RegisterUniquePendingChange(DatabaseCommand action, object contributer) {
             return _impl.RegisterUniquePendingChange(action, contributer);
         }
 
-        public void RegisterPendingChanges(List<DatabaseAction> actions, object contributer) {
+        public void RegisterPendingChanges(List<DatabaseCommand> actions, object contributer) {
             _impl.RegisterPendingChanges(actions, contributer);
         }
 
@@ -57,7 +57,7 @@ namespace BioLink.Client.Extensibility {
             _impl.ClearPendingChanges();
         }
 
-        public void ClearMatchingPendingChanges(Predicate<DatabaseAction> predicate) {
+        public void ClearMatchingPendingChanges(Predicate<DatabaseCommand> predicate) {
             _impl.ClearMatchingPendingChanges(predicate);
         }
 
@@ -66,7 +66,7 @@ namespace BioLink.Client.Extensibility {
             _impl.CommitPendingChanges(successAction);
         }
 
-        public ObservableCollection<DatabaseAction> PendingChanges {
+        public ObservableCollection<DatabaseCommand> PendingChanges {
             get { return _impl.PendingChanges; }
         }
 

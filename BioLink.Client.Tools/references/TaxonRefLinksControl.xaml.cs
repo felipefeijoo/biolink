@@ -37,7 +37,7 @@ namespace BioLink.Client.Tools {
             this.ReferenceID = referenceID;
         }
 
-        public override ViewModelBase AddNewItem(out DatabaseAction addAction) {
+        public override ViewModelBase AddNewItem(out DatabaseCommand addAction) {
             var model = new TaxonRefLink();
             model.RefLinkID = -1;
             model.RefID = ReferenceID;
@@ -46,7 +46,7 @@ namespace BioLink.Client.Tools {
             return new TaxonRefLinkViewModel(model);
         }
 
-        public override DatabaseAction PrepareDeleteAction(ViewModelBase viewModel) {
+        public override DatabaseCommand PrepareDeleteAction(ViewModelBase viewModel) {
             var link = viewModel as TaxonRefLinkViewModel;
             if (link != null) {
                 return new DeleteTaxonRefLinkAction(link.Model);
@@ -62,7 +62,7 @@ namespace BioLink.Client.Tools {
             });
         }
 
-        public override DatabaseAction PrepareUpdateAction(ViewModelBase viewModel) {
+        public override DatabaseCommand PrepareUpdateAction(ViewModelBase viewModel) {
             var link = viewModel as TaxonRefLinkViewModel;
             if (link != null) {
                 return new UpdateTaxonRefLinkAction(link.Model);

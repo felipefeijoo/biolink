@@ -404,7 +404,7 @@ namespace BioLink.Client.Tools {
 
     }
 
-    public class DeleteMultimedia : DatabaseAction {
+    public class DeleteMultimedia : DatabaseCommand {
 
         public DeleteMultimedia(int multimediaID) {
             this.MultimediaID = multimediaID;

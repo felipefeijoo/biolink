@@ -131,7 +131,7 @@ namespace BioLink.Client.Tools {
 
     }
 
-    public class InsertBiolinkUserAction : GenericDatabaseAction<BiolinkUser> {
+    public class InsertBiolinkUserAction : GenericDatabaseCommand<BiolinkUser> {
 
         public InsertBiolinkUserAction(BiolinkUser model) : base(model) { }
 
@@ -141,7 +141,7 @@ namespace BioLink.Client.Tools {
         }
     }
 
-    public class UpdateBiolinkUserAction : GenericDatabaseAction<BiolinkUser> {
+    public class UpdateBiolinkUserAction : GenericDatabaseCommand<BiolinkUser> {
 
         public UpdateBiolinkUserAction(BiolinkUser model) : base(model) { }
 
@@ -151,7 +151,7 @@ namespace BioLink.Client.Tools {
         }
     }
 
-    public class DeleteBiolinkUser : GenericDatabaseAction<BiolinkUser> {
+    public class DeleteBiolinkUser : GenericDatabaseCommand<BiolinkUser> {
 
         public DeleteBiolinkUser(BiolinkUser model) : base(model) { }
 

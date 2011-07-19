@@ -7,7 +7,7 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Taxa {
 
-    public class UpdateCommonNameAction : GenericDatabaseAction<CommonName> {
+    public class UpdateCommonNameAction : GenericDatabaseCommand<CommonName> {
 
         public UpdateCommonNameAction(CommonName model)
             : base(model) {
@@ -20,7 +20,7 @@ namespace BioLink.Client.Taxa {
 
     }
 
-    public class InsertCommonNameAction : GenericDatabaseAction<CommonName> {
+    public class InsertCommonNameAction : GenericDatabaseCommand<CommonName> {
 
         public InsertCommonNameAction(CommonName model)
             : base(model) {
@@ -32,7 +32,7 @@ namespace BioLink.Client.Taxa {
         }
     }
 
-    public class DeleteCommonNameAction : GenericDatabaseAction<CommonName> {
+    public class DeleteCommonNameAction : GenericDatabaseCommand<CommonName> {
 
         public DeleteCommonNameAction(CommonName model)
             : base(model) {

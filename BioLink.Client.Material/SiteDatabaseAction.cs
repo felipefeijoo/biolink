@@ -8,7 +8,7 @@ using BioLink.Client.Extensibility;
 
 namespace BioLink.Client.Material {
 
-    public class RenameSiteAction : GenericDatabaseAction<SiteExplorerNode> {
+    public class RenameSiteAction : GenericDatabaseCommand<SiteExplorerNode> {
 
         public RenameSiteAction(SiteExplorerNode model) : base(model) { }
 
@@ -18,7 +18,7 @@ namespace BioLink.Client.Material {
         }
     }
 
-    public class UpdateSiteAction : GenericDatabaseAction<Site> {
+    public class UpdateSiteAction : GenericDatabaseCommand<Site> {
 
         public UpdateSiteAction(Site model)
             : base(model) {
@@ -46,7 +46,7 @@ namespace BioLink.Client.Material {
         public int TemplateID { get; private set; }
     }
 
-    public class InsertSiteTemplateAction : GenericDatabaseAction<SiteExplorerNode> {
+    public class InsertSiteTemplateAction : GenericDatabaseCommand<SiteExplorerNode> {
         public InsertSiteTemplateAction(SiteExplorerNode model)
             : base(model) {
         }
@@ -57,7 +57,7 @@ namespace BioLink.Client.Material {
         }
     }
 
-    public class DeleteSiteAction : DatabaseAction {
+    public class DeleteSiteAction : DatabaseCommand {
         public DeleteSiteAction(int siteID) {
             this.SiteID = siteID;            
         }
@@ -72,7 +72,7 @@ namespace BioLink.Client.Material {
         
     }
 
-    public class MergeSiteAction : GenericDatabaseAction<SiteExplorerNode> {
+    public class MergeSiteAction : GenericDatabaseCommand<SiteExplorerNode> {
 
         public MergeSiteAction(SiteExplorerNode model, SiteExplorerNode dest)
             : base(model) {
@@ -90,7 +90,7 @@ namespace BioLink.Client.Material {
     }
 
 
-    public class MoveSiteAction : GenericDatabaseAction<SiteExplorerNode> {
+    public class MoveSiteAction : GenericDatabaseCommand<SiteExplorerNode> {
 
         public MoveSiteAction(SiteExplorerNode model, SiteExplorerNode dest)
             : base(model) {
@@ -116,7 +116,7 @@ namespace BioLink.Client.Material {
        
     }
 
-    public class InsertRDESiteAction : GenericDatabaseAction<RDESite> {
+    public class InsertRDESiteAction : GenericDatabaseCommand<RDESite> {
 
         public InsertRDESiteAction(RDESite model) : base(model) { }
 
@@ -127,7 +127,7 @@ namespace BioLink.Client.Material {
 
     }
 
-    public class UpdateRDESiteAction : GenericDatabaseAction<RDESite> {
+    public class UpdateRDESiteAction : GenericDatabaseCommand<RDESite> {
 
         public UpdateRDESiteAction(RDESite model) : base(model) { }
 

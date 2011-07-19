@@ -8,7 +8,7 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Tools {
 
-    public class InsertJournalAction : GenericDatabaseAction<Journal> {
+    public class InsertJournalAction : GenericDatabaseCommand<Journal> {
 
         public InsertJournalAction(Journal model)
             : base(model) {
@@ -20,7 +20,7 @@ namespace BioLink.Client.Tools {
         }
     }
 
-    public class UpdateJournalAction : GenericDatabaseAction<Journal> {
+    public class UpdateJournalAction : GenericDatabaseCommand<Journal> {
 
         public UpdateJournalAction(Journal model)
             : base(model) {
@@ -32,7 +32,7 @@ namespace BioLink.Client.Tools {
         }
     }
 
-    public class DeleteJournalAction : GenericDatabaseAction<Journal> {
+    public class DeleteJournalAction : GenericDatabaseCommand<Journal> {
 
         public DeleteJournalAction(Journal model)
             : base(model) {

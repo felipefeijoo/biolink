@@ -8,7 +8,7 @@ using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Extensibility {
 
-    public class DeleteNoteAction : GenericDatabaseAction<Note> {
+    public class DeleteNoteAction : GenericDatabaseCommand<Note> {
     
         public DeleteNoteAction(Note model, ViewModelBase owner) : base(model) {
             this.Owner = owner;
@@ -23,7 +23,7 @@ namespace BioLink.Client.Extensibility {
         protected ViewModelBase Owner { get; set; }
     }
 
-    public class InsertNoteAction : GenericDatabaseAction<Note> {
+    public class InsertNoteAction : GenericDatabaseCommand<Note> {
 
         public InsertNoteAction(Note model, ViewModelBase owner) : base(model) {
             this.Owner = owner;
@@ -39,7 +39,7 @@ namespace BioLink.Client.Extensibility {
 
     }
 
-    public class UpdateNoteAction : GenericDatabaseAction<Note> {
+    public class UpdateNoteAction : GenericDatabaseCommand<Note> {
 
         public UpdateNoteAction(Note model, ViewModelBase owner) : base(model) {
             this.Owner = owner;
