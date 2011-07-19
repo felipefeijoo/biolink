@@ -90,11 +90,11 @@ namespace BioLink.Client.Taxa {
             return null;
         }
 
-        public Data.DatabaseAction AddNewItem(HierarchicalViewModelBase selectedItem) {
+        public Data.DatabaseCommand AddNewItem(HierarchicalViewModelBase selectedItem) {
             throw new NotImplementedException();
         }
 
-        public Data.DatabaseAction RenameItem(HierarchicalViewModelBase selectedItem, string newName) {
+        public Data.DatabaseCommand RenameItem(HierarchicalViewModelBase selectedItem, string newName) {
             var taxon = selectedItem as TaxonViewModel;
             if (taxon != null) {
                 TaxonName name = TaxonNameParser.ParseName(taxon, newName);
@@ -111,7 +111,7 @@ namespace BioLink.Client.Taxa {
             return null;
         }
 
-        public Data.DatabaseAction DeleteItem(HierarchicalViewModelBase selectedItem) {
+        public Data.DatabaseCommand DeleteItem(HierarchicalViewModelBase selectedItem) {
             throw new NotImplementedException();
         }
 

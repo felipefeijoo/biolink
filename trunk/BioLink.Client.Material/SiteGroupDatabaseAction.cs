@@ -8,7 +8,7 @@ using BioLink.Client.Extensibility;
 
 namespace BioLink.Client.Material {
 
-    public class RenameSiteGroupAction : GenericDatabaseAction<SiteExplorerNode> {
+    public class RenameSiteGroupAction : GenericDatabaseCommand<SiteExplorerNode> {
 
         public RenameSiteGroupAction(SiteExplorerNode model) : base(model) { }
 
@@ -19,7 +19,7 @@ namespace BioLink.Client.Material {
 
     }
 
-    public abstract class AbstractSiteExplorerAction : GenericDatabaseAction<SiteExplorerNode> {
+    public abstract class AbstractSiteExplorerAction : GenericDatabaseCommand<SiteExplorerNode> {
 
         public AbstractSiteExplorerAction(SiteExplorerNode model, SiteExplorerNodeViewModel viewModel) : base(model) {
             this.ViewModel = viewModel;
@@ -79,7 +79,7 @@ namespace BioLink.Client.Material {
 
     }
 
-    public class DeleteSiteGroupAction : DatabaseAction {
+    public class DeleteSiteGroupAction : DatabaseCommand {
 
         public DeleteSiteGroupAction(int siteGroupID) {
             this.SiteGroupID = siteGroupID;
@@ -93,7 +93,7 @@ namespace BioLink.Client.Material {
         public int SiteGroupID { get; private set; }
     }
 
-    public class MergeSiteGroupAction : GenericDatabaseAction<SiteExplorerNode> {
+    public class MergeSiteGroupAction : GenericDatabaseCommand<SiteExplorerNode> {
 
         public MergeSiteGroupAction(SiteExplorerNode source, SiteExplorerNode dest) 
             : base(source) {
@@ -108,7 +108,7 @@ namespace BioLink.Client.Material {
         public SiteExplorerNode Dest { get; private set; }
     }
 
-    public class MoveSiteGroupAction : GenericDatabaseAction<SiteExplorerNode> {
+    public class MoveSiteGroupAction : GenericDatabaseCommand<SiteExplorerNode> {
 
         public MoveSiteGroupAction(SiteExplorerNode source, SiteExplorerNode newParent)
             : base(source) {

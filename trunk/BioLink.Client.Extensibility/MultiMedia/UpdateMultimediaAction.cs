@@ -4,7 +4,7 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Extensibility {
 
-    public class UpdateMultimediaAction : GenericDatabaseAction<Multimedia> {
+    public class UpdateMultimediaAction : GenericDatabaseCommand<Multimedia> {
 
         public UpdateMultimediaAction(Multimedia model) : base(model) { }
 
@@ -14,7 +14,7 @@ namespace BioLink.Client.Extensibility {
         }
     }
 
-    public class DeleteMultimediaLinkAction : GenericDatabaseAction<MultimediaLink> {
+    public class DeleteMultimediaLinkAction : GenericDatabaseCommand<MultimediaLink> {
 
         public DeleteMultimediaLinkAction(MultimediaLink model) : base(model) { }
 
@@ -25,7 +25,7 @@ namespace BioLink.Client.Extensibility {
 
     }
 
-    public class InsertMultimediaAction : GenericDatabaseAction<MultimediaLink> {
+    public class InsertMultimediaAction : GenericDatabaseCommand<MultimediaLink> {
 
         public InsertMultimediaAction(MultimediaLink model, string filename) : base(model) {
             this.Filename = filename;
@@ -41,7 +41,7 @@ namespace BioLink.Client.Extensibility {
         public string Filename { get; private set; }        
     }
 
-    public class InsertMultimediaLinkAction : GenericDatabaseAction<MultimediaLink> {
+    public class InsertMultimediaLinkAction : GenericDatabaseCommand<MultimediaLink> {
 
         public InsertMultimediaLinkAction(MultimediaLink model, TraitCategoryType category, ViewModelBase owner) : base(model) {
             this.Category = category;
@@ -60,7 +60,7 @@ namespace BioLink.Client.Extensibility {
         public ViewModelBase Owner{ get; private set; }
     }
 
-    public class UpdateMultimediaLinkAction : GenericDatabaseAction<MultimediaLink> {
+    public class UpdateMultimediaLinkAction : GenericDatabaseCommand<MultimediaLink> {
 
         public UpdateMultimediaLinkAction(MultimediaLink model, TraitCategoryType category)
             : base(model) {
@@ -74,7 +74,7 @@ namespace BioLink.Client.Extensibility {
         public TraitCategoryType TraitCategory { get; private set; }
     }
 
-    public class UpdateMultimediaBytesAction : GenericDatabaseAction<MultimediaLink> {
+    public class UpdateMultimediaBytesAction : GenericDatabaseCommand<MultimediaLink> {
 
         public UpdateMultimediaBytesAction(MultimediaLink model, string filename)
             : base(model) {

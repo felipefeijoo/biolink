@@ -35,22 +35,22 @@ namespace BioLink.Client.Tools {
 
             ReloadModel();
 
-            grpUsers.IsEnabled = User.HasPermission(PermissionMask.USERMANAGER_USER, PERMISSION_MASK.READ);
-            grpUsers.Header = "Users " + User.MaskStr(user.GetPermissionMask(PermissionMask.USERMANAGER_USER), user.Username);
+            grpUsers.IsEnabled = User.HasPermission(PermissionCategory.USERMANAGER_USER, PERMISSION_MASK.READ);
+            grpUsers.Header = "Users " + User.MaskStr(user.GetPermissionMask(PermissionCategory.USERMANAGER_USER), user.Username);
     
-            grpGroups.IsEnabled = User.HasPermission(PermissionMask.USERMANAGER_GROUP, PERMISSION_MASK.READ);
-            grpGroups.Header = "Groups " + User.MaskStr(user.GetPermissionMask(PermissionMask.USERMANAGER_GROUP), user.Username);
+            grpGroups.IsEnabled = User.HasPermission(PermissionCategory.USERMANAGER_GROUP, PERMISSION_MASK.READ);
+            grpGroups.Header = "Groups " + User.MaskStr(user.GetPermissionMask(PermissionCategory.USERMANAGER_GROUP), user.Username);
     
-            btnDelete.IsEnabled = User.HasPermission(PermissionMask.USERMANAGER_USER, PERMISSION_MASK.DELETE);
+            btnDelete.IsEnabled = User.HasPermission(PermissionCategory.USERMANAGER_USER, PERMISSION_MASK.DELETE);
 
-            btnNewUser.IsEnabled = User.HasPermission(PermissionMask.USERMANAGER_USER, PERMISSION_MASK.INSERT);
-            btnProperties.IsEnabled = User.HasPermission(PermissionMask.USERMANAGER_USER, PERMISSION_MASK.READ);
+            btnNewUser.IsEnabled = User.HasPermission(PermissionCategory.USERMANAGER_USER, PERMISSION_MASK.INSERT);
+            btnProperties.IsEnabled = User.HasPermission(PermissionCategory.USERMANAGER_USER, PERMISSION_MASK.READ);
     
-            btnCopy.IsEnabled = User.HasPermission(PermissionMask.USERMANAGER_GROUP, PERMISSION_MASK.INSERT);
-            btnDeleteGroup.IsEnabled = User.HasPermission( PermissionMask.USERMANAGER_GROUP, PERMISSION_MASK.DELETE);
-            btnPermissions.IsEnabled = User.HasPermission(PermissionMask.USERMANAGER_GROUP, PERMISSION_MASK.READ);
-            btnNewGroup.IsEnabled = User.HasPermission(PermissionMask.USERMANAGER_GROUP, PERMISSION_MASK.INSERT);
-            btnRename.IsEnabled = User.HasPermission(PermissionMask.USERMANAGER_GROUP, PERMISSION_MASK.UPDATE);
+            btnCopy.IsEnabled = User.HasPermission(PermissionCategory.USERMANAGER_GROUP, PERMISSION_MASK.INSERT);
+            btnDeleteGroup.IsEnabled = User.HasPermission( PermissionCategory.USERMANAGER_GROUP, PERMISSION_MASK.DELETE);
+            btnPermissions.IsEnabled = User.HasPermission(PermissionCategory.USERMANAGER_GROUP, PERMISSION_MASK.READ);
+            btnNewGroup.IsEnabled = User.HasPermission(PermissionCategory.USERMANAGER_GROUP, PERMISSION_MASK.INSERT);
+            btnRename.IsEnabled = User.HasPermission(PermissionCategory.USERMANAGER_GROUP, PERMISSION_MASK.UPDATE);
 
             tvwGroups.SelectedItemChanged += new RoutedPropertyChangedEventHandler<object>(tvwGroups_SelectedItemChanged);
             tvwGroups.MouseDoubleClick += new MouseButtonEventHandler(tvwGroups_MouseDoubleClick);
@@ -119,7 +119,7 @@ namespace BioLink.Client.Tools {
 
                     var permGroupNodes = new Dictionary<string, PermissionGroupViewModel>();
 
-                    foreach (PermissionMask perm in Enum.GetValues(typeof(PermissionMask))) {
+                    foreach (PermissionCategory perm in Enum.GetValues(typeof(PermissionCategory))) {
                         String desc = PermissionGroups.GetDescriptionForPermission(perm);
                         PermissionGroupViewModel permGroupNode = null;
                         if (!permGroupNodes.ContainsKey(desc)) {
@@ -348,7 +348,7 @@ namespace BioLink.Client.Tools {
 
         private int _mask;
 
-        public PermissionViewModel(int groupID, PermissionMask permType, int mask) {
+        public PermissionViewModel(int groupID, PermissionCategory permType, int mask) {
             this.GroupID = groupID;
             this.Permission = permType;
             _mask = mask;
@@ -380,7 +380,7 @@ namespace BioLink.Client.Tools {
             get { return User.MaskStr(Mask, null); }
         }
         
-        public PermissionMask Permission { get; set; }
+        public PermissionCategory Permission { get; set; }
 
         public int Mask {
             get { return _mask; }

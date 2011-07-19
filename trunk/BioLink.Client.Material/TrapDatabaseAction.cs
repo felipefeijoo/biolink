@@ -8,7 +8,7 @@ using BioLink.Client.Extensibility;
 
 namespace BioLink.Client.Material {
 
-    public class RenameTrapAction : GenericDatabaseAction<SiteExplorerNode> {
+    public class RenameTrapAction : GenericDatabaseCommand<SiteExplorerNode> {
 
         public RenameTrapAction(SiteExplorerNode model) : base(model) { }
 
@@ -19,7 +19,7 @@ namespace BioLink.Client.Material {
 
     }
 
-    public class DeleteTrapAction : DatabaseAction {
+    public class DeleteTrapAction : DatabaseCommand {
 
         public DeleteTrapAction(int trapId) {
             this.TrapID = trapId;
@@ -44,7 +44,7 @@ namespace BioLink.Client.Material {
         }
     }
 
-    public class UpdateTrapAction : GenericDatabaseAction<Trap> {
+    public class UpdateTrapAction : GenericDatabaseCommand<Trap> {
 
         public UpdateTrapAction(Trap trap)
             : base(trap) {
@@ -56,7 +56,7 @@ namespace BioLink.Client.Material {
         }
     }
 
-    public class MergeTrapAction : GenericDatabaseAction<SiteExplorerNode> {
+    public class MergeTrapAction : GenericDatabaseCommand<SiteExplorerNode> {
 
         public MergeTrapAction(SiteExplorerNode source, SiteExplorerNode dest)
             : base(source) {
@@ -71,7 +71,7 @@ namespace BioLink.Client.Material {
         public SiteExplorerNode Dest { get; private set; }
     }
 
-    public class MoveTrapAction : GenericDatabaseAction<SiteExplorerNode> {
+    public class MoveTrapAction : GenericDatabaseCommand<SiteExplorerNode> {
 
         public MoveTrapAction(SiteExplorerNode source, SiteExplorerNode dest)
             : base(source) {

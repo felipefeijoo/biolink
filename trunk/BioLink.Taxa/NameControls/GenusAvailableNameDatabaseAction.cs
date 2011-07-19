@@ -7,7 +7,7 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Taxa {
 
-    public class UpdateGenusAvailableNameAction : GenericDatabaseAction<GenusAvailableName> {
+    public class UpdateGenusAvailableNameAction : GenericDatabaseCommand<GenusAvailableName> {
 
         public UpdateGenusAvailableNameAction(GenusAvailableName model) : base(model) { }
 
@@ -17,7 +17,7 @@ namespace BioLink.Client.Taxa {
         }
     }
 
-    public class DeleteGANIncludedSpeciesAction : GenericDatabaseAction<GANIncludedSpecies> {
+    public class DeleteGANIncludedSpeciesAction : GenericDatabaseCommand<GANIncludedSpecies> {
 
         public DeleteGANIncludedSpeciesAction(GANIncludedSpecies model) 
             : base(model) {
@@ -29,7 +29,7 @@ namespace BioLink.Client.Taxa {
         }
     }
 
-    public class InsertGANIncludedSpeciesAction : GenericDatabaseAction<GANIncludedSpecies> {
+    public class InsertGANIncludedSpeciesAction : GenericDatabaseCommand<GANIncludedSpecies> {
 
         public InsertGANIncludedSpeciesAction(GANIncludedSpecies model)
             : base(model) {
@@ -42,7 +42,7 @@ namespace BioLink.Client.Taxa {
 
     }
 
-    public class UpdateGANIncludedSpeciesAction : GenericDatabaseAction<GANIncludedSpecies> {
+    public class UpdateGANIncludedSpeciesAction : GenericDatabaseCommand<GANIncludedSpecies> {
 
         public UpdateGANIncludedSpeciesAction(GANIncludedSpecies model)
             : base(model) {

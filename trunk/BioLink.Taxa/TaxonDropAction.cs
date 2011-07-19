@@ -16,11 +16,11 @@ namespace BioLink.Client.Taxa {
             _context = context;
         }
 
-        public List<DatabaseAction> ProcessUI() {
+        public List<DatabaseCommand> ProcessUI() {
             return ProcessImpl();
         }
 
-        protected abstract List<DatabaseAction> ProcessImpl();
+        protected abstract List<DatabaseCommand> ProcessImpl();
 
         public TaxonDropContext Context {
             get { return _context; }
@@ -45,8 +45,8 @@ namespace BioLink.Client.Taxa {
             Move(Source, Target);
         }
 
-        protected List<DatabaseAction> Actions(params TaxonDatabaseAction[] actions) {
-            return new List<DatabaseAction>(actions);
+        protected List<DatabaseCommand> Actions(params TaxonDatabaseAction[] actions) {
+            return new List<DatabaseCommand>(actions);
         }
 
     }
@@ -56,7 +56,7 @@ namespace BioLink.Client.Taxa {
             : base(context) {
         }
 
-        protected override List<DatabaseAction> ProcessImpl() {
+        protected override List<DatabaseCommand> ProcessImpl() {
             MoveSourceToTarget();
             return Actions(new MoveTaxonDatabaseAction(Context.Source, Context.Target));            
         }
@@ -72,9 +72,9 @@ namespace BioLink.Client.Taxa {
 
         public TaxonRank ConvertRank { get; private set; }
 
-        protected override List<DatabaseAction> ProcessImpl() {
+        protected override List<DatabaseCommand> ProcessImpl() {
 
-            var dbActions = new List<DatabaseAction>();
+            var dbActions = new List<DatabaseCommand>();
             // Validate the convert...
             ValidateConversion();
 
@@ -127,11 +127,11 @@ namespace BioLink.Client.Taxa {
                 _createNewIdRecord = createNewIdRecord;
         }
 
-        protected override List<DatabaseAction> ProcessImpl() {
+        protected override List<DatabaseCommand> ProcessImpl() {
 
             // Source.Parent.Children.Remove(Source);
             Source.IsDeleted = true;
-            var actions = new List<DatabaseAction>();
+            var actions = new List<DatabaseCommand>();
             List<TaxonViewModel> movelist = new List<TaxonViewModel>();
             // Need to get the children in a separate list to avoid concurrent collection modification errors
             foreach (HierarchicalViewModelBase m in Source.Children) {

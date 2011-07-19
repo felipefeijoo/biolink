@@ -8,7 +8,7 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Tools {
 
-    public class UpdateReferenceAction : GenericDatabaseAction<Reference> {
+    public class UpdateReferenceAction : GenericDatabaseCommand<Reference> {
 
         public UpdateReferenceAction(Reference model)
             : base(model) {
@@ -20,7 +20,7 @@ namespace BioLink.Client.Tools {
         }
     }
 
-    public class InsertReferenceAction : GenericDatabaseAction<Reference> {
+    public class InsertReferenceAction : GenericDatabaseCommand<Reference> {
 
         public InsertReferenceAction(Reference model)
             : base(model) {
@@ -32,7 +32,7 @@ namespace BioLink.Client.Tools {
         }
     }
 
-    public class DeleteReferenceAction : DatabaseAction {
+    public class DeleteReferenceAction : DatabaseCommand {
 
         public DeleteReferenceAction(int refID) {
             this.RefID = refID;

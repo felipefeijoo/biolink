@@ -42,15 +42,15 @@ namespace BioLink.Client.Extensibility {
             get { return _impl.HasPendingChanges; }
         }
 
-        public void RegisterPendingChange(DatabaseAction action, object contributer) {
+        public void RegisterPendingChange(DatabaseCommand action, object contributer) {
             _impl.RegisterPendingChange(action, contributer);
         }
 
-        public bool RegisterUniquePendingChange(DatabaseAction action, object contributer) {
+        public bool RegisterUniquePendingChange(DatabaseCommand action, object contributer) {
             return _impl.RegisterUniquePendingChange(action, contributer);
         }
 
-        public void RegisterPendingChanges(List<DatabaseAction> actions, object contributer) {
+        public void RegisterPendingChanges(List<DatabaseCommand> actions, object contributer) {
             _impl.RegisterPendingChanges(actions, contributer);
         }
 
@@ -58,7 +58,7 @@ namespace BioLink.Client.Extensibility {
             _impl.ClearPendingChanges();
         }
 
-        public void ClearMatchingPendingChanges(Predicate<DatabaseAction> predicate) {
+        public void ClearMatchingPendingChanges(Predicate<DatabaseCommand> predicate) {
             _impl.ClearMatchingPendingChanges(predicate);
         }
 
@@ -67,7 +67,7 @@ namespace BioLink.Client.Extensibility {
             _impl.CommitPendingChanges(successAction);
         }
 
-        public ObservableCollection<DatabaseAction> PendingChanges {
+        public ObservableCollection<DatabaseCommand> PendingChanges {
             get { return _impl.PendingChanges; }
         }
 
@@ -89,7 +89,7 @@ namespace BioLink.Client.Extensibility {
 
     public class ChangeContainerImpl : IChangeContainer {
 
-        private ObservableCollection<DatabaseAction> _pendingChanges = new ObservableCollection<DatabaseAction>();
+        private ObservableCollection<DatabaseCommand> _pendingChanges = new ObservableCollection<DatabaseCommand>();
 
         private List<IChangeContainerObserver> _observers = new List<IChangeContainerObserver>();
 
@@ -101,7 +101,7 @@ namespace BioLink.Client.Extensibility {
             get { return _pendingChanges != null && _pendingChanges.Count > 0; }
         }
 
-        public void RegisterPendingChange(DatabaseAction action, object contributer) {
+        public void RegisterPendingChange(DatabaseCommand action, object contributer) {
             if (action != null) {
                 _pendingChanges.Add(action);
                 if (contributer is IChangeContainerObserver && !_observers.Contains(contributer)) {
@@ -113,8 +113,8 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        public bool RegisterUniquePendingChange(DatabaseAction action, object contributer) {
-            foreach (DatabaseAction existingaction in _pendingChanges) {
+        public bool RegisterUniquePendingChange(DatabaseCommand action, object contributer) {
+            foreach (DatabaseCommand existingaction in _pendingChanges) {
                 if (existingaction.Equals(action)) {
                     return false;
                 }
@@ -123,8 +123,8 @@ namespace BioLink.Client.Extensibility {
             return true;
         }
 
-        public void RegisterPendingChanges(List<DatabaseAction> actions, object contributer) {
-            foreach (DatabaseAction action in actions) {
+        public void RegisterPendingChanges(List<DatabaseCommand> actions, object contributer) {
+            foreach (DatabaseCommand action in actions) {
                 RegisterPendingChange(action, contributer);
             }
         }
@@ -133,8 +133,8 @@ namespace BioLink.Client.Extensibility {
             _pendingChanges.Clear();
         }
 
-        public void ClearMatchingPendingChanges(Predicate<DatabaseAction> predicate) {
-            var purgeList = new List<DatabaseAction>();
+        public void ClearMatchingPendingChanges(Predicate<DatabaseCommand> predicate) {
+            var purgeList = new List<DatabaseCommand>();
             // Build a list of the database actions that need to be removed...
             _pendingChanges.ForEach(action => {
                 if (predicate(action)) {
@@ -156,7 +156,7 @@ namespace BioLink.Client.Extensibility {
             }
 #if DEBUG
             Logger.Debug("About to commit the following changes:");
-            foreach (DatabaseAction action in _pendingChanges) {
+            foreach (DatabaseCommand action in _pendingChanges) {
                 Logger.Debug("{0}", action);
             }
 #endif
@@ -164,7 +164,7 @@ namespace BioLink.Client.Extensibility {
 
             // First validate each action...Actions can produce messages if they are not valid.
             var messageList = new List<string>();
-            foreach (DatabaseAction action in _pendingChanges) {
+            foreach (DatabaseCommand action in _pendingChanges) {
                 var messages = action.Validate();
                 if (messages != null && messages.Count > 0) {
                     messageList.AddRange(messages);
@@ -185,7 +185,7 @@ namespace BioLink.Client.Extensibility {
                 commitTrans = true;
             }
             try {
-                foreach (DatabaseAction action in _pendingChanges) {
+                foreach (DatabaseCommand action in _pendingChanges) {
                     action.Process(User);
                 }
 
@@ -221,7 +221,7 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        public ObservableCollection<DatabaseAction> PendingChanges {
+        public ObservableCollection<DatabaseCommand> PendingChanges {
             get { return _pendingChanges; }
         }
 

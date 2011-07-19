@@ -31,14 +31,14 @@ namespace BioLink.Client.Tools {
             this.Loan = loan;
         }
 
-        public override ViewModelBase AddNewItem(out DatabaseAction addAction) {
+        public override ViewModelBase AddNewItem(out DatabaseCommand addAction) {
             var model = new LoanCorrespondence() {  };
             addAction = new InsertLoanCorrespondenceAction(model, Loan);
             return new LoanCorrespondenceViewModel(model);
         }
 
 
-        public override DatabaseAction PrepareDeleteAction(ViewModelBase viewModel) {
+        public override DatabaseCommand PrepareDeleteAction(ViewModelBase viewModel) {
             var lc = viewModel as LoanCorrespondenceViewModel;
             if (lc != null) {
                 return new DeleteLoanCorrespondenceAction(lc.Model);
@@ -54,7 +54,7 @@ namespace BioLink.Client.Tools {
             }));
         }
 
-        public override DatabaseAction PrepareUpdateAction(ViewModelBase viewModel) {
+        public override DatabaseCommand PrepareUpdateAction(ViewModelBase viewModel) {
             var lc = viewModel as LoanCorrespondenceViewModel;
             if (lc != null) {
                 return new UpdateLoanCorrespondenceAction(lc.Model);
@@ -70,7 +70,7 @@ namespace BioLink.Client.Tools {
 
     }
 
-    public class InsertLoanCorrespondenceAction : GenericDatabaseAction<LoanCorrespondence> {
+    public class InsertLoanCorrespondenceAction : GenericDatabaseCommand<LoanCorrespondence> {
 
         public InsertLoanCorrespondenceAction(LoanCorrespondence model, Loan loan) : base(model) {
             Loan = loan;
@@ -85,7 +85,7 @@ namespace BioLink.Client.Tools {
         protected Loan Loan { get; private set; }
     }
 
-    public class UpdateLoanCorrespondenceAction : GenericDatabaseAction<LoanCorrespondence> {
+    public class UpdateLoanCorrespondenceAction : GenericDatabaseCommand<LoanCorrespondence> {
         public UpdateLoanCorrespondenceAction(LoanCorrespondence model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
@@ -94,7 +94,7 @@ namespace BioLink.Client.Tools {
         }
     }
 
-    public class DeleteLoanCorrespondenceAction : GenericDatabaseAction<LoanCorrespondence> {
+    public class DeleteLoanCorrespondenceAction : GenericDatabaseCommand<LoanCorrespondence> {
 
         public DeleteLoanCorrespondenceAction(LoanCorrespondence model) : base(model) { }
 

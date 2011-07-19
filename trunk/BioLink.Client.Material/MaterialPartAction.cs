@@ -8,7 +8,7 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Material {
 
-    public class InsertMaterialPartAction : GenericDatabaseAction<MaterialPart> {
+    public class InsertMaterialPartAction : GenericDatabaseCommand<MaterialPart> {
 
         public InsertMaterialPartAction(MaterialPart model, ViewModelBase owner) : base(model) {
             this.Owner = owner;
@@ -61,7 +61,7 @@ namespace BioLink.Client.Material {
         protected ViewModelBase Owner { get; private set; }
     }
 
-    public class UpdateMaterialPartAction : GenericDatabaseAction<MaterialPart> {
+    public class UpdateMaterialPartAction : GenericDatabaseCommand<MaterialPart> {
 
         public UpdateMaterialPartAction(MaterialPart model)
             : base(model) {
@@ -77,7 +77,7 @@ namespace BioLink.Client.Material {
         }
     }
 
-    public class DeleteMaterialPartAction : GenericDatabaseAction<MaterialPart> {
+    public class DeleteMaterialPartAction : GenericDatabaseCommand<MaterialPart> {
 
         public DeleteMaterialPartAction(MaterialPart model)
             : base(model) {

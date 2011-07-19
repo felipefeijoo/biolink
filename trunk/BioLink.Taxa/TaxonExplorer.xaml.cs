@@ -397,7 +397,7 @@ namespace BioLink.Client.Taxa {
             // Ensure the permissions set at the user group level take precendence to the indivual taxon based permissions.
             try {
                 if (mask != PERMISSION_MASK.OWNER) {
-                    User.CheckPermission(PermissionMask.SPIN_TAXON, mask, "You do not have permission to move this item!");
+                    User.CheckPermission(PermissionCategory.SPIN_TAXON, mask, "You do not have permission to move this item!");
                 }
 
 
@@ -408,7 +408,7 @@ namespace BioLink.Client.Taxa {
                     }
                     var service = new SupportService(User);
                     if (!service.HasBiotaPermission(target.TaxaID.Value, mask)) {
-                        throw new NoPermissionException(PermissionMask.SPIN_TAXON, mask, "You do not have permission to move this item!");
+                        throw new NoPermissionException(PermissionCategory.SPIN_TAXON, mask, "You do not have permission to move this item!");
                     }
                 }
                 return true;
@@ -417,7 +417,7 @@ namespace BioLink.Client.Taxa {
                 if (!string.IsNullOrEmpty(npex.DeniedMessage)) {
                     txt = npex.DeniedMessage;
                 }
-                string caption = string.Format("Permission Error [{0} {1}]", npex.RequestedPermission, npex.RequestedMask);
+                string caption = string.Format("Permission Error [{0} {1}]", npex.PermissionCategory, npex.RequestedMask);
                 MessageBox.Show(txt, caption, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return false;
             }
@@ -459,7 +459,7 @@ namespace BioLink.Client.Taxa {
 
                 if (action != null) {
                     // process the action...
-                    List<DatabaseAction> dbActions = action.ProcessUI();
+                    List<DatabaseCommand> dbActions = action.ProcessUI();
                     if (dbActions != null && dbActions.Count > 0) {
                         RegisterPendingChanges(dbActions);
                     }

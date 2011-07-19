@@ -59,7 +59,7 @@ namespace BioLink.Client.Taxa {
         }
     }
 
-    public class UpdateAvailableNameAction : GenericDatabaseAction<AvailableName> {
+    public class UpdateAvailableNameAction : GenericDatabaseCommand<AvailableName> {
 
         public UpdateAvailableNameAction(AvailableName model)
             : base(model) {

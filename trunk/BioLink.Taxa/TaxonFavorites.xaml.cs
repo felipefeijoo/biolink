@@ -33,7 +33,7 @@ namespace BioLink.Client.Taxa {
             InitializeComponent();
             tvwFavorites.PreviewMouseLeftButtonDown +=new MouseButtonEventHandler(tvwFavorites_PreviewMouseLeftButtonDown);
             tvwFavorites.PreviewMouseMove += new MouseEventHandler(tvwFavorites_PreviewMouseMove);
-            this.ChangeRegistered += new Action<IList<DatabaseAction>>((changes) => {
+            this.ChangeRegistered += new Action<IList<DatabaseCommand>>((changes) => {
                 EnableButtons();
             });
         }
@@ -149,7 +149,7 @@ namespace BioLink.Client.Taxa {
                     source.IsGroup = target.IsGlobal;       // May have changed root
                     source.Parent = target;
                     if (source.FavoriteID >= 0) {
-                        RegisterPendingChange(new MoveFavoriteAction(source.Model, target.Model));
+                        RegisterPendingChange(new MoveFavoriteCommand(source.Model, target.Model));
                     }
                 } else {
                     if (tvwFavorites.SelectedItem is ViewModelPlaceholder) {
@@ -164,7 +164,7 @@ namespace BioLink.Client.Taxa {
                         source.Parent = root;
                         // If it is a new favorite no need to move, because the insert will occur with the latest (correct) linkages.
                         if (source.FavoriteID >= 0) {
-                            RegisterPendingChange(new MoveFavoriteAction(source.Model, null));
+                            RegisterPendingChange(new MoveFavoriteCommand(source.Model, null));
                         }
 
                     }
@@ -347,7 +347,7 @@ namespace BioLink.Client.Taxa {
             }
 
             model.IsDeleted = true;
-            RegisterUniquePendingChange(new DeleteFavoriteAction(favorite.FavoriteID));
+            RegisterUniquePendingChange(new DeleteFavoriteCommand(favorite.FavoriteID));
         }
 
         public TaxonFavoriteViewModel FindFavorite(int favoriteId) {
@@ -386,7 +386,7 @@ namespace BioLink.Client.Taxa {
 
         private void ProcessRename(TaxonFavoriteViewModel viewModel, string name) {
             viewModel.GroupName = name;
-            RegisterUniquePendingChange(new RenameFavoriteGroupAction(viewModel.Model));
+            RegisterUniquePendingChange(new RenameFavoriteGroupCommand(viewModel.Model));
         }
 
         internal void DeleteFavorite(int favoriteId) {
@@ -396,7 +396,7 @@ namespace BioLink.Client.Taxa {
             } else {
                 if (viewModel != null && !viewModel.IsDeleted) {
                     viewModel.IsDeleted = true;
-                    RegisterUniquePendingChange(new DeleteFavoriteAction(viewModel.FavoriteID));
+                    RegisterUniquePendingChange(new DeleteFavoriteCommand(viewModel.FavoriteID));
                 }
             }
         }
@@ -453,7 +453,7 @@ namespace BioLink.Client.Taxa {
 
             viewModel.IsSelected = true;
 
-            RegisterPendingChange(new InsertTaxonFavoriteAction(viewModel.Model));
+            RegisterPendingChange(new InsertTaxonFavoriteCommand(viewModel.Model));
         }
 
         internal void AddFavoriteGroup(HierarchicalViewModelBase parent) {
@@ -485,7 +485,7 @@ namespace BioLink.Client.Taxa {
 
             parent.Children.Add(viewModel);
 
-            RegisterUniquePendingChange(new InsertFavoriteGroupAction(model));
+            RegisterUniquePendingChange(new InsertFavoriteGroupCommand(model));
             viewModel.IsRenaming = true;
         }
 

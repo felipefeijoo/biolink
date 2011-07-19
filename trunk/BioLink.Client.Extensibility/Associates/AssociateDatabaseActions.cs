@@ -7,7 +7,7 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Extensibility {
 
-    public class InsertAssociateAction : GenericDatabaseAction<Associate> {
+    public class InsertAssociateAction : GenericDatabaseCommand<Associate> {
 
         public InsertAssociateAction(Associate model, ViewModelBase owner) : base(model) {
             this.Owner = owner;
@@ -40,7 +40,7 @@ namespace BioLink.Client.Extensibility {
 
     }
 
-    public class UpdateAssociateAction : GenericDatabaseAction<Associate> {
+    public class UpdateAssociateAction : GenericDatabaseCommand<Associate> {
         public UpdateAssociateAction(Associate model)
             : base(model) {
         }
@@ -69,7 +69,7 @@ namespace BioLink.Client.Extensibility {
 
     }
 
-    public class DeleteAssociateAction : GenericDatabaseAction<Associate> {
+    public class DeleteAssociateAction : GenericDatabaseCommand<Associate> {
         public DeleteAssociateAction(Associate model)
             : base(model) {
         }

@@ -361,7 +361,7 @@ namespace BioLink.Client.Material {
 
         #endregion
 
-        public DatabaseAction AddNewItem(HierarchicalViewModelBase selectedItem) {
+        public DatabaseCommand AddNewItem(HierarchicalViewModelBase selectedItem) {
             var parent = selectedItem as SiteExplorerNodeViewModel;
 
             Debug.Assert(parent != null);
@@ -383,7 +383,7 @@ namespace BioLink.Client.Material {
             return new InsertRegionAction(viewModel.Model, viewModel);
         }
 
-        public DatabaseAction RenameItem(HierarchicalViewModelBase selectedItem, string newName) {
+        public DatabaseCommand RenameItem(HierarchicalViewModelBase selectedItem, string newName) {
             var item = selectedItem as SiteExplorerNodeViewModel;
             if (item != null) {
                 item.Name = newName;
@@ -392,7 +392,7 @@ namespace BioLink.Client.Material {
             return null;
         }
 
-        public DatabaseAction DeleteItem(HierarchicalViewModelBase selectedItem) {
+        public DatabaseCommand DeleteItem(HierarchicalViewModelBase selectedItem) {
             var item = selectedItem as SiteExplorerNodeViewModel;
             if (item != null) {                
                 return new DeleteRegionAction(item.ElemID);

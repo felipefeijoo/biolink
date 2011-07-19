@@ -119,7 +119,7 @@ namespace BioLink.Client.Extensibility {
 
         private ViewModelBase AddNew() {
             if (_control != null) {
-                DatabaseAction action = null;
+                DatabaseCommand action = null;
                 var viewModel = _control.AddNewItem(out action);
                 if (viewModel != null) {
                     _model.Add(viewModel);

@@ -3,7 +3,7 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Extensibility {
 
-    public abstract class TraitDatabaseActionBase : DatabaseAction {
+    public abstract class TraitDatabaseActionBase : DatabaseCommand {
 
         public TraitDatabaseActionBase(Trait trait, ViewModelBase owner) {
             this.Trait = trait;

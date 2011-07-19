@@ -21,12 +21,12 @@ namespace BioLink.Client.Extensibility {
             this.ContentID = contentId;
         }
 
-        public virtual ViewModelBase AddNewItem(out DatabaseAction addAction) {
+        public virtual ViewModelBase AddNewItem(out DatabaseCommand addAction) {
             throw new NotImplementedException();
         }
 
 
-        public virtual DatabaseAction PrepareDeleteAction(ViewModelBase viewModel) {
+        public virtual DatabaseCommand PrepareDeleteAction(ViewModelBase viewModel) {
             throw new NotImplementedException();
         }
 
@@ -34,7 +34,7 @@ namespace BioLink.Client.Extensibility {
             throw new NotImplementedException();
         }
 
-        public virtual DatabaseAction PrepareUpdateAction(ViewModelBase viewModel) {
+        public virtual DatabaseCommand PrepareUpdateAction(ViewModelBase viewModel) {
             throw new NotImplementedException();
         }
 

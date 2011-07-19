@@ -124,15 +124,15 @@ namespace BioLink.Client.Tools {
             return new ReferenceFavoriteViewModel(model);
         }
 
-        public DatabaseAction GetInsertAction(FavoriteViewModel<ReferenceFavorite> favViewModel) {
-            return new InsertReferenceFavoriteAction(favViewModel.Model);
+        public DatabaseCommand GetInsertAction(FavoriteViewModel<ReferenceFavorite> favViewModel) {
+            return new InsertReferenceFavoriteCommand(favViewModel.Model);
         }
 
-        public DatabaseAction RenameViewModel(ReferenceSearchResultViewModel vm, string text) {
+        public DatabaseCommand RenameViewModel(ReferenceSearchResultViewModel vm, string text) {
             throw new NotImplementedException();
         }
 
-        public DatabaseAction RenameFavorite(FavoriteViewModel<ReferenceFavorite> vm, string text) {
+        public DatabaseCommand RenameFavorite(FavoriteViewModel<ReferenceFavorite> vm, string text) {
             throw new NotImplementedException();
         }
 

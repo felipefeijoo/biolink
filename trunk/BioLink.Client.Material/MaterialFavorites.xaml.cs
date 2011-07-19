@@ -122,11 +122,11 @@ namespace BioLink.Client.Material {
             return new SiteFavoriteViewModel(model);
         }
 
-        public DatabaseAction GetInsertAction(FavoriteViewModel<SiteFavorite> favViewModel) {
-            return new InsertSiteFavoriteAction(favViewModel.Model);
+        public DatabaseCommand GetInsertAction(FavoriteViewModel<SiteFavorite> favViewModel) {
+            return new InsertSiteFavoriteCommand(favViewModel.Model);
         }
 
-        public DatabaseAction RenameViewModel(SiteExplorerNodeViewModel vm, string text) {
+        public DatabaseCommand RenameViewModel(SiteExplorerNodeViewModel vm, string text) {
             var action = Explorer.GetRenameActionForNode(vm);
             if (action != null) {
                 vm.Name = text;
@@ -135,7 +135,7 @@ namespace BioLink.Client.Material {
             return null;
         }
 
-        public DatabaseAction RenameFavorite(FavoriteViewModel<SiteFavorite> vm, string text) {
+        public DatabaseCommand RenameFavorite(FavoriteViewModel<SiteFavorite> vm, string text) {
             if (!vm.IsGroup) {
                 var fav = vm as SiteFavoriteViewModel;                
                 SiteExplorerNode model = new SiteExplorerNode();

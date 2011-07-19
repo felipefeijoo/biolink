@@ -32,21 +32,21 @@ namespace BioLink.Client.Extensibility {
             return ContentIdentifier == other;
         }
 
-        public void RegisterPendingChange(DatabaseAction action) {
+        public void RegisterPendingChange(DatabaseCommand action) {
             WithChangeContainer(window => {
                 window.RegisterPendingChange(action, this);
             });
             RaiseChangeRegistered(action);
         }
 
-        public bool RegisterUniquePendingChange(DatabaseAction action) {
+        public bool RegisterUniquePendingChange(DatabaseCommand action) {
             bool ret = false;
             WithChangeContainer(window => { ret = window.RegisterUniquePendingChange(action, this); });
             RaiseChangeRegistered(action);
             return ret;
         }
 
-        public void RegisterPendingChanges(List<DatabaseAction> actions) {
+        public void RegisterPendingChanges(List<DatabaseCommand> actions) {
             WithChangeContainer(window =>  window.RegisterPendingChanges(actions, this));
             RaiseChangeRegistered(actions);
 
@@ -60,7 +60,7 @@ namespace BioLink.Client.Extensibility {
             WithChangeContainer(window => window.ClearPendingChanges());
         }
 
-        public void ClearMatchingPendingChanges(Predicate<DatabaseAction> predicate) {
+        public void ClearMatchingPendingChanges(Predicate<DatabaseCommand> predicate) {
             WithChangeContainer(container => {
                 container.ClearMatchingPendingChanges(predicate);
             });
@@ -145,13 +145,13 @@ namespace BioLink.Client.Extensibility {
             return string.Format(format, nextNum);
         }
 
-        private void RaiseChangeRegistered(DatabaseAction change) {
-            var list = new List<DatabaseAction>();
+        private void RaiseChangeRegistered(DatabaseCommand change) {
+            var list = new List<DatabaseCommand>();
             list.Add(change);
             RaiseChangeRegistered(list);
         }
 
-        private void RaiseChangeRegistered(List<DatabaseAction> list) {
+        private void RaiseChangeRegistered(List<DatabaseCommand> list) {
             if (ChangeRegistered != null) {
                 ChangeRegistered(list);
             }
@@ -162,7 +162,7 @@ namespace BioLink.Client.Extensibility {
 
         public User User { get; protected set; }
 
-        public event Action<IList<DatabaseAction>> ChangeRegistered;
+        public event Action<IList<DatabaseCommand>> ChangeRegistered;
 
         public event PendingChangesCommittedHandler ChangesCommitted;
 

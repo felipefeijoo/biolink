@@ -236,7 +236,7 @@ namespace BioLink.Client.Material {
         }
 
         private void MoveNode(SiteExplorerNodeViewModel source, SiteExplorerNodeViewModel dest) {
-            DatabaseAction moveAction = null;
+            DatabaseCommand moveAction = null;
             if (source.Parent == dest) {
                 ErrorMessage.Show("'{0}' is already a child of '{1}'.", source.Name, dest.Name);
                 return;
@@ -287,7 +287,7 @@ namespace BioLink.Client.Material {
         }
 
         private void MergeNodes(SiteExplorerNodeViewModel oldNode, SiteExplorerNodeViewModel newNode) {
-            DatabaseAction mergeAction = null;
+            DatabaseCommand mergeAction = null;
             switch (oldNode.NodeType) {
                 case SiteExplorerNodeType.SiteGroup:
                     mergeAction = new MergeSiteGroupAction(oldNode.Model, newNode.Model);
@@ -520,7 +520,7 @@ namespace BioLink.Client.Material {
             }
         }
 
-        public DatabaseAction GetRenameActionForNode(SiteExplorerNodeViewModel selected) {
+        public DatabaseCommand GetRenameActionForNode(SiteExplorerNodeViewModel selected) {
             if (selected != null) {
                 switch (selected.NodeType) {
                     case SiteExplorerNodeType.Region:
@@ -690,7 +690,7 @@ namespace BioLink.Client.Material {
             }
         }
 
-        internal SiteExplorerNodeViewModel AddNewNode(HierarchicalViewModelBase parent, SiteExplorerNodeType nodeType, Func<SiteExplorerNodeViewModel, DatabaseAction> actionFactory) {
+        internal SiteExplorerNodeViewModel AddNewNode(HierarchicalViewModelBase parent, SiteExplorerNodeType nodeType, Func<SiteExplorerNodeViewModel, DatabaseCommand> actionFactory) {
 
             if (parent != null) {
                 parent.IsExpanded = true;
@@ -825,7 +825,7 @@ namespace BioLink.Client.Material {
             EditNode(site, () => { return new SiteDetails(User, site.ElemID); });
         }
 
-        internal void DeleteNode(SiteExplorerNodeViewModel node, Func<DatabaseAction> actionFactory) {
+        internal void DeleteNode(SiteExplorerNodeViewModel node, Func<DatabaseCommand> actionFactory) {
 
             if (!node.IsDeleted) {
                 node.Traverse((child) => {

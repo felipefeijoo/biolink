@@ -68,7 +68,7 @@
     <Compile Include="BioLinkService.cs" />
     <Compile Include="CodeValuePair.cs" />
     <Compile Include="ConfigurationStore.cs" />
-    <Compile Include="FavoriteActions.cs" />
+    <Compile Include="FavoriteDatabaseCommands.cs" />
     <Compile Include="IgnoreFormattingChanges.cs" />
     <Compile Include="ImportService.cs" />
     <Compile Include="IXMLImportProgressObserver.cs" />
@@ -124,7 +124,7 @@
     <Compile Include="Model\ChecklistData.cs" />
     <Compile Include="Model\CommonName.cs" />
     <Compile Include="Model\ConnectionProfile.cs" />
-    <Compile Include="DatabaseAction.cs" />
+    <Compile Include="DatabaseCommand.cs" />
     <Compile Include="DataMatrix.cs" />
     <Compile Include="Mapper.cs" />
     <Compile Include="Model\CurationEvent.cs" />

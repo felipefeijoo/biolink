@@ -7,7 +7,7 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Extensibility {
 
-    public abstract class RefLinkDatabaseAction : GenericDatabaseAction<RefLink> {
+    public abstract class RefLinkDatabaseAction : GenericDatabaseCommand<RefLink> {
 
         public RefLinkDatabaseAction(RefLink model, string categoryName)
             : base(model) {
@@ -48,7 +48,7 @@ namespace BioLink.Client.Extensibility {
 
     }
 
-    public class DeleteRefLinkAction : GenericDatabaseAction<RefLink> {
+    public class DeleteRefLinkAction : GenericDatabaseCommand<RefLink> {
 
         public DeleteRefLinkAction(RefLink model) : base(model) { }
 

@@ -107,7 +107,7 @@ namespace BioLink.Client.Extensibility {
             parent.Children.Add(viewModel);
             
 
-            RegisterUniquePendingChange(new InsertFavoriteGroupAction(model));
+            RegisterUniquePendingChange(new InsertFavoriteGroupCommand(model));
             viewModel.IsRenaming = true;
         }
 
@@ -128,12 +128,12 @@ namespace BioLink.Client.Extensibility {
                 var selected = control.DataContext as HierarchicalViewModelBase;
 
 
-                DatabaseAction action = null;
+                DatabaseCommand action = null;
                 if (selected is FavoriteViewModel<T>) {
                     var vm = selected as FavoriteViewModel<T>;
                     if (vm.IsGroup) {
                         vm.GroupName = text;
-                        action = new RenameFavoriteGroupAction(vm.Model);
+                        action = new RenameFavoriteGroupCommand(vm.Model);
                     } else {
                         action = Provider.RenameFavorite(vm, text);
                     }
@@ -159,7 +159,7 @@ namespace BioLink.Client.Extensibility {
             }
 
             favorite.IsDeleted = true;
-            RegisterUniquePendingChange(new DeleteFavoriteAction(favorite.FavoriteID));
+            RegisterUniquePendingChange(new DeleteFavoriteCommand(favorite.FavoriteID));
         }
 
 
@@ -384,7 +384,7 @@ namespace BioLink.Client.Extensibility {
                     source.IsGlobal = target.IsGlobal;       // May have changed root
                     source.Parent = target;
                     if (source.FavoriteID >= 0) {
-                        RegisterPendingChange(new MoveFavoriteAction(source.Model, target.Model));
+                        RegisterPendingChange(new MoveFavoriteCommand(source.Model, target.Model));
                     }
                 } else {
                     if (tvw.SelectedItem is ViewModelPlaceholder) {
@@ -399,7 +399,7 @@ namespace BioLink.Client.Extensibility {
                         source.Parent = root;
                         // If it is a new favorite no need to move, because the insert will occur with the latest (correct) linkages.
                         if (source.FavoriteID >= 0) {
-                            RegisterPendingChange(new MoveFavoriteAction(source.Model, null));
+                            RegisterPendingChange(new MoveFavoriteCommand(source.Model, null));
                         }
 
                     }
@@ -428,7 +428,7 @@ namespace BioLink.Client.Extensibility {
             } else {
                 if (viewModel != null && !viewModel.IsDeleted) {
                     viewModel.IsDeleted = true;
-                    RegisterUniquePendingChange(new DeleteFavoriteAction(viewModel.FavoriteID));
+                    RegisterUniquePendingChange(new DeleteFavoriteCommand(viewModel.FavoriteID));
                 }
             }
         }
@@ -502,10 +502,10 @@ namespace BioLink.Client.Extensibility {
 
         FavoriteViewModel<T> CreateFavoriteViewModel(T model);
 
-        DatabaseAction GetInsertAction(FavoriteViewModel<T> favViewModel);
+        DatabaseCommand GetInsertAction(FavoriteViewModel<T> favViewModel);
 
-        DatabaseAction RenameViewModel(V vm, string text);
+        DatabaseCommand RenameViewModel(V vm, string text);
 
-        DatabaseAction RenameFavorite(FavoriteViewModel<T> vm, string text);
+        DatabaseCommand RenameFavorite(FavoriteViewModel<T> vm, string text);
     }
 }

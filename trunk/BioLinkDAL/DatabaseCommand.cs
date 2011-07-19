@@ -7,7 +7,11 @@ using BioLink.Data.Model;
 
 namespace BioLink.Data {
 
-    public abstract class DatabaseAction {
+    /// <summary>
+    /// Base class for a Command pattern. Each command represents a action against the database, and contains enough state to perform the command independently.
+    /// Commands are aggregated by command container controls
+    /// </summary>
+    public abstract class DatabaseCommand {
 
         public void Process(User user) {
             ProcessImpl(user);
@@ -21,9 +25,9 @@ namespace BioLink.Data {
         
     }
 
-    public abstract class GenericDatabaseAction<T> : DatabaseAction where T: BioLinkDataObject {
+    public abstract class GenericDatabaseCommand<T> : DatabaseCommand where T: BioLinkDataObject {
         
-        public GenericDatabaseAction(T model) {
+        public GenericDatabaseCommand(T model) {
             Model = model;            
         }
 
@@ -32,7 +36,7 @@ namespace BioLink.Data {
         public override bool Equals(object obj) {
 
             if (obj.GetType() == this.GetType()) {
-                var other = obj as GenericDatabaseAction<T>;
+                var other = obj as GenericDatabaseCommand<T>;
                 return other.Model == Model;
             }
             return false;
