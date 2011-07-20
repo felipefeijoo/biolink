@@ -123,6 +123,14 @@ namespace BioLink.Client.Taxa {
                 }                
             }
 
+            if (pinnable != null && pinnable.LookupType == LookupType.DistributionRegion) {
+                var service = new SupportService(User);
+                var region = service.GetDistributionRegion(pinnable.ObjectID);
+                if (region != null) {
+                    return new DistributionRegionViewModel(region);
+                }
+            }
+
             return null;            
         }
 
@@ -179,7 +187,7 @@ namespace BioLink.Client.Taxa {
 
         public override bool CanSelect<T>() {
             var t = typeof(T);
-            return typeof(Taxon).IsAssignableFrom(t);
+            return typeof(Taxon).IsAssignableFrom(t) || typeof(DistributionRegion).IsAssignableFrom(t);
         }
 
         public override void Select<T>(LookupOptions options, Action<SelectionResult> success) {
@@ -223,7 +231,7 @@ namespace BioLink.Client.Taxa {
 
         public void ShowRegionExplorer(Action<SelectionResult> selectionFunc = null) {
             if (_regionExplorer == null) {
-                var explorer = new DistributionRegionExplorer(User);
+                var explorer = new DistributionRegionExplorer(this, User);
                 _regionExplorer = PluginManager.Instance.AddNonDockableContent(this, explorer, "Distribution Region Explorer", SizeToContent.Manual);
 
                 if (selectionFunc != null) {
