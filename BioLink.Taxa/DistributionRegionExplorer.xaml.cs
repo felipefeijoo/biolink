@@ -23,13 +23,24 @@ namespace BioLink.Client.Taxa {
     /// </summary>
     public partial class DistributionRegionExplorer : DatabaseCommandControl, ISelectionHostControl {
 
-        public DistributionRegionExplorer(User user) : base(user, "Distribution Region Explorer") {
+        public DistributionRegionExplorer(TaxaPlugin plugin, User user) : base(user, "Distribution Region Explorer") {
 
             InitializeComponent();
 
+            this.Plugin = plugin;
+
             Loaded += new RoutedEventHandler(DistributionRegionExplorer_Loaded);
+            this.Unloaded += new RoutedEventHandler(DistributionRegionExplorer_Unloaded);
 
             ChangesCommitted += new PendingChangesCommittedHandler(DistributionRegionExplorer_ChangesCommitted);
+
+            TreeViewDragHelper.Bind(tvwRegions, TreeViewDragHelper.CreatePinnableGenerator(plugin.Name, LookupType.DistributionRegion));
+
+        }
+
+        void DistributionRegionExplorer_Unloaded(object sender, RoutedEventArgs e) {
+            var expanded = tvwRegions.GetExpandedParentages();
+            Config.SetUser(User, "DistributionRegion.LastExpanded", expanded);
         }
 
         void DistributionRegionExplorer_ChangesCommitted(object sender) {
@@ -54,6 +65,11 @@ namespace BioLink.Client.Taxa {
                 }));
                 
                 tvwRegions.ItemsSource = model;
+
+                var expanded = Config.GetUser<List<String>>(User, "DistributionRegion.LastExpanded", null);
+                if (expanded != null) {
+                    tvwRegions.ExpandParentages(expanded);
+                }
             }
 
         }
@@ -171,6 +187,8 @@ namespace BioLink.Client.Taxa {
             }
             return null;
         }
+
+        protected TaxaPlugin Plugin { get; private set; }
     }
 
     public class DeleteDistributionRegion : GenericDatabaseCommand<DistributionRegion> {
@@ -230,9 +248,11 @@ namespace BioLink.Client.Taxa {
             get {
                 return ImageCache.GetImage("pack://application:,,,/BioLink.Client.Extensibility;component/images/DistributionRegion.png");
             }
-            set {
-                base.Icon = value;
-            }
+            set { base.Icon = value; }
+        }
+
+        public override string DisplayLabel {
+            get { return DistRegionName; }
         }
 
         public int DistRegionID {

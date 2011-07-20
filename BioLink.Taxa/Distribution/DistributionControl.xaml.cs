@@ -35,7 +35,10 @@ namespace BioLink.Client.Taxa {
 
         public DistributionControl(TaxaPlugin plugin, Data.User user, TaxonViewModel taxon)
             : base(user, String.Format("Taxon::DistributionControl::{0}", taxon.TaxaID.Value)) {
-            InitializeComponent();                
+            InitializeComponent();
+
+            this.AllowDrop = true;
+
             this.Taxon = taxon;
             this.Plugin = plugin;
             txtDistribution.DataContext = taxon;
@@ -53,7 +56,34 @@ namespace BioLink.Client.Taxa {
             taxon.DataChanged += new DataChangedHandler((t) => {
                 RegisterUniquePendingChange(new UpdateDistQualDatabaseCommand(taxon.Taxon));
             });
+
+            this.PreviewDragEnter += new DragEventHandler(DistributionControl_PreviewDrag);
+            this.PreviewDragOver += new DragEventHandler(DistributionControl_PreviewDrag);
+
+            this.Drop += new DragEventHandler(DistributionControl_Drop);
             
+        }
+
+        void DistributionControl_Drop(object sender, DragEventArgs e) {
+            var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;
+            e.Effects = DragDropEffects.None;
+            if (pinnable != null && pinnable.LookupType == LookupType.DistributionRegion) {
+                var service = new SupportService(User);
+                var parentage = service.GetDistributionFullPath(pinnable.ObjectID);
+                if (!string.IsNullOrEmpty(parentage)) {
+                    var dist = new TaxonDistribution { BiotaDistID = -1, DistRegionFullPath = parentage, TaxonID = Taxon.TaxaID.Value, DistRegionID = pinnable.ObjectID };
+                    AddViewModelByPath(_model, dist);
+                    RegisterUniquePendingChange(new SaveDistributionRegionsCommand(Taxon.Taxon, _model));
+                }
+            }             
+        }
+
+        void DistributionControl_PreviewDrag(object sender, DragEventArgs e) {
+            var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;
+            e.Effects = DragDropEffects.None;
+            if (pinnable != null && pinnable.LookupType == LookupType.DistributionRegion) {
+                e.Effects = DragDropEffects.Link;
+            } 
         }
 
         private void ExpandAll(ObservableCollection<HierarchicalViewModelBase> l) {

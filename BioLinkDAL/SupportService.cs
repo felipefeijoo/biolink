@@ -1646,8 +1646,35 @@ namespace BioLink.Data {
             StoredProcUpdate("spDistRegionUpdate", _P("intDistributionRegionID", region.DistRegionID), _P("vchrDistRegionName", region.DistRegionName));
         }
 
-        #endregion
+        public DistributionRegion GetDistributionRegion(int regionId) {
+            var mapper = new GenericMapperBuilder<DistributionRegion>().build();
+            var sql = "SELECT intDistributionRegionID as DistRegionID, intParentID as DistRegionParentID, vchrName as DistRegionName, 0 as NumChildren from tblDistributionRegion where intDistributionRegionID = @regionid";
+            DistributionRegion result = null;
+            this.SQLReaderForEach(sql, (reader) => {
+                result = mapper.Map(reader);
+            }, _P("@regionid", regionId));
 
+            return result;
+        }
+
+        public string GetDistributionRegionParentage(int regionId) {
+            var parentage = "";
+            StoredProcReaderFirst("spDistRegionGetParentage", (reader) => {
+                parentage = reader[0] as string;
+            }, _P("intDistributionRegionID", regionId));
+            return parentage;
+        }
+
+        public string GetDistributionFullPath(int regionId) {
+            var retval = _P("vchrRegionFullPath", "");
+            retval.Direction = ParameterDirection.Output;
+            retval.DbType = DbType.String;
+            retval.Size = 512;
+            StoredProcUpdate("spDistRegionBuildFullPath", _P("intDistRegionID", regionId), retval);
+            return retval.Value as string;
+        }
+
+        #endregion
     }
 
     public class RefTypeMapping {
