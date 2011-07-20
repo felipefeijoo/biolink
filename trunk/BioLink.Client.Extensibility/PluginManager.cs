@@ -86,7 +86,7 @@ namespace BioLink.Client.Extensibility {
                 if (!string.IsNullOrWhiteSpace(htmlfile)) {
                     BioLinkCorePlugin core = GetExtensionsOfType<BioLinkCorePlugin>()[0];
                     var browser = new WebBrowser();
-                    AddDockableContent(core, browser, "Welcome");
+                    AddDocumentContent(core, browser, "Welcome");
                     browser.Navigate(string.Format("file:///{0}", htmlfile));
                 }
 
@@ -184,10 +184,10 @@ namespace BioLink.Client.Extensibility {
             return extension;
         }
 
-        public void AddDockableContent(IBioLinkPlugin plugin, FrameworkElement content, string title, bool closeable = true) {
+        public void AddDocumentContent(IBioLinkPlugin plugin, FrameworkElement content, string title, bool closeable = true) {
 
-            if (DockableContentAdded != null) {
-                DockableContentAdded(plugin, content, title, closeable);
+            if (DocumentContentAdded != null) {
+                DocumentContentAdded(plugin, content, title, closeable);
             }
 
         }
@@ -287,7 +287,7 @@ namespace BioLink.Client.Extensibility {
 
             if (report.DisplayOptions(User, ParentWindow)) {
                 ReportResults results = new ReportResults(report);
-                AddDockableContent(owner, results, report.Name);
+                AddDocumentContent(owner, results, report.Name);
             }
         }
 
@@ -524,7 +524,7 @@ namespace BioLink.Client.Extensibility {
 
         public event ShowDockableContributionDelegate RequestShowContent;
 
-        public event AddDockableContentDelegate DockableContentAdded;
+        public event AddDockableContentDelegate DocumentContentAdded;
 
         public event CloseDockableContentDelegate DockableContentClosed;
 

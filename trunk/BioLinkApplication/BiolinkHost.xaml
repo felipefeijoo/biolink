@@ -29,7 +29,7 @@
             </MenuItem>
         </Menu>            
         
-        <ad:DockingManager Grid.Row="1" x:Name="dockManager">
+        <ad:DockingManager Grid.Row="1" x:Name="dockManager" IsAnimationEnabled="True">
             <ad:ResizingPanel Orientation="Horizontal" >
                 <ad:DockablePane x:Name="explorersPane" ad:ResizingPanel.ResizeWidth="200">
                 </ad:DockablePane>                    
