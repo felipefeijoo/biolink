@@ -1,0 +1,172 @@
+﻿<ext:DatabaseCommandControl x:Class="BioLink.Client.Taxa.TaxonExplorer"             
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:src="clr-namespace:BioLink.Client.Taxa"
+             xmlns:data="clr-namespace:BioLink.Data;assembly=BioLink.Data"
+             xmlns:model="clr-namespace:BioLink.Data.Model;assembly=BioLink.Data"
+             xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"                
+             mc:Ignorable="d" 
+             d:DesignHeight="400" d:DesignWidth="442" SnapsToDevicePixels="True" UseLayoutRounding="True">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="StringResources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style TargetType="ListBoxItem">
+                <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Unverified}" Value="True">
+                        <Setter Property="Foreground" Value="Red" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding AvailableName}" Value="True">
+                        <Setter Property="FontStyle" Value="Italic" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <src:SortedTaxonConverter x:Key="SortedTaxonConverter" />
+
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>  
+        <Grid.Resources>
+            <HierarchicalDataTemplate x:Name="AllTaxaDataTemplate" DataType="{x:Type src:TaxonViewModel}" ItemsSource="{Binding Path=Children, Converter={StaticResource SortedTaxonConverter}}">
+                <StackPanel Orientation="Horizontal" ToolTip="{Binding Path=TooltipContent}" ToolTipService.ShowDuration="30000">
+                    <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,0" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
+                    <ext:EditableTextBlock FontSize="11" x:Name="TaxonName" Text="{Binding Path=TaxonLabel}" VerticalAlignment="Center" IsInEditMode="{Binding Path=IsRenaming, Mode=TwoWay}" EditingComplete="EditableTextBlock_EditingComplete" ViewModel="{Binding}" />
+                </StackPanel>
+                <HierarchicalDataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding IsDeleted}" Value="True">
+                        <Setter TargetName="TaxonName" Property="TextDecorations" Value="Strikethrough" />
+                    </DataTrigger>
+                </HierarchicalDataTemplate.Triggers>
+            </HierarchicalDataTemplate>
+
+            <Style TargetType="{x:Type ext:VTreeViewItem}">
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <!-- This custom VSP exposes BringIntoView -->
+                            <ext:BLVirtualizingStackPanel />
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+
+                <Setter Property="IsExpanded" Value="{Binding Path=IsExpanded, Mode=TwoWay}" />
+                <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
+                <EventSetter Event="TreeViewItem.MouseRightButtonDown" Handler="TreeViewItem_MouseRightButtonDown"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Unverified}" Value="True">
+                        <Setter Property="Foreground" Value="Red" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding AvailableName}" Value="True">
+                        <Setter Property="FontStyle" Value="Italic" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding IsRenaming}" Value="True">
+                        <Setter Property="TextBox.Visibility" Value="Visible" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+        </Grid.Resources>
+        <TabControl Name="tabControl1" SelectionChanged="tabControl1_SelectionChanged">
+            <TabItem Header="{StaticResource TaxonExplorer.Tab.AllTaxa}" Name="tabAllTaxa">
+                <Grid x:Name="allTaxaGrid">
+                    <Border x:Name="taxaBorder" Background="White" BorderThickness="1" BorderBrush="#8C8E94">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30"></RowDefinition>
+                                <RowDefinition Height="*"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid x:Name="gridContentsHeader" Height="30" Background="{x:Static SystemColors.ControlBrush}">       
+                                <ToggleButton x:Name="btnLock" Margin="3,3,0,0" HorizontalAlignment="Left" Width="30" Height="24" VerticalAlignment="Top">
+                                    <ToggleButton.Style>
+                                        <Style TargetType="{x:Type ToggleButton}">
+                                            <Setter Property="Content">
+                                                <Setter.Value>
+                                                    <Image Height="20" Width="20" Source="images\Locked.png" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                </Setter.Value>
+                                            </Setter>                                            
+                                            <Style.Triggers>
+                                                <Trigger Property="IsChecked" Value="True">
+                                                    <Setter Property="Content">
+                                                        <Setter.Value>
+                                                            <Image Height="20" Width="20" Source="images\Unlocked.png" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ToggleButton.Style>
+                                </ToggleButton>
+                                <Label x:Name="lblHeader" Margin="36,0,60,0" VerticalAlignment="Top" VerticalContentAlignment="Center" Visibility="Hidden">
+                                    <Label.Content>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="images/LeftArrow.png" Height="20" Width="20" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                            <TextBlock Text="{StaticResource TaxonExplorer.explorer.UnlockToChange}" HorizontalAlignment="Center" VerticalAlignment="Center"/>                                            
+                                        </StackPanel>
+                                    </Label.Content>                                    
+                                </Label>
+                                <Grid x:Name="buttonBar" Margin="36,0,0,0" Visibility="Hidden">
+                                    <Button x:Name="btnApplyChanges" Margin="0,0,4,0" HorizontalAlignment="Right" Width="80" Height="22"  Content="Save changes" Click="btnApplyChanges_Click" />
+                                    <Button x:Name="btnCancelEditing" Margin="0,0,90,0" HorizontalAlignment="Right" Width="80" Height="22"  Content="Cancel" Click="btnCancelEditing_Click" />
+                                    <Button x:Name="btnDown" Margin="0,0,180,0" HorizontalAlignment="Right" Width="22" Height="22"  Click="btnDown_Click" Visibility="Hidden">
+                                        <Button.Content>
+                                            <Image Source="images\DownArrow.png" Height="20" Width="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Button.Content>
+                                    </Button>
+                                    <Button x:Name="btnUp" Margin="0,0,204,0" HorizontalAlignment="Right" Width="22" Height="22" Click="btnUp_Click" Visibility="Hidden" >
+                                        <Button.Content>
+                                            <Image Source="images\UpArrow.png" Height="20" Width="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Button.Content>
+                                    </Button>
+                                </Grid>
+                                
+                            </Grid>
+                            <Grid Grid.Row="1">
+                                <ext:DragDropScrollViewer ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                                    <ext:VTreeView x:Name="tvwAllTaxa" Margin="0,0,0,0" BorderThickness="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" PreviewMouseMove="TreeView_PreviewMouseMove" PreviewMouseLeftButtonDown="TreeView_PreviewMouseLeftButtonDown" MouseRightButtonUp="TreeView_MouseRightButtonUp" AutoExpandTopLevel="True">
+                                        <TreeView.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <!-- This custom VSP exposes BringIntoView -->
+                                                <ext:BLVirtualizingStackPanel />
+                                            </ItemsPanelTemplate>
+                                        </TreeView.ItemsPanel>
+
+                                        <TreeViewItem>
+                                            <TreeViewItem.Header>Loading...</TreeViewItem.Header>
+                                        </TreeViewItem>
+                                    </ext:VTreeView>
+                                </ext:DragDropScrollViewer>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </TabItem>
+            <TabItem Header="{StaticResource TaxonExplorer.Tab.Find}" Name="tabFind">
+                <Grid>
+                    <Label Content="Find:" Height="23" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" Width="56" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" />
+                    <ext:DelayedTriggerTextbox Height="23" Margin="68,6,6,0" Name="txtFind" VerticalAlignment="Top" TypingPaused="txtFind_TypingPaused" KeyUp="txtFind_KeyUp" />
+
+                    <ext:VTreeView x:Name="tvwResults" Margin="0,40,0,0" BorderThickness="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" PreviewMouseMove="TreeView_PreviewMouseMove" PreviewMouseLeftButtonDown="TreeView_PreviewMouseLeftButtonDown" MouseRightButtonUp="TreeView_MouseRightButtonUp" AutoExpandTopLevel="False">
+                        <TreeView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <!-- This custom VSP exposes BringIntoView -->
+                                <ext:BLVirtualizingStackPanel />
+                            </ItemsPanelTemplate>
+                        </TreeView.ItemsPanel>
+                    </ext:VTreeView>
+
+                </Grid>                    
+            </TabItem>
+            <TabItem Header="{StaticResource TaxonExplorer.Tab.Favorites}" Name="tabFavorites">
+                <src:TaxonFavorites x:Name="favorites" />
+            </TabItem>
+        </TabControl>
+    </Grid>
+</ext:DatabaseCommandControl>
