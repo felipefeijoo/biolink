@@ -20,7 +20,7 @@ namespace BioLink.Client.Tools {
     /// <summary>
     /// Interaction logic for JournalDetails.xaml
     /// </summary>
-    public partial class JournalDetails : DatabaseActionControl {
+    public partial class JournalDetails : DatabaseCommandControl {
 
         private JournalViewModel _viewModel;
 

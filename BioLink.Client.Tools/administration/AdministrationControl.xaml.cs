@@ -19,7 +19,7 @@ namespace BioLink.Client.Tools {
     /// <summary>
     /// Interaction logic for AdministrationWindow.xaml
     /// </summary>
-    public partial class AdministrationControl : DatabaseActionControl {
+    public partial class AdministrationControl : DatabaseCommandControl {
 
         public AdministrationControl(User user) : base(user, "AdminControl") {
             InitializeComponent();

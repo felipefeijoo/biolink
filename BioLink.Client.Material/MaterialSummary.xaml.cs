@@ -20,7 +20,7 @@ namespace BioLink.Client.Material {
     /// <summary>
     /// Interaction logic for MaterialSummary.xaml
     /// </summary>
-    public partial class MaterialSummary : DatabaseActionControl, ILazyPopulateControl {
+    public partial class MaterialSummary : DatabaseCommandControl, ILazyPopulateControl {
 
         #region Designer Ctor
         public MaterialSummary() {

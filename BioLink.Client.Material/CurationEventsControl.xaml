@@ -1,4 +1,4 @@
-﻿<ext:DatabaseActionControl x:Class="BioLink.Client.Material.CurationEventsControl"
+﻿<ext:DatabaseCommandControl x:Class="BioLink.Client.Material.CurationEventsControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -50,4 +50,4 @@
         <Button Content="_Add new" Height="23" HorizontalAlignment="Left" Margin="0,5,0,0" Name="btnAdd" VerticalAlignment="Top" Width="75" Grid.Row="1" Click="btnAdd_Click" />
 
     </Grid>
-</ext:DatabaseActionControl>
+</ext:DatabaseCommandControl>

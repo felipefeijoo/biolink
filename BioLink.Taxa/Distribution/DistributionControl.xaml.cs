@@ -21,7 +21,7 @@ namespace BioLink.Client.Taxa {
     /// <summary>
     /// Interaction logic for DistributionControl.xaml
     /// </summary>
-    public partial class DistributionControl : DatabaseActionControl {
+    public partial class DistributionControl : DatabaseCommandControl {
 
         private ObservableCollection<HierarchicalViewModelBase> _model;
 

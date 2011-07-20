@@ -21,7 +21,7 @@ namespace BioLink.Client.Taxa {
     /// <summary>
     /// Interaction logic for TaxonExplorer.xaml
     /// </summary>
-    public partial class TaxonExplorer : DatabaseActionControl {
+    public partial class TaxonExplorer : DatabaseCommandControl {
         
         private ObservableCollection<HierarchicalViewModelBase> _explorerModel;
         private ObservableCollection<TaxonViewModel> _searchModel;

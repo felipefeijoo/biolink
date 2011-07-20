@@ -22,7 +22,7 @@ namespace BioLink.Client.Tools {
     /// <summary>
     /// Interaction logic for PhraseManager.xaml
     /// </summary>
-    public partial class PhraseManager : DatabaseActionControl {
+    public partial class PhraseManager : DatabaseCommandControl {
 
         private ObservableCollection<PhraseCategoryViewModel> _model;
 

@@ -25,7 +25,7 @@ namespace BioLink.Client.Tools {
     /// <summary>
     /// Interaction logic for MultimediaManager.xaml
     /// </summary>
-    public partial class MultimediaManager : DatabaseActionControl {
+    public partial class MultimediaManager : DatabaseCommandControl {
 
         private List<string> _extensions;
         private List<string> _multimediaTypes;

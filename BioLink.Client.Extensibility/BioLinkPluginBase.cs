@@ -130,14 +130,14 @@ namespace BioLink.Client.Extensibility {
 
         private Dictionary<string, ControlHostWindow> _controlHosts = new Dictionary<string, ControlHostWindow>();
 
-        protected ControlHostWindow ShowSingleton(string title, Func<Control> controlFactory, SizeToContent sizeMode = SizeToContent.Manual, bool autoSavePosition = true, Action<ControlHostWindow> initFunc = null) {
+        protected ControlHostWindow ShowSingleton(string title, Func<Control> controlFactoryFunction, SizeToContent sizeMode = SizeToContent.Manual, bool autoSavePosition = true, Action<ControlHostWindow> initFunc = null) {
             
             ControlHostWindow frm = null;
             lock (_controlHosts) {
                 if (_controlHosts.ContainsKey(title)) {
                     frm = _controlHosts[title];
                 } else {
-                    var control = controlFactory();
+                    var control = controlFactoryFunction();
                     if (control != null) {
 
                         frm = PluginManager.Instance.AddNonDockableContent(this, control, title, sizeMode, autoSavePosition, initFunc);

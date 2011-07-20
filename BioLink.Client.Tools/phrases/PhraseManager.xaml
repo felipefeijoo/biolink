@@ -1,4 +1,4 @@
-﻿<ext:DatabaseActionControl x:Class="BioLink.Client.Tools.PhraseManager"                                         
+﻿<ext:DatabaseCommandControl x:Class="BioLink.Client.Tools.PhraseManager"                                         
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -117,4 +117,4 @@
             </Grid>            
         </Grid>
     </Grid>
-</ext:DatabaseActionControl>
+</ext:DatabaseCommandControl>

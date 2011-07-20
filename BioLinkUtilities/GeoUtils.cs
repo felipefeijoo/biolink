@@ -10,6 +10,7 @@ namespace BioLink.Client.Utilities {
 
         private static Regex _DegDecMRegex = new Regex(@"^(\d+).*?([\d.]+)'*\s*(N|S|E|W|n|e|s|w)\s*$");
         private static Regex _DMSRegex = new Regex("^(\\d+).*?([\\d.]+)'.*?([\\d.]+)\"*\\s*(N|S|E|W|n|e|s|w)\\s*$");
+        private static Regex _DegDecMNoDirRegex = new Regex(@"^([-+]?[0-9]+)(?:[^\d]+([-+]?[0-9]*\.?[0-9]+))?");
 
 
         public const string DEGREE_SYMBOL = "°";
@@ -122,6 +123,15 @@ namespace BioLink.Client.Utilities {
                 return GeoUtils.DMSToDecDeg(degrees, minutes, seconds, dir);
             }
 
+            // try degrees decimal minutes (using sign as direction)
+            matcher = _DegDecMNoDirRegex.Match(str);
+            if (matcher.Success) {
+                int degrees = Int32.Parse(matcher.Groups[1].Value);
+                double minutes = Double.Parse(matcher.Groups[2].Value);                
+                return GeoUtils.DDecMToDecDeg(degrees, minutes);
+            }
+
+            // try degrees decimal minutes with direction...
             matcher = _DegDecMRegex.Match(str);
             if (matcher.Success) {
                 int degrees = Int32.Parse(matcher.Groups[1].Value);

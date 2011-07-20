@@ -20,7 +20,7 @@ namespace BioLink.Client.Extensibility {
     /// <summary>
     /// Interaction logic for TraitControl.xaml
     /// </summary>
-    public partial class TraitControl : DatabaseActionControl, ILazyPopulateControl {
+    public partial class TraitControl : DatabaseCommandControl, ILazyPopulateControl {
 
         private List<TraitViewModel> _model;
         private bool _rdeMode = false;

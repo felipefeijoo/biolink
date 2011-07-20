@@ -32,9 +32,9 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        void _impl_ChangeRegistered(object sender, object action) {
+        void _impl_ChangeRegistered(object sender, object command) {
             if (this.ChangeRegistered != null) {
-                ChangeRegistered(sender, action);
+                ChangeRegistered(sender, command);
             }
         }
 
@@ -42,16 +42,16 @@ namespace BioLink.Client.Extensibility {
             get { return _impl.HasPendingChanges; }
         }
 
-        public void RegisterPendingChange(DatabaseCommand action, object contributer) {
-            _impl.RegisterPendingChange(action, contributer);
+        public void RegisterPendingChange(DatabaseCommand command, object contributer) {
+            _impl.RegisterPendingChange(command, contributer);
         }
 
-        public bool RegisterUniquePendingChange(DatabaseCommand action, object contributer) {
-            return _impl.RegisterUniquePendingChange(action, contributer);
+        public bool RegisterUniquePendingChange(DatabaseCommand command, object contributer) {
+            return _impl.RegisterUniquePendingChange(command, contributer);
         }
 
-        public void RegisterPendingChanges(List<DatabaseCommand> actions, object contributer) {
-            _impl.RegisterPendingChanges(actions, contributer);
+        public void RegisterPendingChanges(List<DatabaseCommand> commands, object contributer) {
+            _impl.RegisterPendingChanges(commands, contributer);
         }
 
         public void ClearPendingChanges() {
@@ -117,8 +117,8 @@ namespace BioLink.Client.Extensibility {
         }
 
         public bool RegisterUniquePendingChange(DatabaseCommand command, object contributer) {
-            foreach (DatabaseCommand existingaction in _pendingChanges) {
-                if (existingaction.Equals(command)) {
+            foreach (DatabaseCommand existingcommand in _pendingChanges) {
+                if (existingcommand.Equals(command)) {
                     return false;
                 }
             }
@@ -127,8 +127,8 @@ namespace BioLink.Client.Extensibility {
         }
 
         public void RegisterPendingChanges(List<DatabaseCommand> commands, object contributer) {
-            foreach (DatabaseCommand action in commands) {
-                RegisterPendingChange(action, contributer);
+            foreach (DatabaseCommand command in commands) {
+                RegisterPendingChange(command, contributer);
             }
         }
 
@@ -138,16 +138,16 @@ namespace BioLink.Client.Extensibility {
 
         public void ClearMatchingPendingChanges(Predicate<DatabaseCommand> predicate) {
             var purgeList = new List<DatabaseCommand>();
-            // Build a list of the database actions that need to be removed...
-            _pendingChanges.ForEach(action => {
-                if (predicate(action)) {
-                    purgeList.Add(action);
+            // Build a list of the database commands that need to be removed...
+            _pendingChanges.ForEach(command => {
+                if (predicate(command)) {
+                    purgeList.Add(command);
                 }
             });
 
             // and remove them
-            purgeList.ForEach(action => {
-                _pendingChanges.Remove(action);
+            purgeList.ForEach(command => {
+                _pendingChanges.Remove(command);
             });
         }
 
@@ -159,16 +159,16 @@ namespace BioLink.Client.Extensibility {
             }
 #if DEBUG
             Logger.Debug("About to commit the following changes:");
-            foreach (DatabaseCommand action in _pendingChanges) {
-                Logger.Debug("{0}", action);
+            foreach (DatabaseCommand command in _pendingChanges) {
+                Logger.Debug("{0}", command);
             }
 #endif
 
 
-            // First validate each action...Actions can produce messages if they are not valid.
+            // First validate each command...Commands can produce messages if they are not valid.
             var messageList = new List<string>();
-            foreach (DatabaseCommand action in _pendingChanges) {
-                var messages = action.Validate();
+            foreach (DatabaseCommand command in _pendingChanges) {
+                var messages = command.Validate();
                 if (messages != null && messages.Count > 0) {
                     messageList.AddRange(messages);
                 }

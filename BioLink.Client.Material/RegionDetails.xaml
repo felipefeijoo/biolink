@@ -1,4 +1,4 @@
-﻿<ext:DatabaseActionControl x:Class="BioLink.Client.Material.RegionDetails"
+﻿<ext:DatabaseCommandControl x:Class="BioLink.Client.Material.RegionDetails"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -14,4 +14,4 @@
         <TabControl Margin="12,92,12,12" Name="tabRegion" MinWidth="200" MinHeight="200">
         </TabControl>
     </Grid>
-</ext:DatabaseActionControl>
+</ext:DatabaseCommandControl>

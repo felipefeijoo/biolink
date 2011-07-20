@@ -20,7 +20,7 @@ namespace BioLink.Client.Material {
     /// <summary>
     /// Interaction logic for RegionDetails.xaml
     /// </summary>
-    public partial class RegionDetails : DatabaseActionControl {
+    public partial class RegionDetails : DatabaseCommandControl {
 
         private RegionViewModel _viewModel;
 

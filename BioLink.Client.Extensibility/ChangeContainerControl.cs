@@ -31,9 +31,9 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        void _impl_ChangeRegistered(object sender, object action) {
+        void _impl_ChangeRegistered(object sender, object command) {
             if (this.ChangeRegistered != null) {
-                ChangeRegistered(sender, action);
+                ChangeRegistered(sender, command);
             }
         }
 
@@ -41,16 +41,16 @@ namespace BioLink.Client.Extensibility {
             get { return _impl.HasPendingChanges; }
         }
 
-        public void RegisterPendingChange(DatabaseCommand action, object contributer) {
-            _impl.RegisterPendingChange(action, contributer);
+        public void RegisterPendingChange(DatabaseCommand command, object contributer) {
+            _impl.RegisterPendingChange(command, contributer);
         }
 
-        public bool RegisterUniquePendingChange(DatabaseCommand action, object contributer) {
-            return _impl.RegisterUniquePendingChange(action, contributer);
+        public bool RegisterUniquePendingChange(DatabaseCommand command, object contributer) {
+            return _impl.RegisterUniquePendingChange(command, contributer);
         }
 
-        public void RegisterPendingChanges(List<DatabaseCommand> actions, object contributer) {
-            _impl.RegisterPendingChanges(actions, contributer);
+        public void RegisterPendingChanges(List<DatabaseCommand> commands, object contributer) {
+            _impl.RegisterPendingChanges(commands, contributer);
         }
 
         public void ClearPendingChanges() {

@@ -21,7 +21,7 @@ namespace BioLink.Client.Material {
     /// <summary>
     /// Interaction logic for CurationEventsControl.xaml
     /// </summary>
-    public partial class CurationEventsControl : DatabaseActionControl, ILazyPopulateControl {
+    public partial class CurationEventsControl : DatabaseCommandControl, ILazyPopulateControl {
 
         private ObservableCollection<CurationEventViewModel> _model;
         private bool _populated = false;

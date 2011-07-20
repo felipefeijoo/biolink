@@ -21,7 +21,7 @@ namespace BioLink.Client.Material {
     /// <summary>
     /// Interaction logic for IdentificationHistoryControl.xaml
     /// </summary>
-    public partial class IdentificationHistoryControl : DatabaseActionControl {
+    public partial class IdentificationHistoryControl : DatabaseCommandControl {
 
         private ObservableCollection<MaterialIdentificationViewModel> _model;
 

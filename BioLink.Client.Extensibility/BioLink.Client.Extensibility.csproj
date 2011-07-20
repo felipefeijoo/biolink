@@ -94,7 +94,7 @@
     <Compile Include="ControlHostWindow.xaml.cs">
       <DependentUpon>ControlHostWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DatabaseActionControl.cs" />
+    <Compile Include="DatabaseCommandControl.cs" />
     <Compile Include="DateChooserWindow.xaml.cs">
       <DependentUpon>DateChooserWindow.xaml</DependentUpon>
     </Compile>

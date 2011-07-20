@@ -20,7 +20,7 @@ namespace BioLink.Client.Material {
     /// <summary>
     /// Interaction logic for TrapDetail.xaml
     /// </summary>
-    public partial class TrapDetails : DatabaseActionControl {
+    public partial class TrapDetails : DatabaseCommandControl {
 
         #region Designer Constructor
 

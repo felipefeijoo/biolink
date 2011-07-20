@@ -25,7 +25,7 @@ namespace BioLink.Client.Extensibility {
     /// <summary>
     /// Interaction logic for MultimediaControl.xaml
     /// </summary>
-    public partial class MultimediaControl : DatabaseActionControl, ILazyPopulateControl {
+    public partial class MultimediaControl : DatabaseCommandControl, ILazyPopulateControl {
 
         private ObservableCollection<MultimediaLinkViewModel> _model;
 

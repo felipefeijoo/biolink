@@ -21,7 +21,7 @@ namespace BioLink.Client.Tools {
     /// <summary>
     /// Interaction logic for LoansForContact.xaml
     /// </summary>
-    public partial class LoansForContact : DatabaseActionControl {
+    public partial class LoansForContact : DatabaseCommandControl {
 
         private ObservableCollection<LoanViewModel> _model;
 

@@ -20,7 +20,7 @@ namespace BioLink.Client.Material {
     /// <summary>
     /// Interaction logic for SiteVisitDetails.xaml
     /// </summary>
-    public partial class SiteVisitDetails : DatabaseActionControl {
+    public partial class SiteVisitDetails : DatabaseCommandControl {
 
         #region Designer Constructor
         public SiteVisitDetails() {

@@ -21,7 +21,7 @@ namespace BioLink.Client.Tools {
     /// <summary>
     /// Interaction logic for ContactDetails.xaml
     /// </summary>
-    public partial class ContactDetails : DatabaseActionControl {
+    public partial class ContactDetails : DatabaseCommandControl {
 
         private ContactViewModel _viewModel;
         private int _contactId;

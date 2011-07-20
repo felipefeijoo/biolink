@@ -21,7 +21,7 @@ namespace BioLink.Client.Tools {
     /// <summary>
     /// Interaction logic for JournalManager.xaml
     /// </summary>
-    public partial class JournalManager : DatabaseActionControl, ISelectionHostControl {
+    public partial class JournalManager : DatabaseCommandControl, ISelectionHostControl {
 
         private ObservableCollection<JournalViewModel> _findModel;
         private TabItem _previousPage;

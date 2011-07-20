@@ -21,7 +21,7 @@ namespace BioLink.Client.Extensibility {
     /// <summary>
     /// Interaction logic for ReferencesControl.xaml
     /// </summary>
-    public partial class ReferencesControl : DatabaseActionControl {
+    public partial class ReferencesControl : DatabaseCommandControl {
 
         private ObservableCollection<RefLinkViewModel> _model;
 

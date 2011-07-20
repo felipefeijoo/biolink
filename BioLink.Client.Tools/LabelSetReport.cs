@@ -78,7 +78,7 @@ namespace BioLink.Client.Tools {
                         include = c.Field.Category.Equals("SiteVisit");
                         break;
                     case "Material":
-                        include = c.Field.Category.Equals("Material");
+                        include = c.Field.Category.Equals("Material") || c.Field.Category.Equals("Nomenclature");
                         break;
                 }
 

@@ -20,7 +20,7 @@ namespace BioLink.Client.Tools {
     /// <summary>
     /// Interaction logic for LoanDetails.xaml
     /// </summary>
-    public partial class LoanDetails : DatabaseActionControl {
+    public partial class LoanDetails : DatabaseCommandControl {
 
         private LoanViewModel _viewModel;
         private OneToManyControl _reminders;

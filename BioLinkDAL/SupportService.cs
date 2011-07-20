@@ -1321,19 +1321,20 @@ namespace BioLink.Data {
 
             foreach (QueryCriteria c in criteria) {
                 string alias = c.Alias;
+                var formatOption = c.FormatOption;
                 if (string.IsNullOrEmpty(alias)) {
                     alias = c.Field.DisplayName;
                 }
 
-                if (!string.IsNullOrEmpty(c.Field.Format) && !string.IsNullOrEmpty(c.FormatOption)) {
+                if (!string.IsNullOrEmpty(c.Field.Format) && !string.IsNullOrEmpty(formatOption)) {
                     switch (c.Field.Format.ToLower()) {
                         case "date":
-                            m[alias] = new ColumnDataFormatter((value, reader) => { return FormatDate(value, c.FormatOption); });
+                            m[alias] = new ColumnDataFormatter((value, reader) => { return FormatDate(value, formatOption); });
                             break;
                         case "latitude":
                         case "longitude":
                             var coordType = (CoordinateType)Enum.Parse(typeof(CoordinateType), c.Field.Format);
-                            m[alias] = new ColumnDataFormatter((value, reader) => { return FormatCoordinate(value, c.FormatOption, coordType); });
+                            m[alias] = new ColumnDataFormatter((value, reader) => { return FormatCoordinate(value, formatOption, coordType); });
                             break;
                     }
                 }

@@ -20,7 +20,7 @@ namespace BioLink.Client.Extensibility {
     /// <summary>
     /// Interaction logic for NotesControl.xaml
     /// </summary>
-    public partial class NotesControl : DatabaseActionControl, ILazyPopulateControl {
+    public partial class NotesControl : DatabaseCommandControl, ILazyPopulateControl {
 
         private ObservableCollection<NoteViewModel> _model;
         private NoteControl _currentNoteControl;        

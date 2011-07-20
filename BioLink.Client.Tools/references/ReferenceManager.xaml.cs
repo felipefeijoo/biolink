@@ -22,7 +22,7 @@ namespace BioLink.Client.Tools {
     /// <summary>
     /// Interaction logic for FindReferencesControl.xaml
     /// </summary>
-    public partial class ReferenceManager : DatabaseActionControl, ISelectionHostControl {
+    public partial class ReferenceManager : DatabaseCommandControl, ISelectionHostControl {
 
         private GridViewColumnHeader _lastHeaderClicked = null;
         private ListSortDirection _lastDirection = ListSortDirection.Ascending;

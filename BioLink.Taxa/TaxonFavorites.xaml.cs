@@ -21,7 +21,7 @@ namespace BioLink.Client.Taxa {
     /// <summary>
     /// Interaction logic for TaxonFavorites.xaml
     /// </summary>
-    public partial class TaxonFavorites : DatabaseActionControl {
+    public partial class TaxonFavorites : DatabaseCommandControl {
 
         private ObservableCollection<HierarchicalViewModelBase> _model;
         private HierarchicalViewModelBase _userRoot;

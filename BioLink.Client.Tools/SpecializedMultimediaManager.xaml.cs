@@ -20,7 +20,7 @@ namespace BioLink.Client.Tools {
     /// <summary>
     /// Interaction logic for SpecializedMultimediaManager.xaml
     /// </summary>
-    public partial class SpecializedMultimediaManager : DatabaseActionControl {
+    public partial class SpecializedMultimediaManager : DatabaseCommandControl {
 
         private MultimediaControl _content;
 

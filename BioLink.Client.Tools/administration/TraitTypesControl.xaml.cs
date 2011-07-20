@@ -116,23 +116,23 @@ namespace BioLink.Client.Tools {
         }
 
         private void DeleteTypeDataFromOwner(TypeDataOwnerInfo ownerInfo) {
-            DatabaseCommand action = null;
+            DatabaseCommand command = null;
             switch (_type) {
                 case "trait":
-                    action = new DeleteTraitFromOwnerCommand(ownerInfo.ObjectID.Value);
+                    command = new DeleteTraitFromOwnerCommand(ownerInfo.ObjectID.Value);
                     break;
                 case "note":
-                    action = new DeleteNoteFromOwnerCommand(ownerInfo.ObjectID.Value);
+                    command = new DeleteNoteFromOwnerCommand(ownerInfo.ObjectID.Value);
                     break;
                 default:
                     throw new NotImplementedException("Deleting type data for type: " + _type + " is currently unsupported!");
             }
 
-            if (action != null) {
+            if (command != null) {
                 var model = lvwValues.ItemsSource as ObservableCollection<TypeDataOwnerInfo>;
                 if (model != null) {
                     model.Remove(ownerInfo);
-                    RegisterPendingChange(action);
+                    RegisterPendingChange(command);
                 }
             }
         }
