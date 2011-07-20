@@ -31,8 +31,9 @@ namespace BioLink.Client.Taxa {
         }
         #endregion
 
-        public TaxonDetails(TaxonViewModel taxon, User user, Action<TaxonViewModel> committedAction) : base(user, "TaxonDetails::" + taxon.TaxaID.Value) {
+        public TaxonDetails(TaxaPlugin plugin, TaxonViewModel taxon, User user, Action<TaxonViewModel> committedAction) : base(user, "TaxonDetails::" + taxon.TaxaID.Value) {
             InitializeComponent();
+            this.Plugin = plugin;
             _committedAction = committedAction;
             tabControl.AddTabItem("General", new TaxonNameDetails(taxon.TaxaID, User, committedAction));
 
@@ -56,7 +57,7 @@ namespace BioLink.Client.Taxa {
             tabControl.AddTabItem("References", new ReferencesControl(user, TraitCategoryType.Taxon, taxon.TaxaID));
 
             if ((!taxon.AvailableName.ValueOrFalse() && !taxon.LiteratureName.ValueOrFalse())) {
-                tabControl.AddTabItem("Distribution", new DistributionControl(user, taxon));
+                tabControl.AddTabItem("Distribution", new DistributionControl(Plugin, user, taxon));
             }
 
             tabControl.AddTabItem("Multimedia", new MultimediaControl(User, TraitCategoryType.Taxon, taxon));
@@ -92,6 +93,8 @@ namespace BioLink.Client.Taxa {
         public TaxonViewModel Taxon { get; private set; }
 
         public TaxaService Service { get { return new TaxaService(User); } }
+
+        public TaxaPlugin Plugin { get; private set; }
 
         #endregion
 

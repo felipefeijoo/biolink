@@ -47,6 +47,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DistributionRegionExplorer.xaml.cs">
+      <DependentUpon>DistributionRegionExplorer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Reports\ChecklistReportOptions.xaml.cs">
       <DependentUpon>ChecklistReportOptions.xaml</DependentUpon>
     </Compile>
@@ -136,6 +139,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="DistributionRegionExplorer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Reports\ChecklistReportOptions.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

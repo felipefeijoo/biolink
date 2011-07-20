@@ -74,6 +74,7 @@
     <Compile Include="IXMLImportProgressObserver.cs" />
     <Compile Include="LoanService.cs" />
     <Compile Include="Model\Contact.cs" />
+    <Compile Include="Model\DistributionRegion.cs" />
     <Compile Include="Model\LabelSet.cs" />
     <Compile Include="Model\LabelSetItem.cs" />
     <Compile Include="Model\Loan.cs" />

@@ -17,6 +17,8 @@ namespace BioLink.Client.Taxa {
         private TaxaService _taxaService;
         private XMLIOImportOptions _xmlImportOptions;
 
+        private ControlHostWindow _regionExplorer;
+
         public TaxaPlugin() {
         }
 
@@ -218,6 +220,28 @@ namespace BioLink.Client.Taxa {
 
             return base.GetAdaptorForPinnable<T>(pinnable);
         }
+
+        public void ShowRegionExplorer(Action<SelectionResult> selectionFunc = null) {
+            if (_regionExplorer == null) {
+                var explorer = new DistributionRegionExplorer(User);
+                _regionExplorer = PluginManager.Instance.AddNonDockableContent(this, explorer, "Distribution Region Explorer", SizeToContent.Manual);
+
+                if (selectionFunc != null) {
+                    _regionExplorer.BindSelectCallback(selectionFunc);
+                }
+
+                _regionExplorer.Closed += new EventHandler((object sender, EventArgs e) => {
+                    _regionExplorer.Dispose();
+                    _regionExplorer = null;
+                });
+            }
+
+            if (_regionExplorer != null) {
+                _regionExplorer.Show();
+            }
+
+        }
+
     }
 
     public delegate void TaxonViewModelAction(TaxonViewModel taxon);

@@ -42,6 +42,6 @@
             </TreeView.Resources>
         </TreeView>
         <Button Content="Region _Map" Margin="0,0,12,12" Name="btnRegionMap" HorizontalAlignment="Right" Width="117" Height="23" VerticalAlignment="Bottom" Click="btnRegionMap_Click" />
-        <Button Content="Region _Explorer" Height="23" HorizontalAlignment="Right" Margin="0,0,134,12" Name="btnRegionExplorer" VerticalAlignment="Bottom" Width="116" />
+        <Button Content="Region _Explorer" Height="23" HorizontalAlignment="Right" Margin="0,0,134,12" Name="btnRegionExplorer" VerticalAlignment="Bottom" Width="116" Click="btnRegionExplorer_Click" />
     </Grid>
 </ext:DatabaseCommandControl>

@@ -37,7 +37,7 @@
         <Grid.Resources>
             <HierarchicalDataTemplate x:Name="AllTaxaDataTemplate" DataType="{x:Type src:TaxonViewModel}" ItemsSource="{Binding Path=Children, Converter={StaticResource SortedTaxonConverter}}">
                 <StackPanel Orientation="Horizontal" ToolTip="{Binding Path=TooltipContent}" ToolTipService.ShowDuration="30000">
-                    <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,0" />
+                    <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,0" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
                     <ext:EditableTextBlock FontSize="11" x:Name="TaxonName" Text="{Binding Path=TaxonLabel}" VerticalAlignment="Center" IsInEditMode="{Binding Path=IsRenaming, Mode=TwoWay}" EditingComplete="EditableTextBlock_EditingComplete" ViewModel="{Binding}" />
                 </StackPanel>
                 <HierarchicalDataTemplate.Triggers>

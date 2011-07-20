@@ -358,7 +358,7 @@ namespace BioLink.Client.Taxa {
             }
         }
 
-        public string GetParentage() {
+        public override string GetParentage() {
             String parentage = "";
             TraverseToTop((t) => {
                 if (t is TaxonViewModel) {

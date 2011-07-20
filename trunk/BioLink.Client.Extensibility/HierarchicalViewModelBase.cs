@@ -53,6 +53,10 @@ namespace BioLink.Client.Extensibility {
 
         public bool IsChildrenLoaded { get; set; }
 
+        /// <summary>
+        /// Traverses from this node to each successive parent until a node with parent is reached.
+        /// </summary>
+        /// <param name="func"></param>
         public void TraverseToTop(HierarchicalViewModelAction func) {
             HierarchicalViewModelBase p = this;
             while (p != null) {
@@ -61,6 +65,10 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
+        /// <summary>
+        /// Visits this node, and all children recursively (i.e. It traverses the tree 'downwards' only, from parent to child).
+        /// </summary>
+        /// <param name="action"></param>
         public void Traverse(HierarchicalViewModelAction action) {
             if (action == null) { 
                 return; 
@@ -75,6 +83,13 @@ namespace BioLink.Client.Extensibility {
             
         }
 
+        /// <summary>
+        /// Find the first node that matches the specified predicate by recursing downwards through children.
+        /// This node is tested initially.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
         public T FindFirst<T>(Predicate<T> predicate) where T : HierarchicalViewModelBase {
 
             if (predicate((T)this)) {
@@ -90,6 +105,10 @@ namespace BioLink.Client.Extensibility {
             return default(T);
         }
 
+        /// <summary>
+        /// Returns a stack of nodes, each being an ancestor of this one (or this one), with the topmost node being the topmost parent, and the bottom of the stack being this node.
+        /// </summary>
+        /// <returns></returns>
         public Stack<HierarchicalViewModelBase> GetParentStack() {
             var p = this;
             var stack = new Stack<HierarchicalViewModelBase>();
@@ -98,6 +117,22 @@ namespace BioLink.Client.Extensibility {
                 p = p.Parent;
             }
             return stack;
+        }
+
+        /// <summary>
+        /// Returns a delimited string or ancestor object ids, descending (from left to right) from the topmost node to this node.
+        /// <para>
+        /// E.g. /1231/32/23
+        /// </para>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public virtual string GetParentage() {
+            String parentage = "";
+            TraverseToTop((child) => {
+                parentage = "/" + child.ObjectID + parentage;
+            });
+            return parentage;
         }
 
         public virtual int NumChildren { get; set; }
@@ -137,6 +172,10 @@ namespace BioLink.Client.Extensibility {
 
         public override int? ObjectID {
             get { return null; }
+        }
+
+        public override string ToString() {
+            return _label;
         }
 
     }
