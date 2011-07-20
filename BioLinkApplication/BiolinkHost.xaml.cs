@@ -56,7 +56,7 @@ namespace BioLinkApplication {
             _pluginManager = PluginManager.Instance;
 
             _pluginManager.RequestShowContent += new PluginManager.ShowDockableContributionDelegate(_pluginManager_RequestShowContent);
-            _pluginManager.DockableContentAdded += new PluginManager.AddDockableContentDelegate(_pluginManager_DockableContentAdded);
+            _pluginManager.DocumentContentAdded += new PluginManager.AddDockableContentDelegate(_pluginManager_DocumentContentAdded);
             _pluginManager.DockableContentClosed += new PluginManager.CloseDockableContentDelegate(_pluginManager_DockableContentClosed);
             _pluginManager.ProgressEvent += ProgressObserverAdapter.Adapt(monitor);
             // Debug logging...            
@@ -81,9 +81,9 @@ namespace BioLinkApplication {
             }
         }
 
-        void _pluginManager_DockableContentAdded(IBioLinkPlugin plugin, FrameworkElement content, string title, bool isClosable) {
+        void _pluginManager_DocumentContentAdded(IBioLinkPlugin plugin, FrameworkElement content, string title, bool isClosable) {
 
-            BiolinkDocumentContent newContent = new BiolinkDocumentContent {
+            var newContent = new BiolinkDocumentContent {
                 Title = title, 
                 Content = content,
                 FloatingWindowSize = new Size(600,500),
@@ -96,9 +96,10 @@ namespace BioLinkApplication {
                 }
             });
 
-            bool addAsFloating = Config.GetUser(User, "client.dock.AddDockableContentAsFloating", false);
+            bool addAsFloating = Config.GetUser(User, "client.dock.AddDocumentContentAsFloating", false);
 
             newContent.Show(dockManager, addAsFloating);
+
             newContent.BringIntoView();
             newContent.Focus();
             
@@ -106,7 +107,7 @@ namespace BioLinkApplication {
 
         void _pluginManager_RequestShowContent(IBioLinkPlugin plugin, string name) {
             String contentName = plugin.Name + "_" + name;
-            AvalonDock.DockableContent content = dockManager.DockableContents.First((candidate) => {
+            AvalonDock.DockableContent content = dockManager.DockableContents.FirstOrDefault((candidate) => {
                 return candidate.Name.Equals(contentName);
             });
 
@@ -119,22 +120,27 @@ namespace BioLinkApplication {
         private void AddPluginContributions(IBioLinkPlugin plugin) {
             Logger.Debug("Looking for workspace contributions from {0}", plugin.Name);
             List<IWorkspaceContribution> contributions = plugin.GetContributions();
-            foreach (IWorkspaceContribution contrib in contributions) {
-                if (contrib is MenuWorkspaceContribution) {
-                    AddMenu(contrib as MenuWorkspaceContribution);
-                } else if (contrib is IExplorerWorkspaceContribution) {
-                    IExplorerWorkspaceContribution explorer = contrib as IExplorerWorkspaceContribution;
-                    AvalonDock.DockableContent newContent = new AvalonDock.DockableContent();
-                    newContent.Title = explorer.Title;
-                    newContent.Content = explorer.Content;
-                    newContent.Name = plugin.Name + "_" + explorer.Name;
+            try {
+                this.explorersPane.Width = 0;
+                foreach (IWorkspaceContribution contrib in contributions) {
+                    if (contrib is MenuWorkspaceContribution) {
+                        AddMenu(contrib as MenuWorkspaceContribution);
+                    } else if (contrib is IExplorerWorkspaceContribution) {
+                        IExplorerWorkspaceContribution explorer = contrib as IExplorerWorkspaceContribution;
+                        DockableContent newContent = new DockableContent();
+                        newContent.Title = explorer.Title;
+                        newContent.Content = explorer.Content;
+                        newContent.Name = plugin.Name + "_" + explorer.Name;
 
-                    this.explorersPane.Items.Add(newContent);
+                        this.explorersPane.Items.Add(newContent);
 
-                    JobExecutor.QueueJob(() => {
-                        explorer.InitializeContent();
-                    });
+                        JobExecutor.QueueJob(() => {
+                            explorer.InitializeContent();
+                        });
+                    }
+                    
                 }
+            } finally {                
             }
         }
 
@@ -286,6 +292,7 @@ namespace BioLinkApplication {
 
         public BiolinkDocumentContent() {
         }
+
     }
 
 }

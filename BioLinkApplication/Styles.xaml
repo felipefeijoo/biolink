@@ -16,12 +16,12 @@
     </ResourceDictionary.MergedDictionaries>
 
     <!--DocumentTabItemStyle-->
-    <Style x:Key="BiolinkDocumentTabItemStyle" TargetType="{x:Type local:BiolinkDocumentContent}">
+    <Style x:Key="BiolinkDocumentTabItemStyle" TargetType="{x:Type ad:ManagedContent}">
         <Setter Property="Background"
                 Value="Transparent"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:BiolinkDocumentContent}">
+                <ControlTemplate TargetType="{x:Type ad:ManagedContent}">
                     <Border 
 						x:Name="PART_DragArea" 
 						BorderBrush="{StaticResource ManagedContentTabControlNormalBorderBrush}"

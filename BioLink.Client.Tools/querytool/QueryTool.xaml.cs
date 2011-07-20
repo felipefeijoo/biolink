@@ -224,7 +224,7 @@ namespace BioLink.Client.Tools {
             try {
                 var report = new QueryReport(User, _model, _distinct);
                 ReportResults results = new ReportResults(report);
-                PluginManager.Instance.AddDockableContent(this.Owner, results, report.Name);            
+                PluginManager.Instance.AddDocumentContent(this.Owner, results, report.Name);            
             } catch (Exception ex) {
                 ErrorMessage.Show(ex.Message);
             }
