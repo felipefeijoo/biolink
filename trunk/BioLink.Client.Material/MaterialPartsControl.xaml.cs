@@ -21,7 +21,7 @@ namespace BioLink.Client.Material {
     /// <summary>
     /// Interaction logic for MaterialPartsControl.xaml
     /// </summary>
-    public partial class MaterialPartsControl : DatabaseActionControl, ILazyPopulateControl {
+    public partial class MaterialPartsControl : DatabaseCommandControl, ILazyPopulateControl {
 
         private ObservableCollection<ViewModelBase> _model;
         private bool _rdeMode;

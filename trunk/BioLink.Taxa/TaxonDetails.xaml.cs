@@ -21,7 +21,7 @@ namespace BioLink.Client.Taxa {
     /// <summary>
     /// Interaction logic for TaxonDetails.xaml
     /// </summary>
-    public partial class TaxonDetails : DatabaseActionControl {
+    public partial class TaxonDetails : DatabaseCommandControl {
 
         private Action<TaxonViewModel> _committedAction;
 

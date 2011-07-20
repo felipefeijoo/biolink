@@ -18,7 +18,7 @@ using System.Collections.ObjectModel;
 
 namespace BioLink.Client.Extensibility {
 
-    public partial class AutoNumberCategoryManager : DatabaseActionControl {
+    public partial class AutoNumberCategoryManager : DatabaseCommandControl {
 
         private ObservableCollection<AutoNumberViewModel> _model;
 

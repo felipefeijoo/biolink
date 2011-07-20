@@ -690,7 +690,7 @@ namespace BioLink.Client.Material {
             }
         }
 
-        internal SiteExplorerNodeViewModel AddNewNode(HierarchicalViewModelBase parent, SiteExplorerNodeType nodeType, Func<SiteExplorerNodeViewModel, DatabaseCommand> actionFactory) {
+        internal SiteExplorerNodeViewModel AddNewNode(HierarchicalViewModelBase parent, SiteExplorerNodeType nodeType, Func<SiteExplorerNodeViewModel, DatabaseCommand> commandFactoryFunction) {
 
             if (parent != null) {
                 parent.IsExpanded = true;
@@ -714,8 +714,8 @@ namespace BioLink.Client.Material {
             viewModel.IsSelected = true;
             viewModel.IsRenaming = true;
 
-            if (actionFactory != null) {
-                RegisterPendingChange(actionFactory(viewModel), this);
+            if (commandFactoryFunction != null) {
+                RegisterPendingChange(commandFactoryFunction(viewModel), this);
             }
 
             return viewModel;
@@ -765,7 +765,7 @@ namespace BioLink.Client.Material {
         }
 
 
-        private void EditNode(SiteExplorerNodeViewModel node, Func<DatabaseActionControl> editorFactory) {
+        private void EditNode(SiteExplorerNodeViewModel node, Func<DatabaseCommandControl> editorFactory) {
             if (node.ElemID < 0) {
                 ErrorMessage.Show("You must first apply the changes before editing the details of this item!");
                 return;

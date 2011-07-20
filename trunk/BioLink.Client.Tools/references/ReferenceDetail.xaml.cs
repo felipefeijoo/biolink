@@ -21,7 +21,7 @@ namespace BioLink.Client.Tools {
     /// <summary>
     /// Interaction logic for ReferenceDetail.xaml
     /// </summary>
-    public partial class ReferenceDetail : DatabaseActionControl {
+    public partial class ReferenceDetail : DatabaseCommandControl {
 
         private ReferenceViewModel _viewModel;
 

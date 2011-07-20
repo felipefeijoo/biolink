@@ -20,7 +20,7 @@ namespace BioLink.Client.Material {
     /// <summary>
     /// Interaction logic for MaterialDetails.xaml
     /// </summary>
-    public partial class MaterialDetails : DatabaseActionControl {
+    public partial class MaterialDetails : DatabaseCommandControl {
 
         private IdentificationHistoryControl _historyControl;
 

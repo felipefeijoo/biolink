@@ -21,7 +21,7 @@ namespace BioLink.Client.Material {
     /// <summary>
     /// Interaction logic for SiteDetails.xaml
     /// </summary>
-    public partial class SiteDetails : DatabaseActionControl {
+    public partial class SiteDetails : DatabaseCommandControl {
 
         private SiteViewModel _viewModel;
 

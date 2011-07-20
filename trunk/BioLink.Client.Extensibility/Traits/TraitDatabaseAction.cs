@@ -3,9 +3,9 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Extensibility {
 
-    public abstract class TraitDatabaseActionBase : DatabaseCommand {
+    public abstract class TraitDatabaseCommandBase : DatabaseCommand {
 
-        public TraitDatabaseActionBase(Trait trait, ViewModelBase owner) {
+        public TraitDatabaseCommandBase(Trait trait, ViewModelBase owner) {
             this.Trait = trait;
             this.Owner = owner;
         }
@@ -16,7 +16,7 @@ namespace BioLink.Client.Extensibility {
         
     }
 
-    public class UpdateTraitDatabaseCommand : TraitDatabaseActionBase {
+    public class UpdateTraitDatabaseCommand : TraitDatabaseCommandBase {
 
         public UpdateTraitDatabaseCommand(Trait trait, ViewModelBase owner) : base(trait, owner) { }
 
@@ -48,7 +48,7 @@ namespace BioLink.Client.Extensibility {
 
     }
 
-    public class DeleteTraitDatabaseCommand : TraitDatabaseActionBase {
+    public class DeleteTraitDatabaseCommand : TraitDatabaseCommandBase {
 
         public DeleteTraitDatabaseCommand(Trait trait, ViewModelBase owner) : base(trait, owner) { }
 

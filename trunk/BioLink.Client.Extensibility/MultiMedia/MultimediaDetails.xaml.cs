@@ -19,7 +19,7 @@ namespace BioLink.Client.Extensibility {
     /// <summary>
     /// Interaction logic for MultimediaDetails.xaml
     /// </summary>
-    public partial class MultimediaDetails : DatabaseActionControl {
+    public partial class MultimediaDetails : DatabaseCommandControl {
 
         #region Designer Constructor
         public MultimediaDetails() {

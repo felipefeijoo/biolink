@@ -21,7 +21,7 @@ namespace BioLink.Client.Material {
     /// <summary>
     /// Interaction logic for RapidDataEntry.xaml
     /// </summary>
-    public partial class RapidDataEntry : DatabaseActionControl {
+    public partial class RapidDataEntry : DatabaseCommandControl {
 
         private static string CONFIG_LAT_LONG_FORMAT = "RDE.LatLongFormat";
         private static string CONFIG_LOCKING_MODE = "RDE.LockAtStartMode";

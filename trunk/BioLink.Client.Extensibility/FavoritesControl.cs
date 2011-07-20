@@ -13,7 +13,7 @@ using System.Windows.Media;
 
 namespace BioLink.Client.Extensibility {
 
-    public class FavoritesControl<T,V> : DatabaseActionControl, ILazyPopulateControl where T : Favorite, new() where V : HierarchicalViewModelBase {
+    public class FavoritesControl<T,V> : DatabaseCommandControl, ILazyPopulateControl where T : Favorite, new() where V : HierarchicalViewModelBase {
 
         private ObservableCollection<HierarchicalViewModelBase> _model;
         private HierarchicalViewModelBase _userRoot;
@@ -128,21 +128,21 @@ namespace BioLink.Client.Extensibility {
                 var selected = control.DataContext as HierarchicalViewModelBase;
 
 
-                DatabaseCommand action = null;
+                DatabaseCommand command = null;
                 if (selected is FavoriteViewModel<T>) {
                     var vm = selected as FavoriteViewModel<T>;
                     if (vm.IsGroup) {
                         vm.GroupName = text;
-                        action = new RenameFavoriteGroupCommand(vm.Model);
+                        command = new RenameFavoriteGroupCommand(vm.Model);
                     } else {
-                        action = Provider.RenameFavorite(vm, text);
+                        command = Provider.RenameFavorite(vm, text);
                     }
                 } else if (selected is V) {
-                    action = Provider.RenameViewModel(selected as V, text);
+                    command = Provider.RenameViewModel(selected as V, text);
                 }
 
-                if (action != null) {
-                    RegisterPendingChange(action);
+                if (command != null) {
+                    RegisterPendingChange(command);
                 }
             }
 

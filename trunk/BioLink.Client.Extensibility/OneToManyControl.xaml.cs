@@ -21,7 +21,7 @@ namespace BioLink.Client.Extensibility {
     /// <summary>
     /// Interaction logic for OneToManyControl.xaml
     /// </summary>
-    public partial class OneToManyControl : DatabaseActionControl, ILazyPopulateControl {
+    public partial class OneToManyControl : DatabaseCommandControl, ILazyPopulateControl {
 
         private OneToManyDetailControl _control;
         private ObservableCollection<ViewModelBase> _model;
@@ -119,12 +119,12 @@ namespace BioLink.Client.Extensibility {
 
         private ViewModelBase AddNew() {
             if (_control != null) {
-                DatabaseCommand action = null;
-                var viewModel = _control.AddNewItem(out action);
+                DatabaseCommand command = null;
+                var viewModel = _control.AddNewItem(out command);
                 if (viewModel != null) {
                     _model.Add(viewModel);
-                    if (action != null) {
-                        RegisterPendingChange(action);
+                    if (command != null) {
+                        RegisterPendingChange(command);
                     }
                     lst.SelectedItem = viewModel;
 

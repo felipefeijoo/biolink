@@ -14,7 +14,7 @@ namespace BioLink.Client.Extensibility {
 
         bool RegisterUniquePendingChange(DatabaseCommand change, object contributer);
 
-        void RegisterPendingChanges(List<DatabaseCommand> actions, object contributer);
+        void RegisterPendingChanges(List<DatabaseCommand> commands, object contributer);
 
         void CommitPendingChanges(Action successAction = null);
 

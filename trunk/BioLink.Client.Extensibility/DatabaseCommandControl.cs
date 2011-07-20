@@ -12,14 +12,14 @@ using System.Text.RegularExpressions;
 
 namespace BioLink.Client.Extensibility {
 
-    public class DatabaseActionControl : UserControl, IIdentifiableContent, IChangeContainerObserver, IDisposable, IIconHolder {
+    public class DatabaseCommandControl : UserControl, IIdentifiableContent, IChangeContainerObserver, IDisposable, IIconHolder {
 
         #region Designer Constructor
-        public DatabaseActionControl() : base() {
+        public DatabaseCommandControl() : base() {
         }
         #endregion
 
-        public DatabaseActionControl(User user, string contentId)
+        public DatabaseCommandControl(User user, string contentId)
             : base() {
 
             this.User = user;
@@ -32,23 +32,23 @@ namespace BioLink.Client.Extensibility {
             return ContentIdentifier == other;
         }
 
-        public void RegisterPendingChange(DatabaseCommand action) {
+        public void RegisterPendingChange(DatabaseCommand command) {
             WithChangeContainer(window => {
-                window.RegisterPendingChange(action, this);
+                window.RegisterPendingChange(command, this);
             });
-            RaiseChangeRegistered(action);
+            RaiseChangeRegistered(command);
         }
 
-        public bool RegisterUniquePendingChange(DatabaseCommand action) {
+        public bool RegisterUniquePendingChange(DatabaseCommand command) {
             bool ret = false;
-            WithChangeContainer(window => { ret = window.RegisterUniquePendingChange(action, this); });
-            RaiseChangeRegistered(action);
+            WithChangeContainer(window => { ret = window.RegisterUniquePendingChange(command, this); });
+            RaiseChangeRegistered(command);
             return ret;
         }
 
-        public void RegisterPendingChanges(List<DatabaseCommand> actions) {
-            WithChangeContainer(window =>  window.RegisterPendingChanges(actions, this));
-            RaiseChangeRegistered(actions);
+        public void RegisterPendingChanges(List<DatabaseCommand> commands) {
+            WithChangeContainer(window =>  window.RegisterPendingChanges(commands, this));
+            RaiseChangeRegistered(commands);
 
         }
 

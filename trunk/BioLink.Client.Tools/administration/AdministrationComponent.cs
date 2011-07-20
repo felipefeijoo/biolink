@@ -31,17 +31,17 @@ namespace BioLink.Client.Tools {
 
         protected SupportService Service { get { return new SupportService(User); } }
 
-        protected void RegisterPendingChange(DatabaseCommand action) {
+        protected void RegisterPendingChange(DatabaseCommand command) {
             var changeContainer = FindChangeContainer();
             if (changeContainer != null) {
-                changeContainer.RegisterPendingChange(action, this);
+                changeContainer.RegisterPendingChange(command, this);
             }
         }
 
-        protected void RegisterUniquePendingChange(DatabaseCommand action) {
+        protected void RegisterUniquePendingChange(DatabaseCommand command) {
             var changeContainer = FindChangeContainer();
             if (changeContainer != null) {
-                changeContainer.RegisterUniquePendingChange(action, this);
+                changeContainer.RegisterUniquePendingChange(command, this);
             }
         }
 

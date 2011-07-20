@@ -226,15 +226,15 @@ namespace BioLink.Client.Extensibility {
                 }
             }
 
-            bool hideButtons = !(content is DatabaseActionControl);
+            bool hideButtons = !(content is DatabaseCommandControl);
             ControlHostWindow form = new ControlHostWindow(User, content, sizeToContent, hideButtons);
             form.Owner = ParentWindow;
             form.Title = title;
             form.Name = "HostFor_" + content.GetType().Name;
             form.SizeToContent = sizeToContent;
 
-            if (content is DatabaseActionControl) {
-                var dbcontrol = content as DatabaseActionControl;
+            if (content is DatabaseCommandControl) {
+                var dbcontrol = content as DatabaseCommandControl;
                 dbcontrol.NotifyChangeContainerSet();
             }
 

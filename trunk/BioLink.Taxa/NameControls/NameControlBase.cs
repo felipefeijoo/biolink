@@ -9,7 +9,7 @@ using System.Windows.Documents;
 
 namespace BioLink.Client.Taxa {
 
-    public class NameControlBase : DatabaseActionControl {
+    public class NameControlBase : DatabaseCommandControl {
 
         public NameControlBase()
             : base() {

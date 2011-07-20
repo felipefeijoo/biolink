@@ -18,14 +18,14 @@ namespace BioLink.Client.Extensibility {
             return control.SelectedItem as ViewModelBase;
         }
 
-        public static void Bind(TreeView treeView, Func<ViewModelBase, DataObject> dataObjFactory) {
-            new TreeViewDragHelper(treeView, dataObjFactory);
+        public static void Bind(TreeView treeView, Func<ViewModelBase, DataObject> dataObjFactoryFunction) {
+            new TreeViewDragHelper(treeView, dataObjFactoryFunction);
         }
     }
 
     public class ListBoxDragHelper : GenericDragHelper<ListBox, ListBoxItem> {
 
-        public ListBoxDragHelper(ListBox control, Func<ViewModelBase, DataObject> func) : base(control, func) { }
+        public ListBoxDragHelper(ListBox control, Func<ViewModelBase, DataObject> dataObjFactoryFunction) : base(control, dataObjFactoryFunction) { }
 
         protected override ViewModelBase GetSelectedItem(ListBox control) {
             return control.SelectedItem as ViewModelBase;
@@ -39,14 +39,14 @@ namespace BioLink.Client.Extensibility {
 
     public class ListViewDragHelper : GenericDragHelper<ListView, ListViewItem> {
 
-        public ListViewDragHelper(ListView listView, Func<ViewModelBase, DataObject> func) : base(listView, func) { }
+        public ListViewDragHelper(ListView listView, Func<ViewModelBase, DataObject> dataObjFactoryFunction) : base(listView, dataObjFactoryFunction) { }
 
         protected override ViewModelBase GetSelectedItem(ListView control) {
             return control.SelectedItem as ViewModelBase;
         }
 
-        public static void Bind(ListView listView, Func<ViewModelBase, DataObject> dataObjFactory) {
-            new ListViewDragHelper(listView, dataObjFactory);
+        public static void Bind(ListView listView, Func<ViewModelBase, DataObject> dataObjFactoryFunction) {
+            new ListViewDragHelper(listView, dataObjFactoryFunction);
         }
 
     }
@@ -55,10 +55,10 @@ namespace BioLink.Client.Extensibility {
 
         private static List<T> _BoundControls = new List<T>();
 
-        protected GenericDragHelper(T control, Func<ViewModelBase, DataObject> dataObjFactory) {
+        protected GenericDragHelper(T control, Func<ViewModelBase, DataObject> dataObjFactoryFunction) {
             if (control != null) {
                 this.Control = control;
-                this.CreateDataObject = dataObjFactory;
+                this.CreateDataObject = dataObjFactoryFunction;
                 control.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(Control_PreviewMouseLeftButtonDown);
                 control.PreviewMouseMove += new MouseEventHandler(Control_PreviewMouseMove);
                 DragDropEffects = DragDropEffects.Copy | DragDropEffects.Move | DragDropEffects.Link;

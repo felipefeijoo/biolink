@@ -33,18 +33,12 @@ namespace BioLink.Client.Maps {
     /// </summary>
     public partial class MapControl : UserControl, IDisposable {
 
-        //[System.Runtime.InteropServices.DllImport("gdi32.dll")]
-        //private static extern bool DeleteObject(IntPtr hObject);
-
-
         private const int RESIZE_TIMEOUT = 0;
 
         private Timer _resizeTimer;
         private Point _distanceAnchor;
         private string _anchorCaption;
         private Point _lastMousePos;
-        // private ObservableCollection<LayerViewModel> _layers;
-        // private IDegreeDistanceConverter _distanceConverter = new DegreesToKilometresConverter();
         private Action<List<RegionDescriptor>> _callback;
         private RegionTreeNode _regionModel;
         private VectorLayer _regionLayer;
@@ -79,7 +73,6 @@ namespace BioLink.Client.Maps {
                 txtPosition.Text = String.Format("{0}, {1}", lat, lng);
 
                 if (_distanceAnchor != null) {
-                    // var distance = _distanceAnchor.Distance(_lastMousePos);                    
                     string from = "drop anchor";
                     var units = DistanceUnits.Kilometers;
                     if (!string.IsNullOrEmpty(_anchorCaption)) {
@@ -158,6 +151,7 @@ namespace BioLink.Client.Maps {
             InfoGrid.Visibility = System.Windows.Visibility.Visible;
             mapGrid.ColumnDefinitions[1].Width = new System.Windows.GridLength(6);
             mapGrid.ColumnDefinitions[2].Width = new System.Windows.GridLength(250);
+            btnArrow.IsChecked = true;
             _resizeTimer.Change(RESIZE_TIMEOUT, Timeout.Infinite);
         }
 
