@@ -2,6 +2,9 @@
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
+using System.Collections.Generic;
+using System;
+using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Extensibility {
 
@@ -16,6 +19,42 @@ namespace BioLink.Client.Extensibility {
             base.PrepareContainerForItemOverride(element, item);
             if (AutoExpandTopLevel) {
                 ((TreeViewItem)element).IsExpanded = true;
+            }
+        }
+
+        public List<string> GetExpandedParentages() {
+            List<string> list = new List<string>();
+            var model = ItemsSource as IEnumerable<HierarchicalViewModelBase>;            
+            if (model != null) {
+                CollectExpandedParentages(model, list);
+            }
+            return list;
+        }
+
+        private void CollectExpandedParentages(IEnumerable<HierarchicalViewModelBase> model, List<string> list) {
+            foreach (HierarchicalViewModelBase tvm in model) {
+                if (tvm.IsExpanded) {
+                    list.Add(tvm.GetParentage());
+                    if (tvm.Children != null && tvm.Children.Count > 0) {
+                        CollectExpandedParentages(tvm.Children, list);
+                    }
+                }
+            }
+        }
+
+        public void ExpandParentages(List<string> expanded) {
+            var model = ItemsSource as IEnumerable<HierarchicalViewModelBase>;            
+            if (model != null && expanded != null && expanded.Count > 0) {
+                var todo = new Stack<HierarchicalViewModelBase>(model);
+                while (todo.Count > 0) {
+                    var vm = todo.Pop();
+                    string parentage = vm.GetParentage();
+                    if (expanded.Contains(parentage)) {
+                        vm.IsExpanded = true;
+                        expanded.Remove(parentage);
+                        vm.Children.ForEach(child => todo.Push(child));
+                    }
+                }
             }
         }
 

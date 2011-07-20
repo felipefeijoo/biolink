@@ -808,7 +808,7 @@ namespace BioLink.Client.Taxa {
 
                 Taxon fullDetails = Service.GetTaxon(taxonId.Value);
                 TaxonViewModel model = new TaxonViewModel(null, fullDetails, null);
-                TaxonDetails control = new TaxonDetails(model, User, (changedModel) => {
+                TaxonDetails control = new TaxonDetails(Owner, model, User, (changedModel) => {
                     RegenerateLabel(changedModel);
                 });
 

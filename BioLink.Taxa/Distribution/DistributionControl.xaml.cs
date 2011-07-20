@@ -33,10 +33,11 @@ namespace BioLink.Client.Taxa {
 
         #endregion
 
-        public DistributionControl(Data.User user, TaxonViewModel taxon)
+        public DistributionControl(TaxaPlugin plugin, Data.User user, TaxonViewModel taxon)
             : base(user, String.Format("Taxon::DistributionControl::{0}", taxon.TaxaID.Value)) {
             InitializeComponent();                
             this.Taxon = taxon;
+            this.Plugin = plugin;
             txtDistribution.DataContext = taxon;
 
             var list = Service.GetDistribution(taxon.TaxaID);
@@ -177,6 +178,8 @@ namespace BioLink.Client.Taxa {
 
         protected TaxonViewModel Taxon { get; private set; }
 
+        protected TaxaPlugin Plugin { get; private set; }
+
         #endregion
 
         private void btnRemove_Click(object sender, RoutedEventArgs e) {
@@ -187,6 +190,21 @@ namespace BioLink.Client.Taxa {
             var item = tvwDist.SelectedItem as DistributionViewModel;
             item.Parent.Children.Remove(item);
             RegisterUniquePendingChange(new SaveDistributionRegionsCommand(Taxon.Taxon, _model));
+        }
+
+        private void btnRegionExplorer_Click(object sender, RoutedEventArgs e) {
+            ShowRegionExplorer();
+        }
+
+        private void ShowRegionExplorer() {
+            Plugin.ShowRegionExplorer((selectionResult) => {
+                var region = selectionResult.DataObject as DistributionRegionViewModel;
+                if (region != null) {                    
+                    var dist = new TaxonDistribution { DistRegionID = region.DistRegionID, TaxonID = Taxon.TaxaID.Value, BiotaDistID = -1, DistRegionFullPath = region.GetFullPath() };
+                    AddViewModelByPath(_model, dist);
+                    RegisterUniquePendingChange(new SaveDistributionRegionsCommand(Taxon.Taxon, _model));
+                }
+            });            
         }
 
     }

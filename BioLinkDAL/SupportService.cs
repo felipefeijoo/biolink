@@ -1611,12 +1611,10 @@ namespace BioLink.Data {
             );            
         }
 
-        #endregion
-
         public List<LabelSetItem> ListLabelSetItemsForUser(string username, DateTime? startdate, DateTime? enddate) {
 
             var mapper = new GenericMapperBuilder<LabelSetItem>().Ignore("Material").build();
-            return StoredProcToList("spLabelSetItemListUserPeriod", 
+            return StoredProcToList("spLabelSetItemListUserPeriod",
                 mapper,
                 _P("vchrUser", username),
                 _P("vchrDateStart", DateUtils.ShortDate(startdate)),
@@ -1624,6 +1622,32 @@ namespace BioLink.Data {
             );
 
         }
+
+        #endregion
+
+        #region Distribution Regions
+
+        public List<DistributionRegion> GetDistributionRegions(int parentId) {
+            var mapper = new GenericMapperBuilder<DistributionRegion>().build();
+            return StoredProcToList("spDistRegionList", mapper, _P("intParentID", parentId));
+        }
+
+        public int InsertDistributionRegion(DistributionRegion region) {
+            var retval = ReturnParam("newDistRegionID");
+            StoredProcUpdate("spDistRegionInsert", _P("intParentID", region.DistRegionParentID), _P("vchrDistRegionName", region.DistRegionName), retval);
+            return (int)retval.Value;
+        }
+
+        public void DeleteDistributionRegion(int regionId) {
+            StoredProcUpdate("spDistRegionDelete", _P("intDistRegionID", regionId));
+        }
+
+        public void UpdateDistributionRegion(DistributionRegion region) {
+            StoredProcUpdate("spDistRegionUpdate", _P("intDistributionRegionID", region.DistRegionID), _P("vchrDistRegionName", region.DistRegionName));
+        }
+
+        #endregion
+
     }
 
     public class RefTypeMapping {
@@ -1650,7 +1674,8 @@ namespace BioLink.Data {
         PlaceName,
         SiteOrRegion,
         Contact,
-        Loan
+        Loan,
+        DistributionRegion
     }
 
     public enum LookupOptions {

@@ -28,15 +28,15 @@ namespace BioLink.Client.Material {
                 }
         }
 
-        public string GetParentage() {
-            String parentage = "";
-            TraverseToTop((node) => {
-                if (node is SiteExplorerNodeViewModel) {
-                    parentage = "/" + (node as SiteExplorerNodeViewModel).ElemID + parentage;
-                } 
-            });
-            return parentage;
-        }
+        //public string GetParentage() {
+        //    String parentage = "";
+        //    TraverseToTop((node) => {
+        //        if (node is SiteExplorerNodeViewModel) {
+        //            parentage = "/" + (node as SiteExplorerNodeViewModel).ElemID + parentage;
+        //        } 
+        //    });
+        //    return parentage;
+        //}
 
         public override System.Windows.FrameworkElement TooltipContent {
             get {
