@@ -499,7 +499,7 @@ namespace BioLink.Data {
                 category = "%";
             }
 
-            term = term.Replace("*", "%") + "%";
+            term = EscapeSearchTerm(term, true);
 
             var mapper = new GenericMapperBuilder<MultimediaLink>().Map("FileExtension", "Extension").Override(new StringToIntConverteringMapping("MultimediaLinkID")).build();
             List<MultimediaLink> ret = StoredProcToList("spMultimediaFind", mapper, 
@@ -521,7 +521,7 @@ namespace BioLink.Data {
         }
 
         public List<Multimedia> FindMultimediaByName(string name) {
-            string searchTerm = EscapeSearchTerm(name) + "%";
+            string searchTerm = EscapeSearchTerm(name, true);
             var mapper = new GenericMapperBuilder<Multimedia>().Map("Extension", "FileExtension").build();
             List<Multimedia> results = StoredProcToList("spMultimediaFindByName", mapper, _P("txtSearchTerm", searchTerm));
             return results;
@@ -709,10 +709,10 @@ namespace BioLink.Data {
         public List<ReferenceSearchResult> FindReferences(string refCode, string author, string year, string other) {
             var mapper = new GenericMapperBuilder<ReferenceSearchResult>().Map("FullRTF","RefRTF").build();
             return StoredProcToList("spReferenceFind", mapper,
-                _P("vchrRefCode", refCode, DBNull.Value),
-                _P("vchrAuthor", author, DBNull.Value),
-                _P("vchrYear", year, DBNull.Value),
-                _P("vchrOther", other, DBNull.Value));
+                _P("vchrRefCode", EscapeSearchTerm(refCode, true), DBNull.Value),
+                _P("vchrAuthor", EscapeSearchTerm(author, true), DBNull.Value),
+                _P("vchrYear", EscapeSearchTerm(year, true), DBNull.Value),
+                _P("vchrOther", EscapeSearchTerm(other, true), DBNull.Value));
         }
 
         public List<RefLink> GetReferenceLinks(string categoryName, int intraCatID) {
@@ -1154,7 +1154,7 @@ namespace BioLink.Data {
 
         public List<Journal> FindJournals(string criteria) {
             var mapper = new GenericMapperBuilder<Journal>().build();
-            return StoredProcToList("spJournalFind", mapper, _P("vchrCriteria", criteria + "%"));
+            return StoredProcToList("spJournalFind", mapper, _P("vchrCriteria", EscapeSearchTerm(criteria, true)));
         }
 
         public List<Journal> ListJournalRange(string where) {
@@ -1445,7 +1445,7 @@ namespace BioLink.Data {
 
         public List<LookupResult> LookupSearch(string filter, LookupType lookupType) {
 
-            filter = EscapeSearchTerm(filter);
+            filter = EscapeSearchTerm(filter, true);
 
             List<LookupProcedureBinding> storedProcs = new List<LookupProcedureBinding>();
             string paramName = "vchrFilter";
@@ -1672,6 +1672,12 @@ namespace BioLink.Data {
             retval.Size = 512;
             StoredProcUpdate("spDistRegionBuildFullPath", _P("intDistRegionID", regionId), retval);
             return retval.Value as string;
+        }
+
+        public List<DistributionRegion> FindDistributionRegions(string filter) {
+            filter = EscapeSearchTerm(filter, true);
+            var mapper = new GenericMapperBuilder<DistributionRegion>().build();
+            return StoredProcToList("spDistRegionFind", mapper, _P("vchrDistRegionToFind", filter));
         }
 
         #endregion

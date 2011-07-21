@@ -248,9 +248,7 @@ namespace BioLink.Data {
 
         public List<Loan> FindLoansByTaxon(string taxon, bool findOpenLoansOnly) {
 
-            if (!taxon.EndsWith("%")) {
-                taxon += "%";
-            }
+            taxon = EscapeSearchTerm(taxon, true);
 
             var sql = @"SELECT DISTINCT L.*, REQ.vchrTitle AS [RequestorTitle], REQ.vchrGivenName AS [RequestorGivenName], REQ.vchrName AS [RequestorName], 
 			            REC.vchrTitle AS [ReceiverTitle], REC.vchrGivenName AS [ReceiverGivenName], REC.vchrName AS [ReceiverName],

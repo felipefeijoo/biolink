@@ -200,7 +200,7 @@ namespace BioLink.Client.Tools {
                 return;
             }
 
-            List<ReferenceSearchResult> data = Service.FindReferences(Wildcard(txtCode.Text), Wildcard(txtAuthor.Text), Wildcard(txtYear.Text), Wildcard(txtOther.Text));
+            List<ReferenceSearchResult> data = Service.FindReferences(txtCode.Text, txtAuthor.Text, txtYear.Text, txtOther.Text);
 
             lblStatus.Content = string.Format("{0} matching references found.", data.Count);
 
@@ -208,14 +208,6 @@ namespace BioLink.Client.Tools {
                 _searchModel.Add(new ReferenceSearchResultViewModel(item));
             });
             
-        }
-
-        private string Wildcard(string str) {
-            if (String.IsNullOrEmpty(str)) {
-                return null;
-            }
-
-            return str + "%";
         }
 
         protected SupportService Service { get { return new SupportService(User); } }

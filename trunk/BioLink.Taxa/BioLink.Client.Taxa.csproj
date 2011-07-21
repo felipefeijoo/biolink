@@ -47,8 +47,11 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DistributionRegionExplorer.xaml.cs">
+    <Compile Include="Distribution\DistributionRegionExplorer.xaml.cs">
       <DependentUpon>DistributionRegionExplorer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Distribution\DistributionRegionTooltipContent.xaml.cs">
+      <DependentUpon>DistributionRegionTooltipContent.xaml</DependentUpon>
     </Compile>
     <Compile Include="Reports\ChecklistReportOptions.xaml.cs">
       <DependentUpon>ChecklistReportOptions.xaml</DependentUpon>
@@ -139,7 +142,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="DistributionRegionExplorer.xaml">
+    <Page Include="Distribution\DistributionRegionExplorer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Distribution\DistributionRegionTooltipContent.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

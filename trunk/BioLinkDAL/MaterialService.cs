@@ -177,13 +177,13 @@ namespace BioLink.Data {
 
         public List<SiteExplorerNode> FindNodesByName(string searchTerm, string limitations) {
 
-            searchTerm = EscapeSearchTerm(searchTerm);
+            searchTerm = EscapeSearchTerm(searchTerm, true);
 
             var mapper = new GenericMapperBuilder<SiteExplorerNode>().build();
             return StoredProcToList<SiteExplorerNode>("spSiteFindByName",
                 mapper,
                 _P("vchrLimitations", limitations),
-                _P("vchrSiteToFind", searchTerm + "%")
+                _P("vchrSiteToFind", searchTerm)
             );
         }
 
@@ -253,7 +253,7 @@ namespace BioLink.Data {
         }
 
         public List<RegionSearchResult> FindRegions(string searchTerm) {
-            searchTerm = EscapeSearchTerm(searchTerm) + '%';
+            searchTerm = EscapeSearchTerm(searchTerm, true);
             var mapper = new GenericMapperBuilder<RegionSearchResult>().build();
             return StoredProcToList("spRegionFind", mapper, _P("vchrRegionToFind", searchTerm));
         }

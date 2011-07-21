@@ -35,7 +35,26 @@ namespace BioLink.Client.Taxa {
             ChangesCommitted += new PendingChangesCommittedHandler(DistributionRegionExplorer_ChangesCommitted);
 
             TreeViewDragHelper.Bind(tvwRegions, TreeViewDragHelper.CreatePinnableGenerator(plugin.Name, LookupType.DistributionRegion));
+            TreeViewDragHelper.Bind(tvwFind, TreeViewDragHelper.CreatePinnableGenerator(plugin.Name, LookupType.DistributionRegion));
 
+            txtFind.PreviewKeyDown += new KeyEventHandler(txtFind_PreviewKeyDown);
+
+        }
+
+        void txtFind_PreviewKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key == Key.Enter) {
+                DoFind();
+                e.Handled = true;
+            }
+
+            if (e.Key == Key.Down) {
+                tvwFind.Focus();
+                var model = tvwFind.ItemsSource as ObservableCollection<DistributionRegionViewModel>;
+                if (model != null && model.Count > 0) {
+                    model[0].IsSelected = true;
+                }
+                e.Handled = true;
+            }
         }
 
         void DistributionRegionExplorer_Unloaded(object sender, RoutedEventArgs e) {
@@ -97,8 +116,18 @@ namespace BioLink.Client.Taxa {
             }
         }
 
+        private TreeView CurrentTreeView {
+            get {
+                if (tvwRegions.IsVisible) {
+                    return tvwRegions;
+                }
+
+                return tvwFind;
+            }
+        }
+
         private void RegionName_EditingComplete(object sender, string text) {
-            var selected = tvwRegions.SelectedItem as DistributionRegionViewModel;
+            var selected = CurrentTreeView.SelectedItem as DistributionRegionViewModel;
             if (selected != null) {
                 RegisterUniquePendingChange(new UpdateDistributionRegionCommand(selected.Model));
             }
@@ -178,10 +207,38 @@ namespace BioLink.Client.Taxa {
             }
         }
 
+        private void btnFind_Click(object sender, RoutedEventArgs e) {
+            DoFind();
+        }
+
+        private void DoFind() {
+            var searchTerm = txtFind.Text;
+            tvwFind.ItemsSource = null;
+            if (string.IsNullOrWhiteSpace(searchTerm)) {
+                ErrorMessage.Show("Please supply a search term");
+                return;
+            }
+
+            var service= new SupportService(User);
+            var results = service.FindDistributionRegions(searchTerm);
+            if (results.Count == 0) {
+                InfoBox.Show("No matching regions found.", "No results", this);
+                return;
+            }
+
+            var model = new ObservableCollection<DistributionRegionViewModel>(results.Select((region) => {
+                var vm = new DistributionRegionViewModel(region);
+                vm.LazyLoadChildren += new HierarchicalViewModelAction(vm_LazyLoadChildren);
+                vm.Children.Add(new ViewModelPlaceholder("Loading..."));
+                return vm;
+            }));
+
+            tvwFind.ItemsSource = model;
+        }
 
 
         public SelectionResult Select() {
-            var selected = tvwRegions.SelectedItem as DistributionRegionViewModel;
+            var selected = CurrentTreeView.SelectedItem as DistributionRegionViewModel;
             if (selected != null) {
                 return new SelectionResult { DataObject = selected, Description = selected.DistRegionName, LookupType = LookupType.DistributionRegion, ObjectID = selected.DistRegionID };
             }
@@ -189,6 +246,7 @@ namespace BioLink.Client.Taxa {
         }
 
         protected TaxaPlugin Plugin { get; private set; }
+
     }
 
     public class DeleteDistributionRegion : GenericDatabaseCommand<DistributionRegion> {
@@ -251,6 +309,10 @@ namespace BioLink.Client.Taxa {
             set { base.Icon = value; }
         }
 
+        public override FrameworkElement TooltipContent {
+            get { return new DistributionRegionTooltipContent(PluginManager.Instance.User, Model.DistRegionID); }
+        }
+
         public override string DisplayLabel {
             get { return DistRegionName; }
         }
@@ -292,3 +354,4 @@ namespace BioLink.Client.Taxa {
         }
     }
 }
+
