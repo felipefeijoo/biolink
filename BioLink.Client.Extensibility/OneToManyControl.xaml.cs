@@ -85,6 +85,8 @@ namespace BioLink.Client.Extensibility {
             }            
         }
 
+        public OneToManyDetailControl DetailControl { get { return _control; } }
+
         protected ViewModelBase Owner { get; set; }
 
         public void SetModel(ViewModelBase owner, ObservableCollection<ViewModelBase> model) {
@@ -96,6 +98,23 @@ namespace BioLink.Client.Extensibility {
             } else {
                 detailsGrid.IsEnabled = false;
             }
+        }
+
+        public void SetSelectedItem(ViewModelBase selected) {
+            if (selected != null) {
+                lst.SelectedItem = selected;
+            }
+        }
+
+        public ViewModelBase FindItem(Predicate<ViewModelBase> predicate) {
+            if (_model != null) {
+                foreach (ViewModelBase item in _model) {
+                    if (predicate(item)) {
+                        return item;
+                    }
+                }
+            }
+            return null;
         }
 
         public ObservableCollection<ViewModelBase> GetModel() {

@@ -456,10 +456,76 @@ namespace BioLink.Client.Tools {
             }
         }
 
+        public override T GetAdaptorForPinnable<T>(PinnableObject pinnable) {
+            if (pinnable.LookupType == LookupType.Material) {
+                if (typeof(T) == typeof(ILabelSetItemTarget)) {
+                    return (T) (object) (new AddToLabelSetAdapter(this, User));
+                }
+            }
+
+            return base.GetAdaptorForPinnable<T>(pinnable);
+
+        }
+
 
         public void AddNewLoan() {
             var control = new LoanDetails(User, this, -1);
             PluginManager.Instance.AddNonDockableContent(this, control, "Loan Detail <New Loan>", SizeToContent.Manual);
         }
+
+
+        internal void AddItemToLabelSet(PinnableObject item, string labelSetName) {
+            var host = ShowLabelManager();
+            if (host != null) {
+                var otm = host.Control as OneToManyControl;
+                if (otm != null) {
+                    var existing = otm.FindItem((vm) => {
+                        var set = vm as LabelSetViewModel;
+                        return set.Name.Equals(labelSetName, StringComparison.CurrentCultureIgnoreCase);
+                    });
+                    LabelManagerControl control = null;
+                    if (existing != null) {
+                        otm.SetSelectedItem(existing);
+                        control = otm.DetailControl as LabelManagerControl;
+                    } else {
+                    }
+
+                    if (control != null) {
+                        control.AddItemFromPinnable(item);
+                    }
+                }
+            }
+        }
     }
+
+    class AddToLabelSetAdapter : ILabelSetItemTarget {
+
+        public AddToLabelSetAdapter(ToolsPlugin plugin, User user) {
+            this.Plugin = plugin;
+            this.User = user;
+        }
+
+        public void AddItemToLabelSet(PinnableObject item) {
+            if (item.LookupType == LookupType.Material) {
+                var frm = new AddToLabelSet(User, item.ObjectID);
+                frm.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                if (frm.ShowDialog().ValueOrFalse()) {
+                    // Do it!
+                    Plugin.AddItemToLabelSet(item, frm.LabelSetName);
+                }
+            } else {
+                ErrorMessage.Show("Unhandled item type for this operation: " + item.LookupType.ToString());
+                return;
+            }
+        }
+
+        public void AddMaterialToSet(PinnableObject item) {
+        }
+
+        protected User User { get; private set; }
+        protected ToolsPlugin Plugin { get; private set; }
+    }
+
+
+
 }

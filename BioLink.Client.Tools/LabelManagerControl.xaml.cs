@@ -160,73 +160,78 @@ namespace BioLink.Client.Tools {
             dataView.Refresh();
         }
 
+        public void AddItemFromPinnable(PinnableObject pinnable) {
+            int maxOrder = 0;
+            if (_itemModel.Count > 0) {
+                maxOrder = _itemModel.Max((item) => {
+                    return item.PrintOrder;
+                });
+            }
+
+            var newItem = new LabelSetItem { ItemID = pinnable.ObjectID, ItemType = pinnable.LookupType.ToString(), SetID = CurrentItemSetID, PrintOrder = maxOrder + 1, NumCopies = 1 };
+            var service = new MaterialService(User);
+            Site site = null;
+            SiteVisit visit = null;
+            Material material = null;
+            switch (pinnable.LookupType) {
+                case LookupType.Material:
+                    material = service.GetMaterial(pinnable.ObjectID);
+                    visit = service.GetSiteVisit(material.SiteVisitID);
+                    site = service.GetSite(material.SiteID);
+                    break;
+                case LookupType.SiteVisit:
+                    visit = service.GetSiteVisit(pinnable.ObjectID);
+                    site = service.GetSite(visit.SiteID);
+                    break;
+                case LookupType.Site:
+                    site = service.GetSite(pinnable.ObjectID);
+                    break;
+            }
+
+            if (material != null) {
+                newItem.MaterialID = material.MaterialID;
+                newItem.TaxaFullName = material.TaxaDesc;
+                newItem.AccessionNo = material.AccessionNumber;
+            }
+
+            if (visit != null) {
+                newItem.VisitID = visit.SiteVisitID;
+                newItem.Collectors = visit.Collector;
+                newItem.DateType = visit.DateType;
+                newItem.CasualDate = visit.CasualTime;
+                newItem.StartDate = visit.DateStart;
+                newItem.EndDate = visit.DateEnd;
+            }
+
+            if (site != null) {
+                newItem.SiteID = site.SiteID;
+                newItem.Region = site.PoliticalRegion;
+                newItem.Local = site.Locality;
+                newItem.LocalType = site.LocalityType;
+                newItem.Lat = site.PosY1;
+                newItem.Long = site.PosX1;
+                newItem.Lat2 = site.PosY2;
+                newItem.Long2 = site.PosX2;
+            }
+
+            var vm = new LabelSetItemViewModel(newItem);
+
+            vm.DataChanged += new DataChangedHandler((viewModel) => {
+                Host.RegisterUniquePendingChange(new UpdateLabelSetItemCommand(newItem));
+            });
+
+            Host.RegisterUniquePendingChange(new InsertLabelSetItemCommand(newItem));
+            _itemModel.Add(vm);
+
+        }
+
 
         void lvw_Drop(object sender, DragEventArgs e) {
 
             using (new OverrideCursor(Cursors.Wait)) {
                 var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;
                 if (pinnable != null) {
-                    int maxOrder = 0;
-                    if (_itemModel.Count > 0) {
-                        maxOrder = _itemModel.Max((item) => {
-                            return item.PrintOrder;
-                        });
-                    }
-
-                    var newItem = new LabelSetItem { ItemID = pinnable.ObjectID, ItemType = pinnable.LookupType.ToString(), SetID = CurrentItemSetID, PrintOrder = maxOrder + 1, NumCopies = 1 };
-                    var service = new MaterialService(User);
-                    Site site = null;
-                    SiteVisit visit = null;
-                    Material material = null;
-                    switch (pinnable.LookupType) {
-                        case LookupType.Material:
-                            material = service.GetMaterial(pinnable.ObjectID);
-                            visit = service.GetSiteVisit(material.SiteVisitID);
-                            site = service.GetSite(material.SiteID);
-                            break;
-                        case LookupType.SiteVisit:
-                            visit = service.GetSiteVisit(pinnable.ObjectID);
-                            site = service.GetSite(visit.SiteID);
-                            break;
-                        case LookupType.Site:
-                            site = service.GetSite(pinnable.ObjectID);
-                            break;
-                    }
-
-                    if (material != null) {
-                        newItem.MaterialID = material.MaterialID;
-                        newItem.TaxaFullName = material.TaxaDesc;
-                        newItem.AccessionNo = material.AccessionNumber;
-                    }
-
-                    if (visit != null) {                       
-                        newItem.VisitID = visit.SiteVisitID;
-                        newItem.Collectors = visit.Collector;
-                        newItem.DateType = visit.DateType;
-                        newItem.CasualDate = visit.CasualTime;
-                        newItem.StartDate = visit.DateStart;
-                        newItem.EndDate = visit.DateEnd;
-                    }
-
-                    if (site != null) {
-                        newItem.SiteID = site.SiteID;
-                        newItem.Region = site.PoliticalRegion;
-                        newItem.Local = site.Locality;
-                        newItem.LocalType = site.LocalityType;
-                        newItem.Lat = site.PosY1;
-                        newItem.Long = site.PosX1;
-                        newItem.Lat2 = site.PosY2;
-                        newItem.Long2 = site.PosX2;
-                    }
-
-                    var vm = new LabelSetItemViewModel(newItem);
-
-                    vm.DataChanged += new DataChangedHandler((viewModel) => {
-                        Host.RegisterUniquePendingChange(new UpdateLabelSetItemCommand(newItem));
-                    });
-
-                    Host.RegisterUniquePendingChange(new InsertLabelSetItemCommand(newItem));
-                    _itemModel.Add(vm);
+                    AddItemFromPinnable(pinnable);
                 }
             }
         }
