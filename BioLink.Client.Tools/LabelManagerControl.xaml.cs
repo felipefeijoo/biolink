@@ -542,7 +542,7 @@ namespace BioLink.Client.Tools {
                 sb.Append(fd.Field.DisplayName);
                 if (!string.IsNullOrEmpty(fd.FormatOption)) {
                     sb.Append((char)2);
-                    sb.Append(fd.FormatOption);
+                    sb.Append(fd.FormatOption);        
                 }
             }
             return sb.ToString();
@@ -571,6 +571,38 @@ namespace BioLink.Client.Tools {
 
         private void lstFields_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
             SelectField();
+        }
+
+        private void btnFieldUp_Click(object sender, RoutedEventArgs e) {
+            MoveSelectedFieldUp();
+        }
+
+        private void btnFieldDown_Click(object sender, RoutedEventArgs e) {
+            MoveSelectedFieldDown();
+        }
+
+        private void MoveSelectedFieldUp() {
+            var selected = lvwSelectedFields.SelectedItem as QueryCriteriaViewModel;
+            var list = lvwSelectedFields.ItemsSource as ObservableCollection<QueryCriteriaViewModel>;
+            if (list != null && selected != null) {
+                var index = list.IndexOf(selected);
+                if (index >= 1) {
+                    list.Move(index, index - 1);
+                    CurrentLabelSet.Delimited = BuildDelimitedFields(list); 
+                }
+            }
+        }
+
+        private void MoveSelectedFieldDown() {
+            var selected = lvwSelectedFields.SelectedItem as QueryCriteriaViewModel;
+            var list = lvwSelectedFields.ItemsSource as ObservableCollection<QueryCriteriaViewModel>;
+            if (list != null && selected != null) {
+                var index = list.IndexOf(selected);
+                if (index < list.Count - 1) {
+                    list.Move(index, index + 1);
+                    CurrentLabelSet.Delimited = BuildDelimitedFields(list);
+                }
+            }
         }
 
     }

@@ -113,8 +113,12 @@
                                 <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/DoubleLeftArrowSmall.png" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
                             </Button.Content>
                         </Button>
-
-
+                        <Button Height="23" Name="btnFieldUp" Margin="0,0,0,6" ToolTip="Move selected field up" Click="btnFieldUp_Click">
+                            <Image SnapsToDevicePixels="True" Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/UpArrowSmall.png" Stretch="None" UseLayoutRounding="True" />
+                        </Button>
+                        <Button Height="23" Name="btnFieldDown" Margin="0,0,0,6" ToolTip="Move selected field down" Click="btnFieldDown_Click">
+                            <Image SnapsToDevicePixels="True" Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/DownArrowSmall.png" Stretch="None" UseLayoutRounding="True" />
+                        </Button>
                     </StackPanel>
                     
                     <ListView Grid.Column="2" Margin="6" x:Name="lvwSelectedFields">
