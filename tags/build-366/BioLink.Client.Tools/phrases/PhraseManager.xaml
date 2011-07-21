@@ -1,0 +1,120 @@
+﻿<ext:DatabaseCommandControl x:Class="BioLink.Client.Tools.PhraseManager"                                         
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+             xmlns:data="clr-namespace:BioLink.Data;assembly=BioLink.Data"                           
+             xmlns:model="clr-namespace:BioLink.Data.Model;assembly=BioLink.Data"
+             xmlns:src="clr-namespace:BioLink.Client.Tools"
+             mc:Ignorable="d" 
+             d:DesignHeight="446" d:DesignWidth="679">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <!--<ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="StringResources.xaml" />
+            </ResourceDictionary.MergedDictionaries>-->
+            
+            <Style TargetType="ListViewItem">
+                <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
+            </Style>
+            
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>        
+        <Grid.RowDefinitions>            
+            <RowDefinition Height="*" />            
+        </Grid.RowDefinitions>        
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />                
+            </Grid.ColumnDefinitions>
+            <Grid x:Name="lhsGrid" MinWidth="150">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="34" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="30" />
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <ToolBar x:Name="CategoriesToolBar" Grid.Row="0">
+                        <Button x:Name="btnDeleteCategory" Width="24" Click="btnDeleteCategory_Click">
+                            <Button.Content>
+                                <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/Delete.png" Stretch="None" SnapsToDevicePixels="True" />
+                            </Button.Content>
+                        </Button>
+                        <Label Content="Filter:" VerticalContentAlignment="Center"/>                        
+                    </ToolBar>
+                    <ext:DelayedTriggerTextbox Height="23" x:Name="txtFilter" TypingPaused="txtFilter_TypingPaused" TextChanged="txtFilter_TextChanged" KeyUp="txtFilter_KeyUp" Margin="106,6,20,0" VerticalAlignment="Top" />
+                </Grid>
+                <ListView Grid.Row="1" Margin="6,0" Grid.RowSpan="2" Name="lvwCategories" SelectionChanged="lvwCategories_SelectionChanged" MouseRightButtonUp="lvwCategories_MouseRightButtonUp" SelectionMode="Single">
+                    <ListView.Resources>
+                        <DataTemplate DataType="{x:Type src:PhraseCategoryViewModel}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,1" Height="20" Width="20" Stretch="None"/>
+                                <TextBlock x:Name="Category" Text="{Binding Path=Category, Mode=TwoWay}" VerticalAlignment="Center" />
+                            </StackPanel>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding IsDeleted}" Value="True">
+                                    <Setter TargetName="Category" Property="TextDecorations" Value="Strikethrough" />
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
+                    </ListView.Resources>
+                    
+                    <ListView.View>
+                        <GridView>
+                            <GridView.Columns>
+                                <GridViewColumn Header="Phrase Category" Width="{Binding ElementName=lhsGrid, Path=Width}" />
+                            </GridView.Columns>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Grid>
+            <GridSplitter  Width="5" Margin="0,34,0,0" ResizeDirection="Columns" ResizeBehavior="CurrentAndNext" />
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="34" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <ToolBar Margin="0,0,5,0">
+                    <Button x:Name="btnAddPhrase" Height="24" Width="24" Click="btnAddPhrase_Click">
+                        <Button.Content>
+                            <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/AddNew.png" Stretch="None" SnapsToDevicePixels="True" />
+                        </Button.Content>
+                    </Button>
+                    <Button x:Name="btnDeletePhrase" Height="24" Width="24" Click="btnDeletePhrase_Click">
+                        <Button.Content>
+                            <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/Delete.png" Stretch="None" SnapsToDevicePixels="True" />
+                        </Button.Content>
+                    </Button>
+                    <Button x:Name="btnRenamePhrase" Height="24" Width="24" Click="btnRenamePhrase_Click">
+                        <Button.Content>
+                            <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/Rename.png" Stretch="None" SnapsToDevicePixels="True" />
+                        </Button.Content>
+                    </Button>
+                    <Label Content="Filter:" VerticalContentAlignment="Center" Width="50"/>
+                    <ext:DelayedTriggerTextbox x:Name="txtPhraseFilter" Width="150" Height="23" TypingPaused="txtPhraseFilter_TypingPaused" TextChanged="txtPhraseFilter_TextChanged" />
+                </ToolBar>
+                <ListView Grid.Row="1" Margin="0,0,6,0" Name="lvwPhrases" MouseRightButtonUp="lvwPhrases_MouseRightButtonUp" SelectionMode="Single">
+                    <ListView.Resources>
+                        <DataTemplate DataType="{x:Type src:PhraseViewModel}">
+                            <StackPanel Orientation="Horizontal">
+                                <!-- <TextBlock x:Name="PhraseText" Text="{Binding Path=PhraseText, Mode=TwoWay}" VerticalAlignment="Center" /> -->
+                                <ext:EditableTextBlock x:Name="PhraseText" Text="{Binding Path=PhraseText,Mode=TwoWay}" VerticalAlignment="Center" IsInEditMode="{Binding Path=IsRenaming, Mode=TwoWay}" EditingComplete="PhraseText_EditingComplete"  EditingCancelled="PhraseText_EditingCancelled"  ViewModel="{Binding}"/>
+                            </StackPanel>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding IsDeleted}" Value="True">
+                                    <Setter TargetName="PhraseText" Property="TextDecorations" Value="Strikethrough" />                                    
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
+                    </ListView.Resources>
+                </ListView>
+            </Grid>            
+        </Grid>
+    </Grid>
+</ext:DatabaseCommandControl>
