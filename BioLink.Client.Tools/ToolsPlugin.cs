@@ -488,6 +488,12 @@ namespace BioLink.Client.Tools {
                         otm.SetSelectedItem(existing);
                         control = otm.DetailControl as LabelManagerControl;
                     } else {
+                        var set = otm.AddNew() as LabelSetViewModel;
+                        if (set != null) {
+                            set.Name = labelSetName;
+                            otm.SetSelectedItem(set);
+                            control = otm.DetailControl as LabelManagerControl;
+                        }
                     }
 
                     if (control != null) {
