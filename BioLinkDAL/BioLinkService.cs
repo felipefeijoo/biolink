@@ -322,9 +322,19 @@ namespace BioLink.Data {
             return @default;
         }
 
-        protected string EscapeSearchTerm(string searchTerm) {
+        protected string EscapeSearchTerm(string searchTerm, bool appendWildcard = false) {
+            if (string.IsNullOrWhiteSpace(searchTerm)) {
+                if (appendWildcard) {
+                    return "%";
+                }
+                return "";
+            }
+
             var escaped = searchTerm.Replace('*', '%');
             escaped = escaped.Replace("[", "[[]");
+            if (appendWildcard && !escaped.EndsWith("%")) {
+                escaped += "%";
+            }
             return escaped;
         }
      

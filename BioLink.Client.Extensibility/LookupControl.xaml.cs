@@ -87,7 +87,6 @@ namespace BioLink.Client.Extensibility {
             }
 
             _validate = false;
-            filter = filter + "%";
             var service = new SupportService(User);
             var lookupResults = service.LookupSearch(filter, LookupType);
             _validate = true;
