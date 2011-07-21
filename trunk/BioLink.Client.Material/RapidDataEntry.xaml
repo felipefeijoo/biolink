@@ -101,6 +101,8 @@
                     <MenuItem x:Name="mnuLockAtStart" Header="Lock Existing Records at Start" IsCheckable="True" IsChecked="True" Click="mnuLockAtStart_Click"/>
                     <MenuItem x:Name="mnuUnlockAtStart" Header="Unlock Existing Records at Start" IsCheckable="True" Click="mnuUnlockAtStart_Click"/>
                  </MenuItem>
+                <Separator />
+                <MenuItem x:Name="mnuAddToLabelSet" Header="Add Material to Label Set" Click="mnuAddToLabelSet_Click"/>
             </MenuItem>
         </Menu>
         

@@ -1122,6 +1122,28 @@ namespace BioLink.Client.Material {
 
         protected MaterialExplorer Explorer { get; private set; }
 
+        private void mnuAddToLabelSet_Click(object sender, RoutedEventArgs e) {
+            AddMaterialToLabelSet();
+        }
+
+        private void AddMaterialToLabelSet() {
+            var m = grpMaterial.SelectedItem as RDEMaterialViewModel;
+            if (m != null) {
+                if (m.IsChanged || m.MaterialID <= 0) {
+                    ErrorMessage.Show("This material has unsaved changes. Please apply the changes before trying again.");
+                    return;
+                }
+
+                // make a pinnable...
+                var pinnable = new PinnableObject(MaterialPlugin.MATERIAL_PLUGIN_NAME, Data.LookupType.Material, m.MaterialID);
+                var target = PluginManager.Instance.FindAdaptorForPinnable<ILabelSetItemTarget>(pinnable);
+                if (target != null) {
+                    target.AddItemToLabelSet(pinnable);
+                }
+            }
+
+        }
+
     }
     
 }

@@ -121,6 +121,7 @@
     </Compile>
     <Compile Include="Export\Excel2003Exporter.cs" />
     <Compile Include="IIconHolder.cs" />
+    <Compile Include="ILabelSetItemTarget.cs" />
     <Compile Include="IPreferredSizeHolder.cs" />
     <Compile Include="MultiMedia\FindMultimediaDialog.xaml.cs">
       <DependentUpon>FindMultimediaDialog.xaml</DependentUpon>
