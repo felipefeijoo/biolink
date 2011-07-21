@@ -108,11 +108,12 @@
                             </Button.Content>
                         </Button>
 
-                        <Button Height="23" x:Name="btnUnselectAll" Margin="0,0,0,6" ToolTip="Remove field from selected list" Click="btnUnselectAll_Click">
+                        <Button Height="23" x:Name="btnUnselectAll" Margin="0,0,0,12" ToolTip="Remove field from selected list" Click="btnUnselectAll_Click">
                             <Button.Content>
                                 <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/DoubleLeftArrowSmall.png" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
                             </Button.Content>
                         </Button>
+                        
                         <Button Height="23" Name="btnFieldUp" Margin="0,0,0,6" ToolTip="Move selected field up" Click="btnFieldUp_Click">
                             <Image SnapsToDevicePixels="True" Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/UpArrowSmall.png" Stretch="None" UseLayoutRounding="True" />
                         </Button>

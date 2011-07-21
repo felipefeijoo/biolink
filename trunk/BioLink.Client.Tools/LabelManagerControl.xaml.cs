@@ -220,7 +220,7 @@ namespace BioLink.Client.Tools {
                 Host.RegisterUniquePendingChange(new UpdateLabelSetItemCommand(newItem));
             });
 
-            Host.RegisterUniquePendingChange(new InsertLabelSetItemCommand(newItem));
+            Host.RegisterUniquePendingChange(new InsertLabelSetItemCommand(newItem, CurrentLabelSet.Model));
             _itemModel.Add(vm);
 
         }
@@ -324,7 +324,7 @@ namespace BioLink.Client.Tools {
                     _itemModel.Add(vm);
                     item.SetID = CurrentItemSetID;
                     item.NumCopies = 1;
-                    Host.RegisterUniquePendingChange(new InsertLabelSetItemCommand(item));
+                    Host.RegisterUniquePendingChange(new InsertLabelSetItemCommand(item, CurrentLabelSet.Model));
                 }
 
                 ReorderItems();
@@ -639,16 +639,21 @@ namespace BioLink.Client.Tools {
 
     public class InsertLabelSetItemCommand : GenericDatabaseCommand<LabelSetItem> {
 
-        public InsertLabelSetItemCommand(LabelSetItem model) : base(model) { }
+        public InsertLabelSetItemCommand(LabelSetItem model, LabelSet ownerSet) : base(model) {
+            LabelSet = ownerSet;
+        }
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);
+            Model.SetID = LabelSet.ID;
             Model.LabelItemID = service.InsertLabelSetItem(Model);
         }
 
         protected override void BindPermissions(PermissionBuilder required) {
             required.None();
         }
+
+        protected LabelSet LabelSet { get; private set; }
 
     }
 
@@ -657,7 +662,7 @@ namespace BioLink.Client.Tools {
         public UpdateLabelSetItemCommand(LabelSetItem model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
-            var service = new SupportService(user);
+            var service = new SupportService(user);            
             service.UpdateLabelSetItem(Model);
         }
 

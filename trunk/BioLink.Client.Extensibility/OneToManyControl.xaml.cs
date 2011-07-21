@@ -136,7 +136,7 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        private ViewModelBase AddNew() {
+        public ViewModelBase AddNew() {
             if (_control != null) {
                 DatabaseCommand command = null;
                 var viewModel = _control.AddNewItem(out command);
