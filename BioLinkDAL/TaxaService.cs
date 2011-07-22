@@ -687,11 +687,11 @@ namespace BioLink.Data {
 
         public DataMatrix TaxaForSites(int siteOrRegionID, int taxonID, string itemType, string criteriaDisplayText, bool includeLocations) {
 
-            var sb = new RTFReportBuilder();
-            sb.AppendFullHeader();            
-            sb.Append(@"\pard\fs36\b Taxa for Site/Region Report\b0\pard\par\fs24 ");
-            sb.Append(criteriaDisplayText);
-            sb.Append(@"\pard\par\fs24 Produced: ").AppendCurrentDate();
+            var rtf = new RTFReportBuilder();
+            rtf.AppendFullHeader();
+            rtf.ReportHeading("Taxa for Site/Region Report");            
+            rtf.Append(criteriaDisplayText);
+            rtf.Append(@"\pard\par\fs24 Produced: ").AppendCurrentDate();
 
             int lngLastBiotaID = -1;
             int lngLastRegionID = -1;
@@ -706,16 +706,16 @@ namespace BioLink.Data {
                     lngLastBiotaID = biotaID;
                     lngLastRegionID = -1;
                     lngLastSiteID = -1;
-                    sb.Par().Par().Append(@"\pard\sb20\fs28\b ");
-                    sb.Append(AsString(reader["BiotaFullName"])).Append(@"\b0");
+                    rtf.Par().Par().Append(@"\pard\sb20\fs28\b ");
+                    rtf.Append(AsString(reader["BiotaFullName"])).Append(@"\b0");
                     // extract the family and order
                     string orderRank = GetBiotaRankElemType(lngLastBiotaID, "O");
                     string familyRank = GetBiotaRankElemType(lngLastBiotaID, "F");
 
                     if (!string.IsNullOrWhiteSpace(orderRank) && string.IsNullOrWhiteSpace(familyRank)) {
-                        sb.Append("  [").Append(orderRank).Append("]");
+                        rtf.Append("  [").Append(orderRank).Append("]");
                     } else if (!string.IsNullOrWhiteSpace(orderRank) && !string.IsNullOrWhiteSpace(familyRank)) {
-                        sb.Append("  [").Append(orderRank).Append(": ").Append(familyRank).Append("]");
+                        rtf.Append("  [").Append(orderRank).Append(": ").Append(familyRank).Append("]");
                     }
                 }
 
@@ -726,25 +726,25 @@ namespace BioLink.Data {
                     if (lngLastRegionID != regionID) {
                         // Add the region
                         lngLastRegionID = regionID;
-                        sb.Par().Append(@"\pard\sb10\fs20\li600\b ").Append(AsString(reader["FullRegion"])).Append(@"\b0 ");
+                        rtf.Par().Append(@"\pard\sb10\fs20\li600\b ").Append(AsString(reader["FullRegion"])).Append(@"\b0 ");
                     }
 
                     int siteID = (Int32)reader["SiteID"];
                     if (lngLastSiteID != siteID) {
                         lngLastSiteID = siteID;
                         // Add the Site
-                        sb.Par().Append(@"\pard\sb10\fs20\li1200 ");
+                        rtf.Par().Append(@"\pard\sb10\fs20\li1200 ");
                         // Add the locality
                         byte localType = (byte) reader["LocalType"];
                         switch (localType) {
                             case 0:
-                                sb.Append(reader["Local"] as string);
+                                rtf.Append(reader["Local"] as string);
                                 break;
                             case 1:
-                                sb.Append(reader["DistanceFromPlace"]).Append(" ").Append(reader["DirFromPlace"]).Append(" of ").Append(reader["Local"]);
+                                rtf.Append(reader["DistanceFromPlace"]).Append(" ").Append(reader["DirFromPlace"]).Append(" of ").Append(reader["Local"]);
                                 break;
                             default:
-                                sb.Append(reader["Local"] as string);
+                                rtf.Append(reader["Local"] as string);
                                 break;
                         }
 
@@ -757,41 +757,41 @@ namespace BioLink.Data {
                         double? lon2 = reader["Long2"] as double?;
 
                         if (!lat.HasValue || !lon.HasValue) {
-                            sb.Append("; No position data");
+                            rtf.Append("; No position data");
                         } else {
                             switch (areaType) {
                                 case 1:
-                                    sb.Append("; ");
-                                    sb.Append(GeoUtils.DecDegToDMS(lat.Value, CoordinateType.Latitude));
-                                    sb.Append(", ");
-                                    sb.Append(GeoUtils.DecDegToDMS(lon.Value, CoordinateType.Longitude));
+                                    rtf.Append("; ");
+                                    rtf.Append(GeoUtils.DecDegToDMS(lat.Value, CoordinateType.Latitude));
+                                    rtf.Append(", ");
+                                    rtf.Append(GeoUtils.DecDegToDMS(lon.Value, CoordinateType.Longitude));
                                     break;
                                 case 2:
-                                    sb.Append("; Box: ");
-                                    sb.Append(GeoUtils.DecDegToDMS(lat.Value, CoordinateType.Latitude));
-                                    sb.Append(", ");
-                                    sb.Append(GeoUtils.DecDegToDMS(lon.Value, CoordinateType.Longitude));
-                                    sb.Append("; ");
+                                    rtf.Append("; Box: ");
+                                    rtf.Append(GeoUtils.DecDegToDMS(lat.Value, CoordinateType.Latitude));
+                                    rtf.Append(", ");
+                                    rtf.Append(GeoUtils.DecDegToDMS(lon.Value, CoordinateType.Longitude));
+                                    rtf.Append("; ");
                                     if (!lat2.HasValue || !lon2.HasValue) {
-                                        sb.Append("; No position data for second coordinate");
+                                        rtf.Append("; No position data for second coordinate");
                                     } else {
-                                        sb.Append(GeoUtils.DecDegToDMS(lat2.Value, CoordinateType.Latitude));
-                                        sb.Append(", ");
-                                        sb.Append(GeoUtils.DecDegToDMS(lon2.Value, CoordinateType.Longitude));
+                                        rtf.Append(GeoUtils.DecDegToDMS(lat2.Value, CoordinateType.Latitude));
+                                        rtf.Append(", ");
+                                        rtf.Append(GeoUtils.DecDegToDMS(lon2.Value, CoordinateType.Longitude));
                                     }
                                     break;
                                 case 3:
-                                    sb.Append("; Line: ");
-                                    sb.Append(GeoUtils.DecDegToDMS(lat.Value, CoordinateType.Latitude));
-                                    sb.Append(", ");
-                                    sb.Append(GeoUtils.DecDegToDMS(lon.Value, CoordinateType.Longitude));
-                                    sb.Append("; ");
+                                    rtf.Append("; Line: ");
+                                    rtf.Append(GeoUtils.DecDegToDMS(lat.Value, CoordinateType.Latitude));
+                                    rtf.Append(", ");
+                                    rtf.Append(GeoUtils.DecDegToDMS(lon.Value, CoordinateType.Longitude));
+                                    rtf.Append("; ");
                                     if (!lat2.HasValue || !lon2.HasValue) {
-                                        sb.Append("; No position data for second coordinate");
+                                        rtf.Append("; No position data for second coordinate");
                                     } else {
-                                        sb.Append(GeoUtils.DecDegToDMS(lat2.Value, CoordinateType.Latitude));
-                                        sb.Append(", ");
-                                        sb.Append(GeoUtils.DecDegToDMS(lon2.Value, CoordinateType.Longitude));
+                                        rtf.Append(GeoUtils.DecDegToDMS(lat2.Value, CoordinateType.Latitude));
+                                        rtf.Append(", ");
+                                        rtf.Append(GeoUtils.DecDegToDMS(lon2.Value, CoordinateType.Longitude));
                                     }
 
                                     break;
@@ -805,13 +805,69 @@ namespace BioLink.Data {
             }, _P("vchrItemType", itemType), _P("intItemID", siteOrRegionID), _P("intBiotaID", taxonID));
 
             if (!hasResults) {
-                sb.Par().Par().Append("No results.");
+                rtf.Par().Par().Append("No results.");
             }
     
    
-            sb.Append("}");
+            rtf.Append("}");
 
-            return sb.GetAsMatrix();
+            return rtf.GetAsMatrix();
+        }
+
+        public DataMatrix TaxaForDistributionRegionReport(int regionId, int taxonId) {
+
+            var region = new SupportService(User).GetDistributionRegion(regionId);
+            if (region == null) {
+                throw new Exception("Could not retrieve region: " + regionId);
+            }
+
+            Taxon taxon = null;
+            if (taxonId > 0) {
+                taxon = GetTaxon(taxonId);
+                if (taxon == null) {
+                    throw new Exception("Could not retrieve taxon: " + taxonId);
+                }
+            }
+
+            var rtf = new RTFReportBuilder();
+            rtf.AppendFullHeader();
+            rtf.ReportHeading("Taxa for Distribution Region Report");
+            rtf.Append("Region: {0}", region.DistRegionName);
+            if (taxon != null) {
+                rtf.Append(" Taxon: {0}", taxon.TaxaFullName);
+            }
+
+            rtf.Append(@"\pard\par\fs24 Produced: ").AppendCurrentDate();
+
+            int rowCount = 0;
+            int lastRegionId = -1;
+            int lastTaxonId = -1;
+            StoredProcReaderForEach("spReportTaxaForDistRegion", (reader) => {
+                rowCount++;
+                int currentRegionId = (int) reader["DistRegionID"];
+                if (lastRegionId != currentRegionId) {
+                    lastRegionId = currentRegionId;
+                    lastTaxonId = -1;
+                    var regionName = reader["DistRegion"] as string;
+                    regionName = regionName.Replace('\\', ':');
+                    rtf.Par().Par().Append(@"\pard\sb20\fs24\b ").Append(regionName).Append(@"\b0 ");
+                }
+
+                var currentTaxonId = (int)reader["BiotaID"];
+                if (lastTaxonId != currentTaxonId) {
+                    lastTaxonId = currentTaxonId;
+                    rtf.Par().Append(@"\pard\sb10\fs20\li600 ").Append(reader["Biota"].ToString());
+                }
+
+            }, _P("intDistributionRegionID", regionId), _P("intBiotaID", taxonId));
+
+            if (rowCount == 0) {
+                rtf.Par().Append("No results...");
+            }
+
+            rtf.Append(" }");
+
+            return rtf.GetAsMatrix();
         }
     }
 
