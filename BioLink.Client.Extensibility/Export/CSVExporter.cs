@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using BioLink.Client.Utilities;
 using BioLink.Data;
+using System.Text;
 
 namespace BioLink.Client.Extensibility.Export {
 
@@ -34,8 +35,13 @@ namespace BioLink.Client.Extensibility.Export {
             }
 
             ProgressStart(String.Format("Exporting to {0}", options.Filename));
+
+            var encoding = options.Encoding;
+            if (encoding == null) {
+                encoding = Encoding.GetEncoding(1252);
+            }
                 
-            using (StreamWriter writer = new StreamWriter(options.Filename)) {
+            using (StreamWriter writer = new StreamWriter(options.Filename, false, encoding)) {
                 int numCols = matrix.Columns.Count;
                 if (options.ColumnHeadersAsFirstRow) {
                     // write out the column headers as the first row...
