@@ -68,6 +68,11 @@ namespace BioLink.Data {
             return this;
         }
 
+        public RTFReportBuilder ReportHeading(string heading) {
+            Append(@"\pard\fs36\b {0}\b0\pard\par\fs24 ", heading);
+            return this;
+        }
+
         public DataMatrix GetAsMatrix() {
             var results = new DataMatrix();
             results.Columns.Add(new MatrixColumn { Name = "RTF" });

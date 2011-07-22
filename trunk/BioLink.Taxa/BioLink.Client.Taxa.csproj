@@ -89,6 +89,7 @@
     <Compile Include="Reports\SiteForTaxaReport.cs" />
     <Compile Include="Reports\StatisticsReport.cs" />
     <Compile Include="Reports\TaxaAssociatesReport.cs" />
+    <Compile Include="Reports\TaxaForDistributionRegionReport.cs" />
     <Compile Include="TaxonFavorites.xaml.cs">
       <DependentUpon>TaxonFavorites.xaml</DependentUpon>
     </Compile>

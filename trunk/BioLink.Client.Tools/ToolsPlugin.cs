@@ -95,7 +95,6 @@ namespace BioLink.Client.Tools {
                 "{'Name':'LabelManager', 'Header':'Label Manager'}"
             ));
 
-
             // Settings...
 
             contrib.Add(new MenuWorkspaceContribution(this, "Phrases", (obj, e) => { ShowPhraseManager(); },

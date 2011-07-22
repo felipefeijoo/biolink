@@ -154,9 +154,17 @@ namespace BioLink.Client.Taxa {
                 builder.New("Rename region").Handler(() => { RenameRegion(item); }).End();
                 builder.Separator();
                 builder.New("Expand all").Handler(() => { ExpandAll(item); }).End();
+                builder.Separator();
+                builder.New("Taxa for Distribution Region").Handler(() => { RunTaxaForDistRegionReport(item); }).End();
 
                 tvw.ContextMenu = builder.ContextMenu;
 
+            }
+        }
+
+        private void RunTaxaForDistRegionReport(DistributionRegionViewModel selected) {
+            if (selected != null) {
+                PluginManager.Instance.RunReport(Plugin, new TaxaForDistributionRegionReport(User, selected.Model));
             }
         }
 

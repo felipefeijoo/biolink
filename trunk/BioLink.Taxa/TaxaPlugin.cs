@@ -37,9 +37,15 @@ namespace BioLink.Client.Taxa {
 
         public override List<IWorkspaceContribution> GetContributions() {            
             List<IWorkspaceContribution> contrib = new List<IWorkspaceContribution>();
+
             contrib.Add(new MenuWorkspaceContribution(this, "ShowExplorer", (obj, e) => { PluginManager.EnsureVisible(this, "TaxonExplorer"); },
                 String.Format("{{'Name':'View', 'Header':'{0}','InsertAfter':'File'}}", _R("Taxa.Menu.View")),
                 String.Format("{{'Name':'ShowTaxaExplorer', 'Header':'{0}'}}", _R("Taxa.Menu.ShowExplorer"))
+            ));
+
+            contrib.Add(new MenuWorkspaceContribution(this, "ShowDistributionRegionExplorer", (obj, e) => { ShowRegionExplorer(); },
+                String.Format("{{'Name':'View', 'Header':'{0}','InsertAfter':'File'}}", _R("Taxa.Menu.View")),
+                String.Format("{{'Name':'ShowDistributionRegionExplorer', 'Header':'Show Distribution Region Explorer'}}")
             ));
 
             contrib.Add(new MenuWorkspaceContribution(this, "ShowXMLImport", (obj, e) => { ShowXMLImport(); },
@@ -164,6 +170,13 @@ namespace BioLink.Client.Taxa {
                 list.Add(new Command("Edit Name...", (dataobj) => { _explorer.ContentControl.EditTaxonName(taxon); }));
                 list.Add(new Command("Edit Details...", (dataobj) => { _explorer.ContentControl.ShowTaxonDetails(taxon.TaxaID); }));
             }
+
+            if (selected[0] is DistributionRegionViewModel) {
+                var region = selected[0] as DistributionRegionViewModel;
+                list.Add(new Command("Taxa for Distribution Region Report", (dataobj) => {
+                    PluginManager.Instance.RunReport(this, new TaxaForDistributionRegionReport(User, region.Model));
+                }));
+            }
             return list;
         }
 
@@ -234,10 +247,6 @@ namespace BioLink.Client.Taxa {
                 var explorer = new DistributionRegionExplorer(this, User);
                 _regionExplorer = PluginManager.Instance.AddNonDockableContent(this, explorer, "Distribution Region Explorer", SizeToContent.Manual);
 
-                if (selectionFunc != null) {
-                    _regionExplorer.BindSelectCallback(selectionFunc);
-                }
-
                 _regionExplorer.Closed += new EventHandler((object sender, EventArgs e) => {
                     _regionExplorer.Dispose();
                     _regionExplorer = null;
@@ -245,6 +254,9 @@ namespace BioLink.Client.Taxa {
             }
 
             if (_regionExplorer != null) {
+                if (selectionFunc != null) {
+                    _regionExplorer.BindSelectCallback(selectionFunc);
+                }
                 _regionExplorer.Show();
             }
 
