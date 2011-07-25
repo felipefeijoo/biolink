@@ -24,7 +24,7 @@ namespace BioLink.Client.Extensibility.Export {
             this.Matrix = matrix;
             lblCaption.Content = caption;
 
-            var names = matrix.Columns.Select((col) => {
+            var names = matrix.Columns.FindAll((col) => { return !col.IsHidden; }).Select((col) => {
                 return col.Name;
             });
 

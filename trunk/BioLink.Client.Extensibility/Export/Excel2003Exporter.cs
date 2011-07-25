@@ -45,14 +45,16 @@ namespace BioLink.Client.Extensibility.Export {
                 writer.WriteLine("<ss:Worksheet ss:Name=\"Exported Data\">");
                 writer.WriteLine("<ss:Table>");
                 int currentRow = 0;                
-                foreach (MatrixRow row in matrix.Rows) {
+                foreach (MatrixRow row in matrix.Rows) {                    
                     writer.WriteLine("<ss:Row>");
                     for (int i = 0; i < matrix.Columns.Count; ++i) {
-                        object val = row[i];
-                        writer.Write("<ss:Cell><ss:Data ss:Type=\"String\">");
-                        String str = (val == null ? "" : val.ToString());
-                        writer.Write(Escape(str));
-                        writer.Write("</ss:Data></ss:Cell>");
+                        if (!matrix.Columns[i].IsHidden) {
+                            object val = row[i];
+                            writer.Write("<ss:Cell><ss:Data ss:Type=\"String\">");
+                            String str = (val == null ? "" : val.ToString());
+                            writer.Write(Escape(str));
+                            writer.Write("</ss:Data></ss:Cell>");
+                        }
                     }
                     if (++currentRow % 1000 == 0) {
                         double percent = ((double)currentRow / (double)totalRows) * 100.0;
