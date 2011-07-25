@@ -1,0 +1,122 @@
+﻿<ext:DatabaseCommandControl x:Class="BioLink.Client.Extensibility.NotesControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ext="clr-namespace:BioLink.Client.Extensibility"
+             mc:Ignorable="d" 
+             d:DesignHeight="285" d:DesignWidth="765" SnapsToDevicePixels="True" UseLayoutRounding="True">
+    <UserControl.Resources>
+        <Style TargetType="{x:Type Button}" x:Key="formatTextStyle">
+            <Setter Property="FontFamily" Value="Arial"></Setter>
+            <Setter Property="Width" Value="24"></Setter>
+            <Setter Property="FontSize" Value ="14"></Setter>
+            <Setter Property="CommandTarget" Value="{Binding ElementName=mainRTB}"></Setter>
+        </Style>
+
+        <Style TargetType="{x:Type Button}" x:Key="formatImageStyle">
+            <Setter Property="Width" Value="24"></Setter>
+            <Setter Property="CommandTarget" Value="{Binding ElementName=mainRTB}"></Setter>
+        </Style>
+        
+    </UserControl.Resources>
+    <Grid>        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <ToolBar>
+
+            <Button Style="{StaticResource formatImageStyle}" ToolTip="Add new note..." Click="btnAddNew_Click">
+                <Image Source="..\images\AddNew.png" Stretch="None"></Image>
+            </Button>
+            
+            <Separator />
+            
+            <Button x:Name="btnExpandALL" Style="{StaticResource formatImageStyle}" ToolTip="Expand all" Click="btnExpandALL_Click">
+                <Image Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" Source="..\images\ExpandAll.png"></Image>
+            </Button>
+            
+            <Button x:Name="btnCollapseAll" Style="{StaticResource formatImageStyle}" ToolTip="Collapse all" Click="btnCollapseAll_Click">
+                <Image Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" Source="..\images\CollapseAll.png"></Image>
+            </Button>
+
+            <Separator />
+
+            <Button Style="{StaticResource formatImageStyle}" Command="ApplicationCommands.Cut" ToolTip="Cut">
+                <Image Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" Source="..\images\Cut.png"></Image>
+            </Button>
+            <Button Style="{StaticResource formatImageStyle}" Command="ApplicationCommands.Copy" ToolTip="Copy">
+                <Image Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" Source="..\images\Copy.png"></Image>
+            </Button>
+            <Button Style="{StaticResource formatImageStyle}" Command="ApplicationCommands.Paste" ToolTip="Paste">
+                <Image  Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" Source="..\images\Paste.png"></Image>
+            </Button>
+            <Separator />
+            <Button Style="{StaticResource formatImageStyle}" Command="ApplicationCommands.Undo" ToolTip="Undo">
+                <Image Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" Source="..\images\Undo.png"></Image>
+            </Button>
+            <Button Style="{StaticResource formatImageStyle}" Command="ApplicationCommands.Redo" ToolTip="Redo">
+                <Image Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" Source="..\images\Redo.png"></Image>
+            </Button>
+            <Separator />
+            <Button Style="{StaticResource formatTextStyle}" Command="EditingCommands.ToggleBold" ToolTip="Bold">
+                <TextBlock FontWeight="Bold">B</TextBlock>
+            </Button>
+            <Button Style="{StaticResource formatTextStyle}" Command="EditingCommands.ToggleItalic" ToolTip="Italic">
+                <TextBlock FontStyle="Italic" FontWeight="Bold">I</TextBlock>
+            </Button>
+            <Button Style="{StaticResource formatTextStyle}" Command="EditingCommands.ToggleUnderline" ToolTip="Underline">
+                <TextBlock TextDecorations="Underline" FontWeight="Bold">U</TextBlock>
+            </Button>
+            <Separator />
+            <Button Style="{StaticResource formatImageStyle}" Command="EditingCommands.IncreaseFontSize" ToolTip="Grow Font">
+                <Image Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" Source="..\images\TextGrow.png"></Image>
+            </Button>
+            <Button Style="{StaticResource formatImageStyle}" Command="EditingCommands.DecreaseFontSize" ToolTip="Shrink Font">
+                <Image Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" Source="..\images\TextShrink.png"></Image>
+            </Button>
+            <Separator />
+            <Button Style="{StaticResource formatImageStyle}" Command="EditingCommands.ToggleBullets" ToolTip="Bullets">
+                <Image Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" Source="..\images\BulletList.png"></Image>
+            </Button>
+            <Button Style="{StaticResource formatImageStyle}" Command="EditingCommands.ToggleNumbering" ToolTip="Numbering">
+                <Image Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" Source="..\images\NumberedList.png" ></Image>
+            </Button>
+            <Separator />
+            <Button Style="{StaticResource formatImageStyle}" Command="EditingCommands.AlignLeft" ToolTip="Align Left">
+                <Image Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" Source="..\images\ParagraphLeftJustify.png" ></Image>
+            </Button>
+            <Button Style="{StaticResource formatImageStyle}" Command="EditingCommands.AlignCenter" ToolTip="Align Center">
+                <Image Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" Source="..\images\ParagraphCenterJustify.png"></Image>
+            </Button>
+            <Button Style="{StaticResource formatImageStyle}" Command="EditingCommands.AlignRight" ToolTip="Align Right">
+                <Image Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" Source="..\images\ParagraphRightJustify.png"></Image>
+            </Button>
+            <Button Style="{StaticResource formatImageStyle}" Command="EditingCommands.AlignJustify" ToolTip="Align Justify">
+                <Image Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" Source="..\images\ParagraphFullJustify.png"></Image>
+            </Button>
+            <Separator />
+            <Button Style="{StaticResource formatImageStyle}" Command="EditingCommands.IncreaseIndentation" ToolTip="Increase Indent">
+                <Image Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" Source="..\images\ParagraphIncreaseIndentation.png"></Image>
+            </Button>
+            <Button Style="{StaticResource formatImageStyle}" Command="EditingCommands.DecreaseIndentation" ToolTip="Decrease Indent">
+                <Image Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" Source="..\images\ParagraphDecreaseIndentation.png"></Image>
+            </Button>
+            <Separator />
+            
+            <Button x:Name="btnFont" Style="{StaticResource formatImageStyle}" ToolTip="Change font" Click="btnFont_Click">
+                <Image Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" Source="..\images\Font.png" ></Image>
+            </Button>
+
+            <ext:CustomColorPicker VerticalAlignment="Center" x:Name="btnColor"/>
+
+        </ToolBar>
+
+        <ScrollViewer Grid.Row="2">
+            <StackPanel Orientation="Vertical" x:Name="notesPanel">                
+            </StackPanel>
+        </ScrollViewer>
+        
+    </Grid>
+</ext:DatabaseCommandControl>

@@ -1,0 +1,58 @@
+﻿<ext:OneToManyDetailControl x:Class="BioLink.Client.Extensibility.AssociatesControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ext="clr-namespace:BioLink.Client.Extensibility"
+             mc:Ignorable="d" 
+             d:DesignHeight="340" d:DesignWidth="555">
+    <Grid x:Name="contentGrid">
+        <Grid.Resources>
+            <ext:AssociateTypeConverter x:Key="AssociateTypeConverter" />
+        </Grid.Resources>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32" />
+            <RowDefinition Height="32" />
+            <RowDefinition Height="32" />
+            <RowDefinition Height="32" />
+            <RowDefinition Height="32" />
+            <RowDefinition Height="32" />
+            <RowDefinition Height="32" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <Label Content="Type:" Height="28" HorizontalAlignment="Left" Name="label1" VerticalAlignment="Top" Width="100" />
+        <ComboBox Grid.Column="1" Grid.ColumnSpan="2" Height="23" Margin="0,5,12,0" Name="cmbType" VerticalAlignment="Top" SelectedItem="{Binding RelativeCatID, Converter={StaticResource AssociateTypeConverter}}" />
+        
+        <Label Content="Associate:" Height="28" HorizontalAlignment="Left" Margin="0,31,0,0" Name="label2" VerticalAlignment="Top" Width="100" Grid.RowSpan="2" />
+        <ext:TextBox Grid.Column="1" Grid.Row="1" Margin="0,4,12,5" x:Name="txtDescription" Grid.ColumnSpan="2" Text="{Binding AssocDescription}" Visibility="Hidden" AcceptsReturn="True" VerticalScrollBarVisibility="Visible" />
+        <ext:LookupControl Grid.Column="1" Grid.Row="1" Margin="0,0,12,0" x:Name="txtAssociate" VerticalAlignment="Top" Grid.ColumnSpan="2" ObjectID="{Binding RelativeIntraCatID}" Text="{Binding AssocName}" />
+        
+        <Label Content="Political region:" Height="28" HorizontalAlignment="Left" Name="label4" VerticalAlignment="Top" Width="100" Grid.Row="2" />
+        <ext:LookupControl Grid.ColumnSpan="2" Margin="0,0,12,0" x:Name="txtPoliticalRegion" ObjectID="{Binding PoliticalRegionID}" Text="{Binding PoliticalRegion}" VerticalAlignment="Top" Grid.Column="1" Grid.Row="2" />
+
+        <Label Content="Associate is a:" Height="28" HorizontalAlignment="Left" Name="label3" VerticalAlignment="Top" Width="100" Grid.Row="3" />
+        <ext:PickListControl Grid.Column="1" Grid.Row="3" Height="23" x:Name="txtRelBtoA" VerticalAlignment="Top" Text="{Binding RelativeRelationToFrom}" />
+        <Label Content="&lt;thing&gt; is:" Height="28" HorizontalAlignment="Left" Name="lblRelAToB" VerticalAlignment="Top" Width="100" Grid.Row="4" />
+        <ext:PickListControl Grid.Column="1" Height="23" x:Name="txtRelAToB" Text="{Binding RelativeRelationFromTo}" VerticalAlignment="Top" Grid.Row="4" />
+        <Label Content="Source:" Height="28" HorizontalAlignment="Left" Name="label5" VerticalAlignment="Top" Width="100" Grid.Row="5" />
+        <ext:PickListControl Grid.Column="1" Height="23" x:Name="txtSource" Text="{Binding Source}" VerticalAlignment="Top" Grid.Row="5" Grid.ColumnSpan="2" Margin="0,0,12,0" />
+        <Grid Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,12,0">
+            <ext:LookupControl x:Name="txtReference" ObjectID="{Binding RefID}" Text="{Binding RefCode}" VerticalAlignment="Top" Margin="0,0,195,0" />
+            <Label Content="Page:" Height="28" HorizontalAlignment="Right" Margin="0,0,148,0" Name="label7" VerticalAlignment="Top" Width="41" />
+            <ext:TextBox Height="23" HorizontalAlignment="Right" Margin="0,0,80,0" x:Name="txtPage" VerticalAlignment="Top" Width="62" Text="{Binding RefPage}"/>
+            <CheckBox Content="Uncertain" Height="16" HorizontalAlignment="Right" Margin="0,3,6,0" Name="chkUncertain" VerticalAlignment="Top" IsChecked="{Binding Uncertain}"/>
+        </Grid>
+        <Label Content="Reference:" Height="28" HorizontalAlignment="Left" Name="label6" VerticalAlignment="Top" Width="100" Grid.Row="6" />
+        <Label Content="Notes:" Height="28" HorizontalAlignment="Left" Name="label8" VerticalAlignment="Top" Width="100" Grid.Row="7" />
+        <ext:BindableRichTextBox Grid.Column="1" Grid.Row="7" x:Name="txtNotes" Grid.ColumnSpan="2" Margin="0,0,12,0" RTF="{Binding Notes}" >
+            <FlowDocument PageWidth="{Binding ElementName=txtNotes, Path=ActualWidth}" />
+        </ext:BindableRichTextBox>
+    </Grid>
+</ext:OneToManyDetailControl>
+    
