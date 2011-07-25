@@ -8,6 +8,7 @@ namespace BioLink.Data {
 
     public class MatrixColumn {
         public string Name { get; set; }
+        public bool IsHidden { get; set; }
     }
 
     public class VirtualMatrixColumn : MatrixColumn {

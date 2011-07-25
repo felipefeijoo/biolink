@@ -213,6 +213,8 @@ namespace BioLink.Data {
             return table;
         }
 
+        public const string HIDDEN_COLUMN_PREFIX = "HIDDEN_";
+
         internal DataMatrix StoredProcDataMatrix(string proc, Dictionary<string, ColumnDataFormatter> formatterMap, params SqlParameter[] @params) {
 
             DataMatrix matrix = null;
@@ -232,7 +234,14 @@ namespace BioLink.Data {
                     matrix = new DataMatrix();
                     for (int i = 0; i < reader.FieldCount; ++i) {
                         var columnName = reader.GetName(i);
-                        matrix.Columns.Add(new MatrixColumn { Name = columnName});
+
+                        bool hidden = false;
+                        if (columnName.StartsWith(HIDDEN_COLUMN_PREFIX)) {
+                            columnName = columnName.Substring(HIDDEN_COLUMN_PREFIX.Length);
+                            hidden = true;
+                        }
+
+                        matrix.Columns.Add(new MatrixColumn { Name = columnName, IsHidden = hidden });
                         if (formatterMap != null && formatterMap.ContainsKey(columnName)) {
                             formatters[i] = formatterMap[columnName];
                         } else {
