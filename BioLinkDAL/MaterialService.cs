@@ -353,6 +353,29 @@ namespace BioLink.Data {
             return (int)retval.Value;
         }
 
+        public void UpdateSiteRDE(RDESite site) {
+            StoredProcUpdate("spSiteUpdateRDE",
+                _P("intSiteID", site.SiteID),
+                _P("vchrSiteName", site.SiteName),
+                _P("intPoliticalRegionID", site.PoliticalRegionID),
+                _P("tintLocalType", site.LocalType),
+                _P("vchrLocal", site.Locality),
+                _P("tintPosCoordinates", site.PosCoordinates),
+                _P("tintPosAreaType", site.PosAreaType),
+                _P("fltPosX1", site.Longitude),
+                _P("fltPosY1", site.Latitude),
+                _P("tintPosXYDisplayFormat", site.PosCoordinates),
+                _P("vchrPosSource", site.LLSource),
+                _P("vchrPosError", site.LLError),
+                _P("tintElevType", site.ElevType),
+                _P("fltElevUpper", site.ElevUpper),
+                _P("fltElevLower", site.ElevLower),                
+                _P("vchrElevUnits", site.ElevUnits),
+                _P("vchrElevSource", site.ElevSource),
+                _P("vchrElevError", site.ElevError)
+            );
+        }
+
         public void UpdateSite(Site site) {
             StoredProcUpdate("spSiteUpdate",
                 _P("intSiteID", site.SiteID),
@@ -520,6 +543,16 @@ namespace BioLink.Data {
             return (int)retval.Value;
         }
 
+        public void UpdateSiteVisitRDE(RDESiteVisit siteVisit) {
+            StoredProcUpdate("spSiteVisitUpdateRDE",
+                _P("intSiteVisitID", siteVisit.SiteVisitID),
+                _P("vchrSiteVisitName", siteVisit.VisitName),
+                _P("vchrCollector", siteVisit.Collector),
+                _P("intStartDate", siteVisit.DateStart),
+                _P("intEndDate", siteVisit.DateEnd)
+            );
+        }
+
         public void UpdateSiteVisit(SiteVisit siteVisit) {
             StoredProcUpdate("spSiteVisitUpdate",
                 _P("intSiteVisitID", siteVisit.SiteVisitID),
@@ -685,6 +718,27 @@ namespace BioLink.Data {
                 _P("vchrOriginalLabel", material.OriginalLabel)
             );
         }
+
+        public void UpdateMaterialRDE(RDEMaterial material) {
+            StoredProcUpdate("spMaterialUpdateRDE",
+                _P("intMaterialID", material.MaterialID),
+                _P("vchrMaterialName", material.MaterialName),
+                _P("intBiotaID", material.BiotaID),
+                _P("vchrIDBy", material.ClassifiedBy),
+                _P("vchrIDDate", material.IDDate),
+                _P("vchrMaterialSource", material.MaterialSource),
+                _P("vchrInstitution", material.Institution),
+                _P("vchrAccessionNo", material.AccessionNo),
+                _P("vchrRegNo", material.RegNo),
+                _P("vchrCollectorNo", material.CollectorNo),
+                _P("vchrMacroHabitat", material.MacroHabitat),
+                _P("vchrMicroHabitat", material.MicroHabitat),
+                _P("intTrapID", material.TrapID),
+                _P("vchrCollectionMethod", material.CollectionMethod),
+                _P("intSiteVisitID", material.SiteVisitID)
+            );
+        }
+
 
         public void MergeMaterial(int oldMaterialID, int newMaterialID) {
             StoredProcUpdate("spMaterialMerge", _P("intOldMaterialID", oldMaterialID), _P("intNewMaterialID", newMaterialID));

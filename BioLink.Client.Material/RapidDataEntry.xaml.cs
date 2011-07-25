@@ -185,7 +185,7 @@ namespace BioLink.Client.Material {
             List<RDEMaterial> material = null;
 
             if (objectId < 0) {
-                root = CreateSiteViewModel(new RDESite());
+                root = CreateSiteViewModel(new RDESite { LocalType=0 });
                 root.Locked = false;
                 RegisterPendingChange(new InsertRDESiteCommand(root.Model));
                 var siteVisit = AddNewSiteVisit(root);
@@ -404,6 +404,8 @@ namespace BioLink.Client.Material {
             } else {
                 ret = new RDESite();
             }
+
+            ret.LocalType = 0; // Locality
 
             ret.Locked = false;
 
