@@ -59,7 +59,18 @@ namespace BioLink.Client.Extensibility {
             tvwExplorer.SelectedItemChanged += new RoutedPropertyChangedEventHandler<object>(tvw_SelectedItemChanged);
             tvwSearchResults.SelectedItemChanged += new RoutedPropertyChangedEventHandler<object>(tvw_SelectedItemChanged);
 
+            tvwExplorer.MouseDoubleClick += new MouseButtonEventHandler(tvwExplorer_MouseDoubleClick);
+            tvwSearchResults.MouseDoubleClick += new MouseButtonEventHandler(tvwSearchResults_MouseDoubleClick);
+
             btnSelect.IsEnabled = false;
+        }
+
+        void tvwSearchResults_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
+            DoSelect();
+        }
+
+        void tvwExplorer_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
+            DoSelect();
         }
 
         void HierarchicalSelector_Loaded(object sender, RoutedEventArgs e) {
@@ -273,6 +284,10 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void btnSelect_Click(object sender, RoutedEventArgs e) {
+            DoSelect();
+        }
+
+        private void DoSelect() {
             HierarchicalViewModelBase selected = null;
             if (tvwExplorer.IsVisible) {
                 if (tvwExplorer.SelectedItem != null) {
@@ -288,7 +303,6 @@ namespace BioLink.Client.Extensibility {
                 this.DialogResult = true;
                 this.Close();
             }
-
         }
 
         private bool Select(HierarchicalViewModelBase selected) {
