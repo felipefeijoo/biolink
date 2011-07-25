@@ -461,7 +461,7 @@ namespace BioLink.Data {
 
             var traitKeyField = GetTableTraitKeyField(tableName);
             if (!String.IsNullOrEmpty(traitKeyField)) {
-                _hiddenFieldList.Add(GetTableAlias(tableName) + "." + traitKeyField + " AS [HIDDEN_" + traitKeyField + "]");
+                _hiddenFieldList.Add(string.Format("{0}.{1} AS [{2}{1}]",   GetTableAlias(tableName), traitKeyField, BioLinkService.HIDDEN_COLUMN_PREFIX));
             }
         }
 

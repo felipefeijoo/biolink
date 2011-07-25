@@ -120,10 +120,18 @@ namespace BioLink.Client.Tools {
         private DataMatrix MergeItemMatrices(DataMatrix siteData, DataMatrix siteVisitData, DataMatrix materialData) {
             var result = new DataMatrix();
 
+            // Create the final column set (based on the specified criteria)
             foreach (QueryCriteria c in Criteria) {
                 result.Columns.Add(new MatrixColumn { Name = c.Field.DisplayName });
             }
 
+            // Now add the identity columns (as hidden columns, unless they already exist)
+            string[] cols = { "Site Identifier", "Visit Identifier", "Material Identifier"};
+            foreach (string col in cols) {
+                if (result.IndexOf(col) < 0) {
+                    result.Columns.Add(new MatrixColumn { Name = col, IsHidden = true });
+                }
+            }
 
             int currentOrderNum = 1;            
             LabelSetItem item = null;
@@ -172,6 +180,7 @@ namespace BioLink.Client.Tools {
                 for (int srcIndex = 0; srcIndex < srcData.Columns.Count; srcIndex++) {
                     var col = srcData.Columns[srcIndex];
                     int targetIndex = targetRow.Matrix.IndexOf(col.Name);
+
                     if (targetIndex >= 0) {
                         targetRow[targetIndex] = srcRow[srcIndex];
                     }

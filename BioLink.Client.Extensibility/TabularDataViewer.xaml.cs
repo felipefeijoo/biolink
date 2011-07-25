@@ -56,17 +56,13 @@ namespace BioLink.Client.Extensibility {
         private List<DisplayColumnDefinition> GenerateDefaultColumns(DataMatrix data) {
             var list = new List<DisplayColumnDefinition>();
             foreach (MatrixColumn col in data.Columns) {
-                if (!col.Name.StartsWith("hidden_", StringComparison.CurrentCultureIgnoreCase)) {
+                if (!col.IsHidden) {
                     var colDef = new DisplayColumnDefinition { ColumnName = col.Name, DisplayName = col.Name };
                     list.Add(colDef);
                 }
             }
             return list;
         }
-
-        //private void EditSite(int siteID) {            
-        //    PluginManager.Instance.EditLookupObject(LookupType.Site, siteID);
-        //}
 
         private void AddMapItems(ContextMenuBuilder builder, params string[] colAliases) {
             foreach (string colpair in colAliases) {
@@ -191,7 +187,8 @@ namespace BioLink.Client.Extensibility {
 
             if (index > -1) {
                 var row = lvw.SelectedItem as MatrixRow;
-                builder.New("Edit " + lookupType.ToString()).Handler(() => { PluginManager.Instance.EditLookupObject(lookupType, (int)row[index]); }).End();
+                var enabled = row[index] != null;
+                builder.New("Edit " + lookupType.ToString()).Handler(() => { PluginManager.Instance.EditLookupObject(lookupType, (int)row[index]); }).Enabled(enabled).End();
             }
 
         }
