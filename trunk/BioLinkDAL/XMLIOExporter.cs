@@ -40,7 +40,7 @@ namespace BioLink.Data {
         private FieldToNameMappings _regionMappings;
         private FieldToNameMappings _trapMappings;
         private static string[] _coordType = new string[] { "None", "Latitude Longitude", "Eastings Northings" };
-        private static string[] _localType = new string[] { "Nearest Place", "Locality" };
+        private static string[] _localType = new string[] { "Locality", "Nearest Place" };
         private static string[] _geomType = new string[] { "Point", "Line", "Bounding Box" };
         private static string[] _elevType = new string[] { "Not Specified", "Elevation", "Depth" };
 

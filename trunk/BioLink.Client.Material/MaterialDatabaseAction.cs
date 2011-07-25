@@ -141,6 +141,7 @@ namespace BioLink.Client.Material {
             var service = new MaterialService(user);
             Model.SiteVisitID = Owner.SiteVisitID;
             Model.MaterialID = service.InsertMaterial(Model.SiteVisitID);
+            service.UpdateMaterialRDE(Model);
         }
 
         protected RDESiteVisit Owner { get; private set; }
@@ -157,43 +158,20 @@ namespace BioLink.Client.Material {
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
-            service.UpdateMaterial(MapToMaterial(Model));
-        }
-
-        private static Data.Model.Material MapToMaterial(RDEMaterial s) {
-            var m = new Data.Model.Material();
-            m.MaterialID = s.MaterialID;
-            m.SiteVisitID = s.SiteVisitID;
-
-            if (String.IsNullOrEmpty(s.MaterialName)) {
+            if (String.IsNullOrEmpty(Model.MaterialName)) {
                 var name = new StringBuilder();
-                if (!string.IsNullOrEmpty(s.AccessionNo)) {
-                    name.Append(s.AccessionNo).Append("; ");
+                if (!string.IsNullOrEmpty(Model.AccessionNo)) {
+                    name.Append(Model.AccessionNo).Append("; ");
                 } else {
-                    if (!string.IsNullOrEmpty(s.RegNo)) {
-                        name.Append(s.RegNo).Append("; ");
+                    if (!string.IsNullOrEmpty(Model.RegNo)) {
+                        name.Append(Model.RegNo).Append("; ");
                     }
                 }
-
-                name.Append(s.TaxaDesc);
-
-                s.MaterialName = name.ToString();
+                name.Append(Model.TaxaDesc);
+                Model.MaterialName = name.ToString();
             }
 
-            m.MaterialName = s.MaterialName;
-
-
-            m.AccessionNumber = s.AccessionNo;
-            m.BiotaID = s.BiotaID;
-            m.CollectionMethod = s.CollectionMethod;
-            m.CollectorNumber = s.CollectorNo;
-            m.IdentificationDate = s.IDDate;
-            m.IdentifiedBy = s.ClassifiedBy;
-            m.Institution = s.Institution;
-            m.MacroHabitat = s.MacroHabitat;
-            m.MicroHabitat = s.MicroHabitat;
-            m.TrapID = s.TrapID.GetValueOrDefault(-1);
-            return m;
+            service.UpdateMaterialRDE(Model);
         }
 
         protected override void BindPermissions(PermissionBuilder required) {

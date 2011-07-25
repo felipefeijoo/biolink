@@ -149,6 +149,8 @@ namespace BioLink.Client.Material {
             var service = new MaterialService(user);
             Model.SiteID = Owner.SiteID;
             Model.SiteVisitID = service.InsertSiteVisit(Model.SiteID);
+            var update = new UpdateRDESiteVisitCommand(Model);
+            update.Process(user);            
         }
 
         protected override void BindPermissions(PermissionBuilder required) {
@@ -165,34 +167,21 @@ namespace BioLink.Client.Material {
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
-            service.UpdateSiteVisit(MapToSiteVisit(Model));
-        }
 
-        private static SiteVisit MapToSiteVisit(RDESiteVisit model) {
-            var visit = new SiteVisit();
-
-            if (string.IsNullOrEmpty(model.VisitName)) {
-                int? date = model.DateStart;
+            if (string.IsNullOrEmpty(Model.VisitName)) {
+                int? date = Model.DateStart;
                 if (!date.HasValue || date.Value == 0) {
-                    date = model.DateEnd;
+                    date = Model.DateEnd;
                 }
 
                 if (date.HasValue && date.Value != 0) {
-                    model.VisitName = string.Format("{0} {1}", model.Collector, DateControl.DateToStr(date.ToString()));
+                    Model.VisitName = string.Format("{0} {1}", Model.Collector, DateControl.DateToStr(date.ToString()));
                 } else {
-                    model.VisitName = model.Collector;
+                    Model.VisitName = Model.Collector;
                 }
             }
 
-            visit.SiteVisitName = model.VisitName;
-            visit.SiteVisitID = model.SiteVisitID;
-            visit.SiteID = model.SiteID;
-
-            visit.Collector = model.Collector;
-            visit.DateStart = model.DateStart;
-            visit.DateEnd = model.DateEnd;
-
-            return visit;
+            service.UpdateSiteVisitRDE(Model);
         }
 
         protected override void BindPermissions(PermissionBuilder required) {

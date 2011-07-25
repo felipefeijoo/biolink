@@ -153,6 +153,9 @@ namespace BioLink.Client.Material {
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
             Model.SiteID = service.InsertSite(Model.PoliticalRegionID.GetValueOrDefault(-1), -1);
+            // Now do an update to insert all the other goodies!
+            var update = new UpdateRDESiteCommand(Model);
+            update.Process(user);            
         }
 
         protected override void BindPermissions(PermissionBuilder required) {
@@ -167,44 +170,16 @@ namespace BioLink.Client.Material {
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
-            service.UpdateSite(MapToSite(Model));
-        }
 
-        private static Site MapToSite(RDESite model) {
-            var site = new Site();
-
-            site.SiteID = model.SiteID;
-
-            site.ElevError = model.ElevError;
-            site.ElevLower = model.ElevLower;
-            site.ElevSource = model.ElevSource;
-            site.ElevType = 1;
-            site.ElevUnits = model.ElevUnits;
-            site.ElevUpper = model.ElevUpper;
-
-            if (model.Longitude.HasValue) {
-                site.PosX1 = model.Longitude.Value;
+            if (string.IsNullOrWhiteSpace(Model.SiteName)) {
+                if (string.IsNullOrEmpty(Model.SiteName)) {
+                    Model.SiteName = Model.Locality;
+                } else {
+                    Model.SiteName = Model.SiteName;
+                }
             }
 
-            if (model.Latitude.HasValue) {
-                site.PosY1 = model.Latitude.Value;
-            }
-
-            if (string.IsNullOrEmpty(model.SiteName)) {
-                site.SiteName = model.Locality;
-            } else {
-                site.SiteName = model.SiteName;
-            }
-
-            site.Locality = model.Locality;
-            site.LocalityType = 1;
-            site.PoliticalRegionID = model.PoliticalRegionID.GetValueOrDefault(0);
-            site.PosAreaType = 1;
-            site.PosCoordinates = 1;
-            site.PosError = model.LLError;
-            site.PosSource = model.LLSource;
-
-            return site;
+            service.UpdateSiteRDE(Model);
         }
 
         protected override void BindPermissions(PermissionBuilder required) {
