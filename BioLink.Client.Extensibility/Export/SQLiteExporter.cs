@@ -94,15 +94,15 @@ namespace BioLink.Client.Extensibility.Export {
         public void CreateTable(string tableName, DataMatrix matrix) {
 
             StringBuilder columnDefs = new StringBuilder();
-
             int numCols = matrix.Columns.Count;
-            int colcount = 0;
             foreach (MatrixColumn col in matrix.Columns) {
-                columnDefs.Append(col.Name).Append(" TEXT");
-                if (++colcount < numCols) {
+                if (!col.IsHidden) {
+                    columnDefs.AppendFormat("[{0}]", col.Name).Append(" TEXT");
                     columnDefs.Append(", ");
                 }
             }
+
+            columnDefs.Remove(columnDefs.Length - 2, 2);
             
             Command((cmd) => {
                 cmd.CommandText = String.Format("CREATE TABLE [{0}] ({1})", tableName, columnDefs.ToString());
@@ -113,22 +113,25 @@ namespace BioLink.Client.Extensibility.Export {
 
         public void InsertRow(string tableName, MatrixRow row) {
 
-            int numCols = row.Matrix.Columns.Count;
-            int colcount = 0;
+            int numCols = row.Matrix.Columns.Count;            
             StringBuilder b = new StringBuilder();
             
             foreach (MatrixColumn col in row.Matrix.Columns) {
-                b.Append("@").Append(col.Name);
-                if (++colcount < numCols) {
+                if (!col.IsHidden) {
+                    b.Append("@").Append(col.Name.Replace(" ", ""));
                     b.Append(", ");
                 }
             }
+
+            b.Remove(b.Length - 2, 2);
             
             Command((cmd) => {                
                 cmd.CommandText = String.Format(@"INSERT INTO [{0}] VALUES ({1})", tableName, b.ToString());
                 int currentCol = 0;
                 foreach (MatrixColumn col in row.Matrix.Columns) {
-                    cmd.Parameters.Add(new SQLiteParameter("@" + col.Name, row[currentCol++]));
+                    if (!col.IsHidden) {
+                        cmd.Parameters.Add(new SQLiteParameter("@" + col.Name.Replace(" ", ""), row[currentCol++]));
+                    }
                 }
                 cmd.ExecuteNonQuery();
             });

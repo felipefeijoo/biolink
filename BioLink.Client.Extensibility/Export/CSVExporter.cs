@@ -48,15 +48,17 @@ namespace BioLink.Client.Extensibility.Export {
 
                     for (int colIndex = 0; colIndex < numCols; ++colIndex) {
                         MatrixColumn col = matrix.Columns[colIndex];
-                        if (options.QuoteValues) {
-                            writer.Write(_quote);
-                        }
-                        writer.Write(col.Name);
-                        if (options.QuoteValues) {
-                            writer.Write(_quote);
-                        }
-                        if (colIndex < numCols - 1) {
-                            writer.Write(options.Delimiter);
+                        if (!col.IsHidden) {
+                            if (options.QuoteValues) {
+                                writer.Write(_quote);
+                            }
+                            writer.Write(col.Name);
+                            if (options.QuoteValues) {
+                                writer.Write(_quote);
+                            }
+                            if (colIndex < numCols - 1) {
+                                writer.Write(options.Delimiter);
+                            }
                         }
                     }
                     writer.WriteLine();
@@ -67,16 +69,18 @@ namespace BioLink.Client.Extensibility.Export {
                 int currentRow = 0;
                 foreach (MatrixRow row in matrix.Rows) {
                     for (int colIndex = 0; colIndex < numCols; ++colIndex) {
-                        object value = row[colIndex];
-                        if (options.QuoteValues) {
-                            writer.Write(_quote);
-                        }
-                        writer.Write(value);
-                        if (options.QuoteValues) {
-                            writer.Write(_quote);
-                        }
-                        if (colIndex < numCols - 1) {
-                            writer.Write(options.Delimiter);
+                        if (!matrix.Columns[colIndex].IsHidden) {
+                            object value = row[colIndex];
+                            if (options.QuoteValues) {
+                                writer.Write(_quote);
+                            }
+                            writer.Write(value);
+                            if (options.QuoteValues) {
+                                writer.Write(_quote);
+                            }
+                            if (colIndex < numCols - 1) {
+                                writer.Write(options.Delimiter);
+                            }
                         }
                     }
                     writer.WriteLine();
