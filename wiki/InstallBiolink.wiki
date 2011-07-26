@@ -1,6 +1,6 @@
 #summary Installing version BioLink 3.0
 
-= Installing the BioLink 3.0 application =
+= Installing the !BioLink 3.0 application =
 
 First, download the latest version of the installer package from [http://code.google.com/p/biolink/downloads/list the downloads section].
 
@@ -31,6 +31,4 @@ The installer will copy over all the necessary files to the target installation 
 And finally click Finish to exit the installer
 
 [http://biolink.googlecode.com/svn/wiki/Setup6.png]
-
-
 
