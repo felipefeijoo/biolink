@@ -53,3 +53,6 @@ The SQL Server Management Studio will automatically add a log file entry under t
 Press OK on the "Attach Databases" dialog, and you should now see your database underneath the Databases node in the Management tree.
 
 [http://biolink.googlecode.com/svn/wiki/Attach6.png]
+
+
+Once this step has been completed, you can close down the SQL Server Management Studio, and [InstallBiolink install] the !BioLink application
