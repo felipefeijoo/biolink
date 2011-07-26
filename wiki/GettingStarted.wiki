@@ -1,10 +1,10 @@
 #Getting started with BioLink
 
-= Installing a new instance of BioLink =
+= Installing a new instance of !BioLink =
 
 The latest published build of !BioLink 3.0 can be downloaded from [http://code.google.com/p/biolink/downloads here].
 
-== Creating a BioLink database ==
+== Creating a !BioLink database ==
 
 === Installing SQL Server ===
 
