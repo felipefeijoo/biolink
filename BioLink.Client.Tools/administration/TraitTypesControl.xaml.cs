@@ -63,7 +63,9 @@ namespace BioLink.Client.Tools {
             }
             _categories = new List<string>(map.Values);
             cmbCategory.ItemsSource = _categories;
-            cmbCategory.SelectedItem = _categories[0];
+            if (_categories.Count > 0) {
+                cmbCategory.SelectedItem = _categories[0];
+            }
 
             IsPopulated = true;
         }

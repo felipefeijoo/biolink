@@ -63,10 +63,12 @@ namespace BioLinkApplication {
             _pluginManager.ProgressEvent += (message, percent, eventType) => { Logger.Debug("<<{2}>> {0} {1}", message, (percent >= 0 ? "(" + percent + "%)" : ""), eventType); return true; };
             Thread t = new Thread(new ThreadStart(() => {
                 this.InvokeIfRequired(() => {
+                    this.explorersPane.Width = 0;
                     _pluginManager.LoadPlugins(AddPluginContributions);
                     if (finished != null) {
                         finished();
                     }
+                    explorersPane.Width = 180;
                 });
             }));
             t.Name = "Plugin Bootstrapper Thread";
@@ -121,7 +123,7 @@ namespace BioLinkApplication {
             Logger.Debug("Looking for workspace contributions from {0}", plugin.Name);
             List<IWorkspaceContribution> contributions = plugin.GetContributions();
             try {
-                this.explorersPane.Width = 0;
+                
                 foreach (IWorkspaceContribution contrib in contributions) {
                     if (contrib is MenuWorkspaceContribution) {
                         AddMenu(contrib as MenuWorkspaceContribution);
@@ -139,7 +141,7 @@ namespace BioLinkApplication {
                         });
                     }
                     
-                }
+                }                
             } finally {                
             }
         }
