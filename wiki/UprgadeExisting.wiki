@@ -6,6 +6,8 @@ Version 3.0 of !BioLink is basically a rewrite of the !BioLink client applicatio
 
 In addition to remaining backwards compatible with existing !BioLink databases, version 3.0 of !BioLink can be installed side by side with an existing installation of the old version of the !BioLink application. Typically BioLink version 2.5 is installed under `c:\program files\CSIRO\Biolink`. By default version 3.0 is installed directly under `c:\program files\Biolink`.
 
+Any existing (version 2.5) connection profiles will automatically be imported into the new application, and so profile configuration should be minimal.
+
 All existing users of !BioLink need to do in order to upgrade to version 3.0 is to install the version 3.0 application (See [InstallBiolink here]).
 
 = See Also =
