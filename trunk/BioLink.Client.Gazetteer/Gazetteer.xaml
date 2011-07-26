@@ -33,7 +33,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <ScrollViewer HorizontalScrollBarVisibility="Auto">
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
     <Grid>
         <ComboBox Height="23" Margin="12,8,131,0" Name="cmbFile" VerticalAlignment="Top" Text="{Binding Path=Name}" >
             <ComboBox.ItemTemplate>
@@ -75,12 +75,17 @@
         <GroupBox Header="&lt;caption&gt;" Height="107" HorizontalAlignment="Left" Margin="150,0,0,53" Name="grpCalc" VerticalAlignment="Bottom" Width="333">
             <Grid />
         </GroupBox>
-        <Button Content="ShowMap" Height="23" HorizontalAlignment="Left" Margin="18,0,0,12" Name="button2" VerticalAlignment="Bottom" Width="75" Click="button2_Click" />
-        <Button Content="_Select" Height="23" HorizontalAlignment="Left" Margin="99,0,0,12" Name="btnSelect" VerticalAlignment="Bottom" Width="75" Visibility="Hidden" Click="btnSelect_Click" />
-        <Button Height="23" HorizontalAlignment="Right" Margin="0,8,99,0" Name="btnDataInfo" VerticalAlignment="Top" Width="24" Click="btnDataInfo_Click">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" Background="{x:Static SystemColors.ControlBrush}" Height="36">
+                <Button Content="_Select" Height="23" Margin ="6,0,0,0" Name="btnSelect" VerticalAlignment="Center" Width="75" Visibility="Collapsed" Click="btnSelect_Click" />
+                <Button Content="ShowMap" Height="23" Margin ="6,0,0,0" Name="button2" VerticalAlignment="Center" Width="75" Click="button2_Click" />
+                <Button Content="_Find nearest named place..." Margin ="6,0,0,0" Height="23" Name="btnFindNearestPlace" VerticalAlignment="Center" Width="170" Click="btnFindNearestPlace_Click" />
+            </StackPanel>
+                
+                    
+            <Button Height="23" HorizontalAlignment="Right" Margin="0,8,99,0" Name="btnDataInfo" VerticalAlignment="Top" Width="24" Click="btnDataInfo_Click">
             <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/info.png" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" ImageFailed="Image_ImageFailed" />
         </Button>
-        <Button Content="_Find nearest named place..." Height="23" HorizontalAlignment="Left" Margin="99,0,0,12" Name="btnFindNearestPlace" VerticalAlignment="Bottom" Width="173" Click="btnFindNearestPlace_Click" />
+        
     </Grid>
     </ScrollViewer>
 </UserControl>
