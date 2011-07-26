@@ -2,9 +2,15 @@
 
 = Introduction =
 
+To do...
+
   * Main window Layout and Docking
   * Taxon Explorer locking
-  * Report results
+  * Query Tool, Label sets and Report results
   * The pin board
   * Map tool differences
-  * Gazetteer
+  * Gazetteer differences
+  * Configuration store
+  * Tool tips
+  * Filters
+  * Find loans by Taxon
