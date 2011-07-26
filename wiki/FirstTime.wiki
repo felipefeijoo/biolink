@@ -1,3 +1,7 @@
 #summary The first time you start the BioLink application
 
 = Starting BioLink for the first time =
+
+*Note*: !BioLink has a runtime dependency on the Microsoft Dot Net Framework version 4.0. If you do not have this installed when you try and start the application, you will be presented with an error message, and will be prompted to download and install the Dot Net Framework (Version 4.0 or better)
+
+If you are starting a fresh install of !BioLink for the first time, the first thing you need to do is to create a connection profile. A connection profile details which server and database holds !BioLink data. If you do not have a !BioLink database running in an instance of SQL Server, see [CreatingNewDatabase here] first.
