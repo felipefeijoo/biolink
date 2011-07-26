@@ -6,6 +6,11 @@ BioLink 3.0 can be downloaded from [http://code.google.com/p/biolink/downloads h
 
 == Creating a BioLink database ==
 
+=== Installing SQL Server ===
+
+Download and install SQL Server 2008 R2 from http://www.microsoft.com/sqlserver/en/us/editions/express.aspx
+
+
 == Installing BioLink 3.0 ==
 
 == Starting BioLink for the first time ==
