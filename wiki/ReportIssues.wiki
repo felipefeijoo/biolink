@@ -1,8 +1,8 @@
 #summary What to do should you find an error in BioLink
 
-This development is being funded by the Atlas of Living Australia.  The Atlas of Living Australia is an initiative to improve access to essential information on Australia’s biodiversity by providing tools for researchers and others to access, combine and map data on Australian species. The Atlas project is a partnership between the Commonwealth Scientific and Industrial Research Organisation (CSIRO), the Australian natural history collections community and the Australian Government.  For more information, go to [http://www.ala.org.au].
-
 = Reporting Issues =
+
+This development is being funded by the Atlas of Living Australia.  The Atlas of Living Australia is an initiative to improve access to essential information on Australia’s biodiversity by providing tools for researchers and others to access, combine and map data on Australian species. The Atlas project is a partnership between the Commonwealth Scientific and Industrial Research Organisation (CSIRO), the Australian natural history collections community and the Australian Government.  For more information, go to [http://www.ala.org.au].
 
 ==Defects vs Enhancements==
 
