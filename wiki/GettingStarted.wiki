@@ -1,4 +1,4 @@
-#Getting started with BioLink
+#Getting started with !BioLink
 
 = Installing a new instance of !BioLink =
 
@@ -16,7 +16,7 @@ In order to attach the !BioLink starter database you will need administrative pr
 
   Download and install SQL Server 2008 R2 from [http://www.microsoft.com/sqlserver/en/us/editions/express.aspx* here].
 
-  Download and install the SQL Server Management Management Studio from Express from [http://www.microsoft.com/download/en/details.aspx?id=8961 here].
+  Download and install the SQL Server Management Management Studio from Express from [http://www.microsoft.com/download/en/details.aspx?id=22985 here].
 
 
 == Installing !BioLink 3.0 ==
