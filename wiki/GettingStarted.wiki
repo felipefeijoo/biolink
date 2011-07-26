@@ -28,6 +28,7 @@ In addition, you should also allow "SQL Server" authentication mode (mixed mode)
 
 Start the SQL Server Management Studio, and when prompted, connect to your running SQL Server instance.
 
+[http://biolink.googlecode.com/svn/wiki/SQLMSConnect.png]
 
 == Installing !BioLink 3.0 ==
 
