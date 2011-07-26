@@ -14,11 +14,11 @@ In order to attach the !BioLink starter database you will need administrative pr
 
 *Note:* At this time, the supplied starter database is compatible with  SQL Server 2008 R2 or greater only. Existing !BioLink databases running on older versions of SQL Server can be connected to using the !BioLink client without any issues, however.
 
-  Download and install SQL Server 2008 R2 from [http://www.microsoft.com/sqlserver/en/us/editions/express.aspx* here].
+  #. Download and install SQL Server 2008 R2 from [http://www.microsoft.com/sqlserver/en/us/editions/express.aspx* here].
 
 *Note:* During the installation of SQL Server you will be prompted to enter a name for your database instance. The full name of your database instance will be the name of your computer + a slash + the name your entered. For example, if you choose to call your database instance `biolink`, the full name of the database instance will be `<yourcomputername>\biolink`. You will need to know the full name of the database instance in order to connect to it.
 
-  Download and install the SQL Server Management Management Studio from Express from [http://www.microsoft.com/download/en/details.aspx?id=22985 here].
+  #. Download and install the SQL Server Management Management Studio from Express from [http://www.microsoft.com/download/en/details.aspx?id=22985 here].
 
 
 == Installing !BioLink 3.0 ==
