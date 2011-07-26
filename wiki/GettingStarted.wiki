@@ -30,6 +30,11 @@ Start the SQL Server Management Studio, and when prompted, connect to your runni
 
 [http://biolink.googlecode.com/svn/wiki/SQLMSConnect.png]
 
+Once connected, expand and right click on the "Databases" node, and select "Attach..."
+
+[http://biolink.googlecode.com/svn/wiki/Attach1.png]
+
+
 == Installing !BioLink 3.0 ==
 
 == Starting !BioLink for the first time ==
