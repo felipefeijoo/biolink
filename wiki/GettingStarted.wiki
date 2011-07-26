@@ -1,0 +1,17 @@
+#Getting started with BioLink
+
+= Installing a new instance of BioLink =
+
+BioLink 3.0 can be downloaded from [http://code.google.com/p/biolink/downloads here].
+
+== Creating a BioLink database ==
+
+== Installing BioLink 3.0 ==
+
+== Starting BioLink for the first time ==
+
+= Upgrading an existing installation=
+
+== BioLink Installer ==
+
+== Existing connection profiles ==
