@@ -4,7 +4,7 @@
 
 The latest published build of !BioLink 3.0 can be downloaded from [http://code.google.com/p/biolink/downloads here].
 
-
+  * [CreatingNewDatabase Install SQL Server and create a new database]
 
 == Installing !BioLink 3.0 ==
 
