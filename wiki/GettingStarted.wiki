@@ -1,4 +1,4 @@
-#Summary Getting started with !BioLink
+#summary Getting started with !BioLink
 
 = Installing a new instance of !BioLink =
 
