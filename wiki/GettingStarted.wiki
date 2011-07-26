@@ -16,9 +16,17 @@ In order to attach the !BioLink starter database you will need administrative pr
 
   * Download and install SQL Server 2008 R2 from [http://www.microsoft.com/sqlserver/en/us/editions/express.aspx* here].
 
-*Note:* During the installation of SQL Server you will be prompted to enter a name for your database instance. The full name of your database instance will be the name of your computer + a slash + the name your entered. For example, if you choose to call your database instance `biolink`, the full name of the database instance will be `<yourcomputername>\biolink`. You will need to know the full name of the database instance in order to connect to it.
+*Note:* During the installation of SQL Server you will be prompted to enter a name for your database instance. The full name of your database instance will be the name of your computer + a slash + the name your entered. For example, if you choose to call your database instance `biolink`, the full name of the database instance will be `<yourcomputername>\biolink`. You will need to know the full name of the database instance in order to connect to it. 
+
+In addition, you should also allow "SQL Server" authentication mode (mixed mode). This will allow you to more easily manage your user accounts. This mode can be disabled once a !BioLink user user has been created that can manage users.
 
   * Download and install the SQL Server Management Management Studio from Express from [http://www.microsoft.com/download/en/details.aspx?id=22985 here].
+
+  * Download the !BioLink starter database from [http://code.google.com/p/biolink/downloads/detail?name=BioLinkStarter.mdf here].
+
+=== Attaching the Starter Databaser ===
+
+Start the SQL Server Management Studio, and when prompted, connect to your running SQL Server instance.
 
 
 == Installing !BioLink 3.0 ==
