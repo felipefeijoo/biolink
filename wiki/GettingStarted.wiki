@@ -1,6 +1,6 @@
 #summary Getting started with BioLink
 
-= Installing a new instance of !BioLink =
+= Getting started with !BioLink 3.0 =
 
 The latest published build of !BioLink 3.0 can be downloaded from [http://code.google.com/p/biolink/downloads here].
 
