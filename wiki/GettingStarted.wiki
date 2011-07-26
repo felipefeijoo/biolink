@@ -38,7 +38,7 @@ Click on the "Add button"
 
 [http://biolink.googlecode.com/svn/wiki/Attach2.png]
 
-And select the file that you have just downloaded (BiolinkStarter.mdf). It will probably be in your downloads directory.
+And select the file that you have just downloaded (!BiolinkStarter.mdf). It will probably be in your downloads directory.
 
 [http://biolink.googlecode.com/svn/wiki/Attach3.png]
 
@@ -46,7 +46,7 @@ Once the MDF file has been added, you can rename the "Attach as" field. This is 
 
 [http://biolink.googlecode.com/svn/wiki/Attach4.png]
 
-The SQL Server Management Studio will automatically add a log file entry under the database details. This needs to be removed, as a log file (*.ldf) will be created automatically when the database is attached. Selected the log file in the lower pane, and click "Remove".
+The SQL Server Management Studio will automatically add a log file entry under the database details. This needs to be removed, as a log file (LDF) will be created automatically when the database is attached. Selected the log file in the lower pane, and click "Remove".
 
 [http://biolink.googlecode.com/svn/wiki/Attach5.png]
 
