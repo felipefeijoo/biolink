@@ -4,14 +4,12 @@
 
 The latest published build of !BioLink 3.0 can be downloaded from [http://code.google.com/p/biolink/downloads here].
 
-  * [CreatingNewDatabase Install SQL Server and create a new database]
+  * [CreatingNewDatabase Download and Install SQL Server, and create a new !BioLink database]
+OR
+  * [UprgadeExisting Upgrading !BioLink from version 2.5]
 
-== Installing !BioLink 3.0 ==
+  * [InstallBiolink Download and Install the !BioLink application]
 
-== Starting !BioLink for the first time ==
+  * [FirstTime Starting !BioLink for the first time]
 
-= Upgrading an existing installation=
-
-== !BioLink Installer ==
-
-== Existing connection profiles ==
+  * [WhatsNew Whats new and different in version 3.0]
