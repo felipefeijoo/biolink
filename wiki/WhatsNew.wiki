@@ -1,4 +1,4 @@
-#summary Whats new in !BioLink 3.0
+#summary Whats new in BioLink 3.0
 
 = Introduction =
 
