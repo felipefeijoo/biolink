@@ -1,0 +1,11 @@
+#summary Overview of the technical design of BioLink
+
+= Technical overview =
+
+== Legacy Design ==
+
+The original !BioLink (versions 2.5 and prior) where primarily written in Microsoft Visual Basic 6.0, with some performance critical functionality implemented in C/C++. !BioLink was designed with a 'N-Tier' architecture, comprising of 3 tiers (client, middle and storage). The client tier was a collection of COM components composed by a single executable process, and interaction between components was achieved via a relatively crude manual dynamic string dispatch mechanism. The middle tier abstracts database access, and some business rules, behind logical services, and comprised multiple DCOM server processes, one for roughly each major component in !BioLink (Taxonomy, Specimens etc). The client tier communicated with the middle tier by making DCOM method calls, and because of the difficulty of defining and marshaling complex data types in Visual Basic, row sets are marshalled as 2 dimensional COM 'Safearrays' of Variants. The Middle tier made use of Microsoft's Active Data Object (ADO) library to execute queries and retrieve results.
+
+
+
+== Version 3.0 Design ==
