@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -68,8 +69,10 @@ namespace BioLink.Client.Taxa {
             tvwResults.PreviewKeyDown += new KeyEventHandler(TaxonExplorer_PreviewKeyDown);
             
             btnLock.Checked += new RoutedEventHandler(btnLock_Checked);
+            btnLock2.Checked += new RoutedEventHandler(btnLock_Checked);
 
             btnLock.Unchecked += new RoutedEventHandler(btnLock_Unchecked);
+            btnLock2.Unchecked += new RoutedEventHandler(btnLock_Unchecked);
 
             favorites.BindUser(User, this);
         }
@@ -96,14 +99,35 @@ namespace BioLink.Client.Taxa {
                     btnLock.IsChecked = true;
                 }
             }
+
+            if ((sender as ToggleButton).Name == "btnLock") {
+                btnLock2.IsChecked = false;
+            } else {
+                btnLock.IsChecked = false;
+            }
             gridContentsHeader.Background = SystemColors.ControlBrush;
             buttonBar.Visibility = IsUnlocked ? Visibility.Visible : Visibility.Hidden;
+
+            lblHeader2.Visibility = Visibility.Hidden;
+            gridContentsHeader2.Background = SystemColors.ControlBrush;
+            buttonBar2.Visibility = IsUnlocked ? Visibility.Visible : Visibility.Hidden;
         }
 
         void btnLock_Checked(object sender, RoutedEventArgs e) {
             lblHeader.Visibility = Visibility.Hidden;
             buttonBar.Visibility = IsUnlocked ? Visibility.Visible : Visibility.Hidden;
             gridContentsHeader.Background = new LinearGradientBrush(Colors.DarkOrange, Colors.Orange, 90.0);
+
+            lblHeader2.Visibility = Visibility.Hidden;
+            buttonBar2.Visibility = IsUnlocked ? Visibility.Visible : Visibility.Hidden;
+            gridContentsHeader2.Background = new LinearGradientBrush(Colors.DarkOrange, Colors.Orange, 90.0);
+
+            if ((sender as ToggleButton).Name == "btnLock") {
+                btnLock2.IsChecked = true;
+            } else {
+                btnLock.IsChecked = true;
+            }
+
         }
 
         public string GenerateTaxonDisplayLabel(TaxonViewModel taxon) {
@@ -1180,6 +1204,7 @@ namespace BioLink.Client.Taxa {
                 CommitPendingChanges(() => {
                     ReloadModel();
                 });
+                btnLock.IsChecked = false;
             }
 
         }
