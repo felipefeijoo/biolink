@@ -1,0 +1,7 @@
+#summary How to modify the Welcome message displayed by BioLink
+
+= Introduction =
+
+*Note* This information is aimed at administrators, and assumes a basic working knowledge of HTML.
+
+The Welcome message is a piece of static HTML that is held within the BioLink database under a special pre-defined multimedia category.
