@@ -31,6 +31,30 @@ Each of the explorers (including the Gazetteer) can be docked/undocked and re-si
 
 [http://biolink.googlecode.com/svn/wiki/WhatsNew.attach/guide2.png]
 
+If you have moved your tabs around, the screen may now look like the one above. Note that the Welcome window tab is still populating the centre of the screen, and the moved tabs are now "pinned" on each side of the centre window. If you choose to set up your screen this way, the Welcome window tab will now automatically populate any remaining space left between the tabs on either side of the screen.
+
+*Hints*
+  * The Welcome tab can be made to float on the screen by the click and drag method. 
+
+  * You can also choose to close the Welcome window tab by either clicking on the X next to Welcome on the tab or by clicking on the X on the top right corner of the Welcome window. The Welcome window will always reappear the next time you log in to BioLink however.
+
+[http://biolink.googlecode.com/svn/wiki/WhatsNew.attach/guide3.png]
+
+Another option for setting up your screen is to un-pin the tabs, as illustrated above. The un-pinned tabs will now line up down the side of the screen on which they were originally pinned. If you have a small monitor, you may choose to work this way as it gives you more “clear” screen for working with Rapid Data Entry (RDE), reports, etc. 
+
+To un-pin the tabs, click on the pin symbol in the top right hand corner of the window. 
+
+[http://biolink.googlecode.com/svn/wiki/WhatsNew.attach/pinned.png]
+
+To use an un-pinned tab, hover your mouse over the item you wish to use, and it will temporarily populate the screen. 
+
+To re-pin the item, hover the mouse over the item and click on the pin symbol. This will re-pin the whole stack. Or, you can choose View on the menu bar and click on any of the un-pinned tab names and this will also re-pin the whole stack. Alternatively you can right mouse click on the light blue line and choose “Dock as Tabbed Document”. This will pin the choosen tab in the centre of the screen.
+
+*Hints*
+
+When you re-pin the tab stack, the tab you choose to do this on will now be on top of the tab stack.
+
+
 To do...
 
   * Taxon Explorer locking
