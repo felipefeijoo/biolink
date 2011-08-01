@@ -7,7 +7,18 @@
 
 This release is the first release candidate for BioLink 3.0. Testing is continuing, and any issues found will be addressed by subsequent release candidate builds.
 
+==== New Features ====
+  * Issue 78 Taxa for distribution report
+  * Issue 84 Drop files from Window Explorer to multimedia
+
 ==== Issues addressed in this release ====
 
-  * Issue 76
-  * Issue 77
+  * Issue 76 Editing site details and locality
+  * Issue 77 Collector box appends rather than replaces
+  * Issue 79 Site/Visit/Material identifiers in query results
+  * Issue 80 Double clicking in hierarchical selectors
+  * Issue 81 Gazetteer select button missing
+  * Issue 82 Gazetteer scrolling issue
+  * Issue 83 Remember answer to update locality question RDE
+  * Issue 85 Admin controls fail with no data
+  * Issue 86 Taxon Explorer lock panel on find tab
