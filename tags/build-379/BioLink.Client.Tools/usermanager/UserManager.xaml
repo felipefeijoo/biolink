@@ -1,0 +1,107 @@
+﻿<UserControl x:Class="BioLink.Client.Tools.UserManager"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:src="clr-namespace:BioLink.Client.Tools"
+             mc:Ignorable="d" 
+             d:DesignHeight="451" d:DesignWidth="752" xmlns:my="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility">
+             
+    <Grid>
+        <Grid.Resources>
+            <Style x:Key="hcs" TargetType="{x:Type GridViewColumnHeader}">
+                <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
+            </Style>
+            <Style TargetType="{x:Type TreeViewItem}">
+
+                <Setter Property="IsExpanded" Value="{Binding Path=IsExpanded, Mode=TwoWay}" />
+                <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
+                <EventSetter Event="TreeViewItem.MouseRightButtonDown" Handler="tvwGroup_MouseRightButtonDown"/>
+
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Unverified}" Value="True">
+                        <Setter Property="Foreground" Value="Red" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding AvailableName}" Value="True">
+                        <Setter Property="FontStyle" Value="Italic" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding IsRenaming}" Value="True">
+                        <Setter Property="TextBox.Visibility" Value="Visible" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Resources>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="1.5*" />
+        </Grid.RowDefinitions>
+        <GroupBox x:Name="grpUsers" Header="Users" Grid.Row="0" Margin="6,0,6,0">
+            <Grid Margin="0">
+                <ListView Margin="6,35,102,10" x:Name="lvwUsers" MouseDoubleClick="lvwUsers_MouseDoubleClick">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Width="100" Header="User Name" HeaderContainerStyle="{StaticResource hcs}">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="{Binding Icon}" />
+                                            <TextBlock Text="{Binding Username}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Width="120" Header="Group" DisplayMemberBinding="{Binding Group}" HeaderContainerStyle="{StaticResource hcs}" />
+                            <GridViewColumn Width="150" Header="Full Name" DisplayMemberBinding="{Binding FullName}" HeaderContainerStyle="{StaticResource hcs}" />
+                            <GridViewColumn Width="150" Header="Description" DisplayMemberBinding="{Binding Description}" HeaderContainerStyle="{StaticResource hcs}" />
+                            <GridViewColumn Width="100" Header="Can Create Users" DisplayMemberBinding="{Binding CanCreateUsers}" HeaderContainerStyle="{StaticResource hcs}" />
+                        </GridView>
+                    </ListView.View>
+
+                </ListView>
+                <Button Content="_Properties..." Height="23" HorizontalAlignment="Right" Margin="0,35,6,0" Name="btnProperties" VerticalAlignment="Top" Width="90" Click="btnProperties_Click" />
+                <Button Content="_Delete..." Height="23" HorizontalAlignment="Right" Margin="0,64,6,0" Name="btnDelete" VerticalAlignment="Top" Width="90" Click="btnDelete_Click" />
+                <Button Content="_New User..." Height="23" HorizontalAlignment="Right" Margin="0,93,6,0" Name="btnNewUser" VerticalAlignment="Top" Width="90" Click="btnNewUser_Click" />
+                <Label Content="Filter:" Height="31" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" Width="48" />
+                <my:DelayedTriggerTextbox HorizontalAlignment="Left" Margin="60,7,0,0" Name="txtUserFilter" VerticalAlignment="Top" Width="186" TypingPaused="txtUserFilter_TypingPaused" KeyUp="txtUserFilter_KeyUp" />
+            </Grid>
+        </GroupBox>
+
+        <GroupBox x:Name="grpGroups" Header="Groups" Grid.Row="1" Margin="6,0,6,6">
+            <Grid>
+                <TreeView Name="tvwGroups" Margin="6,6,102,5">
+                    <TreeView.Resources>
+                        <HierarchicalDataTemplate DataType="{x:Type src:GroupViewModel}" ItemsSource="{Binding Path=Children}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,0" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
+                                <TextBlock FontSize="11" x:Name="elemName" Text="{Binding Path=GroupName,Mode=OneWay}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+
+                        <HierarchicalDataTemplate DataType="{x:Type src:PermissionGroupViewModel}" ItemsSource="{Binding Path=Children}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,0" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
+                                <TextBlock FontSize="11" x:Name="groupName" Text="{Binding Path=Name,Mode=OneWay}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+
+                        <HierarchicalDataTemplate DataType="{x:Type src:PermissionViewModel}" ItemsSource="{Binding Path=Children}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,0" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
+                                <TextBlock FontSize="11" x:Name="permName" Text="{Binding Path=Permission,Mode=OneWay}" VerticalAlignment="Center" Width="150"/>
+                                <TextBlock FontSize="11" x:Name="permMask" Text="{Binding Path=MaskLabel,Mode=OneWay}" VerticalAlignment="Center" Foreground="Blue"/>
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+
+                    </TreeView.Resources>
+                </TreeView>
+                <Button Content="Per_missions..." Height="23" HorizontalAlignment="Right" Margin="0,6,6,0" Name="btnPermissions" VerticalAlignment="Top" Width="90" Click="btnPermissions_Click" />
+                <Button Content="_Rename..." Height="23" HorizontalAlignment="Right" Margin="0,35,6,0" Name="btnRename" VerticalAlignment="Top" Width="90" Click="btnRename_Click" />
+                <Button Content="_Copy..." Height="23" HorizontalAlignment="Right" Margin="0,64,6,0" Name="btnCopy" VerticalAlignment="Top" Width="90" Click="btnCopy_Click" />
+                <Button Content="Delete G_roup" Height="23" HorizontalAlignment="Right" Margin="0,93,6,0" Name="btnDeleteGroup" VerticalAlignment="Top" Width="90" Click="btnDeleteGroup_Click" />
+                <Button Content="New _Group..." Height="23" HorizontalAlignment="Right" Margin="0,122,6,0" Name="btnNewGroup" VerticalAlignment="Top" Width="90" Click="btnNewGroup_Click" />
+            </Grid>
+        </GroupBox>
+        
+    </Grid>
+</UserControl>
