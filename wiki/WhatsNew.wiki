@@ -2,6 +2,15 @@
 
 = Introduction =
 
+Although core functionality is basically unchanged from the previous versions, there are a number of minor or cosmetic changes to !BioLink in version 3.0 that existing users should be aware of.
+
+== New Look and Feel ==
+
+Version 3 of !BioLink has a new look. The following screens and documentation will outline the changes and provide some helpful tips and rules when using this new version.
+
+The screen bellow is how BioLink will appear when you log in for the first time. The top left hand corner of the screen will tell you which Database you are connected to, and what User id is logged on. The menu bar is where you will find the Tools and Views you may want to use, such as the Loan Manager, Import, Label Manager, Statistics and the Query Tool. 
+
+
 To do...
 
   * Main window Layout and Docking
