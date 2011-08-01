@@ -1,0 +1,43 @@
+﻿<ext:DatabaseCommandControl x:Class="BioLink.Client.Material.SiteVisitDetails"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+             xmlns:mat="clr-namespace:BioLink.Client.Material"                           
+             mc:Ignorable="d" 
+             d:DesignHeight="414" d:DesignWidth="646">
+    <UserControl.Resources>
+        <ext:BLDateIntStrConverter x:Key="dateConverter" />
+    </UserControl.Resources>
+    <Grid>
+        <Label Content="Site: " Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" Name="label1" VerticalAlignment="Top" Width="87" />
+        <TextBox Height="23" Margin="105,14,12,0" Name="txtSiteName" VerticalAlignment="Top" IsEnabled="False" Text="{Binding SiteName}" />
+        <Label Content="Site Visit: " Height="28" HorizontalAlignment="Left" Margin="12,46,0,0" Name="label2" VerticalAlignment="Top" Width="87" />
+        <ext:TextBox Height="23" Margin="105,46,12,0" Name="txtSiteVisitName" VerticalAlignment="Top" Text="{Binding SiteVisitName}"/>
+        <TabControl Margin="12,80,12,12" Name="tab">
+            <TabItem Header="General" Name="tabGeneral">
+                <Grid>
+                    <Label Content="Collectors:" Height="28" HorizontalAlignment="Left" Margin="10,10,0,0" Name="label3" VerticalAlignment="Top" Width="87" />
+                    <mat:CollectorControl Margin="103,10,6,0" x:Name="txtCollector" VerticalAlignment="Top" Text="{Binding Collector}" />
+                    <Label Content="Field Number:" Height="28" HorizontalAlignment="Left" Margin="10,44,0,0" Name="label4" VerticalAlignment="Top" Width="87" />
+                    <ext:TextBox Height="23" Margin="103,46,0,0" Name="txtFieldNumber" VerticalAlignment="Top" HorizontalAlignment="Left" Width="154" Text="{Binding FieldNumber}"/>
+                    <GroupBox Header="Date / Time" Height="206" HorizontalAlignment="Left" Margin="10,78,0,0" Name="groupBox1" VerticalAlignment="Top" Width="596">
+                        <Grid Margin="5">
+                            <Label Content="Date" HorizontalContentAlignment="Center" Padding="1" Name="label5" VerticalContentAlignment="Center" Background="DimGray" Foreground="White" FontWeight="Bold" FontSize="10" Margin="191,6,0,0" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" Width="150" />
+                            <Label Background="DimGray" Content="Time" FontSize="10" FontWeight="Bold" Foreground="White" Height="18" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="347,6,0,0" Name="label6" Padding="1" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="150" />
+                            <ext:DateControl Height="23" HorizontalAlignment="Left" Margin="191,30,0,0" Name="dtStartDate" VerticalAlignment="Top" Width="150" Date="{Binding DateStart, Converter={StaticResource dateConverter}}" />
+                            <ext:TimeControl Height="23" HorizontalAlignment="Left" Margin="347,30,0,0" Name="txtTimeStart" VerticalAlignment="Top" Width="150" Time="{Binding TimeStart}" />
+                            <ext:DateControl Height="23" HorizontalAlignment="Left" Margin="191,58,0,0" Name="dtEndDate" VerticalAlignment="Top" Width="150" Date="{Binding DateEnd, Converter={StaticResource dateConverter}}" />                            
+                            <ext:TimeControl Height="23" HorizontalAlignment="Left" Margin="347,58,0,0" Name="txtTimeEnd" VerticalAlignment="Top" Width="150" Time="{Binding TimeEnd}" />
+                            <Label Content="Start:" Height="28" HorizontalAlignment="Left" Margin="111,28,0,0" Name="label7" VerticalAlignment="Top" Width="74" />
+                            <Label Content="End:" Height="28" HorizontalAlignment="Left" Margin="111,56,0,0" Name="label8" VerticalAlignment="Top" Width="74" />
+                            <Label Content="Casual Date:" Height="28" HorizontalAlignment="Left" Margin="82,108,0,0" Name="label9" VerticalAlignment="Top" Width="103" />
+                            <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="191,108,0,0" Name="txtCasualDate" VerticalAlignment="Top" Width="306" Text="{Binding CasualTime}" />
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</ext:DatabaseCommandControl>
