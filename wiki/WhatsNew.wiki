@@ -56,12 +56,44 @@ To re-pin the item, hover the mouse over the item and click on the pin symbol. T
 
 When you re-pin the tab stack, the tab you choose to do this on will now be on top of the tab stack.
 
+=== The Pin Board ===
 
-To do...
+One of the more obvious new features introduced in version 3 of !BioLink is the "Pin Board".
 
-  * Taxon Explorer locking
+[http://biolink.googlecode.com/svn/wiki/WhatsNew.attach/guide4.png]
+
+The Pin Board allows you to "pin" favourite or regularly used items. Items on the Pin Board tab can be dragged and dropped onto such things as fields on the Rapid Data Entry form, Loans forms, etc. As can be seen from the above screen shot, the Pin Board groups like items together, and displays them in alphabetical or numeric order, which-ever is appropriate.
+
+*Hints*
+
+  * To add items to the Pin Board tab, you can either drag and drop them onto the Pin Board, or on explorers, choose the item you want to add, right mouse click and select “Pin to pin board”. To remove items from the Pin Board tab, select the item to be removed, right mouse click and choose “Unpin”.
+
+  * Pin board items may also have other commonly used commands (such as Edit, for example) in their context menu (right click), depending on the item.
+
+
+=== The Material Explorer ===
+
+[http://biolink.googlecode.com/svn/wiki/WhatsNew.attach/guide5.png]
+
+One of the new features on the Material Explorer is the ability to select the type of material search from the drop down menu as seen on the screen above, without having to use the mouse. Just tab into the type of search field and type the first letter of the search word you want to use. For example, if you want to search on Accession Number  type the letter 'a'. Where there is more than one 'search type' starting with the same letter, continue to type the same letter and it will alternate through the possible matches for that letter.
+
+=== The Taxon Explorer ===
+
+[http://biolink.googlecode.com/svn/wiki/WhatsNew.attach/guide6.png]
+
+The Taxon Explorer now has a lock symbol in the top left of the window. This is a security device to protect the taxon tree from accidental changes. The lock symbol appears on both the "All Taxa" and "Find" tabs. You can still edit the taxon tree in the same ways as before, except that you must "unlock" the Taxon tree (by clicking on the lock symbol) before you can make any changes. Once you open the lock, you will notice an orange band across the top of the window as visual reminder that the taxon tree is now open for editing. To lock the taxon tree again, click on the lock symbol. If you have made any changes that have yet to be applied to the database you will be prompted to save these changes, or to discard them.
+
+*Hints*
+  * You can scroll the taxon tree up and down using the mouse wheel
+
+  * You can use a right mouse click to access a context menu on individual taxa items. This menu has the option to "Unlock Taxon Explorer for editing". However you cannot re-lock the Taxon tree from a right mouse click menu list, you must use the lock symbol.
+
+  * When dragging taxon items, if drop target is not visible (off screen) because there are too many other taxa items between the drag source and the target, you can simply drag the item to either the very top of the taxon tree, or the bottom (depending on which direction the target is from the source), and the tree view will automatically scroll.
+
+
+= To do... =
+
   * Query Tool, Label sets and Report results
-  * The pin board
   * Map tool differences
   * Gazetteer differences
   * Configuration store
