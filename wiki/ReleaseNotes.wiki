@@ -1,0 +1,13 @@
+#summary Release notes for current build
+#labels Phase-Deploy
+
+= Release Notes =
+
+== Release Candidate 1 (RC1) ==
+
+This release is the first release candidate for BioLink 3.0. Testing is continuing, and any issues found will be addressed by subsequent release candidate builds.
+
+==== Issues addressed in this release ====
+
+  * Issue 76
+  * Issue 77
