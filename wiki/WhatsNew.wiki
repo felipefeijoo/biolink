@@ -12,16 +12,18 @@ The screen below is how !BioLink will appear when you log in for the first time.
 
 [http://biolink.googlecode.com/svn/wiki/WhatsNew.attach/guide1.png]
 
-When you first open !BioLink 3.0, the screen will look like the one above (Windows Vista and Windows 7 users will notice other cosmetic differences due to the Aero theme). You will note that there is now a stack of tabs on the left hand side of the screen, one for each of the main "Explorers" in !BioLink - the Material Explorer, Taxon Explorer, Gazetteer and the new Pin Board. The rest of the screen by default is filled by the Welcome tab window, which tells contains a welcome message that is specific to the database to which you are connected (!BioLink administrators can change the content of this page. See [WelcomeHTML here] for more details.)
+When you first open !BioLink 3, the screen will look like the one above (Windows Vista and Windows 7 users will notice other cosmetic differences due to the Aero theme). You will note that there is now a stack of tabs on the left hand side of the screen, one for each of the main "Explorers" in !BioLink - the Material Explorer, Taxon Explorer, Gazetteer and the new Pin Board. The rest of the screen by default is filled by the Welcome tab window, which tells contains a welcome message that is specific to the database to which you are connected (!BioLink administrators can change the content of this page. See [WelcomeHTML here] for more details.)
 
 == Docking and Undocking Explorers ==
 
 You may choose to leave the Explorer tabs as they are and work with them this way. More typically, however, you can detach each explorer by "dragging" its tab (left click on the tab title, and move the mouse whilst keeping the mouse button pressed) to float on any part of the screen. Alternatively, you can place the contents of individual tabs onto other anchor points that will appear on screen once you initiate a drag (docking).
 
+[http://biolink.googlecode.com/svn/wiki/WhatsNew.attach/docking.png]
+
 Each of the explorers (including the Gazetteer) can be docked/undocked and re-sized to suit your work preferences and screen size. 
 
 *Hints:*
-  *  To drag a tab easily, hold the left mouse button and down then move the mouse either *up* or *down* to detach the contents of the tab. If you move the mouse *left* or *right*, the tab will change position within the stack of tabs, and will only detach if the tab is either the right most tab(or left most, depending on which way you are dragging).
+  *  To drag a tab easily, hold the left mouse button and down then move the mouse either *up* or *down* to detach the contents of the tab. If you move the mouse *left* or *right*, the tab will change position within the stack of tabs, and will only detach if the tab is either the right most tab (or left most, depending on which way you are dragging).
 
   * The tabs can also be moved collectively by using “click and hold” on the light blue bar where the name of the tab is written at the top of the window. The main thing to note with this option, is that if you have your tabs "stacked" one on top of the other, the drag will move all the stacked tabs as one.
 
