@@ -5,6 +5,8 @@
 
 The latest published build of !BioLink 3.0 can be downloaded from [http://code.google.com/p/biolink/downloads here].
 
+[ReleaseNotes Release Notes]
+
 If you are new to !BioLink, or need to create a fresh install from scratch
   * [CreatingNewDatabase Download and Install SQL Server, and create a new BioLink database]
 
