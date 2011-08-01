@@ -15,16 +15,13 @@ namespace BioLink.Client.Taxa {
             IEnumerable<HierarchicalViewModelBase> taxa = value as IEnumerable<HierarchicalViewModelBase>;
             ListCollectionView lcv = (ListCollectionView) CollectionViewSource.GetDefaultView(taxa);
 
-            // Available and Literature Names are always at the top...
-            lcv.SortDescriptions.Add(new SortDescription("IsAvailableOrLiteratureName", ListSortDirection.Descending)); // bool            
-
-            // When the sort mode is manual, the order will take precedence over the name
+            // When the sort mode is manual, the order will take precedence over the default sort order
             if (TaxonExplorer.IsManualSort) {
                 lcv.SortDescriptions.Add(new SortDescription("Order", ListSortDirection.Ascending)); // int
             }
 
-            // And finally the name
-            lcv.SortDescriptions.Add(new SortDescription("Epithet", ListSortDirection.Ascending));
+            // The default sort order is computed according to a set of rules too complicated for the SortDescription interface...
+            lcv.SortDescriptions.Add(new SortDescription("DefaultSortOrder", ListSortDirection.Ascending));
 
             return lcv;
         }
@@ -53,8 +50,8 @@ namespace BioLink.Client.Taxa {
             // Higher orders precede lower...
             lcv.SortDescriptions.Add(new SortDescription("ElemType", ListSortDirection.Ascending));
 
-            // Finally the name in alpha ascending order
-            lcv.SortDescriptions.Add(new SortDescription("TaxaFullName", ListSortDirection.Ascending)); 
+            // Finally the "default" sort order
+            lcv.SortDescriptions.Add(new SortDescription("DefaultSortOrder", ListSortDirection.Ascending)); 
 
             return lcv;
         }
