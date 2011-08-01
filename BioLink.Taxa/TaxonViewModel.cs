@@ -384,6 +384,36 @@ namespace BioLink.Client.Taxa {
             get { return Taxon.TaxaID; }
         }
 
+        public string DefaultSortOrder {
+            get {
+                string styleFactor = "2";
+
+                if (AvailableName.ValueOrFalse()) {
+                    styleFactor = "0";
+                } else if (LiteratureName.ValueOrFalse()) {
+                    styleFactor = "1";
+                } else if (TaxonRank.INCERTAE_SEDIS.Equals(ElemType, StringComparison.CurrentCultureIgnoreCase)) {
+                    styleFactor = "3";
+                } else if (TaxonRank.SPECIES_INQUIRENDA.Equals(ElemType, StringComparison.CurrentCultureIgnoreCase)) {
+                    styleFactor = "4";
+                } else if (Unplaced.ValueOrFalse()) {
+                    styleFactor = "5";
+                }
+
+                string strOrder = string.Format("{0:0000000}", Order.GetValueOrDefault(0));
+
+                if (AvailableName.ValueOrFalse()) {
+                    string strYearOfPub = YearOfPub;
+                    if (string.IsNullOrWhiteSpace(YearOfPub) || YearOfPub.Length < 4) {
+                        strYearOfPub = "0000";
+                    }
+                    return string.Format("{0}{1}{2}{3}", styleFactor, strYearOfPub, Epithet, Author);                        
+                } else {
+                    return string.Format("{0}{1}{2}", styleFactor, Epithet, Author);
+                }
+            }
+        }
+
 
     }
 
