@@ -39,5 +39,11 @@ Save this to Welcome.html, for example (the name is not important, just the exte
 
 Then ensure any images (or other content you require) is also present. Note in the above example that the image 'biolink_logo_splash.png' has a relative location (i.e. it is assumed to be co-located with the html file).
 
-Add the html file to the welcome file list by either clicking on the 'add multimedia' button and locating the file, or by dragging the html file from the Windows Explorer to the Welcome message multimedia window. Ensure that any existing html files that are no longer required are removed from the list as well. Click apply. The next time that you log in, your new content should now be displayed.
+Add the html file to the welcome file list by either clicking on the 'add multimedia' button and locating the file, or by dragging the html file from the Windows Explorer to the Welcome message multimedia window. Ensure that any existing html files that are no longer required are removed from the list as well. Click apply. 
 
+
+[http://biolink.googlecode.com/svn/wiki/WelcomeHTML.attach/html3.png]
+
+The next time that you log in, your new content should now be displayed.
+
+[http://biolink.googlecode.com/svn/wiki/WelcomeHTML.attach/html4.png]
