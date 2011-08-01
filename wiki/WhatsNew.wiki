@@ -91,12 +91,56 @@ The Taxon Explorer now has a lock symbol in the top left of the window. This is 
   * When dragging taxon items, if drop target is not visible (off screen) because there are too many other taxa items between the drag source and the target, you can simply drag the item to either the very top of the taxon tree, or the bottom (depending on which direction the target is from the source), and the tree view will automatically scroll.
 
 
+=== Rich tooltips ===
+
+Most items displayed in explorers and find results now have detailed tool tips that display further information about that item when the mouse is hovered over them.
+
+[http://biolink.googlecode.com/svn/wiki/WhatsNew.attach/guide7.png]
+
+On the Material explorer, for example, if you can place the mouse over a site name, a pop-up box (commonly called a tooltip) will appear as illustrated in the screen shot above. The tooltip will present more details on the hovered site record. The main benefit of this feature is when you have multiple site records with the same label, records can be quickly differentiated by their latitude & longitude (or other fields), as these now appear on screen without having to open each site record individually.
+
+[http://biolink.googlecode.com/svn/wiki/WhatsNew.attach/guide8.png]
+
+Likewise, this feature is also available on the Taxon Explorer as seen in the screen shot above. The tooltip for taxon items will show the three "levels" above where the hovered item exists in the hierarchy. It is particularly helpful when you search on a species name and it returns multiple species with similar names, but within different higher orders.
+
+=== The Gazetteer ===
+
+[http://biolink.googlecode.com/svn/wiki/WhatsNew.attach/guide9.png]
+
+The Gazetteer works in the same way as in previous versions, although it looks a little different. You may need to re-size the Gazetteer window to show all the Lat and Long offset buttons, or you can use the scroll bar that will automatically appear if the gazetteer is too big for its allotted space. 
+
+Some gazetteer functions are found on the menu bar under Tools -> eGaz. 
+
+The Choose file button allows you to select a gazetteer file. The format of Gazetteer files has changed for version 3, and older (version 2.5 and earlier) gazetteer files can be converted via the 'Legacy eGaz file converter' menu option (Tools->eGaz).
+
+=== Rapid Data Entry ===
+
+When using the RDE form, there are now several shortcuts that allow you to use your keyboard instead of the mouse. The RDE form looks different at fisrt glance, but it has all the same fields as in version 2.5. 
+
+[http://biolink.googlecode.com/svn/wiki/WhatsNew.attach/guide10.png]
+
+All the ellipsis buttons work in the same way for populating fields, but there are some shortcuts that you can now choose to use as well.
+
+*Shortcuts*
+
+  * You can drag and drop in to fields using Values you have previously placed on the pin board
+
+  * In any field that has a magnifying glass symbol at the end of the field, you can type the first letter of the information you want in the field and then hit the enter key and a Search results list will pop up that you can select from. The more letters you type before using the enter key the narrower the returned search results will be.
+  * Another way to access the Search results pop up list in fields where there is a Values list behind the elipsis button, is to type the first few letters of the Value you are looking for then type Ctrl + Space. You can use your up and down arrow keys to navigate the list to select the Value you want (by pressing enter).
+
+  * In any of the fields that show the blue auto-select, you can go to the front or back of the highlighted characters by using either your right or left arrow key to move your cursor in the direction you wish to edit
+
+* This version of BioLink defaults the S for South in the Longitude field, whereas in previous versions it always defaulted whatever the last Longitude you used was. If you need to add a Northern hemisphere record, you will need to remember to change the Longitude field to N.
+
+
 = To do... =
 
-  * Query Tool, Label sets and Report results
-  * Map tool differences
-  * Gazetteer differences
-  * Configuration store
-  * Tool tips
-  * Filters
-  * Find loans by Taxon
+=== Query Tool, Label sets and Report results ===
+
+=== The Map tool ===
+
+=== Configuration store ===
+
+=== Filters ===
+
+=== Find loans by Taxon ===
