@@ -65,11 +65,7 @@ namespace BioLink.Client.Material {
             PickListWindow frm = new PickListWindow(User, "Select a collector", itemsFunc, null, txt.Text, owner, this);            
                        
             if (frm.ShowDialog().ValueOrFalse()) {
-                if (preSelectionLength == 0 && !string.IsNullOrWhiteSpace(txt.Text)) {
-                    txt.Text += ", " + frm.SelectedValue;
-                } else {
-                    txt.SelectedText = frm.SelectedValue as string;
-                }
+                txt.SelectedText = frm.SelectedValue as string;
             }
         }
 
