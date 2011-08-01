@@ -2,7 +2,7 @@
 
 = Introduction =
 
-Although core functionality is basically unchanged from the previous versions, there are a number of minor or cosmetic changes to !BioLink in version 3.0 that existing users should be aware of.
+Although core functionality is basically unchanged from the previous versions, there are a number of minor changes and enhancements to !BioLink in version 3.0 that existing users should be aware of.
 
 == New Look and Feel ==
 
