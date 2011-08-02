@@ -123,6 +123,9 @@
     <Compile Include="IIconHolder.cs" />
     <Compile Include="ILabelSetItemTarget.cs" />
     <Compile Include="IPreferredSizeHolder.cs" />
+    <Compile Include="MultimediaThumbnailViewer.xaml.cs">
+      <DependentUpon>MultimediaThumbnailViewer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MultiMedia\FindMultimediaDialog.xaml.cs">
       <DependentUpon>FindMultimediaDialog.xaml</DependentUpon>
     </Compile>
@@ -201,6 +204,9 @@
     <Compile Include="MultiMedia\DuplicateItemOptions.xaml.cs">
       <DependentUpon>DuplicateItemOptions.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MultiMedia\LinkedMultimediaItemsControl.xaml.cs">
+      <DependentUpon>LinkedMultimediaItemsControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MultiMedia\MultimediaControl.xaml.cs">
       <DependentUpon>MultimediaControl.xaml</DependentUpon>
     </Compile>
@@ -209,6 +215,7 @@
     </Compile>
     <Compile Include="MultiMedia\MultimediaLinkTooltip.cs" />
     <Compile Include="MultiMedia\MultimediaLinkViewModel.cs" />
+    <Compile Include="MultiMedia\MultimediaReport.cs" />
     <Compile Include="MultiMedia\MultimediaViewModel.cs" />
     <Compile Include="MultiMedia\UpdateMultimediaAction.cs" />
     <Compile Include="NegatingConverter.cs" />
@@ -381,6 +388,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="MultimediaThumbnailViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MultiMedia\FindMultimediaDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -436,6 +447,10 @@
     <Page Include="MultiMedia\DuplicateItemOptions.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MultiMedia\LinkedMultimediaItemsControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="MultiMedia\MultimediaControl.xaml">
       <SubType>Designer</SubType>

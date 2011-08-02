@@ -25,6 +25,7 @@ namespace BioLink.Data.Model {
 
         public int BlobChanges { get; set; }
 
+        public string TempFilename { get; set; }
 
         protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
             get { return () => this.MultimediaLinkID; }

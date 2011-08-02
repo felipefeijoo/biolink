@@ -28,7 +28,7 @@ namespace BioLink.Client.Extensibility {
     }
 
     public interface IReportViewerSource {
-        string Name { get; }
+        string Name { get; }        
         FrameworkElement ConstructView(IBioLinkReport report, DataMatrix reportData, IProgressObserver progress);
     }
 

@@ -93,7 +93,7 @@ namespace BioLink.Client.Extensibility {
                 AddLookupItem(builder, LookupType.Site, "SiteID", "intSiteID", "Site Identifier");
                 AddLookupItem(builder, LookupType.SiteVisit, "SiteVisitID", "intSiteVisitID", "Visit Identifier");
                 AddLookupItem(builder, LookupType.Material, "MaterialID", "intMaterialID", "Material Identifier");
-                AddLookupItem(builder, LookupType.Taxon, "BiotaID", "intBiotaID", "Taxon Identifier");
+                AddLookupItem(builder, LookupType.Taxon, "BiotaID", "intBiotaID", "Taxon Identifier", "TaxonID");
 
                 string latColName = null;
                 string longColName = null;
@@ -333,7 +333,7 @@ namespace BioLink.Client.Extensibility {
     public class TabularDataViewerSource : IReportViewerSource {
 
         public string Name {
-            get { return "Table Viewer"; }
+            get { return "Table"; }
         }
 
         public FrameworkElement ConstructView(IBioLinkReport report, DataMatrix reportData, IProgressObserver progress) {
@@ -342,5 +342,6 @@ namespace BioLink.Client.Extensibility {
         }
 
     }
+
 }
 

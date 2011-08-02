@@ -51,12 +51,23 @@ namespace BioLink.Client.Utilities {
             }
         }
 
+        private static Dictionary<string, BitmapSource> _ExtensionIconMap = new Dictionary<string, BitmapSource>();
+
         public static BitmapSource ExtractIconForExtension(string ext) {
             if (ext != null) {
-                System.Drawing.Icon icon = SystemUtils.GetIconFromExtension(ext);
-                if (icon != null) {
-                    return SystemDrawingIconToBitmapSource(icon);
-                } 
+                lock (_ExtensionIconMap) {
+                    var key = ext.ToUpper();
+                    if (_ExtensionIconMap.ContainsKey(key)) {
+                        return _ExtensionIconMap[key];
+                    }
+
+                    System.Drawing.Icon icon = SystemUtils.GetIconFromExtension(ext);
+                    if (icon != null) {                    
+                        var bitmap = SystemDrawingIconToBitmapSource(icon);
+                        _ExtensionIconMap[key] = bitmap;
+                        return bitmap;
+                    } 
+                }
             }
             return null;
         }

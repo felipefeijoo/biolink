@@ -22,8 +22,14 @@ namespace BioLink.Client.Utilities {
             }
 
             Func<string> generateUniqueName = () => {
+
+                var dirName = System.IO.Path.GetTempPath() + "BiolinkTempFiles/";
+                if (!Directory.Exists(dirName)) {
+                    Directory.CreateDirectory(dirName);
+                }
+
                 var guid = Guid.NewGuid().ToString();
-                return string.Format("{0}{1}-{2}{3}", System.IO.Path.GetTempPath(), prefix, guid.Substring(guid.LastIndexOf("-") + 1), extension);
+                return string.Format("{0}{1}-{2}{3}", dirName, prefix, guid.Substring(guid.LastIndexOf("-") + 1), extension);
             };
             string filename;
             while (File.Exists(filename = generateUniqueName())) {
@@ -122,7 +128,13 @@ namespace BioLink.Client.Utilities {
             if (!ext.StartsWith(".")) {
                 ext = "." + ext;
             }
-            return System.IO.Path.GetTempPath() + Guid.NewGuid().ToString() + ext;
+
+            var dirName = System.IO.Path.GetTempPath() + "BiolinkTempFiles/";
+            if (!Directory.Exists(dirName)) {
+                Directory.CreateDirectory(dirName);
+            }
+
+            return string.Format("{0}{1}{2}", dirName, Guid.NewGuid().ToString(), ext);
         }
 
         internal void CleanUp() {

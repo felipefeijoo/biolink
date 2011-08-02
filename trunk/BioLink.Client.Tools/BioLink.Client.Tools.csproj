@@ -79,9 +79,6 @@
       <DependentUpon>LabelManagerControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="LabelSetReport.cs" />
-    <Compile Include="LinkedMultimediaItemsControl.xaml.cs">
-      <DependentUpon>LinkedMultimediaItemsControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="MaterialByUserWindow.xaml.cs">
       <DependentUpon>MaterialByUserWindow.xaml</DependentUpon>
     </Compile>
@@ -292,10 +289,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="LabelManagerControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="LinkedMultimediaItemsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

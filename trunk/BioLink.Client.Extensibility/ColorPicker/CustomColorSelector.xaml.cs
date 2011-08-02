@@ -286,8 +286,14 @@ namespace BioLink.Client.Extensibility {
         }
 
         public static BitmapSource loadBitmap(System.Drawing.Bitmap source) {
-            return System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(source.GetHbitmap(), IntPtr.Zero, Int32Rect.Empty,
-                System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
+
+            var hBitmap = source.GetHbitmap();
+            try {
+                return System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty,
+                    System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
+            } finally {
+                BioLink.Client.Utilities.SystemUtils.DeleteObject(hBitmap);
+            }
         }
 
         private void InitialWork() {
