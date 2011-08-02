@@ -91,10 +91,7 @@ namespace BioLink.Client.Extensibility {
             get { return string.Format("{0}.{1}", Name, Extension); }
         }
 
-        public string TempFilename {
-            get { return Model.TempFilename; }
-            set { SetProperty(() => Model.TempFilename, value); }
-        }
-
+        public string TempFilename { get; set; }
+        
     }
 }

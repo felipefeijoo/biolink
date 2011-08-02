@@ -216,6 +216,9 @@
     <Compile Include="MultiMedia\MultimediaLinkTooltip.cs" />
     <Compile Include="MultiMedia\MultimediaLinkViewModel.cs" />
     <Compile Include="MultiMedia\MultimediaReport.cs" />
+    <Compile Include="MultiMedia\MultimediaReportOptions.xaml.cs">
+      <DependentUpon>MultimediaReportOptions.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MultiMedia\MultimediaViewModel.cs" />
     <Compile Include="MultiMedia\UpdateMultimediaAction.cs" />
     <Compile Include="NegatingConverter.cs" />
@@ -457,6 +460,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MultiMedia\MultimediaDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MultiMedia\MultimediaReportOptions.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
