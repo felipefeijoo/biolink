@@ -44,11 +44,16 @@ namespace BioLink.Client.Extensibility {
             return null;
         }
 
-        private string NewFilename(String ext) {            
+        private string NewFilename(String ext) {
             if (!ext.StartsWith(".")) {
                 ext = "." + ext;
             }
-            return System.IO.Path.GetTempPath() + Guid.NewGuid().ToString() + ext;
+
+            var dirName = System.IO.Path.GetTempPath() + "BiolinkTempFiles/";
+            if (!Directory.Exists(dirName)) {
+                Directory.CreateDirectory(dirName);
+            }
+            return dirName + Guid.NewGuid().ToString() + ext;
         }
 
 

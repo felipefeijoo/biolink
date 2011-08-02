@@ -18,7 +18,7 @@ using BioLink.Data;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
-namespace BioLink.Client.Tools {
+namespace BioLink.Client.Extensibility {
     /// <summary>
     /// Interaction logic for LinkedMultimediaItemsControl.xaml
     /// </summary>

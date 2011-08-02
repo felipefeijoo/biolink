@@ -28,6 +28,15 @@ namespace BioLink.Data {
             return taxa;
         }
 
+        public List<int> GetChildrenIds(int parentId) {
+            var result = new List<int>();
+            StoredProcReaderForEach("spBiotaGetChildrenID", (reader) => {
+                result.Add((int) reader[0]);
+            }, _P("intParentID", parentId));
+
+            return result;
+        }
+
         public List<Taxon> GetTaxaForParent(int taxonId) {
             List<Taxon> taxa = new List<Taxon>();            
             StoredProcReaderForEach("spBiotaList", (reader) => {

@@ -66,7 +66,7 @@ namespace BioLink.Client.Extensibility {
 
     public class RTFReportViewerSource : IReportViewerSource {
         public string Name {
-            get { return "RTF Report Viewer"; }
+            get { return "RTF"; }
         }
 
         public FrameworkElement ConstructView(IBioLinkReport report, Data.DataMatrix reportData, Utilities.IProgressObserver progress) {

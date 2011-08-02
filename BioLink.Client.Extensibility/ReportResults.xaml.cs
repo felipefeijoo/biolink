@@ -100,11 +100,25 @@ namespace BioLink.Client.Extensibility {
                     reportContent.Children.Add(control);                    
                 } else {
                     TabControl tab = new TabControl();
-                    foreach (IReportViewerSource viewerSource in Report.Viewers) {
-                        FrameworkElement control = viewerSource.ConstructView(Report, data, this);
-                        tab.Items.Add(control);
+                    int count = 0;
+                    foreach (IReportViewerSource tmpViewerSource in Report.Viewers) {
+                        var viewerSource = tmpViewerSource; // need to capture a local because of the closure below
+                        var tabItem = new TabItem { Header = viewerSource.Name };
+
+                        // Create the first view straight away...
+                        if (count == 0) {
+                            tabItem.Content = viewerSource.ConstructView(Report, data, this);
+                        } else {
+                            tabItem.RequestBringIntoView += new RequestBringIntoViewEventHandler((s, e) => {
+                                if (tabItem.Content == null) {
+                                    tabItem.Content = viewerSource.ConstructView(Report, data, this);
+                                }
+                            });
+                        }
+                        tab.Items.Add(tabItem);
+                        count++;
                     }                    
-                    reportContent.Children.Add(tab);    
+                    reportContent.Children.Add(tab);
                 }
             }
 
@@ -159,7 +173,15 @@ namespace BioLink.Client.Extensibility {
                 if (elem is IDisposable) {
                     IDisposable disposable = elem as IDisposable;
                     disposable.Dispose();
+                } else if (elem is TabControl) {
+                    var t = elem as TabControl;
+                    foreach (TabItem item in t.Items) {
+                        if (item.Content != null && item.Content is IDisposable) {
+                            (item.Content as IDisposable).Dispose();
+                        }
+                    }
                 }
+
             }
         }
 
