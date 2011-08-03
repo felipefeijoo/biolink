@@ -120,6 +120,10 @@
       <DependentUpon>CSVExporterOptionsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Export\Excel2003Exporter.cs" />
+    <Compile Include="GoogleEarth.cs" />
+    <Compile Include="GoogleEarthGeoTag.xaml.cs">
+      <DependentUpon>GoogleEarthGeoTag.xaml</DependentUpon>
+    </Compile>
     <Compile Include="IIconHolder.cs" />
     <Compile Include="ILabelSetItemTarget.cs" />
     <Compile Include="IPreferredSizeHolder.cs" />
@@ -388,6 +392,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Export\CSVExporterOptionsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GoogleEarthGeoTag.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -665,6 +673,7 @@
     <Resource Include="images\TemplateOverlay.png" />
     <Resource Include="images\DeletedOverlay.png" />
     <Resource Include="images\DistributionRegion.png" />
+    <Resource Include="images\GoogleEarth.png" />
     <Content Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>

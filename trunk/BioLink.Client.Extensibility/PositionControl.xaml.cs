@@ -41,6 +41,15 @@ namespace BioLink.Client.Extensibility {
             grid.RowDefinitions[1].Height = new GridLength(0);
             grid.ColumnDefinitions[1].Width = new GridLength(68);
             lblLon.Visibility = System.Windows.Visibility.Visible;
+
+            if (GoogleEarth.IsInstalled()) {
+                grid.ColumnDefinitions[5].Width = new GridLength(4);
+                grid.ColumnDefinitions[6].Width = new GridLength(23);
+            } else {
+                grid.ColumnDefinitions[5].Width = new GridLength(0);
+                grid.ColumnDefinitions[6].Width = new GridLength(0);
+            }
+
         }
 
         private void HookLatLongControl(LatLongInput ctl) {
@@ -97,27 +106,6 @@ namespace BioLink.Client.Extensibility {
             this.Longitude = lon.Value;
         }
 
-        //public bool HeaderLabels {
-        //    get {
-        //        return grid.ColumnDefinitions[1].Width.Value != 0;
-        //    }
-
-        //    set {
-
-        //        if (value) {
-        //            grid.RowDefinitions[0].Height = new GridLength(18);
-        //            grid.RowDefinitions[1].Height = new GridLength(2);
-        //            grid.ColumnDefinitions[1].Width = new GridLength(4);
-        //            lblLon.Visibility = System.Windows.Visibility.Collapsed;
-        //        } else {
-        //            grid.RowDefinitions[0].Height = new GridLength(0);
-        //            grid.RowDefinitions[1].Height = new GridLength(0);
-        //            grid.ColumnDefinitions[1].Width = new GridLength(68);
-        //            lblLon.Visibility = System.Windows.Visibility.Visible;
-        //        }
-        //    }
-        //}
-
         public LatLongMode Mode {
             get { return lon.Mode; }
 
@@ -171,6 +159,7 @@ namespace BioLink.Client.Extensibility {
                 control.lat.IsReadOnly = val;
                 control.lon.IsReadOnly = val;
                 control.btnEgaz.IsEnabled = !val;
+                control.btnGoogleCode.IsEnabled = !val;
             }
 
         }
@@ -222,6 +211,13 @@ namespace BioLink.Client.Extensibility {
         }
 
         public event Action<PlaceName, string> PositionChanged;
+
+        private void btnGoogleCode_Click(object sender, RoutedEventArgs e) {
+            GoogleEarth.GeoTag((lat, lon) => {
+                this.lat.Value = lat;
+                this.lon.Value = lon;
+            });
+        }
 
     }
 
