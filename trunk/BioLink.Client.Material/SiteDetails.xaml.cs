@@ -38,7 +38,11 @@ namespace BioLink.Client.Material {
             var list = new List<Ellipsoid>(GeoUtils.ELLIPSOIDS);
             cmbDatum.ItemsSource = new ObservableCollection<string>(list.ConvertAll((ellipsoid) => { return ellipsoid.Name; }));
 
-
+            if (GoogleEarth.IsInstalled()) {
+                coordGrid.ColumnDefinitions[7].Width = new GridLength(23);
+            } else {
+                coordGrid.ColumnDefinitions[7].Width = new GridLength(0);
+            }
 
             // Radio button checked event handlers
             optNearestPlace.Checked += new RoutedEventHandler((s, e) => {
@@ -230,6 +234,7 @@ namespace BioLink.Client.Material {
                 ctlY2.Visibility = System.Windows.Visibility.Hidden;
                 ctlEastingsNorthings2.Visibility = System.Windows.Visibility.Collapsed;
                 btnEgaz2.Visibility = System.Windows.Visibility.Collapsed;
+                btnGE2.Visibility = System.Windows.Visibility.Collapsed;
                 if (_viewModel.PosCoordinates == 2) {
                     ctlX1.Visibility = System.Windows.Visibility.Collapsed;
                     ctlY1.Visibility = System.Windows.Visibility.Collapsed;
@@ -243,6 +248,7 @@ namespace BioLink.Client.Material {
                 lblStart.Content = "Start:";
                 lblEnd.Visibility = System.Windows.Visibility.Visible;
                 btnEgaz2.Visibility = System.Windows.Visibility.Visible;
+                btnGE2.Visibility = System.Windows.Visibility.Visible;
                 if (_viewModel.PosCoordinates == 2) {
                     ctlX1.Visibility = System.Windows.Visibility.Collapsed;
                     ctlY1.Visibility = System.Windows.Visibility.Collapsed;
@@ -377,6 +383,30 @@ namespace BioLink.Client.Material {
                     }
                 }
             });
+        }
+
+        private void btnGE1_Click(object sender, RoutedEventArgs e) {
+            GeoCode(ctlY1, ctlX1, true);
+        }
+
+        private void btnGE2_Click(object sender, RoutedEventArgs e) {
+            GeoCode(ctlY2, ctlX2, false);
+        }
+
+        private void GeoCode(LatLongInput ctlLat, LatLongInput ctlLon, bool acceptElevation) {
+            if (GoogleEarth.IsInstalled()) {
+                GoogleEarth.GeoTag((lat, lon, alt) => {
+                    ctlLat.Value = lat;
+                    ctlLon.Value = lon;
+                    if (alt.HasValue && acceptElevation) {
+                        if (OptionalQuestion.AskOrDefault(this.FindParentWindow(), "The altitude of the selected location is " + alt.Value + " metres. Do you wish to update the elevation for this site?", "Site.UpdateElevationFromGoogleCode", "Update elevation?")) {
+                            txtElevUpper.Text = alt.Value + "";
+                            txtElevUnits.Text = "metres";
+                        }
+                    }
+                });
+            }
+
         }
 
     }

@@ -19,19 +19,22 @@ namespace BioLink.Client.Extensibility {
     /// </summary>
     public partial class GoogleEarthGeoTag : Window {
 
-        public GoogleEarthGeoTag() {
+        public GoogleEarthGeoTag(Action selectAction) {
             InitializeComponent();
+            this.SelectAction = selectAction;
         }
 
         private void btnOK_Click(object sender, RoutedEventArgs e) {
-            this.DialogResult = true;
+            if (SelectAction != null) {
+                SelectAction();
+            }
+        }
+
+        private void btnCancel_Click(object sender, RoutedEventArgs e) {            
             this.Close();
         }
 
-        private void btnCancel_Click(object sender, RoutedEventArgs e) {
-            this.DialogResult = false;
-            this.Close();
-        }
+        private Action SelectAction { get; set; }
 
     }
 }

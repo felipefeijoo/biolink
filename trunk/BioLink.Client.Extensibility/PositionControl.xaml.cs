@@ -213,7 +213,7 @@ namespace BioLink.Client.Extensibility {
         public event Action<PlaceName, string> PositionChanged;
 
         private void btnGoogleCode_Click(object sender, RoutedEventArgs e) {
-            GoogleEarth.GeoTag((lat, lon) => {
+            GoogleEarth.GeoTag((lat, lon, altitude) => {
                 this.lat.Value = lat;
                 this.lon.Value = lon;
             });
