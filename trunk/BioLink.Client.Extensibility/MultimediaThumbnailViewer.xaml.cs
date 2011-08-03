@@ -282,6 +282,69 @@ namespace BioLink.Client.Extensibility {
                 });
             }
         }
+
+        private void txtFilter_TypingPaused(string text) {
+            if (String.IsNullOrEmpty(text)) {
+                ClearFilter();
+            } else {
+                SetFilter(text);
+            }
+        }
+
+        private void SetFilter(string text) {
+            if (String.IsNullOrEmpty(text)) {
+                return;
+            }
+            ListCollectionView dataView = CollectionViewSource.GetDefaultView(thumbList.ItemsSource) as ListCollectionView;
+            text = text.ToLower();
+            dataView.Filter = (obj) => {
+                var mm = obj as MultimediaLinkViewModel;
+
+                if (mm != null) {
+                    if (!string.IsNullOrWhiteSpace(mm.MultimediaType)) {
+                        if (mm.MultimediaType.ToLower().Contains(text)) {
+                            return true;
+                        }
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(mm.Name)) {
+                        if (mm.Name.ToLower().Contains(text)) {
+                            return true;
+                        }
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(mm.Caption)) {
+                        if (mm.Caption.ToLower().Contains(text)) {
+                            return true;
+                        }
+                    }
+                    
+                }
+                return false;
+            };
+
+            dataView.Refresh();
+            if (Progress != null) {
+                Progress.ProgressMessage(String.Format("Showing {0} of {1} items", dataView.Count, ReportData.Rows.Count));
+            }
+        }
+
+
+        private void txtFilter_TextChanged(object sender, TextChangedEventArgs e) {
+            if (String.IsNullOrEmpty(txtFilter.Text)) {
+                ClearFilter();
+            }
+        }
+
+        private void ClearFilter() {
+            System.ComponentModel.ICollectionView dataView = CollectionViewSource.GetDefaultView(thumbList.ItemsSource);
+            dataView.Filter = null;
+            dataView.Refresh();
+            if (Progress != null) {
+                Progress.ProgressMessage(String.Format("Displaying all {0} items.", ReportData.Rows.Count));
+            }
+
+        }
     }
 
     public class MultimediaThumbnailViewerSource : IReportViewerSource {

@@ -7,7 +7,7 @@
              xmlns:data="clr-namespace:BioLink.Data;assembly=BioLink.Data"                           
              xmlns:model="clr-namespace:BioLink.Data.Model;assembly=BioLink.Data"             
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="312" d:DesignWidth="422">
     <Grid>
         
         <Grid.RowDefinitions>
@@ -15,8 +15,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         
-        <ToolBar Grid.Row="0">
-            
+        <ToolBar HorizontalAlignment="Stretch" >
             <Button x:Name="btnProperties" Click="btnProperties_Click" ToolTip="Edit/View multimedia properties ">
                 <Image Source="images/Properties.png" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
             </Button>
@@ -31,17 +30,23 @@
                 <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/Save.png" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
             </Button>
 
-            <Separator />            
-            
+            <Separator />
+
             <Button x:Name="btnExport" Click="btnExport_Click"  ToolTip="Export all items to the filesystem">
                 <Button.Content>
-                    <Image Source="images/export.png" Height="20" Width="20" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None"/>
+                    <Image Source="images/export.png" Height="16" Width="16" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None"/>
                 </Button.Content>
             </Button>
 
+            <Separator />
+
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                    <TextBlock Text="Filter:" VerticalAlignment="Center" Padding="5,0" HorizontalAlignment="Right" />
+                    <src:DelayedTriggerTextbox x:Name="txtFilter" TypingPaused="txtFilter_TypingPaused" Width="160" TextChanged="txtFilter_TextChanged"  VerticalAlignment="Center" Height="23" />
+            </StackPanel>
 
         </ToolBar>
-        
+
         <ListBox Grid.Row="1" x:Name="thumbList" HorizontalContentAlignment="Center" MouseRightButtonUp="thumbList_MouseRightButtonUp"  MouseDoubleClick="thumbList_MouseDoubleClick">
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
