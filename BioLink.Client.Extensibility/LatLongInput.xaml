@@ -27,7 +27,7 @@
             <ColumnDefinition Width="15"></ColumnDefinition>
             <ColumnDefinition ></ColumnDefinition>
             <ColumnDefinition Width="15"></ColumnDefinition>
-            <ColumnDefinition Width="35"></ColumnDefinition>
+            <ColumnDefinition Width="45"></ColumnDefinition>
 
         </Grid.ColumnDefinitions>
         <Label Grid.ColumnSpan="7" Content="Label" Name="lblAxis" HorizontalContentAlignment="Center" Padding="1" VerticalContentAlignment="Center" Background="DimGray" Foreground="White" FontWeight="Bold" FontSize="10" />
@@ -37,6 +37,6 @@
         <Label Grid.Column="3" Grid.Row="2" Content="{StaticResource LatLong.MinuteSeparator}" Name="lblMinuteSeparator" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Top" Padding="0" />
         <ext:TextBox Grid.Column="4" Grid.Row="2" x:Name="txtSeconds" AllowDrop="False"  x:FieldModifier="public"/>
         <Label Grid.Column="5" Grid.Row="2" Content="{StaticResource LatLong.SecondSeparator}" Name="lblSecondSeparator" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Top" Padding="0" />
-        <ComboBox Grid.Column="6" Grid.Row="2" HorizontalAlignment="Right"  Name="cmbDirection" Width="35" x:FieldModifier="public" />
+        <ComboBox Grid.Column="6" Grid.Row="2" HorizontalAlignment="Stretch"  Name="cmbDirection" x:FieldModifier="public" />
     </Grid>
 </UserControl>

@@ -674,13 +674,18 @@
     <Resource Include="images\DeletedOverlay.png" />
     <Resource Include="images\DistributionRegion.png" />
     <Resource Include="images\GoogleEarth.png" />
+    <Resource Include="images\Target.png" />
     <Content Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Target.kmz" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

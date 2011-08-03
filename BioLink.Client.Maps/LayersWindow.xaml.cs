@@ -39,11 +39,13 @@ namespace BioLink.Client.Maps {
             InitializeComponent();
             _mapControl = mapControl;            
             _model = new ObservableCollection<LayerViewModel>();
-            foreach (ILayer layer in mapControl.mapBox.Map.Layers) {
-                if (layer is VectorLayer) {
-                    _model.Insert(0, new VectorLayerViewModel(layer as VectorLayer));
-                } else if (layer is MyGdalRasterLayer) {
-                    _model.Insert(0, new RasterLayerViewModel(layer as MyGdalRasterLayer));
+            if (mapControl.mapBox.Map.Layers != null && mapControl.mapBox.Map.Layers.Count > 0) {
+                foreach (ILayer layer in mapControl.mapBox.Map.Layers) {
+                    if (layer is VectorLayer) {
+                        _model.Insert(0, new VectorLayerViewModel(layer as VectorLayer));
+                    } else if (layer is MyGdalRasterLayer) {
+                        _model.Insert(0, new RasterLayerViewModel(layer as MyGdalRasterLayer));
+                    }
                 }
             }
 

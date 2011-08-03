@@ -74,7 +74,7 @@
                     <Image Height="96" HorizontalAlignment="Left" Margin="6,256,0,0" Name="imgMiniMap2" Source="images\World.png" Stretch="None" VerticalAlignment="Top" Width="200" />
                     
                     <GroupBox Grid.Column="1" Header="Coordinates" Height="216" Margin="6,6,6,0" Name="grpCoordinates" VerticalAlignment="Top">
-                        <Grid>
+                        <Grid x:Name="coordGrid">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="120" />
                                 <ColumnDefinition Width="*" />
@@ -83,6 +83,7 @@
                                 <ColumnDefinition Width="6" />
                                 <ColumnDefinition Width="23" />
                                 <ColumnDefinition Width="6" />
+                                <ColumnDefinition Width="23" />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="46" />
@@ -103,16 +104,29 @@
                                 </Button.Content>
                             </Button>
 
+                            <Button x:Name="btnGE1" Grid.Column="7" Grid.Row="0" Height="23" VerticalAlignment="Bottom" Click="btnGE1_Click" Focusable="False">
+                                <Button.Content>
+                                    <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/GoogleEarth.png" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True" />
+                                </Button.Content>
+                            </Button>
+
                             <Label Grid.Row="2" Content="End:" Name="lblEnd" VerticalAlignment="Bottom" />
                             <ext:EastingsNorthingsControl Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="2" Name="ctlEastingsNorthings2" X="{Binding PosX2}" Y="{Binding PosY2}" Datum="{Binding PosUTMSource}" Visibility="Collapsed" VerticalAlignment="Bottom"/>
                             <ext:LatLongInput Grid.Column="1" Grid.Row="2" Name="ctlY2" Value="{Binding PosY2}"  Axis="Latitude" VerticalAlignment="Bottom"/>
                             <ext:LatLongInput Grid.Column="3" Grid.Row="2" Axis="Longitude" Name="ctlX2" Value="{Binding PosX2}" VerticalAlignment="Bottom"/>
 
-                            <Button x:Name="btnEgaz2" Grid.Column="5" Grid.Row="2" Height="23" VerticalAlignment="Bottom" Visibility="Collapsed" Click="btnEgaz2_Click" Focusable="False">
+                            <Button x:Name="btnEgaz2" Grid.Column="5" Grid.Row="2" Height="23" VerticalAlignment="Bottom" Click="btnEgaz2_Click" Focusable="False">
                                 <Button.Content>
                                     <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/Ellipsis.png" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True" />
                                 </Button.Content>
                             </Button>
+
+                            <Button x:Name="btnGE2" Grid.Column="7" Grid.Row="2" Height="23" VerticalAlignment="Bottom" Click="btnGE2_Click" Focusable="False">
+                                <Button.Content>
+                                    <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/GoogleEarth.png" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True" />
+                                </Button.Content>
+                            </Button>
+
 
                             <Label Grid.Row="3" Content="Datum:" Name="label7" />
                             <ComboBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Height="23" Name="cmbDatum" SelectedItem="{Binding PosUTMSource}" />
