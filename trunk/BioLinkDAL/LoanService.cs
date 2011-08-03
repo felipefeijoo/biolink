@@ -18,7 +18,7 @@ namespace BioLink.Data {
                     what = "i";
                     break;
                 case ContactSearchType.Surname:
-                    what = "s";
+                    what = "n";
                     break;
                 default:
                     break;
