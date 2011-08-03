@@ -82,7 +82,6 @@
     <Compile Include="BlockingQueue.cs" />
     <Compile Include="ByteConverter.cs" />
     <Compile Include="CodeTimer.cs" />
-    <Compile Include="Command.cs" />
     <Compile Include="DateUtils.cs" />
     <Compile Include="Debug.cs" />
     <Compile Include="DiscardChangesWindow.xaml.cs">
