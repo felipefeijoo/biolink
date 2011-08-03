@@ -57,10 +57,21 @@ namespace BioLink.Client.Utilities {
             }
         }
 
+        /// <summary>
+        /// Gets the controls dispatcher and invokes the action with a priority of background
+        /// </summary>
+        /// <param name="control"></param>
+        /// <param name="action"></param>
         public static void BackgroundInvoke(this DispatcherObject control, Action action) {
             control.Dispatcher.Invoke(DispatcherPriority.Background, action);
         }
 
+        /// <summary>
+        /// Checks to see if the current (calling) thread is the same as the controls dispatcher thread. If not, will
+        /// schedule the action to be performed on the dispatcher thread, otherwise invokes directly
+        /// </summary>
+        /// <param name="control">A control on which some action needs to be performed</param>
+        /// <param name="action">The action</param>
         public static void InvokeIfRequired(this DispatcherObject control, Action action) {
             if (control.Dispatcher.Thread != Thread.CurrentThread) {
                 control.Dispatcher.Invoke(action);
@@ -69,10 +80,23 @@ namespace BioLink.Client.Utilities {
             }
         }
 
+        /// <summary>
+        /// Returns true if the environment is Visual Studios designer
+        /// </summary>
+        /// <param name="control"></param>
+        /// <returns></returns>
         public static bool IsDesignTime(this Control control) {
             return DesignerProperties.GetIsInDesignMode(control);
         }
 
+        /// <summary>
+        /// Looks up a string resource from the controls resource dictionarys with the given key.
+        /// Can also perform string.format style substitutions
+        /// </summary>
+        /// <param name="control">The control whose resource dictionary is going to be checked</param>
+        /// <param name="messageKey">the message key</param>
+        /// <param name="args">Arguments</param>
+        /// <returns></returns>
         public static string _R(this Control control, string messageKey, params object[] args) {
             string message = null;
             control.InvokeIfRequired(() => {
@@ -95,6 +119,14 @@ namespace BioLink.Client.Utilities {
             return message;
         }
 
+        /// <summary>
+        /// Wrapper over MessageBox that asks a Yes/No question
+        /// </summary>
+        /// <param name="control">The source of the question</param>
+        /// <param name="question">Question Text</param>
+        /// <param name="caption">Window caption</param>
+        /// <param name="icon">Alternate icon (optional)</param>
+        /// <returns>Returns true if the Yes button is pressed</returns>
         public static bool Question(this Control control, string question, string caption, MessageBoxImage icon = MessageBoxImage.Question) {
 
             MessageBoxResult result = MessageBoxResult.No;
@@ -120,20 +152,42 @@ namespace BioLink.Client.Utilities {
             return discard;
         }
 
+        /// <summary>
+        /// Useful for nullable booleans (bool?). Slighlty simplifies the GetValueOrDefault call
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static bool ValueOrFalse(this bool? value) {
             return value.GetValueOrDefault(false);
         }
 
+        /// <summary>
+        /// Checks if a string holds a numeric value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static bool IsNumeric(this string value) {
             double result;
             return Double.TryParse(value, out result);
         }
 
+        /// <summary>
+        /// Checks if a string holds an integer value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static bool IsInteger(this string value) {
             int result;
             return Int32.TryParse(value, out result);
         }
 
+        /// <summary>
+        /// Truncates a string to a specified length, and will append ellipsis (or other suffix) if truncation is actually necessary
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="length"></param>
+        /// <param name="suffix"></param>
+        /// <returns></returns>
         public static string Truncate(this string value, int length, string suffix = "...") {
             if (value.Length > length) {
                 return value.Substring(0, length - suffix.Length) + suffix;
@@ -141,6 +195,12 @@ namespace BioLink.Client.Utilities {
             return value;
         }
 
+        /// <summary>
+        /// Returns turn if the type to check is a subclass of generic type
+        /// </summary>
+        /// <param name="toCheck"></param>
+        /// <param name="generic"></param>
+        /// <returns></returns>
         public static bool IsSubclassOfRawGeneric(this Type toCheck, Type generic) {
             while (toCheck != typeof(object)) {
                 var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
@@ -152,6 +212,11 @@ namespace BioLink.Client.Utilities {
             return false;
         }
 
+        /// <summary>
+        /// Helper function to load text into a RichTextControl
+        /// </summary>
+        /// <param name="control"></param>
+        /// <param name="fragment"></param>
         public static void SetRTF(this RichTextBox control, string fragment) {
             if (string.IsNullOrEmpty(fragment)) {
                 control.Document.Blocks.Clear();
@@ -161,6 +226,14 @@ namespace BioLink.Client.Utilities {
             }
         }
 
+        /// <summary>
+        /// Adds a new tab item to specified tab control. Will bind a handler to RequestBringIntoView should
+        /// the content be ILazyPopulateControl
+        /// </summary>
+        /// <param name="tab"></param>
+        /// <param name="title"></param>
+        /// <param name="content"></param>
+        /// <returns></returns>
         public static TabItem AddTabItem(this TabControl tab, string title, UIElement content) {
             TabItem tabItem = new TabItem();
             tabItem.Header = title;
@@ -184,6 +257,12 @@ namespace BioLink.Client.Utilities {
             return tabItem;
         }
 
+        /// <summary>
+        /// Helper to retrieve a TreeViewItem from its framework element 
+        /// </summary>
+        /// <param name="treeView"></param>
+        /// <param name="sender"></param>
+        /// <returns></returns>
         public static TreeViewItem GetTreeViewItemClicked(this TreeView treeView, FrameworkElement sender) {
             Point p = sender.TranslatePoint(new Point(1, 1), treeView);
             DependencyObject obj = treeView.InputHitTest(p) as DependencyObject;
@@ -203,6 +282,12 @@ namespace BioLink.Client.Utilities {
 
         }
 
+        /// <summary>
+        /// Builds a string by repeatingthe source n times
+        /// </summary>
+        /// <param name="stringToRepeat"></param>
+        /// <param name="repeat"></param>
+        /// <returns></returns>
         public static string Repeat(this string stringToRepeat, int repeat) {
             var builder = new StringBuilder(repeat);
             for (int i = 0; i < repeat; i++) {
@@ -211,6 +296,13 @@ namespace BioLink.Client.Utilities {
             return builder.ToString();
         }
 
+        /// <summary>
+        /// Construct a string that is a delimited list of the elements of an array (using toString())
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="items"></param>
+        /// <param name="delimiter"></param>
+        /// <returns></returns>
         public static string Join<T>(this T[] items, string delimiter) {            
             if (items.Length == 0) {
                 return "";
@@ -223,6 +315,13 @@ namespace BioLink.Client.Utilities {
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Construct a string that is a delimited list of the elements of a collection (using toString())
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="items"></param>
+        /// <param name="delimiter"></param>
+        /// <returns></returns>
         public static string Join<T>(this IList<T> items, string delimiter) {
             if (items.Count == 0) {
                 return "";
@@ -235,18 +334,42 @@ namespace BioLink.Client.Utilities {
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Reads the next line from the stream, and attempts to match the supplied pattern, and yield the first group as an int 
+        /// Throws if no match
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="pattern"></param>
+        /// <returns></returns>
         public static int ReadRegexInt(this StreamReader reader, string pattern) {
             return ReadRegex<int>(reader, pattern, (str) => {
                 return Int32.Parse(str);
             });
         }
 
+        /// <summary>
+        /// Reads the next line from the stream, and attempts to match the supplied pattern, and yield the first group as a double
+        /// Throws if no match
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="pattern"></param>
+        /// <returns></returns>
         public static double ReadRegexDouble(this StreamReader reader, string pattern) {
             return ReadRegex<double>(reader, pattern, (str) => {
                 return Double.Parse(str);
             });
         }
 
+        /// <summary>
+        /// Reads the next line from the stream, and attempts to match the supplied pattern, and yield the first group as an instance of type T 
+        /// using the supplied convert function
+        /// Throws if no match
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="reader"></param>
+        /// <param name="pattern"></param>
+        /// <param name="convert"></param>
+        /// <returns></returns>
         public static T ReadRegex<T>(this StreamReader reader, string pattern, Func<string, T> convert) {
             var str = ReadRegex(reader, pattern);
             if (str != null) {
@@ -255,6 +378,11 @@ namespace BioLink.Client.Utilities {
             throw new Exception(string.Format("Failed to read data in expected format: {0}", pattern));
         }
 
+        /// <summary>
+        /// Reads the next double value from the reader. will consume characters until a non-numeric is encountered
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <returns></returns>
         public static double ReadDouble(this StreamReader reader) {
             var valid = "0123456789.-";
             int ch;
@@ -273,6 +401,12 @@ namespace BioLink.Client.Utilities {
             throw new Exception("Failed to read double from stream!");
         }
 
+        /// <summary>
+        /// Reads the next line from the stream, and matches it against the supplied pattern. Returns the first group as a string
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="pattern"></param>
+        /// <returns></returns>
         public static string ReadRegex(this StreamReader reader, string pattern) {
 
             var line = reader.ReadLine();
@@ -290,6 +424,11 @@ namespace BioLink.Client.Utilities {
             return null;
         }
 
+        /// <summary>
+        /// Traverses a controls ancestry to find a Window container
+        /// </summary>
+        /// <param name="control"></param>
+        /// <returns></returns>
         public static Window FindParentWindow(this FrameworkElement control) {
             if (control is Window) {
                 return control as Window;
@@ -308,10 +447,17 @@ namespace BioLink.Client.Utilities {
 
     }
 
-
-
+    /// <summary>
+    /// A delegate used for formatting message strings in the same style as String.Format()
+    /// </summary>
+    /// <param name="format"></param>
+    /// <param name="args"></param>
+    /// <returns></returns>
     public delegate string MessageFormatterFunc(string format, params object[] args);
 
+    /// <summary>
+    /// Help class that adds extensions to list boxes
+    /// </summary>
     public class ListBoxExtenders : DependencyObject {
 
         public static readonly DependencyProperty AutoScrollToCurrentItemProperty = DependencyProperty.RegisterAttached("AutoScrollToCurrentItem", typeof(bool), typeof(ListBoxExtenders), new UIPropertyMetadata(default(bool), OnAutoScrollToCurrentItemChanged));
