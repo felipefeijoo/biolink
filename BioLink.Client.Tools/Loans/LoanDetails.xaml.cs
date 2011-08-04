@@ -169,6 +169,13 @@ namespace BioLink.Client.Tools {
         public int LoanID { get; private set; }
         public ToolsPlugin Plugin { get; private set; }
 
+        private void CheckBox_Checked(object sender, RoutedEventArgs e) {
+            DateTime dt = new DateTime(1900, 1, 1);
+            if (!_viewModel.DateClosed.HasValue || _viewModel.DateClosed.Value.CompareTo(dt) < 0) {
+                _viewModel.DateClosed = DateTime.Now;
+            }
+        }
+
     }
 
     public class UpdateLoanCommand : GenericDatabaseCommand<Loan> {

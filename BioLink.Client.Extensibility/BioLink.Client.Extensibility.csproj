@@ -82,6 +82,7 @@
     </Compile>
     <Compile Include="BioLinkCorePlugin.cs" />
     <Compile Include="BioLinkPluginBase.cs" />
+    <Compile Include="BooleanVisibilityConverter.cs" />
     <Compile Include="ChangeContainerControl.cs" />
     <Compile Include="ChangeContainerWindow.cs" />
     <Compile Include="ColorPicker\CustomColorPicker.xaml.cs">
