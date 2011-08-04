@@ -38,7 +38,7 @@
         </Grid.RowDefinitions>
         <GroupBox x:Name="grpUsers" Header="Users" Grid.Row="0" Margin="6,0,6,0">
             <Grid Margin="0">
-                <ListView Margin="6,35,102,10" x:Name="lvwUsers" MouseDoubleClick="lvwUsers_MouseDoubleClick">
+                <ListView Margin="6,35,102,10" x:Name="lvwUsers" MouseDoubleClick="lvwUsers_MouseDoubleClick" MouseRightButtonUp="lvwUsers_MouseRightButtonUp">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Width="100" Header="User Name" HeaderContainerStyle="{StaticResource hcs}">

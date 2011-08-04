@@ -342,6 +342,20 @@ namespace BioLink.Client.Tools {
             ShowSelectedProperties();
         }
 
+        private void lvwUsers_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            var selected = lvwUsers.SelectedItem as UserSearchResultViewModel;
+            if (selected != null) {
+                var builder = new ContextMenuBuilder(null);
+                builder.New("Add User").Handler(() => AddNewUser()).End();
+                builder.Separator();
+                builder.New("Delete " + selected.Username).Handler(() => DeleteSelectedUser()).End();
+                builder.Separator();
+                builder.New("Properties...").Handler(() => ShowSelectedProperties()).End();
+
+                lvwUsers.ContextMenu = builder.ContextMenu;
+            }
+        }
+
     }
 
     public class PermissionViewModel : HierarchicalViewModelBase {
