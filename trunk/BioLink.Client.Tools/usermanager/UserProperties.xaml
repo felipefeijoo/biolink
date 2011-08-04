@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
              mc:Ignorable="d" 
-             d:DesignHeight="374" d:DesignWidth="377" SizeToContent="WidthAndHeight" Title="User details">
+             Height="380" Width="380" SizeToContent="Manual" Title="User details">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -58,7 +58,7 @@
 
             <Label Grid.Row="7" Content="Notes:" />
             
-            <ext:TextBox Grid.Row="8" Grid.ColumnSpan="2" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible" />
+            <ext:TextBox Grid.Row="8" Grid.ColumnSpan="2" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible" Text="{Binding Path=Notes}"/>
 
 
 
