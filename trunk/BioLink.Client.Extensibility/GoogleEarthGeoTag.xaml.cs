@@ -28,6 +28,7 @@ namespace BioLink.Client.Extensibility {
             if (SelectAction != null) {
                 SelectAction();
             }
+            this.Close();
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e) {            

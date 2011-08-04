@@ -34,9 +34,9 @@
         </Menu>
 
         <Grid Grid.Row="1">
-            <my:PositionControl HorizontalAlignment="Left" Margin="12,46,0,0" Name="ctlPosition" VerticalAlignment="Top" ShowHeaderLabels="True" IsManipulationEnabled="False" Width="362" />
+            <my:PositionControl HorizontalAlignment="Left" Margin="12,46,0,0" Name="ctlPosition" VerticalAlignment="Top" ShowHeaderLabels="True" IsManipulationEnabled="False" Width="430" />
             <CheckBox Content="Return only places of type:" Height="16" HorizontalAlignment="Left" Margin="12,104,0,0" Name="chkRestrictPlaceType" VerticalAlignment="Top" Width="177" />
-            <ComboBox Height="23" HorizontalAlignment="Left" Margin="198,100,0,0" Name="cmbPlaceType" VerticalAlignment="Top" Width="179" />
+            <ComboBox Height="23" HorizontalAlignment="Left" Margin="176,101,0,0" Name="cmbPlaceType" VerticalAlignment="Top" Width="266" />
             <Label Content="Return the nearest " Height="28" HorizontalAlignment="Left" Margin="11,131,0,0" Name="label1" VerticalAlignment="Top" />
             <TextBox Height="23" HorizontalAlignment="Left" Margin="128,133,0,0" Name="txtMaxResults" VerticalAlignment="Top" Width="42" Text="300" />
             <Label Content="places." Height="28" HorizontalAlignment="Left" Margin="176,131,0,0" Name="label2" VerticalAlignment="Top" />

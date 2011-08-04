@@ -194,7 +194,7 @@ namespace BioLink.Client.Material {
                 place = string.Format("{0} {1} {2} of {3}", placeName.Offset, placeName.Units, placeName.Direction, placeName.Name);
             }
 
-            var updateLocality = OptionalQuestion.AskOrDefault(this.FindParentWindow(), string.Format("Do you wish to update the locality from '{0}' to '{1}'?", _viewModel.Locality, place), "Material.UpdateLocalityFromEGaz", "Update Locality?");
+            var updateLocality = OptionalQuestions.UpdateLocalityQuestion.Ask(this.FindParentWindow(), _viewModel.Locality, place);
 
             if (updateLocality) {
                 if (placeName.PlaceNameType == PlaceNameType.OffsetAndDirection) {
@@ -399,12 +399,12 @@ namespace BioLink.Client.Material {
                     ctlLat.Value = lat;
                     ctlLon.Value = lon;
                     if (alt.HasValue && acceptElevation) {
-                        if (OptionalQuestion.AskOrDefault(this.FindParentWindow(), "The altitude of the selected location is " + alt.Value + " metres. Do you wish to update the elevation for this site?", "Site.UpdateElevationFromGoogleCode", "Update elevation?")) {
+                        if (OptionalQuestions.UpdateElevationQuestion.Ask(this.FindParentWindow(), alt.Value)) {
                             txtElevUpper.Text = alt.Value + "";
                             txtElevUnits.Text = "metres";
                         }
                     }
-                });
+                }, ctlLat.Value, ctlLon.Value);
             }
 
         }

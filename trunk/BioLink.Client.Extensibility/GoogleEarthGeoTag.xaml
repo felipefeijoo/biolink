@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             Height="131" Width="466" Topmost="True" WindowStartupLocation="Manual" WindowStyle="ToolWindow" Title="Google Earth Geo Coding" ResizeMode="NoResize">
+             Height="131" Width="466" Topmost="True" WindowStartupLocation="Manual" WindowStyle="ToolWindow" Title="Geocoding" ResizeMode="NoResize">
     
     <Grid>
         <Grid.RowDefinitions>
@@ -18,7 +18,7 @@
 
         <Grid Grid.Row="1">
             <Button Content="_Close" Height="23" HorizontalAlignment="Right" Margin="0,0,6,6" Name="btnCancel" VerticalAlignment="Bottom" Width="75" IsCancel="True" Click="btnCancel_Click" />
-            <Button Content="Select current location" Height="23" HorizontalAlignment="Right" Margin="0,0,87,6" Name="btnOK" VerticalAlignment="Bottom" Width="147" IsDefault="True" Click="btnOK_Click" />
+            <Button Content="Use current location" Height="23" HorizontalAlignment="Right" Margin="0,0,87,6" Name="btnOK" VerticalAlignment="Bottom" Width="125" IsDefault="True" Click="btnOK_Click" />
             <Grid.Background>
                 <LinearGradientBrush EndPoint="1,0.5" StartPoint="0,0.5">
                     <GradientStop Color="DarkOrange" Offset="0" />

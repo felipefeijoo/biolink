@@ -37,7 +37,7 @@
                 <Image Source="images/Ellipsis.png" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
             </Button.Content>
         </Button>
-        <Button Grid.Column="6" Grid.Row="2" Height="23" HorizontalAlignment="Center" Name="btnGoogleCode" VerticalAlignment="Center" Width="23" ToolTip="Geocode with Google Earth" Click="btnGoogleCode_Click">
+        <Button Grid.Column="6" Grid.Row="2" Height="23" HorizontalAlignment="Center" Name="btnGoogleCode" VerticalAlignment="Center" Width="23" ToolTip="Get a location from Google Earth™" Click="btnGoogleCode_Click">
             <Button.Content>
                 <Image Source="images/GoogleEarth.png" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="Uniform" Height="16"/>
             </Button.Content>

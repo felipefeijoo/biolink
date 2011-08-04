@@ -39,7 +39,7 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        public static void GeoTag(GeoCodingAction geoCodeAction) {
+        public static void GeoTag(GeoCodingAction geoCodeAction, double? startLat, double? startLon) {
             try {                                
 
                 var ge = (dynamic) Interaction.CreateObject("GoogleEarth.ApplicationGE");
@@ -48,6 +48,20 @@ namespace BioLink.Client.Extensibility {
 
                     int gHandle = ge.GetMainHwnd();
                     SetForegroundWindow(gHandle);
+
+                    if (startLat.HasValue && startLon.HasValue) {
+                        try {
+                            var camera = ge.GetCamera(false);
+                            camera.FocusPointLatitude = startLat.Value;
+                            camera.FocusPointLongitude = startLon.Value;
+                            camera.FocusPointAltitude = 0;
+                            camera.Range = 5000;
+                            camera.Tilt = 0;
+
+                            ge.SetCamera(camera, 3);
+                        } catch (Exception) {
+                        }
+                    }
 
                     // The KMZ file is a zip file containing a reticle png and kml file that will place the cross hairs on the google earth view (via temporary locations)...
                     string kmzFile = PluginManager.Instance.ResourceTempFileManager.ProxyResource(new Uri("pack://application:,,,/BioLink.Client.Extensibility;component/Resources/Target.kmz"));
