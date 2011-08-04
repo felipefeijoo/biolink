@@ -29,7 +29,7 @@ namespace BioLink.Client.Extensibility {
         public DuplicateItemOptions(Multimedia duplicate, int sizeInBytes, Boolean managerMode = false) {
             InitializeComponent();
             this.DuplicateItem = duplicate;
-            lblDescription.Content = "There already exists a multimedia item with the name and size ('" + duplicate.Name + "', " +  SystemUtils.ByteCountToSizeString(sizeInBytes) + ").";
+            lblDescription.Content = "There already exists a multimedia item with the name and size ('" + duplicate.Name + "', " +  ByteLengthConverter.FormatBytes(sizeInBytes) + ").";
             if (managerMode) {
                 optContinue.IsChecked = true;
                 optLinkToExisting.IsEnabled = false;

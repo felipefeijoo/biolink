@@ -24,7 +24,7 @@ namespace BioLink.Client.Utilities {
     /// <summary>
     /// IValueConverter class used to format byte values (integers) into size descriptions (strings)
     /// </summary>
-    public class ByteConverter : IValueConverter {
+    public class ByteLengthConverter : IValueConverter {
 
         /// <summary>
         /// Default Scale is 1024 bytes to a kilobyte, etc.

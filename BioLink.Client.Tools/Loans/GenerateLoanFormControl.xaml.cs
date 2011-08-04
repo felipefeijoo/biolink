@@ -219,7 +219,7 @@ namespace BioLink.Client.Tools {
         public LoanFormTemplateViewModel(MultimediaLink model) : base(model) { }
 
         public string FileDesc {
-            get { return string.Format("{0} {1}", this.Extension, SystemUtils.ByteCountToSizeString(this.SizeInBytes)); }
+            get { return string.Format("{0} {1}", this.Extension, ByteLengthConverter.FormatBytes(this.SizeInBytes)); }
         }
     }
 
