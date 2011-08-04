@@ -32,8 +32,8 @@
 
         </ToolBar>
         <Label Content="Find:" Grid.Row="1" Height="28" HorizontalAlignment="Left" Name="lblFind" VerticalAlignment="Top" Width="40" Margin="12,6,0,0" />
-        <ext:TextBox x:Name="txtFind" Grid.Row="1" Height="23" VerticalAlignment="Center" Margin="54,3,205,25" />
-        <ComboBox Grid.Row="1" Height="23" HorizontalAlignment="Right" Margin="0,8,81,0" Name="cmbWhat" VerticalAlignment="Top" Width="117" />
+        <ext:TextBox x:Name="txtFind" Grid.Row="1" Height="23" VerticalAlignment="Center" Margin="54,3,236,25" />
+        <ComboBox Grid.Row="1" Height="23" HorizontalAlignment="Right" Margin="0,8,81,0" Name="cmbWhat" VerticalAlignment="Top" Width="149" />
         <Button Content="_Find" Grid.Row="1" Height="23" HorizontalAlignment="Right" Margin="0,8,12,0" Name="btnFind" VerticalAlignment="Top" Width="63" Click="btnFind_Click" />
         <CheckBox Content="Find only open loans" Grid.Row="1" Height="16" HorizontalAlignment="Left" Margin="54,36,0,0" Name="chkFindOnlyOpenLoans" VerticalAlignment="Top" Width="275" />
 

@@ -706,13 +706,21 @@ namespace BioLink.Data {
 
         }
 
+        private String NullIfEmptyWildcard(string criteria) {
+            if (string.IsNullOrWhiteSpace(criteria)) {
+                return null;
+            }
+            return EscapeSearchTerm(criteria, true);
+        }
+
         public List<ReferenceSearchResult> FindReferences(string refCode, string author, string year, string other) {
-            var mapper = new GenericMapperBuilder<ReferenceSearchResult>().Map("FullRTF","RefRTF").build();
+            var mapper = new GenericMapperBuilder<ReferenceSearchResult>().Map("FullRTF", "RefRTF").build();
+            
             return StoredProcToList("spReferenceFind", mapper,
-                _P("vchrRefCode", EscapeSearchTerm(refCode, true), DBNull.Value),
-                _P("vchrAuthor", EscapeSearchTerm(author, true), DBNull.Value),
-                _P("vchrYear", EscapeSearchTerm(year, true), DBNull.Value),
-                _P("vchrOther", EscapeSearchTerm(other, true), DBNull.Value));
+                _P("vchrRefCode", NullIfEmptyWildcard(refCode), DBNull.Value),
+                _P("vchrAuthor", NullIfEmptyWildcard(author), DBNull.Value),
+                _P("vchrYear", NullIfEmptyWildcard(year), DBNull.Value),
+                _P("vchrOther", NullIfEmptyWildcard(other), DBNull.Value));
         }
 
         public List<RefLink> GetReferenceLinks(string categoryName, int intraCatID) {
