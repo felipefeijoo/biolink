@@ -117,7 +117,7 @@ namespace BioLink.Client.Extensibility {
                         imgPreview.Source = image;
                         gridInfo.DataContext = image;
                         FileInfo f = new FileInfo(filename);
-                        lblImageInfo.Content = string.Format("{0}x{1}  {2} DPI  {3}", image.PixelWidth, image.PixelHeight, image.DpiX, ByteConverter.FormatBytes(f.Length));
+                        lblImageInfo.Content = string.Format("{0}x{1}  {2} DPI  {3}", image.PixelWidth, image.PixelHeight, image.DpiX, ByteLengthConverter.FormatBytes(f.Length));
                     });
 
 

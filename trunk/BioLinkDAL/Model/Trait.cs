@@ -145,7 +145,7 @@ namespace BioLink.Data.Model {
         public string Note { get; set; }
         
         public string NoteLength {
-            get { return ByteConverter.FormatBytes(Note == null ? 0 : Note.Length); }
+            get { return ByteLengthConverter.FormatBytes(Note == null ? 0 : Note.Length); }
         }
 
     }

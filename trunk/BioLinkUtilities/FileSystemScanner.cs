@@ -1,4 +1,18 @@
-﻿using System;
+﻿/*******************************************************************************
+ * Copyright (C) 2011 Atlas of Living Australia
+ * All Rights Reserved.
+ * 
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
+ * 
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ ******************************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.IO;
@@ -6,26 +20,32 @@ using System.Text;
 
 namespace BioLink.Client.Utilities {
 
+    /// <summary>
+    /// Utility class for recursing through a file system. Can handle reparse points (hard/soft links)
+    /// </summary>
     public class FileSystemTraverser {
 
         public delegate bool Filter(FileInfo file);
         public delegate void OnFile(FileInfo file);
 
         public void FilterFiles(string directory, Filter filter, OnFile matchHandler, bool recurseSubdirectories) {
-            Kernel32.OnFileHandler fh = (filedata, dir) => {
+            DirectoryUtils.OnFileHandler fh = (filedata, dir) => {
                 FileInfo fileInfo = new FileInfo(dir + "\\" + filedata.cFileName);                
                 if (filter(fileInfo)) {
                     matchHandler(fileInfo);
                 }
             };            
-            Kernel32.TraverseDirectory(directory, fh, null, null, recurseSubdirectories);
+            DirectoryUtils.TraverseDirectory(directory, fh, null, null, recurseSubdirectories);
         }
     }
 
-    public class Kernel32 {
+    /// <summary>
+    /// Utility functions used to traverse directories
+    /// </summary>
+    public class DirectoryUtils {
 
-        public delegate void OnFileHandler(Kernel32.WIN32_FIND_DATA file, string directory);
-        public delegate void OnDirectoryHandler(Kernel32.WIN32_FIND_DATA directory, string fullpath);
+        public delegate void OnFileHandler(DirectoryUtils.WIN32_FIND_DATA file, string directory);
+        public delegate void OnDirectoryHandler(DirectoryUtils.WIN32_FIND_DATA directory, string fullpath);
         public delegate bool CheckCancelHandler();
 
         #region "DllImports, Constants & Structs"
@@ -131,7 +151,7 @@ namespace BioLink.Client.Utilities {
 
         public static void TraverseDirectory(string directory, OnFileHandler onfile, OnDirectoryHandler ondir, CheckCancelHandler checkCancel, bool recurse) {
             IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1);
-            Kernel32.WIN32_FIND_DATA findData;
+            DirectoryUtils.WIN32_FIND_DATA findData;
             IntPtr findHandle;
 
             if (directory.StartsWith(".")) {
@@ -144,7 +164,7 @@ namespace BioLink.Client.Utilities {
                 directory = directory.Substring(0, directory.Length - 1);
             }
 
-            findHandle = Kernel32.FindFirstFile(@"\\?\" + directory + @"\*", out findData);
+            findHandle = DirectoryUtils.FindFirstFile(@"\\?\" + directory + @"\*", out findData);
 
             if (findHandle != INVALID_HANDLE_VALUE) {
 
@@ -152,7 +172,7 @@ namespace BioLink.Client.Utilities {
                     // Check if we should stop!
                     if (checkCancel != null) {
                         if (checkCancel()) {
-                            Kernel32.FindClose(findHandle);
+                            DirectoryUtils.FindClose(findHandle);
                             break;
                         }
                     }
@@ -177,9 +197,9 @@ namespace BioLink.Client.Utilities {
                         }
                         // size += (long)findData.nFileSizeLow + (long)findData.nFileSizeHigh * 4294967296;
                     }
-                } while (Kernel32.FindNextFile(findHandle, out findData));
+                } while (DirectoryUtils.FindNextFile(findHandle, out findData));
 
-                Kernel32.FindClose(findHandle);
+                DirectoryUtils.FindClose(findHandle);
             }
         }
 

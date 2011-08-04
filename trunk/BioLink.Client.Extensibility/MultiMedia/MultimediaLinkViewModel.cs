@@ -25,7 +25,7 @@ namespace BioLink.Client.Extensibility {
                     var finfo = new FileInfo(TempFilename);
                     size = finfo.Length;
                 }
-                var sizeStr = SystemUtils.ByteCountToSizeString(size);
+                var sizeStr = ByteLengthConverter.FormatBytes(size);
                 return string.Format("{0}.{1} ({2})", Name, Extension, sizeStr);
             }
         }
@@ -84,7 +84,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         public string FileInfo {
-            get { return string.Format("{0} {1}", this.Extension, ByteConverter.FormatBytes(SizeInBytes)); }
+            get { return string.Format("{0} {1}", this.Extension, ByteLengthConverter.FormatBytes(SizeInBytes)); }
         }
 
         public string Fullname {

@@ -325,7 +325,7 @@ namespace BioLink.Client.Tools {
                                     selected.SuspendChangeMonitoring = false;
                                 }
 
-                                lblImageInfo.Content = string.Format("{0}x{1}  {2} DPI  {3}", image.PixelWidth, image.PixelHeight, image.DpiX, ByteConverter.FormatBytes(f.Length));
+                                lblImageInfo.Content = string.Format("{0}x{1}  {2} DPI  {3}", image.PixelWidth, image.PixelHeight, image.DpiX, ByteLengthConverter.FormatBytes(f.Length));
                                 lblFilename.Content = string.Format("Filename: {0}", filename);
                             });
                         }

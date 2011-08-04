@@ -1,4 +1,18 @@
-﻿using System;
+﻿/*******************************************************************************
+ * Copyright (C) 2011 Atlas of Living Australia
+ * All Rights Reserved.
+ * 
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
+ * 
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ ******************************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,13 +20,27 @@ using System.Text.RegularExpressions;
 
 namespace BioLink.Client.Utilities {
 
+    /// <summary>
+    /// Utility geospatial functions 
+    /// </summary>
     public static class GeoUtils {
 
+        /* RegEx for matching Degree Decimal minutes (+Direction) */
         private static Regex _DegDecMRegex = new Regex(@"^(\d+).*?([\d.]+)'*\s*(N|S|E|W|n|e|s|w)\s*$");
+        /* RegEx for matching Degree Minutes Seconds*/
         private static Regex _DMSRegex = new Regex("^(\\d+).*?([\\d.]+)'.*?([\\d.]+)\"*\\s*(N|S|E|W|n|e|s|w)\\s*$");
+        /* RegEx for matching Degree Decimal minutes (No direction) */
         private static Regex _DegDecMNoDirRegex = new Regex(@"^([-+]?[0-9]+)(?:[^\d]+([-+]?[0-9]*\.?[0-9]+))?");
 
+        /* Some useful constants used when doing coordinate calculations */
+        public const double PI = Math.PI;
+        public const double FOURTHPI = PI / 4;
+        public const double DEGREES_TO_RADS = PI / 180;
+        public const double RADS_TO_DEGREES = 180.0 / PI;
 
+        /// <summary>
+        /// Degree symbol character
+        /// </summary>
         public const string DEGREE_SYMBOL = "°";
 
         private static DirectionRange[] FourPoints = new DirectionRange[] {
@@ -143,6 +171,16 @@ namespace BioLink.Client.Utilities {
             return null;
         }
 
+        /// <summary>
+        /// Given two points, works out a coarse bearing (Direction) from point 1 to point2. The coarseness is limited to a compass with either 4, 8, 16 or 32 points
+        /// 
+        /// </summary>
+        /// <param name="nsLat1">Latitude for point 1</param>
+        /// <param name="nsLong1">Longitude for point 1</param>
+        /// <param name="nsLat2">Latitude for point 2</param>
+        /// <param name="nsLong2">Longitude for point 2</param>
+        /// <param name="niNumberOfPoints">The number of points on the compass from which the bearing will be taken. If 0, the actual bearing in degrees will be returned</param>
+        /// <returns></returns>
         public static string GreatCircleArcDirection(double nsLat1, double nsLong1, double nsLat2, double nsLong2, int niNumberOfPoints) {
             // Calculate the Great Circle Arc direction between two points
             double ndPi = Math.PI;
@@ -215,6 +253,15 @@ namespace BioLink.Client.Utilities {
             }
         }
 
+        /// <summary>
+        /// Returns the distance between two points on a curved plane with an assumed mean radius of 6371.1 KM (Earth)
+        /// </summary>
+        /// <param name="fLat1">Y1</param>
+        /// <param name="fLong1">X1</param>
+        /// <param name="fLat2">Y2</param>
+        /// <param name="fLong2">X2</param>
+        /// <param name="units">Should start with k for kilometres or m for Miles</param>
+        /// <returns></returns>
         public static double GreatCircleArcLength(double fLat1, double fLong1, double fLat2, double fLong2, string units) {
             var distUnits = DistanceUnits.None;
             if (units.StartsWith("k", StringComparison.CurrentCultureIgnoreCase)) {
@@ -225,7 +272,16 @@ namespace BioLink.Client.Utilities {
 
             return GreatCircleArcLength(fLat1, fLong1, fLat2, fLong2, distUnits);
         }
-        
+
+        /// <summary>
+        /// Returns the distance between two points on a curved plane with an assumed mean radius of 6371.1 KM (Earth)
+        /// </summary>
+        /// <param name="fLat1">Y1</param>
+        /// <param name="fLong1">X1</param>
+        /// <param name="fLat2">Y2</param>
+        /// <param name="fLong2">X2</param>
+        /// <param name="units">Miles or Kilometres</param>
+        /// <returns></returns>
         public static double GreatCircleArcLength(double fLat1, double fLong1, double fLat2, double fLong2, DistanceUnits units) {
             double dfRadLat1, dfRadLat2;
             double dfRadDeltaLong;
@@ -260,6 +316,15 @@ namespace BioLink.Client.Utilities {
                 }
             }
         }
+
+        /// <summary>
+        /// Convert a string in the format of Degrees Minutes and Seconds into a signed decimal degree value
+        /// </summary>
+        /// <param name="szIn">The string to convert</param>
+        /// <param name="iCoordType">Latitude or Longitide</param>
+        /// <param name="dfRet">The result of the conversion if successful</param>
+        /// <param name="bszReason">If unsuccessful, the reason for failure</param>
+        /// <returns></returns>
         public static bool DMSStrToDecDeg(string szIn, CoordinateType iCoordType, out double dfRet, out string bszReason) {
 
             int iDegrees = 0, iMinutes = 0;
@@ -452,24 +517,37 @@ namespace BioLink.Client.Utilities {
             return b.ToString();
         }
 
+        /// <summary>
+        /// Converts Degrees decimal minutes into decimal degrees
+        /// </summary>
+        /// <param name="degrees"></param>
+        /// <param name="minutes"></param>
+        /// <returns></returns>
         public static double DDecMToDecDeg(int degrees, double minutes) {
             return degrees + (minutes / 60.0) * (degrees < 0 ? -1 : 1);
         }
 
-        /*
-        ' Converts Degrees, Decimal Minutes and a direction to Decimal Degrees
-        Public Function DDecMDirToDecDeg(Degrees As Integer, Minutes As Single, Direction As String) As Single
-            Dim sign As Integer: sign = 1
-            If LCase(Direction) = "s" Or LCase(Direction) = "w" Then sign = -1
-            DDecMDirToDecDeg = (Abs(Degrees) + (Minutes / 60)) * sign
-        End Function
-        */
-
+        /// <summary>
+        /// Converts degrees minutes and direction to decimal degrees
+        /// </summary>
+        /// <param name="degrees"></param>
+        /// <param name="minutes"></param>
+        /// <param name="direction"></param>
+        /// <returns></returns>
         public static double DDecMDirToDecDeg(int degrees, double minutes, string direction) {
             int sign = ("sw".Contains(direction.ToLower()) ? -1 : 1);
             return (Math.Abs(degrees) + (minutes / 60)) * (double)sign;
         }
 
+        /// <summary>
+        /// Converts a decimal degree value into its component degrees minutes and seconds, including direction
+        /// </summary>
+        /// <param name="decdeg"></param>
+        /// <param name="coordType"></param>
+        /// <param name="degrees"></param>
+        /// <param name="minutes"></param>
+        /// <param name="seconds"></param>
+        /// <param name="direction"></param>
         public static void DecDegToDMS(double decdeg, CoordinateType coordType, out int degrees, out int minutes, out int seconds, out string direction) {
             degrees = (int)Math.Abs(decdeg);
             double leftover = (Math.Abs(decdeg) - degrees);
@@ -494,6 +572,12 @@ namespace BioLink.Client.Utilities {
             }
         }
 
+        /// <summary>
+        /// Converts a decimal degree value into degrees decimal minutes
+        /// </summary>
+        /// <param name="decdeg"></param>
+        /// <param name="degrees"></param>
+        /// <param name="minutes"></param>
         public static void DecDegToDDecM(double decdeg, out int degrees, out double minutes) {
             degrees = (int)Math.Abs(decdeg);
             double leftover = (Math.Abs(decdeg) - degrees);
@@ -503,6 +587,14 @@ namespace BioLink.Client.Utilities {
             }
         }
 
+        /// <summary>
+        /// Converts a decimal degree value int degrees minutes + direction
+        /// </summary>
+        /// <param name="decdeg"></param>
+        /// <param name="degrees"></param>
+        /// <param name="minutes"></param>
+        /// <param name="direction"></param>
+        /// <param name="coordType"></param>
         public static void DecDegToDDecMDir(double decdeg, out int degrees, out double minutes, out string direction, CoordinateType coordType) {
             DecDegToDDecM(decdeg, out degrees, out minutes);
             if (coordType == CoordinateType.Latitude) {
@@ -512,6 +604,14 @@ namespace BioLink.Client.Utilities {
             }
         }
 
+        /// <summary>
+        /// Converts component degrees, minutes and seconds (+ direction) into a decimal degree value
+        /// </summary>
+        /// <param name="degrees"></param>
+        /// <param name="minutes"></param>
+        /// <param name="seconds"></param>
+        /// <param name="direction"></param>
+        /// <returns></returns>
         public static double DMSToDecDeg(int degrees, int minutes, double seconds, string direction) {
             if (direction == null) {
                 direction = "N";
@@ -521,11 +621,11 @@ namespace BioLink.Client.Utilities {
             return decdeg * sign;
         }
 
-        public const double PI = 3.14159265;
-        public const double FOURTHPI = PI / 4;
-        public const double DEGREES_TO_RADS = PI / 180;
-        public const double RADS_TO_DEGREES = 180.0 / PI;
-
+        /// <summary>
+        /// Given a latitude returns a UTM designator
+        /// </summary>
+        /// <param name="Lat"></param>
+        /// <returns></returns>
         private static char UTMLetterDesignator(double Lat) {
             //This routine determines the correct UTM letter designator for the given latitude
             //returns 'Z' if latitude is outside the UTM limits of 80N to 80S
@@ -710,6 +810,11 @@ namespace BioLink.Client.Utilities {
             longitude = LongOrigin + longitude * RADS_TO_DEGREES;
         }
 
+        /// <summary>
+        /// Returns the index of the supplied ellipsis name (or index) in the statuc array of possible ellipsoids
+        /// </summary>
+        /// <param name="nameOrIndex"></param>
+        /// <returns></returns>
         public static int GetEllipsoidIndex(string nameOrIndex) {
 
             if (nameOrIndex.IsNumeric()) {
@@ -728,6 +833,9 @@ namespace BioLink.Client.Utilities {
             return -1;
         }
 
+        /// <summary>
+        /// Each ellipsoid is an approximation for the Earths geometry by specifying a radius and an 'eccentricity squard' constant
+        /// </summary>
         public static Ellipsoid[] ELLIPSOIDS = new Ellipsoid[] {
 	        new Ellipsoid( -1, "", 0, 0),
 	        new Ellipsoid( 1, "Airy", 6377563, 0.00667054),
@@ -756,7 +864,11 @@ namespace BioLink.Client.Utilities {
 	        new Ellipsoid( 24, "GDA", 6378137, 0.0066943800229)
         };
 
-
+        /// <summary>
+        /// Get an ellipsoid by name
+        /// </summary>
+        /// <param name="Datum"></param>
+        /// <returns></returns>
         public static Ellipsoid FindEllipsoidByName(string Datum) {
             foreach (Ellipsoid e in ELLIPSOIDS) {
                 if (e.Name.Equals(Datum, StringComparison.InvariantCultureIgnoreCase)) {
@@ -766,6 +878,13 @@ namespace BioLink.Client.Utilities {
             return null;
         }
 
+        /// <summary>
+        /// Helper function for printing coordinates (both a lat and long)
+        /// </summary>
+        /// <param name="latitude"></param>
+        /// <param name="longitude"></param>
+        /// <param name="novalue"></param>
+        /// <returns></returns>
         public static string FormatCoordinates(double? latitude, double? longitude, string novalue="") {
             if (latitude.HasValue && longitude.HasValue) {
                 return string.Format("{0} {1}", DecDegToDMS(latitude.Value, CoordinateType.Latitude), DecDegToDMS(longitude.Value, CoordinateType.Longitude));
@@ -774,6 +893,9 @@ namespace BioLink.Client.Utilities {
         }
     }
 
+    /// <summary>
+    /// This class holds parameters that approximate the Earths geometry
+    /// </summary>
     public class Ellipsoid {
 
         public Ellipsoid(int id, string name, double radius, double eccentricity) {
@@ -791,22 +913,34 @@ namespace BioLink.Client.Utilities {
 
     }
 
+    /// <summary>
+    /// Really should be called 'ordinate type'
+    /// </summary>
     public enum CoordinateType {
         Latitude, Longitude
     }
 
+    /// <summary>
+    /// Differenet geometries that can be described
+    /// </summary>
     public enum AreaType {
         Point = 1,
         Line = 2,
         Box = 3
     }
 
+    /// <summary>
+    /// Distance Units
+    /// </summary>
     public enum DistanceUnits {
         Kilometers,
         Miles,
         None
     }
 
+    /// <summary>
+    /// Utility class that describes and labels (direction) an arc on a virtual compass
+    /// </summary>
     public class DirectionRange {
 
         public DirectionRange(double start, double end, string dir) {
