@@ -74,11 +74,11 @@
             </Style>
 
         </Grid.Resources>
-        <TabControl Name="tabControl1" SelectionChanged="tabControl1_SelectionChanged">
+        <TabControl Name="taxonTabControl" SelectionChanged="tabControl1_SelectionChanged">
             <TabItem Header="{StaticResource TaxonExplorer.Tab.AllTaxa}" Name="tabAllTaxa">
                 <Grid x:Name="allTaxaGrid">
                     <Border x:Name="taxaBorder" Background="White" BorderThickness="1" BorderBrush="#8C8E94">
-                        <Grid>
+                        <Grid x:Name="gridAllTaxaContent">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="30"></RowDefinition>
                                 <RowDefinition Height="*"></RowDefinition>
@@ -150,47 +150,11 @@
             </TabItem>
             <TabItem Header="{StaticResource TaxonExplorer.Tab.Find}" Name="tabFind">
                 <Border Background="White" BorderThickness="1" BorderBrush="#8C8E94">
-                    <Grid>
+                    <Grid x:Name="gridFindTaxaContent">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="30" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-
-                        <Grid x:Name="gridContentsHeader2" Height="30" Background="{x:Static SystemColors.ControlBrush}">
-                            <ToggleButton x:Name="btnLock2" Margin="3,3,0,0" HorizontalAlignment="Left" Width="30" Height="24" VerticalAlignment="Top">
-                                <ToggleButton.Style>
-                                    <Style TargetType="{x:Type ToggleButton}">
-                                        <Setter Property="Content">
-                                            <Setter.Value>
-                                                <Image Height="20" Width="20" Source="images\Locked.png" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                            </Setter.Value>
-                                        </Setter>
-                                        <Style.Triggers>
-                                            <Trigger Property="IsChecked" Value="True">
-                                                <Setter Property="Content">
-                                                    <Setter.Value>
-                                                        <Image Height="20" Width="20" Source="images\Unlocked.png" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </ToggleButton.Style>
-                            </ToggleButton>
-                            <Label x:Name="lblHeader2" Margin="36,0,60,0" VerticalAlignment="Top" VerticalContentAlignment="Center" Visibility="Hidden">
-                                <Label.Content>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Image Source="images/LeftArrow.png" Height="20" Width="20" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                        <TextBlock Text="{StaticResource TaxonExplorer.explorer.UnlockToChange}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </StackPanel>
-                                </Label.Content>
-                            </Label>
-                            <Grid x:Name="buttonBar2" Margin="36,0,0,0" Visibility="Hidden">
-                                <Button x:Name="btnApplyChanges2" Margin="0,0,4,0" HorizontalAlignment="Right" Width="80" Height="22"  Content="Save changes" Click="btnApplyChanges_Click" />
-                                <Button x:Name="btnCancelEditing2" Margin="0,0,90,0" HorizontalAlignment="Right" Width="80" Height="22"  Content="Cancel" Click="btnCancelEditing_Click" />
-                            </Grid>
-
-                        </Grid>
 
                         <Grid Grid.Row="1">
                             <Label Content="Find:" Height="23" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" Width="56" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" />
