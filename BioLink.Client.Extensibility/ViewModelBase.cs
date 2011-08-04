@@ -256,8 +256,12 @@ namespace BioLink.Client.Extensibility {
                 if (_objectIDExpr == null) {
                     return null;                    
                 } else {
-                    var destProp = (PropertyInfo)((MemberExpression)_objectIDExpr.Body).Member;                    
-                    return (int)destProp.GetValue(Model, null);
+                    if (Model != null) {
+                        var destProp = (PropertyInfo)((MemberExpression)_objectIDExpr.Body).Member;
+                        return (int)destProp.GetValue(Model, null);
+                    }
+
+                    return null;
                 }
             }
         }
