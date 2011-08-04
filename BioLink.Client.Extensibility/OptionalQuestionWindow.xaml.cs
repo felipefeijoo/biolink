@@ -7,28 +7,28 @@ namespace BioLink.Client.Extensibility {
     /// <summary>
     /// Interaction logic for OptionalQuestionWindow.xaml
     /// </summary>
-    public partial class OptionalQuestion : Window {
+    public partial class OptionalQuestionWindow : Window {
 
-        public static bool AskOrDefault(Window parentWindow, string question, string configKey, string windowTitle) {
+        public static bool AskOrDefault(Window parentWindow, OptionalQuestion question, params object[] args) {
             var user = PluginManager.Instance.User;
-            var askQuestion = Config.GetUser(user, configKey + ".AskQuestion", true);
+            var askQuestion = Config.GetUser(user, question.AskQuestionConfigurationKey, true);
             if (askQuestion) {
-                var frm = new OptionalQuestion(question, configKey);
+                var frm = new OptionalQuestionWindow(question, args);
                 frm.Owner = parentWindow;
-                frm.Title = windowTitle;
+                frm.Title = question.QuestionTitle;
                 frm.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                 return frm.ShowDialog().ValueOrFalse();
             } else {
-                return Config.GetUser(user, configKey, true);
+                return Config.GetUser(user, question.ConfigurationKey, true);
             }
         }
 
-        public OptionalQuestion(string question, string configKey) {
+        protected OptionalQuestionWindow(OptionalQuestion question, params object[] args) {
             InitializeComponent();
             this.User = PluginManager.Instance.User;
             this.DataContext = this;
-            lblQuestion.Text = question;
-            this.ConfigurationKey = configKey;
+            lblQuestion.Text = string.Format(question.QuestionText, args);
+            this.Question = question;
         }
 
         public ImageSource MessageBoxImage {
@@ -48,8 +48,8 @@ namespace BioLink.Client.Extensibility {
         }
 
         protected void Remember(bool remember) {
-            Config.SetUser(User, ConfigurationKey + ".AskQuestion", false);
-            Config.SetUser(User, ConfigurationKey, remember);
+            Config.SetUser(User, Question.AskQuestionConfigurationKey, false);
+            Config.SetUser(User, Question.ConfigurationKey, remember);
         }
 
         private void btnYes_Click(object sender, RoutedEventArgs e) {
@@ -61,9 +61,7 @@ namespace BioLink.Client.Extensibility {
 
         protected User User { get; private set; }
 
-        protected string ConfigurationKey { get; private set; }
-
-        protected string Question { get; set; }
+        protected OptionalQuestion Question { get; private set; }
 
     }
 

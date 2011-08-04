@@ -132,7 +132,7 @@ namespace BioLink.Client.Extensibility.Export {
         }
 
         public override string Description {
-            get { return "Export point data to Google Earth"; }
+            get { return "Export point data to Google Earth™"; }
         }
 
         public override System.Windows.Media.Imaging.BitmapSource Icon {

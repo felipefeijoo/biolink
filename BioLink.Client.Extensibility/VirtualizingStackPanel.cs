@@ -109,20 +109,22 @@ namespace BioLink.Client.Extensibility {
                 }
 
                 // Access the custom VSP that exposes BringIntoView
-                BLVirtualizingStackPanel itemsHost = FindVisualChild<BLVirtualizingStackPanel>(itemsControl);
-                if (itemsHost != null) {
-                    // Due to virtualization, BringIntoView may not predict the offset correctly the first time.
-                    ItemsControl nextItemsControl = null;
-                    while (nextItemsControl == null) {
-                        foundContainer = true;
-                        itemsHost.BringIntoView(index);
-                        tvw.Dispatcher.Invoke(DispatcherPriority.Background, (DispatcherOperationCallback)delegate(object unused) {
-                            nextItemsControl = (ItemsControl)itemsControl.ItemContainerGenerator.ContainerFromIndex(index);
-                            return null;
-                        }, null);
-                    }
+                if (index >= 0) {
+                    BLVirtualizingStackPanel itemsHost = FindVisualChild<BLVirtualizingStackPanel>(itemsControl);
+                    if (itemsHost != null) {
+                        // Due to virtualization, BringIntoView may not predict the offset correctly the first time.
+                        ItemsControl nextItemsControl = null;
+                        while (nextItemsControl == null) {
+                            foundContainer = true;
+                            itemsHost.BringIntoView(index);
+                            tvw.Dispatcher.Invoke(DispatcherPriority.Background, (DispatcherOperationCallback)delegate(object unused) {
+                                nextItemsControl = (ItemsControl)itemsControl.ItemContainerGenerator.ContainerFromIndex(index);
+                                return null;
+                            }, null);
+                        }
 
-                    itemsControl = nextItemsControl;
+                        itemsControl = nextItemsControl;
+                    }
                 }
 
                 if (!foundContainer || (itemsControl == null)) {

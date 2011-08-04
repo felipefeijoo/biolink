@@ -46,7 +46,8 @@ namespace BioLink.Client.Material {
                 locality = string.Format("{0} {1} {2} of {3}", placeName.Offset, placeName.Units, placeName.Direction, placeName.Name);
             }
 
-            var updateLocality = OptionalQuestion.AskOrDefault(this.FindParentWindow(), string.Format("Do you wish to update the locality from '{0}' to '{1}'?", txtLocality.Text, locality), "Material.UpdateLocalityFromEGaz", "Update Locality?");
+            var updateLocality = OptionalQuestions.UpdateLocalityQuestion.Ask(this.FindParentWindow(), txtLocality.Text, locality);
+            
             if (updateLocality) {
                 txtLocality.Text = locality;
             }

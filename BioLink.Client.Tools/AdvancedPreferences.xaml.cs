@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using BioLink.Client.Utilities;
 using BioLink.Client.Extensibility;
 using BioLink.Data;
+using System.Reflection;
 
 namespace BioLink.Client.Tools {
     /// <summary>
@@ -22,13 +23,36 @@ namespace BioLink.Client.Tools {
     public partial class AdvancedPreferences : Window {
 
         public AdvancedPreferences() {
+
             InitializeComponent();
 
-            chkAskIDHistoryQuestion.IsChecked = Config.GetUser(User, "Material.DefaultRecordIDHistory.AskQuestion", true);
-            chkDefaultIDHistoryCreation.IsChecked = Config.GetUser(User, "Material.DefaultRecordIDHistory", true);
+            var questionFields = typeof(OptionalQuestions).GetMembers(BindingFlags.Public | BindingFlags.Static);
+            
+            for (int i = 0; i < questionFields.Length; ++i) {
+                var questionField = questionFields[i] as FieldInfo;         
+       
+                var question = questionField.GetValue(null) as OptionalQuestion;
+                if (question != null) {
+                    gridOptionalQuestions.RowDefinitions.Add(new RowDefinition { Height = new GridLength(50) });
+                    bool askQuestion = Config.GetUser(PluginManager.Instance.User, question.AskQuestionConfigurationKey, true);
+                    bool defaultAnswer = Config.GetUser(PluginManager.Instance.User, question.ConfigurationKey, true);
+                    var chkAskQuestion = new CheckBox { Content = question.ConfigurationText, IsChecked = askQuestion, VerticalAlignment = System.Windows.VerticalAlignment.Top };
+                    chkAskQuestion.Margin = new Thickness(6, 0, 0, 0);
+                    Grid.SetRow(chkAskQuestion, i);
 
-            chkAskUpdateLocality.IsChecked = Config.GetUser(User, "Material.UpdateLocalityFromEGaz.AskQuestion", true);
-            chkUpdateLocality.IsChecked = Config.GetUser(User, "Material.UpdateLocalityFromEGaz", true);
+                    var chkDefaultAnswer = new CheckBox { Content = "If not, is the default answer yes?", IsChecked = defaultAnswer, VerticalAlignment = System.Windows.VerticalAlignment.Top };
+                    chkDefaultAnswer.Margin = new Thickness(30, 25, 0, 0);
+                    Grid.SetRow(chkDefaultAnswer, i);
+
+                    chkDefaultAnswer.Unloaded += new RoutedEventHandler((s, e) => {
+                        Config.SetUser(PluginManager.Instance.User, question.AskQuestionConfigurationKey, chkAskQuestion.IsChecked.ValueOrFalse());
+                        Config.SetUser(PluginManager.Instance.User, question.ConfigurationKey, chkDefaultAnswer.IsChecked.ValueOrFalse());
+                    });
+
+                    gridOptionalQuestions.Children.Add(chkAskQuestion);
+                    gridOptionalQuestions.Children.Add(chkDefaultAnswer);
+                }
+            }
 
             txtMaxSearchResults.Text = Config.GetUser(User, "SearchResults.MaxSearchResults", 2000).ToString();
 
@@ -49,11 +73,6 @@ namespace BioLink.Client.Tools {
         }
 
         private void SavePreferences() {
-            Config.SetUser(User, "Material.DefaultRecordIDHistory.AskQuestion", chkAskIDHistoryQuestion.IsChecked.ValueOrFalse());
-            Config.SetUser(User, "Material.DefaultRecordIDHistory", chkDefaultIDHistoryCreation.IsChecked.ValueOrFalse());
-
-            Config.SetUser(User, "Material.UpdateLocalityFromEGaz.AskQuestion", chkAskUpdateLocality.IsChecked.ValueOrFalse());
-            Config.SetUser(User, "Material.UpdateLocalityFromEGaz", chkUpdateLocality.IsChecked.ValueOrFalse());
 
             int maxResults = 0;
             if (Int32.TryParse(txtMaxSearchResults.Text, out maxResults)) {

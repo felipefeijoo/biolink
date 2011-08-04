@@ -216,7 +216,7 @@ namespace BioLink.Client.Extensibility {
             GoogleEarth.GeoTag((lat, lon, altitude) => {
                 this.lat.Value = lat;
                 this.lon.Value = lon;
-            });
+            }, this.lat.Value, this.lon.Value);
         }
 
     }

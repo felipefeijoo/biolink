@@ -107,7 +107,7 @@ namespace BioLink.Client.Material {
         void txtIdentification_ObjectIDChanged(object source, int? objectID) {
 
             if (!_viewModel.IsTemplate) {
-                var addHistory = OptionalQuestion.AskOrDefault(this.FindParentWindow(), "Do you wish to record a history of this identification change?", "Material.DefaultRecordIDHistory", "Record ID history?");
+                var addHistory = OptionalQuestions.MaterialIDHistoryQuestion.Ask(this.FindParentWindow());
                 if (addHistory) {
                     _historyControl.AddHistoryFromMaterial(_viewModel);
                     // Clear id fields...
