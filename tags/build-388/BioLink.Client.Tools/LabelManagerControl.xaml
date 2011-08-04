@@ -1,0 +1,139 @@
+﻿<ext:OneToManyDetailControl x:Class="BioLink.Client.Tools.LabelManagerControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+             xmlns:model="clr-namespace:BioLink.Data.Model;assembly=BioLink.Data"
+             mc:Ignorable="d" 
+             d:DesignHeight="354" d:DesignWidth="811">
+    <Grid>
+        <Grid.Resources>
+            <Style x:Key="hcs" TargetType="{x:Type GridViewColumnHeader}">
+                <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
+            </Style>
+        </Grid.Resources>
+        <TabControl>
+            <TabItem Header="_Items">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="28" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="36" />
+                    </Grid.RowDefinitions>
+
+                    <Label Content="Label set name:" Height="23" HorizontalAlignment="Left" Name="label1" VerticalAlignment="Center" Width="106" />
+                    <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="112,2,0,0" Name="txrtName" VerticalAlignment="Center" Width="246" Text="{Binding Path=Name}"/>
+
+                    <ListView Grid.Row="1" Margin="6,6,6,0" x:Name="lvw" ToolTipService.ShowDuration="30000">
+                        <ListView.Resources>
+                            <DataTemplate x:Key="NumCopiesTemplate">
+                                <Grid Margin="0">
+                                    <ext:NumberUpDown Number="{Binding Path=NumCopies}" Margin="0" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.Resources>
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                <Setter Property="ToolTip" Value="{Binding Path=TooltipContent}" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.View>
+                            <GridView>
+                                <GridView.Columns>
+                                    <GridViewColumn Width="80" Header="Num Copies" HeaderContainerStyle="{StaticResource hcs}" CellTemplate="{StaticResource NumCopiesTemplate}" />
+                                    <GridViewColumn Width="80" Header="Order" DisplayMemberBinding="{Binding Path=PrintOrder}" HeaderContainerStyle="{StaticResource hcs}" />
+                                    <GridViewColumn Width="100" Header="Region" DisplayMemberBinding="{Binding Path=Region}" HeaderContainerStyle="{StaticResource hcs}" />
+                                    <GridViewColumn Width="100" Header="Locality" DisplayMemberBinding="{Binding Path=Local}" HeaderContainerStyle="{StaticResource hcs}" />
+                                    <GridViewColumn Width="120" Header="Lat./Long." DisplayMemberBinding="{Binding Path=Position}" HeaderContainerStyle="{StaticResource hcs}" />
+                                    <GridViewColumn Width="120" Header="Collectors" DisplayMemberBinding="{Binding Path=Collectors}" HeaderContainerStyle="{StaticResource hcs}" />
+                                    <GridViewColumn Width="120" Header="Dates" DisplayMemberBinding="{Binding Path=DateStr}" HeaderContainerStyle="{StaticResource hcs}" />
+                                    <GridViewColumn Width="120" Header="Taxa" DisplayMemberBinding="{Binding Path=TaxaFullName}" HeaderContainerStyle="{StaticResource hcs}" />
+                                    <GridViewColumn Width="120" Header="Accession No." DisplayMemberBinding="{Binding Path=AccessionNo}" HeaderContainerStyle="{StaticResource hcs}" />
+                                </GridView.Columns>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <Button Grid.Row="2" Height="23" HorizontalAlignment="Left" Margin="6,7,0,0" Name="btnUp" VerticalAlignment="Top" Width="23" Click="btnUp_Click">
+                        <Button.Content>
+                            <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/UpArrowSmall.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None" />
+                        </Button.Content>
+                    </Button>
+                    <Button Grid.Row="2" Height="23" HorizontalAlignment="Left" Margin="35,7,0,0" Name="btnDown" VerticalAlignment="Top" Width="23" Click="btnDown_Click">
+                        <Image SnapsToDevicePixels="True" Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/DownArrowSmall.png" Stretch="None" UseLayoutRounding="True" />
+                    </Button>
+                    <Button Content="_Delete" Grid.Row="2" Height="23" HorizontalAlignment="Right" Margin="0,7,6,0" Name="btnDelete" VerticalAlignment="Top" Width="75" Click="btnDelete_Click" />
+                </Grid>
+            </TabItem>
+            
+            <TabItem Header="_Export fields">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="240" />
+                        <ColumnDefinition Width="60" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    
+                    <Label Content="Filter:" Height="28" HorizontalAlignment="Left" VerticalAlignment="Top" Width="47" Margin="6,6,0,0" />
+                    <ext:DelayedTriggerTextbox Height="23" VerticalAlignment="Top" Margin="59,6,6,0" x:Name="txtFilter" TypingPaused="txtFilter_TypingPaused" />
+
+                    <ListView x:Name="lvwFields" Margin="6,35,6,6" MouseDoubleClick="lstFields_MouseDoubleClick" >
+                        <ListView.Resources>
+                            <DataTemplate DataType="{x:Type model:FieldDescriptor}">
+                                <TextBlock Text="{Binding DisplayName}" />
+                            </DataTemplate>
+                        </ListView.Resources>
+                        <ListView.GroupStyle>
+                            <GroupStyle>
+                                <GroupStyle.HeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock FontSize="15" FontWeight="Bold" Text="{Binding Name}"/>
+                                    </DataTemplate>
+                                </GroupStyle.HeaderTemplate>
+                            </GroupStyle>
+                        </ListView.GroupStyle>
+
+                    </ListView>
+                    
+                    <StackPanel Grid.Column="1" Orientation="Vertical" Margin="6">
+                        <Button Height="23" x:Name="btnSelectField" Margin="0,0,0,6" ToolTip="Select field for export" Click="btnSelectField_Click">
+                            <Button.Content>
+                                <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/RightArrowSmall.png" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
+                            </Button.Content>
+                        </Button>
+                        <Button Height="23" x:Name="btnUnselectField" Margin="0,0,0,6" ToolTip="Remove field from selected list" Click="btnUnselectField_Click">
+                            <Button.Content>
+                                <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/LeftArrowSmall.png" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
+                            </Button.Content>
+                        </Button>
+
+                        <Button Height="23" x:Name="btnUnselectAll" Margin="0,0,0,12" ToolTip="Remove field from selected list" Click="btnUnselectAll_Click">
+                            <Button.Content>
+                                <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/DoubleLeftArrowSmall.png" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" />
+                            </Button.Content>
+                        </Button>
+                        
+                        <Button Height="23" Name="btnFieldUp" Margin="0,0,0,6" ToolTip="Move selected field up" Click="btnFieldUp_Click">
+                            <Image SnapsToDevicePixels="True" Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/UpArrowSmall.png" Stretch="None" UseLayoutRounding="True" />
+                        </Button>
+                        <Button Height="23" Name="btnFieldDown" Margin="0,0,0,6" ToolTip="Move selected field down" Click="btnFieldDown_Click">
+                            <Image SnapsToDevicePixels="True" Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/DownArrowSmall.png" Stretch="None" UseLayoutRounding="True" />
+                        </Button>
+                    </StackPanel>
+                    
+                    <ListView Grid.Column="2" Margin="6" x:Name="lvwSelectedFields">
+                        <ListView.View>
+                            <GridView>
+                                <GridView.Columns>
+                                    <GridViewColumn Header="Field" Width="250" DisplayMemberBinding="{Binding Path=FieldLabel}" HeaderContainerStyle="{StaticResource hcs}" />
+                                    <GridViewColumn Header="Format" Width="100" DisplayMemberBinding="{Binding Path=FormatOption}" HeaderContainerStyle="{StaticResource hcs}" />
+                                </GridView.Columns>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</ext:OneToManyDetailControl>

@@ -1,0 +1,196 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E74AFE93-4A44-43F6-8F94-03E457321ABC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BioLink.Data</RootNamespace>
+    <AssemblyName>BioLink.Data</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Practices.Unity.Interception, Version=2.0.414.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\shared\lib\Microsoft.Practices.Unity.Interception.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\shared\lib\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.SQLite">
+      <HintPath>..\shared\lib\System.Data.SQLite.DLL</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BioLinkService.cs" />
+    <Compile Include="CodeValuePair.cs" />
+    <Compile Include="ConfigurationStore.cs" />
+    <Compile Include="FavoriteDatabaseCommands.cs" />
+    <Compile Include="IgnoreFormattingChanges.cs" />
+    <Compile Include="ImportService.cs" />
+    <Compile Include="IXMLImportProgressObserver.cs" />
+    <Compile Include="LoanService.cs" />
+    <Compile Include="Model\Contact.cs" />
+    <Compile Include="Model\DistributionRegion.cs" />
+    <Compile Include="Model\LabelSet.cs" />
+    <Compile Include="Model\LabelSetItem.cs" />
+    <Compile Include="Model\Loan.cs" />
+    <Compile Include="Model\LoanCorrespondence.cs" />
+    <Compile Include="Model\LoanMaterial.cs" />
+    <Compile Include="Model\LoanReminder.cs" />
+    <Compile Include="Model\MultimediaLinkedItem.cs" />
+    <Compile Include="Model\StorageLocation.cs" />
+    <Compile Include="Model\TaxonStatistics.cs" />
+    <Compile Include="Model\XMLImportALN.cs" />
+    <Compile Include="Model\XMLImportAssociate.cs" />
+    <Compile Include="Model\XMLImportCommonName.cs" />
+    <Compile Include="Model\XMLImportDistribution.cs" />
+    <Compile Include="Model\XMLImportEvent.cs" />
+    <Compile Include="Model\XMLImportGAN.cs" />
+    <Compile Include="Model\XMLImportIDHistory.cs" />
+    <Compile Include="Model\XMLImportJournal.cs" />
+    <Compile Include="Model\XMLImportMaterial.cs" />
+    <Compile Include="Model\XMLImportMultimedia.cs" />
+    <Compile Include="Model\XMLImportMultimediaLink.cs" />
+    <Compile Include="Model\XMLImportReference.cs" />
+    <Compile Include="Model\XMLImportRefLink.cs" />
+    <Compile Include="Model\XMLImportRegion.cs" />
+    <Compile Include="Model\XMLImportSAN.cs" />
+    <Compile Include="Model\XMLImportSite.cs" />
+    <Compile Include="Model\XMLImportSiteVisit.cs" />
+    <Compile Include="Model\XMLImportStorageLocation.cs" />
+    <Compile Include="Model\XMLImportSubPart.cs" />
+    <Compile Include="Model\XMLImportTaxon.cs" />
+    <Compile Include="Model\XMLImportTrap.cs" />
+    <Compile Include="Model\XMLIOMaterial.cs" />
+    <Compile Include="Model\XMLIOMaterialID.cs" />
+    <Compile Include="Model\XMLIOMultimediaLink.cs" />
+    <Compile Include="Model\XMLImportNote.cs" />
+    <Compile Include="Model\XMLIORegion.cs" />
+    <Compile Include="Model\XMLIOSite.cs" />
+    <Compile Include="Model\XMLIOSiteVisit.cs" />
+    <Compile Include="Model\XMLIOTrait.cs" />
+    <Compile Include="XMLExportObject.cs" />
+    <Compile Include="XMLIOExporter.cs" />
+    <Compile Include="XMLIOExportOptions.cs" />
+    <Compile Include="MaterialService.cs" />
+    <Compile Include="Model\Associate.cs" />
+    <Compile Include="Model\AutoNumber.cs" />
+    <Compile Include="Model\AvailableName.cs" />
+    <Compile Include="Model\BiolinkDataObject.cs" />
+    <Compile Include="Model\BiolinkUser.cs" />
+    <Compile Include="Model\ChecklistData.cs" />
+    <Compile Include="Model\CommonName.cs" />
+    <Compile Include="Model\ConnectionProfile.cs" />
+    <Compile Include="DatabaseCommand.cs" />
+    <Compile Include="DataMatrix.cs" />
+    <Compile Include="Mapper.cs" />
+    <Compile Include="Model\CurationEvent.cs" />
+    <Compile Include="Model\Favorite.cs" />
+    <Compile Include="Model\FieldDescriptor.cs" />
+    <Compile Include="Model\GANIncludedSpecies.cs" />
+    <Compile Include="Model\GenusAvailableName.cs" />
+    <Compile Include="Model\Group.cs" />
+    <Compile Include="Model\Journal.cs" />
+    <Compile Include="Model\Kingdom.cs" />
+    <Compile Include="Model\LookupResult.cs" />
+    <Compile Include="Model\Material.cs" />
+    <Compile Include="Model\MaterialIdentification.cs" />
+    <Compile Include="Model\MaterialPart.cs" />
+    <Compile Include="Model\Multimedia.cs" />
+    <Compile Include="Model\MultimediaLink.cs" />
+    <Compile Include="Model\Note.cs" />
+    <Compile Include="Model\Permission.cs" />
+    <Compile Include="Model\Phrase.cs" />
+    <Compile Include="Model\PlaceName.cs" />
+    <Compile Include="Model\RDEMaterial.cs" />
+    <Compile Include="Model\RDESite.cs" />
+    <Compile Include="Model\RDESiteVisit.cs" />
+    <Compile Include="Model\Reference.cs" />
+    <Compile Include="Model\ReferenceSearchResult.cs" />
+    <Compile Include="Model\RefLink.cs" />
+    <Compile Include="Model\Region.cs" />
+    <Compile Include="Model\RegionSearchResult.cs" />
+    <Compile Include="Model\Site.cs" />
+    <Compile Include="Model\SiteExplorerNode.cs" />
+    <Compile Include="Model\SANTypeData.cs" />
+    <Compile Include="Model\SANTypeDataType.cs" />
+    <Compile Include="Model\SiteExplorerNodeType.cs" />
+    <Compile Include="Model\SiteVisit.cs" />
+    <Compile Include="Model\SpeciesAvailableName.cs" />
+    <Compile Include="Model\TaxonDistribution.cs" />
+    <Compile Include="Model\TaxonRankName.cs" />
+    <Compile Include="Model\TaxonRefLink.cs" />
+    <Compile Include="Model\Trait.cs" />
+    <Compile Include="Model\Trap.cs" />
+    <Compile Include="Model\UserSearchResult.cs" />
+    <Compile Include="QuerySQLGenerator.cs" />
+    <Compile Include="RTFReportBuilder.cs" />
+    <Compile Include="SupportService.cs" />
+    <Compile Include="Model\Taxon.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SQLiteServiceBase.cs" />
+    <Compile Include="TaxaService.cs" />
+    <Compile Include="Model\TaxonRank.cs" />
+    <Compile Include="User.cs" />
+    <Compile Include="XMLIOImporter.cs" />
+    <Compile Include="XMLIOService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BioLinkUtilities\BioLink.Client.Utilities.csproj">
+      <Project>{85A21739-BE1C-4A09-9BF6-145A6162929E}</Project>
+      <Name>BioLink.Client.Utilities</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
