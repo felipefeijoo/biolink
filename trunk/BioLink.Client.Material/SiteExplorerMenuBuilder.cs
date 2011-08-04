@@ -214,6 +214,9 @@ namespace BioLink.Client.Material {
             var addMenu = new MenuItem();
             addMenu.Header = "Add";
 
+            var user = PluginManager.Instance.User;
+            var service = new MaterialService(user);                        
+
             var builder = new MenuItemBuilder();
 
             switch (NodeType(viewModel)) {
@@ -222,10 +225,21 @@ namespace BioLink.Client.Material {
                     addMenu.Items.Add(builder.New("New Site Group").Handler(() => { explorer.AddSiteGroup(viewModel); }).MenuItem);
                     var addSite = builder.New("_Site").MenuItem;
                     addSite.Items.Add(builder.New("_Blank").Handler(() => { explorer.AddSite(viewModel); }).MenuItem);
+                    var lastSiteTemplateId = Config.GetUser(user, "SiteExplorer.LastSiteTemplate", -1);
+                    if (lastSiteTemplateId > 0) {
+                        var siteTemplate = service.GetSite(lastSiteTemplateId);
+                        if (siteTemplate != null) {
+                            addSite.Items.Add(builder.New("As '" + siteTemplate.SiteName + "'").Handler(() => {
+                                explorer.AddSite(viewModel, lastSiteTemplateId);
+                            }).MenuItem);
+                        }
+                    }
+
                     addSite.Items.Add(builder.New("From _Template").Handler(() => {
                         int? templateId = explorer.ChooseTemplate(SiteExplorerNodeType.Site);
                         if (templateId.HasValue) {
-                            explorer.AddSite(viewModel, templateId.Value); 
+                            explorer.AddSite(viewModel, templateId.Value);
+                            Config.SetUser(PluginManager.Instance.User, "SiteExplorer.LastSiteTemplate", templateId.Value);
                         }                        
                     }).MenuItem);
                     addMenu.Items.Add(addSite);
@@ -234,10 +248,22 @@ namespace BioLink.Client.Material {
                     addMenu.Items.Add(builder.New("New Site Group").Handler(() => { explorer.AddSiteGroup(viewModel); }).MenuItem);
                     addSite = builder.New("_Site").MenuItem;
                     addSite.Items.Add(builder.New("_Blank").Handler(() => { explorer.AddSite(viewModel); }).MenuItem);
+
+                    lastSiteTemplateId = Config.GetUser(user, "SiteExplorer.LastSiteTemplate", -1);
+                    if (lastSiteTemplateId > 0) {
+                        var siteTemplate = service.GetSite(lastSiteTemplateId);
+                        if (siteTemplate != null) {
+                            addSite.Items.Add(builder.New("As '" + siteTemplate.SiteName + "'").Handler(() => {
+                                explorer.AddSite(viewModel, lastSiteTemplateId);
+                            }).MenuItem);
+                        }
+                    }
+
                     addSite.Items.Add(builder.New("From _Template").Handler(() => {
                         int? templateId = explorer.ChooseTemplate(SiteExplorerNodeType.Site);
                         if (templateId.HasValue) {
-                            explorer.AddSite(viewModel, templateId.Value); 
+                            explorer.AddSite(viewModel, templateId.Value);
+                            Config.SetUser(PluginManager.Instance.User, "SiteExplorer.LastSiteTemplate", templateId.Value);
                         }                        
                     }).MenuItem);
                     addMenu.Items.Add(addSite);
@@ -247,10 +273,22 @@ namespace BioLink.Client.Material {
 
                     var addVisit = builder.New("Site _Visit").MenuItem;
                     addVisit.Items.Add(builder.New("_Blank").Handler(() => { explorer.AddSiteVisit(viewModel); }).MenuItem);
+
+                    var lastSiteVisitTemplateId = Config.GetUser(user, "SiteExplorer.LastSiteVisitTemplate", -1);
+                    if (lastSiteVisitTemplateId > 0) {
+                        var siteVisitTemplate = service.GetSiteVisit(lastSiteVisitTemplateId);
+                        if (siteVisitTemplate != null) {
+                            addVisit.Items.Add(builder.New("As '" + siteVisitTemplate.SiteVisitName + "'").Handler(() => {
+                                explorer.AddSiteVisit(viewModel, lastSiteVisitTemplateId);
+                            }).MenuItem);
+                        }
+                    }
+
                     addVisit.Items.Add(builder.New("From _Template").Handler(() => {
                         int? templateId = explorer.ChooseTemplate(SiteExplorerNodeType.SiteVisit);
-                        if (templateId.HasValue) {
-                            explorer.AddSiteVisit(viewModel, templateId.Value); 
+                        if (templateId.HasValue) {                            
+                            explorer.AddSiteVisit(viewModel, templateId.Value);
+                            Config.SetUser(user, "SiteExplorer.LastSiteVisitTemplate", templateId.Value);
                         }                        
                     }).MenuItem);
                     addMenu.Items.Add(addVisit);
@@ -259,10 +297,22 @@ namespace BioLink.Client.Material {
                 case SiteExplorerNodeType.SiteVisit:
                     var addMaterial = builder.New("_Material").MenuItem;
                     addMaterial.Items.Add(builder.New("_Blank").Handler(() => { explorer.AddMaterial(viewModel); }).MenuItem);
+
+                    var lastMaterialTemplateId = Config.GetUser(user, "SiteExplorer.LastMaterialTemplate", -1);
+                    if (lastMaterialTemplateId > 0) {
+                        var materialTemplate = service.GetMaterial(lastMaterialTemplateId);
+                        if (materialTemplate != null) {
+                            addMaterial.Items.Add(builder.New("As '" + materialTemplate.MaterialName + "'").Handler(() => {
+                                explorer.AddMaterial(viewModel, lastMaterialTemplateId);
+                            }).MenuItem);
+                        }
+                    }
+
                     addMaterial.Items.Add(builder.New("From _Template").Handler(() => {
                         int? templateId = explorer.ChooseTemplate(SiteExplorerNodeType.Material);
                         if (templateId.HasValue) {
-                            explorer.AddMaterial(viewModel, templateId.Value); 
+                            explorer.AddMaterial(viewModel, templateId.Value);
+                            Config.SetUser(user, "SiteExplorer.LastMaterialTemplate", templateId);
                         }                        
                     }).MenuItem);
                     addMenu.Items.Add(addMaterial);
