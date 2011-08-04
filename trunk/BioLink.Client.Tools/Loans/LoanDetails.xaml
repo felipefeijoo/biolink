@@ -10,6 +10,7 @@
         <Grid.Resources>
             <ext:HardDateConverter x:Key="hardDateConverter" />
             <ext:NegatingConverter x:Key="negatingConverter" />
+            <ext:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter" />
         </Grid.Resources>
 
         <TabControl Margin="6" x:Name="tabLoan">
@@ -72,8 +73,9 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <CheckBox Content="This loan is closed/inactive" VerticalAlignment="Center" IsChecked="{Binding Path=LoanClosed}"/>
-                            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                            
+                            <CheckBox Content="This loan is closed/inactive" VerticalAlignment="Center" IsChecked="{Binding Path=LoanClosed}" Checked="CheckBox_Checked" />
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" x:Name="pnlDateClosed" Visibility="{Binding Path=LoanClosed, Converter={StaticResource BooleanVisibilityConverter}}">
                                 <Label Content="Date closed:" />
                                 <ext:DateControl Height="23" HorizontalAlignment="Right" Width="140" IsReadOnly="{Binding Path=LoanClosed, Mode=OneWay, Converter={StaticResource negatingConverter}}" Date="{Binding Path=DateClosed, Converter={StaticResource hardDateConverter}}"/>
                             </StackPanel>
