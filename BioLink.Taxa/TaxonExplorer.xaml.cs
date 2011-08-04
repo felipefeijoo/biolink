@@ -68,11 +68,10 @@ namespace BioLink.Client.Taxa {
             tvwAllTaxa.PreviewKeyDown += new KeyEventHandler(TaxonExplorer_PreviewKeyDown);
             tvwResults.PreviewKeyDown += new KeyEventHandler(TaxonExplorer_PreviewKeyDown);
             
-            btnLock.Checked += new RoutedEventHandler(btnLock_Checked);
-            btnLock2.Checked += new RoutedEventHandler(btnLock_Checked);
-
+            btnLock.Checked += new RoutedEventHandler(btnLock_Checked);          
             btnLock.Unchecked += new RoutedEventHandler(btnLock_Unchecked);
-            btnLock2.Unchecked += new RoutedEventHandler(btnLock_Unchecked);
+
+            
 
             favorites.BindUser(User, this);
         }
@@ -90,44 +89,26 @@ namespace BioLink.Client.Taxa {
         }
 
         void btnLock_Unchecked(object sender, RoutedEventArgs e) {
-            lblHeader.Visibility = Visibility.Hidden;
+            
             if (AnyChanges()) {
                 if (this.DiscardChangesQuestion()) {
                     ReloadModel();
                 } else {
                     // Cancel the unlock
                     btnLock.IsChecked = true;
+                    return;
                 }
             }
 
-            if ((sender as ToggleButton).Name == "btnLock") {
-                btnLock2.IsChecked = false;
-            } else {
-                btnLock.IsChecked = false;
-            }
+            lblHeader.Visibility = Visibility.Hidden;
             gridContentsHeader.Background = SystemColors.ControlBrush;
             buttonBar.Visibility = IsUnlocked ? Visibility.Visible : Visibility.Hidden;
-
-            lblHeader2.Visibility = Visibility.Hidden;
-            gridContentsHeader2.Background = SystemColors.ControlBrush;
-            buttonBar2.Visibility = IsUnlocked ? Visibility.Visible : Visibility.Hidden;
         }
 
         void btnLock_Checked(object sender, RoutedEventArgs e) {
             lblHeader.Visibility = Visibility.Hidden;
             buttonBar.Visibility = IsUnlocked ? Visibility.Visible : Visibility.Hidden;
             gridContentsHeader.Background = new LinearGradientBrush(Colors.DarkOrange, Colors.Orange, 90.0);
-
-            lblHeader2.Visibility = Visibility.Hidden;
-            buttonBar2.Visibility = IsUnlocked ? Visibility.Visible : Visibility.Hidden;
-            gridContentsHeader2.Background = new LinearGradientBrush(Colors.DarkOrange, Colors.Orange, 90.0);
-
-            if ((sender as ToggleButton).Name == "btnLock") {
-                btnLock2.IsChecked = true;
-            } else {
-                btnLock.IsChecked = true;
-            }
-
         }
 
         public string GenerateTaxonDisplayLabel(TaxonViewModel taxon) {
@@ -206,8 +187,18 @@ namespace BioLink.Client.Taxa {
         }
 
         private void tabControl1_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            if (tabControl1.SelectedItem == tabFavorites) {
+            if (taxonTabControl.SelectedItem == tabFavorites) {
                 favorites.LoadFavorites();
+            } else {
+                var parent = gridContentsHeader.Parent as Grid;
+                if (parent != null) {
+                    parent.Children.Remove(gridContentsHeader);
+                    if (taxonTabControl.SelectedItem == tabAllTaxa) {
+                        gridAllTaxaContent.Children.Add(gridContentsHeader);
+                    } else {
+                        gridFindTaxaContent.Children.Add(gridContentsHeader);
+                    }
+                }
             }
         }
 
