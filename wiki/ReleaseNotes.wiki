@@ -17,7 +17,7 @@ Associates is still not working quite right. In addition a new, more simplified 
 
   * Multimedia Report from Taxon Explorer. Finds all multimedia for a taxon (and optionally its descendents)
   * Google Earth geo coding is now possible from Site and Rapid Data Entry forms (only if Google Earth is installed)
-  * Region Map now warns you if you have no 'Region enabled' layers active. 'Region enabled' layers are shape files that included specially marked up meta data that associates a region identifiers to a polygons. BioLink 2.5 shipped with one Region layer (Admin98), which can be used with !BioLink 3.0.
+  * Region Map now warns you if you have no 'Region enabled' layers active. 'Region enabled' layers are shape files that include meta data that associates  region identifiers to a polygons. BioLink 2.5 shipped with one Region layer (Admin98), which can be used with !BioLink 3.0.
 
 === Issues addressed in this release ===
 
