@@ -7,7 +7,7 @@
 
 5th August, 2011
 
-The second release candidate for BioLink 3.0. This release addresses a number of issues identified during testing of RC1. 
+The second release candidate for !BioLink 3.0. This release addresses a number of issues identified during testing of RC1. 
 
 === Known Issues ===
 
@@ -16,7 +16,8 @@ Associates is still not working quite right. In addition a new, more simplified 
 === New Features ===
 
   * Multimedia Report from Taxon Explorer. Finds all multimedia for a taxon (and optionally its descendents)
-  * Google Earth geo coding from Site and Rapid Data Entry forms
+  * Google Earth geo coding is now possible from Site and Rapid Data Entry forms (only if Google Earth is installed)
+  * Region Map now warns you if you have no 'Region enabled' layers active. 'Region enabled' layers are shape files that included specially marked up meta data that associates a region identifiers to a polygons. BioLink 2.5 shipped with one Region layer (Admin98), which can be used with !BioLink 3.0.
 
 === Issues addressed in this release ===
 
@@ -27,7 +28,7 @@ Associates is still not working quite right. In addition a new, more simplified 
   * Issue 92	Reference search by surname not working	 
   * Issue 93	User details does not register changes on notes field	 
   * Issue 94	Last used template is not appearing on the Add-> xxx menu from the material explorer	 
-  * Issue 95	Cancelling changes on taxon tree will enters endless loop of asked if you want to discard changes	 
+  * Issue 95	Cancelling changes on taxon tree will enter an endless loop of asking if you want to discard changes (unless you discard the changes)
   * Issue 96	Label manager wont allow new items (wont save)	 
   * Issue 97	Mini map on site details should allow to plot site location on full map	 
   * Issue 98	When geo coding from GE, set Source and Elev Source to "Google Earth"
