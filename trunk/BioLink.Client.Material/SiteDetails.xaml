@@ -6,7 +6,7 @@
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
              xmlns:src="clr-namespace:BioLink.Client.Material"                           
              mc:Ignorable="d" 
-             MinWidth="400" d:DesignHeight="442" d:DesignWidth="702">
+             MinWidth="400" d:DesignHeight="510" d:DesignWidth="726">
     <UserControl.Resources>
         <ext:RadioButtonIntValueConverter x:Key="radioButtonConverter" />
     </UserControl.Resources>
@@ -48,7 +48,11 @@
                     </GroupBox>
                     <Label Content="Informal Locality:" Height="28" HorizontalAlignment="Left" Margin="6,165,0,0" Name="label4" VerticalAlignment="Top" Width="117" />
                     <ext:BindableRichTextBox Margin="129,165,12,108" Name="txtInformalLocality" RTF="{Binding InformalLocal}" />
-                    <Image Margin="0,0,12,6" Name="imgMap" Stretch="None" VerticalAlignment="Bottom" Height="96" Source="images\World.png" HorizontalAlignment="Right" Width="200" />
+
+                    <Image Margin="0,0,12,6" ToolTip="Double click to show in the map tool" Name="imgMap" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True" VerticalAlignment="Bottom" Height="96" Source="images\World.png" HorizontalAlignment="Right" Width="200" MouseDown="imgMap_MouseDown">
+                            
+                    </Image>
+                    
                 </Grid>
             </TabItem>
             <TabItem Header="Position" Name="tabPosition">
@@ -71,7 +75,7 @@
                             <RadioButton Content="Line" Height="16" HorizontalAlignment="Left" Margin="6,50,0,0" Name="optLine" VerticalAlignment="Top" Width="196" IsChecked="{Binding PosAreaType, Converter={StaticResource radioButtonConverter}, ConverterParameter=2}" />
                         </Grid>
                     </GroupBox>
-                    <Image Height="96" HorizontalAlignment="Left" Margin="6,256,0,0" Name="imgMiniMap2" Source="images\World.png" Stretch="None" VerticalAlignment="Top" Width="200" />
+                    <Image Height="96" HorizontalAlignment="Left" Margin="6,256,0,0" Name="imgMiniMap2" Source="images\World.png" Stretch="None" VerticalAlignment="Top" Width="200" ToolTip="Double click to show in the map tool" MouseDown="imgMap_MouseDown" />
                     
                     <GroupBox Grid.Column="1" Header="Coordinates" Height="216" Margin="6,6,6,0" Name="grpCoordinates" VerticalAlignment="Top">
                         <Grid x:Name="coordGrid">

@@ -203,22 +203,31 @@ namespace BioLink.Client.Extensibility {
                 if (place != null) {
                     lat.Value = place.Latitude;
                     lon.Value = place.Longitude;
-                    if (PositionChanged != null) {
-                        PositionChanged(place, "EGaz");
+                    if (LocationChanged != null) {
+                        var locality = place.Name;
+                        if (place.PlaceNameType == PlaceNameType.OffsetAndDirection) {
+                            locality = string.Format("{0} {1} {2} of {3}", place.Offset, place.Units, place.Direction, place.Name);
+                        }
+                        LocationChanged(place.Latitude, place.Longitude, null, null, locality, "EGaz");
                     }
                 }
             });
         }
 
-        public event Action<PlaceName, string> PositionChanged;
-
         private void btnGoogleCode_Click(object sender, RoutedEventArgs e) {
             GoogleEarth.GeoTag((lat, lon, altitude) => {
                 this.lat.Value = lat;
                 this.lon.Value = lon;
+                if (this.LocationChanged != null) {
+                    LocationChanged(lat, lon, altitude, "m", null, "Google Earth");
+                }
             }, this.lat.Value, this.lon.Value);
         }
 
+        public event LocationSelectedEvent LocationChanged;
+
     }
+
+    public delegate void LocationSelectedEvent(double latitude, double longitude, int? altitude, string altitudeUnits, string locality, string source);
 
 }

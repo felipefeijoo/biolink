@@ -36,21 +36,32 @@ namespace BioLink.Client.Material {
 
             this.DataContextChanged += new DependencyPropertyChangedEventHandler(SiteRDEControl_DataContextChanged);
 
-            ctlPosition.PositionChanged += new Action<PlaceName, string>(ctlPosition_PositionChanged);
+            ctlPosition.LocationChanged += new LocationSelectedEvent(ctlPosition_LocationChanged);
+            
         }
 
-        void ctlPosition_PositionChanged(PlaceName placeName, string changeSource) {
-            txtSource.Text = changeSource;
-            string locality = placeName.Name;
-            if (placeName.PlaceNameType == PlaceNameType.OffsetAndDirection) {
-                locality = string.Format("{0} {1} {2} of {3}", placeName.Offset, placeName.Units, placeName.Direction, placeName.Name);
+        void ctlPosition_LocationChanged(double latitude, double longitude, int? altitude, string altitudeUnits, string locality, string source) {
+
+            if (!string.IsNullOrWhiteSpace(source)) {
+                txtSource.Text = source;
             }
 
-            var updateLocality = OptionalQuestions.UpdateLocalityQuestion.Ask(this.FindParentWindow(), txtLocality.Text, locality);
-            
-            if (updateLocality) {
-                txtLocality.Text = locality;
+            if (!string.IsNullOrWhiteSpace(locality)) {
+                var updateLocality = OptionalQuestions.UpdateLocalityQuestion.Ask(this.FindParentWindow(), txtLocality.Text, locality);
+
+                if (updateLocality) {
+                    txtLocality.Text = locality;
+                }
             }
+
+            if (altitude.HasValue) {
+                if (OptionalQuestions.UpdateElevationQuestion.Ask(this.FindParentWindow(), altitude.Value)) {                    
+                    txtElevUpper.Text = altitude.Value + "";
+                    txtElevSource.Text = source;
+                    txtUnits.Text = altitudeUnits;
+                }
+            }
+
         }
 
         void SiteRDEControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e) {
