@@ -398,15 +398,32 @@ namespace BioLink.Client.Material {
                 GoogleEarth.GeoTag((lat, lon, alt) => {
                     ctlLat.Value = lat;
                     ctlLon.Value = lon;
+                    txtPosSource.Text = "Google Earth";
                     if (alt.HasValue && acceptElevation) {
                         if (OptionalQuestions.UpdateElevationQuestion.Ask(this.FindParentWindow(), alt.Value)) {
+                            optElevElevation.IsChecked = true;
                             txtElevUpper.Text = alt.Value + "";
-                            txtElevUnits.Text = "metres";
+                            txtElevUnits.Text = "m";
+                            txtElevSource.Text = "Google Earth";
                         }
                     }
                 }, ctlLat.Value, ctlLon.Value);
             }
 
+        }
+
+        private void imgMap_MouseDown(object sender, MouseButtonEventArgs e) {
+            if (e.LeftButton == MouseButtonState.Pressed && e.ClickCount == 2) {
+                ShowOnMap();
+            }
+        }
+
+        private void ShowOnMap() {
+            var map = PluginManager.Instance.GetMap();
+            if (map != null) {
+                map.Show();
+                map.DropAnchor(ctlX1.Value, ctlY1.Value, txtLocality.Text);
+            }
         }
 
     }
