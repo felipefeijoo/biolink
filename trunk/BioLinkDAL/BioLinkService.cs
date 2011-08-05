@@ -58,7 +58,7 @@ namespace BioLink.Data {
         internal void SQLReaderForEach(string SQL, ServiceReaderAction action, params SqlParameter[] @params) {
             Message("Executing query...");
             using (new CodeTimer(String.Format("SQLReaderForEach '{0}'", SQL))) {
-                Logger.Debug("Calling stored procedure (reader): {0}", SQL);
+                Logger.Debug("Calling stored procedure (reader): {0}({1})", SQL, GetParamsString(@params));
                 Command((con, cmd) => {
                     cmd.CommandText = SQL;
                     cmd.CommandType = System.Data.CommandType.Text;
@@ -96,7 +96,7 @@ namespace BioLink.Data {
         internal void StoredProcReaderForEach(string proc, ServiceReaderAction action, params SqlParameter[] @params) {
             Message("Executing query...");
             using (new CodeTimer(String.Format("StoredProcReaderForEach '{0}'", proc))) {
-                Logger.Debug("Calling stored procedure (reader): {0}", proc);
+                Logger.Debug("Calling stored procedure (reader): {0}({1})", proc, GetParamsString(@params));
                 Command((con, cmd) => {
                     cmd.CommandText = proc;
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
@@ -125,7 +125,7 @@ namespace BioLink.Data {
 
         internal void StoredProcReaderFirst(string proc, ServiceReaderAction action, params SqlParameter[] @params) {
             using (new CodeTimer(String.Format("StoredProcReaderFirst '{0}'", proc))) {
-                Logger.Debug("Calling stored procedure (reader): {0}", proc);
+                Logger.Debug("Calling stored procedure (reader): {0}({1})", proc, GetParamsString(@params));
                 Command((con, cmd) => {
                     cmd.CommandText = proc;
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
@@ -267,18 +267,22 @@ namespace BioLink.Data {
             return matrix;
         }
 
+        private string GetParamsString(params SqlParameter[] @params) {
+            var plist = new List<string>();
+            foreach (SqlParameter p in @params) {
+                var pValue = p.Value == null ? "(null)" : p.Value.ToString().Truncate(50);
+                plist.Add(p.ParameterName + "=" + pValue);
+            }
+
+            return plist.Join(",");
+
+        }
 
         internal int StoredProcUpdate(string proc, params SqlParameter[] @params) {
             int rowsAffected = -1;
             using (new CodeTimer(String.Format("StoredProcUpdate '{0}'", proc))) {
 
-                var plist = new List<string>();
-                foreach (SqlParameter p in @params) {
-                    var pValue = p.Value == null ? "(null)" : p.Value.ToString().Truncate(50);
-                    plist.Add(p.ParameterName + "=" + pValue);
-                }
-
-                Logger.Debug("Calling stored procedure (update): {0}({1})", proc, plist.Join(","));
+                Logger.Debug("Calling stored procedure (update): {0}({1})", proc, GetParamsString(@params));
 
 
                 Command((con, cmd) => {
