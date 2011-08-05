@@ -11,8 +11,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition Height="*" />
-            <RowDefinition Height="35" x:Name="buttonRow" />
-            <RowDefinition Height="25" x:Name="statusRow" />
+            <RowDefinition Height="36" x:Name="buttonRow" />
+            <RowDefinition Height="30" x:Name="statusRow" />
         </Grid.RowDefinitions>
         <ToolBar>
             <Button x:Name="btnSaveImage" ToolTip="Save as image" Click="btnSaveImage_Click">
@@ -76,12 +76,32 @@
             </Grid>
         </Grid>
         <Grid Grid.Row="2">
-            <Button Content="_Update" HorizontalAlignment="Right" Margin="0,6,6,0" Name="btnUpdate" Width="75" Height="23" VerticalAlignment="Top" Click="btnUpdate_Click" />
+            <Grid.Background>
+                <LinearGradientBrush EndPoint="1,0.5" StartPoint="0,0.5">
+                    <GradientStop Color="Black" Offset="0" />
+                    <GradientStop Color="#5AFFA500" Offset="1" />
+                    <GradientStop Color="DarkOrange" Offset="0" />
+                </LinearGradientBrush>
+            </Grid.Background>
+            <Grid.ColumnDefinitions>                
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="100" />
+            </Grid.ColumnDefinitions>
+            <Grid x:Name="gridRegionWarning" Margin="6,0,0,0" Visibility="Collapsed">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="6" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Image Grid.Column="0" Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/warning.png" UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" VerticalAlignment="Center" />                                    
+                <TextBlock Grid.Column="2" x:Name="lblRegionWarning" Text="There are no region enabled layers present in the layers collection" VerticalAlignment="Center" />                
+            </Grid>
+            <Button Grid.Column="1" Content="_Update" HorizontalAlignment="Right" Margin="0,6,6,0" Name="btnUpdate" Width="75" Height="23" VerticalAlignment="Top" Click="btnUpdate_Click" />
         </Grid>
         <StatusBar Grid.Row="3">
             <StatusBarItem DockPanel.Dock="Left">
-                <StackPanel Orientation="Horizontal">                    
-                    <TextBlock x:Name="txtPosition" Width="200" TextAlignment="Left"/>
+                <StackPanel Orientation="Horizontal" Margin="0">                    
+                    <TextBlock x:Name="txtPosition" Width="200" TextAlignment="Left" />
                 </StackPanel>
             </StatusBarItem>
             <StatusBarItem>

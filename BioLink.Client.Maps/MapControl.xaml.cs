@@ -432,6 +432,7 @@ namespace BioLink.Client.Maps {
 
         public void SelectRegions(List<RegionDescriptor> selectedRegions) {
             var layer = FindFirstRegionLayer();
+
             if (layer != null) {
                 if (_regionModel != null) {
                     _regionModel.DeselectAll();
@@ -522,6 +523,7 @@ namespace BioLink.Client.Maps {
         }
 
         private VectorLayer FindFirstRegionLayer() {
+            gridRegionWarning.Visibility = System.Windows.Visibility.Collapsed;
             foreach (ILayer layer in mapBox.Map.Layers) {
                 if (layer is VectorLayer) {
                     var vl = layer as VectorLayer;
@@ -537,6 +539,10 @@ namespace BioLink.Client.Maps {
                     }
                 }
             }
+
+            // No region layers...Show a warning...
+            gridRegionWarning.Visibility = System.Windows.Visibility.Visible;
+
             return null;
         }
 
@@ -788,6 +794,7 @@ namespace BioLink.Client.Maps {
         }
 
         private void addLayer(ILayer layer, bool zoomToExtent = true) {
+
             mapBox.Map.Layers.Add(layer);
 
             if (zoomToExtent) {
@@ -923,7 +930,7 @@ namespace BioLink.Client.Maps {
         /// <param name="list"></param>
         private void FindTopMostSelectedRegions(RegionTreeNode root, List<RegionDescriptor> list) {
 
-            if (root.IsSelected) {
+            if (root.IsSelected && root.Parent != null) {
                 // Create a new region descriptor for this top-most selected item...
                 list.Add(new RegionDescriptor(root.Path, root.IsThroughoutRegion));
                 return;
@@ -972,7 +979,7 @@ namespace BioLink.Client.Maps {
 
             // By now, all my childrens selected properties should be normalized, so its quite
             // simple to determine if the current node's selecton property can replace the composite values of my children
-            if (AllChildrenSelected(root)) {
+            if (AllChildrenSelected(root) && root.Children.Count > 1) {
                 if (!root.IsSelected) {
                     root.IsThroughoutRegion = true;
                 }
