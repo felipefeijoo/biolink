@@ -271,7 +271,16 @@ namespace BioLink.Data {
         internal int StoredProcUpdate(string proc, params SqlParameter[] @params) {
             int rowsAffected = -1;
             using (new CodeTimer(String.Format("StoredProcUpdate '{0}'", proc))) {
-                Logger.Debug("Calling stored procedure (update): {0}", proc);
+
+                var plist = new List<string>();
+                foreach (SqlParameter p in @params) {
+                    var pValue = p.Value == null ? "(null)" : p.Value.ToString().Truncate(50);
+                    plist.Add(p.ParameterName + "=" + pValue);
+                }
+
+                Logger.Debug("Calling stored procedure (update): {0}({1})", proc, plist.Join(","));
+
+
                 Command((con, cmd) => {
                     cmd.CommandText = proc;
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
