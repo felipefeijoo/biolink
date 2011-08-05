@@ -204,6 +204,12 @@ namespace BioLink.Client.Tools {
             }
 
             if (site != null) {
+
+                if (site.PoliticalRegionID <= 0) {
+                    ErrorMessage.Show("You cannot add this item as it does not belong to a political region (unplaced)");
+                    return;
+                }
+
                 newItem.SiteID = site.SiteID;
                 newItem.Region = site.PoliticalRegion;
                 newItem.Local = site.Locality;
@@ -213,6 +219,7 @@ namespace BioLink.Client.Tools {
                 newItem.Lat2 = site.PosY2;
                 newItem.Long2 = site.PosX2;
             }
+
 
             var vm = new LabelSetItemViewModel(newItem);
 
