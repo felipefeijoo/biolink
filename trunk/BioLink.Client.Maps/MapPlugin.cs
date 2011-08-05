@@ -56,7 +56,7 @@ namespace BioLink.Client.Maps {
         public void SelectRegions(List<RegionDescriptor> preselectedRegions, Action<List<RegionDescriptor>> updatefunc) {
             if (_regionMap == null) {
                 var map = new MapControl(MapMode.RegionSelect, updatefunc);
-                _regionMap = PluginManager.Instance.AddNonDockableContent(this, map, "Name Selection Tool", SizeToContent.Manual);
+                _regionMap = PluginManager.Instance.AddNonDockableContent(this, map, "Region Selection Tool", SizeToContent.Manual);
                 _regionMap.Closed += new EventHandler((sender, e) => {
                     _regionMap = null;
                 });
