@@ -3,7 +3,38 @@
 
 = Release Notes =
 
+== Release Candidate 2 (RC2)  ==
+
+5th August, 2011
+
+The second release candidate for BioLink 3.0. This release addresses a number of issues identified during testing of RC1. 
+
+=== Known Issues ===
+
+Associates is still not working quite right. In addition a new, more simplified Associates mode is currently being implemented, which should be available in RC 3.
+
+=== New Features ===
+
+  * Multimedia Report from Taxon Explorer. Finds all multimedia for a taxon (and optionally its descendents)
+  * Google Earth geo coding from Site and Rapid Data Entry forms
+
+=== Issues addressed in this release ===
+
+  * Issue 87	Taxon sort order not quite right	 
+  * Issue 89	Loans search by surname not working	 
+  * Issue 90	Region Map sometimes 'optimizes' all regions out	 
+  * Issue 91	Loans that have not yet been closed have a closed date of 30 Dec, 1899	 
+  * Issue 92	Reference search by surname not working	 
+  * Issue 93	User details does not register changes on notes field	 
+  * Issue 94	Last used template is not appearing on the Add-> xxx menu from the material explorer	 
+  * Issue 95	Cancelling changes on taxon tree will enters endless loop of asked if you want to discard changes	 
+  * Issue 96	Label manager wont allow new items (wont save)	 
+  * Issue 97	Mini map on site details should allow to plot site location on full map	 
+  * Issue 98	When geo coding from GE, set Source and Elev Source to "Google Earth"
+
 == Release Candidate 1 (RC1) ==
+
+1st August, 2011
 
 This release is the first release candidate for BioLink 3.0. Testing is continuing, and any issues found will be addressed by subsequent release candidate builds.
 
