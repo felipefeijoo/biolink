@@ -25,6 +25,8 @@ namespace BioLink.Data {
 
     public class DataMatrix : IEnumerable {
 
+        public Object Tag { get; set; }
+
         public DataMatrix() {
             this.Columns = new List<MatrixColumn>();
             this.Rows = new List<MatrixRow>();

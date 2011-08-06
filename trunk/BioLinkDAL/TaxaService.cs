@@ -287,6 +287,7 @@ namespace BioLink.Data {
 
         public DataMatrix GetAssociatesForTaxa(int regionID, params int[] taxonIds) {
             var strTaxonIDS = taxonIds.Join(",");
+            
             return StoredProcDataMatrix("spAssociatesListForTaxon", null, _P("intPoliticalRegionID", regionID), _P("vchrBiotaID", strTaxonIDS));
         }
 

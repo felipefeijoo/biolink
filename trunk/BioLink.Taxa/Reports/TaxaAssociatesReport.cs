@@ -5,7 +5,7 @@ using System.Text;
 using BioLink.Client.Extensibility;
 using BioLink.Client.Utilities;
 using BioLink.Data;
-
+using BioLink.Data.Model;
 
 namespace BioLink.Client.Taxa {
 
@@ -18,13 +18,100 @@ namespace BioLink.Client.Taxa {
         }
 
         public override DataMatrix ExtractReportData(IProgressObserver progress) {
+
+            if (progress != null) {
+                progress.ProgressMessage("Phase 1: Finding associate relationships...");
+            }
+
             int[] ids = new int[Taxa.Count];
             int i = 0;
             foreach (TaxonViewModel vm in Taxa) {
                 ids[i++] = vm.TaxaID.Value;
             }
 
-            return Service.GetAssociatesForTaxa(RegionID, ids);
+            var matrix = Service.GetAssociatesForTaxa(RegionID, ids);
+
+            var index = matrix.IndexOf("AssociateID");
+            if (index >= 0) {
+
+                if (progress != null) {
+                    progress.ProgressMessage("Phase 2: Retrieving associates...");
+                }
+
+                var idList = new List<int>();
+                foreach (MatrixRow row in matrix) {
+                    var associateId = (int)row[index];
+                    if (!idList.Contains(associateId)) {
+                        idList.Add(associateId);
+                    }
+                }
+
+                if (progress != null) {                    
+                    progress.ProgressStart("Phase 3: Building view models...");
+                }
+
+                var viewModels = new List<AssociateReportViewModel>();
+
+                if (idList.Count > 0) {
+                    var service = new SupportService(PluginManager.Instance.User);
+                    var associates = service.GetAssociatesById(idList);
+                    int count = 0;
+                    foreach (Associate m in associates) {
+
+                        count++;
+
+                        if (progress != null) {
+                            var percentComplete = ((double) count / (double) associates.Count) * 100.0;
+                            progress.ProgressMessage("Phase 3: Building view models...", percentComplete);
+                        }
+
+                        var vm = new AssociateReportViewModel(m);
+
+                        switch (m.FromCatID) {
+                            case 1: // Material
+                                vm.FromViewModel = GetViewModel(LookupType.Material, m.FromIntraCatID);
+                                break;
+                            case 2:
+                                vm.FromViewModel = GetViewModel(LookupType.Taxon, m.FromIntraCatID);
+                                break;
+                            default:
+                                vm.FromViewModel = new ViewModelPlaceholder(m.AssocDescription, "images/Description.png");
+                                break;
+                        }
+
+                        switch (m.ToCatID) {
+                            case 1: // Material
+                                vm.ToViewModel = GetViewModel(LookupType.Material, m.ToIntraCatID);
+                                break;
+                            case 2:
+                                vm.ToViewModel = GetViewModel(LookupType.Taxon, m.ToIntraCatID);
+                                break;
+                            default:
+                                vm.ToViewModel = new ViewModelPlaceholder(m.AssocDescription, "images/Description.png");
+                                break;
+                        }
+
+                        viewModels.Add(vm);
+                    }
+
+                    progress.ProgressEnd("Complete.");                    
+                }
+
+                matrix.Tag = viewModels;
+            }
+
+            return matrix;
+        }
+
+        private ViewModelBase GetViewModel(LookupType lookupType, int? objectId) {
+            if (objectId.HasValue) {
+                var plugin = PluginManager.Instance.GetLookupTypeOwner(lookupType);
+                if (plugin != null) {
+                    var pin = new PinnableObject(plugin.Name, lookupType, objectId.Value);
+                    return PluginManager.Instance.GetViewModel(pin);
+                }
+            }
+            return null;
         }
 
         public override string Name {
