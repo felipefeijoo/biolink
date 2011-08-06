@@ -1,0 +1,78 @@
+﻿<UserControl x:Class="BioLink.Client.Extensibility.AssociateReportsViewer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ext="clr-namespace:BioLink.Client.Extensibility"
+             xmlns:model="clr-namespace:BioLink.Data.Model;assembly=BioLink.Data"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <ListBox Grid.Row="1" x:Name="lst" HorizontalContentAlignment="Center">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel IsItemsHost="True" Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ScrollContentPresenter}}}" />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.Resources>
+                <DataTemplate DataType="{x:Type ext:AssociateReportViewModel}">
+                    <Border Margin="3" BorderThickness="1" BorderBrush="{x:Static SystemColors.ControlBrush}" Background="{x:Static SystemColors.ControlBrush}" CornerRadius="3" Height="130" Padding="3" ToolTip="{Binding Path=TooltipContent}" ToolTipService.ShowDuration="30000">
+                        <Grid Width="220">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="30" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- From side of the relationship -->
+                            <Border Margin="3" BorderThickness="1" BorderBrush="{x:Static SystemColors.ControlDarkBrush}" Background="{x:Static SystemColors.ControlDarkBrush}" CornerRadius="3" Padding="3" ToolTip="{Binding Path=FromViewModel.TooltipContent}" ToolTipService.ShowDuration="30000">
+                                <Grid Grid.Column="0">
+                                    
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="30" />
+                                        <RowDefinition Height="20" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" Text="{Binding Path=RelationFromTo}" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" FontWeight="Bold"/>
+                                    <Image Grid.Row="1" Source="{Binding Path=FromViewModel.Icon}" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True" />
+                                    <TextBlock Grid.Row="2" Text="{Binding Path=FromViewModel.DisplayLabel}" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+                                </Grid>
+                            </Border>
+
+                            <Image Grid.Column="1"  Grid.Row="1" Source="pack://application:,,,/BioLink.Client.Extensibility;component/images/Relationship.png" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True" />
+
+                            <!-- To side of the relationship -->
+                            <Border Grid.Column="2" Margin="3" BorderThickness="1" BorderBrush="{x:Static SystemColors.ControlDarkBrush}" Background="{x:Static SystemColors.ControlDarkBrush}" CornerRadius="3" Padding="3" ToolTip="{Binding Path=ToViewModel.TooltipContent}" ToolTipService.ShowDuration="30000">
+                                <Grid Grid.Column="0">
+
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="30" />
+                                        <RowDefinition Height="20" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0"  Text="{Binding Path=RelationToFrom}" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" FontWeight="Bold"/>
+                                    <Image Grid.Row="1" Source="{Binding Path=ToViewModel.Icon}" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True" />
+                                    <TextBlock Grid.Row="2"  Text="{Binding Path=ToViewModel.DisplayLabel}" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+                                </Grid>
+                            </Border>
+
+                            <!--<TextBlock Grid.Column="2" Grid.Row="0"  Text="{Binding Path=RelationToFrom}" HorizontalAlignment="Center"  VerticalAlignment="Bottom" FontWeight="Bold" />
+                            <Image Grid.Column="2"  Grid.Row="1" Source="{Binding Path=ToViewModel.Icon}" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True" ToolTip="{Binding Path=ToViewModel.TooltipContent}" ToolTipService.ShowDuration="30000"/>
+                            <TextBlock Grid.Column="2" Grid.Row="2"  Text="{Binding Path=ToViewModel.DisplayLabel}" HorizontalAlignment="Center"/>-->
+
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+
+                <Style TargetType="ListBoxItem">
+                    <Style.Resources>
+                    </Style.Resources>
+                </Style>
+
+            </ListBox.Resources>
+        </ListBox>
+
+    </Grid>
+</UserControl>
