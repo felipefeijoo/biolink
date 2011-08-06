@@ -37,29 +37,35 @@ namespace BioLink.Client.Extensibility {
         }
 
         void AssociateReportsViewer_Loaded(object sender, RoutedEventArgs e) {
-            if (Progress != null) {
-                Progress.ProgressMessage("Extracting associate details...");
+
+            var viewModels = DataMatrix.Tag as List<AssociateReportViewModel>;
+            if (viewModels != null) {
+                lst.ItemsSource = viewModels;
             }
 
-            var index = DataMatrix.IndexOf("AssociateID");
-            var idList = new List<int>();
-            foreach (MatrixRow row in DataMatrix) {
-                var associateId = (int) row[index];
-                if (!idList.Contains(associateId)) {
-                    idList.Add(associateId);
-                }
-            }
+            //if (Progress != null) {
+            //    Progress.ProgressMessage("Extracting associate details...");
+            //}
 
-            if (idList.Count > 0) {
-                var service = new SupportService(PluginManager.Instance.User);
-                var associates = service.GetAssociatesById(idList);
+            //var index = DataMatrix.IndexOf("AssociateID");
+            //var idList = new List<int>();
+            //foreach (MatrixRow row in DataMatrix) {
+            //    var associateId = (int) row[index];
+            //    if (!idList.Contains(associateId)) {
+            //        idList.Add(associateId);
+            //    }
+            //}
 
-                var model = new List<AssociateReportViewModel>(associates.Select((m) => {
-                    return new AssociateReportViewModel(m);
-                }));
+            //if (idList.Count > 0) {
+            //    var service = new SupportService(PluginManager.Instance.User);
+            //    var associates = service.GetAssociatesById(idList);
 
-                lst.ItemsSource = model;
-            }
+            //    var model = new List<AssociateReportViewModel>(associates.Select((m) => {
+            //        return new AssociateReportViewModel(m);
+            //    }));
+
+            //    lst.ItemsSource = model;
+            //}
         }
 
         protected IBioLinkReport Report { get; set; }
@@ -67,38 +73,85 @@ namespace BioLink.Client.Extensibility {
         protected DataMatrix DataMatrix { get; set; }
 
         protected IProgressObserver Progress { get; set; }
+
+        private void Border_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+
+            lst.ContextMenu = null;
+            var selected = lst.SelectedItem as AssociateReportViewModel;
+            if (selected != null) {
+                var builder = new ContextMenuBuilder(null);
+                builder.New("Edit " + selected.FromViewModel.DisplayLabel + " (" + selected.RelationFromTo + ")").Handler(() => {
+                    EditAssociatedItem(selected.Model.FromCatID, selected.Model.FromIntraCatID);
+                }).End();
+
+                builder.Separator();
+
+                builder.New("Pin " + selected.FromViewModel.DisplayLabel + " (" + selected.RelationFromTo + ") to pin board").Handler(() => PinAssociatedItem(selected.Model.FromCatID, selected.Model.FromIntraCatID)).End();
+
+                lst.ContextMenu = builder.ContextMenu;
+            }
+        }
+
+        private void EditAssociatedItem(int catId, int intraCatId) {
+            switch (catId) {
+                case 1: // Material
+                    PluginManager.Instance.EditLookupObject(LookupType.Material, intraCatId);                    
+                    break;
+                case 2: // Taxon
+                    PluginManager.Instance.EditLookupObject(LookupType.Taxon, intraCatId);                    
+                    break;
+                default:
+                    // Don't think this should ever happen!
+                    ErrorMessage.Show("Error!");
+                    break;
+            }
+
+        }
+
+        private void PinAssociatedItem(int catId, int intraCatId) {
+            LookupType type = LookupType.Unknown;
+            IBioLinkPlugin plugin = null;
+            switch (catId) {
+                case 1: // Material
+                    type = LookupType.Material;
+                    plugin = PluginManager.Instance.GetLookupTypeOwner(LookupType.Material);
+                    break;
+                case 2: // Taxon
+                    type = LookupType.Taxon;
+                    plugin = PluginManager.Instance.GetLookupTypeOwner(LookupType.Taxon);
+                    break;
+            }
+
+            if (plugin != null) {
+                PluginManager.Instance.PinObject(new PinnableObject(plugin.Name, type, intraCatId));
+            }
+
+        }
+
+
+        private void Border_MouseRightButtonUp_1(object sender, MouseButtonEventArgs e) {
+            lst.ContextMenu = null;
+            var selected = lst.SelectedItem as AssociateReportViewModel;
+            if (selected != null && selected.Model.ToIntraCatID.HasValue) {
+                var builder = new ContextMenuBuilder(null);
+                builder.New("Edit " + selected.ToViewModel.DisplayLabel + " (" + selected.RelationToFrom + ")").Handler(() => {
+                    EditAssociatedItem(selected.Model.ToCatID.Value, selected.Model.ToIntraCatID.Value);
+                }).End();
+
+                lst.ContextMenu = builder.ContextMenu;
+
+                builder.Separator();
+
+                builder.New("Pin " + selected.ToViewModel.DisplayLabel + " (" + selected.RelationToFrom + ") to pin board").Handler(() => PinAssociatedItem(selected.Model.ToCatID.Value, selected.Model.ToIntraCatID.Value)).End();
+            }
+
+        }
         
     }
 
     public class AssociateReportViewModel : GenericViewModelBase<Associate>{
 
-        public AssociateReportViewModel(Associate model) : base(model, ()=>model.AssociateID) {
-
-            switch (Model.FromCatID) {
-                case 1: // Material
-                    FromViewModel = GetViewModel(LookupType.Material, Model.FromIntraCatID);
-                    break;
-                case 2:
-                    FromViewModel = GetViewModel(LookupType.Taxon, Model.FromIntraCatID);
-                    break;
-                default:
-                    FromViewModel = new ViewModelPlaceholder(Model.AssocDescription, "images/Description.png");
-                    break;
-            }
-
-            switch (Model.ToCatID) {
-                case 1: // Material
-                    ToViewModel = GetViewModel(LookupType.Material, Model.ToIntraCatID);
-                    break;
-                case 2:
-                    ToViewModel = GetViewModel(LookupType.Taxon, Model.ToIntraCatID);
-                    break;
-                default:
-                    ToViewModel = new ViewModelPlaceholder(Model.AssocDescription, "images/Description.png");
-                    break;
-            }
-
-        }
+        public AssociateReportViewModel(Associate model) : base(model, ()=>model.AssociateID) { }
 
         public ViewModelBase FromViewModel { get; set; }
 
@@ -116,16 +169,6 @@ namespace BioLink.Client.Extensibility {
             get { return Model.AssociateID; }
         }
 
-        private ViewModelBase GetViewModel(LookupType lookupType, int? objectId) {
-            if (objectId.HasValue) {
-                var plugin = PluginManager.Instance.GetLookupTypeOwner(lookupType);
-                if (plugin != null) {
-                    var pin = new PinnableObject(plugin.Name, lookupType, objectId.Value);
-                    return PluginManager.Instance.GetViewModel(pin);
-                }
-            }
-            return null;
-        }
     }    
 
     public class AssociateReportsViewerSource : IReportViewerSource {

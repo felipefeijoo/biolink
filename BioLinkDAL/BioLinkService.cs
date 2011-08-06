@@ -216,6 +216,10 @@ namespace BioLink.Data {
         public const string HIDDEN_COLUMN_PREFIX = "HIDDEN_";
 
         internal DataMatrix StoredProcDataMatrix(string proc, Dictionary<string, ColumnDataFormatter> formatterMap, params SqlParameter[] @params) {
+            return StoredProcDataMatrix(proc, formatterMap, null, @params);
+        }
+
+        public DataMatrix StoredProcDataMatrix(string proc, Dictionary<string, ColumnDataFormatter> formatterMap, List<MatrixColumn> additionalColumns, params SqlParameter[] @params) {
 
             DataMatrix matrix = null;
             ColumnDataFormatter[] formatters = null;
@@ -247,6 +251,12 @@ namespace BioLink.Data {
                         } else {
                             formatters[i] = defaultFormatter;
                         }
+                    }
+                }
+
+                if (additionalColumns != null && additionalColumns.Count > 0) {
+                    foreach (MatrixColumn col in additionalColumns) {
+                        matrix.Columns.Add(col);
                     }
                 }
 

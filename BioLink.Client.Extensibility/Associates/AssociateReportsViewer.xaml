@@ -16,7 +16,7 @@
             </ListBox.ItemsPanel>
             <ListBox.Resources>
                 <DataTemplate DataType="{x:Type ext:AssociateReportViewModel}">
-                    <Border Margin="3" BorderThickness="1" BorderBrush="{x:Static SystemColors.ControlBrush}" Background="{x:Static SystemColors.ControlBrush}" CornerRadius="3" Height="130" Padding="3" ToolTip="{Binding Path=TooltipContent}" ToolTipService.ShowDuration="30000">
+                    <Border Margin="3" BorderThickness="1" BorderBrush="{x:Static SystemColors.ControlDarkBrush}" Background="{x:Static SystemColors.ControlBrush}" CornerRadius="3" Height="130" Padding="3" ToolTip="{Binding Path=TooltipContent}" ToolTipService.ShowDuration="30000">
                         <Grid Width="220">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -25,7 +25,7 @@
                             </Grid.ColumnDefinitions>
 
                             <!-- From side of the relationship -->
-                            <Border Margin="3" BorderThickness="1" BorderBrush="{x:Static SystemColors.ControlDarkBrush}" Background="{x:Static SystemColors.ControlDarkBrush}" CornerRadius="3" Padding="3" ToolTip="{Binding Path=FromViewModel.TooltipContent}" ToolTipService.ShowDuration="30000">
+                            <Border Margin="3" BorderThickness="1" BorderBrush="{x:Static SystemColors.ControlDarkBrush}" Background="{x:Static SystemColors.ControlDarkBrush}" CornerRadius="3" Padding="3" ToolTip="{Binding Path=FromViewModel.TooltipContent}" ToolTipService.ShowDuration="30000" MouseRightButtonUp="Border_MouseRightButtonUp">
                                 <Grid Grid.Column="0">
                                     
                                     <Grid.RowDefinitions>
@@ -43,7 +43,7 @@
                             <Image Grid.Column="1"  Grid.Row="1" Source="pack://application:,,,/BioLink.Client.Extensibility;component/images/Relationship.png" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True" />
 
                             <!-- To side of the relationship -->
-                            <Border Grid.Column="2" Margin="3" BorderThickness="1" BorderBrush="{x:Static SystemColors.ControlDarkBrush}" Background="{x:Static SystemColors.ControlDarkBrush}" CornerRadius="3" Padding="3" ToolTip="{Binding Path=ToViewModel.TooltipContent}" ToolTipService.ShowDuration="30000">
+                            <Border Grid.Column="2" Margin="3" BorderThickness="1" BorderBrush="{x:Static SystemColors.ControlDarkBrush}" Background="{x:Static SystemColors.ControlDarkBrush}" CornerRadius="3" Padding="3" ToolTip="{Binding Path=ToViewModel.TooltipContent}" ToolTipService.ShowDuration="30000" MouseRightButtonUp="Border_MouseRightButtonUp_1">
                                 <Grid Grid.Column="0">
 
                                     <Grid.RowDefinitions>
