@@ -326,10 +326,6 @@ namespace BioLink.Client.Extensibility {
         }
     }
 
-    public class AugmentedTextBlock : TextBlock {
-
-    }
-
     public class TabularDataViewerSource : IReportViewerSource {
 
         public string Name {

@@ -1689,6 +1689,15 @@ namespace BioLink.Data {
         }
 
         #endregion
+
+        public List<Associate> GetAssociatesById(List<int> idList) {                        
+            var results = new List<Associate>();
+            var mapper = new GenericMapperBuilder<Associate>().build();
+            SQLReaderForEach("SELECT * from tblAssociate WHERE intAssociateID in (" + idList.Join(",") + ")", (reader) => {
+                results.Add(mapper.Map(reader));
+            });
+            return results;
+        }
     }
 
     public class RefTypeMapping {
