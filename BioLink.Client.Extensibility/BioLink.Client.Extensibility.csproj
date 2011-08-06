@@ -69,6 +69,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Associates\AssociateDatabaseActions.cs" />
+    <Compile Include="Associates\AssociateReportsViewer.xaml.cs">
+      <DependentUpon>AssociateReportsViewer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Associates\AssociatesControl.xaml.cs">
       <DependentUpon>AssociatesControl.xaml</DependentUpon>
     </Compile>
@@ -345,6 +348,10 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Themes\EditSmall.png" />
+    <Page Include="Associates\AssociateReportsViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Associates\AssociatesControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -677,6 +684,8 @@
     <Resource Include="images\DistributionRegion.png" />
     <Resource Include="images\GoogleEarth.png" />
     <Resource Include="images\Target.png" />
+    <Resource Include="images\Relationship.png" />
+    <Resource Include="images\Description.png" />
     <Content Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>

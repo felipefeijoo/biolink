@@ -55,16 +55,11 @@ namespace BioLink.Client.Extensibility {
 
                 if (dragged.Tag is LookupType) {
                     var lookupType = (LookupType) dragged.Tag;
-                    string pluginName = null;
-                    PluginManager.Instance.TraversePlugins((plugin) => {
-                        if (plugin.CanEditObjectType(lookupType)) {
-                            pluginName = plugin.Name;
-                        }
-                    });
+                    var plugin = PluginManager.Instance.GetLookupTypeOwner(lookupType);
 
-                    if (!string.IsNullOrWhiteSpace(pluginName)) {
+                    if (plugin != null) {
                         var data = new DataObject("Pinnable", dragged);
-                        var pinnable = new PinnableObject(pluginName, lookupType, dragged.ObjectID.Value);
+                        var pinnable = new PinnableObject(plugin.Name, lookupType, dragged.ObjectID.Value);
                         data.SetData(PinnableObject.DRAG_FORMAT_NAME, pinnable);
                         data.SetData(DataFormats.Text, dragged.DisplayLabel);
                         return data;

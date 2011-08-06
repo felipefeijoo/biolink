@@ -39,6 +39,16 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
+        public IBioLinkPlugin GetLookupTypeOwner(LookupType lookupType) {
+            IBioLinkPlugin result = null;
+            TraversePlugins((plugin) => {
+                if (plugin.CanEditObjectType(lookupType)) {
+                    result = plugin;
+                }
+            });
+            return result;
+        }
+
         private PluginManager(User user, Window parentWindow) {
             User = user;            
             _extensions = new List<IBioLinkExtension>();

@@ -13,6 +13,8 @@ namespace BioLink.Client.Taxa {
 
         public TaxaAssociatesReport(User user, List<TaxonViewModel> taxa) : base(user) {
             this.Taxa = taxa;
+            RegisterViewer(new TabularDataViewerSource());
+            RegisterViewer(new AssociateReportsViewerSource());
         }
 
         public override DataMatrix ExtractReportData(IProgressObserver progress) {
