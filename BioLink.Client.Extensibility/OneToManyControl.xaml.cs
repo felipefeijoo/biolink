@@ -25,10 +25,8 @@ namespace BioLink.Client.Extensibility {
 
         //private OneToManyDetailControl _defaultControl;
         private ObservableCollection<ViewModelBase> _model;
-        private OneToManyDetailControl _defaultDetailControl;
-        private OneToManyDetailControl _currentDetailControl;
+        private IOneToManyDetailController _controller;
         private bool _rdeMode;
-        private Func<object, OneToManyDetailControl, OneToManyDetailControl> _controlFactory;
 
         #region Designer Constructor
         public OneToManyControl() {
@@ -36,15 +34,12 @@ namespace BioLink.Client.Extensibility {
         }
         #endregion
 
-        public OneToManyControl(OneToManyDetailControl defaultDetailControl, Func<object, OneToManyDetailControl, OneToManyDetailControl> detailControlFactory = null, bool rdeMode = false)
-            : base(PluginManager.Instance.User, "OneToManyControl" + Guid.NewGuid().ToString()) {
+        public OneToManyControl(IOneToManyDetailController controller, bool rdeMode = false) : base(PluginManager.Instance.User, "OneToManyControl" + Guid.NewGuid().ToString()) {
 
             InitializeComponent();
             _rdeMode = rdeMode;
-            _defaultDetailControl = defaultDetailControl;
-            _currentDetailControl = defaultDetailControl;
+            _controller = controller;
 
-            _controlFactory = detailControlFactory;            
             detailsGrid.DataContextChanged += new DependencyPropertyChangedEventHandler(detailsGrid_DataContextChanged);
             lst.SelectionChanged += new SelectionChangedEventHandler(lst_SelectionChanged);
             
@@ -59,18 +54,13 @@ namespace BioLink.Client.Extensibility {
         }
 
         void detailsGrid_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e) {
-            if (_controlFactory != null) {
-                _currentDetailControl = _controlFactory(detailsGrid.DataContext, _defaultDetailControl);
+            if (_controller != null) {
                 detailsGrid.Children.Clear();
-                if (_currentDetailControl != null) {
-                    _currentDetailControl.Host = this;
-                    if (_currentDetailControl.Owner == null) {
-                        _currentDetailControl.Owner = Owner;
-                    }
-                    detailsGrid.Children.Add(_currentDetailControl);
+                var editor = _controller.GetDetailEditor(detailsGrid.DataContext as ViewModelBase);                
+                if (editor != null) {
+                    detailsGrid.Children.Add(editor);
                 }
             }
-
         }
 
         void lst_Drop(object sender, DragEventArgs e) {
@@ -78,17 +68,16 @@ namespace BioLink.Client.Extensibility {
             if (pinnable != null) {
                 var viewModel = AddNew();
                 if (viewModel != null) {
-                    CurrentDetailControl.PopulateFromPinnable(viewModel, pinnable);
+                    _controller.PopulateFromPinnable(viewModel, pinnable);
                 }
-            }                            
-            
+            }          
         }
 
         void lst_PreviewDragOver(object sender, DragEventArgs e) {
             var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;
             e.Effects = DragDropEffects.None;
             if (pinnable != null) {
-                if (CurrentDetailControl.AcceptDroppedPinnable(pinnable)) {
+                if (_controller.AcceptDroppedPinnable(pinnable)) {
                     e.Effects = DragDropEffects.Link;
                 }
             }                            
@@ -106,20 +95,13 @@ namespace BioLink.Client.Extensibility {
             }            
         }
 
-        public OneToManyDetailControl CurrentDetailControl {
-            get { return _currentDetailControl == null ? _defaultDetailControl : _currentDetailControl; }
-        }
-
         protected ViewModelBase Owner { get; set; }
 
         public void SetModel(ViewModelBase owner, ObservableCollection<ViewModelBase> model) {
             _model = model;
             lst.ItemsSource = _model;
             this.Owner = owner;
-            _defaultDetailControl.Owner = owner;
-            if (_currentDetailControl != null) {
-                _currentDetailControl.Owner = owner;
-            }
+            _controller.Owner = owner;
             
             if (_model.Count > 0) {
                 lst.SelectedItem = _model[0];
@@ -149,15 +131,24 @@ namespace BioLink.Client.Extensibility {
             return _model;
         }
 
+        public UIElement DetailControl {
+            get {
+                if (detailsGrid.Children.Count > 0) {
+                    return detailsGrid.Children[0];
+                }
+                return null;
+            }
+        }
+
         void lst_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            detailsGrid.IsEnabled = lst.SelectedItem != null;
+            detailsGrid.IsEnabled = !IsReadOnly && lst.SelectedItem != null;
         }
 
         private void DeleteSelected() {
             var selected = lst.SelectedItem as ViewModelBase;
-            if (selected != null && CurrentDetailControl != null) {
+            if (selected != null && _controller != null) {
                 _model.Remove(selected);
-                var action = CurrentDetailControl.PrepareDeleteAction(selected);
+                var action = _controller.PrepareDeleteAction(selected);
                 if (action != null) {
                     RegisterPendingChange(action);
                 }
@@ -165,9 +156,9 @@ namespace BioLink.Client.Extensibility {
         }
 
         public ViewModelBase AddNew() {
-            if (CurrentDetailControl != null) {
+            if (_controller != null) {
                 DatabaseCommand command = null;
-                var viewModel = CurrentDetailControl.AddNewItem(out command);
+                var viewModel = _controller.AddNewItem(out command);
                 if (viewModel != null) {
                     _model.Add(viewModel);
                     if (command != null) {
@@ -175,11 +166,16 @@ namespace BioLink.Client.Extensibility {
                     }
                     lst.SelectedItem = viewModel;
 
-                    if (CurrentDetailControl.FirstControl != null) {
-                        if (CurrentDetailControl.FirstControl is PickListControl) {
-                            FocusHelper.Focus((CurrentDetailControl.FirstControl as PickListControl).txt);
-                        } else {
-                            FocusHelper.Focus(CurrentDetailControl.FirstControl);
+                    if (detailsGrid.Children.Count > 0) {
+                        var editor = detailsGrid.Children[0] as IOneToManyDetailEditor;
+                        if (editor != null) {
+                            if (editor.FirstControl != null) {
+                                if (editor.FirstControl is PickListControl) {
+                                    FocusHelper.Focus((editor.FirstControl as PickListControl).txt);
+                                } else {
+                                    FocusHelper.Focus(editor.FirstControl);
+                                }
+                            }
                         }
                     }
                 }
@@ -199,10 +195,10 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void LoadModel() {
-            if (CurrentDetailControl != null && !_rdeMode) {
+            if (_controller != null && !_rdeMode) {
                 detailsGrid.IsEnabled = false;
 
-                var list = CurrentDetailControl.LoadModel();
+                var list = _controller.LoadModel();
                 _model = new ObservableCollection<ViewModelBase>(list.ConvertAll((viewModel) => {
                     viewModel.DataChanged += new DataChangedHandler(viewModel_DataChanged);
                     return viewModel;
@@ -219,8 +215,8 @@ namespace BioLink.Client.Extensibility {
         }
 
         void viewModel_DataChanged(ChangeableModelBase viewmodel) {
-            if (CurrentDetailControl != null) {
-                var action = CurrentDetailControl.PrepareUpdateAction(viewmodel as ViewModelBase);
+            if (_controller != null) {
+                var action = _controller.PrepareUpdateAction(viewmodel as ViewModelBase);
                 if (action != null) {
                     RegisterUniquePendingChange(action);
                 }
@@ -254,7 +250,7 @@ namespace BioLink.Client.Extensibility {
             var control = obj as OneToManyControl;
             if (control != null) {
                 bool val = (bool)args.NewValue;
-                control.CurrentDetailControl.IsEnabled = !val;
+                control.detailsGrid.IsEnabled = !val;
                 control.btnAdd.IsEnabled = !val;
                 control.btnDelete.IsEnabled = !val;
             }

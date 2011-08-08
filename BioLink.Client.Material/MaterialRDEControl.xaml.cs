@@ -53,7 +53,7 @@ namespace BioLink.Client.Material {
             _subpartsFull = new MaterialPartsControl(user, null, true);
             tabSubparts.Content = _subpartsFull;
 
-            _associates = new OneToManyControl(new AssociatesControl(user, TraitCategoryType.Material, null), AssociateControlLoader.AssociatesFactoryFactory(TraitCategoryType.Material, null), true);
+            _associates = new OneToManyControl(new AssociatesOneToManyController(user, TraitCategoryType.Material, null), true);
             tabAssociates.Content = _associates;
             this.IsEnabled = false;
             this.DataContextChanged += new DependencyPropertyChangedEventHandler(MaterialRDEControl_DataContextChanged);

@@ -21,7 +21,7 @@ namespace BioLink.Client.Tools {
     /// <summary>
     /// Interaction logic for LabelManagerControl.xaml
     /// </summary>
-    public partial class LabelManagerControl : OneToManyDetailControl {
+    public partial class LabelManagerControl : OneToManyControllerEditor {
 
         private const string V_1_5_PREFIX = "v1.5:";
 
@@ -31,7 +31,7 @@ namespace BioLink.Client.Tools {
 
         public ToolsPlugin Plugin { get; private set; }
 
-        public LabelManagerControl(ToolsPlugin plugin, User user) : base(user, "LabelManager") {
+        public LabelManagerControl(ToolsPlugin plugin, User user) : base(user)  {
             InitializeComponent();
             Plugin = plugin;
             this.DataContextChanged += new DependencyPropertyChangedEventHandler(LabelManagerControl_DataContextChanged);
@@ -41,7 +41,7 @@ namespace BioLink.Client.Tools {
             lvw.PreviewDragOver += new DragEventHandler(lvw_PreviewDragOver);
             lvw.Drop += new DragEventHandler(lvw_Drop);
 
-            var service = new SupportService(User);
+            var service = new SupportService(user);
 
             _fieldModel = service.GetFieldMappings();
             lvwFields.ItemsSource = _fieldModel;
@@ -424,7 +424,7 @@ namespace BioLink.Client.Tools {
 
         private int CurrentItemSetID { get; set; }
 
-        public override FrameworkElement FirstControl {
+        public override UIElement FirstControl {
             get { return lvw;  }
         }
 

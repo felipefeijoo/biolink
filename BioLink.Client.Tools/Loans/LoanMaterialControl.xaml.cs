@@ -20,11 +20,11 @@ namespace BioLink.Client.Tools {
     /// <summary>
     /// Interaction logic for LoanMaterialControl.xaml
     /// </summary>
-    public partial class LoanMaterialControl : OneToManyDetailControl {
+    public partial class LoanMaterialControl : OneToManyControllerEditor {
 
         protected Loan Loan { get; private set; }
 
-        public LoanMaterialControl(User user, Loan model) : base(user, "LoanMaterial:" + model.LoanID) {
+        public LoanMaterialControl(User user, Loan model) : base(user) {
             InitializeComponent();
 
             txtMaterial.BindUser(user, LookupType.Material);
@@ -76,7 +76,7 @@ namespace BioLink.Client.Tools {
             return new UpdateLoanMaterialCommand((viewModel as LoanMaterialViewModel).Model);
         }
 
-        public override FrameworkElement FirstControl {
+        public override UIElement FirstControl {
             get { return txtMaterial; }
         }
 

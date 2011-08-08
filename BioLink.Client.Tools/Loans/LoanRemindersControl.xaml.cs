@@ -20,15 +20,9 @@ namespace BioLink.Client.Tools {
     /// <summary>
     /// Interaction logic for LoanRemindersControl.xaml
     /// </summary>
-    public partial class LoanRemindersControl : OneToManyDetailControl {
+    public partial class LoanRemindersControl : OneToManyControllerEditor {
 
-        #region Designer Ctor
-        public LoanRemindersControl() {
-            InitializeComponent();
-        }
-        #endregion
-
-        public LoanRemindersControl(User user, Loan loan) : base(user, "LoanReminders:" + loan.LoanID) {
+        public LoanRemindersControl(User user, Loan loan) : base(user)  {
             InitializeComponent();
             this.Loan = loan;
         }
@@ -64,11 +58,8 @@ namespace BioLink.Client.Tools {
             return null;
         }
 
-        public override FrameworkElement FirstControl {
-            get { return txtDate; }
-        }
-
         protected Loan Loan { get; private set; }
+
     }
 
     public class InsertLoanReminderCommand : GenericDatabaseCommand<LoanReminder> {

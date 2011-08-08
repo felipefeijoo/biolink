@@ -1,4 +1,4 @@
-﻿<ext:OneToManyDetailControl x:Class="BioLink.Client.Extensibility.PestHostAssociateControl"
+﻿<UserControl x:Class="BioLink.Client.Extensibility.PestHostAssociateControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -42,4 +42,4 @@
         </ext:BindableRichTextBox>
         <Label Height="28" Margin="117,30,103,0" Name="lblAssociateType" VerticalAlignment="Top" Foreground="DarkGray" />
     </Grid>
-</ext:OneToManyDetailControl>
+</UserControl>
