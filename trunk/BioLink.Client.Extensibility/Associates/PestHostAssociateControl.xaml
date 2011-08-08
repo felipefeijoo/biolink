@@ -26,10 +26,10 @@
         <ext:LookupControl Margin="117,98,103,0" x:Name="txtRegion" VerticalAlignment="Top" ObjectID="{Binding PoliticalRegionID}" Text="{Binding PoliticalRegion}" />
         
         <Label Content="Source:" Height="28" HorizontalAlignment="Left" Margin="8,130,0,0" Name="label4" VerticalAlignment="Top" Width="103" />        
-        <ext:PickListControl Height="23" HorizontalAlignment="Left" Margin="119,130,0,0" x:Name="txtSource" VerticalAlignment="Top" Width="191" Text="{Binding Source}" />
+        <ext:PickListControl Height="23" HorizontalAlignment="Left" Margin="117,130,0,0" x:Name="txtSource" VerticalAlignment="Top" Width="191" Text="{Binding Source}" />
         
         <Label Content="Reference:" Height="28" HorizontalAlignment="Left" Margin="8,164,0,0" Name="label5" VerticalAlignment="Top" Width="103" />
-        <ext:LookupControl Margin="119,164,263,0" x:Name="txtReference" VerticalAlignment="Top" ObjectID="{Binding RefID}" Text="{Binding RefCode}" />
+        <ext:LookupControl Margin="117,162,265,0" x:Name="txtReference" VerticalAlignment="Top" ObjectID="{Binding RefID}" Text="{Binding RefCode}" />
         
         <Label Content="Page:" Height="28" HorizontalAlignment="Right" Margin="0,164,216,0" Name="label6" VerticalAlignment="Top" Width="41" />
         <ext:TextBox Height="23" HorizontalAlignment="Right" Margin="0,166,130,0" x:Name="txtPage" VerticalAlignment="Top" Width="80" Text="{Binding RefPage}" />
@@ -37,7 +37,7 @@
         <CheckBox Content="Uncertain" Height="16" Margin="0,169,39,0" Name="chkUncertain" VerticalAlignment="Top" HorizontalAlignment="Right" Width="85" IsChecked="{Binding Uncertain}" />
         
         <Label Content="Notes:" Height="28" HorizontalAlignment="Left" Margin="8,198,0,0" Name="label7" VerticalAlignment="Top" Width="103" />
-        <ext:BindableRichTextBox Margin="119,198,16,12" x:Name="txtNotes" RTF="{Binding Notes}">
+        <ext:BindableRichTextBox Margin="117,198,16,12" x:Name="txtNotes" RTF="{Binding Notes}">
             <FlowDocument PageWidth="{Binding ElementName=txtNotes, Path=ActualWidth}" />            
         </ext:BindableRichTextBox>
         <Label Height="28" Margin="117,30,103,0" Name="lblAssociateType" VerticalAlignment="Top" Foreground="DarkGray" />
