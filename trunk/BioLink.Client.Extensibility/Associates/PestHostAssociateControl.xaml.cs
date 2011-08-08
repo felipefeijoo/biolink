@@ -22,14 +22,13 @@ namespace BioLink.Client.Extensibility {
     /// <summary>
     /// Interaction logic for PestHostAssociateControl.xaml
     /// </summary>
-    public partial class PestHostAssociateControl : OneToManyDetailControl {
+    public partial class PestHostAssociateControl : UserControl, IOneToManyDetailEditor {
 
         private bool _manualSet;
 
-        public PestHostAssociateControl(User user, TraitCategoryType category, ViewModelBase owner) : base(user, "Associates:" + category.ToString() + ":" + (owner == null ? -1 : owner.ObjectID.Value)) {
+        public PestHostAssociateControl(User user, TraitCategoryType category, ViewModelBase owner) {
             InitializeComponent();
             this.Category = category;
-            this.Owner = owner;
 
             txtRegion.BindUser(user, LookupType.Region);
             txtSource.BindUser(user, "tblAssociate", "vchrSource");
@@ -149,50 +148,6 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        public override List<ViewModelBase> LoadModel() {
-            var service = new SupportService(User);
-            var list = service.GetAssociates(Category.ToString(), Owner.ObjectID.Value);
-            return list.ConvertAll((model) => {
-                return (ViewModelBase)new AssociateViewModel(model);
-            });
-
-        }
-
-        public override ViewModelBase AddNewItem(out DatabaseCommand addAction) {
-            var model = new Associate();
-            model.AssociateID = -1;
-            model.FromIntraCatID = Owner.ObjectID.Value;
-            model.FromCategory = Category.ToString();
-            model.Direction = "FromTo";
-            model.RelationFromTo = "Host";
-            model.RelationToFrom = "Pest";
-            var viewModel = new AssociateViewModel(model);
-            addAction = new InsertAssociateCommand(model, Owner);
-            return viewModel;
-        }
-
-        public override DatabaseCommand PrepareDeleteAction(ViewModelBase viewModel) {
-            var a = viewModel as AssociateViewModel;
-            if (a != null) {
-                return new DeleteAssociateCommand(a.Model);
-            }
-            return null;
-        }
-
-        public override DatabaseCommand PrepareUpdateAction(ViewModelBase viewModel) {
-            var a = viewModel as AssociateViewModel;
-            if (a != null) {
-                return new UpdateAssociateCommand(a.Model);
-            }
-            return null;
-        }
-
-        public override FrameworkElement FirstControl {
-            get {
-                return txtAssociate;
-            }
-        }
-
         #region Properties
 
         public TraitCategoryType Category { get; private set; }
@@ -241,5 +196,10 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
+        protected User User { get; private set; }
+
+        UIElement IOneToManyDetailEditor.FirstControl {
+            get { throw new NotImplementedException(); }
+        }
     }
 }

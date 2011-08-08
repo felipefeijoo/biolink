@@ -21,16 +21,9 @@ namespace BioLink.Client.Tools {
     /// <summary>
     /// Interaction logic for TaxonRefLinksControl.xaml
     /// </summary>
-    public partial class TaxonRefLinksControl : OneToManyDetailControl {
+    public partial class TaxonRefLinksControl : OneToManyControllerEditor {
 
-        #region Designer ctor
-        public TaxonRefLinksControl() {
-            InitializeComponent();
-        }
-        #endregion
-
-        public TaxonRefLinksControl(User user, int referenceID) 
-            : base(user, "TaxonRefLinks:" + referenceID) {
+        public TaxonRefLinksControl(User user, int referenceID) : base(user) {
             InitializeComponent();
             txtRefType.BindUser(User, PickListType.RefLinkType, "", TraitCategoryType.Taxon);
             txtTaxon.BindUser(User, LookupType.Taxon);
@@ -74,7 +67,7 @@ namespace BioLink.Client.Tools {
 
         public int ReferenceID { get; private set;  }
 
-        public override FrameworkElement FirstControl {
+        public override UIElement FirstControl {
             get { return this.txtRefType; }
         }
 

@@ -20,9 +20,9 @@ namespace BioLink.Client.Tools {
     /// <summary>
     /// Interaction logic for LoanCorrespondenceControl.xaml
     /// </summary>
-    public partial class LoanCorrespondenceControl : OneToManyDetailControl {
+    public partial class LoanCorrespondenceControl : OneToManyControllerEditor {
 
-        public LoanCorrespondenceControl(User user, Loan loan) : base(user, "LoanCorrespondence:" + loan.LoanID) {
+        public LoanCorrespondenceControl(User user, Loan loan) : base(user) {
             InitializeComponent();
             txtRefNo.BindUser(user, "LoanCorrespondence", "tblLoanCorrespondence", "vchrRefNo");
             txtSender.BindUser(user, LookupType.Contact);
@@ -62,12 +62,11 @@ namespace BioLink.Client.Tools {
             return null;            
         }
 
-        public override FrameworkElement FirstControl {
+        public override UIElement FirstControl {
             get { return txtRefNo; }
         }
 
         protected Loan Loan { get; private set; }
-
     }
 
     public class InsertLoanCorrespondenceCommand : GenericDatabaseCommand<LoanCorrespondence> {

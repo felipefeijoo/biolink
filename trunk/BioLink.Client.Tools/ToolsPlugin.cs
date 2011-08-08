@@ -485,13 +485,13 @@ namespace BioLink.Client.Tools {
                     LabelManagerControl control = null;
                     if (existing != null) {
                         otm.SetSelectedItem(existing);
-                        control = otm.CurrentDetailControl as LabelManagerControl;
+                        control = otm.DetailControl as LabelManagerControl;
                     } else {
                         var set = otm.AddNew() as LabelSetViewModel;
                         if (set != null) {
                             set.Name = labelSetName;
                             otm.SetSelectedItem(set);
-                            control = otm.CurrentDetailControl as LabelManagerControl;
+                            control = otm.DetailControl as LabelManagerControl;
                         }
                     }
 

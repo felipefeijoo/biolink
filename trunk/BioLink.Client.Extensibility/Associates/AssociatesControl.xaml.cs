@@ -20,17 +20,18 @@ namespace BioLink.Client.Extensibility {
     /// <summary>
     /// Interaction logic for AssociatesControl.xaml
     /// </summary>
-    public partial class AssociatesControl : OneToManyDetailControl {
+    public partial class AssociatesControl : UserControl, IOneToManyDetailEditor {
 
+        #region Designer CTOR
         public AssociatesControl() {
             InitializeComponent();
         }
+        #endregion
 
-        public AssociatesControl(User user, TraitCategoryType category, ViewModelBase owner) : base(user, "Associates:" + category.ToString() + ":" + (owner == null ? -1 : owner.ObjectID.Value)) {
+        public AssociatesControl(TraitCategoryType category, ViewModelBase owner) {
 
             InitializeComponent();
             this.Category = category;
-            this.Owner = owner;
 
             var itemsList =new List<String>(new String[] {"Description", "Taxon", "Material" });
             cmbType.ItemsSource = itemsList;
@@ -39,15 +40,15 @@ namespace BioLink.Client.Extensibility {
                 contentGrid.RowDefinitions[2].Height = new GridLength(0);
                 lblRelAToB.Content = "Specimen is a:";
             } else {
-                txtPoliticalRegion.BindUser(user, LookupType.Region);
+                txtPoliticalRegion.BindUser(User, LookupType.Region);
                 lblRelAToB.Content = "Taxon is a:";
             }
 
             cmbType.SelectionChanged += new SelectionChangedEventHandler(cmbType_SelectionChanged);            
             DataContextChanged += new DependencyPropertyChangedEventHandler(AssociatesControl_DataContextChanged);
 
-            txtSource.BindUser(user, "tblAssociate", "vchrSource");
-            txtReference.BindUser(user, LookupType.Reference);
+            txtSource.BindUser(User, "tblAssociate", "vchrSource");
+            txtReference.BindUser(User, LookupType.Reference);
 
         }
 
@@ -95,51 +96,16 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        public override List<ViewModelBase> LoadModel() {
-            var service = new SupportService(User);
-            var list = service.GetAssociates(Category.ToString(), Owner.ObjectID.Value);
-            return list.ConvertAll((model) => {
-                return (ViewModelBase) new AssociateViewModel(model);
-            });
 
-        }
+        protected User User { get { return PluginManager.Instance.User; } }
 
-        public override ViewModelBase AddNewItem(out DatabaseCommand addAction) {
-            var model = new Associate();
-            model.AssociateID = -1;
-            model.FromIntraCatID = Owner.ObjectID.Value;
-            model.FromCategory = Category.ToString();
-            model.Direction = "FromTo";
-
-            var viewModel = new AssociateViewModel(model);
-            addAction = new InsertAssociateCommand(model, Owner);
-            return viewModel;
-        }
-
-        public override DatabaseCommand PrepareDeleteAction(ViewModelBase viewModel) {
-            var a = viewModel as AssociateViewModel;
-            if (a != null) {
-                return new DeleteAssociateCommand(a.Model);
-            }
-            return null;
-        }
-
-        public override DatabaseCommand PrepareUpdateAction(ViewModelBase viewModel) {
-            var a = viewModel as AssociateViewModel;
-            if (a != null) {
-                return new UpdateAssociateCommand(a.Model);
-            }
-            return null;
-        }
-
-        public override FrameworkElement FirstControl {
-            get {
-                return cmbType;
-            }
-        }
 
         public TraitCategoryType Category { get; private set; }
 
+
+        public UIElement FirstControl {
+            get { return cmbType; }
+        }
     }
 
     public class AssociateTypeConverter : IValueConverter {

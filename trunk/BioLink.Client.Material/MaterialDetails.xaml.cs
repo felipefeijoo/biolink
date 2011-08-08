@@ -70,8 +70,8 @@ namespace BioLink.Client.Material {
             var partsControl = new MaterialPartsControl(User, _viewModel);
 
             tabMaterial.AddTabItem("Subparts", partsControl);
-            tabMaterial.AddDeferredLoadingTabItem("Associates", () => { return AssociateControlLoader.GetAssociatesControl(User, TraitCategoryType.Material, _viewModel, false); });
-            // tabMaterial.AddTabItem("Associates", new OneToManyControl(new AssociatesControl(User, TraitCategoryType.Material, _viewModel)));
+            // tabMaterial.AddDeferredLoadingTabItem("Associates", () => { return AssociateControlLoader.GetAssociatesControl(User, TraitCategoryType.Material, _viewModel, false); });
+            tabMaterial.AddTabItem("Associates", new OneToManyControl(new AssociatesOneToManyController(User, TraitCategoryType.Material, _viewModel)));
             tabMaterial.AddTabItem("Events", new CurationEventsControl(User, materialID, partsControl));
             tabMaterial.AddTabItem("Labels", new MaterialLabelsControl(_viewModel));
             tabMaterial.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Material, _viewModel));

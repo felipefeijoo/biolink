@@ -1,4 +1,4 @@
-﻿<ext:OneToManyDetailControl x:Class="BioLink.Client.Tools.LoanRemindersControl"
+﻿<ext:OneToManyControllerEditor x:Class="BioLink.Client.Tools.LoanRemindersControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -33,4 +33,4 @@
         
         <CheckBox Grid.Row="3" Grid.ColumnSpan="2" Content="This reminder is closed" VerticalAlignment="Center" IsChecked="{Binding Path=Closed, Mode=TwoWay}" />
     </Grid>
-</ext:OneToManyDetailControl>
+</ext:OneToManyControllerEditor>
