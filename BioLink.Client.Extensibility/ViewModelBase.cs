@@ -39,7 +39,7 @@ namespace BioLink.Client.Extensibility {
             bool changed = false;
             var ignoreRtfAttr = Attribute.GetCustomAttribute(destProp, typeof(IgnoreRTFFormattingChanges));
             if (ignoreRtfAttr != null) {
-                changed = CompareRTF(currVal as string, value as string);
+                changed = CompareIgnoringFormatting(currVal as string, value as string);
             } else {
                 changed = !EqualityComparer<T>.Default.Equals(currVal, value);
             }
@@ -57,7 +57,15 @@ namespace BioLink.Client.Extensibility {
             return changed;
         }
 
-        private bool CompareRTF(string current, string newval) {
+        /// <summary>
+        /// Compares two strings by stripping away any RTF formatting so that just textual content is compared.
+        /// This is necessary because the RTF text box will add a bunch of RTF fluff to field values even if no actual formatting is used,
+        /// and this will trigger a change when logically there isn't one.
+        /// </summary>
+        /// <param name="current"></param>
+        /// <param name="newval"></param>
+        /// <returns></returns>
+        private bool CompareIgnoringFormatting(string current, string newval) {
 
             if (current == null) {
                 current = "";
@@ -75,7 +83,7 @@ namespace BioLink.Client.Extensibility {
             string lhs = RTFUtils.StripMarkup(current);
             string rhs = RTFUtils.StripMarkup(newval);
 
-            return lhs != rhs;
+            return !lhs.Trim().Equals(rhs.Trim());
         }
 
         /// <summary>
@@ -95,7 +103,7 @@ namespace BioLink.Client.Extensibility {
                 
                 var ignoreRtfAttr = Attribute.GetCustomAttribute(destProp, typeof(IgnoreRTFFormattingChanges));
                 if (ignoreRtfAttr != null) {
-                    changed = CompareRTF(backingField as string, value as string);
+                    changed = CompareIgnoringFormatting(backingField as string, value as string);
                 }
 
                 if (changed) {

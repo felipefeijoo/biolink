@@ -43,29 +43,6 @@ namespace BioLink.Client.Extensibility {
                 lst.ItemsSource = viewModels;
             }
 
-            //if (Progress != null) {
-            //    Progress.ProgressMessage("Extracting associate details...");
-            //}
-
-            //var index = DataMatrix.IndexOf("AssociateID");
-            //var idList = new List<int>();
-            //foreach (MatrixRow row in DataMatrix) {
-            //    var associateId = (int) row[index];
-            //    if (!idList.Contains(associateId)) {
-            //        idList.Add(associateId);
-            //    }
-            //}
-
-            //if (idList.Count > 0) {
-            //    var service = new SupportService(PluginManager.Instance.User);
-            //    var associates = service.GetAssociatesById(idList);
-
-            //    var model = new List<AssociateReportViewModel>(associates.Select((m) => {
-            //        return new AssociateReportViewModel(m);
-            //    }));
-
-            //    lst.ItemsSource = model;
-            //}
         }
 
         protected IBioLinkReport Report { get; set; }
@@ -125,9 +102,7 @@ namespace BioLink.Client.Extensibility {
             if (plugin != null) {
                 PluginManager.Instance.PinObject(new PinnableObject(plugin.Name, type, intraCatId));
             }
-
         }
-
 
         private void Border_MouseRightButtonUp_1(object sender, MouseButtonEventArgs e) {
             lst.ContextMenu = null;
@@ -149,6 +124,78 @@ namespace BioLink.Client.Extensibility {
         
     }
 
+    public class AssociateReportTooltip : TooltipContentBase {
+
+        public AssociateReportTooltip(AssociateReportViewModel viewModel) : base(viewModel.ObjectID.Value, viewModel) { }
+
+        protected override void GetDetailText(BioLinkDataObject model, TextTableBuilder builder) {
+            var m = model as Associate;
+            if (m != null) {
+
+                builder.Add("Name", m.AssocName);
+                builder.Add("Description", m.AssocDescription);
+
+                builder.Add("Direction", m.Direction);
+                builder.Add("From category", m.FromCategory);
+                builder.Add("To category", m.ToCategory);
+
+                builder.Add("Relation From->To", m.RelationFromTo);
+                builder.Add("Relation To->From", m.RelationToFrom);
+
+                builder.Add("Region", m.PoliticalRegion);
+                builder.Add("Region ID", m.PoliticalRegionID);
+
+                builder.Add("Ref Code", m.RefCode);
+                builder.Add("Ref Page", m.RefPage);
+
+                builder.Add("Source", m.Source);                
+                builder.Add("Is Uncertain", m.Uncertain.ToString());
+
+                var vm = ViewModel as AssociateReportViewModel;
+                if (vm != null) {
+
+                    if (vm.FromViewModel != null) {
+                        builder.Add("\"From\" type", GetLookupTypeFromAssociateCategoryId(m.FromCatID).ToString());
+                        builder.Add("\"From\" name", vm.FromViewModel.DisplayLabel);
+                        builder.Add("\"From\" object id", vm.FromViewModel.ObjectID);
+                    }
+
+                    if (vm.ToViewModel != null) {
+                        if (m.ToCatID.HasValue) {
+                            builder.Add("\"To\" type", GetLookupTypeFromAssociateCategoryId(m.ToCatID.Value).ToString());
+                        } else {
+                            builder.Add("\"To\" type", "Description");
+                        }
+                        builder.Add("\"To\" name", vm.ToViewModel.DisplayLabel);
+                        builder.Add("\"To\" object id", vm.ToViewModel.ObjectID);
+                    }
+                    
+                }
+                
+            }
+        }
+
+        internal LookupType GetLookupTypeFromAssociateCategoryId(int catId) {
+            switch (catId) {
+                case 1: // Material
+                    return LookupType.Material;
+                case 2: // Taxon
+                    return LookupType.Taxon;
+                default:
+                    return LookupType.Unknown;
+            }
+
+        }
+
+        protected override BioLinkDataObject GetModel() {
+            var vm = ViewModel as AssociateReportViewModel;
+            if (vm != null) {
+                return vm.Model;
+            }
+            return null;
+        }
+    }
+
     public class AssociateReportViewModel : GenericViewModelBase<Associate>{
 
         public AssociateReportViewModel(Associate model) : base(model, ()=>model.AssociateID) { }
@@ -156,6 +203,16 @@ namespace BioLink.Client.Extensibility {
         public ViewModelBase FromViewModel { get; set; }
 
         public ViewModelBase ToViewModel { get; set; }
+
+        public override string DisplayLabel {
+            get { return "Association " + Model.AssocName; }
+        }
+
+        public override FrameworkElement TooltipContent {
+            get {
+                return new AssociateReportTooltip(this);
+            }
+        }
 
         public String RelationFromTo {
             get { return Model.RelationFromTo; }
