@@ -92,6 +92,7 @@ namespace BioLink.Client.Extensibility {
                 var associate = this.DataContext as AssociateViewModel;
                 _manualSet = true;                
                 txtAssociate.Text = result.Description;
+                associate.AssocName = result.Description;
                 lblAssociateType.Content = result.LookupType.ToString();
                 associate.RelativeIntraCatID = result.ObjectID;
                 associate.RelativeCatID = GetCategoryIDFromLookupType(result.LookupType);
@@ -118,6 +119,7 @@ namespace BioLink.Client.Extensibility {
             if (pinnable != null && selected != null) {
                 var viewModel = PluginManager.Instance.GetViewModel(pinnable);
                 txtAssociate.Text = viewModel.DisplayLabel;
+                selected.AssocName = viewModel.DisplayLabel;
                 selected.RelativeCatID = GetCategoryIDFromLookupType(pinnable.LookupType);
                 selected.RelativeIntraCatID = pinnable.ObjectID;
                 SetRelationships();
@@ -162,8 +164,8 @@ namespace BioLink.Client.Extensibility {
             model.FromIntraCatID = Owner.ObjectID.Value;
             model.FromCategory = Category.ToString();
             model.Direction = "FromTo";
-            model.RelationFromTo = "Pest";
-            model.RelationToFrom = "Host";
+            model.RelationFromTo = "Host";
+            model.RelationToFrom = "Pest";
             var viewModel = new AssociateViewModel(model);
             addAction = new InsertAssociateCommand(model, Owner);
             return viewModel;
