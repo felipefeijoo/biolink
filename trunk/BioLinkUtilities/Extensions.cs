@@ -226,6 +226,32 @@ namespace BioLink.Client.Utilities {
             }
         }
 
+        public static TabItem AddDeferredLoadingTabItem(this TabControl tab, string title, Func<UIElement> controlFactory) {
+            TabItem tabItem = new TabItem();
+            tabItem.Header = title;
+            tabItem.Content = null;
+            tab.Items.Add(tabItem);
+
+            tabItem.RequestBringIntoView += new RequestBringIntoViewEventHandler((s, e) => {
+                
+                if (tabItem.Content == null) {
+                    var control = controlFactory();
+                    tabItem.Content = control;
+                    if (control is ILazyPopulateControl) {
+                        var lazyLoadee = control as ILazyPopulateControl;
+                        if (lazyLoadee != null && !lazyLoadee.IsPopulated) {
+                            lazyLoadee.Populate();
+                        }
+                    }
+                }
+
+            });
+
+
+            return tabItem;
+
+        }
+
         /// <summary>
         /// Adds a new tab item to specified tab control. Will bind a handler to RequestBringIntoView should
         /// the content be ILazyPopulateControl
