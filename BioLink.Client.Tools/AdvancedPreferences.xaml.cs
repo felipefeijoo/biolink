@@ -57,6 +57,8 @@ namespace BioLink.Client.Tools {
             txtMaxSearchResults.Text = Config.GetUser(User, "SearchResults.MaxSearchResults", 2000).ToString();
 
             chkCheckDuplicateAccessionNumbers.IsChecked = Config.GetGlobal("Material.CheckUniqueAccessionNumbers", true);
+
+            chkUsePostHestControl.IsChecked = Config.GetUser(PluginManager.Instance.User, "Associates.UsePestHostControl", false);
         }
 
         public User User {
@@ -80,6 +82,8 @@ namespace BioLink.Client.Tools {
             }
 
             Config.SetGlobal("Material.CheckUniqueAccessionNumbers", chkCheckDuplicateAccessionNumbers.IsChecked.GetValueOrDefault(true));
+
+            Config.SetUser(PluginManager.Instance.User, "Associates.UsePestHostControl", chkUsePostHestControl.IsChecked.ValueOrFalse());
         }
     }
 }

@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             Height="310" Width="607" Title="Preferences">
+             Height="379" Width="607" Title="Preferences">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -14,7 +14,8 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="36" />
-                <RowDefinition Height="36" />                
+                <RowDefinition Height="36" />
+                <RowDefinition Height="36" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             
@@ -22,9 +23,14 @@
             <TextBox Height="23" HorizontalAlignment="Left" Margin="230,12,0,0" Name="txtMaxSearchResults" VerticalAlignment="Top" Width="81" />
             
             <CheckBox Grid.Row="1" Content="Check for duplicate accession numbers when saving new material?" Height="16" HorizontalAlignment="Left" Name="chkCheckDuplicateAccessionNumbers" VerticalAlignment="Top" Width="435" Margin="12,10,0,0" />
-            
-            <Grid Grid.Row="2" x:Name="gridOptionalQuestions" Margin="6">
-                
+
+            <CheckBox Grid.Row="2" Content="Use the simplified Pest/Host associates editor, if possible?" Height="16" HorizontalAlignment="Left" Name="chkUsePostHestControl" VerticalAlignment="Top" Width="435" Margin="12,10,0,0" />
+
+            <Grid Grid.Row="3" x:Name="gridOptionalQuestions" Margin="6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="322*" />
+                    <ColumnDefinition Width="251*" />
+                </Grid.ColumnDefinitions>
             </Grid>
 
         </Grid>

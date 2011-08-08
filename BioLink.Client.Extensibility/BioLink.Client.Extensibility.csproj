@@ -68,6 +68,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Associates\AssociateControlLoader.cs" />
     <Compile Include="Associates\AssociateDatabaseActions.cs" />
     <Compile Include="Associates\AssociateReportsViewer.xaml.cs">
       <DependentUpon>AssociateReportsViewer.xaml</DependentUpon>
@@ -76,6 +77,9 @@
       <DependentUpon>AssociatesControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Associates\AssociateViewModel.cs" />
+    <Compile Include="Associates\PestHostAssociateControl.xaml.cs">
+      <DependentUpon>PestHostAssociateControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="AutoNumber\AutoNumberBox.cs" />
     <Compile Include="AutoNumber\AutoNumberCategoryManager.xaml.cs">
       <DependentUpon>AutoNumberCategoryManager.xaml</DependentUpon>
@@ -353,6 +357,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Associates\AssociatesControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Associates\PestHostAssociateControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

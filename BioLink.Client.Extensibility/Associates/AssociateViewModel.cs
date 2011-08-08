@@ -19,7 +19,11 @@ namespace BioLink.Client.Extensibility {
 
         public override string DisplayLabel {
             get {
-                return String.Format("{0} ({1})", AssocName, this.RelationFromTo);
+                var name = AssocName;
+                if (!RelativeIntraCatID.HasValue) {
+                    name = AssocDescription;
+                }
+                return String.Format("{0} ({1})", name, this.RelativeRelationToFrom);
             }
         }
 
