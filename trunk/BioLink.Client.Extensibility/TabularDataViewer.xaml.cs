@@ -113,6 +113,13 @@ namespace BioLink.Client.Extensibility {
                 if (builder.ContextMenu.HasItems) {
                     builder.Separator();
                 }
+
+                if (ContextMenuHandler != null) {
+                    ContextMenuHandler(builder, row);
+                    if (builder.ContextMenu.HasItems) {
+                        builder.Separator();
+                    }
+                }
                 
                 builder.New("Export data...").Handler(() => { Export(); }).End();
 
@@ -324,6 +331,8 @@ namespace BioLink.Client.Extensibility {
                 ClearFilter();
             }
         }
+
+        public Action<ContextMenuBuilder, MatrixRow> ContextMenuHandler { get; set; }
     }
 
     public class TabularDataViewerSource : IReportViewerSource {
@@ -334,8 +343,11 @@ namespace BioLink.Client.Extensibility {
 
         public FrameworkElement ConstructView(IBioLinkReport report, DataMatrix reportData, IProgressObserver progress) {
             TabularDataViewer viewer = new TabularDataViewer(report, reportData, progress);
+            viewer.ContextMenuHandler = ContextMenuHandler;
             return viewer;
         }
+
+        public Action<ContextMenuBuilder, MatrixRow> ContextMenuHandler { get; set; }
 
     }
 

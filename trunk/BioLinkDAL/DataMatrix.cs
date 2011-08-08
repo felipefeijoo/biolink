@@ -108,6 +108,11 @@ namespace BioLink.Data {
 
         public Object this [int index] {
             get {
+
+                if (index < 0) {
+                    throw new IndexOutOfRangeException();
+                }
+
                 if (index >= _data.Length) {
                     // This might be a virtual column...
                     if (index < _matrix.Columns.Count) {
