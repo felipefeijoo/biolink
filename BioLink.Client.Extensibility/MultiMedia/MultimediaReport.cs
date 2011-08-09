@@ -13,6 +13,50 @@ namespace BioLink.Client.Extensibility {
         private bool _recurse;
         private string _extensionFilter;
         private string _typeFilter;
+        private bool _includeMaterial;
+
+        private TaxaService _taxaService;
+        private SupportService _supportService;
+        private XMLIOService _xmlService;
+        private MaterialService _materialService;
+        private Dictionary<string, bool> _idCache = new Dictionary<string, bool>();
+
+        protected TaxaService TaxaService {
+            get {
+                if (_taxaService == null) {
+                    _taxaService = new TaxaService(User);
+                }
+                return _taxaService;
+            }
+        }
+
+        protected SupportService SupportService {
+            get {
+                if (_supportService== null) {
+                    _supportService = new SupportService(User);
+                }
+                return _supportService;
+            }
+        }
+
+        protected XMLIOService XMLIOService {
+            get {
+                if (_xmlService == null) {
+                    _xmlService = new XMLIOService(User);
+                }
+                return _xmlService;
+            }
+        }
+
+        protected MaterialService MaterialService {
+            get {
+                if (_materialService == null) {
+                    _materialService = new MaterialService(User);
+                }
+                return _materialService;
+            }
+        }
+
 
         public MultimediaReport(User user, int objectId, TraitCategoryType lookupType) : base(user) {
             ObjectID = objectId;
@@ -45,12 +89,13 @@ namespace BioLink.Client.Extensibility {
                 _recurse = options.Recurse;
                 _extensionFilter = options.ExtensionFilter;
                 _typeFilter = options.TypeFilter;
+                _includeMaterial = options.IncludeMaterial;
                 return true;
             }
             return false;
         }
 
-        private void AddTaxonRow(DataMatrix results, Taxon taxa, MultimediaLink link) {
+        private void AddTaxonRow(DataMatrix results, Taxon taxa, MultimediaLink link, string multimediaSource = "Taxon", int? materialId= null) {
 
             // Filter the rows...
             bool addRow = true;
@@ -73,6 +118,8 @@ namespace BioLink.Client.Extensibility {
                 row[6] = link.Extension;
                 row[7] = link.MultimediaType;
                 row[8] = link.SizeInBytes;
+                row[9] = multimediaSource;
+                row[10] = materialId;
             }
         }
 
@@ -88,19 +135,23 @@ namespace BioLink.Client.Extensibility {
             results.Columns.Add(new MatrixColumn { Name = "Extension" });
             results.Columns.Add(new MatrixColumn { Name = "Multimedia Type" });
             results.Columns.Add(new MatrixColumn { Name = "Size" });
+            results.Columns.Add(new MatrixColumn { Name = "Attached To" });
+            results.Columns.Add(new MatrixColumn { Name = "MaterialID", IsHidden= true });
 
             if (progress != null) {
                 progress.ProgressMessage("Extracting multimedia details for item...");
             }
-            
-            var service = new SupportService(User);
+                        
             // First add the multimedia for this item
-            var links = service.GetMultimediaItems(TraitCategoryType.Taxon.ToString(), taxonId);
-            var taxaService = new TaxaService(User);
-            var taxon = taxaService.GetTaxon(taxonId);
+            var links = SupportService.GetMultimediaItems(TraitCategoryType.Taxon.ToString(), taxonId);
+            var taxon = TaxaService.GetTaxon(taxonId);
             
             foreach (MultimediaLink link in links) {
                 AddTaxonRow(results, taxon, link);            
+            }
+
+            if (_includeMaterial) {
+                AddMaterialRowsForTaxon(results, taxon);
             }
 
             if (_recurse) {
@@ -109,28 +160,33 @@ namespace BioLink.Client.Extensibility {
                     progress.ProgressMessage("Retrieving child items...");
                 }
 
-                var children = taxaService.GetExpandFullTree(taxonId);
+                var children = TaxaService.GetExpandFullTree(taxonId);
+
+                var elementCount = 0;
+                int total = children.Count;
 
                 if (progress != null) {
                     progress.ProgressStart("Extracting multimedia for children...");
                 }
-
-                var childCount = 0;
+                
                 foreach (Taxon child in children) {
 
                     if (progress != null) {
-                        double percent = (((double)childCount) / ((double)children.Count)) * 100.0;
+                        double percent = (((double)elementCount) / ((double)total)) * 100.0;
                         progress.ProgressMessage(string.Format("Processing {0}", child.TaxaFullName), percent);
                     }
-                    childCount++;
+                    elementCount++;
 
-                    links = service.GetMultimediaItems(TraitCategoryType.Taxon.ToString(), child.TaxaID.Value);
+                    links = SupportService.GetMultimediaItems(TraitCategoryType.Taxon.ToString(), child.TaxaID.Value);
                     foreach (MultimediaLink link in links) {
                         AddTaxonRow(results, child, link);
                     }
 
-                }
+                    if (_includeMaterial) {
+                        AddMaterialRowsForTaxon(results, child);
+                    }
 
+                }
             }
 
             if (progress != null) {
@@ -139,6 +195,16 @@ namespace BioLink.Client.Extensibility {
 
 
             return results;
+        }
+
+        private void AddMaterialRowsForTaxon(DataMatrix results, Taxon taxon) {
+            var ids = XMLIOService.GetMaterialForTaxon(taxon.TaxaID.Value);
+            foreach (XMLIOMaterialID id in ids) {
+                var links = SupportService.GetMultimediaItems(TraitCategoryType.Material.ToString(), id.MaterialID);
+                foreach (MultimediaLink link in links) {
+                    AddTaxonRow(results, taxon, link, "Material", id.MaterialID);
+                }
+            }
         }
 
         protected int ObjectID { get; private set; }
