@@ -87,6 +87,12 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
+        public bool IncludeMaterial {
+            get {
+                return chkIncludeSites.IsChecked == true;
+            }
+        }
+
 
     }
 }
