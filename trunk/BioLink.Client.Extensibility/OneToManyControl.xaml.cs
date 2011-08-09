@@ -65,11 +65,12 @@ namespace BioLink.Client.Extensibility {
 
         void lst_Drop(object sender, DragEventArgs e) {
             var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;            
-            if (pinnable != null) {
+            if (pinnable != null && _controller.AcceptDroppedPinnable(pinnable)) {
                 var viewModel = AddNew();
                 if (viewModel != null) {
                     _controller.PopulateFromPinnable(viewModel, pinnable);
                 }
+                e.Handled = true;
             }          
         }
 
@@ -78,9 +79,10 @@ namespace BioLink.Client.Extensibility {
             e.Effects = DragDropEffects.None;
             if (pinnable != null) {
                 if (_controller.AcceptDroppedPinnable(pinnable)) {
-                    e.Effects = DragDropEffects.Link;
+                    e.Effects = DragDropEffects.Link;                    
                 }
-            }                            
+            }
+            e.Handled = true;
         }
 
         void OneToManyControl_ChangesCommitted(object sender) {

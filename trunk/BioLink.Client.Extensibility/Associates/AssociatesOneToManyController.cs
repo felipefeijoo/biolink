@@ -68,6 +68,7 @@ namespace BioLink.Client.Extensibility {
                 if (string.IsNullOrWhiteSpace(associate.RelationFromTo) || string.IsNullOrWhiteSpace(associate.RelationToFrom)) {
                     return false;
                 }
+
                 if (!associate.RelationFromTo.Equals("pest", StringComparison.CurrentCultureIgnoreCase) && !associate.RelationFromTo.Equals("host", StringComparison.CurrentCultureIgnoreCase)) {
                     return false;
                 }
@@ -86,6 +87,7 @@ namespace BioLink.Client.Extensibility {
 
             var associate = selectedItem as AssociateViewModel;
             if (UsePestHostControl(associate)) {
+                // If there are no relationships defined, and we are using the pest/host control, we can prefill the relationships...
                 if (string.IsNullOrWhiteSpace(associate.RelationFromTo) && string.IsNullOrWhiteSpace(associate.RelationToFrom)) {
                     associate.RelationFromTo = "Host";
                     associate.RelationToFrom = "Pest";
@@ -99,10 +101,6 @@ namespace BioLink.Client.Extensibility {
 
         public TraitCategoryType Category { get; private set; }
 
-        public string ContentID {
-            get { return new Guid().ToString(); }
-        }
-
         public User User { get; private set; }
 
         public ViewModelBase Owner { get; set; }
@@ -110,12 +108,46 @@ namespace BioLink.Client.Extensibility {
         public OneToManyControl Host { get; set; }
 
         public bool AcceptDroppedPinnable(PinnableObject pinnable) {
+            if (pinnable.LookupType == LookupType.Material || pinnable.LookupType == LookupType.Taxon) {
+                return true;
+            }
             return false;
         }
 
         public void PopulateFromPinnable(ViewModelBase viewModel, PinnableObject pinnable) {
-            throw new NotImplementedException();
+            var associate = viewModel as AssociateViewModel;
+            if (associate != null) {            
+                var pinnableViewModel = PluginManager.Instance.GetViewModel(pinnable);
+                if (pinnableViewModel != null) {
+                    associate.AssocName = pinnableViewModel.DisplayLabel;
+                    associate.RelativeCatID = GetCategoryIDFromLookupType(pinnable.LookupType);
+                    associate.RelativeIntraCatID = pinnable.ObjectID;
+                }
+            }            
         }
+
+        public static int GetCategoryIDFromLookupType(LookupType l) {
+            switch (l) {
+                case LookupType.Material:
+                    return 1;
+                case LookupType.Taxon:
+                    return 2;
+                default:
+                    return -1;
+            }
+        }
+
+        public static LookupType GetLookupTypeFromCategoryID(int catId) {
+            switch (catId) {
+                case 1: // Material
+                    return LookupType.Material;
+                case 2: // Taxon
+                    return LookupType.Taxon;
+                default:
+                    return LookupType.Unknown;
+            }
+        }
+
     }
 
 }

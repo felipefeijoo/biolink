@@ -8,16 +8,16 @@
              d:DesignHeight="363" d:DesignWidth="573">
     <Grid AllowDrop="False">
         <Label Content="The associate is" Height="28" HorizontalAlignment="Left" Margin="8,10,0,0" Name="label1" VerticalAlignment="Top" Width="103" />
-        <ext:TextBox Height="23" Margin="117,12,103,0" x:Name="txtAssociate" VerticalAlignment="Top" />
+        <ext:TextBox Height="23" Margin="117,12,103,0" x:Name="txtAssociate" VerticalAlignment="Top" Text="{Binding Path=NameOrDescription, Mode=TwoWay}" />
 
-        <Button Height="23" HorizontalAlignment="Right" Margin="0,12,16,0" Name="btnEditSelected" VerticalAlignment="Top" Width="23" Click="btnEditSelected_Click">
+        <Button Height="23" HorizontalAlignment="Right" Margin="0,12,16,0" Name="btnEditSelected" VerticalAlignment="Top" Width="23" Click="btnEditSelected_Click" Focusable="False">
             <Button.Content>
                 <Image Source="../images/Find.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None" />
             </Button.Content>
         </Button>
         
-        <Button Content="M" Height="23" HorizontalAlignment="Right" Margin="0,12,45,0" Name="btnSelectMaterial" VerticalAlignment="Top" Width="23" ToolTip="Select a Material record" Click="btnSelectMaterial_Click" />
-        <Button Content="T" Height="23" HorizontalAlignment="Right" Margin="0,12,74,0" Name="btnSelectTaxon" VerticalAlignment="Top" Width="23" ToolTip="Select a Taxon record" Click="btnSelectTaxon_Click" />
+        <Button Content="M" Height="23" HorizontalAlignment="Right" Margin="0,12,45,0" Name="btnSelectMaterial" VerticalAlignment="Top" Width="23" ToolTip="Select a Material record" Click="btnSelectMaterial_Click" Focusable="False" />
+        <Button Content="T" Height="23" HorizontalAlignment="Right" Margin="0,12,74,0" Name="btnSelectTaxon" VerticalAlignment="Top" Width="23" ToolTip="Select a Taxon record" Click="btnSelectTaxon_Click" Focusable="False" />
         <Label Content="and is a" Height="28" HorizontalAlignment="Left" Margin="50,59,0,0" Name="label2" VerticalAlignment="Top" Width="61" />
         <RadioButton Content="Pest" Height="16" HorizontalAlignment="Left" Margin="117,64,0,0" Name="optPest" VerticalAlignment="Top" Checked="optPest_Checked" />
         <RadioButton Content="Host" Height="16" HorizontalAlignment="Left" Margin="182,64,0,0" Name="optHost" VerticalAlignment="Top" Checked="optHost_Checked" />

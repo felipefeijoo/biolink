@@ -140,6 +140,25 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
+        public string NameOrDescription {
+            get {
+                if (RelativeCatID.HasValue) {
+                    return AssocName;
+                } else {
+                    return AssocDescription;
+                }
+            }
+
+            set {
+                if (RelativeCatID.HasValue) {
+                    SetProperty(() => Model.AssocName, value);
+                } else {
+                    SetProperty(() => Model.AssocDescription, value);
+                }
+                RaisePropertyChanged("NameOrDescription");
+            }
+        }
+
         public int PoliticalRegionID {
             get { return Model.PoliticalRegionID; }
             set { SetProperty(() => Model.PoliticalRegionID, value); }
