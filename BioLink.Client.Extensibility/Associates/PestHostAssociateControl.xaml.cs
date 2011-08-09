@@ -58,7 +58,8 @@ namespace BioLink.Client.Extensibility {
         void txtAssociate_PreviewDrop(object sender, DragEventArgs e) {
             var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;
             if (pinnable != null) {
-                SetFromPinnable(pinnable);
+                var associate = DataContext as AssociateViewModel;
+                SetFromPinnable(associate, pinnable);
                 e.Handled = true;
             }
         }
@@ -68,11 +69,11 @@ namespace BioLink.Client.Extensibility {
             if (selected != null) {
 
                 if (selected.RelativeCatID == 1 || selected.RelativeCatID == 2) {
-                    txtAssociate.Text = selected.AssocName;
-                    var lookupType = GetLookupTypeFromCategoryID(selected.RelativeCatID.Value);
+                    // txtAssociate.Text = selected.AssocName;
+                    var lookupType = AssociatesOneToManyController.GetLookupTypeFromCategoryID(selected.RelativeCatID.Value);
                     lblAssociateType.Content = lookupType.ToString();
                 } else {
-                    txtAssociate.Text = selected.AssocDescription;
+                    // txtAssociate.Text = selected.AssocDescription;
                     lblAssociateType.Content = "Description";
                 }
 
@@ -90,13 +91,14 @@ namespace BioLink.Client.Extensibility {
             PluginManager.Instance.StartSelect<T>((result) => {
                 var associate = this.DataContext as AssociateViewModel;
                 _manualSet = true;                
-                txtAssociate.Text = result.Description;
-                associate.AssocName = result.Description;
+                // txtAssociate.Text = result.Description;
+                
                 lblAssociateType.Content = result.LookupType.ToString();
                 associate.RelativeIntraCatID = result.ObjectID;
-                associate.RelativeCatID = GetCategoryIDFromLookupType(result.LookupType);
+                associate.RelativeCatID = AssociatesOneToManyController.GetCategoryIDFromLookupType(result.LookupType);
                 associate.RelativeRelationFromTo = optPest.IsChecked.ValueOrFalse() ? "Pest" : "Host";
                 associate.RelativeRelationToFrom = optPest.IsChecked.ValueOrFalse() ? "Host" : "Pest";
+                associate.NameOrDescription = result.Description;
 
                 _manualSet = false;
             }, LookupOptions.None);
@@ -113,38 +115,14 @@ namespace BioLink.Client.Extensibility {
             }                                        
         }
 
-        private void SetFromPinnable(PinnableObject pinnable) {
-            var selected = this.DataContext as AssociateViewModel;
-            if (pinnable != null && selected != null) {
-                var viewModel = PluginManager.Instance.GetViewModel(pinnable);
-                txtAssociate.Text = viewModel.DisplayLabel;
-                selected.AssocName = viewModel.DisplayLabel;
-                selected.RelativeCatID = GetCategoryIDFromLookupType(pinnable.LookupType);
-                selected.RelativeIntraCatID = pinnable.ObjectID;
-                SetRelationships();
+        private void SetFromPinnable(AssociateViewModel associate, PinnableObject pinnable) {            
+            if (pinnable != null && associate != null) {
+                var viewModel = PluginManager.Instance.GetViewModel(pinnable);                
+                associate.RelativeCatID = AssociatesOneToManyController.GetCategoryIDFromLookupType(pinnable.LookupType);
+                associate.RelativeIntraCatID = pinnable.ObjectID;
+                associate.NameOrDescription = viewModel.DisplayLabel;                
+                SetRelationships(associate);
                 lblAssociateType.Content = pinnable.LookupType.ToString();
-            }
-        }
-
-        private int GetCategoryIDFromLookupType(LookupType l) {
-            switch (l) {
-                case LookupType.Material:
-                    return 1;
-                case LookupType.Taxon:
-                    return 2;
-                default:
-                    return -1;
-            }
-        }
-
-        public LookupType GetLookupTypeFromCategoryID(int catId) {
-            switch (catId) {                
-                case 1: // Material
-                    return LookupType.Material;
-                case 2: // Taxon
-                    return LookupType.Taxon;
-                default:
-                    return LookupType.Unknown;
             }
         }
 
@@ -167,7 +145,7 @@ namespace BioLink.Client.Extensibility {
             if (selected != null) {
 
                 if (selected.RelativeCatID.HasValue) {
-                    var lookupType = GetLookupTypeFromCategoryID(selected.RelativeCatID.Value);
+                    var lookupType = AssociatesOneToManyController.GetLookupTypeFromCategoryID(selected.RelativeCatID.Value);
                     if (lookupType != LookupType.Unknown && selected.RelativeIntraCatID.HasValue) {
                         PluginManager.Instance.EditLookupObject(lookupType, selected.RelativeIntraCatID.Value);
                     }
@@ -178,18 +156,19 @@ namespace BioLink.Client.Extensibility {
 
         private void optPest_Checked(object sender, RoutedEventArgs e) {
             if (!_manualSet) {
-                SetRelationships();
+                var associate = DataContext as AssociateViewModel;
+                SetRelationships(associate);
             }
         }
 
         private void optHost_Checked(object sender, RoutedEventArgs e) {
             if (!_manualSet) {
-                SetRelationships();
+                var associate = DataContext as AssociateViewModel;
+                SetRelationships(associate);
             }
         }
 
-        private void SetRelationships() {
-            var associate = DataContext as AssociateViewModel;
+        private void SetRelationships(AssociateViewModel associate) {            
             if (associate != null) {
                 associate.RelativeRelationFromTo = optPest.IsChecked.ValueOrFalse() ? "Host" : "Pest";
                 associate.RelativeRelationToFrom = optPest.IsChecked.ValueOrFalse() ? "Pest" : "Host";
@@ -199,7 +178,7 @@ namespace BioLink.Client.Extensibility {
         protected User User { get; private set; }
 
         UIElement IOneToManyDetailEditor.FirstControl {
-            get { throw new NotImplementedException(); }
+            get { return txtAssociate; }
         }
     }
 }

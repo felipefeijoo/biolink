@@ -60,9 +60,7 @@ namespace BioLink.Client.Taxa {
                 tabControl.AddTabItem("Distribution", new DistributionControl(Plugin, user, taxon));
             }
 
-            tabControl.AddTabItem("Multimedia", new MultimediaControl(User, TraitCategoryType.Taxon, taxon));
-
-            // tabControl.AddDeferredLoadingTabItem("Associates",() => AssociateControlLoader.GetAssociatesControl(User, TraitCategoryType.Taxon, taxon, false));
+            tabControl.AddTabItem("Multimedia", new MultimediaControl(User, TraitCategoryType.Taxon, taxon));            
             tabControl.AddTabItem("Associates", new OneToManyControl(new AssociatesOneToManyController(User, TraitCategoryType.Taxon, taxon)));
             tabControl.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Taxon, taxon));            
             tabControl.AddTabItem("Notes", new NotesControl(User, TraitCategoryType.Taxon, taxon));
