@@ -172,6 +172,14 @@ Some gazetteer functions are found on the menu bar under Tools -> eGaz.
 
 The Choose file button allows you to select a gazetteer file. The format of Gazetteer files has changed for version 3, and older (version 2.5 and earlier) gazetteer files can be converted via the 'Legacy eGaz file converter' menu option (Tools->eGaz).
 
+= Filters =
+Report result tables, the query tool field lists and import field selectors are just a few of the lists withing !BioLink 3.0 that have a filter box associated with them. 
+
+[http://biolink.googlecode.com/svn/wiki/WhatsNew.attach/QueryToolFilter.png]
+
+The filter box allows you to quickly filter out items that do not match text entered. This allows you to quick find a field (in the query tool, for example) if you already know the name of the item you wish to select.
+
+
 = Google Earth integration =
 
 Google Earth integration has also been added to this version of BioLink. Google Earth must be already installed on your computer to make this feature work. You can use this feature to populate the Latitude, Longitude and Elevation of a locality in both the Site Detail and Rapid Data Entry (RDE) screens. Clicking on the earth symbol initiates Google Earth, and a Geo-coding dialog will prompt you to find your Locality. When the desired position has been located, click on the button “Use current location”. This will seed the Latitude and Longitude values in !BioLink, and will prompt to add the Elevation (if applicable). The Source field on the Rapid Data Entry screen will automatically be populated with "Google Earth". 
@@ -184,11 +192,9 @@ Google Earth integration has also been added to this version of BioLink. Google 
 
 Loans can now be searched by the Taxon name supplied in the material attached to the loan. 
 
+[http://biolink.googlecode.com/svn/wiki/WhatsNew.attach/LoansByTaxonName.png]
+
 *Note:* The Find in all (Loan fields) will *not* search the taxon name field.
-
-
-
-
 
 = To do... =
 
@@ -197,7 +203,5 @@ Loans can now be searched by the Taxon name supplied in the material attached to
 === The Map tool ===
 
 === Configuration store ===
-
-=== Filters ===
 
 === Find loans by Taxon ===
