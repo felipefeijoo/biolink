@@ -1,4 +1,4 @@
-﻿<ext:DatabaseCommandControl x:Class="BioLink.Client.Taxa.TaxonExplorer"             
+﻿<ext:ChangeContainerControl x:Class="BioLink.Client.Taxa.TaxonExplorer"             
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -177,4 +177,4 @@
             </TabItem>
         </TabControl>
     </Grid>
-</ext:DatabaseCommandControl>
+</ext:ChangeContainerControl>

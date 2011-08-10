@@ -30,11 +30,13 @@ namespace BioLink.Client.Material {
 
         #endregion
 
-        public TrapDetails(User user, int trapID) : base(user, "Trap:" + trapID) {
+        public TrapDetails(User user, int trapID, bool readOnly) : base(user, "Trap:" + trapID) {
             InitializeComponent();
             var service = new MaterialService(user);
             var model = service.GetTrap(trapID);
             var viewModel = new TrapViewModel(model);
+
+            IsReadOnly = readOnly;
 
             this.DataContext = viewModel;
 
@@ -42,15 +44,30 @@ namespace BioLink.Client.Material {
 
             txtTrapType.BindUser(User, PickListType.Phrase, "Trap Type", TraitCategoryType.Trap);
 
-            tabTrap.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Trap, viewModel));
-            tabTrap.AddTabItem("Notes", new NotesControl(User, TraitCategoryType.Trap, viewModel));
+            tabTrap.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Trap, viewModel) { IsReadOnly = readOnly });
+            tabTrap.AddTabItem("Notes", new NotesControl(User, TraitCategoryType.Trap, viewModel) { IsReadOnly = readOnly });
             tabTrap.AddTabItem("Ownership", new OwnershipDetails(model));
-
         }
 
         void viewModel_DataChanged(ChangeableModelBase viewmodel) {
             RegisterUniquePendingChange(new UpdateTrapCommand((viewmodel as TrapViewModel).Model));
         }
+
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(TrapDetails), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnIsReadOnlyChanged)));
+
+        public bool IsReadOnly {
+            get { return (bool)GetValue(IsReadOnlyProperty); }
+            set { SetValue(IsReadOnlyProperty, value); }
+        }
+
+        private static void OnIsReadOnlyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            var control = (TrapDetails)obj;
+            if (control != null) {
+                var readOnly = (bool)args.NewValue;
+                control.SetReadOnlyRecursive(readOnly);
+            }
+        }
+
 
     }
 }

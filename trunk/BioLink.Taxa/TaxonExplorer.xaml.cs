@@ -22,7 +22,7 @@ namespace BioLink.Client.Taxa {
     /// <summary>
     /// Interaction logic for TaxonExplorer.xaml
     /// </summary>
-    public partial class TaxonExplorer : DatabaseCommandControl {
+    public partial class TaxonExplorer : ChangeContainerControl {
         
         private ObservableCollection<HierarchicalViewModelBase> _explorerModel;
         private ObservableCollection<TaxonViewModel> _searchModel;
@@ -40,8 +40,7 @@ namespace BioLink.Client.Taxa {
         }
         #endregion
 
-        public TaxonExplorer(TaxaPlugin owner)
-            : base(owner.User, "TaxonExplorer") {
+        public TaxonExplorer(TaxaPlugin owner) : base(owner.User) {
 
             InitializeComponent();
 
@@ -109,6 +108,13 @@ namespace BioLink.Client.Taxa {
             lblHeader.Visibility = Visibility.Hidden;
             buttonBar.Visibility = IsUnlocked ? Visibility.Visible : Visibility.Hidden;
             gridContentsHeader.Background = new LinearGradientBrush(Colors.DarkOrange, Colors.Orange, 90.0);
+
+            if (!User.HasPermission(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE)) {
+                btnLock.IsChecked = false;
+                ErrorMessage.Show("You do not have sufficient priviledges to edit the taxon tree!");
+                return;
+            }
+
         }
 
         public string GenerateTaxonDisplayLabel(TaxonViewModel taxon) {
@@ -480,7 +486,7 @@ namespace BioLink.Client.Taxa {
                     // process the action...
                     List<DatabaseCommand> dbActions = action.ProcessUI();
                     if (dbActions != null && dbActions.Count > 0) {
-                        RegisterPendingChanges(dbActions);
+                        RegisterPendingChanges(dbActions, this);
                     }
                 }
             } catch (IllegalTaxonMoveException ex) {
@@ -745,7 +751,7 @@ namespace BioLink.Client.Taxa {
         }
 
         private bool InsertUniquePendingUpdate(TaxonViewModel taxon) {
-            return RegisterUniquePendingChange(new UpdateTaxonCommand(taxon.Taxon));
+            return RegisterUniquePendingChange(new UpdateTaxonCommand(taxon.Taxon), this);
         }
        
         private void ShiftTaxon(TaxonViewModel taxon, System.Func<int, int> action) {
@@ -857,7 +863,12 @@ namespace BioLink.Client.Taxa {
         }
 
         internal void RenameTaxon(TaxonViewModel taxon) {
-            // TODO: Permissions!
+
+            if (!User.HasBiotaPermission(taxon.TaxaID.Value, PERMISSION_MASK.UPDATE)) {
+                ErrorMessage.Show("You do not have permission to rename '" + taxon.TaxaFullName + "'!");
+                return;
+            }
+
             taxon.IsSelected = true;
             taxon.IsRenaming = true;
         }
@@ -924,7 +935,7 @@ namespace BioLink.Client.Taxa {
                     RenameTaxon(viewModel);
                 }
 
-                RegisterPendingChange(new InsertTaxonDatabaseCommand(viewModel));
+                RegisterPendingChange(new InsertTaxonDatabaseCommand(viewModel), this);
 
             } catch (Exception ex) {
                 ErrorMessage.Show(ex.Message);
@@ -954,7 +965,7 @@ namespace BioLink.Client.Taxa {
                                 newUnplaced.Children.Add(child);
                                 child.TaxaParentID = newUnplaced.TaxaID;
                                 child.Parent = newUnplaced;
-                                RegisterPendingChange(new MoveTaxonDatabaseCommand(child, newUnplaced));
+                                RegisterPendingChange(new MoveTaxonDatabaseCommand(child, newUnplaced), this);
                             }
                         }
                         parent.Children.Clear();
@@ -1025,10 +1036,10 @@ namespace BioLink.Client.Taxa {
 
         internal void DeleteTaxon(TaxonViewModel taxon) {
             if (this.Question(_R("TaxonExplorer.prompt.DeleteTaxon", taxon.DisplayLabel), _R("TaxonExplorer.prompt.DeleteTaxon.Caption"))) {
-                // First the UI bit...                
+                // schedule the database bit...                                
+                RegisterPendingChange(new DeleteTaxonDatabaseCommand(taxon), this);
+                // and the update the UI
                 MarkItemAsDeleted(taxon);
-                // And schedule the database bit...                                
-                RegisterPendingChange(new DeleteTaxonDatabaseCommand(taxon));
             }
         }
 

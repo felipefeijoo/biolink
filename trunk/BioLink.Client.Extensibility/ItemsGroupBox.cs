@@ -304,8 +304,12 @@ namespace BioLink.Client.Extensibility {
 
             ItemsGroupBox target = e.Source as ItemsGroupBox;
 
-            if (target != null) {                
-                e.CanExecute = (target.SelectedItem != null);
+            if (target != null) {
+                if (target.Content is IItemsGroupBoxDetailControl) {
+                    e.CanExecute = (target.Content as IItemsGroupBoxDetailControl).CanUnlock();
+                } else {
+                    e.CanExecute = (target.SelectedItem != null);
+                }
             } else {
                 e.CanExecute = false;
             }
@@ -323,7 +327,11 @@ namespace BioLink.Client.Extensibility {
             ItemsGroupBox target = e.Source as ItemsGroupBox;
 
             if (target != null) {
-                e.CanExecute = true;
+                if (target.Content is IItemsGroupBoxDetailControl) {
+                    e.CanExecute = (target.Content as IItemsGroupBoxDetailControl).CanAddNew();
+                } else {
+                    e.CanExecute = true;
+                }
             } else {
                 e.CanExecute = false;
             }
@@ -350,6 +358,14 @@ namespace BioLink.Client.Extensibility {
         public event RoutedEventHandler EditClicked;
 
         #endregion
+
+    }
+
+    public interface IItemsGroupBoxDetailControl {
+
+        bool CanUnlock();
+
+        bool CanAddNew();
 
     }
 }

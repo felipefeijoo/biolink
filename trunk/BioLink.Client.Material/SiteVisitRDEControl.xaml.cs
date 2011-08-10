@@ -21,7 +21,7 @@ namespace BioLink.Client.Material {
     /// <summary>
     /// Interaction logic for SiteVisitRDEControl.xaml
     /// </summary>
-    public partial class SiteVisitRDEControl : UserControl {
+    public partial class SiteVisitRDEControl : UserControl, IItemsGroupBoxDetailControl {
 
         public SiteVisitRDEControl(User user) {
             InitializeComponent();
@@ -47,5 +47,13 @@ namespace BioLink.Client.Material {
 
         public User User { get; private set; }
 
+
+        public bool CanUnlock() {
+            return User.HasPermission(PermissionCategory.SPARC_SITEVISIT, PERMISSION_MASK.UPDATE);
+        }
+
+        public bool CanAddNew() {
+            return User.HasPermission(PermissionCategory.SPARC_SITEVISIT, PERMISSION_MASK.INSERT);
+        }
     }
 }

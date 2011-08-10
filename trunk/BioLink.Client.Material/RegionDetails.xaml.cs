@@ -30,7 +30,7 @@ namespace BioLink.Client.Material {
         }
         #endregion
 
-        public RegionDetails(User user, int regionId) : base(user, "Region:" + regionId) {
+        public RegionDetails(User user, int regionId, bool readOnly) : base(user, "Region:" + regionId) {
             InitializeComponent();
             this.RegionID = RegionID;
 
@@ -41,8 +41,9 @@ namespace BioLink.Client.Material {
             _viewModel.DataChanged += new DataChangedHandler(model_DataChanged);
 
             txtRegionType.BindUser(User, PickListType.Phrase, "Region Rank", TraitCategoryType.Region);
+            txtRegion.IsReadOnly = readOnly;
 
-            tabRegion.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Region, ViewModel));
+            tabRegion.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Region, ViewModel) { IsReadOnly = readOnly});
             tabRegion.AddTabItem("Ownership", new OwnershipDetails(_viewModel.Model));
 
         }
@@ -50,6 +51,23 @@ namespace BioLink.Client.Material {
         void model_DataChanged(ChangeableModelBase viewmodel) {
             RegisterUniquePendingChange(new UpdateRegionCommand(_viewModel.Model));
         }
+
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(RegionDetails), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnIsReadOnlyChanged)));
+
+        public bool IsReadOnly {
+            get { return (bool)GetValue(IsReadOnlyProperty); }
+            set { SetValue(IsReadOnlyProperty, value); }
+        }
+
+        private static void OnIsReadOnlyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            var control = (RegionDetails)obj;
+            if (control != null) {
+                var readOnly = (bool)args.NewValue;
+                control.txtRegion.IsReadOnly = readOnly;
+                control.txtRegionType.IsReadOnly = readOnly;
+            }
+        }
+
 
         #region Properties
 
