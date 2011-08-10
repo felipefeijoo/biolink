@@ -31,10 +31,11 @@ namespace BioLink.Client.Material {
         }
         #endregion
 
-        public SiteDetails(User user, int siteID) : base(user, "Site:" + siteID) {
+        public SiteDetails(User user, int siteID, bool readOnly) : base(user, "Site:" + siteID) {
             InitializeComponent();
             this.SiteID = siteID;
 
+            this.IsReadOnly = readOnly;
             var list = new List<Ellipsoid>(GeoUtils.ELLIPSOIDS);
             cmbDatum.ItemsSource = new ObservableCollection<string>(list.ConvertAll((ellipsoid) => { return ellipsoid.Name; }));
 
@@ -64,9 +65,9 @@ namespace BioLink.Client.Material {
             _viewModel = new SiteViewModel(model);
             this.DataContext = _viewModel;
 
-            tabSite.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Site, _viewModel));
-            tabSite.AddTabItem("Notes", new NotesControl(User, TraitCategoryType.Site, _viewModel));
-            tabSite.AddTabItem("Multimedia", new MultimediaControl(User, TraitCategoryType.Site, _viewModel));
+            tabSite.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Site, _viewModel) { IsReadOnly = readOnly });
+            tabSite.AddTabItem("Notes", new NotesControl(User, TraitCategoryType.Site, _viewModel) { IsReadOnly = readOnly });
+            tabSite.AddTabItem("Multimedia", new MultimediaControl(User, TraitCategoryType.Site, _viewModel) { IsReadOnly = readOnly });
             tabSite.AddTabItem("Ownership", new OwnershipDetails(_viewModel.Model));
 
             txtPosSource.BindUser(User, PickListType.Phrase, "Source", TraitCategoryType.Site);
@@ -425,6 +426,22 @@ namespace BioLink.Client.Material {
                 map.DropAnchor(ctlX1.Value, ctlY1.Value, txtLocality.Text);
             }
         }
+
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(SiteDetails), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnIsReadOnlyChanged)));
+
+        public bool IsReadOnly {
+            get { return (bool)GetValue(IsReadOnlyProperty); }
+            set { SetValue(IsReadOnlyProperty, value); }
+        }
+
+        private static void OnIsReadOnlyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            var control = (SiteDetails) obj;
+            if (control != null) {
+                var readOnly = (bool)args.NewValue;
+                control.SetReadOnlyRecursive(readOnly);
+            }
+        }
+
 
     }
 

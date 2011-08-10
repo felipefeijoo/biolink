@@ -21,7 +21,7 @@ namespace BioLink.Client.Material {
     /// <summary>
     /// Interaction logic for MaterialRDEControl.xaml
     /// </summary>
-    public partial class MaterialRDEControl : UserControl {
+    public partial class MaterialRDEControl : UserControl, IItemsGroupBoxDetailControl {
 
         private TraitControl _traits;        
         private RDEMaterialViewModel _currentMaterial;
@@ -123,5 +123,13 @@ namespace BioLink.Client.Material {
             }));
         }
 
+
+        public bool CanUnlock() {
+            return User.HasPermission(PermissionCategory.SPARC_MATERIAL, PERMISSION_MASK.UPDATE);                
+        }
+
+        public bool CanAddNew() {
+            return User.HasPermission(PermissionCategory.SPARC_MATERIAL, PERMISSION_MASK.INSERT);
+        }
     }
 }

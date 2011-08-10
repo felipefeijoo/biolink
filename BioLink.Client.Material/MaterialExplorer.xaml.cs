@@ -765,18 +765,20 @@ namespace BioLink.Client.Material {
         }
 
 
-        private void EditNode(SiteExplorerNodeViewModel node, Func<DatabaseCommandControl> editorFactory) {
+        private void EditNode(SiteExplorerNodeViewModel node, Func<bool, DatabaseCommandControl> editorFactory, PermissionCategory permCategory) {
             if (node.ElemID < 0) {
                 ErrorMessage.Show("You must first apply the changes before editing the details of this item!");
                 return;
             } else {
-                var editor = editorFactory();
+                var readOnly = !User.HasPermission(permCategory, PERMISSION_MASK.UPDATE);
+                var editor = editorFactory(readOnly);
                 string caption = "";
-                
+
+                var readOnlyStr = readOnly ? "(Read Only)" : "";
                 if (node.IsTemplate) {
-                    caption = string.Format("{0} Template [{1}]", node.NodeType.ToString(), node.ElemID);
+                    caption = string.Format("{0} Template [{1}] {2}", node.NodeType.ToString(), node.ElemID, readOnlyStr);
                 } else {
-                    caption = string.Format("{0} Detail {1} [{2}]", node.NodeType.ToString(), node.Name, node.ElemID);
+                    caption = string.Format("{0} Detail {1} [{2}] {3}", node.NodeType.ToString(), node.Name, node.ElemID, readOnlyStr);
                 }
                 
                 PluginManager.Instance.AddNonDockableContent(Owner, editor, caption, SizeToContent.Manual);
@@ -806,28 +808,34 @@ namespace BioLink.Client.Material {
         }
 
         internal void EditSiteVisit(SiteExplorerNodeViewModel sitevisit) {
-            EditNode(sitevisit, () => { return new SiteVisitDetails(User, sitevisit.ElemID); });
+            EditNode(sitevisit, (readOnly) => { return new SiteVisitDetails(User, sitevisit.ElemID, readOnly); }, PermissionCategory.SPARC_SITEVISIT);
         }
 
         internal void EditMaterial(SiteExplorerNodeViewModel material) {
-            EditNode(material, () => { return new MaterialDetails(User, material.ElemID); });
+            EditNode(material, (readOnly) => { return new MaterialDetails(User, material.ElemID, readOnly); }, PermissionCategory.SPARC_MATERIAL);
         }
 
         internal void EditTrap(SiteExplorerNodeViewModel trap) {
-            EditNode(trap, () => { return new TrapDetails(User, trap.ElemID); });
+            EditNode(trap, (readOnly) => { return new TrapDetails(User, trap.ElemID, readOnly); }, PermissionCategory.SPARC_TRAP);
         }
 
         internal void EditRegion(SiteExplorerNodeViewModel region) {
-            EditNode(region, () => { return new RegionDetails(User, region.ElemID); });
+            EditNode(region, (readOnly) => { return new RegionDetails(User, region.ElemID, readOnly); }, PermissionCategory.SPARC_REGION);
         }
 
         internal void EditSite(SiteExplorerNodeViewModel site) {
-            EditNode(site, () => { return new SiteDetails(User, site.ElemID); });
+            EditNode(site, (readOnly) => { return new SiteDetails(User, site.ElemID, readOnly); }, PermissionCategory.SPARC_SITE);
         }
 
-        internal void DeleteNode(SiteExplorerNodeViewModel node, Func<DatabaseCommand> actionFactory) {
+        internal void DeleteNode(SiteExplorerNodeViewModel node, Func<DatabaseCommand> actionFactory, PermissionCategory permCategory) {
 
             if (!node.IsDeleted) {
+
+                if (!User.HasPermission(permCategory, PERMISSION_MASK.DELETE)) {
+                    ErrorMessage.Show("You do not have permission to delete this item!");
+                    return;
+                }
+
                 node.Traverse((child) => {
                     child.IsDeleted = true;
                 });
@@ -839,27 +847,27 @@ namespace BioLink.Client.Material {
         }
 
         internal void DeleteRegion(SiteExplorerNodeViewModel region) {
-            DeleteNode(region, () => { return new DeleteRegionCommand(region.ElemID); });
+            DeleteNode(region, () => { return new DeleteRegionCommand(region.ElemID); }, PermissionCategory.SPARC_REGION);
         }
 
         internal void DeleteSiteGroup(SiteExplorerNodeViewModel group) {
-            DeleteNode(group, () => { return new DeleteSiteGroupCommand(group.ElemID); });
+            DeleteNode(group, () => { return new DeleteSiteGroupCommand(group.ElemID); }, PermissionCategory.SPARC_SITEGROUP);
         }
 
         internal void DeleteSite(SiteExplorerNodeViewModel group) {
-            DeleteNode(group, () => { return new DeleteSiteCommand(group.ElemID); });
+            DeleteNode(group, () => { return new DeleteSiteCommand(group.ElemID); }, PermissionCategory.SPARC_SITE);
         }
 
         internal void DeleteSiteVisit(SiteExplorerNodeViewModel group) {
-            DeleteNode(group, () => { return new DeleteSiteVisitCommand(group.ElemID); });
+            DeleteNode(group, () => { return new DeleteSiteVisitCommand(group.ElemID); }, PermissionCategory.SPARC_SITEVISIT);
         }
 
         internal void DeleteTrap(SiteExplorerNodeViewModel trap) {
-            DeleteNode(trap, () => { return new DeleteTrapCommand(trap.ElemID); });
+            DeleteNode(trap, () => { return new DeleteTrapCommand(trap.ElemID); }, PermissionCategory.SPARC_TRAP);
         }
 
         internal void DeleteMaterial(SiteExplorerNodeViewModel material) {
-            DeleteNode(material, () => { return new DeleteMaterialCommand(material.ElemID); });
+            DeleteNode(material, () => { return new DeleteMaterialCommand(material.ElemID); }, PermissionCategory.SPARC_MATERIAL);
         }
 
         private void tvwMaterial_MouseRightButtonDown(object sender, MouseButtonEventArgs e) {

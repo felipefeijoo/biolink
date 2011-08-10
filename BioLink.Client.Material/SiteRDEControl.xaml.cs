@@ -20,13 +20,14 @@ namespace BioLink.Client.Material {
     /// <summary>
     /// Interaction logic for SiteRDEControl.xaml
     /// </summary>
-    public partial class SiteRDEControl : UserControl {
+    public partial class SiteRDEControl : UserControl, IItemsGroupBoxDetailControl {
 
         private TraitControl _traits;
         private RDESiteViewModel _currentSite;
        
         public SiteRDEControl(User user) {
             InitializeComponent();
+            this.User = user;
             txtPolitical.BindUser(user, LookupType.Region);
             txtSource.BindUser(user, PickListType.Phrase, "Source", TraitCategoryType.Material);
             txtElevSource.BindUser(user, PickListType.Phrase, "Source", TraitCategoryType.Material);
@@ -39,6 +40,8 @@ namespace BioLink.Client.Material {
             ctlPosition.LocationChanged += new LocationSelectedEvent(ctlPosition_LocationChanged);
             
         }
+
+        protected User User { get; private set; }
 
         void ctlPosition_LocationChanged(double latitude, double longitude, int? altitude, string altitudeUnits, string locality, string source) {
 
@@ -87,6 +90,14 @@ namespace BioLink.Client.Material {
 
         public List<Trait> GetTraits() {
             return _traits.GetModel();
+        }
+
+        public bool CanUnlock() {
+            return User.HasPermission(PermissionCategory.SPARC_SITE, PERMISSION_MASK.UPDATE);
+        }
+
+        public bool CanAddNew() {
+            return User.HasPermission(PermissionCategory.SPARC_SITE, PERMISSION_MASK.INSERT);
         }
 
     }

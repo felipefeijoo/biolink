@@ -37,9 +37,25 @@ namespace BioLink.Client.Extensibility {
             });
         }
 
+        public static void SetReadOnlyRecursive(this DependencyObject obj, bool readOnly) {
+            if (obj != null) {
+                foreach (object child in LogicalTreeHelper.GetChildren(obj)) {
+
+                    if (child is System.Windows.Controls.Primitives.TextBoxBase) {
+                        (child as System.Windows.Controls.Primitives.TextBoxBase).IsReadOnly = readOnly;
+                    } else if (child is CheckBox) {
+                        (child as CheckBox).IsEnabled = !readOnly;
+                    } else if (child is RadioButton || child is ComboBox) {
+                        (child as UIElement).IsEnabled = !readOnly;
+                    } else if (child is LookupControl) {
+                        (child as LookupControl).IsReadOnly = readOnly;
+                    } else {
+                        SetReadOnlyRecursive(child as DependencyObject, readOnly);
+                    }
+                }
+            }
+        }
+
     }
-
-            
-
 
 }

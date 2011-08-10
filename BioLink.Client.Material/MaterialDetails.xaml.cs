@@ -32,13 +32,16 @@ namespace BioLink.Client.Material {
         }
         #endregion
 
-        public MaterialDetails(User user, int materialID) : base(user, "Material:" + materialID) {
+        public MaterialDetails(User user, int materialID, bool readOnly) : base(user, "Material:" + materialID) {
             InitializeComponent();
             var service = new MaterialService(user);
             var model = service.GetMaterial(materialID);
             _viewModel = new MaterialViewModel(model);
             _viewModel.DataChanged += new DataChangedHandler(viewModel_DataChanged);
             this.DataContext = _viewModel;
+
+            this.IsReadOnly = readOnly;
+            
 
             // General tab
             txtAccessionNumber.BindUser(User, "MaterialAccessionNo", "tblMaterial", "vchrAccessionNo");            
@@ -67,16 +70,15 @@ namespace BioLink.Client.Material {
             _historyControl.Margin = new Thickness(0);
             tabIDHistory.Content = _historyControl;
 
-            var partsControl = new MaterialPartsControl(User, _viewModel);
+            var partsControl = new MaterialPartsControl(User, _viewModel) { IsReadOnly = readOnly };
 
             tabMaterial.AddTabItem("Subparts", partsControl);
-            // tabMaterial.AddDeferredLoadingTabItem("Associates", () => { return AssociateControlLoader.GetAssociatesControl(User, TraitCategoryType.Material, _viewModel, false); });
-            tabMaterial.AddTabItem("Associates", new OneToManyControl(new AssociatesOneToManyController(User, TraitCategoryType.Material, _viewModel)));
+            tabMaterial.AddTabItem("Associates", new OneToManyControl(new AssociatesOneToManyController(User, TraitCategoryType.Material, _viewModel)) { IsReadOnly = readOnly });
             tabMaterial.AddTabItem("Events", new CurationEventsControl(User, materialID, partsControl));
             tabMaterial.AddTabItem("Labels", new MaterialLabelsControl(_viewModel));
-            tabMaterial.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Material, _viewModel));
-            tabMaterial.AddTabItem("Notes", new NotesControl(User, TraitCategoryType.Material, _viewModel));
-            tabMaterial.AddTabItem("Multimedia", new MultimediaControl(User, TraitCategoryType.Material, _viewModel));
+            tabMaterial.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Material, _viewModel) { IsReadOnly = readOnly });
+            tabMaterial.AddTabItem("Notes", new NotesControl(User, TraitCategoryType.Material, _viewModel) { IsReadOnly = readOnly });
+            tabMaterial.AddTabItem("Multimedia", new MultimediaControl(User, TraitCategoryType.Material, _viewModel) { IsReadOnly = readOnly });
             tabMaterial.AddTabItem("Ownership", new OwnershipDetails(model));
             if (!model.IsTemplate) {
                 tabMaterial.AddTabItem("Summary", new MaterialSummary(User, _viewModel));
@@ -151,6 +153,22 @@ namespace BioLink.Client.Material {
                 }
             }
         }
+
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(MaterialDetails), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnIsReadOnlyChanged)));
+
+        public bool IsReadOnly {
+            get { return (bool)GetValue(IsReadOnlyProperty); }
+            set { SetValue(IsReadOnlyProperty, value); }
+        }
+
+        private static void OnIsReadOnlyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            var control = (MaterialDetails)obj;
+            if (control != null) {
+                var readOnly = (bool)args.NewValue;
+                control.SetReadOnlyRecursive(readOnly);
+            }
+        }
+
 
     }
 }

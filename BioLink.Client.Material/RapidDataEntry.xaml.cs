@@ -313,7 +313,13 @@ namespace BioLink.Client.Material {
         private RDESiteViewModel CreateSiteViewModel(RDESite site, bool addChangedHandler = true) {
             var supportService = new SupportService(User);
             var vm = new RDESiteViewModel(site);
-            vm.Locked = _startLockMode;
+
+            if (User.HasPermission(PermissionCategory.SPARC_SITE, PERMISSION_MASK.UPDATE)) {
+                vm.Locked = _startLockMode;
+            } else {
+                vm.Locked = true;
+            }
+
             if (site.SiteID >= 0) {
                 vm.Traits = supportService.GetTraits(TraitCategoryType.Site.ToString(), site.SiteID);
             }
@@ -328,7 +334,11 @@ namespace BioLink.Client.Material {
             vm.DataChanged += new DataChangedHandler(siteVisitViewModel_DataChanged);
             vm.Site = site;
             vm.SiteID = site.SiteID;
-            vm.Locked = _startLockMode;
+            if (User.HasPermission(PermissionCategory.SPARC_SITEVISIT, PERMISSION_MASK.UPDATE)) {
+                vm.Locked = _startLockMode;
+            } else {
+                vm.Locked = true;
+            }
             site.SiteVisits.Add(vm);
             return vm;
         }
@@ -344,7 +354,11 @@ namespace BioLink.Client.Material {
                 vm.SiteVisit = siteVisit;
                 vm.SiteVisitID = siteVisit.SiteVisitID;
                 siteVisit.Material.Add(vm);
-                vm.Locked = _startLockMode;
+                if (User.HasPermission(PermissionCategory.SPARC_MATERIAL, PERMISSION_MASK.UPDATE)) {
+                    vm.Locked = _startLockMode;
+                } else {
+                    vm.Locked = true;
+                }
                 return (ViewModelBase)vm;
             }));
         }
