@@ -64,5 +64,24 @@ namespace BioLink.Client.Extensibility {
             this.Hide();
         }
 
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(NoteProperties), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnIsReadOnlyChanged)));
+
+        public bool IsReadOnly {
+            get { return (bool)GetValue(IsReadOnlyProperty); }
+            set { SetValue(IsReadOnlyProperty, value); }
+        }
+
+        private static void OnIsReadOnlyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            var control = (NoteProperties)obj;
+            if (control != null) {
+                var readOnly = (bool)args.NewValue;
+                control.txtAuthor.IsReadOnly = readOnly;
+                control.txtComment.IsReadOnly = readOnly;
+                control.txtPage.IsReadOnly = readOnly;
+                control.txtReference.IsReadOnly = readOnly;
+                control.chkUseInReports.IsEnabled = !readOnly;
+            }
+        }
+
     }
 }

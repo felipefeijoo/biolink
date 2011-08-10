@@ -73,6 +73,7 @@
     <Compile Include="ImportService.cs" />
     <Compile Include="IXMLImportProgressObserver.cs" />
     <Compile Include="LoanService.cs" />
+    <Compile Include="Model\BiotaPermission.cs" />
     <Compile Include="Model\Contact.cs" />
     <Compile Include="Model\DistributionRegion.cs" />
     <Compile Include="Model\LabelSet.cs" />

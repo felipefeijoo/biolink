@@ -411,10 +411,12 @@ namespace BioLink.Client.Taxa {
 
             // Ensure the permissions set at the user group level take precendence to the indivual taxon based permissions.
             try {
-                if (mask != PERMISSION_MASK.OWNER) {
-                    User.CheckPermission(PermissionCategory.SPIN_TAXON, mask, "You do not have permission to move this item!");
-                }
 
+                if (mask != PERMISSION_MASK.OWNER) {
+                    if (!User.HasPermission(PermissionCategory.SPIN_TAXON, mask)) {
+                        return false;
+                    }
+                }
 
                 if (target != null) {
                     if (target.TaxaID.Value < 0) {
@@ -426,7 +428,9 @@ namespace BioLink.Client.Taxa {
                         throw new NoPermissionException(PermissionCategory.SPIN_TAXON, mask, "You do not have permission to move this item!");
                     }
                 }
+
                 return true;
+
             } catch (NoPermissionException npex) {
                 string txt = npex.Message;
                 if (!string.IsNullOrEmpty(npex.DeniedMessage)) {
@@ -813,7 +817,7 @@ namespace BioLink.Client.Taxa {
             );
         }
 
-        internal void ShowTaxonDetails(int? taxonId) {
+        internal void EditTaxonDetails(int? taxonId) {
             if (taxonId.HasValue) {
 
                 if (taxonId.Value < 0) {
@@ -823,13 +827,14 @@ namespace BioLink.Client.Taxa {
 
                 Taxon fullDetails = Service.GetTaxon(taxonId.Value);
                 TaxonViewModel model = new TaxonViewModel(null, fullDetails, null);
+                bool readOnly = !User.HasBiotaPermission(taxonId.Value, PERMISSION_MASK.UPDATE);
                 TaxonDetails control = new TaxonDetails(Owner, model, User, (changedModel) => {
                     RegenerateLabel(changedModel);
-                });
+                }, readOnly);
 
                 TaxonRank taxonRank = Service.GetTaxonRank(model.ElemType);
 
-                String title = String.Format("Taxon Detail: {0} ({1}) [{2}]", model.TaxaFullName, taxonRank == null ? "Unranked" : taxonRank.GetElementTypeLongName(model.Taxon), model.TaxaID);
+                String title = String.Format("Taxon Detail: {0} ({1}) [{2}] {3}", model.TaxaFullName, taxonRank == null ? "Unranked" : taxonRank.GetElementTypeLongName(model.Taxon), model.TaxaID, readOnly ? "(Read Only)" : "");
 
                 PluginManager.Instance.AddNonDockableContent(Owner, control, title, SizeToContent.Manual);
             }
@@ -1274,10 +1279,11 @@ namespace BioLink.Client.Taxa {
                 return;
             }
 
+            var readOnly = !User.HasBiotaPermission(viewModel.TaxaID.Value, PERMISSION_MASK.UPDATE);
+
             TaxonNameDetails details = new TaxonNameDetails(viewModel.TaxaID, User, (nameDetails) => {
                 RegenerateLabel(nameDetails);
-
-            });
+            }) { IsReadOnly = readOnly };
             PluginManager.Instance.AddNonDockableContent(this.Owner, details, "Taxon name details",SizeToContent.WidthAndHeight);
         }
 
@@ -1391,6 +1397,17 @@ namespace BioLink.Client.Taxa {
 
         internal void RenameFavoriteGroup(TaxonFavoriteViewModel taxonFavoriteViewModel) {
             favorites.RenameFavoriteGroup(taxonFavoriteViewModel);
+        }
+
+        internal void EditBiotaPermissions(TaxonViewModel taxon) {
+            if (!taxon.TaxaID.HasValue || taxon.TaxaID.Value < 0) {
+                ErrorMessage.Show("You must save apply changes before you can proceed.");
+                return;
+            }
+
+            bool readOnly = !User.HasBiotaPermission(taxon.TaxaID.Value, PERMISSION_MASK.OWNER);
+
+            PluginManager.Instance.AddNonDockableContent(Owner, new BiotaPermissions(User, taxon, readOnly), "Taxon Permissions for '" + taxon.TaxaFullName + (readOnly ? "' (Read Only)" : "'"), SizeToContent.Manual);
         }
     }
 

@@ -34,8 +34,7 @@ namespace BioLink.Client.Taxa {
         }
         #endregion
 
-        public SpeciesAvailableNameControl(TaxonViewModel taxon, User user) 
-            : base(taxon, user, "SpeciesAvailabeNames::" ) {
+        public SpeciesAvailableNameControl(TaxonViewModel taxon, User user) : base(taxon, user, "SpeciesAvailabeNames::" ) {
 
             InitializeComponent();
 
@@ -140,6 +139,39 @@ namespace BioLink.Client.Taxa {
         }
 
         public TaxaService Service { get { return new TaxaService(User); } }
+
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(SpeciesAvailableNameControl), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnIsReadOnlyChanged)));
+
+        public bool IsReadOnly {
+            get { return (bool)GetValue(IsReadOnlyProperty); }
+            set { SetValue(IsReadOnlyProperty, value); }
+        }
+
+        private static void OnIsReadOnlyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            var control = (SpeciesAvailableNameControl)obj;
+            if (control != null) {
+                var readOnly = (bool)args.NewValue;
+                control.txtAccessionNumber.IsReadOnly = readOnly;
+                control.txtInstitution.IsReadOnly = readOnly;
+                control.txtLocality.IsReadOnly = readOnly;
+                control.txtMaterial.IsReadOnly = readOnly;
+                control.txtNameStatus.IsReadOnly = readOnly;
+                control.txtPage.IsReadOnly = readOnly;
+                control.txtQual.IsReadOnly = readOnly;
+                control.txtReference.IsReadOnly = readOnly;
+                control.txtSpecimen.IsReadOnly = readOnly;
+                control.btnAddNew.IsEnabled = !readOnly;
+                control.btnDelete.IsEnabled = !readOnly;
+                control.btnPhrase.IsEnabled = !readOnly;
+                control.cmbPrimaryType.IsEnabled = !readOnly;
+                control.cmbSecondaryType.IsEnabled = !readOnly;
+                control.cmbType.IsEnabled = !readOnly;
+
+                control.chkIDConfirmed.IsEnabled = !readOnly;
+                control.chkPrimaryProbable.IsEnabled = !readOnly;
+                control.chkSecondaryProbable.IsEnabled = !readOnly;
+            }
+        }
 
     }
 }

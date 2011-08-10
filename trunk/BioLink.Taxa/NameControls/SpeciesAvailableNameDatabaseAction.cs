@@ -11,9 +11,7 @@ namespace BioLink.Client.Taxa {
 
     public class UpdateSanDatabaseCommand : GenericDatabaseCommand<SpeciesAvailableName> {
 
-        public UpdateSanDatabaseCommand(SpeciesAvailableName name)
-            : base(name) {
-        }
+        public UpdateSanDatabaseCommand(SpeciesAvailableName name) : base(name) { }
 
         protected override void ProcessImpl(User user) {
             var service = new TaxaService(user);
@@ -22,15 +20,14 @@ namespace BioLink.Client.Taxa {
 
         protected override void BindPermissions(PermissionBuilder required) {
             required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
+            required.AddBiota(Model.BiotaID, PERMISSION_MASK.UPDATE);
         }
 
     }
 
     public class UpdateSANTypeDataCommand : GenericDatabaseCommand<SANTypeData> {
 
-        public UpdateSANTypeDataCommand(SANTypeData model)
-            : base(model) {
-        }
+        public UpdateSANTypeDataCommand(SANTypeData model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             Debug.Assert(Model.SANTypeDataID >= 0);
@@ -40,15 +37,14 @@ namespace BioLink.Client.Taxa {
 
         protected override void BindPermissions(PermissionBuilder required) {
             required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
+            required.AddBiota(Model.BiotaID, PERMISSION_MASK.UPDATE);
         }
 
     }
 
     public class InsertSANTypeDataCommand : GenericDatabaseCommand<SANTypeData> {
 
-        public InsertSANTypeDataCommand(SANTypeData model)
-            : base(model) {
-        }
+        public InsertSANTypeDataCommand(SANTypeData model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             Debug.Assert(Model.SANTypeDataID < 0);
@@ -58,15 +54,14 @@ namespace BioLink.Client.Taxa {
 
         protected override void BindPermissions(PermissionBuilder required) {
             required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
+            required.AddBiota(Model.BiotaID, PERMISSION_MASK.UPDATE);
         }
 
     }
 
     public class DeleteSANTypeDataCommand : GenericDatabaseCommand<SANTypeData> {
 
-        public DeleteSANTypeDataCommand(SANTypeData model)
-            : base(model) {
-        }
+        public DeleteSANTypeDataCommand(SANTypeData model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
             Debug.Assert(Model.SANTypeDataID >= 0);
@@ -76,6 +71,7 @@ namespace BioLink.Client.Taxa {
 
         protected override void BindPermissions(PermissionBuilder required) {
             required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
+            required.AddBiota(Model.BiotaID, PERMISSION_MASK.UPDATE);
         }
 
     }

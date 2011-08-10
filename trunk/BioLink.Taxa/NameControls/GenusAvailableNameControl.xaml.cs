@@ -32,8 +32,7 @@ namespace BioLink.Client.Taxa {
         }
         #endregion
 
-        public GenusAvailableNameControl(TaxonViewModel taxon, User user)
-            : base(taxon, user, "GenusAvailableNames") {
+        public GenusAvailableNameControl(TaxonViewModel taxon, User user) : base(taxon, user, "GenusAvailableNames") {
 
             InitializeComponent();
 
@@ -141,6 +140,30 @@ namespace BioLink.Client.Taxa {
             var vm = new GANIncludedSpeciesViewModel(data);
             _includedSpecies.Add(vm);
             RegisterPendingChange(new InsertGANIncludedSpeciesCommand(data));
+        }
+
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(GenusAvailableNameControl), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnIsReadOnlyChanged)));
+
+        public bool IsReadOnly {
+            get { return (bool)GetValue(IsReadOnlyProperty); }
+            set { SetValue(IsReadOnlyProperty, value); }
+        }
+
+        private static void OnIsReadOnlyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            var control = (GenusAvailableNameControl)obj;
+            if (control != null) {
+                var readOnly = (bool)args.NewValue;
+
+                control.btnAddIncludedSpecies.IsEnabled = !readOnly;
+                control.btnInsertPhrase.IsEnabled = !readOnly;
+                control.txtFixationMethod.IsReadOnly = readOnly;
+                control.txtNameStatus.IsReadOnly = readOnly;
+                control.txtPage.IsReadOnly = readOnly;
+                control.txtQual.IsReadOnly = readOnly;
+                control.txtReference.IsReadOnly = readOnly;
+                control.txtTypeSpecies.IsReadOnly = readOnly;
+                control.groupBox1.IsEnabled = !readOnly;
+            }
         }
 
     }

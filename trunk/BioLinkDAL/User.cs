@@ -67,7 +67,7 @@ namespace BioLink.Data {
 
         public bool HasPermission(PermissionCategory perm, PERMISSION_MASK mask) {
 
-            if (Username.Equals("sa", StringComparison.CurrentCultureIgnoreCase)) {
+            if (IsSysAdmin) {
                 return true;
             }
 
@@ -77,6 +77,33 @@ namespace BioLink.Data {
             }
 
             return false;
+        }
+
+        public bool HasBiotaPermission(int taxonId, PERMISSION_MASK mask) {
+
+            // system administrator has full rights to all.
+            if (IsSysAdmin) {
+                return true;
+            }
+
+            // Ensure the permissions set at the user group level take precendence to the individual taxon based permissions.
+
+            if (mask != PERMISSION_MASK.OWNER) {
+                if (!HasPermission(PermissionCategory.SPIN_TAXON, mask)) {
+                    return false;
+                }
+            }
+
+            if (taxonId < 0) {
+                // new items are automatically approved!
+                return true;
+            }
+
+            var service = new SupportService(this);
+            if (!service.HasBiotaPermission(taxonId, mask)) {
+                return false;
+            }
+            return true;
         }
 
         public void CheckPermission(PermissionCategory perm, PERMISSION_MASK mask, string deniedMessage) {
@@ -410,6 +437,10 @@ namespace BioLink.Data {
     };
 
     public class NoPermissionException : Exception {
+
+        public NoPermissionException(string message) : base(message) {
+            this.DeniedMessage = message;
+        }
 
         public NoPermissionException(PermissionCategory permissionCategory, PERMISSION_MASK mask, string deniedMessage = "") : base(String.Format("You do not have permission to perform this operation: {0} :: {1}", permissionCategory.ToString(), mask.ToString())) {
             this.PermissionCategory = permissionCategory;

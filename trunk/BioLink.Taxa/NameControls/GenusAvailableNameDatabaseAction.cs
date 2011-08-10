@@ -18,6 +18,7 @@ namespace BioLink.Client.Taxa {
 
         protected override void BindPermissions(PermissionBuilder required) {
             required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
+            required.AddBiota(Model.BiotaID, PERMISSION_MASK.UPDATE);
         }
 
     }
@@ -35,6 +36,7 @@ namespace BioLink.Client.Taxa {
 
         protected override void BindPermissions(PermissionBuilder required) {
             required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
+            required.AddBiota(Model.BiotaID, PERMISSION_MASK.UPDATE);
         }
 
     }
@@ -52,6 +54,7 @@ namespace BioLink.Client.Taxa {
 
         protected override void BindPermissions(PermissionBuilder required) {
             required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
+            required.AddBiota(Model.BiotaID, PERMISSION_MASK.UPDATE);
         }
 
     }
@@ -69,6 +72,7 @@ namespace BioLink.Client.Taxa {
 
         protected override void BindPermissions(PermissionBuilder required) {
             required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
+            required.AddBiota(Model.BiotaID, PERMISSION_MASK.UPDATE);
         }
 
     }

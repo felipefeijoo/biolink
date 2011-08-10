@@ -26,6 +26,7 @@ namespace BioLink.Client.Taxa {
 
         public TaxonNameDetails(int? taxonId, User user, Action<TaxonNameViewModel> successAction)  : base(user, "TaxonNameDetails::" + taxonId.Value) {
             _successAction = successAction;
+
             var service = new TaxaService(user);
             Taxon taxon = service.GetTaxon(taxonId.Value);
             _rank = service.GetTaxonRank(taxon.ElemType);
@@ -75,6 +76,27 @@ namespace BioLink.Client.Taxa {
 
         void _model_DataChanged(ChangeableModelBase model) {
             RegisterUniquePendingChange(new UpdateTaxonCommand(_model.Taxon));
+        }
+
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(TaxonNameDetails), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnIsReadOnlyChanged)));
+
+        public bool IsReadOnly {
+            get { return (bool)GetValue(IsReadOnlyProperty); }
+            set { SetValue(IsReadOnlyProperty, value); }
+        }
+
+        private static void OnIsReadOnlyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            var control = (TaxonNameDetails)obj;
+            if (control != null) {
+                var readOnly = (bool) args.NewValue;
+                control.txtAuthor.IsReadOnly = readOnly;
+                control.txtName.IsReadOnly = readOnly;
+                control.txtNameStatus.IsReadOnly = readOnly;
+                control.txtYear.IsReadOnly = readOnly;
+                control.cmbKingdom.IsEnabled = !readOnly;
+                control.chkChangedCombination.IsEnabled = !readOnly;
+                control.chkVerified.IsEnabled = !readOnly;
+            }
         }
 
     }

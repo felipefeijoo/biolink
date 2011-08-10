@@ -148,9 +148,9 @@ namespace BioLink.Client.Extensibility {
                 }
                 
                 menu.Items.Add(new Separator());
-                menu.Items.Add(builder.New("Add multimedia").Handler(() => { AddMultimedia(); }).MenuItem);
+                menu.Items.Add(builder.New("Add multimedia").Handler(() => { AddMultimedia(); }).Enabled(!IsReadOnly).MenuItem);
                 menu.Items.Add(new Separator());
-                menu.Items.Add(builder.New("Delete").Handler(() => { DeleteSelectedMultimedia(); }).MenuItem);
+                menu.Items.Add(builder.New("Delete").Handler(() => { DeleteSelectedMultimedia(); }).Enabled(!IsReadOnly).MenuItem);
                 menu.Items.Add(new Separator());
                 menu.Items.Add(builder.New("Edit Details...").Handler(() => { ShowProperties(); }).MenuItem);
             }
@@ -165,6 +165,9 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void AddMultimedia() {
+            if (IsReadOnly) {
+                return;
+            }
             var dlg = new OpenFileDialog();
             dlg.Filter = "All files (*.*)|*.*";
             dlg.Multiselect = true;
@@ -176,6 +179,10 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void AddMultimediaFromFile(string filename) {
+
+            if (IsReadOnly) {
+                return;
+            }
 
             if (string.IsNullOrWhiteSpace(filename)) {
                 return;
@@ -347,10 +354,15 @@ namespace BioLink.Client.Extensibility {
 
         private void thumbList_DragOver(object sender, DragEventArgs e) {
             e.Handled = true;
-            var link = e.Data.GetData("MultimediaLink") as  MultimediaLink;
+            e.Effects = DragDropEffects.None;
+
+            if (IsReadOnly) {
+                return;
+            }
+
+            var link = e.Data.GetData("MultimediaLink") as MultimediaLink;
             var formats = e.Data.GetFormats();
 
-            e.Effects = DragDropEffects.None;            
             if (link != null) {
                 e.Effects = DragDropEffects.Link;
                 return;
@@ -365,6 +377,11 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void thumbList_Drop(object sender, DragEventArgs e) {
+
+            if (IsReadOnly) {
+                return;
+            }
+
             var link = e.Data.GetData("MultimediaLink") as  MultimediaLink;
             if (link != null) {
                 AddNewLinkFromExternalLink(link);
@@ -404,6 +421,27 @@ namespace BioLink.Client.Extensibility {
             frm.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             if (frm.ShowDialog() == true) {                
                 AddNewLinkFromExternalLink(frm.SelectedMultimedia.Model);
+            }
+        }
+
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(MultimediaControl), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnIsReadOnlyChanged)));
+
+        public bool IsReadOnly {
+            get { return (bool)GetValue(IsReadOnlyProperty); }
+            set { SetValue(IsReadOnlyProperty, value); }
+        }
+
+        private static void OnIsReadOnlyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            var control = (MultimediaControl)obj;
+            if (control != null) {
+                var readOnly = (bool)args.NewValue;
+
+                control.btnAdd.IsEnabled = !readOnly;
+                control.btnDelete.IsEnabled = !readOnly;
+                control.btnLinkToExisting.IsEnabled = !readOnly;
+                control.txtCaption.IsReadOnly = readOnly;
+                control.txtMultimediaType.IsReadOnly = readOnly;
+                control.txtName.IsReadOnly = readOnly;
             }
         }
 
