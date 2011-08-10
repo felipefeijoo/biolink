@@ -181,7 +181,13 @@ The filter box allows you to quickly filter out items that do not match text ent
 
 = Google Earth integration =
 
-Google Earth integration has also been added to this version of BioLink. Google Earth must be already installed on your computer to make this feature work. You can use this feature to populate the Latitude, Longitude and Elevation of a locality in both the Site Detail and Rapid Data Entry (RDE) screens. Clicking on the earth symbol initiates Google Earth, and a Geo-coding dialog will prompt you to find your Locality. When the desired position has been located, click on the button “Use current location”. This will seed the Latitude and Longitude values in !BioLink, and will prompt to add the Elevation (if applicable). The Source field on the Rapid Data Entry screen will automatically be populated with "Google Earth". 
+Google Earth integration has also been added to this version of BioLink. Google Earth must be already installed on your computer to make this feature work. You can use this feature to populate the Latitude, Longitude and Elevation of a locality in both the Site Detail and Rapid Data Entry (RDE) screens. Clicking on the earth symbol initiates Google Earth, and a Geo-coding dialog will prompt you to find your Locality. 
+
+[http://biolink.googlecode.com/svn/wiki/WhatsNew.attach/GoogleEarth2.png]
+
+When the desired position has been located, click on the button “Use current location”. This will seed the Latitude and Longitude values in !BioLink, and will prompt to add the Elevation (if applicable). The Source field on the Rapid Data Entry screen will automatically be populated with "Google Earth". 
+
+[http://biolink.googlecode.com/svn/wiki/WhatsNew.attach/GoogleEarth1.png]
 
 *Note:* If you do not have Google Earth installed the 'Earth' button will not be displayed.
 
