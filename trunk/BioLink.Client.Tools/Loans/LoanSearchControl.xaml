@@ -55,7 +55,7 @@
                 <GridView>
                     <GridView.Columns>
                         <GridViewColumn Width="100" Header="Loan #" CellTemplate="{StaticResource IconColumnTemplate}" HeaderContainerStyle="{StaticResource hcs}" />
-                        <GridViewColumn Header="Request by" Width="140" DisplayMemberBinding="{Binding Path=RequestedBy}" HeaderContainerStyle="{StaticResource hcs}"/>
+                        <GridViewColumn Header="Requested by" Width="140" DisplayMemberBinding="{Binding Path=RequestedBy}" HeaderContainerStyle="{StaticResource hcs}"/>
                         <GridViewColumn Header="Received by" Width="140" DisplayMemberBinding="{Binding Path=ReceivedBy}" HeaderContainerStyle="{StaticResource hcs}"/>
                         <GridViewColumn Header="Authorized by" Width="140" DisplayMemberBinding="{Binding Path=AuthorizedBy}" HeaderContainerStyle="{StaticResource hcs}"/>
                         <GridViewColumn Header="Status" Width="100" DisplayMemberBinding="{Binding Path=Status}" HeaderContainerStyle="{StaticResource hcs}"/>
