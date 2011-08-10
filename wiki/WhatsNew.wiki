@@ -148,7 +148,7 @@ The Taxon tree now exposes a new report - the 'Multimedia' report. This report w
 
 There are two views presented once the report has completed. The table view lists a summary of the multimedia found, and the thumbnail view displays a thumbnail image for each item.
 
-*Note* Thumbnail image generation requires that each piece of multimedia be retrieved to a temporary file on your computer which could, if the number of items found is large, have an effect on the amount of free space available on your computer. Thumbnails are generated as a background process, and once started will continue to run until all thumbnails have been generated, or the report tab is closed.
+*Note* Thumbnail image generation requires that each piece of multimedia be retrieved to a temporary file on your computer which could, if the number of items found is large, have an (temporary) effect on the amount of free space available on your computer. Thumbnails are generated as a background process, and once started will continue to run until all thumbnails have been generated, or the report tab is closed. When the report tab is closed, all temporary files associated with the report will be deleted.
 
 = Rich tooltips =
 
