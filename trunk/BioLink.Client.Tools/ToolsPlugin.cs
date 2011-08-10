@@ -412,12 +412,21 @@ namespace BioLink.Client.Tools {
         }
 
         public void EditReference(int refID) {
-            var control = new ReferenceDetail(User, refID);
+
+            var readOnly = !User.HasPermission(PermissionCategory.SUPPORT_REFS, PERMISSION_MASK.UPDATE);
+
+            var control = new ReferenceDetail(User, refID, readOnly);
             PluginManager.Instance.AddNonDockableContent(this, control, string.Format("Reference Detail [{0}]", refID), SizeToContent.Manual);
         }
 
         public void AddNewReference() {
-            var control = new ReferenceDetail(User, -1);
+
+            if (!User.HasPermission(PermissionCategory.SUPPORT_REFS, PERMISSION_MASK.INSERT)) {
+                ErrorMessage.Show("You do not have sufficient priviledges to create new references!");
+                return;
+            }
+
+            var control = new ReferenceDetail(User, -1, false);
             PluginManager.Instance.AddNonDockableContent(this, control, "Reference Detail", SizeToContent.Manual);
         }
 
@@ -432,6 +441,12 @@ namespace BioLink.Client.Tools {
         }
 
         public void AddNewJournal() {
+
+            if (!User.HasPermission(PermissionCategory.SUPPORT_JOURNALS, PERMISSION_MASK.INSERT)) {
+                ErrorMessage.Show("You do not have sufficient priviledges to create new journals!");
+                return;
+            }
+
             var control = new JournalDetails(User, -1);
             PluginManager.Instance.AddNonDockableContent(this, control, "Journal Detail", SizeToContent.Manual);
         }

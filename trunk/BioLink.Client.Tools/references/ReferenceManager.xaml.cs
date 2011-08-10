@@ -160,6 +160,12 @@ namespace BioLink.Client.Tools {
         }
 
         public void DeleteReference(int refID, String refCode) {
+
+            if (!User.HasPermission(PermissionCategory.SUPPORT_REFS, PERMISSION_MASK.DELETE)) {
+                ErrorMessage.Show("You do not have sufficient priviledges to delete references!");
+                return;
+            }
+
             if (this.Question(string.Format("Are you sure you wish to permanently delete the reference '{0}'?", refCode), "Delete Reference?")) {
                 RegisterUniquePendingChange(new DeleteReferenceCommand(refID));
             }

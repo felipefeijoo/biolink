@@ -38,10 +38,11 @@ namespace BioLink.Client.Tools {
         private TabItem _mmTab;
         private TabItem _linksTab;
 
-        public ReferenceDetail(User user, int referenceID)
-            : base(user, "Reference:" + referenceID) {
+        public ReferenceDetail(User user, int referenceID, bool readOnly) : base(user, "Reference:" + referenceID) {
 
             InitializeComponent();
+
+            this.IsReadOnly = readOnly;
 
             var refTypeList = new List<RefTypeMapping>();
             foreach (string reftypecode in SupportService.RefTypeMap.Keys) {
@@ -72,20 +73,12 @@ namespace BioLink.Client.Tools {
             txtPossess.BindUser(User, PickListType.Phrase, "Reference Possess", TraitCategoryType.Reference);
             txtSource.BindUser(User, PickListType.Phrase, "Reference Source", TraitCategoryType.Reference);
 
-            _traitsTab = tabRef.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Reference, _viewModel));
-            _notesTab = tabRef.AddTabItem("Notes", new NotesControl(User, TraitCategoryType.Reference, _viewModel));
-            _mmTab = tabRef.AddTabItem("Multimedia", new MultimediaControl(User, TraitCategoryType.Reference, _viewModel));
-            _linksTab = tabRef.AddTabItem("Taxon Links", new OneToManyControl(new TaxonRefLinksControl(User, _viewModel.RefID)));
+            _traitsTab = tabRef.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Reference, _viewModel) { IsReadOnly = readOnly });
+            _notesTab = tabRef.AddTabItem("Notes", new NotesControl(User, TraitCategoryType.Reference, _viewModel) { IsReadOnly = readOnly });
+            _mmTab = tabRef.AddTabItem("Multimedia", new MultimediaControl(User, TraitCategoryType.Reference, _viewModel) { IsReadOnly = readOnly });
+            _linksTab = tabRef.AddTabItem("Taxon Links", new OneToManyControl(new TaxonRefLinksControl(User, _viewModel.RefID)) { IsReadOnly = readOnly });
 
             tabRef.AddTabItem("Ownership", new OwnershipDetails(_viewModel.Model));
-
-//            if (model.RefID < 0) {
-                // Can't insert/update any of these things until we have a valid ref id!
-                //_traitsTab.IsEnabled = false;
-                //_notesTab.IsEnabled = false;
-                //_mmTab.IsEnabled = false;
-                //_linksTab.IsEnabled = true;
-  //          }
 
             cmbRefType.SelectionChanged += new SelectionChangedEventHandler(cmbRefType_SelectionChanged);
 
@@ -252,11 +245,6 @@ namespace BioLink.Client.Tools {
             return edition;
         }
 
-
-        //    ProcRefPages = strPages
-
-        //End Function
-
         public string BuildRefRTF(Reference model) {
             // This routine builds the reference depening on its type.
 
@@ -374,7 +362,21 @@ namespace BioLink.Client.Tools {
             }
 
             return strRTF.ToString();
+        }
 
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(ReferenceDetail), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnIsReadOnlyChanged)));
+
+        public bool IsReadOnly {
+            get { return (bool)GetValue(IsReadOnlyProperty); }
+            set { SetValue(IsReadOnlyProperty, value); }
+        }
+
+        private static void OnIsReadOnlyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            var control = (ReferenceDetail)obj;
+            if (control != null) {
+                var readOnly = (bool)args.NewValue;
+                control.SetReadOnlyRecursive(readOnly);
+            }
         }
 
     }
