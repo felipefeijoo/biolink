@@ -48,8 +48,8 @@ namespace BioLink.Client.Extensibility {
             ShowNoteProperties();
         }
 
-        private void ShowNoteProperties() {            
-            var form = new NoteProperties(User, Model);
+        private void ShowNoteProperties() {
+            var form = new NoteProperties(User, Model) { IsReadOnly = IsReadOnly };
             form.Owner = this.FindParentWindow();
             form.ShowDialog();
         }
@@ -90,6 +90,23 @@ namespace BioLink.Client.Extensibility {
         public delegate void NoteEventHandler(object source, NoteViewModel note);
 
         #endregion
+
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(NoteControl), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnIsReadOnlyChanged)));
+
+        public bool IsReadOnly {
+            get { return (bool)GetValue(IsReadOnlyProperty); }
+            set { SetValue(IsReadOnlyProperty, value); }
+        }
+
+        private static void OnIsReadOnlyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            var control = (NoteControl)obj;
+            if (control != null) {
+                var readOnly = (bool)args.NewValue;
+                control.btnDelete.IsEnabled = !readOnly;
+                control.txtNote.IsReadOnly = readOnly;                
+            }
+        }
+
 
     }
 }

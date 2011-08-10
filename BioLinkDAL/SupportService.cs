@@ -1376,6 +1376,11 @@ namespace BioLink.Data {
             return list;
         }
 
+        public BiotaPermission GetBiotaPermission(int groupId, int userId, int taxonId) {
+            var mapper = new GenericMapperBuilder<BiotaPermission>().build();
+            return StoredProcGetOne<BiotaPermission>("spUserPermissionsForBiotaUsingIDs", mapper, _P("intGroupID", groupId), _P("intUserID", userId), _P("intBiotaID", taxonId));
+        }
+
         public bool HasBiotaPermission(int taxonID, PERMISSION_MASK mask) {
             var ret = StoredProcReturnVal<int>("spUserHasBiotaPermission", _P("vchrUsername", User.Username), _P("intBiotaID", taxonID), _P("intRequiredPermissionMask", (int)mask));
             // SP's return 0 when they succeed !
@@ -1697,6 +1702,10 @@ namespace BioLink.Data {
                 results.Add(mapper.Map(reader));
             });
             return results;
+        }
+
+        public void UpdateBiotaPermission(int groupId, int userId, int taxonId, PERMISSION_MASK mask1, PERMISSION_MASK mask2 = 0) {
+            StoredProcUpdate("spUserPermissionsInsertUpdateUsingIDs", _P("intGroupID", groupId), _P("intUserID", userId), _P("intBiotaID", taxonId), _P("intPermMask1", mask1), _P("intPermMask2", mask2));
         }
     }
 

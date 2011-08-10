@@ -61,16 +61,19 @@ namespace BioLink.Client.Extensibility {
 
             traitsPanel.Children.Clear();
 
-            _model.Sort(new Comparison<TraitViewModel>((a , b) => {
-                if (a.Name != null) {
-                    return a.Name.CompareTo(b.Name);
-                } else {
-                    return 0;
-                }
-            }));
+            if (_model != null) {
 
-            foreach (TraitViewModel m in _model) {
-                AddTraitEditor(m);
+                _model.Sort(new Comparison<TraitViewModel>((a, b) => {
+                    if (a.Name != null) {
+                        return a.Name.CompareTo(b.Name);
+                    } else {
+                        return 0;
+                    }
+                }));
+
+                foreach (TraitViewModel m in _model) {
+                    AddTraitEditor(m);
+                }
             }
         }
 

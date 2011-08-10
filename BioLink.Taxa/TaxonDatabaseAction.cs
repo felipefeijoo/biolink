@@ -33,6 +33,8 @@ namespace BioLink.Client.Taxa {
 
         protected override void BindPermissions(PermissionBuilder required) {
             required.Add(PermissionCategory.SPIN_EXPLORER, PERMISSION_MASK.ALLOW);
+            required.AddBiota(Taxon.TaxaID.Value, PERMISSION_MASK.UPDATE);
+            required.AddBiota(NewParent.TaxaID.Value, PERMISSION_MASK.UPDATE);
         }
 
     }
@@ -41,10 +43,6 @@ namespace BioLink.Client.Taxa {
 
         public UpdateTaxonCommand(Taxon taxon) {
             this.Taxon = taxon;
-        }
-
-        protected override void BindPermissions(PermissionBuilder required) {
-            required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
         }
 
         public Taxon Taxon { get; private set; }
@@ -95,6 +93,11 @@ namespace BioLink.Client.Taxa {
             return Taxon.GetHashCode();
         }
 
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
+            required.AddBiota(Taxon.TaxaID.Value, PERMISSION_MASK.UPDATE);
+        }
+
     }
 
     public class MergeTaxonDatabaseCommand : TaxonDatabaseCommand {
@@ -121,6 +124,8 @@ namespace BioLink.Client.Taxa {
 
         protected override void BindPermissions(PermissionBuilder required) {
             required.Add(PermissionCategory.SPIN_EXPLORER, PERMISSION_MASK.ALLOW);
+            required.AddBiota(Source.TaxaID.Value, PERMISSION_MASK.UPDATE);
+            required.AddBiota(Target.TaxaID.Value, PERMISSION_MASK.UPDATE);
         }
 
     }
@@ -144,6 +149,7 @@ namespace BioLink.Client.Taxa {
 
         protected override void BindPermissions(PermissionBuilder required) {
             required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.DELETE);
+            required.AddBiota(Taxon.TaxaID.Value, PERMISSION_MASK.DELETE);
         }
 
     }
@@ -173,9 +179,9 @@ namespace BioLink.Client.Taxa {
 
         protected override void BindPermissions(PermissionBuilder required) {
             required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.INSERT);
+            required.AddBiota(Taxon.TaxaID.Value, PERMISSION_MASK.INSERT);
         }
 
     }
-
     
 }

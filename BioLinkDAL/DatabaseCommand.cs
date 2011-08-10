@@ -23,11 +23,19 @@ namespace BioLink.Data {
         }
 
         public void CheckPermissions(User user) {
-            var required = new PermissionBuilder();
-            BindPermissions(required);
-            foreach (RequiredPermission mask in required.Permissions) {
-                user.CheckPermission(mask.Category, mask.Mask, "You do not have permission to perform this action.");
-            }            
+            var requiredPermissions = new PermissionBuilder();
+            BindPermissions(requiredPermissions);
+            foreach (RequiredPermission required in requiredPermissions.Permissions) {
+                if (required is BasicRequiredPermission) {
+                    var basic = required as BasicRequiredPermission;
+                    user.CheckPermission(basic.Category, basic.Mask, "You do not have permission to perform this action.");
+                } else if (required is BiotaRequiredPermission) {
+                    var taxonperm = required as BiotaRequiredPermission;
+                    if (!user.HasBiotaPermission(taxonperm.TaxonID, taxonperm.Mask)) {
+                        throw new NoPermissionException("You do not have permission to perform this action.");
+                    }
+                }
+            }
         }
 
         protected abstract void BindPermissions(PermissionBuilder required);
@@ -67,15 +75,30 @@ namespace BioLink.Data {
 
     }
 
-    public class RequiredPermission {
+    public abstract class RequiredPermission {
 
-        public RequiredPermission(PermissionCategory category, PERMISSION_MASK mask) {
-            this.Category = category;
+        protected RequiredPermission(PERMISSION_MASK mask) {
             this.Mask = mask;
         }
 
-        public PermissionCategory Category { get; private set; }
         public PERMISSION_MASK Mask { get; private set; }
+    }
+
+    public class BasicRequiredPermission : RequiredPermission {
+
+        public BasicRequiredPermission(PermissionCategory category, PERMISSION_MASK mask) : base(mask) {
+            this.Category = category;
+        }
+
+        public PermissionCategory Category { get; private set; }        
+    }
+
+    public class BiotaRequiredPermission : RequiredPermission {
+        public BiotaRequiredPermission(int taxonId, PERMISSION_MASK mask) : base(mask) {
+            this.TaxonID = taxonId;
+        }
+
+        public int TaxonID { get; private set; }
     }
 
     public class PermissionBuilder {
@@ -83,9 +106,15 @@ namespace BioLink.Data {
         private List<RequiredPermission> _required = new List<RequiredPermission>();
 
         public PermissionBuilder Add(PermissionCategory category, PERMISSION_MASK mask) {
-            _required.Add(new RequiredPermission(category, mask));
+            _required.Add(new BasicRequiredPermission(category, mask));
             return this;
         }
+
+        public PermissionBuilder AddBiota(int taxonId, PERMISSION_MASK mask) {
+            _required.Add(new BiotaRequiredPermission(taxonId, mask));
+            return this;
+        }
+
 
         /// <summary>
         /// Placeholder to help find commands that have no required permissions...

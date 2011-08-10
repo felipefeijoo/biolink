@@ -30,13 +30,13 @@
         </ListBox>
         <Grid Grid.Column="1" DataContext="{Binding ElementName=lstNames, Path=SelectedItem}" Name="detailGrid">
             <Label Content="Name:" Height="26" Margin="6,6,0,0" HorizontalAlignment="Left" Width="82" VerticalAlignment="Top" />
-            <ext:TextBox Height="23" Margin="86,8,6,0" VerticalAlignment="Top" Text="{Binding Name}"/>
+            <ext:TextBox Height="23" Margin="86,8,6,0" VerticalAlignment="Top" Text="{Binding Name}" x:Name="txtName"/>
 
             <Label Content="Reference:" Height="26" Margin="6,36,0,0" HorizontalAlignment="Left" Width="69" VerticalAlignment="Top" />
             <ext:LookupControl x:Name="txtReference" Margin="86,38,165,0" Height="23" VerticalAlignment="Top" ObjectID="{Binding RefID}" Text="{Binding RefCode}"/>
 
             <Label Content="Page:" Height="28" HorizontalAlignment="Right" Margin="0,36,116,0" Name="label1" VerticalAlignment="Top" Width="43" />
-            <ext:TextBox Height="23" HorizontalAlignment="Right" Name="textBox1" VerticalAlignment="Top" Width="104" Margin="0,38,6,0" Text="{Binding RefPage}"/>
+            <ext:TextBox Height="23" HorizontalAlignment="Right" Name="txtPage" VerticalAlignment="Top" Width="104" Margin="0,38,6,0" Text="{Binding RefPage}"/>
 
             <Label Content="Notes:" Height="26" Margin="6,67,0,0" HorizontalContentAlignment="Left" VerticalAlignment="Top" HorizontalAlignment="Left" Width="55" />
             <ext:BindableRichTextBox x:Name="txtNotes" RTF="{Binding Notes}" Margin="86,70,6,0" Height="66" VerticalAlignment="Top" />

@@ -88,9 +88,11 @@ namespace BioLink.Client.Taxa {
                 builder.Separator();
                 var pinnable = Explorer.Owner.CreatePinnableTaxon(Taxon.TaxaID.Value);
                 builder.New("_Pin to pin board").Handler(() => { PluginManager.Instance.PinObject(pinnable); }).End();
+                builder.Separator();
+                builder.New("_Permissions...").Handler(() => Explorer.EditBiotaPermissions(Taxon)).End();
                 builder.Separator();                
                 builder.New("_Edit Name...").Handler(() => { Explorer.EditTaxonName(Taxon); });
-                builder.New("_Edit Details...").Handler(() => { Explorer.ShowTaxonDetails(Taxon.TaxaID); }).End();
+                builder.New("_Edit Details...").Handler(() => { Explorer.EditTaxonDetails(Taxon.TaxaID); }).End();
             }
 
             return builder.ContextMenu;        
@@ -230,8 +232,10 @@ namespace BioLink.Client.Taxa {
             builder.Separator();
             builder.New("_Pin to pin board").Handler(() => { PluginManager.Instance.PinObject(new PinnableObject(TaxaPlugin.TAXA_PLUGIN_NAME, LookupType.Taxon, Taxon.TaxaID.Value)); }).End();
             builder.Separator();
+            builder.New("_Permissions...").Handler(() => Explorer.EditBiotaPermissions(Taxon)).End();
+            builder.Separator();
             builder.New("_Edit Name...").Handler(() => { Explorer.EditTaxonName(Taxon); }).End();
-            builder.New("_Edit Details...").Handler(() => { Explorer.ShowTaxonDetails(Taxon.TaxaID); }).End();
+            builder.New("_Edit Details...").Handler(() => { Explorer.EditTaxonDetails(Taxon.TaxaID); }).End();
 
             return builder.ContextMenu;
         }
@@ -269,8 +273,10 @@ namespace BioLink.Client.Taxa {
             builder.Separator();
             builder.New("_Pin to pin board").Handler(() => { PluginManager.Instance.PinObject(new PinnableObject(TaxaPlugin.TAXA_PLUGIN_NAME, LookupType.Taxon, Taxon.TaxaID.Value)); });
             builder.Separator();
+            builder.New("_Permissions...").Handler(() => Explorer.EditBiotaPermissions(Taxon)).End();
+            builder.Separator();
             builder.New("_Edit Name...").Handler(() => { Explorer.EditTaxonName(Taxon); });
-            builder.New("_Edit Details...").Handler(() => { Explorer.ShowTaxonDetails(Taxon.TaxaID); }).End();
+            builder.New("_Edit Details...").Handler(() => { Explorer.EditTaxonDetails(Taxon.TaxaID); }).End();
 
             return builder.ContextMenu;
         }

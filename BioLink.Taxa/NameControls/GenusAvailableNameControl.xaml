@@ -9,6 +9,7 @@
              d:DesignHeight="446" d:DesignWidth="724">
     <UserControl.Resources>
         <tax:GANDesignationTypeConverter x:Key="designationConverter" />
+        <ext:NegatingConverter x:Key="NegatingConverter" />
         <Style x:Key="StretchedContainerStyle" TargetType="{x:Type ListBoxItem}">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         </Style>
@@ -62,7 +63,7 @@
                                             <ColumnDefinition Width="100" />
                                         </Grid.ColumnDefinitions>                                    
                                         <ext:TextBox Height="23" Grid.Column="0" Margin="6,0,6,0"  x:Name="txtIncludedSpecies" Text="{Binding IncludedSpecies}" />
-                                        <Button Name="btnDeleteIncludedSpecies" Height="23" Grid.Column="1" Content="Delete" Width="80" Click="btnDeleteIncludedSpecies_Click" Tag="{Binding}"/>
+                                        <Button Name="btnDeleteIncludedSpecies" Height="23" Grid.Column="1" Content="Delete" Width="80" Click="btnDeleteIncludedSpecies_Click" Tag="{Binding}" IsEnabled="{Binding Path=IsReadOnly, Converter={StaticResource NegatingConverter}}" />
                                     </Grid>
                                 </DataTemplate>
                             </ItemsControl.Resources>

@@ -44,9 +44,11 @@ namespace BioLink.Client.Taxa {
                         for (int i = 1; i < bits.Length - 1; ++i) {
                             name.Author += bits[i] + " ";
                         }
-                        name.Author = name.Author.Trim();
+                        if (name.Author != null) {
+                            name.Author = name.Author.Trim();
+                        }
                     }
-                    if (name.Author.StartsWith("(")) {
+                    if (!string.IsNullOrWhiteSpace(name.Author) && name.Author.StartsWith("(")) {
                         name.Author = name.Author.Substring(1);
                     }
                 }

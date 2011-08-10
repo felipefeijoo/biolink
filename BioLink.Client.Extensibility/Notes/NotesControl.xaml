@@ -25,9 +25,9 @@
             <RowDefinition Height="30" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <ToolBar>
+        <ToolBar x:Name="toolbar">
 
-            <Button Style="{StaticResource formatImageStyle}" ToolTip="Add new note..." Click="btnAddNew_Click">
+            <Button Style="{StaticResource formatImageStyle}" ToolTip="Add new note..." Click="btnAddNew_Click" x:Name="btnAddNew">
                 <Image Source="..\images\AddNew.png" Stretch="None"></Image>
             </Button>
             

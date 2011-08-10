@@ -168,7 +168,7 @@ namespace BioLink.Client.Taxa {
 
                 list.Add(new CommandSeparator());
                 list.Add(new Command("Edit Name...", (dataobj) => { _explorer.ContentControl.EditTaxonName(taxon); }));
-                list.Add(new Command("Edit Details...", (dataobj) => { _explorer.ContentControl.ShowTaxonDetails(taxon.TaxaID); }));
+                list.Add(new Command("Edit Details...", (dataobj) => { _explorer.ContentControl.EditTaxonDetails(taxon.TaxaID); }));
             }
 
             if (selected[0] is DistributionRegionViewModel) {
@@ -228,7 +228,7 @@ namespace BioLink.Client.Taxa {
 
         public override void EditObject(LookupType type, int objectID) {
             if (type == LookupType.Taxon) {
-                (_explorer.Content as TaxonExplorer).ShowTaxonDetails(objectID);
+                (_explorer.Content as TaxonExplorer).EditTaxonDetails(objectID);
             }
         }
 

@@ -107,6 +107,29 @@ namespace BioLink.Client.Taxa {
                 LoadNames();
             }
         }
+
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(CommonNamesControl), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnIsReadOnlyChanged)));
+
+        public bool IsReadOnly {
+            get { return (bool)GetValue(IsReadOnlyProperty); }
+            set { SetValue(IsReadOnlyProperty, value); }
+        }
+
+        private static void OnIsReadOnlyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            var control = (CommonNamesControl)obj;
+            if (control != null) {
+                var readOnly = (bool)args.NewValue;
+
+                control.btnAdd.IsEnabled = !readOnly;
+                control.btnDelete.IsEnabled = !readOnly;
+                control.txtNotes.IsReadOnly = readOnly;
+                control.txtReference.IsReadOnly = readOnly;
+                control.txtPage.IsReadOnly = readOnly;
+                control.txtName.IsReadOnly = readOnly;
+                
+            }
+        }
+
     }
 
 }

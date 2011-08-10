@@ -57,6 +57,26 @@ namespace BioLink.Client.Taxa {
         private void btnPhrase_Click(object sender, RoutedEventArgs e) {
             InsertPhrase(txtQual, "ALN Standard Phrases");
         }
+
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(AvailableNameControl), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnIsReadOnlyChanged)));
+
+        public bool IsReadOnly {
+            get { return (bool)GetValue(IsReadOnlyProperty); }
+            set { SetValue(IsReadOnlyProperty, value); }
+        }
+
+        private static void OnIsReadOnlyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            var control = (AvailableNameControl)obj;
+            if (control != null) {
+                var readOnly = (bool)args.NewValue;
+                control.txtNameStatus.IsReadOnly = readOnly;
+                control.txtPage.IsReadOnly = readOnly;
+                control.txtQual.IsReadOnly = readOnly;
+                control.txtReference.IsReadOnly = readOnly;
+                control.btnPhrase.IsEnabled = !readOnly;
+            }
+        }
+
     }
 
     public class UpdateAvailableNameCommand : GenericDatabaseCommand<AvailableName> {

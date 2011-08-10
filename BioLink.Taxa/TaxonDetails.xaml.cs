@@ -31,39 +31,41 @@ namespace BioLink.Client.Taxa {
         }
         #endregion
 
-        public TaxonDetails(TaxaPlugin plugin, TaxonViewModel taxon, User user, Action<TaxonViewModel> committedAction) : base(user, "TaxonDetails::" + taxon.TaxaID.Value) {
+        public TaxonDetails(TaxaPlugin plugin, TaxonViewModel taxon, User user, Action<TaxonViewModel> committedAction, bool readOnly) : base(user, "TaxonDetails::" + taxon.TaxaID.Value) {
             InitializeComponent();
+
             this.Plugin = plugin;
             _committedAction = committedAction;
-            tabControl.AddTabItem("General", new TaxonNameDetails(taxon.TaxaID, User, committedAction));
+
+            tabControl.AddTabItem("General", new TaxonNameDetails(taxon.TaxaID, User, committedAction) { IsReadOnly = readOnly });
 
             if (taxon.IsAvailableOrLiteratureName) {
                 TaxonRank rank = Service.GetTaxonRank(taxon.ElemType);
                 switch (rank.Category.ToLower()) {
                     case "g":
-                        tabControl.AddTabItem("Available Name", new GenusAvailableNameControl(taxon, user));
+                        tabControl.AddTabItem("Available Name", new GenusAvailableNameControl(taxon, user) { IsReadOnly = readOnly });
                         break;
                     case "s":
-                        tabControl.AddTabItem("Available Name", new SpeciesAvailableNameControl(taxon, user));
+                        tabControl.AddTabItem("Available Name", new SpeciesAvailableNameControl(taxon, user) { IsReadOnly = readOnly });
                         break;
                     default:
-                        tabControl.AddTabItem("Available Name", new AvailableNameControl(taxon, user));
+                        tabControl.AddTabItem("Available Name", new AvailableNameControl(taxon, user) { IsReadOnly = readOnly });
                         break;
                 }
             } else {
-                tabControl.AddTabItem("Common Names", new CommonNamesControl(taxon, user));
+                tabControl.AddTabItem("Common Names", new CommonNamesControl(taxon, user) { IsReadOnly = readOnly });
             }
 
-            tabControl.AddTabItem("References", new ReferencesControl(user, TraitCategoryType.Taxon, taxon.TaxaID));
+            tabControl.AddTabItem("References", new ReferencesControl(user, TraitCategoryType.Taxon, taxon.TaxaID) { IsReadOnly = readOnly });
 
             if ((!taxon.AvailableName.ValueOrFalse() && !taxon.LiteratureName.ValueOrFalse())) {
-                tabControl.AddTabItem("Distribution", new DistributionControl(Plugin, user, taxon));
+                tabControl.AddTabItem("Distribution", new DistributionControl(Plugin, user, taxon) { IsReadOnly = readOnly });
             }
 
-            tabControl.AddTabItem("Multimedia", new MultimediaControl(User, TraitCategoryType.Taxon, taxon));            
-            tabControl.AddTabItem("Associates", new OneToManyControl(new AssociatesOneToManyController(User, TraitCategoryType.Taxon, taxon)));
-            tabControl.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Taxon, taxon));            
-            tabControl.AddTabItem("Notes", new NotesControl(User, TraitCategoryType.Taxon, taxon));
+            tabControl.AddTabItem("Multimedia", new MultimediaControl(User, TraitCategoryType.Taxon, taxon) { IsReadOnly = readOnly });
+            tabControl.AddTabItem("Associates", new OneToManyControl(new AssociatesOneToManyController(User, TraitCategoryType.Taxon, taxon)) { IsReadOnly = readOnly });
+            tabControl.AddTabItem("Traits", new TraitControl(User, TraitCategoryType.Taxon, taxon) { IsReadOnly = readOnly });
+            tabControl.AddTabItem("Notes", new NotesControl(User, TraitCategoryType.Taxon, taxon) { IsReadOnly = readOnly });
             tabControl.AddTabItem("Ownership", new OwnershipDetails(taxon.Taxon));
 
             this.Taxon = taxon;

@@ -129,29 +129,31 @@ namespace BioLink.Client.Taxa {
 
             PluginManager.Instance.ShowRegionSelector(regions, (selectedRegions) => {
 
-                var newModel = new ObservableCollection<HierarchicalViewModelBase>();
+                if (!IsReadOnly) {
+                    var newModel = new ObservableCollection<HierarchicalViewModelBase>();
 
-                // rebuild the model from the new list of regions...
-                foreach (RegionDescriptor region in selectedRegions) {
-                    var existing = FindDistributionByPath(region.Path);
-                    TaxonDistribution model = null;
-                    if (existing != null) {
-                        model = existing.Model;
-                    } else {
-                        model = new TaxonDistribution();
-                        model.DistRegionFullPath = region.Path;
-                        model.BiotaDistID = -1;                        
-                        model.ThroughoutRegion = region.IsThroughoutRegion;
+                    // rebuild the model from the new list of regions...
+                    foreach (RegionDescriptor region in selectedRegions) {
+                        var existing = FindDistributionByPath(region.Path);
+                        TaxonDistribution model = null;
+                        if (existing != null) {
+                            model = existing.Model;
+                        } else {
+                            model = new TaxonDistribution();
+                            model.DistRegionFullPath = region.Path;
+                            model.BiotaDistID = -1;
+                            model.ThroughoutRegion = region.IsThroughoutRegion;
+                        }
+                        AddViewModelByPath(newModel, model);
                     }
-                    AddViewModelByPath(newModel, model);
-                }
 
-                _model.Clear();
-                foreach (HierarchicalViewModelBase item in newModel) {
-                    _model.Add(item);
+                    _model.Clear();
+                    foreach (HierarchicalViewModelBase item in newModel) {
+                        _model.Add(item);
+                    }
+                    RegisterUniquePendingChange(new SaveDistributionRegionsCommand(Taxon.Taxon, _model));
+                    ExpandAll(_model);
                 }
-                RegisterUniquePendingChange(new SaveDistributionRegionsCommand(Taxon.Taxon, _model));
-                ExpandAll(_model);
             });
         }
 
@@ -235,6 +237,29 @@ namespace BioLink.Client.Taxa {
                     RegisterUniquePendingChange(new SaveDistributionRegionsCommand(Taxon.Taxon, _model));
                 }
             });            
+        }
+
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(DistributionControl), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnIsReadOnlyChanged)));
+
+        public bool IsReadOnly {
+            get { return (bool)GetValue(IsReadOnlyProperty); }
+            set { SetValue(IsReadOnlyProperty, value); }
+        }
+
+        private static void OnIsReadOnlyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            var control = (DistributionControl)obj;
+            if (control != null) {
+                var readOnly = (bool)args.NewValue;
+
+                control.txtDistribution.IsReadOnly = readOnly;
+                control.txtQualification.IsReadOnly = readOnly;
+
+                control.btnRegionExplorer.IsEnabled = !readOnly;
+                control.btnRemove.IsEnabled = !readOnly;
+                control.chkIntroduced.IsEnabled = !readOnly;
+                control.chkThroughoutRegion.IsEnabled = !readOnly;
+                control.chkUncertain.IsEnabled = !readOnly;                
+            }
         }
 
     }

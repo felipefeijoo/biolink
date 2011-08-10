@@ -43,7 +43,7 @@ namespace BioLink.Client.Utilities {
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="message"></param>
-        public static void AssetNotNull(object obj, string message = "Object is null!") {
+        public static void AssertNotNull(object obj, string message = "Object is null!") {
 #if (DEBUG)
             if (obj == null) {
                 throw new AssertionFailedException(message);

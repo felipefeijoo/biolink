@@ -66,7 +66,7 @@ namespace BioLink.Client.Extensibility {
             notesPanel.Children.Clear();
 
             foreach (NoteViewModel m in _model) {
-                var control = new NoteControl(User, m);
+                var control = new NoteControl(User, m) { IsReadOnly = IsReadOnly };
                 control.NoteDeleted += new NoteControl.NoteEventHandler(control_NoteDeleted);
                 control.TextSelectionChanged += new NoteControl.NoteEventHandler(control_TextSelectionChanged);
 
@@ -191,16 +191,24 @@ namespace BioLink.Client.Extensibility {
                 form.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                 if (form.ShowDialog().ValueOrFalse()) {
                     form.ApplyPropertiesToTextSelection(_currentNoteControl.txtNote.Selection);
-                    //var selection = _currentNoteControl.txtNote.Selection;
-                    //selection.ApplyPropertyValue(TextElement.FontFamilyProperty, form.SelectedFontFamily);
-                    //selection.ApplyPropertyValue(TextElement.FontSizeProperty, form.SelectedFontSize);
-                    //selection.ApplyPropertyValue(TextElement.FontStretchProperty, form.SelectedFontStretch);
-                    //selection.ApplyPropertyValue(TextElement.FontStyleProperty, form.SelectedFontStyle);
-                    //selection.ApplyPropertyValue(TextElement.FontWeightProperty, form.SelectedFontWeight);                    
                 }
             }
 
+        }
 
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(NotesControl), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnIsReadOnlyChanged)));
+
+        public bool IsReadOnly {
+            get { return (bool)GetValue(IsReadOnlyProperty); }
+            set { SetValue(IsReadOnlyProperty, value); }
+        }
+
+        private static void OnIsReadOnlyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
+            var control = (NotesControl)obj;
+            if (control != null) {
+                var readOnly = (bool)args.NewValue;                
+                control.toolbar.IsEnabled = !readOnly;
+            }
         }
 
     }

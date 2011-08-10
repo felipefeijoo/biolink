@@ -321,7 +321,7 @@ namespace BioLink.Client.Extensibility {
                     break;
             }
 
-            Debug.AssetNotNull(widths);
+            Debug.AssertNotNull(widths);
             Debug.Assert(widths.Length == 7);
 
             // Now apply the column widths
