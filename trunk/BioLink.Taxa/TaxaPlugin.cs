@@ -190,7 +190,7 @@ namespace BioLink.Client.Taxa {
             list.Add(new SiteForTaxaReport(User, taxa[0]));
             list.Add(new ChecklistReport(User, taxa[0]));
             list.Add(new TaxonStatisticsReport(User, taxa[0]));
-            list.Add(new MultimediaReport(User, taxa[0].TaxaID.Value, TraitCategoryType.Taxon));
+            list.Add(new MultimediaReport(User, taxa[0], TraitCategoryType.Taxon));
 
 
             return list;

@@ -21,52 +21,15 @@ namespace BioLink.Client.Extensibility {
         private MaterialService _materialService;
         private Dictionary<string, bool> _idCache = new Dictionary<string, bool>();
 
-        protected TaxaService TaxaService {
-            get {
-                if (_taxaService == null) {
-                    _taxaService = new TaxaService(User);
-                }
-                return _taxaService;
-            }
-        }
-
-        protected SupportService SupportService {
-            get {
-                if (_supportService== null) {
-                    _supportService = new SupportService(User);
-                }
-                return _supportService;
-            }
-        }
-
-        protected XMLIOService XMLIOService {
-            get {
-                if (_xmlService == null) {
-                    _xmlService = new XMLIOService(User);
-                }
-                return _xmlService;
-            }
-        }
-
-        protected MaterialService MaterialService {
-            get {
-                if (_materialService == null) {
-                    _materialService = new MaterialService(User);
-                }
-                return _materialService;
-            }
-        }
-
-
-        public MultimediaReport(User user, int objectId, TraitCategoryType lookupType) : base(user) {
-            ObjectID = objectId;
+        public MultimediaReport(User user, ViewModelBase target, TraitCategoryType lookupType) : base(user) {
+            Target = target;
             ObjectType = lookupType;
             RegisterViewer(new TabularDataViewerSource());
             RegisterViewer(new MultimediaThumbnailViewerSource());
         }
 
         public override string Name {
-            get { return "Multimedia Report"; }
+            get { return string.Format("Multimedia Report for '{0}'", Target.DisplayLabel); }
         }
 
         public override Data.DataMatrix ExtractReportData(IProgressObserver progress) {
@@ -75,7 +38,7 @@ namespace BioLink.Client.Extensibility {
             
             switch (ObjectType) {
                 case TraitCategoryType.Taxon:
-                    results = AddMediaForTaxon(ObjectID, progress);
+                    results = AddMediaForTaxon(Target.ObjectID.Value, progress);
                     break;
             }
 
@@ -207,7 +170,43 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        protected int ObjectID { get; private set; }
+        protected TaxaService TaxaService {
+            get {
+                if (_taxaService == null) {
+                    _taxaService = new TaxaService(User);
+                }
+                return _taxaService;
+            }
+        }
+
+        protected SupportService SupportService {
+            get {
+                if (_supportService == null) {
+                    _supportService = new SupportService(User);
+                }
+                return _supportService;
+            }
+        }
+
+        protected XMLIOService XMLIOService {
+            get {
+                if (_xmlService == null) {
+                    _xmlService = new XMLIOService(User);
+                }
+                return _xmlService;
+            }
+        }
+
+        protected MaterialService MaterialService {
+            get {
+                if (_materialService == null) {
+                    _materialService = new MaterialService(User);
+                }
+                return _materialService;
+            }
+        }
+
+        protected ViewModelBase Target { get; private set; }        
 
         protected TraitCategoryType ObjectType { get; private set; }
     }
