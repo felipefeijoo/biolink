@@ -173,12 +173,11 @@ Some gazetteer functions are found on the menu bar under Tools -> eGaz.
 The Choose file button allows you to select a gazetteer file. The format of Gazetteer files has changed for version 3, and older (version 2.5 and earlier) gazetteer files can be converted via the 'Legacy eGaz file converter' menu option (Tools->eGaz).
 
 = Filters =
-Report result tables, the query tool field lists and import field selectors are just a few of the lists withing !BioLink 3.0 that have a filter box associated with them. 
+Report result tables, User manager, Query tool and import field selectors are just a few of the lists within !BioLink 3.0 that now have a filter box associated with them. 
 
 [http://biolink.googlecode.com/svn/wiki/WhatsNew.attach/QueryToolFilter.png]
 
 The filter box allows you to quickly filter out items that do not match text entered. This allows you to quick find a field (in the query tool, for example) if you already know the name of the item you wish to select.
-
 
 = Google Earth integration =
 
