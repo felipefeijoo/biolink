@@ -194,13 +194,3 @@ Loans can now be searched by the Taxon name supplied in the material attached to
 [http://biolink.googlecode.com/svn/wiki/WhatsNew.attach/LoansByTaxonName.png]
 
 *Note:* The Find in all (Loan fields) will *not* search the taxon name field.
-
-= To do... =
-
-=== Query Tool, Label sets and Report results ===
-
-=== The Map tool ===
-
-=== Configuration store ===
-
-=== Find loans by Taxon ===
