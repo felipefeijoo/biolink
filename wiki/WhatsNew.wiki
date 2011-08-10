@@ -12,7 +12,7 @@ The screen below is how !BioLink will appear when you log in for the first time.
 
 [http://biolink.googlecode.com/svn/wiki/WhatsNew.attach/guide1.png]
 
-When you first open !BioLink 3, the screen will look like the one above (Windows Vista and Windows 7 users will notice other cosmetic differences due to the Aero theme). You will note that there is now a stack of tabs on the left hand side of the screen, one for each of the main "Explorers" in !BioLink - the Material Explorer, Taxon Explorer, Gazetteer and the new Pin Board. The rest of the screen by default is filled by the Welcome tab window, which tells contains a welcome message that is specific to the database to which you are connected (!BioLink administrators can change the content of this page. See [WelcomeHTML here] for more details.)
+When you first open !BioLink 3, the screen will look like the one above (Windows Vista and Windows 7 users will notice other cosmetic differences due to the Aero theme). You will note that there is now a stack of tabs on the left hand side of the screen, one for each of the main "Explorers" in !BioLink - the Material Explorer, Taxon Explorer, Gazetteer and the new Pin Board. The rest of the screen by default is filled by the Welcome tab window, which contains a welcome message that is specific to the database to which you are connected (!BioLink administrators can change the content of this page. See [WelcomeHTML here] for more details.)
 
 == Docking and Undocking Explorers ==
 
@@ -132,6 +132,9 @@ All the ellipsis buttons work in the same way for populating fields, but there a
 
 * This version of BioLink defaults the S for South in the Longitude field, whereas in previous versions it always defaulted whatever the last Longitude you used was. If you need to add a Northern hemisphere record, you will need to remember to change the Longitude field to N.
 
+=== Google Earth integration ===
+
+Google Earth integration has also been added to this version of BioLink. Google Earth must be already installed on your computer to make this feature work. You can use this feature to populate the Latitude, Longitude and Elevation of a locality in both the Site Detail and Rapid Data Entry (RDE) screens. Clicking on the earth symbol initiates Google Earth, and a Geo-coding dialog will prompt you to find your Locality. When the desired position has been located, click on the button “Use current location”. This will seed the Latitude and Longitude values in !BioLink, and will prompt to add the Elevation (if applicable). The Source field on the Rapid Data Entry screen will automatically be populated with "Google Earth". 
 
 = To do... =
 
