@@ -149,6 +149,12 @@ namespace BioLink.Client.Tools {
         }
 
         private void DeleteJournal(JournalViewModel model) {
+
+            if (!User.HasPermission(PermissionCategory.SUPPORT_JOURNALS, PERMISSION_MASK.DELETE)) {
+                ErrorMessage.Show("You do not have sufficient priviledges to delete journals!");
+                return;
+            }
+
             var service = new SupportService(User);
             if (service.OkToDeleteJournal(model.JournalID)) {
                 if (this.Question(string.Format("Are you sure you wish to permanently delete the journal '{0}'?", model.FullName), "Delete Journal?")) {
@@ -174,6 +180,12 @@ namespace BioLink.Client.Tools {
         }
 
         private void AddNew() {
+
+            if (!User.HasPermission(PermissionCategory.SUPPORT_JOURNALS, PERMISSION_MASK.INSERT)) {
+                ErrorMessage.Show("You do not have sufficient priviledges to add new journals!");
+                return;
+            }
+
             Owner.AddNewJournal();
         }
 
