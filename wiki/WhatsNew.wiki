@@ -73,15 +73,15 @@ The Pin Board allows you to "pin" favourite or regularly used items. Items on th
 
 = Associates =
 
-There are two new Associates features in !BioLink 3.0 - The associates view on the Associates for taxa report, and the simplified Pest/Host associate editor
+There are two new "Associates" features in !BioLink 3.0 - The "Associates" view on the Associates for taxa report, and the simplified Pest/Host associate editor.
 
 == Associates viewer (Associates for Taxa report) ==
 
-The associates view of the "Associates for Taxa" report is an attempt to present the relationships involved in an association more explicit.
+The associates view of the "Associates for Taxa" report is an attempt to present the relationships involved in an association in an unambiguous manner.
 
 [http://biolink.googlecode.com/svn/wiki/WhatsNew.attach/AssociatesReport1.png]
 
-Each outer box in the view represents an association between two elements. Each element in an association is either a Taxon, and piece of material (specimen) or a description. Because a description does not exists as separate entity outside of the association, a description will always appear on the right hand side. Each inner box describes one participant in the association. Rich Tooltips will be displayed when the mouse is hovered over either side.
+Each outer box in the view represents an association between two elements. Each element in an association is either a Taxon, and piece of material (specimen) or a piece of descriptive text (description). Because a description does not exist as separate entity outside of the association, a description will always appear on the right hand side of the association. Each inner box describes one participant in the association. Rich Tooltips will be displayed when the mouse is hovered over either side.
 
 == Simplified Pest/Host associates editor ==
 
