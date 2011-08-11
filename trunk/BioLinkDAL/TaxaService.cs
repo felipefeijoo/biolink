@@ -316,6 +316,14 @@ namespace BioLink.Data {
             }
         }
 
+        public List<TaxonRank> GetDefaultChildRanks(string parentElemType, string kingdomCode) {
+            var list = new List<TaxonRank>();
+            StoredProcReaderForEach("spBiotaDefGetChildren", (reader) => {
+                list.Add(TaxonMapper.MapTaxonRank(reader));
+            }, _P("vchrRank", parentElemType), _P("vchrKingdom", kingdomCode));
+            return list;
+        }
+
         #region Names
 
         public void InsertOrUpdateAvailableName(AvailableName name) {

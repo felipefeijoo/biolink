@@ -22,7 +22,8 @@
     <system:String x:Key="TaxonExplorer.menu.ShowInContents">Show in contents</system:String>
     <system:String x:Key="TaxonExplorer.menu.Add">Add</system:String>
     <system:String x:Key="TaxonExplorer.menu.Delete">Delete '{0}'</system:String>
-    <system:String x:Key="TaxonExplorer.menu.Rename">Rename '{0}'</system:String>    
+    <system:String x:Key="TaxonExplorer.menu.Rename">Rename '{0}'</system:String>
+    <system:String x:Key="TaxonExplorer.menu.ChangeRank">Change rank...</system:String>
     <system:String x:Key="TaxonExplorer.menu.Refresh">Refresh</system:String>
     <system:String x:Key="TaxonExplorer.menu.Unlock">Unlock Taxon Explorer for editing</system:String>
     <system:String x:Key="TaxonExplorer.menu.ExpandAll">Expand all children</system:String>

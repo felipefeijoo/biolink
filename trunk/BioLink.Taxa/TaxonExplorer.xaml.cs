@@ -531,7 +531,7 @@ namespace BioLink.Client.Taxa {
             _layer.Add(_adorner);
             _IsDragging = true;
             
-            if (taxon != null) {
+            if (taxon != null && !string.IsNullOrWhiteSpace(taxon.TaxaFullName)) {
                 DataObject data = new DataObject("Taxon", taxon);
                 data.SetData(PinnableObject.DRAG_FORMAT_NAME, Owner.CreatePinnableTaxon(taxon.TaxaID.Value));
                 data.SetData(DataFormats.Text, taxon.TaxaFullName);
@@ -1420,6 +1420,87 @@ namespace BioLink.Client.Taxa {
 
             PluginManager.Instance.AddNonDockableContent(Owner, new BiotaPermissions(User, taxon, readOnly), "Taxon Permissions for '" + taxon.TaxaFullName + (readOnly ? "' (Read Only)" : "'"), SizeToContent.Manual);
         }
+
+        internal void ChangeRank(TaxonViewModel taxon) {
+            if (!User.HasBiotaPermission(taxon.TaxaID.Value, PERMISSION_MASK.UPDATE)) {
+                ErrorMessage.Show("You do not have sufficient priviledges to perform this operation!");
+                return;
+            }
+
+            var validTypes = GetValidChildren(taxon);
+
+            var frm = new ChangeRankWindow(User, taxon, validTypes);
+            frm.Owner = this.FindParentWindow();
+            if (frm.ShowDialog() == true) {
+                var selectedRank = frm.SelectedRank == null ? "" : frm.SelectedRank.Code;
+                if (selectedRank != taxon.ElemType) {
+                    taxon.ElemType = selectedRank; // should trigger a change!
+                    InsertUniquePendingUpdate(taxon);
+                }                
+            }
+
+        }
+
+        private List<TaxonRank> GetValidChildren(TaxonViewModel taxon) {
+
+            // Look at the valid ranks for taxon's children...
+
+            string siblingRank = null;
+
+            bool parentIsRoot = false;
+
+            var parent = taxon.Parent as TaxonViewModel;
+            if (parent == null) {
+                if (tabFind.IsSelected == true) {
+                    ErrorMessage.Show("Could not find the rank of the current items parent. Please use 'Find in explorer' and try again");
+                    return null;
+                } else {
+                    parentIsRoot = true;
+                }
+            } else {
+                siblingRank = GetChildElementType(parent);
+            }
+
+            var currentChildRank = GetChildElementType(taxon);
+            var list = new List<TaxonRank>();
+            if (parentIsRoot) {
+                // Get the element type of the first taxon in tree...
+                var toplevel = _explorerModel[0].Children[0] as TaxonViewModel;
+                string elemType = Service.GetTaxonRanks()[0].Code;
+                if (toplevel != null) {
+                    elemType = toplevel.ElemType;
+                }
+                list.Add(Service.GetTaxonRank(elemType));
+            } else if (!string.IsNullOrWhiteSpace(siblingRank)) {
+                // sibling has a rank, use it...
+                list.Add(Service.GetTaxonRank(siblingRank));                
+            } else if (string.IsNullOrWhiteSpace(parent.ElemType)) {
+                // parent is unranked, so allow all options...                
+                list.AddRange(Service.GetDefaultChildRanks("", taxon.KingdomCode));
+            } else if (string.IsNullOrWhiteSpace(currentChildRank)) {
+                // Current item has no children or children of no rank so the current item can become any of the valid children of the parent.
+                list.AddRange(Service.GetDefaultChildRanks(parent.ElemType, taxon.KingdomCode));
+            } else {
+                // For each of the possible child types associated with the parent, see which ones will co-exist with the 'to be ranked' items children.
+                var candidates = Service.GetDefaultChildRanks(parent.ElemType, taxon.KingdomCode);
+                foreach (TaxonRank candidate in candidates) {
+                    var validChildTypes = Service.GetDefaultChildRanks(currentChildRank, taxon.KingdomCode);
+                    bool match = false;
+                    foreach (TaxonRank child in validChildTypes) {
+                        if (candidate.Code.Equals(child.Code)) {
+                            match = true;
+                            break;
+                        }
+                    }
+                    if (match) {
+                        list.Add(candidate);
+                    }
+                }
+            }
+
+            return list;
+        }
+
     }
 
 }

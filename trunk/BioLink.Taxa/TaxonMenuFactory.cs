@@ -32,6 +32,8 @@ namespace BioLink.Client.Taxa {
                 if (!Taxon.IsRootNode) {
                     builder.New("TaxonExplorer.menu.Delete", Taxon.DisplayLabel).Handler(() => { Explorer.DeleteTaxon(Taxon); });
                     builder.New("TaxonExplorer.menu.Rename", Taxon.DisplayLabel).Handler(() => { Explorer.RenameTaxon(Taxon); });
+                    builder.Separator();
+                    builder.New("TaxonExplorer.menu.ChangeRank", Taxon.DisplayLabel).Handler(() => { Explorer.ChangeRank(Taxon); });
                 }
 
                 MenuItem addMenu = BuildAddMenuItems();
@@ -208,6 +210,8 @@ namespace BioLink.Client.Taxa {
                 if (!Taxon.IsRootNode) {
                     builder.New("TaxonExplorer.menu.Delete", Taxon.DisplayLabel).Handler(() => { Explorer.DeleteTaxon(Taxon); });
                     builder.New("TaxonExplorer.menu.Rename", Taxon.DisplayLabel).Handler(() => { Explorer.RenameTaxon(Taxon); });
+                    builder.Separator();
+                    builder.New("TaxonExplorer.menu.ChangeRank", Taxon.DisplayLabel).Handler(() => { Explorer.ChangeRank(Taxon); });
                 }
 
                 MenuItem addMenu = BuildAddMenuItems();
