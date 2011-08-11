@@ -34,6 +34,12 @@ namespace BioLink.Client.Taxa {
                     builder.New("TaxonExplorer.menu.Rename", Taxon.DisplayLabel).Handler(() => { Explorer.RenameTaxon(Taxon); });
                     builder.Separator();
                     builder.New("TaxonExplorer.menu.ChangeRank", Taxon.DisplayLabel).Handler(() => { Explorer.ChangeRank(Taxon); });
+                    if (Taxon.AvailableName == true) {
+                        builder.New("TaxonExplorer.menu.ChangeToLiterature", Taxon.DisplayLabel).Handler(() => { Explorer.ChangeAvailable(Taxon); });
+                    } else if (Taxon.LiteratureName == true) {
+                        builder.New("TaxonExplorer.menu.ChangeToAvailable", Taxon.DisplayLabel).Handler(() => { Explorer.ChangeAvailable(Taxon); });
+                    } 
+
                 }
 
                 MenuItem addMenu = BuildAddMenuItems();
@@ -212,6 +218,11 @@ namespace BioLink.Client.Taxa {
                     builder.New("TaxonExplorer.menu.Rename", Taxon.DisplayLabel).Handler(() => { Explorer.RenameTaxon(Taxon); });
                     builder.Separator();
                     builder.New("TaxonExplorer.menu.ChangeRank", Taxon.DisplayLabel).Handler(() => { Explorer.ChangeRank(Taxon); });
+                    if (Taxon.AvailableName == true) {
+                        builder.New("TaxonExplorer.menu.ChangeToLiterature", Taxon.DisplayLabel).Handler(() => { Explorer.ChangeAvailable(Taxon); });
+                    } else if (Taxon.LiteratureName == true) {
+                        builder.New("TaxonExplorer.menu.ChangeToAvailable", Taxon.DisplayLabel).Handler(() => { Explorer.ChangeAvailable(Taxon); });
+                    } 
                 }
 
                 MenuItem addMenu = BuildAddMenuItems();
