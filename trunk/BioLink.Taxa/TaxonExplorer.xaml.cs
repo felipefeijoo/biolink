@@ -1544,6 +1544,95 @@ namespace BioLink.Client.Taxa {
             }
 
         }
+
+        internal void DeleteLevel(TaxonViewModel taxon) {
+            if (taxon == null) {
+                return;
+            }
+
+            if (!User.HasBiotaPermission(taxon.TaxaID.Value, PERMISSION_MASK.DELETE)) {
+                ErrorMessage.Show("You do not have sufficient priviledges to perform this operation!");
+                return;
+            }
+
+            var parent = taxon.Parent as TaxonViewModel;
+            if (parent == null) {
+                ErrorMessage.Show("You cannot remove the top level!");
+                return;
+            }
+
+            // Prompt the user to continue.
+            if (!this.Question("Are you sure you would like to remove all the valid names in the level of which '" + taxon.TaxaFullName + "' is a member.", "Delete Level?")) {
+                return;
+            }
+
+            // Create a list of children that need to be moved to the parent....
+            taxon.IsExpanded = true;
+            var parentRank = Service.GetTaxonRank(parent.ElemType);
+
+            var deleteList = new List<TaxonViewModel>();
+            foreach (TaxonViewModel sibling in parent.Children) {
+                if (!sibling.ElemType.Equals(TaxonRank.INCERTAE_SEDIS) && !sibling.ElemType.Equals(TaxonRank.SPECIES_INQUIRENDA) && !sibling.IsAvailableOrLiteratureName) {
+                    deleteList.Add(sibling);
+                }
+            }
+
+            var childList = new List<TaxonViewModel>();
+            string childType = "";
+            foreach (TaxonViewModel sibling in deleteList) {
+                // Determine from the examination of the current child if the process can continue.                
+                sibling.IsExpanded = true;
+
+                string strCurrentSiblingElemType = GetChildElementType(sibling);
+                var siblingChildRank = Service.GetTaxonRank(strCurrentSiblingElemType);
+
+                if (string.IsNullOrEmpty(childType)) {
+                    childType = strCurrentSiblingElemType;
+                    if (!string.IsNullOrEmpty(strCurrentSiblingElemType)) {
+                        // If the child type cannot exist under the new parent type, then exit
+                        if (!Service.IsValidChild(siblingChildRank, parentRank)) {
+                            ErrorMessage.Show("Delete Level Failed: Items of type '" + siblingChildRank.LongName + "' cannot exist as children of a '" + parentRank.LongName + "' item!");
+                            return;
+                        }
+                    }
+                } else {
+                    if (!string.IsNullOrEmpty(strCurrentSiblingElemType) && !sibling.ElemType.Equals(childType)) {
+                        // tell the user that the children of the level being removed are mixed.
+                        ErrorMessage.Show("Delete Level Failed: The subitems of the level being removed must be of the same type!");
+                        return;
+                    }
+                }
+
+                foreach (TaxonViewModel child in sibling.Children) {
+                    childList.Add(child);
+                }
+            }
+
+            // Go through the collection and convert the available names if required, and move each element...
+            foreach (TaxonViewModel child in childList) {
+                if (child.IsAvailableOrLiteratureName) {
+                    child.ElemType = parent.ElemType;
+                }
+                Move(child, parent);
+                InsertUniquePendingUpdate(child);
+            }
+
+            foreach (TaxonViewModel sibling in deleteList) {
+                // schedule the database bit...                                
+                RegisterPendingChange(new DeleteTaxonDatabaseCommand(sibling), this);
+                // and the update the UI
+                MarkItemAsDeleted(sibling);
+            }
+
+        }
+
+        protected void Move(TaxonViewModel source, TaxonViewModel target) {
+            source.Parent.Children.Remove(source);
+            target.Children.Add(source);
+            source.Parent = target;
+            source.TaxaParentID = target.TaxaID;
+        }
+
     }
 
 }
