@@ -1501,6 +1501,49 @@ namespace BioLink.Client.Taxa {
             return list;
         }
 
+
+        internal void ChangeAvailable(TaxonViewModel taxon) {
+
+            if (taxon == null) {
+                return;
+            }
+
+            if (!User.HasBiotaPermission(taxon.TaxaID.Value, PERMISSION_MASK.UPDATE)) {
+                ErrorMessage.Show("You do not have sufficient priviledges to perform this operation!");
+                return;
+            }
+
+            var rankCategory = Service.GetTaxonRank(taxon.ElemType).Category ?? "";
+
+            string auxMsg = "";
+
+            if (taxon.AvailableName == true) {
+                
+                switch (rankCategory.ToUpper()) {
+                    case "G":
+                        auxMsg = "WARNING: Changing to Literature Name will result in the permanent loss of any Type Species Designation information.\n\n";
+                        break;
+                    case "S":
+                        auxMsg = "WARNING: Changing to Literature Name will result in the permanent loss of any Type Data information.\n\n";
+                        break;
+                }
+
+                if (this.Question(auxMsg + "Are you sure you wish to change this Available Name to a Literature Name?", "Change to Literature Name?")) {
+                    taxon.LiteratureName = true;
+                    taxon.AvailableName = false;
+                    InsertUniquePendingUpdate(taxon);
+                }
+            } else if (taxon.LiteratureName == true) {
+
+                if (this.Question("Are you sure you wish to change this Literature Name to an Available Name?", "Change to Available Name?")) {
+                    taxon.LiteratureName = false;
+                    taxon.AvailableName = true;
+                    InsertUniquePendingUpdate(taxon);
+                }
+
+            }
+
+        }
     }
 
 }
