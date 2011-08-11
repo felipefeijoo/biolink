@@ -22,6 +22,7 @@
     <system:String x:Key="TaxonExplorer.menu.ShowInContents">Show in contents</system:String>
     <system:String x:Key="TaxonExplorer.menu.Add">Add</system:String>
     <system:String x:Key="TaxonExplorer.menu.Delete">Delete '{0}'</system:String>
+    <system:String x:Key="TaxonExplorer.menu.DeleteCurrentLevel">Delete current level...</system:String>
     <system:String x:Key="TaxonExplorer.menu.Rename">Rename '{0}'</system:String>
     <system:String x:Key="TaxonExplorer.menu.ChangeRank">Change rank...</system:String>
     <system:String x:Key="TaxonExplorer.menu.ChangeToLiterature">Convert to Literature Name</system:String>
