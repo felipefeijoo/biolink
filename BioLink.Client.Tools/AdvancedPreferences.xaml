@@ -27,10 +27,6 @@
             <CheckBox Grid.Row="2" Content="Use the simplified Pest/Host associates editor, if possible?" Height="16" HorizontalAlignment="Left" Name="chkUsePostHestControl" VerticalAlignment="Top" Width="435" Margin="12,10,0,0" />
 
             <Grid Grid.Row="3" x:Name="gridOptionalQuestions" Margin="6">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="322*" />
-                    <ColumnDefinition Width="251*" />
-                </Grid.ColumnDefinitions>
             </Grid>
 
         </Grid>
