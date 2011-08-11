@@ -368,6 +368,11 @@ namespace BioLink.Client.Taxa {
                             return result;
                         }
                     }
+                } else if (model is HierarchicalViewModelBase) {
+                    var result = SearchModel((model as HierarchicalViewModelBase).Children, favoriteID);
+                    if (result != null) {
+                        return result;
+                    }
                 }
             }
             return null;
