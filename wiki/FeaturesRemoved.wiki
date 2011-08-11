@@ -1,0 +1,8 @@
+#summary A list of the features in version 2.5 not found in version 3.0
+
+= Introduction =
+
+Due to time and budget constraints of the !BioLink 3.0 redevelopment, some existing features have not been included in this redevelopment.
+
+ * Morphology (Characters, States)
+ * Storage Locations (Taxon)
