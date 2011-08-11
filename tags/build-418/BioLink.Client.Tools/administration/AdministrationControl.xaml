@@ -1,0 +1,17 @@
+﻿<ext:DatabaseCommandControl x:Class="BioLink.Client.Tools.AdministrationControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+             mc:Ignorable="d" 
+             d:DesignHeight="364" d:DesignWidth="616">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TabControl Margin="6" x:Name="tabControl">
+        </TabControl>
+        
+    </Grid>
+</ext:DatabaseCommandControl>
