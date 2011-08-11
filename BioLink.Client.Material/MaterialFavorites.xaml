@@ -17,7 +17,7 @@
                     <HierarchicalDataTemplate DataType="{x:Type mat:SiteFavoriteViewModel}" ItemsSource="{Binding Path=Children}">
                         <StackPanel Orientation="Horizontal" ToolTip="{Binding Path=TooltipContent}" ToolTipService.ShowDuration="30000">
                             <Image Source="{Binding Path=Icon, Mode=TwoWay}" Margin="0,1,4,1" />
-                            <ext:EditableTextBlock FontSize="11" x:Name="FavoriteName" Text="{Binding Path=DisplayLabel,Mode=OneWay}" VerticalAlignment="Center" IsInEditMode="{Binding Path=IsRenaming, Mode=TwoWay}" EditingComplete="FavoriteName_EditingComplete" ViewModel="{Binding}"/>
+                            <ext:EditableTextBlock FontSize="11" x:Name="FavoriteName" Text="{Binding Path=DisplayLabel,Mode=OneWay}" VerticalAlignment="Center" IsInEditMode="{Binding Path=IsRenaming, Mode=TwoWay}" EditingComplete="FavoriteName_EditingComplete" ViewModel="{Binding}" TextDecorations="Underline"/>
                         </StackPanel>
                         <HierarchicalDataTemplate.Triggers>
                             <DataTrigger Binding="{Binding IsDeleted}" Value="True">
