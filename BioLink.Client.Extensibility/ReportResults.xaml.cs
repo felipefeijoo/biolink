@@ -126,7 +126,10 @@ namespace BioLink.Client.Extensibility {
         }
 
         internal void StatusMessage(string format, params object[] args) {
-            string message = String.Format(format, args);
+            string message = format;
+            if (args != null && args.Length > 0) {
+                message = String.Format(format, args);
+            }            
             statusMessage.InvokeIfRequired(() => {
                 statusMessage.Text = message;
             });
