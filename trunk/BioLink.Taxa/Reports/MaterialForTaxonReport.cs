@@ -10,12 +10,12 @@ namespace BioLink.Client.Taxa {
             : base(user, taxon) {
             RegisterViewer(new TabularDataViewerSource());
             DefineColumn("BiotaFullName", "Taxa");
-            DefineColumn("FullRegion", "Name");
+            DefineColumn("FullRegion", "Region");
             DefineColumn("Local", "Locality");
             DefineColumn("FormattedLatLong", "Lat/Long");
             DefineColumn("Collectors");
             DefineColumn("Dates");
-            DefineColumn("AccessionNo");
+            DefineColumn("AccessionNo", "Accession No.");
         }
 
         public override DataMatrix ExtractReportData(IProgressObserver progress) {
