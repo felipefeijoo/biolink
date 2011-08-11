@@ -50,6 +50,9 @@
     <Compile Include="BiotaPermissions.xaml.cs">
       <DependentUpon>BiotaPermissions.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ChangeRankWindow.xaml.cs">
+      <DependentUpon>ChangeRankWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Distribution\DistributionRegionExplorer.xaml.cs">
       <DependentUpon>DistributionRegionExplorer.xaml</DependentUpon>
     </Compile>
@@ -147,6 +150,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="BiotaPermissions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ChangeRankWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
