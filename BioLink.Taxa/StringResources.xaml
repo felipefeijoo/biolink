@@ -24,8 +24,8 @@
     <system:String x:Key="TaxonExplorer.menu.Delete">Delete '{0}'</system:String>
     <system:String x:Key="TaxonExplorer.menu.Rename">Rename '{0}'</system:String>
     <system:String x:Key="TaxonExplorer.menu.ChangeRank">Change rank...</system:String>
-    <system:String x:Key="TaxonExplorer.menu.ChangeToLiterature">Change to Literature Name</system:String>
-    <system:String x:Key="TaxonExplorer.menu.ChangeToAvailable">Change to Available Name</system:String>    
+    <system:String x:Key="TaxonExplorer.menu.ChangeToLiterature">Convert to Literature Name</system:String>
+    <system:String x:Key="TaxonExplorer.menu.ChangeToAvailable">Convert to Available Name</system:String>    
     <system:String x:Key="TaxonExplorer.menu.Refresh">Refresh</system:String>
     <system:String x:Key="TaxonExplorer.menu.Unlock">Unlock Taxon Explorer for editing</system:String>
     <system:String x:Key="TaxonExplorer.menu.ExpandAll">Expand all children</system:String>
