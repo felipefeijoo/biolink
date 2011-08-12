@@ -3,8 +3,8 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib" 
                     x:Name="TaxaResources">
     
-    <system:String x:Key="MaterialExplorer.Title">Material Explorer</system:String>
+    <system:String x:Key="MaterialExplorer.Title">Site Explorer</system:String>
     <system:String x:Key="Material.Menu.View">_View</system:String>
-    <system:String x:Key="Material.Menu.ShowExplorer">Show Material Explorer</system:String>
+    <system:String x:Key="Material.Menu.ShowExplorer">Show Site Explorer</system:String>
     
 </ResourceDictionary>
