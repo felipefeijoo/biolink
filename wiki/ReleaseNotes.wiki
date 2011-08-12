@@ -3,9 +3,35 @@
 
 = Release Notes =
 
+== Release Candidate 3 (RC3) ==
+
+BioLink 3.0.425 12 August 2011
+
+=== New Features ===
+
+  * New Pest/Hosts associates editor. An optional streamlined editor for simple pest host associations
+  * The Associates for Taxa report now has a second view that graphically describes the relationship between associates
+  * Taxon multimedia report can now optionally include multimedia attached to associated material (specimens)
+  * Lookup controls (linking controls with Magnify glass and ellipsis buttons now get the tooltip of the item they link to.
+
+=== Issues addressed in this release ===
+
+  * Issue 8	Associates not loading on one side of the relationship	 
+  * Issue 99	Items with RTF notes will set 'dirty' flag without any changes	 
+  * Issue 102	 Taxon Explorer (and presumably other explorers) wont save changes if undocked from main window	 
+  * Issue 103	 Taxon "Change Rank" command missing	 
+  * Issue 104	 Taxon fine grained security options missing (permissions)	 
+  * Issue 105	 Change to Available Name or Change to Literature Name not showing in menu	 
+  * Issue 106	 Delete current level menu item missing	 
+  * Issue 107	 Remove from favorites not working	 
+  * Issue 108	 Find regions by name missing (region map)	 
+  * Issue 109	 When generating a loan form, ask for a file location before generation	 
+  * Issue 110	 "Editing" an empty lookup control raises an exception	 
+
+
 == Release Candidate 2 (RC2)  ==
 
-5th August, 2011
+BioLink 3.0.395 5th August, 2011
 
 The second release candidate for !BioLink 3.0. This release addresses a number of issues identified during testing of RC1. 
 
@@ -35,7 +61,7 @@ Associates is still not working quite right. In addition a new, more simplified 
 
 == Release Candidate 1 (RC1) ==
 
-1st August, 2011
+BioLink 3.0.378 1st August, 2011
 
 This release is the first release candidate for BioLink 3.0. Testing is continuing, and any issues found will be addressed by subsequent release candidate builds.
 
