@@ -36,7 +36,6 @@ namespace BioLink.Client.Tools {
             lvw.MouseRightButtonUp += new MouseButtonEventHandler(lvw_MouseRightButtonUp);
 
             ListViewDragHelper.Bind(lvw, ListViewDragHelper.CreatePinnableGenerator(ToolsPlugin.TOOLS_PLUGIN_NAME, LookupType.Loan));
-
         }
 
         void lvw_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
@@ -90,6 +89,8 @@ namespace BioLink.Client.Tools {
             cmbWhat.SelectionChanged += new SelectionChangedEventHandler(cmbWhat_SelectionChanged);
 
             cmbWhat.SelectedIndex = Config.GetProfile<int>(User, "FindLoans.LastFindWhat", 0);
+
+            txtFind.Focus();
 
         }
 

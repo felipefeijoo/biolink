@@ -17,6 +17,7 @@ using BioLink.Data;
 using BioLink.Data.Model;
 using System.Collections.ObjectModel;
 using System.IO;
+using Microsoft.Win32;
 
 namespace BioLink.Client.Tools {
     /// <summary>
@@ -88,12 +89,23 @@ namespace BioLink.Client.Tools {
             var template = Encoding.ASCII.GetString(bytes);
             var content = GenerateLoanForm(template, loan, loanMaterial, loanTraits);
 
-            var filename = TempFileManager.NewTempFilename("RTF", "LoanForm");
-            File.WriteAllText(filename, content);
-            SystemUtils.ShellExecute(filename);
+            var filename = ChooseFilename(loan);
 
-            this.Close();
+            if (!string.IsNullOrWhiteSpace(filename)) {            
+                File.WriteAllText(filename, content);
+                SystemUtils.ShellExecute(filename);
 
+                this.Close();
+            }
+        }
+
+        private string ChooseFilename(Loan loan) {
+            var dlg = new SaveFileDialog();
+            dlg.FileName = string.Format("LoanForm_{0}_{1:yyyy-MM-dd}.rtf", loan.LoanNumber, DateTime.Now);
+            if (dlg.ShowDialog() == true) {
+                return dlg.FileName;
+            }
+            return null;
         }
 
         private string GenerateLoanForm(string template, Loan loan, List<LoanMaterial> material, List<Trait> traits) {
