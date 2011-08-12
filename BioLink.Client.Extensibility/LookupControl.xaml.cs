@@ -303,7 +303,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void EditObject() {
-            if (ObjectID.GetValueOrDefault(-1) >= 0) {
+            if (ObjectID.GetValueOrDefault(-1) > 0) {
                 PluginManager.Instance.EditLookupObject(LookupType, ObjectID.Value);
             }
         }
@@ -399,6 +399,7 @@ namespace BioLink.Client.Extensibility {
                 this.SelectedObject = null;
             }
         }
+
     }
 
     public delegate void ObjectIDChangedHandler(object source, int? objectID);
