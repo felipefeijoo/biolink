@@ -4,7 +4,7 @@
 
 Due to time and budget constraints of the !BioLink 3.0 redevelopment, some existing features have not been included in this redevelopment.
 
- * Morphology (Characters, States)
- * Storage Locations (Taxon)
- * Keywords
- * Sigma (Symbol) button on notes fields
+  * Morphology (Characters, States)
+  * Storage Locations (Taxon)
+  * Keywords
+  * Sigma (Symbol) button on notes fields
