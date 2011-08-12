@@ -386,6 +386,15 @@ namespace BioLink.Data {
     }
 
     public static class DataExtensions {
+        /// <summary>
+        /// Safe get return that attempts to coerce the value of the column specified by field into type T
+        /// If the value is null or DBNull the default is returned.
+        /// </summary>
+        /// <typeparam name="T">The Type to coerce the value to</typeparam>
+        /// <param name="reader">A sql reader</param>
+        /// <param name="field">The name of the column to extract the value from</param>
+        /// <param name="defvalue">A default value to use should the actual value be null or DBNull</param>
+        /// <returns></returns>
         public static T Get<T>(this SqlDataReader reader, string field, T defvalue = default(T)) {
             var value = reader[field];
             if (value == null || value == DBNull.Value) {

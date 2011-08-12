@@ -88,16 +88,17 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void DoFind() {
-            var service = new SupportService(User);
-            var extension = cmbExtension.Text == "(All)" ? "" : cmbExtension.Text;
-            var category = cmbType.Text == "(All)" ? "" : cmbType.Text;
-            var model = service.FindMultimedia(extension, category, txtCriteria.Text);
+            using (new OverrideCursor(Cursors.Wait)) {
+                var service = new SupportService(User);
+                var extension = cmbExtension.Text == "(All)" ? "" : cmbExtension.Text;
+                var category = cmbType.Text == "(All)" ? "" : cmbType.Text;
+                var model = service.FindMultimedia(extension, category, txtCriteria.Text);
 
-            _model = new ObservableCollection<MultimediaLinkViewModel>(model.Select((m) => {
-                return new MultimediaLinkViewModel(m);
-            }));
-
-            lvw.ItemsSource = _model;
+                _model = new ObservableCollection<MultimediaLinkViewModel>(model.Select((m) => {
+                    return new MultimediaLinkViewModel(m);
+                }));
+                lvw.ItemsSource = _model;
+            }
         }
 
         private void lvw_SelectionChanged(object sender, SelectionChangedEventArgs e) {

@@ -20,7 +20,7 @@
                 <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal" x:Name="CustomButtonBar" Grid.Column="0">
-                <ToggleButton Content="?" Height="23" Name="btnDebug" VerticalAlignment="Center" Width="23" Click="btnDebug_Click" Margin="6,0,3,0"/>
+                <ToggleButton Content="?" Height="23" Name="btnDebug" VerticalAlignment="Center" Width="23" Click="btnDebug_Click" Margin="6,0,3,0" Visibility="Collapsed"/>
             </StackPanel>
             
             <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">

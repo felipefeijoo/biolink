@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
 using System.Drawing;
@@ -282,6 +283,12 @@ namespace BioLink.Client.Utilities {
             }
 
             return string.Format("{0}.{1}", filename, newExtension);            
+        }
+
+        private static Regex ILLEGAL_FILENAME_CHARS_REGEX = new Regex(string.Format("[{0}]", Regex.Escape(new string(Path.GetInvalidFileNameChars()))));
+
+        public static string StripIllegalFilenameChars(string filename) {
+            return ILLEGAL_FILENAME_CHARS_REGEX.Replace(filename, "_");
         }
 
         static public string GetUserDataPath() {

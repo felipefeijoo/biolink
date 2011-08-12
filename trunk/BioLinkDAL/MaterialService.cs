@@ -94,43 +94,43 @@ namespace BioLink.Data {
                         }
                     
                        // Add the long and lat.
-                        int areaType = (byte) reader["AreaType"];
+                        int areaType = (int) reader.Get<byte>("AreaType", (byte) 0);
 
                         double? lat = reader.Get<double?>("Lat");
                         double? lon = reader.Get<double?>("Long");
                         
                         double? lat2 = reader.Get<double?>("Lat2");
                         double? lon2 = reader.Get<double?>("Long2");
-    
+
                         switch (areaType) {
                             case 1:   // Point
 
-                                if (!lat.HasValue || !lon.HasValue) {                            
+                                if (!lat.HasValue || !lon.HasValue) {
                                     rtf.Append("; No position data");
                                 } else {
                                     rtf.Append("; {0}, {1}", GeoUtils.DecDegToDMS(lat.Value, CoordinateType.Latitude), GeoUtils.DecDegToDMS(lon.Value, CoordinateType.Longitude));
                                 }
                                 break;
                             case 2:  // Box
-                                if (!lat.HasValue || !lon.HasValue || !lat2.HasValue || !lon2.HasValue) {                            
+                                if (!lat.HasValue || !lon.HasValue || !lat2.HasValue || !lon2.HasValue) {
                                     rtf.Append("; No position data");
                                 } else {
-                                    rtf.Append("; Box: {0}, {1}; {2}, {3}", 
+                                    rtf.Append("; Box: {0}, {1}; {2}, {3}",
                                         GeoUtils.DecDegToDMS(lat.Value, CoordinateType.Latitude),
                                         GeoUtils.DecDegToDMS(lon.Value, CoordinateType.Longitude),
                                         GeoUtils.DecDegToDMS(lat2.Value, CoordinateType.Latitude),
-                                        GeoUtils.DecDegToDMS(lon2.Value, CoordinateType.Longitude));                                    
+                                        GeoUtils.DecDegToDMS(lon2.Value, CoordinateType.Longitude));
                                 }
                                 break;
                             case 3: // Line
-                                if (!lat.HasValue || !lon.HasValue || !lat2.HasValue || !lon2.HasValue) {                            
+                                if (!lat.HasValue || !lon.HasValue || !lat2.HasValue || !lon2.HasValue) {
                                     rtf.Append("; No position data");
                                 } else {
-                                    rtf.Append("; Line: {0}, {1}; {2}, {3}", 
+                                    rtf.Append("; Line: {0}, {1}; {2}, {3}",
                                         GeoUtils.DecDegToDMS(lat.Value, CoordinateType.Latitude),
                                         GeoUtils.DecDegToDMS(lon.Value, CoordinateType.Longitude),
                                         GeoUtils.DecDegToDMS(lat2.Value, CoordinateType.Latitude),
-                                        GeoUtils.DecDegToDMS(lon2.Value, CoordinateType.Longitude));                                    
+                                        GeoUtils.DecDegToDMS(lon2.Value, CoordinateType.Longitude));
                                 }
                                 break;
                             default:
