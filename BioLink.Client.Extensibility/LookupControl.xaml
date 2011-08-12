@@ -14,7 +14,7 @@
             <ColumnDefinition Width="3"/>
             <ColumnDefinition Width="23"/>
         </Grid.ColumnDefinitions>
-        
+
         <ext:TextBox Grid.Column="0" x:Name="txt">
             <ext:WatermarkService.Watermark>
                 <TextBlock Padding="2" x:Name="txtWatermark" Text="{Binding WatermarkText}" />
