@@ -191,24 +191,24 @@ namespace BioLink.Client.Extensibility {
             switch (LookupType) {
                 case LookupType.Material:
                     btnEdit.ToolTip = "Edit Material details...";
-                    btnLookup.ToolTip = "Select Material from the Material explorer...";
+                    btnLookup.ToolTip = "Select Material from the Site explorer...";
                     break;
                 case LookupType.SiteVisit:
                     btnEdit.ToolTip = "Edit Site Visit details...";
-                    btnLookup.ToolTip = "Select a Site Visit from the Material explorer...";
+                    btnLookup.ToolTip = "Select a Site Visit from the Site explorer...";
                     break;
                 case LookupType.Site:
                     btnEdit.ToolTip = "Edit Site details...";
-                    btnLookup.ToolTip = "Select a Site from the Material explorer...";
+                    btnLookup.ToolTip = "Select a Site from the Site explorer...";
                     break;
                 case LookupType.Trap:
                     btnEdit.ToolTip = "Edit Trap details...";
-                    btnLookup.ToolTip = "Select a Trap from the Material explorer...";
+                    btnLookup.ToolTip = "Select a Trap from the Site explorer...";
                     break;
                 case LookupType.Region:
                     btnEdit.ToolTip = "";
                     btnEdit.IsEnabled = false;
-                    btnLookup.ToolTip = "Select a Region from the Material explorer...";
+                    btnLookup.ToolTip = "Select a Region from the Site explorer...";
                     break;
                 //case LookupType.SiteGroup:
                 //    btnEdit.ToolTip = "";
