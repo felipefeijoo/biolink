@@ -60,6 +60,12 @@
                 </ToggleButton.Content>
             </ToggleButton>
 
+            <Button x:Name="btnFindRegion" Click="btnFindRegion_Click" ToolTip="Find a region by name" >
+                <Button.Content>
+                    <Image Source="images/FindRegion.png" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True"/>
+                </Button.Content>
+            </Button>
+
         </ToolBar>
         <Grid Grid.Row="1" x:Name="mapGrid">
             <Grid.ColumnDefinitions>

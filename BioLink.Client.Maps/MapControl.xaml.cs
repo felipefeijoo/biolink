@@ -86,6 +86,8 @@ namespace BioLink.Client.Maps {
 
             });
 
+            btnFindRegion.Visibility = (mode == MapMode.RegionSelect ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed);
+
             InfoGrid.SizeChanged += new System.Windows.SizeChangedEventHandler(InfoGrid_SizeChanged);
 
             mapBox.MouseUp += new MapBox.MouseEventHandler(map_MouseUp);
@@ -1066,19 +1068,28 @@ namespace BioLink.Client.Maps {
             AddLayer(filename);
         }
 
+        private void btnFindRegion_Click(object sender, System.Windows.RoutedEventArgs e) {
+            FindRegionByName();
+        }
+
+        private void FindRegionByName() {
+            var layer = FindFirstRegionLayer();
+            if (layer != null) {
+                var frm = new FindRegionsWindow(layer, (selected) => {
+                    SelectRegionByPath(selected);
+                });
+
+                frm.Owner = this.FindParentWindow();
+                frm.ShowDialog();
+            }
+        }
+
     }
 
     public enum MapMode {
         Normal,
         RegionSelect
     }
-
-    //public static class EnvelopeExtensions {
-
-    //    public static IEnvelope Grow(this IEnvelope envelope, double growAmount) {
-    //        return GeometryFactory.CreateEnvelope(envelope.MinX - growAmount, envelope.MaxX + growAmount, envelope.MinY - growAmount, envelope.MaxY + growAmount);
-    //    }
-    //}
 
     public class LayerDescriptor {
 

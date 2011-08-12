@@ -93,6 +93,9 @@
     <Compile Include="FeatureInfoControl.xaml.cs">
       <DependentUpon>FeatureInfoControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="FindRegionsWindow.xaml.cs">
+      <DependentUpon>FindRegionsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="GdalRasterLayer.cs" />
     <Compile Include="GeoTransform.cs" />
     <Compile Include="IDegreeDistanceConverter.cs" />
@@ -161,6 +164,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="FindRegionsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="LayersWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -211,6 +218,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="images\info.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\FindRegion.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
