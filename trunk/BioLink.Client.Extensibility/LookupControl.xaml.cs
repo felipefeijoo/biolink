@@ -210,11 +210,6 @@ namespace BioLink.Client.Extensibility {
                     btnEdit.IsEnabled = false;
                     btnLookup.ToolTip = "Select a Region from the Site explorer...";
                     break;
-                //case LookupType.SiteGroup:
-                //    btnEdit.ToolTip = "";
-                //    btnEdit.IsEnabled = false;
-                //    btnLookup.ToolTip = "Select a Site Group from the Material explorer...";
-                //    break;
                 case LookupType.Contact:
                     btnEdit.ToolTip = "Edit Contact details...";
                     btnLookup.ToolTip = "Select a Contact from the Contact explorer...";
@@ -308,6 +303,23 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
+        public object CreateTooltip() {
+
+            if (ObjectID.HasValue && ObjectID.Value > 0) {
+
+                var plugin = PluginManager.Instance.GetLookupTypeOwner(LookupType);
+                if (plugin != null) {
+                    var pinnable = new PinnableObject(plugin.Name, LookupType, ObjectID.Value);
+                    var vm = PluginManager.Instance.GetViewModel(pinnable);
+                    if (vm != null) {
+                        return vm.TooltipContent;
+                    }
+                }
+            }
+
+            return ToolTip;
+        }
+
         #region Dependency Properties
 
         public static readonly DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(LookupControl), new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnTextChanged)));
@@ -341,8 +353,9 @@ namespace BioLink.Client.Extensibility {
         private static void OnObjectIDChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
             var control = (LookupControl)obj;
             if (control.ObjectIDChanged != null && control._manualSet) {
-                control.ObjectIDChanged(control, control.ObjectID);
+                control.ObjectIDChanged(control, control.ObjectID);                
             }
+            control.txt.ToolTip = control.CreateTooltip();
         }
 
         public int? ObjectID {
