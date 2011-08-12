@@ -13,6 +13,7 @@
   * The Associates for Taxa report now has a second view that graphically describes the relationship between associates
   * Taxon multimedia report can now optionally include multimedia attached to associated material (specimens)
   * Lookup controls (linking controls with Magnify glass and ellipsis buttons) now show the tooltip of the item they link to when hovered over.
+  * Loan forms generation now prompts for a target filename before the form is generated
 
 === Issues addressed in this release ===
 
