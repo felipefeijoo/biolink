@@ -5,7 +5,7 @@
 
 == Release Candidate 3 (RC3) ==
 
-BioLink 3.0.425 12 August 2011
+!BioLink 3.0.425 12 August 2011
 
 === New Features ===
 
@@ -31,7 +31,7 @@ BioLink 3.0.425 12 August 2011
 
 == Release Candidate 2 (RC2)  ==
 
-BioLink 3.0.395 5th August, 2011
+!BioLink 3.0.395 5th August, 2011
 
 The second release candidate for !BioLink 3.0. This release addresses a number of issues identified during testing of RC1. 
 
@@ -61,7 +61,7 @@ Associates is still not working quite right. In addition a new, more simplified 
 
 == Release Candidate 1 (RC1) ==
 
-BioLink 3.0.378 1st August, 2011
+!BioLink 3.0.378 1st August, 2011
 
 This release is the first release candidate for BioLink 3.0. Testing is continuing, and any issues found will be addressed by subsequent release candidate builds.
 
