@@ -100,9 +100,22 @@ namespace BioLink.Client.Tools {
         }
 
         private string ChooseFilename(Loan loan) {
+
+            
             var dlg = new SaveFileDialog();
-            dlg.FileName = string.Format("LoanForm_{0}_{1:yyyy-MM-dd}.rtf", loan.LoanNumber, DateTime.Now);
+            var defaultDir = Config.GetUser(User, "Loans.Forms.DefaultOutputDirectory", dlg.InitialDirectory);
+            if (!string.IsNullOrWhiteSpace(defaultDir)) {
+                var dirinfo = new DirectoryInfo(defaultDir);
+                if (dirinfo.Exists) {
+                    dlg.InitialDirectory = dirinfo.FullName;
+                }
+            }
+
+            var borrowerName = LoanService.FormatName("", loan.RequestorGivenName, loan.RequestorName);
+            dlg.FileName = SystemUtils.StripIllegalFilenameChars(string.Format("{0}_{1}_{2:yyyy-MM-dd}.rtf", loan.LoanNumber, borrowerName, DateTime.Now));
             if (dlg.ShowDialog() == true) {
+                var finfo = new FileInfo(dlg.FileName);
+                Config.SetUser(User, "Loans.Forms.DefaultOutputDirectory", finfo.DirectoryName);
                 return dlg.FileName;
             }
             return null;
