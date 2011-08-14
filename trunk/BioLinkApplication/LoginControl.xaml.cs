@@ -112,6 +112,9 @@ namespace BioLinkApplication {
 
             btnCancel.Visibility = Visibility.Hidden;
             btnLogin.Visibility = Visibility.Hidden;
+            txtUsername.IsEnabled = false;
+            txtPassword.IsEnabled = false;
+            cmbProfile.IsEnabled = false;
 
             User user = new User(txtUsername.Text, txtPassword.Password, profile);
 
@@ -135,6 +138,9 @@ namespace BioLinkApplication {
                             detailsGrid.IsEnabled = true;
                             btnCancel.Visibility = Visibility.Visible;
                             btnLogin.Visibility = Visibility.Visible;
+                            txtUsername.IsEnabled = true;
+                            txtPassword.IsEnabled = true;
+                            cmbProfile.IsEnabled = true;
                             txtPassword.Focus();
                             txtPassword.SelectAll();
                             ErrorMessage("LoginControl.Status.LoginFailed", errorMsg);

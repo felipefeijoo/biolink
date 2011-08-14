@@ -681,8 +681,10 @@ namespace BioLink.Client.Taxa {
             var map = PluginManager.Instance.GetMap();
             if (map != null) {
                 var data = GenerateSpecimenPoints(true, taxon.Taxon);
-                map.Show();
-                map.PlotPoints(data);
+                if (data != null) {
+                    map.Show();
+                    map.PlotPoints(data);
+                }
             }
         }
 

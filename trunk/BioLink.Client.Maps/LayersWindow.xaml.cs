@@ -179,6 +179,7 @@ namespace BioLink.Client.Maps {
             MoveLayerDown();
         }
 
+
     }
 
 }

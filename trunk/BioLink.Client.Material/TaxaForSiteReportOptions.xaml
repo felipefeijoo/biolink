@@ -22,7 +22,7 @@
                     <Label Content="Region/Site:" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" Width="73" />
                     <ext:LookupControl Height="23" Margin="85,8,6,0" Name="txtRegion" VerticalAlignment="Top" Grid.ColumnSpan="2" />
                     <Label Content="Taxon:" Height="28" HorizontalAlignment="Left" Margin="6,40,0,0" Name="label2" VerticalAlignment="Top" Width="73" />
-                    <ext:LookupControl HorizontalAlignment="Left" Margin="85,40,0,0" Name="txtTaxon" VerticalAlignment="Top" Width="353" Grid.ColumnSpan="2" />
+                    <ext:LookupControl Margin="85,40,6,0" Name="txtTaxon" VerticalAlignment="Top" />
                     <CheckBox Content="Hide Localities" Height="16" HorizontalAlignment="Left" Margin="85,74,0,0" Name="chkHideLocalities" VerticalAlignment="Top" Width="353" />
                 </Grid>
             </TabItem>
