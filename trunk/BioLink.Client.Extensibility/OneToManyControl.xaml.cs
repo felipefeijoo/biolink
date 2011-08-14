@@ -39,6 +39,7 @@ namespace BioLink.Client.Extensibility {
             InitializeComponent();
             _rdeMode = rdeMode;
             _controller = controller;
+            _controller.Host = this;
 
             detailsGrid.DataContextChanged += new DependencyPropertyChangedEventHandler(detailsGrid_DataContextChanged);
             lst.SelectionChanged += new SelectionChangedEventHandler(lst_SelectionChanged);
