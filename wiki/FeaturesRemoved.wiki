@@ -12,3 +12,4 @@ Due to time and budget constraints of the !BioLink 3.0 redevelopment, some exist
   * Merging of References in Reference Manager
   * Copy to clipboard from eGaz
   * Saving !BioLink generated layers (such as distribution points) from the map too (limitation of SharpMaps)
+  * Multiple selection on Taxon explorer and Site explorer
