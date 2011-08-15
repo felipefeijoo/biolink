@@ -41,7 +41,7 @@
                         <RowDefinition />
                     </Grid.RowDefinitions>
                     <ToolBar x:Name="CategoriesToolBar" Grid.Row="0">
-                        <Button x:Name="btnDeleteCategory" Width="24" Click="btnDeleteCategory_Click">
+                        <Button x:Name="btnDeleteCategory" Width="24" Click="btnDeleteCategory_Click" ToolTip="Delete selected phrase category">
                             <Button.Content>
                                 <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/Delete.png" Stretch="None" SnapsToDevicePixels="True" />
                             </Button.Content>
@@ -81,17 +81,17 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <ToolBar Margin="0,0,5,0">
-                    <Button x:Name="btnAddPhrase" Height="24" Width="24" Click="btnAddPhrase_Click">
+                    <Button x:Name="btnAddPhrase" Height="24" Width="24" Click="btnAddPhrase_Click" ToolTip="Add a new phrase">
                         <Button.Content>
                             <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/AddNew.png" Stretch="None" SnapsToDevicePixels="True" />
                         </Button.Content>
                     </Button>
-                    <Button x:Name="btnDeletePhrase" Height="24" Width="24" Click="btnDeletePhrase_Click">
+                    <Button x:Name="btnDeletePhrase" Height="24" Width="24" Click="btnDeletePhrase_Click" ToolTip="Delete the selected phrase">
                         <Button.Content>
                             <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/Delete.png" Stretch="None" SnapsToDevicePixels="True" />
                         </Button.Content>
                     </Button>
-                    <Button x:Name="btnRenamePhrase" Height="24" Width="24" Click="btnRenamePhrase_Click">
+                    <Button x:Name="btnRenamePhrase" Height="24" Width="24" Click="btnRenamePhrase_Click" ToolTip="Rename the selected phrase">
                         <Button.Content>
                             <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/Rename.png" Stretch="None" SnapsToDevicePixels="True" />
                         </Button.Content>
