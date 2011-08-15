@@ -271,7 +271,7 @@ namespace BioLink.Data {
             if (string.IsNullOrWhiteSpace(strRefID )) {
                 strRefID = "NULL";
             } else {
-                strRefID = _guidToIDCache.IDfromGUID(san.GUID) + "";
+                strRefID = _guidToIDCache.IDfromGUID(strRefID) + "";
             }
                 
             GenerateUpdateString(XMLSAN, "SAN", san, "intBiotaID=" + TaxonID + ", intRefID=" + strRefID, "intBiotaID, intRefID", TaxonID + ", " + strRefID);
@@ -647,15 +647,18 @@ namespace BioLink.Data {
                     Log("Failed to get TaxonID for '" + strFullName + "' - GUID=" + strGUID + ".");
                     return false;
                 }
-                var taxon = new XMLImportTaxon(XMLChild) { Rank = GetNodeValue(XMLChild, "RANK", ""), Kingdom = GetNodeValue(XMLChild, "KINGDOM", ""), ID = lngTaxonID };
+
+                var bIsAvailableName = GetNodeValue<bool>(XMLChild, "ISAVAILABLENAME", false);
+                var bIsLiteratureName = GetNodeValue<bool>(XMLChild, "ISLITERATURENAME", false);
+
+                var taxon = new XMLImportTaxon(XMLChild) { Rank = GetNodeValue(XMLChild, "RANK", ""), Kingdom = GetNodeValue(XMLChild, "KINGDOM", ""), ID = lngTaxonID, AvailableName=bIsAvailableName, LiteratureName = bIsLiteratureName };
                 GenerateUpdateString(XMLChild, "Taxon", taxon);
                 Log("Updating Taxon '" + strFullName + "' (TaxonID=" + taxon.ID + ",Rank=" + taxon.Rank + ",Kingdom=" + taxon.Kingdom + ")...");
+
                 if (!XMLIOService.UpdateTaxon(taxon)) {
                     Log("Taxon update failed! {0}", taxon.GUID);
                     return false;
                 }
-                var bIsAvailableName = GetNodeValue<bool>(XMLChild, "ISAVAILABLENAME", false);
-                var bIsLiteratureName = GetNodeValue<bool>(XMLChild, "ISLITERATURENAME", false);
 
                 if (bIsAvailableName || bIsLiteratureName) {
                     var ANItem = new AvailableNameInfo { IsAvailableName = bIsAvailableName, IsLiteratureName = bIsLiteratureName, RankCategory = taxon.RankCategory, TaxonID = taxon.ID, XMLNode = XMLChild };
@@ -1260,7 +1263,7 @@ namespace BioLink.Data {
 
                             if (strFieldName.StartsWith("vchr") || strFieldName.StartsWith("chr") || strFieldName.StartsWith("txt") || strFieldName.StartsWith("dt")) {
                                 strValue = string.Format("'{0}'", strValue);
-                            } else {
+                            } else if (strFieldName.StartsWith("bit")) {
                                 strValue = BoolToBit(strValue);
                             }
 
@@ -1297,8 +1300,11 @@ namespace BioLink.Data {
             if (string.IsNullOrEmpty(boolStr)) {
                 return "0";
             }
-            return boolStr.ToLower() == "true" ? "1" : "0";
 
+            if (boolStr.Equals("1") || boolStr.Equals("0")) {
+                return boolStr;
+            }
+            return boolStr.ToLower() == "true" ? "1" : "0";
         }
 
         private bool CheckForObjectReference(string ObjectType, string FieldName, ref string Value) {
@@ -1318,6 +1324,7 @@ namespace BioLink.Data {
                         case "intFromIntraCatID":
                         case "intToIntraCatID":
                         case "intRefID":
+                        case "intPoliticalRegionID":
                             bDoCheck = true;
                             break;
                     }

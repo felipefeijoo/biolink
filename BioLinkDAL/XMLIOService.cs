@@ -120,16 +120,28 @@ namespace BioLink.Data {
         #endregion
 
 
-        public int GetTraitTypeID(int lngCategoryID, string strTraitName) {
-            return StoredProcReturnVal<int>("spXMLImportTraitTypeGet", _P("intCategoryID", lngCategoryID), _P("vchrTraitType", strTraitName));
+        public int GetTraitTypeID(int lngCategoryID, string strTraitName) {            
+            int typeId = 0;
+            StoredProcReaderFirst("spXMLImportTraitTypeGet", (reader) => {
+                typeId = (int) reader[0];
+            }, _P("intCategoryID", lngCategoryID), _P("vchrTraitType", strTraitName));
+            return typeId;
         }
 
         public int GetTraitCategoryID(string category) {
-            return StoredProcReturnVal<int>("spXMLImportCategoryGet", _P("vchrCategory", category));
+            int catId = 0;
+            StoredProcReaderFirst("spXMLImportCategoryGet", (reader) => {
+                catId = (int)reader[0];
+            }, _P("vchrCategory", category));
+            return catId;
         }
 
         public int NoteGetTypeID(int categoryID, string noteType) {
-            return StoredProcReturnVal<int>("spXMLImportNoteTypeGet", _P("intCategoryID", categoryID), _P("vchrNoteType", noteType));
+            int typeId = 0;
+            StoredProcReaderFirst("spXMLImportNoteTypeGet", (reader) => {
+                typeId = (int)reader[0];
+            }, _P("intCategoryID", categoryID), _P("vchrNoteType", noteType));
+            return typeId;
         }
 
         public void InsertNotes(List<XMLImportNote> notes) {
@@ -155,6 +167,7 @@ namespace BioLink.Data {
             foreach (XMLImportMultimediaLink item in items) {
                 ImportObject(item, "spXMLImportMultimediaLink", _P("GUID", item.GUID));
                 if (item.ID < 0) {
+
                     ok = false;
                 } else {
                     if (!string.IsNullOrWhiteSpace(item.Caption)) {
@@ -166,7 +179,22 @@ namespace BioLink.Data {
                                 cmd.ExecuteNonQuery();
                             });
                         } catch (Exception ex) {
-                            Logger.Debug("Failed to insert caption for multimedia link id {0}. Probably due to the size of the caption exceeding the size of the table column. {1}", item.ID, ex.Message);
+                            Logger.Debug("Failed to insert caption for multimedia link id {0}. Probably due to the size of the caption exceeding the size of the table column. Will trim and try again. {1}.", item.ID, ex.Message);
+                            try {
+                                // first strip off any rtf...
+                                var caption = RTFUtils.StripMarkup(item.Caption);
+                                if (caption.Length > 255) {
+                                    caption = caption.Truncate(255);
+                                }
+                                Command((con, cmd) => {
+                                    cmd.CommandText = "UPDATE tblMultimediaLink SET vchrCaption = @vchrCaption WHERE intMultimediaLinkID = @linkid";
+                                    cmd.Parameters.Add(_P("@vchrCaption", caption));
+                                    cmd.Parameters.Add(_P("@linkid", item.ID));
+                                    cmd.ExecuteNonQuery();
+                                });
+                            } catch (Exception ex2) {
+                                Logger.Debug("Failed to insert shortened caption for multimedia link id {0} again!. Probably due to the size of the caption exceeding the size of the table column. Giving up! {1}. ", item.ID, ex2.Message);
+                            }
                         }
                     }
                 }
@@ -402,28 +430,19 @@ namespace BioLink.Data {
         }
 
         public bool ImportTaxonSAN(XMLImportSAN san, List<XMLImportSANType> list) {
-            if (ImportObject(san, "spXMLImportSAN", _P("GUID", san.GUID), _P("intBiotaID", san.BiotaID))) {
-                foreach (XMLImportSANType sanType in list) {
-                    if (!ImportObject(sanType, "spXMLImportSANTypeData", _P("GUID", sanType.GUID))) {
-                        return false;
-                    }
-                }
-            }
+            ImportObject(san, "spXMLImportSAN", _P("GUID", san.GUID), _P("intBiotaID", san.BiotaID));
+            foreach (XMLImportSANType sanType in list) {
+                ImportObject(sanType, "spXMLImportSANTypeData", _P("GUID", sanType.GUID));
+            }            
             return true;
         }
 
         public bool ImportTaxonGAN(XMLImportGAN gan, List<XMLImportGANIncludedSpecies> species) {
-            if (ImportObject(gan, "spXMLImportGAN", _P("GUID", gan.GUID), _P("intBiotaID", gan.TaxonID))) {
-
-                foreach (XMLImportGANIncludedSpecies item in species) {
-                    if (!ImportObject(item, "spXMLImportGANIncludedSpecies", _P("GUID", item.GUID))) {
-                        return false;
-                    }
-                }
-
-                return true;
+            ImportObject(gan, "spXMLImportGAN", _P("GUID", gan.GUID), _P("intBiotaID", gan.TaxonID));
+            foreach (XMLImportGANIncludedSpecies item in species) {
+                ImportObject(item, "spXMLImportGANIncludedSpecies", _P("GUID", item.GUID));
             }
-            return false;
+            return true;
         }
 
         public bool ImportTaxonALN(XMLImportALN aln) {
