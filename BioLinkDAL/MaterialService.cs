@@ -443,6 +443,8 @@ namespace BioLink.Data {
         }
 
         private void CreateNode(XmlDocument doc, string name, string value) {
+
+            name = name.Replace(" ", "_");
             var newNode = doc.CreateElement(name);
             newNode.InnerText = value;
             doc.DocumentElement.AppendChild(newNode);
