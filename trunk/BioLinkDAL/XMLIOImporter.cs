@@ -697,17 +697,19 @@ namespace BioLink.Data {
             foreach (XmlElement XMLStorageLocationNode in ItemList) {
                 var strDelimiter = XMLStorageLocationNode.GetAttributeValue("PATHSEPARATOR", "\\");
                 var strPath = GetNodeValue<string>(XMLStorageLocationNode, "FULLPATH");
-                var lngStorageLocationID = ImportStorageLocation(strPath, strDelimiter);
-                if (lngStorageLocationID < 0) {
-                    Log("Failed to map/add StorageLocation Path to StorageLocationID ! - " + strPath);
-                } else {
-                    var loc = new XMLImportStorageLocation(XMLStorageLocationNode) { TaxonID = TaxonID, LocationID = lngStorageLocationID };
-                    GenerateUpdateString(XMLStorageLocationNode, "StorageLocation", loc,
-                        "intBiotaID=" + TaxonID + ", intBiotaStorageID=" + lngStorageLocationID,
-                        "intBiotaID, intBiotaStorageID",
-                        TaxonID + ", " + lngStorageLocationID);
+                if (!string.IsNullOrEmpty(strPath)) {
+                    var lngStorageLocationID = ImportStorageLocation(strPath, strDelimiter);
+                    if (lngStorageLocationID < 0) {
+                        Log("Failed to map/add StorageLocation Path to StorageLocationID ! - " + strPath);
+                    } else {
+                        var loc = new XMLImportStorageLocation(XMLStorageLocationNode) { TaxonID = TaxonID, LocationID = lngStorageLocationID };
+                        GenerateUpdateString(XMLStorageLocationNode, "StorageLocation", loc,
+                            "intBiotaID=" + TaxonID + ", intBiotaStorageID=" + lngStorageLocationID,
+                            "intBiotaID, intBiotaStorageID",
+                            TaxonID + ", " + lngStorageLocationID);
 
-                    list.Add(loc);
+                        list.Add(loc);
+                    }
                 }
             }
 

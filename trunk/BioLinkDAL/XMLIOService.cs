@@ -377,7 +377,7 @@ namespace BioLink.Data {
 
         public bool ImportTaxonStorage(List<XMLImportStorageLocation> list) {
             foreach (XMLImportStorageLocation loc in list) {
-                ImportObject(loc, "spXMLImportBiotaStorageLocation", _P("GUID", loc.GUID), _P("intBiotaID", loc.TaxonID), _P("BiotaStorageID", loc.LocationID));
+                ImportObject(loc, "spXMLImportBiotaStorageLocation", _P("GUID", loc.GUID), _P("intBiotaID", loc.TaxonID), _P("intBiotaStorageID", loc.LocationID));
             }
             return true;
         }
