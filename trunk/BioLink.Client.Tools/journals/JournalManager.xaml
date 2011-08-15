@@ -26,17 +26,17 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <ToolBar Grid.Row="0">
-            <Button Name="btnProperties" Click="btnProperties_Click">
+            <Button Name="btnProperties" Click="btnProperties_Click" ToolTip="Edit journal details">
                 <Button.Content>
                     <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/Properties.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None"/>
                 </Button.Content>
             </Button>
-            <Button Name="btnAddNew" Click="btnAddNew_Click">
+            <Button Name="btnAddNew" Click="btnAddNew_Click" ToolTip="Add new Journal">
                 <Button.Content>
                     <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/AddNew.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None"/>
                 </Button.Content>
             </Button>
-            <Button Name="btnDelete" Click="btnDelete_Click">
+            <Button Name="btnDelete" Click="btnDelete_Click" ToolTip="Delete selected Journal">
                 <Button.Content>
                     <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/Delete.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None"/>
                 </Button.Content>
