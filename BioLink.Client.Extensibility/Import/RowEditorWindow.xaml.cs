@@ -118,10 +118,12 @@ namespace BioLink.Client.Extensibility {
 
         public string this[string columnName] {
             get {
-                var service = new ImportService(PluginManager.Instance.User);
-                var result = service.ValidateImportValue(TargetColumn, Value);
-                if (!result.IsValid) {
-                    return result.Message;
+                if (!string.IsNullOrEmpty(TargetColumn)) {
+                    var service = new ImportService(PluginManager.Instance.User);
+                    var result = service.ValidateImportValue(TargetColumn, Value);
+                    if (!result.IsValid) {
+                        return result.Message;
+                    }
                 }
                 return null;
             }
