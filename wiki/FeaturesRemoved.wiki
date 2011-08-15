@@ -11,3 +11,4 @@ Due to time and budget constraints of the !BioLink 3.0 redevelopment, some exist
   * Sigma (Symbol) button on notes fields
   * Merging of References in Reference Manager
   * Copy to clipboard from eGaz
+  * Saving !BioLink generated layers (such as distribution points) from the map too (limitation of SharpMaps)
