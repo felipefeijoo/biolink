@@ -10,3 +10,4 @@ Due to time and budget constraints of the !BioLink 3.0 redevelopment, some exist
   * Keywords
   * Sigma (Symbol) button on notes fields
   * Merging of References in Reference Manager
+  * Copy to clipboard from eGaz
