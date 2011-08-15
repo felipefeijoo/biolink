@@ -77,7 +77,7 @@
         </GroupBox>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" Background="{x:Static SystemColors.ControlBrush}" Height="36">
                 <Button Content="_Select" Height="23" Margin ="6,0,0,0" Name="btnSelect" VerticalAlignment="Center" Width="75" Visibility="Collapsed" Click="btnSelect_Click" />
-                <Button Content="ShowMap" Height="23" Margin ="6,0,0,0" Name="button2" VerticalAlignment="Center" Width="75" Click="button2_Click" />
+                <Button Content="Show Map" Height="23" Margin ="6,0,0,0" Name="button2" VerticalAlignment="Center" Width="75" Click="button2_Click" />
                 <Button Content="_Find nearest named place..." Margin ="6,0,0,0" Height="23" Name="btnFindNearestPlace" VerticalAlignment="Center" Width="170" Click="btnFindNearestPlace_Click" />
             </StackPanel>
                 
