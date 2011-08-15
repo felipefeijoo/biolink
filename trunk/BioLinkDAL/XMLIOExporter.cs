@@ -1897,8 +1897,10 @@ namespace BioLink.Data {
         }
 
         internal int IDfromGUID(string guid) {
-            if (ContainsKey(guid)) {
-                return this[guid];
+            if (!string.IsNullOrEmpty(guid)) {
+                if (ContainsKey(guid)) {
+                    return this[guid];
+                }
             }
 
             return -1;
