@@ -1309,7 +1309,9 @@ namespace BioLink.Data {
                 var taxon = TaxaService.GetTaxon(TaxonID);
                 if (taxon != null) {
                     guid = taxon.GUID.ToString();
-                    _unplacedTaxon.Add(guid, TaxonID);
+                    if (!_unplacedTaxon.ContainsKey(guid)) {
+                        _unplacedTaxon.Add(guid, TaxonID);
+                    }
                 } else {
                     Log("Failed to extract Taxon Details for TaxonID {0}", TaxonID);
                 }
