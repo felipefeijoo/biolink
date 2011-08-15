@@ -9,3 +9,4 @@ Due to time and budget constraints of the !BioLink 3.0 redevelopment, some exist
   * Report Writer
   * Keywords
   * Sigma (Symbol) button on notes fields
+  * Merging of References in Reference Manager
