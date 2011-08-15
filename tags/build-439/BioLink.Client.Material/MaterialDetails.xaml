@@ -1,0 +1,138 @@
+﻿<ext:DatabaseCommandControl x:Class="BioLink.Client.Material.MaterialDetails"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+             xmlns:mat="clr-namespace:BioLink.Client.Material"                           
+             mc:Ignorable="d" 
+             MinWidth="700" MinHeight="450"
+             d:DesignHeight="450" d:DesignWidth="700" UseLayoutRounding="True" SnapsToDevicePixels="True">
+    
+    <Grid>
+        <Grid.Resources>
+            <ext:HardDateConverter x:Key="hardDateConverter" />
+            <mat:TypeDataConverter x:Key="typeDataConverter" />
+        </Grid.Resources>
+        <Label Content="Site:" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" Name="label1" VerticalAlignment="Top" />
+        <ext:TextBox Height="23" Margin="109,14,12,0" Name="txtSiteName" VerticalAlignment="Top" IsEnabled="False" Text="{Binding SiteName}" />
+        <Label Content="Site Visit:" Height="28" HorizontalAlignment="Left" Margin="12,46,0,0" Name="label2" VerticalAlignment="Top" />
+        <ext:TextBox Height="23" Margin="109,48,12,0" Name="txtSiteVisitName" VerticalAlignment="Top" IsEnabled="False" Text="{Binding SiteVisitName}" />
+        <Label Content="Material Name:" Height="28" HorizontalAlignment="Left" Margin="12,80,0,0" Name="label3" VerticalAlignment="Top" />
+        <ext:TextBox Height="23" Margin="109,82,12,0" Name="txtMaterialName" VerticalAlignment="Top" Text="{Binding MaterialName}" />
+        <TabControl Margin="7,114,12,12" Name="tabMaterial">
+            <TabItem Header="General" Name="tabGeneral">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="80" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="28" />
+                        <RowDefinition Height="28" />
+                        <RowDefinition Height="28" />
+                        <RowDefinition Height="28" />
+                        <RowDefinition Height="28" />
+                        <RowDefinition Height="28" />
+                        <RowDefinition Height="28" />
+                        <RowDefinition Height="28" />
+                        <RowDefinition Height="28" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    
+                    <Label Content="Identification:" Name="label4" />
+                    <Label Grid.Column="1" Grid.ColumnSpan="3" Content="{Binding TaxaDesc}" Name="lblIdentification" />
+                    
+                    <Label Grid.Row="1" Content="Accession #:" Name="label5" VerticalAlignment="Top" />
+                    <ext:AutoNumberBox Grid.Row="1" Grid.Column="1" Height="23" Name="txtAccessionNumber" Text="{Binding AccessionNumber}" />
+                    
+                    <Label Grid.Row="2" Content="Registration #:" Name="label6" />
+                    <ext:AutoNumberBox Grid.Row="2" Grid.Column="1" Height="23" Name="txtRegistrationNumber" Text="{Binding RegistrationNumber}" />
+                                        
+                    <Label Grid.Row="3" Content="Collector's #:" Name="label7" />
+                    <ext:AutoNumberBox Grid.Row="3" Grid.Column="1" Height="23" Name="txtCollectorNo" Text="{Binding CollectorNumber}" />
+                    
+                    <Label Grid.Column="2" Grid.Row="1" Content="Abundance:" Name="label8" />
+                    <ext:PickListControl Grid.Row="1" Grid.Column="3" Height="23" Name="txtAbundance" Text="{Binding Abundance}" />
+                    
+                    <Label Grid.Row="2" Grid.Column="2" Content="Source:" Name="label9" />
+                    <ext:PickListControl Height="23" Grid.Row="2" Grid.Column="3" Name="txtSource" Text="{Binding Source}" />
+                    
+                    <Label Grid.Row="3" Grid.Column="2" Content="Institution:" Name="label10" />
+                    <ext:PickListControl Height="23" Grid.Row="3" Grid.Column="3" Name="txtInstitution" Text="{Binding Institution}" />
+                    
+                    <Label Grid.Row="4" Content="Collection method:" />
+                    <ext:PickListControl Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Height="23" Name="txtCollectionMethod" Text="{Binding CollectionMethod}" />
+                    
+                    <Label Grid.Row="5" Content="Macro Habitat:" Name="label12" />
+                    <ext:PickListControl Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Height="23" Name="txtMacroHabitat" Text="{Binding MacroHabitat}" />
+                    
+                    <Label Grid.Row="6" Content="Micro Habitat:" Name="label13" />
+                    <ext:PickListControl Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3" Height="23" Name="txtMicroHabitat" Text="{Binding MicroHabitat}" />
+                    
+                    <Label Grid.Row="7" Content="Trap:" Name="label14" />
+                    <ext:LookupControl Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="3" Height="23" Name="txtTrap" ObjectID="{Binding TrapID}" Text="{Binding TrapName}"/>
+                    
+                    <Label Grid.Row="8" Content="Type Details:" Name="label15" VerticalAlignment="Top" />
+                    <TextBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="3" Height="23" Name="lblTypeDetails" Text="{Binding TypeData, Mode=OneWay, Converter={StaticResource typeDataConverter}}" Background="{x:Static SystemColors.ControlBrush}" IsReadOnly="True" />
+                    <Button Content="Add to label set..." Height="23" HorizontalAlignment="Left" Margin="6,0,0,6" Name="btnAddToLabelSet" VerticalAlignment="Bottom" Width="114" Grid.Row="9" Click="btnAddToLabelSet_Click" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="Identification" Name="tabIdentification">
+                <Grid Margin="0">
+                    <TabControl Name="tabID" TabStripPlacement="Right" Margin="0">
+                        <TabItem Header="Current">
+                            <TabItem.LayoutTransform>
+                                <RotateTransform Angle="90"/>
+                            </TabItem.LayoutTransform>
+                            <Grid Margin="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="5" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="28"/>
+                                    <RowDefinition Height="28"/>
+                                    <RowDefinition Height="28"/>
+                                    <RowDefinition Height="28"/>
+                                    <RowDefinition Height="28"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+
+                                <Label Content="Identification:" HorizontalAlignment="Left" Name="label16" />
+                                <ext:LookupControl Height="23" Grid.Row="0" Grid.ColumnSpan="3" Grid.Column="1" Name="txtIdentification" ObjectID="{Binding BiotaID}" Text="{Binding TaxaDesc}" />
+                                <Label Grid.Row="1" Content="Identified By:" Name="label17" />
+                                <ext:PickListControl Grid.Row="1" Grid.Column="1" Height="23" Name="txtIdentifiedBy" Text="{Binding IdentifiedBy}"/>
+                                <Label Grid.Row="1" Grid.Column="2" Content="on date:" Name="label18"  />
+                                <ext:DateControl Grid.Row="1" Grid.Column="3" Height="23" Name="dtIDDate" Date="{Binding IdentificationDate, Converter={StaticResource hardDateConverter}}"/>
+                                <Label Grid.Row="2" Content="Reference:" Name="label19" />
+                                <ext:LookupControl Grid.Row="2" Grid.Column="1" Height="23" Name="txtReference" Text="{Binding RefCode}" ObjectID="{Binding IdentificationReferenceID}"/>
+                                <Label Grid.Row="2" Grid.Column="2" Content="Page:" Name="label20" />
+                                <ext:TextBox Grid.Row="2" Grid.Column="3" Height="23" Name="txtPage" Text="{Binding IdentificationRefPage}"/>
+                                <Label Grid.Row="3" Content="Accuracy:" HorizontalAlignment="Left" Name="label21" />
+                                <ext:PickListControl Grid.Row="3" Grid.Column="1" Height="23" Name="txtAccuracy"  Text="{Binding IdentificationAccuracy}"/>
+                                <Label Grid.Row="3" Grid.Column="2" Content="Method:" Name="label22" />
+                                <ext:PickListControl Grid.Row="3" Grid.Column="3" Height="23" Name="txtMethod" Text="{Binding IdentificationMethod}"/>
+                                <Label Grid.Row="4" Content="Name Qual.:" Name="label23" />
+                                <ext:PickListControl Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Height="23" Name="txtNameQual" Text="{Binding IdentificationNameQualification}"/>
+                                <Label Grid.Row="5" Content="Notes:" Name="label24" />                                
+                                <ext:BindableRichTextBox Grid.Row="5" Name="txtNotes" RTF="{Binding IdentificationNotes}" Grid.Column="1" Grid.ColumnSpan="3" Margin="0,9,0,0" />
+                            </Grid>
+                        </TabItem>
+                        <TabItem Header="History" x:Name="tabIDHistory">
+                            <TabItem.LayoutTransform>
+                                <RotateTransform Angle="90"/>
+                            </TabItem.LayoutTransform>
+                            <Grid/>
+                        </TabItem>
+                    </TabControl>                    
+                </Grid>                          
+            </TabItem>
+        </TabControl>
+    </Grid>
+</ext:DatabaseCommandControl>
