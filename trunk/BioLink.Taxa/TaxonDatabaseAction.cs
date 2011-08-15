@@ -41,8 +41,11 @@ namespace BioLink.Client.Taxa {
 
     public class UpdateTaxonCommand : TaxonDatabaseCommand {
 
+        private bool _isNew = false;
+
         public UpdateTaxonCommand(Taxon taxon) {
             this.Taxon = taxon;
+            _isNew = taxon.TaxaID.Value < 0;
         }
 
         public Taxon Taxon { get; private set; }
@@ -95,7 +98,10 @@ namespace BioLink.Client.Taxa {
 
         protected override void BindPermissions(PermissionBuilder required) {
             required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.UPDATE);
-            required.AddBiota(Taxon.TaxaID.Value, PERMISSION_MASK.UPDATE);
+            // don't need biota permission to update a new item...
+            if (!_isNew) {
+                required.AddBiota(Taxon.TaxaID.Value, PERMISSION_MASK.UPDATE);
+            }
         }
 
     }
