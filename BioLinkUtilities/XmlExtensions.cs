@@ -43,6 +43,9 @@ namespace BioLink.Client.Utilities {
         }
 
         public static string GetAttributeValue(this XmlElement element, string attrName, string @default = "") {
+            if (element == null) {
+                return @default;
+            }
             if (element.HasAttribute(attrName)) {
                 return element.Attributes[attrName].Value;
             }

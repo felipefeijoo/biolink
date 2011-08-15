@@ -262,6 +262,7 @@ namespace BioLink.Data {
             var XMLSAN = TaxonNode.SelectSingleNode("SAN") as XmlElement;
             if (XMLSAN == null) {
                 Log("The Importer determined that there should be Species Available Name (SAN) data for this Taxon (TaxonID=" + TaxonID + "), but no SAN node could be located !");
+                return false;
             }
 
 
