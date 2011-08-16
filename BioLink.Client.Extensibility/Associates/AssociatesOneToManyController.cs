@@ -120,32 +120,10 @@ namespace BioLink.Client.Extensibility {
                 var pinnableViewModel = PluginManager.Instance.GetViewModel(pinnable);
                 if (pinnableViewModel != null) {
                     associate.AssocName = pinnableViewModel.DisplayLabel;
-                    associate.RelativeCatID = GetCategoryIDFromLookupType(pinnable.LookupType);
+                    associate.RelativeCatID = TraitCategoryTypeHelper.GetCategoryIDFromLookupType(pinnable.LookupType);
                     associate.RelativeIntraCatID = pinnable.ObjectID;
                 }
             }            
-        }
-
-        public static int GetCategoryIDFromLookupType(LookupType l) {
-            switch (l) {
-                case LookupType.Material:
-                    return 1;
-                case LookupType.Taxon:
-                    return 2;
-                default:
-                    return -1;
-            }
-        }
-
-        public static LookupType GetLookupTypeFromCategoryID(int catId) {
-            switch (catId) {
-                case 1: // Material
-                    return LookupType.Material;
-                case 2: // Taxon
-                    return LookupType.Taxon;
-                default:
-                    return LookupType.Unknown;
-            }
         }
 
     }

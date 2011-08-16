@@ -27,7 +27,7 @@ namespace BioLink.Client.Taxa {
                         });
                         if (selected != null) {
 
-                            var fromDescription = string.Format(" {0} \"{1}\" ({2})", GetLookupTypeFromAssociateCategoryId(selected.Model.FromCatID), selected.FromViewModel.DisplayLabel, selected.RelationFromTo);
+                            var fromDescription = string.Format(" {0} \"{1}\" ({2})", TraitCategoryTypeHelper.GetLookupTypeFromCategoryID(selected.Model.FromCatID), selected.FromViewModel.DisplayLabel, selected.RelationFromTo);
                             string toDescription = null;                            
                             builder.New("Edit" + fromDescription).Handler(() => {
                                 EditAssociatedItem(selected.Model.FromCatID, selected.Model.FromIntraCatID);
@@ -35,7 +35,7 @@ namespace BioLink.Client.Taxa {
 
                             if (selected.Model.ToIntraCatID.HasValue) {
 
-                                toDescription = string.Format(" {0} \"{1}\" ({2})", GetLookupTypeFromAssociateCategoryId(selected.Model.ToCatID.Value), selected.ToViewModel.DisplayLabel, selected.RelationToFrom);
+                                toDescription = string.Format(" {0} \"{1}\" ({2})", TraitCategoryTypeHelper.GetLookupTypeFromCategoryID(selected.Model.ToCatID.Value), selected.ToViewModel.DisplayLabel, selected.RelationToFrom);
                                 builder.New("Edit" + toDescription).Handler(() => {
                                     EditAssociatedItem(selected.Model.ToCatID.Value, selected.Model.ToIntraCatID.Value);
                                 }).End();
@@ -115,28 +115,20 @@ namespace BioLink.Client.Taxa {
 
                         var vm = new AssociateReportViewModel(m);
 
-                        switch (m.FromCatID) {
-                            case 1: // Material
-                                vm.FromViewModel = GetViewModel(LookupType.Material, m.FromIntraCatID);
-                                break;
-                            case 2:
-                                vm.FromViewModel = GetViewModel(LookupType.Taxon, m.FromIntraCatID);
-                                break;
-                            default:
-                                vm.FromViewModel = new ViewModelPlaceholder(m.AssocDescription, "images/Description.png");
-                                break;
+                        if (m.FromCatID == TraitCategoryTypeHelper.GetTraitCategoryTypeID(TraitCategoryType.Material)) {
+                            vm.FromViewModel = GetViewModel(LookupType.Material, m.FromIntraCatID);
+                        } else if (m.FromCatID == TraitCategoryTypeHelper.GetTraitCategoryTypeID(TraitCategoryType.Taxon)) {
+                            vm.FromViewModel = GetViewModel(LookupType.Taxon, m.FromIntraCatID);
+                        } else {
+                            vm.FromViewModel = new ViewModelPlaceholder(m.AssocDescription, "images/Description.png");
                         }
 
-                        switch (m.ToCatID) {
-                            case 1: // Material
-                                vm.ToViewModel = GetViewModel(LookupType.Material, m.ToIntraCatID);
-                                break;
-                            case 2:
-                                vm.ToViewModel = GetViewModel(LookupType.Taxon, m.ToIntraCatID);
-                                break;
-                            default:
-                                vm.ToViewModel = new ViewModelPlaceholder(m.AssocDescription, "images/Description.png");
-                                break;
+                        if (m.ToCatID == TraitCategoryTypeHelper.GetTraitCategoryTypeID(TraitCategoryType.Material)) {
+                            vm.ToViewModel = GetViewModel(LookupType.Material, m.ToIntraCatID);
+                        } else if (m.ToCatID == TraitCategoryTypeHelper.GetTraitCategoryTypeID(TraitCategoryType.Taxon)) {
+                            vm.ToViewModel = GetViewModel(LookupType.Taxon, m.ToIntraCatID);
+                        } else {
+                            vm.ToViewModel = new ViewModelPlaceholder(m.AssocDescription, "images/Description.png");
                         }
 
                         viewModels.Add(vm);
@@ -151,20 +143,8 @@ namespace BioLink.Client.Taxa {
             return matrix;
         }
 
-        internal LookupType GetLookupTypeFromAssociateCategoryId(int catId) {
-            switch (catId) {
-                case 1: // Material
-                    return LookupType.Material;
-                case 2: // Taxon
-                    return LookupType.Taxon;
-                default:
-                    return LookupType.Unknown;
-            }
-
-        }
-
         internal void EditAssociatedItem(int catId, int intraCatId) {
-            var lookupType = GetLookupTypeFromAssociateCategoryId(catId);
+            var lookupType = TraitCategoryTypeHelper.GetLookupTypeFromCategoryID(catId);
             switch (lookupType) {
                 case LookupType.Material:
                 case LookupType.Taxon:
@@ -179,7 +159,7 @@ namespace BioLink.Client.Taxa {
         }
 
         internal void PinAssociatedItem(int catId, int intraCatId) {
-            LookupType type = GetLookupTypeFromAssociateCategoryId(catId);
+            LookupType type = TraitCategoryTypeHelper.GetLookupTypeFromCategoryID(catId);
             IBioLinkPlugin plugin = PluginManager.Instance.GetLookupTypeOwner(type);
             if (plugin != null) {
                 PluginManager.Instance.PinObject(new PinnableObject(plugin.Name, type, intraCatId));

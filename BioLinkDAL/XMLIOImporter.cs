@@ -85,6 +85,16 @@ namespace BioLink.Data {
             }
         }
 
+        private int GetAssociateCategoryID(XmlElement XMLAssoc, string assocType) {
+            int catId = GetNodeValue<int>(XMLAssoc, assocType + "CATEGORYID");
+            var catName = GetNodeValue<string>(XMLAssoc, assocType + "CATEGORYNAME");
+            if (!string.IsNullOrWhiteSpace(catName)) {
+                catId = XMLIOService.GetTraitCategoryID(catName);
+            }
+
+            return catId;
+        }
+
         private bool ImportAssociates() {
     
             Log("Importing Associates");
@@ -98,16 +108,17 @@ namespace BioLink.Data {
             var NodeList = XMLAssocParent.SelectNodes("ASSOCIATE");
     
             foreach (XmlElement XMLAssoc in NodeList) {
-                var assoc = new XMLImportAssociate(XMLAssoc) { FromCatID = GetNodeValue<int>(XMLAssoc, "FROMCATEGORYID") };
-
+                int fromCatId = GetAssociateCategoryID(XMLAssoc, "FROM");
+                var assoc = new XMLImportAssociate(XMLAssoc) { FromCatID = fromCatId };
                 assoc.FromIntraCatID = _guidToIDCache.IDfromGUID(GetNodeValue<string>(XMLAssoc, "FROMINTRACATID"));
-                assoc.ToCatID = GetNodeValue<int>(XMLAssoc, "TOCATEGORYID");
+                assoc.ToCatID = GetAssociateCategoryID(XMLAssoc, "TO");
+                string toCatID = (assoc.ToCatID < 0 ? "null" : assoc.ToCatID + "");
                 assoc.ToIntraCatID = _guidToIDCache.IDfromGUID(GetNodeValue<string>(XMLAssoc, "TOINTRACATID"));
                 assoc.AssocDescription = GetNodeValue<string>(XMLAssoc, "ASSOCDESCRIPTION");
                 assoc.RelationFromTo = GetNodeValue<string>(XMLAssoc, "RELATIONFROMTO");
                 assoc.RelationToFrom = GetNodeValue<string>(XMLAssoc, "RELATIONTOFROM");
                 
-                GenerateUpdateString(XMLAssoc, "ASSOCIATE", assoc);
+                GenerateUpdateString(XMLAssoc, "ASSOCIATE", assoc, "intFromCatID=" + fromCatId + ", intToCatID=" + toCatID, "intFromCatID, intToCatID", fromCatId + ", " + toCatID);
                                        
                 if (XMLIOService.ImportAssociate(assoc)) {
                     
@@ -1310,7 +1321,7 @@ namespace BioLink.Data {
             return boolStr.ToLower() == "true" ? "1" : "0";
         }
 
-        private bool CheckForObjectReference(string ObjectType, string FieldName, ref string Value) {
+        private bool CheckForObjectReference(string ObjectType, string FieldName, ref string Value, string defaultValue = "NULL") {
 
             int lngID;
             bool bDoCheck = false;
@@ -1369,7 +1380,7 @@ namespace BioLink.Data {
 
             if (bDoCheck) {
                 if (string.IsNullOrEmpty(Value)) {
-                    Value = "NULL";
+                    Value = defaultValue;
                 } else {
                     lngID = _guidToIDCache.IDfromGUID(Value);
                     if (lngID < 0) {

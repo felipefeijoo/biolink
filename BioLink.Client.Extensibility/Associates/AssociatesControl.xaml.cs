@@ -113,9 +113,9 @@ namespace BioLink.Client.Extensibility {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
             var toCatID = value as int?;            
             if (toCatID != null && toCatID.HasValue && toCatID.Value > 0) {
-                if (toCatID == 1) {
+                if (toCatID == TraitCategoryTypeHelper.GetTraitCategoryTypeID(TraitCategoryType.Material)) {
                     return TraitCategoryType.Material.ToString();
-                } if (toCatID == 2) {
+                } if (toCatID == TraitCategoryTypeHelper.GetTraitCategoryTypeID(TraitCategoryType.Taxon)) {
                     return TraitCategoryType.Taxon.ToString();
                 } else {
                     throw new Exception("Unhandled Associate Type: " + toCatID);
@@ -132,9 +132,9 @@ namespace BioLink.Client.Extensibility {
                     case "Description":
                         return null;
                     case "Taxon":
-                        return 2;
+                        return TraitCategoryTypeHelper.GetTraitCategoryTypeID(TraitCategoryType.Taxon);
                     case "Material":
-                        return 1;
+                        return TraitCategoryTypeHelper.GetTraitCategoryTypeID(TraitCategoryType.Material);
                     default:
                         throw new Exception("Unhandled Associate Type: " + str);
                 }

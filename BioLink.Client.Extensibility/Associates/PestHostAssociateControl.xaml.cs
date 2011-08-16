@@ -68,9 +68,9 @@ namespace BioLink.Client.Extensibility {
             var selected = this.DataContext as AssociateViewModel;
             if (selected != null) {
 
-                if (selected.RelativeCatID == 1 || selected.RelativeCatID == 2) {
+                if (selected.RelativeCatID == TraitCategoryTypeHelper.GetTraitCategoryTypeID(TraitCategoryType.Taxon) || selected.RelativeCatID == TraitCategoryTypeHelper.GetTraitCategoryTypeID(TraitCategoryType.Material)) {
                     // txtAssociate.Text = selected.AssocName;
-                    var lookupType = AssociatesOneToManyController.GetLookupTypeFromCategoryID(selected.RelativeCatID.Value);
+                    var lookupType = TraitCategoryTypeHelper.GetLookupTypeFromCategoryID(selected.RelativeCatID.Value);
                     lblAssociateType.Content = lookupType.ToString();
                 } else {
                     // txtAssociate.Text = selected.AssocDescription;
@@ -95,7 +95,7 @@ namespace BioLink.Client.Extensibility {
                 
                 lblAssociateType.Content = result.LookupType.ToString();
                 associate.RelativeIntraCatID = result.ObjectID;
-                associate.RelativeCatID = AssociatesOneToManyController.GetCategoryIDFromLookupType(result.LookupType);
+                associate.RelativeCatID = TraitCategoryTypeHelper.GetCategoryIDFromLookupType(result.LookupType);
                 associate.RelativeRelationFromTo = optPest.IsChecked.ValueOrFalse() ? "Pest" : "Host";
                 associate.RelativeRelationToFrom = optPest.IsChecked.ValueOrFalse() ? "Host" : "Pest";
                 associate.NameOrDescription = result.Description;
@@ -117,8 +117,8 @@ namespace BioLink.Client.Extensibility {
 
         private void SetFromPinnable(AssociateViewModel associate, PinnableObject pinnable) {            
             if (pinnable != null && associate != null) {
-                var viewModel = PluginManager.Instance.GetViewModel(pinnable);                
-                associate.RelativeCatID = AssociatesOneToManyController.GetCategoryIDFromLookupType(pinnable.LookupType);
+                var viewModel = PluginManager.Instance.GetViewModel(pinnable);
+                associate.RelativeCatID = TraitCategoryTypeHelper.GetCategoryIDFromLookupType(pinnable.LookupType);
                 associate.RelativeIntraCatID = pinnable.ObjectID;
                 associate.NameOrDescription = viewModel.DisplayLabel;                
                 SetRelationships(associate);
@@ -145,7 +145,7 @@ namespace BioLink.Client.Extensibility {
             if (selected != null) {
 
                 if (selected.RelativeCatID.HasValue) {
-                    var lookupType = AssociatesOneToManyController.GetLookupTypeFromCategoryID(selected.RelativeCatID.Value);
+                    var lookupType = TraitCategoryTypeHelper.GetLookupTypeFromCategoryID(selected.RelativeCatID.Value);
                     if (lookupType != LookupType.Unknown && selected.RelativeIntraCatID.HasValue) {
                         PluginManager.Instance.EditLookupObject(lookupType, selected.RelativeIntraCatID.Value);
                     }
