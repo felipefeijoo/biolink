@@ -128,6 +128,14 @@ namespace BioLink.Data {
             return typeId;
         }
 
+        public string GetTraitCategoryName(int catId) {
+            string name = "";
+            SQLReaderForEach("SELECT vchrCategory FROM tblTraitCategory WHERE intTraitCategoryID = @catId", (reader) => {
+                name = reader[0] as string;
+            }, _P("@catId", catId));
+            return name;
+        }
+
         public int GetTraitCategoryID(string category) {
             int catId = 0;
             StoredProcReaderFirst("spXMLImportCategoryGet", (reader) => {

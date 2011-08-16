@@ -238,14 +238,14 @@ namespace BioLink.Data {
 
         #region Traits
 
-        public TraitCategory GetTraitCategory(string category) {
-            TraitCategory cat = null;
-            int catId = StoredProcReturnVal<int>("spTraitCategoryGetSet", _P("vchrTraitCategory", category), ReturnParam("intTraitCategoryID", SqlDbType.Int));
-            cat = new TraitCategory();
-            cat.Category = category;
-            cat.TraitCategoryID = catId;
-            return cat;
-        }
+        //public TraitCategory GetTraitCategory(string category) {
+        //    TraitCategory cat = null;
+        //    int catId = StoredProcReturnVal<int>("spTraitCategoryGetSet", _P("vchrTraitCategory", category), ReturnParam("intTraitCategoryID", SqlDbType.Int));
+        //    cat = new TraitCategory();
+        //    cat.Category = category;
+        //    cat.TraitCategoryID = catId;
+        //    return cat;
+        //}
 
         public List<Trait> GetTraits(string category, int intraCategoryID) {
             var mapper = new GenericMapperBuilder<Trait>().Map("Trait", "Name").PostMapAction((t) => {

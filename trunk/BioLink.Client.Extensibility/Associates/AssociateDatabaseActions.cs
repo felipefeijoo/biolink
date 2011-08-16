@@ -7,7 +7,29 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Extensibility {
 
-    public class InsertAssociateCommand : GenericDatabaseCommand<Associate> {
+    public abstract class AssociateDatabaseCommand : GenericDatabaseCommand<Associate> {
+
+        protected AssociateDatabaseCommand(Associate model) : base(model) { }
+
+        protected string CategoryIDToString(int? catId) {
+            if (!catId.HasValue) {
+                return "";
+            }
+
+            if (catId.Value == TraitCategoryTypeHelper.GetTraitCategoryTypeID(TraitCategoryType.Material)) {
+                return "Material";
+            }
+
+            if (catId.Value == TraitCategoryTypeHelper.GetTraitCategoryTypeID(TraitCategoryType.Taxon)) {
+                return "Taxon";
+            }
+
+            return "";
+        }
+
+    }
+
+    public class InsertAssociateCommand : AssociateDatabaseCommand {
 
         public InsertAssociateCommand(Associate model, ViewModelBase owner) : base(model) {
             this.Owner = owner;
@@ -16,19 +38,7 @@ namespace BioLink.Client.Extensibility {
         protected override void ProcessImpl(User user) {
             var service =new SupportService(user);
             Model.FromIntraCatID = Owner.ObjectID.Value;
-
-            switch (Model.ToCatID.GetValueOrDefault(-1)) {
-                case 1:
-                    Model.ToCategory = "Material";
-                    break;
-                case 2:
-                    Model.ToCategory = "Taxon";
-                    break;
-                default:
-                    Model.ToCategory = "";
-                    break;
-            }
-
+            Model.ToCategory = CategoryIDToString(Model.ToCatID);
             Model.AssociateID = service.InsertAssociate(Model);
         }
 
@@ -45,26 +55,14 @@ namespace BioLink.Client.Extensibility {
 
     }
 
-    public class UpdateAssociateCommand : GenericDatabaseCommand<Associate> {
-        public UpdateAssociateCommand(Associate model)
-            : base(model) {
+    public class UpdateAssociateCommand : AssociateDatabaseCommand {
+
+        public UpdateAssociateCommand(Associate model) : base(model) {
         }
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);
-
-            switch (Model.ToCatID.GetValueOrDefault(-1)) {
-                case 1:
-                    Model.ToCategory = "Material";
-                    break;
-                case 2:
-                    Model.ToCategory = "Taxon";
-                    break;
-                default:
-                    Model.ToCategory = "";
-                    break;
-            }
-
+            Model.ToCategory = CategoryIDToString(Model.ToCatID);
             service.UpdateAssociate(Model);
         }
 

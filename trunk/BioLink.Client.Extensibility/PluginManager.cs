@@ -472,6 +472,8 @@ namespace BioLink.Client.Extensibility {
                     Logger.Debug("Cleaning up generic temp files...");
                     TempFileManager.CleanUp();
 
+                    TraitCategoryTypeHelper.Reset();
+
                 } finally {
                     frm.Close();    
                 }

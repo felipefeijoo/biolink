@@ -70,17 +70,14 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void EditAssociatedItem(int catId, int intraCatId) {
-            switch (catId) {
-                case 1: // Material
-                    PluginManager.Instance.EditLookupObject(LookupType.Material, intraCatId);                    
-                    break;
-                case 2: // Taxon
-                    PluginManager.Instance.EditLookupObject(LookupType.Taxon, intraCatId);                    
-                    break;
-                default:
-                    // Don't think this should ever happen!
-                    ErrorMessage.Show("Error!");
-                    break;
+
+            if (catId == TraitCategoryTypeHelper.GetTraitCategoryTypeID(TraitCategoryType.Material)) {
+                PluginManager.Instance.EditLookupObject(LookupType.Material, intraCatId);
+            } else if (catId == TraitCategoryTypeHelper.GetTraitCategoryTypeID(TraitCategoryType.Taxon)) {
+                PluginManager.Instance.EditLookupObject(LookupType.Taxon, intraCatId);                    
+            } else {
+                // Don't think this should ever happen!
+                ErrorMessage.Show("Error!");
             }
 
         }
@@ -88,16 +85,14 @@ namespace BioLink.Client.Extensibility {
         private void PinAssociatedItem(int catId, int intraCatId) {
             LookupType type = LookupType.Unknown;
             IBioLinkPlugin plugin = null;
-            switch (catId) {
-                case 1: // Material
-                    type = LookupType.Material;
-                    plugin = PluginManager.Instance.GetLookupTypeOwner(LookupType.Material);
-                    break;
-                case 2: // Taxon
-                    type = LookupType.Taxon;
-                    plugin = PluginManager.Instance.GetLookupTypeOwner(LookupType.Taxon);
-                    break;
-            }
+
+            if (catId == TraitCategoryTypeHelper.GetTraitCategoryTypeID(TraitCategoryType.Material)) {
+                type = LookupType.Material;
+                plugin = PluginManager.Instance.GetLookupTypeOwner(LookupType.Material);
+            } else if (catId == TraitCategoryTypeHelper.GetTraitCategoryTypeID(TraitCategoryType.Taxon)) {
+                type = LookupType.Taxon;
+                plugin = PluginManager.Instance.GetLookupTypeOwner(LookupType.Taxon);
+            } 
 
             if (plugin != null) {
                 PluginManager.Instance.PinObject(new PinnableObject(plugin.Name, type, intraCatId));
@@ -176,13 +171,13 @@ namespace BioLink.Client.Extensibility {
         }
 
         internal LookupType GetLookupTypeFromAssociateCategoryId(int catId) {
-            switch (catId) {
-                case 1: // Material
-                    return LookupType.Material;
-                case 2: // Taxon
-                    return LookupType.Taxon;
-                default:
-                    return LookupType.Unknown;
+
+            if (catId == TraitCategoryTypeHelper.GetTraitCategoryTypeID(TraitCategoryType.Material)) {
+                return LookupType.Material;
+            } else if (catId == TraitCategoryTypeHelper.GetTraitCategoryTypeID(TraitCategoryType.Taxon)) {
+                return LookupType.Taxon;
+            } else {
+                return LookupType.Unknown;
             }
 
         }

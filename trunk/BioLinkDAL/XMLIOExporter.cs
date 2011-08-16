@@ -331,9 +331,9 @@ namespace BioLink.Data {
             _subPartMappings.Add("NOTES", "txtNotes");
             // Associate Mappings
             _associateMappings = new FieldToNameMappings();
-            _associateMappings.Add("FROMCATEGORYID", "intFromCatID");
+            _associateMappings.Add("FROMCATEGORYID", "intFromCatID", false);
             _associateMappings.Add("FROMINTRACATID", "intFromIntraCatID");
-            _associateMappings.Add("TOCATEGORYID", "intToCatID");
+            _associateMappings.Add("TOCATEGORYID", "intToCatID", false);
             _associateMappings.Add("TOINTRACATID", "intToIntraCatID");
             _associateMappings.Add("ASSOCDESCRIPTION", "txtAssocDescription");
             _associateMappings.Add("RELATIONFROMTO", "vchrRelationFromTo");
@@ -883,6 +883,7 @@ namespace BioLink.Data {
                         strToCategory = assoc.FromCategory; //GetRowProperty(vAssoc, i, "FromCategory", "")
                     }
                     CreateNamedNode(XMLAssocNode, "FROMCATEGORYID", lngFromCatID);
+                    CreateNamedNode(XMLAssocNode, "FROMCATEGORYNAME", XMLIOService.GetTraitCategoryName(lngFromCatID));
 
                     switch (strFromCategory) {
                         case "Taxon":
@@ -899,6 +900,7 @@ namespace BioLink.Data {
                     }
 
                     CreateNamedNode(XMLAssocNode, "TOCATEGORYID", lngToCatID);
+                    CreateNamedNode(XMLAssocNode, "TOCATEGORYNAME", XMLIOService.GetTraitCategoryName(lngToCatID));
 
                     switch (strToCategory) {
                         case "Taxon":
