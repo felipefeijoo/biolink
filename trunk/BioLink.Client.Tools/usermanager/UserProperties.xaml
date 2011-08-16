@@ -58,7 +58,7 @@
 
             <Label Grid.Row="7" Content="Notes:" />
             
-            <ext:TextBox Grid.Row="8" Grid.ColumnSpan="2" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible" Text="{Binding Path=Notes}"/>
+            <ext:TextBox Grid.Row="8" Grid.ColumnSpan="2" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible" Text="{Binding Path=Notes}" AcceptsReturn="True" />
 
 
 

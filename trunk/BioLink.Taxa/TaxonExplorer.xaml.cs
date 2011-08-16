@@ -425,12 +425,12 @@ namespace BioLink.Client.Taxa {
                 }
 
                 if (target != null) {
-                    if (target.TaxaID.Value < 0) {
+                    if (target.TaxaID.Value <= 0) {
                         // new items are automatically approved!
                         return true;
                     }
-                    var service = new SupportService(User);
-                    if (!service.HasBiotaPermission(target.TaxaID.Value, mask)) {
+
+                    if (!User.HasBiotaPermission(target.TaxaID.Value, mask)) {
                         throw new NoPermissionException(PermissionCategory.SPIN_TAXON, mask, "You do not have permission to move this item!");
                     }
                 }
@@ -835,7 +835,8 @@ namespace BioLink.Client.Taxa {
 
                 Taxon fullDetails = Service.GetTaxon(taxonId.Value);
                 TaxonViewModel model = new TaxonViewModel(null, fullDetails, null);
-                bool readOnly = !User.HasBiotaPermission(taxonId.Value, PERMISSION_MASK.UPDATE);
+
+                var readOnly = !User.HasBiotaPermission(taxonId.Value, PERMISSION_MASK.UPDATE);
                 TaxonDetails control = new TaxonDetails(Owner, model, User, (changedModel) => {
                     RegenerateLabel(changedModel);
                 }, readOnly);
@@ -1420,7 +1421,51 @@ namespace BioLink.Client.Taxa {
 
             bool readOnly = !User.HasBiotaPermission(taxon.TaxaID.Value, PERMISSION_MASK.OWNER);
 
-            PluginManager.Instance.AddNonDockableContent(Owner, new BiotaPermissions(User, taxon, readOnly), "Taxon Permissions for '" + taxon.TaxaFullName + (readOnly ? "' (Read Only)" : "'"), SizeToContent.Manual);
+            if (!readOnly) {
+                PluginManager.Instance.AddNonDockableContent(Owner, new BiotaPermissions(User, taxon, readOnly), "Taxon Permissions for '" + taxon.TaxaFullName + (readOnly ? "' (Read Only)" : "'"), SizeToContent.Manual);
+            } else {
+                // Display a readonly version of the permissions...
+                var permStr = "";
+                string strOwners = "";
+                using (new OverrideCursor(Cursors.Wait)) {
+                    var service = new SupportService(User);
+                    var perms = service.GetBiotaPermissions(User.Username, taxon.TaxaID.Value);
+                    var owners = service.getBiotaOwners(taxon.TaxaID.Value);
+                    
+                    if ((perms.PermMask1 & (int) PERMISSION_MASK.OWNER) != 0) {
+                        permStr= "Owner";
+                    } else if ((perms.PermMask1 & (int) PERMISSION_MASK.WRITE) != 0) {
+                        var rights = new List<String>();
+                        if ((perms.PermMask1 & (int) PERMISSION_MASK.INSERT) != 0) {
+                            rights.Add("Insert");
+                        }
+                        if ((perms.PermMask1 & (int) PERMISSION_MASK.UPDATE) != 0) {
+                            rights.Add("Update");
+                        }
+                        if ((perms.PermMask1 & (int) PERMISSION_MASK.DELETE) != 0) {
+                            rights.Add("Delete");
+                        }
+                        permStr = rights.Join(", ");
+                    } else {
+                        permStr = "Read Only";
+                    }
+
+
+                    var ownerNames = new List<string>();
+                    foreach (BiotaOwner owner in owners) {
+                        if (!string.IsNullOrWhiteSpace(owner.Name)) {
+                            ownerNames.Add(string.Format("{0} ({1})", owner.Name, owner.FullName));
+                        }
+                    }
+
+                    strOwners = ownerNames.Join(", ");
+                    if (string.IsNullOrWhiteSpace(strOwners)) {
+                        strOwners = "sa (System Administrator)";
+                    }
+                }
+
+                InfoBox.Show(string.Format("Permissions: {0}\n\nOwners: {1}", permStr, strOwners), "Permissions for " + taxon.TaxaFullName, this);
+            }
         }
 
         internal void ChangeRank(TaxonViewModel taxon) {

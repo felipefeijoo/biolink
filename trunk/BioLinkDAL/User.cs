@@ -81,13 +81,16 @@ namespace BioLink.Data {
 
         public bool HasBiotaPermission(int taxonId, PERMISSION_MASK mask) {
 
+            if (taxonId == 0) {
+                return true;
+            }
+
             // system administrator has full rights to all.
             if (IsSysAdmin) {
                 return true;
             }
 
             // Ensure the permissions set at the user group level take precendence to the individual taxon based permissions.
-
             if (mask != PERMISSION_MASK.OWNER) {
                 if (!HasPermission(PermissionCategory.SPIN_TAXON, mask)) {
                     return false;
@@ -100,10 +103,22 @@ namespace BioLink.Data {
             }
 
             var service = new SupportService(this);
-            if (!service.HasBiotaPermission(taxonId, mask)) {
+
+            //if (service.HasBiotaPermission(taxonId, mask)) {
+            //    return true;
+            //}
+
+            var perms = service.GetBiotaPermissions(Username, taxonId);
+            if (perms == null) {
                 return false;
-            }
-            return true;
+            } else {
+                if (perms.PermMask1 == 0) {
+                    // If there are owners of this taxa then the user needs permissions...
+                    return perms.NumOwners == 0;
+                } else {
+                    return (perms.PermMask1 & (int) mask) != 0;
+                }
+            }                            
         }
 
         public void CheckPermission(PermissionCategory perm, PERMISSION_MASK mask, string deniedMessage) {

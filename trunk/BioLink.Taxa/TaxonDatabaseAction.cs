@@ -185,7 +185,9 @@ namespace BioLink.Client.Taxa {
 
         protected override void BindPermissions(PermissionBuilder required) {
             required.Add(PermissionCategory.SPIN_TAXON, PERMISSION_MASK.INSERT);
-            required.AddBiota(Taxon.TaxaID.Value, PERMISSION_MASK.INSERT);
+            if (Taxon.Parent != null && Taxon.Parent.ObjectID.HasValue && Taxon.Parent.ObjectID > 0) {
+                required.AddBiota(Taxon.Parent.ObjectID.Value, PERMISSION_MASK.INSERT);
+            }
         }
 
     }

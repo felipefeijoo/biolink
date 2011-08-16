@@ -65,7 +65,7 @@
                     <ext:PickListControl Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="3" x:Name="txtReturnType" Height="23" Text="{Binding TypeOfReturn}" />
 
                     <Label Grid.Row="8" Content="Conditions:" />
-                    <ext:TextBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="3" x:Name="txtConditions" TextWrapping="Wrap" Margin="0,3,0,3" Text="{Binding Path=Restrictions}" />
+                    <ext:TextBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="3" x:Name="txtConditions" TextWrapping="Wrap" Margin="0,3,0,3" Text="{Binding Path=Restrictions}" AcceptsReturn="True" VerticalScrollBarVisibility="Visible" />
 
                     <GroupBox Grid.Row="9" Grid.ColumnSpan="4" Header="Loan Status" Margin="6,3,6,3">
                         <Grid>
