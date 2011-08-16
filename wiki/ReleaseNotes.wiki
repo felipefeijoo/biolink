@@ -3,6 +3,23 @@
 
 = Release Notes =
 
+== Release Candidate 4 (RC4) ==
+!BioLink 3.0.443 16 August 2011
+
+=== New features ===
+
+No new features in this release
+
+=== Issues addressed in this release ===
+
+  * Issue 111	 Can't open label manager (null reference exception)
+  * Issue 112	 When merging two sites, if either site has a trait, performing a compare will fail if the trait name has a space
+  * Issue 113	 Inserting new taxa fails if no permissions exist for user in fine grained permissions	   
+  * Issue 115	 Associates not importing from XML
+  * Issue 117	 Can't press enter in contacts address fields or Loan conditions fields
+
+Also many small issues around XML Importing and Exporting
+
 == Release Candidate 3 (RC3) ==
 
 !BioLink 3.0.425 12 August 2011
