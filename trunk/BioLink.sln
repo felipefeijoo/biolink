@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual C# Express 2010
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioLink.Data", "BioLinkDAL\BioLink.Data.csproj", "{E74AFE93-4A44-43F6-8F94-03E457321ABC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioLinkDALGenerator", "BioLinkDALGenerator\BioLinkDALGenerator.csproj", "{9AEA3CB0-CEFA-4AB1-AC50-012393963B34}"
@@ -20,6 +20,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioLink.Client.Tools", "BioLink.Client.Tools\BioLink.Client.Tools.csproj", "{074D0242-D833-46C6-A486-C2A3B0F189F5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioLink.Client.Maps", "BioLink.Client.Maps\BioLink.Client.Maps.csproj", "{69F9EF25-581C-4A5E-9B25-08162FC5EBF9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseUtilities", "DatabaseUtilities\DatabaseUtilities.csproj", "{45E9AEDD-FABA-42C2-8E5E-1E4CA63882E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -131,6 +133,16 @@ Global
 		{69F9EF25-581C-4A5E-9B25-08162FC5EBF9}.Release|Mixed Platforms.Build.0 = Release|x86
 		{69F9EF25-581C-4A5E-9B25-08162FC5EBF9}.Release|x86.ActiveCfg = Release|x86
 		{69F9EF25-581C-4A5E-9B25-08162FC5EBF9}.Release|x86.Build.0 = Release|x86
+		{45E9AEDD-FABA-42C2-8E5E-1E4CA63882E9}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{45E9AEDD-FABA-42C2-8E5E-1E4CA63882E9}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{45E9AEDD-FABA-42C2-8E5E-1E4CA63882E9}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{45E9AEDD-FABA-42C2-8E5E-1E4CA63882E9}.Debug|x86.ActiveCfg = Debug|x86
+		{45E9AEDD-FABA-42C2-8E5E-1E4CA63882E9}.Debug|x86.Build.0 = Debug|x86
+		{45E9AEDD-FABA-42C2-8E5E-1E4CA63882E9}.Release|Any CPU.ActiveCfg = Release|x86
+		{45E9AEDD-FABA-42C2-8E5E-1E4CA63882E9}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{45E9AEDD-FABA-42C2-8E5E-1E4CA63882E9}.Release|Mixed Platforms.Build.0 = Release|x86
+		{45E9AEDD-FABA-42C2-8E5E-1E4CA63882E9}.Release|x86.ActiveCfg = Release|x86
+		{45E9AEDD-FABA-42C2-8E5E-1E4CA63882E9}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

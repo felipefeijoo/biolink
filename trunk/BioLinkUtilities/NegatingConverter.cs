@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Data;
 
-namespace BioLink.Client.Extensibility {
+namespace BioLink.Client.Utilities {
 
     public class NegatingConverter : IValueConverter {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {

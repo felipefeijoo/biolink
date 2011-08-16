@@ -102,6 +102,7 @@
       <DependentUpon>InputBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="IProgressMonitor.cs" />
+    <Compile Include="NegatingConverter.cs" />
     <Compile Include="rtf\FilteringRTFHandler.cs" />
     <Compile Include="rtf\Keyword.cs" />
     <Compile Include="LegacySettings.cs" />
