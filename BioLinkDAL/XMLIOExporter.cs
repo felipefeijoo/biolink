@@ -1000,8 +1000,6 @@ namespace BioLink.Data {
                 return null;
             }
 
-            ProgressTick();
-
             var XMLMaterialRoot = AddSiteVisitItem(material.SiteVisitID, material.SiteVisitGUID.ToString());
 
             XmlElement XMLMaterial = _xmlDoc.CreateNode(XMLMaterialRoot, "MATERIAL");
@@ -1032,6 +1030,7 @@ namespace BioLink.Data {
             CreateNamedNode(XMLMaterial, "vchrOriginalLabel", material.OriginalLabel);
 
             _materialList.Add(MaterialGUID, MaterialID);
+            ProgressTick();
 
             var lngTrapID = material.TrapID;
             var strTrapGUID = "";
@@ -1196,6 +1195,7 @@ namespace BioLink.Data {
             AddNotes(XMLVisitNode, SiteVisitID, "SiteVisit");
 
             _siteVisitList.Add(SiteVisitGUID, SiteVisitID);
+            ProgressTick();
 
             return XMLVisitNode;
         }
@@ -1287,13 +1287,14 @@ namespace BioLink.Data {
             CreateNamedNode(XMLSiteNode, "vchrGeoAgeTop", site.GeoAgeTop);
             CreateNamedNode(XMLSiteNode, "vchrGeoNotes", ExpandNotes(site.GeoNotes));
             CreateNamedNode(XMLSiteNode, "dtDateCreated", FormatDate(site.DateCreated));
-            CreateNamedNode(XMLSiteNode, "vchrWhoCreated", site.WhoCreated);
+            CreateNamedNode(XMLSiteNode, "vchrWhoCreated", site.WhoCreated);            
 
             AddTraits(XMLSiteNode, SiteID, "Site");
             AddNotes(XMLSiteNode, SiteID, "Site");
             AddMultimedia(XMLSiteNode, SiteID, "Site");
 
             _siteList.Add(SiteGUID, SiteID);
+            ProgressTick();
 
             return XMLSiteNode;
         }
@@ -1477,7 +1478,6 @@ namespace BioLink.Data {
                         AddMultimedia(XMLRefNode, refId.Value, "Reference");
 
                         _referenceList.Add(guid, refId.Value);
-
                     } else {
                         Log("Failed to extract reference detail for ref id {0}", refId);
                     }
@@ -1575,30 +1575,11 @@ namespace BioLink.Data {
                     var XMLData = _xmlDoc.XMLDocument.CreateCDataSection(Convert.ToBase64String(mm.Multimedia));
                     XMLMM.AppendChild(XMLData);
 
-                    //using (var imgStream = new MemoryStream(mm.Multimedia)) {
-                    //    using (var outputStream = new MemoryStream()) {
-                    //        try {
-
-                    //            UUCodec.UUEncode(imgStream, outputStream);
-                    //            outputStream.Position = 0;
-                    //            var reader = new StreamReader(outputStream);
-                    //            var imageData = reader.ReadToEnd();
-
-                    //            if (imageData.Contains("]]>")) {
-                    //                imageData = imageData.Replace("]]>", "]]&gt;");
-                    //            }
-                    //            var XMLData = _xmlDoc.XMLDocument.CreateCDataSection(imageData);
-                    //            XMLMM.AppendChild(XMLData);
-                    //        } catch (Exception ex) {
-                    //            Log("Exception encoding Multimedia Item {0}: {1}", MediaID, ex.Message);
-                    //        }
-                    //    }
-                    //}
-
                     AddTraits(XMLMM, MediaID, "Multimedia");
                     AddNotes(XMLMM, MediaID, "Multimedia");
 
                     _multimediaList.Add(guid, MediaID);
+                    ProgressTick();
                 } else {
                     Log("Failed to export multimedia for item {0} - no media found.", MediaID);
                 }
@@ -1847,7 +1828,7 @@ namespace BioLink.Data {
         private int GetItemCount(int taxonId) {
 
             var stats = TaxaService.GetTaxonStatistics(taxonId);
-            return stats.TotalItems + 1; // the taxon itself counts as one
+            return stats.Material + stats.Sites + stats.SiteVisits + stats.Multimedia + 1; // the taxon itself counts as one
         }
 
         private void Init() {

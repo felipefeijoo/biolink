@@ -50,12 +50,12 @@
                     <ext:PickListControl Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Height="23" x:Name="txtInstituion" Text="{Binding Path=Institution, Mode=TwoWay}" VerticalAlignment="Center"/>
 
                     <Label Content="Street address:" Grid.Row="4" VerticalContentAlignment="Top"/>
-                    <ext:TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" x:Name="txtStreetAddress" Text="{Binding Path=StreetAddress, Mode=TwoWay}" VerticalAlignment="Center" Height="56" />
+                    <ext:TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" x:Name="txtStreetAddress" Text="{Binding Path=StreetAddress, Mode=TwoWay}" VerticalAlignment="Center" Height="56" AcceptsReturn="True" VerticalScrollBarVisibility="Visible" />
 
                     <CheckBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Content="Postal address is the same as the street address" VerticalAlignment="Center" x:Name="chkSameAddress" IsChecked="{Binding Path=PostalSameAsStreet}" />
 
                     <Label Content="Postal address:" Grid.Row="6" VerticalContentAlignment="Top" IsEnabled="{Binding Path=PostalSameAsStreet,  Converter={StaticResource NegatingConverter}}" />
-                    <ext:TextBox Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3" x:Name="txtPostalAddress" Text="{Binding Path=PostalAddress, Mode=TwoWay}" VerticalAlignment="Center" Height="56" IsEnabled="{Binding Path=PostalSameAsStreet,  Converter={StaticResource NegatingConverter}}" />
+                    <ext:TextBox Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3" x:Name="txtPostalAddress" Text="{Binding Path=PostalAddress, Mode=TwoWay}" VerticalAlignment="Center" Height="56" IsEnabled="{Binding Path=PostalSameAsStreet,  Converter={StaticResource NegatingConverter}}" AcceptsReturn="True" VerticalScrollBarVisibility="Visible" />
 
                     <Label Content="Work phone:" Grid.Row="7"/>
                     <ext:TextBox Grid.Row="7" Grid.Column="1" Height="23" x:Name="txtWorkPhone" Text="{Binding Path=WorkPh, Mode=TwoWay}" VerticalAlignment="Center"/>

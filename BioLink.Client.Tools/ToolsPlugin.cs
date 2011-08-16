@@ -245,6 +245,9 @@ namespace BioLink.Client.Tools {
         }
 
         public void ShowImport() {
+
+            User.CheckPermission(PermissionCategory.IMPORT_MATERIAL, PERMISSION_MASK.ALLOW, "You do not have sufficient privileges to import into BioLink!");
+
             if (_importWizard == null) {
                 var context = new ImportWizardContext();
 
@@ -269,6 +272,9 @@ namespace BioLink.Client.Tools {
         }
 
         public void ShowImportReferences() {
+
+            User.CheckPermission(PermissionCategory.IMPORT_REFERENCES, PERMISSION_MASK.ALLOW, "You do not have sufficient privileges to import references into BioLink!");
+
             if (_importReferencesWizard == null) {
                 var context = new ImportWizardContext();
 

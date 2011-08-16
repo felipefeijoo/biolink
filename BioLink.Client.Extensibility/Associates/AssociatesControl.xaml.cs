@@ -111,7 +111,7 @@ namespace BioLink.Client.Extensibility {
     public class AssociateTypeConverter : IValueConverter {
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
-            var toCatID = value as int?;
+            var toCatID = value as int?;            
             if (toCatID != null && toCatID.HasValue && toCatID.Value > 0) {
                 if (toCatID == 1) {
                     return TraitCategoryType.Material.ToString();

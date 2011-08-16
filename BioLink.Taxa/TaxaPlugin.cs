@@ -65,6 +65,8 @@ namespace BioLink.Client.Taxa {
         }
 
         private void ShowXMLImport() {
+            User.CheckPermission(PermissionCategory.IMPORT_MATERIAL, PERMISSION_MASK.ALLOW, "You do not have sufficient privileges to import into BioLink!");
+
             if (_xmlImportOptions == null) {
                 _xmlImportOptions = new XMLIOImportOptions();
                 _xmlImportOptions.Owner = PluginManager.Instance.ParentWindow;
@@ -100,6 +102,10 @@ namespace BioLink.Client.Taxa {
 
                 Config.SetUser(User, "Taxa.ManualSort", TaxonExplorer.IsManualSort);
 
+            }
+
+            if (_xmlImportOptions != null) {
+                _xmlImportOptions.Close();                
             }
         }
 

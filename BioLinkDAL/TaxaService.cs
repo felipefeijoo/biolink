@@ -183,8 +183,11 @@ namespace BioLink.Data {
             int total = 0;
             StoredProcReaderForEach("spBiotaStatistics", (reader) => {
                 int count = (int)reader["Count"];
-                map[reader["Category"] as string] = count;
-                total += count;
+                var key = reader["Category"] as string;
+                if (!string.IsNullOrEmpty(key)) {
+                    map[key.Trim()] = count;
+                    total += count;
+                }
 
             }, _P("intBiotaID", taxonId));
 
