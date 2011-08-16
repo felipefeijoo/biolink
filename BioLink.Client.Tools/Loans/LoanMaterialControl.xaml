@@ -4,12 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+             xmlns:u="clr-namespace:BioLink.Client.Utilities;assembly=BioLink.Client.Utilities"                               
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <Grid.Resources>
             <ext:HardDateConverter x:Key="hardDateConverter" />
-            <ext:NegatingConverter x:Key="NegatingConverter" />
+            <u:NegatingConverter x:Key="NegatingConverter" />
         </Grid.Resources>        
         <Grid.RowDefinitions>
             <RowDefinition Height="28" />

@@ -1,11 +1,12 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:u="clr-namespace:BioLink.Client.Utilities;assembly=BioLink.Client.Utilities"
     xmlns:ext="clr-namespace:BioLink.Client.Extensibility">
     
     <Style TargetType="{x:Type ext:ItemsGroupBox}">
         <Style.Resources>
-            <ext:NegatingConverter x:Key="NegatingConverter" />
+            <u:NegatingConverter x:Key="NegatingConverter" />
         </Style.Resources>
         
         <Setter Property="Template">

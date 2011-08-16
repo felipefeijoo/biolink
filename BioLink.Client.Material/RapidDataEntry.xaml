@@ -4,12 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+             xmlns:u="clr-namespace:BioLink.Client.Utilities;assembly=BioLink.Client.Utilities"
              xmlns:mat="clr-namespace:BioLink.Client.Material"
              mc:Ignorable="d" 
              d:DesignHeight="550" d:DesignWidth="826" FocusManager.IsFocusScope="True" AllowDrop="True">
     <Grid>
         <Grid.Resources>
-            <ext:NegatingConverter x:Key="NegatingConverter" />
+            <u:NegatingConverter x:Key="NegatingConverter" />
             
             <Style TargetType="{x:Type ext:TextBox}">
                 <Setter Property="IsReadOnly" Value="{Binding Locked}" />
