@@ -20,6 +20,8 @@ Or, if you are a !BioLink user with an existing installation
 
   * [FirstTime Starting BioLink for the first time]
 
+  * [UserGuide User Guide]
+
   * [WhatsNew Whats new and different in version 3.0]
 
   * [ReportIssues Report problems or issues with BioLink]
