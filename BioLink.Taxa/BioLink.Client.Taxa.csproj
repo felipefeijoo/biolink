@@ -96,6 +96,9 @@
     <Compile Include="Reports\StatisticsReport.cs" />
     <Compile Include="Reports\TaxaAssociatesReport.cs" />
     <Compile Include="Reports\TaxaForDistributionRegionReport.cs" />
+    <Compile Include="SelectRankWindow.xaml.cs">
+      <DependentUpon>SelectRankWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TaxonFavorites.xaml.cs">
       <DependentUpon>TaxonFavorites.xaml</DependentUpon>
     </Compile>
@@ -190,6 +193,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Reports\RegionBasedReportOptions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SelectRankWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

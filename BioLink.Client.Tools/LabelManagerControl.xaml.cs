@@ -280,17 +280,13 @@ namespace BioLink.Client.Tools {
                 }
 
                 builder.Separator();
-                builder.New("E_xport Label Set").Handler(() => ExportLabelSet()).End();
+                builder.New("E_xport Label Set").Handler(() => ExportData()).End();
 
                 lvw.ContextMenu = builder.ContextMenu;
             }
         
         }
         
-        private void ExportLabelSet() {
-            throw new NotImplementedException();
-        }
-
         private void EditSite() {
             if (lvw.SelectedItems.Count != 1) {
                 return;

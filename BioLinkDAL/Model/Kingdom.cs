@@ -14,5 +14,9 @@ namespace BioLink.Data.Model {
         protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
             get { return null; }
         }
+
+        public override string ToString() {
+            return KingdomName;
+        }
     }
 }
