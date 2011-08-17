@@ -309,7 +309,6 @@
     <Compile Include="ShutdownProgess.xaml.cs">
       <DependentUpon>ShutdownProgess.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SplitButton\SplitButton.cs" />
     <Compile Include="TabularDataViewer.xaml.cs">
       <DependentUpon>TabularDataViewer.xaml</DependentUpon>
     </Compile>
@@ -562,10 +561,6 @@
     <Page Include="ShutdownProgess.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="SplitButton\SplitButtonStyle.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="TabularDataViewer.xaml">
       <SubType>Designer</SubType>

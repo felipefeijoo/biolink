@@ -1,4 +1,18 @@
-﻿using System;
+﻿/*******************************************************************************
+ * Copyright (C) 2011 Atlas of Living Australia
+ * All Rights Reserved.
+ * 
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
+ * 
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ ******************************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -70,7 +84,7 @@ namespace BioLink.Client.Extensibility {
                     var defaultLatDir = Config.GetGlobal("LatLong.Default.Latitude.Direction", "S");
 
                     var list = new String[] { "E", "W" };
-                    int defaultDir = 0;                    
+                    int defaultDir = 0;
                     if (_coordType == CoordinateType.Latitude) {
                         list = new String[] { "N", "S" };
                         if (defaultLatDir.Equals("S", StringComparison.CurrentCultureIgnoreCase)) {
@@ -92,7 +106,7 @@ namespace BioLink.Client.Extensibility {
         private bool _hideLabel;
 
         public bool HideLabel {
-            get { return _hideLabel;  }
+            get { return _hideLabel; }
             set {
                 _hideLabel = value;
                 if (_hideLabel) {
@@ -115,15 +129,15 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register( "Value",  typeof(double),  typeof(LatLongInput), new FrameworkPropertyMetadata((double) 0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnValueChanged));
+        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(double), typeof(LatLongInput), new FrameworkPropertyMetadata((double)0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnValueChanged));
 
         private static void OnValueChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
-            
+
             var control = obj as LatLongInput;
             if (control != null) {
                 double newValue = (double)args.NewValue;
                 if (!control._selfChanged) {
-                    
+
                     switch (control.Mode) {
                         case LatLongMode.DegreesMinutesSeconds:
                             string direction;
@@ -143,7 +157,7 @@ namespace BioLink.Client.Extensibility {
                             control.txtDegrees.Text = degrees + "";
                             control.txtMinutes.Text = dblMinutes + "";
                             break;
-                        case LatLongMode.DegreesDecimalMinutesDirection:                            
+                        case LatLongMode.DegreesDecimalMinutesDirection:
                             GeoUtils.DecDegToDDecMDir(control.Value, out degrees, out dblMinutes, out direction, control._coordType);
                             control.txtDegrees.Text = degrees + "";
                             control.txtMinutes.Text = dblMinutes + "";
@@ -160,7 +174,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         public double Value {
-            get { return (double) GetValue(ValueProperty); }
+            get { return (double)GetValue(ValueProperty); }
             set { SetValue(ValueProperty, value); }
         }
 
@@ -175,7 +189,7 @@ namespace BioLink.Client.Extensibility {
 
             var control = obj as LatLongInput;
             if (control != null) {
-                bool val = (bool) args.NewValue;
+                bool val = (bool)args.NewValue;
                 control.txtDegrees.IsReadOnly = val;
                 control.txtMinutes.IsReadOnly = val;
                 control.txtSeconds.IsReadOnly = val;
@@ -188,7 +202,7 @@ namespace BioLink.Client.Extensibility {
         private void RecalculateValue() {
 
             double newValue = 0;
-            
+
             switch (Mode) {
                 case LatLongMode.DecimalDegrees:
                     newValue = SafeParseDouble(txtDegrees.Text);
@@ -212,13 +226,13 @@ namespace BioLink.Client.Extensibility {
                 default:
                     throw new Exception("Recalculate: Mode not handled: " + Mode.ToString());
             }
-            _selfChanged = true;                 
+            _selfChanged = true;
             this.Value = newValue;
             _selfChanged = false;
         }
 
         private int SafeParse(string text) {
-            int result ;
+            int result;
             if (Int32.TryParse(text, out result)) {
                 return result;
             } else {
@@ -298,7 +312,7 @@ namespace BioLink.Client.Extensibility {
 
                     if (Value == 0) {
                         if (_coordType == CoordinateType.Latitude) {
-                            direction = Config.GetGlobal("LatLong.Default.Longitude.Direction", "E");                    
+                            direction = Config.GetGlobal("LatLong.Default.Longitude.Direction", "E");
                         } else {
                             direction = Config.GetGlobal("LatLong.Default.Latitude.Direction", "S");
                         }
@@ -326,7 +340,7 @@ namespace BioLink.Client.Extensibility {
 
             // Now apply the column widths
             for (int i = 0; i < widths.Length; ++i) {
-                object w = widths[i];                
+                object w = widths[i];
                 grid.ColumnDefinitions[i].Width = (w is GridLength ? (GridLength)w : new GridLength((int)w));
             }
 
@@ -360,7 +374,7 @@ namespace BioLink.Client.Extensibility {
             txtMinutes.Clear();
             txtSeconds.Clear();
 
-            cmbDirection.SelectedIndex = defaultDir;            
+            cmbDirection.SelectedIndex = defaultDir;
         }
     }
 

@@ -1,4 +1,18 @@
-﻿using System;
+﻿/*******************************************************************************
+ * Copyright (C) 2011 Atlas of Living Australia
+ * All Rights Reserved.
+ * 
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
+ * 
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ ******************************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +29,8 @@ namespace BioLink.Client.Extensibility {
     public class DatabaseCommandControl : UserControl, IIdentifiableContent, IChangeContainerObserver, IDisposable, IIconHolder {
 
         #region Designer Constructor
-        public DatabaseCommandControl() : base() {
+        public DatabaseCommandControl()
+            : base() {
         }
         #endregion
 
@@ -47,13 +62,13 @@ namespace BioLink.Client.Extensibility {
         }
 
         public void RegisterPendingChanges(List<DatabaseCommand> commands) {
-            WithChangeContainer(window =>  window.RegisterPendingChanges(commands, this));
+            WithChangeContainer(window => window.RegisterPendingChanges(commands, this));
             RaiseChangeRegistered(commands);
 
         }
 
         protected void CommitPendingChanges(Action successAction = null) {
-            WithChangeContainer(window => window.CommitPendingChanges(successAction));            
+            WithChangeContainer(window => window.CommitPendingChanges(successAction));
         }
 
         public void ClearPendingChanges() {
@@ -95,7 +110,7 @@ namespace BioLink.Client.Extensibility {
             }
 
             if (p != null) {
-                return (IChangeContainer) p;
+                return (IChangeContainer)p;
             }
             return null;
         }
@@ -157,7 +172,7 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        public virtual void Dispose() {        
+        public virtual void Dispose() {
         }
 
         public User User { get; protected set; }
@@ -188,5 +203,5 @@ namespace BioLink.Client.Extensibility {
         string ContentIdentifier { get; }
         void RefreshContent();
     }
-    
+
 }

@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Copyright (C) 2011 Atlas of Living Australia
+ * All Rights Reserved.
+ * 
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
+ * 
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ ******************************************************************************/
 using System;
 using System.Text;
 using System.Windows;
@@ -25,7 +39,7 @@ namespace BioLink.Client.Extensibility {
             string itemLabel = _displayName;
 
             if (_simulated) {
-                string formatString = BioLink.Client.Extensibility.Properties.Resources.ResourceManager.GetString( "simulated", CultureInfo.CurrentUICulture );
+                string formatString = BioLink.Client.Extensibility.Properties.Resources.ResourceManager.GetString("simulated", CultureInfo.CurrentUICulture);
                 itemLabel = string.Format(formatString, itemLabel);
             }
 
@@ -39,34 +53,28 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        public override string ToString()
-        {
+        public override string ToString() {
             return _displayName;
         }
 
-        public Typeface Typeface
-        {
+        public Typeface Typeface {
             get { return new Typeface(FontFamily, FontStyle, FontWeight, FontStretch); }
         }
 
-        int IComparable.CompareTo(object obj)
-        {
+        int IComparable.CompareTo(object obj) {
             TypefaceListItem item = obj as TypefaceListItem;
-            if (item == null)
-            {
+            if (item == null) {
                 return -1;
             }
 
             // Sort all simulated faces after all non-simulated faces.
-            if (_simulated != item._simulated)
-            {
+            if (_simulated != item._simulated) {
                 return _simulated ? 1 : -1;
             }
 
             // If weight differs then sort based on weight (lightest first).
             int difference = FontWeight.ToOpenTypeWeight() - item.FontWeight.ToOpenTypeWeight();
-            if (difference != 0)
-            {
+            if (difference != 0) {
                 return difference > 0 ? 1 : -1;
             }
 
@@ -74,20 +82,14 @@ namespace BioLink.Client.Extensibility {
             FontStyle thisStyle = FontStyle;
             FontStyle otherStyle = item.FontStyle;
 
-            if (thisStyle != otherStyle)
-            {
-                if (thisStyle == FontStyles.Normal)
-                {
+            if (thisStyle != otherStyle) {
+                if (thisStyle == FontStyles.Normal) {
                     // This item is normal style and should come first.
                     return -1;
-                }
-                else if (otherStyle == FontStyles.Normal)
-                {
+                } else if (otherStyle == FontStyles.Normal) {
                     // The other item is normal style and should come first.
                     return 1;
-                }
-                else
-                {
+                } else {
                     // Neither is normal so sort italic before oblique.
                     return (thisStyle == FontStyles.Italic) ? -1 : 1;
                 }
@@ -97,20 +99,14 @@ namespace BioLink.Client.Extensibility {
             FontStretch thisStretch = FontStretch;
             FontStretch otherStretch = item.FontStretch;
 
-            if (thisStretch != otherStretch)
-            {
-                if (thisStretch == FontStretches.Normal)
-                {
+            if (thisStretch != otherStretch) {
+                if (thisStretch == FontStretches.Normal) {
                     // This item is normal stretch and should come first.
                     return -1;
-                }
-                else if (otherStretch == FontStretches.Normal)
-                {
+                } else if (otherStretch == FontStretches.Normal) {
                     // The other item is normal stretch and should come first.
                     return 1;
-                }
-                else
-                {
+                } else {
                     // Neither is normal so sort numerically.
                     return thisStretch.ToOpenTypeStretch() < otherStretch.ToOpenTypeStretch() ? -1 : 0;
                 }
@@ -120,8 +116,7 @@ namespace BioLink.Client.Extensibility {
             return 0;
         }
 
-        internal static string GetDisplayName(Typeface typeface)
-        {
+        internal static string GetDisplayName(Typeface typeface) {
             return NameDictionaryHelper.GetDisplayName(typeface.FaceNames);
         }
     }

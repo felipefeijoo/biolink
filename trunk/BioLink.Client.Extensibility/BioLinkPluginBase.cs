@@ -1,4 +1,18 @@
-﻿using System;
+﻿/*******************************************************************************
+ * Copyright (C) 2011 Atlas of Living Australia
+ * All Rights Reserved.
+ * 
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
+ * 
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ ******************************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,7 +43,7 @@ namespace BioLink.Client.Extensibility {
             this.User = user;
             this.PluginManager = pluginManager;
             this.ParentWindow = parentWindow;
-            
+
             string assemblyName = this.GetType().Assembly.GetName().Name;
             string packUri = String.Format("pack://application:,,,/{0};component/StringResources.xaml", assemblyName);
             Logger.Debug("Attempting resource discovery for {0} ({1})", assemblyName, packUri);
@@ -60,7 +74,7 @@ namespace BioLink.Client.Extensibility {
                 } else {
                     return res.ToString();
                 }
-            }            
+            }
         }
 
         public ResourceDictionary ResourceDictionary {
@@ -78,7 +92,7 @@ namespace BioLink.Client.Extensibility {
         public abstract bool RequestShutdown();
 
         public abstract List<Command> GetCommandsForSelected(List<ViewModelBase> selected);
-        
+
         public virtual void Dispose() {
             Logger.Debug("Disposing {0}", GetType().Name);
             lock (_controlHosts) {
@@ -87,16 +101,16 @@ namespace BioLink.Client.Extensibility {
                     chw.Close();
                 }
                 _controlHosts.Clear();
-            }            
+            }
         }
 
         public virtual ViewModelBase CreatePinnableViewModel(PinnableObject pinnable) {
             return null;
         }
 
-
         public Window ParentWindow {
-            get; set;
+            get;
+            set;
         }
 
         public virtual bool CanSelect<T>() {
@@ -109,8 +123,6 @@ namespace BioLink.Client.Extensibility {
 
         public virtual void Dispatch(string command, Action<object> callback, params object[] args) {
         }
-
-
 
         public virtual bool CanEditObjectType(LookupType type) {
             return false;
@@ -131,7 +143,7 @@ namespace BioLink.Client.Extensibility {
         private Dictionary<string, ControlHostWindow> _controlHosts = new Dictionary<string, ControlHostWindow>();
 
         protected ControlHostWindow ShowSingleton(string title, Func<Control> controlFactoryFunction, SizeToContent sizeMode = SizeToContent.Manual, bool autoSavePosition = true, Action<ControlHostWindow> initFunc = null) {
-            
+
             ControlHostWindow frm = null;
             lock (_controlHosts) {
                 if (_controlHosts.ContainsKey(title)) {
@@ -169,6 +181,6 @@ namespace BioLink.Client.Extensibility {
         public virtual T GetAdaptorForPinnable<T>(PinnableObject pinnable) {
             return default(T);
         }
-        
+
     }
 }

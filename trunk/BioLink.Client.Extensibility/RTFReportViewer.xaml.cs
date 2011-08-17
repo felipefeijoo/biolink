@@ -1,4 +1,18 @@
-﻿using System;
+﻿/*******************************************************************************
+ * Copyright (C) 2011 Atlas of Living Australia
+ * All Rights Reserved.
+ * 
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
+ * 
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ ******************************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -44,7 +58,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         public String RTF {
-            get {                
+            get {
                 return rtf.Rtf;
             }
         }
@@ -57,7 +71,7 @@ namespace BioLink.Client.Extensibility {
         private void btnCopy_Click(object sender, RoutedEventArgs e) {
             var data = new DataObject();
             data.SetText(RTF, TextDataFormat.Rtf);
-            data.SetText(rtf.Text, TextDataFormat.Text);            
+            data.SetText(rtf.Text, TextDataFormat.Text);
             Clipboard.SetDataObject(data);
         }
 
@@ -71,9 +85,9 @@ namespace BioLink.Client.Extensibility {
 
         public FrameworkElement ConstructView(IBioLinkReport report, Data.DataMatrix reportData, Utilities.IProgressObserver progress) {
             var viewer = new RTFReportViewer();
-            viewer.ReportName = report.Name;            
-            viewer.rtf.Rtf = reportData.Rows[0][0] as string;            
-            return viewer;            
+            viewer.ReportName = report.Name;
+            viewer.rtf.Rtf = reportData.Rows[0][0] as string;
+            return viewer;
         }
     }
 }

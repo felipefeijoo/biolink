@@ -1,4 +1,18 @@
-﻿using System;
+﻿/*******************************************************************************
+ * Copyright (C) 2011 Atlas of Living Australia
+ * All Rights Reserved.
+ * 
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
+ * 
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ ******************************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -34,7 +48,8 @@ namespace BioLink.Client.Extensibility {
         }
         #endregion
 
-        public OneToManyControl(IOneToManyDetailController controller, bool rdeMode = false) : base(PluginManager.Instance.User, "OneToManyControl" + Guid.NewGuid().ToString()) {
+        public OneToManyControl(IOneToManyDetailController controller, bool rdeMode = false)
+            : base(PluginManager.Instance.User, "OneToManyControl" + Guid.NewGuid().ToString()) {
 
             InitializeComponent();
             _rdeMode = rdeMode;
@@ -43,7 +58,7 @@ namespace BioLink.Client.Extensibility {
 
             detailsGrid.DataContextChanged += new DependencyPropertyChangedEventHandler(detailsGrid_DataContextChanged);
             lst.SelectionChanged += new SelectionChangedEventHandler(lst_SelectionChanged);
-            
+
             detailsGrid.IsEnabled = false;
 
             ChangesCommitted += new PendingChangesCommittedHandler(OneToManyControl_ChangesCommitted);
@@ -57,7 +72,7 @@ namespace BioLink.Client.Extensibility {
         void detailsGrid_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e) {
             if (_controller != null) {
                 detailsGrid.Children.Clear();
-                var editor = _controller.GetDetailEditor(detailsGrid.DataContext as ViewModelBase);                
+                var editor = _controller.GetDetailEditor(detailsGrid.DataContext as ViewModelBase);
                 if (editor != null) {
                     detailsGrid.Children.Add(editor);
                 }
@@ -65,14 +80,14 @@ namespace BioLink.Client.Extensibility {
         }
 
         void lst_Drop(object sender, DragEventArgs e) {
-            var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;            
+            var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;
             if (pinnable != null && _controller.AcceptDroppedPinnable(pinnable)) {
                 var viewModel = AddNew();
                 if (viewModel != null) {
                     _controller.PopulateFromPinnable(viewModel, pinnable);
                 }
                 e.Handled = true;
-            }          
+            }
         }
 
         void lst_PreviewDragOver(object sender, DragEventArgs e) {
@@ -80,7 +95,7 @@ namespace BioLink.Client.Extensibility {
             e.Effects = DragDropEffects.None;
             if (pinnable != null) {
                 if (_controller.AcceptDroppedPinnable(pinnable)) {
-                    e.Effects = DragDropEffects.Link;                    
+                    e.Effects = DragDropEffects.Link;
                 }
             }
             e.Handled = true;
@@ -95,7 +110,7 @@ namespace BioLink.Client.Extensibility {
                 if (_model.Count > 0) {
                     lst.SelectedIndex = 0;
                 }
-            }            
+            }
         }
 
         protected ViewModelBase Owner { get; set; }
@@ -105,7 +120,7 @@ namespace BioLink.Client.Extensibility {
             lst.ItemsSource = _model;
             this.Owner = owner;
             _controller.Owner = owner;
-            
+
             if (_model.Count > 0) {
                 lst.SelectedItem = _model[0];
             } else {

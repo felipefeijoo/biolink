@@ -1,4 +1,18 @@
-﻿using System;
+﻿/*******************************************************************************
+ * Copyright (C) 2011 Atlas of Living Australia
+ * All Rights Reserved.
+ * 
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
+ * 
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ ******************************************************************************/
+using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -41,14 +55,14 @@ namespace BioLink.Client.Extensibility {
 
             foreach (DisplayColumnDefinition c in columns) {
                 DisplayColumnDefinition coldef = c;
-                var column = new GridViewColumn { Header = BuildColumnHeader(coldef), DisplayMemberBinding = new Binding(String.Format("[{0}]", data.IndexOf(coldef.ColumnName))) , HeaderContainerStyle = hcs};
+                var column = new GridViewColumn { Header = BuildColumnHeader(coldef), DisplayMemberBinding = new Binding(String.Format("[{0}]", data.IndexOf(coldef.ColumnName))), HeaderContainerStyle = hcs };
                 view.Columns.Add(column);
             }
-            
+
             lvw.AddHandler(GridViewColumnHeader.ClickEvent, new RoutedEventHandler(GridViewColumnHeaderClickedHandler));
 
             lvw.MouseRightButtonUp += new System.Windows.Input.MouseButtonEventHandler(lvw_MouseRightButtonUp);
-            
+
             lvw.ItemsSource = Data.Rows;
             this.lvw.View = view;
         }
@@ -120,7 +134,7 @@ namespace BioLink.Client.Extensibility {
                         builder.Separator();
                     }
                 }
-                
+
                 builder.New("Export data...").Handler(() => { Export(); }).End();
 
 
@@ -137,12 +151,12 @@ namespace BioLink.Client.Extensibility {
                 foreach (object selected in lvw.SelectedItems) {
                     var row = selected as MatrixRow;
                     selectedRowIndexes[i++] = Data.Rows.IndexOf(row);
-                }                
+                }
             }
             Plot(selectedRowIndexes, longColName, latColName);
         }
 
-        private void PlotAll(string longColName, string latColName) {            
+        private void PlotAll(string longColName, string latColName) {
             Plot(null, longColName, latColName);
         }
 
@@ -186,7 +200,7 @@ namespace BioLink.Client.Extensibility {
                         break;
                     }
                 }
-                
+
                 if (index >= 0) {
                     break;
                 }
@@ -233,7 +247,7 @@ namespace BioLink.Client.Extensibility {
                     _lastHeaderClicked = headerClicked;
                     _lastDirection = direction;
                 }
-            }            
+            }
         }
 
         private void Sort(DisplayColumnDefinition coldef, ListSortDirection direction) {
@@ -244,7 +258,7 @@ namespace BioLink.Client.Extensibility {
             SortDescription sd = new SortDescription(String.Format("[{0}]", columnIndex), direction);
 
             dataView.SortDescriptions.Add(sd);
-            dataView.Refresh();            
+            dataView.Refresh();
         }
 
         private object BuildColumnHeader(DisplayColumnDefinition coldef) {
@@ -293,9 +307,9 @@ namespace BioLink.Client.Extensibility {
             }
             ListCollectionView dataView = CollectionViewSource.GetDefaultView(lvw.ItemsSource) as ListCollectionView;
             text = text.ToLower();
-            dataView.Filter = (obj) => { 
+            dataView.Filter = (obj) => {
                 var row = obj as MatrixRow;
-                
+
                 if (row != null) {
                     object match = row.First((colval) => {
                         if (colval != null) {
@@ -308,8 +322,8 @@ namespace BioLink.Client.Extensibility {
                         return true;
                     }
                 }
-                return false; 
-            };            
+                return false;
+            };
 
             dataView.Refresh();
             if (_progress != null) {

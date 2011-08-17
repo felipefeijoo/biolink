@@ -1,4 +1,18 @@
-﻿using System;
+﻿/*******************************************************************************
+ * Copyright (C) 2011 Atlas of Living Australia
+ * All Rights Reserved.
+ * 
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
+ * 
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ ******************************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -30,7 +44,7 @@ namespace BioLink.Client.Extensibility {
         private const int THUMB_SIZE = 100;
 
         public MultimediaThumbnailViewer() {
-            InitializeComponent();            
+            InitializeComponent();
         }
 
         public MultimediaThumbnailViewer(IBioLinkReport report, Data.DataMatrix reportData, Utilities.IProgressObserver progress) {
@@ -51,7 +65,7 @@ namespace BioLink.Client.Extensibility {
                 return null;
             });
 
-            Loaded += new RoutedEventHandler(MultimediaThumbnailViewer_Loaded);            
+            Loaded += new RoutedEventHandler(MultimediaThumbnailViewer_Loaded);
         }
 
         private bool _threadRunning = false;
@@ -100,14 +114,14 @@ namespace BioLink.Client.Extensibility {
 
                                     count++;
                                     if (Progress != null) {
-                                        double percent = (((double) count) / ((double) _model.Count)) * 100.0;
+                                        double percent = (((double)count) / ((double)_model.Count)) * 100.0;
                                         Progress.ProgressMessage(string.Format("Generating thumbnails ({0} of {1})", count, _model.Count), percent);
                                     }
 
                                 }
 
                                 if (Progress != null) {
-                                    Progress.ProgressEnd(string.Format("{0} thumbnails generated",count));
+                                    Progress.ProgressEnd(string.Format("{0} thumbnails generated", count));
                                 }
 
                             }
@@ -139,15 +153,15 @@ namespace BioLink.Client.Extensibility {
 
                 var verbMenuItems = SystemUtils.GetVerbsAsMenuItems(filename);
                 foreach (MenuItem verbItem in verbMenuItems) {
-                    builder.AddMenuItem(verbItem);                    
+                    builder.AddMenuItem(verbItem);
                 }
 
                 builder.Separator();
                 builder.New("Show linked items...").Handler(() => ShowLinkedItems(selected)).End();
-                builder.Separator();                
+                builder.Separator();
                 builder.New("Save as...").Handler(() => SaveAs(selected)).End();
                 builder.Separator();
-                builder.New("Open in system editor...").Handler(()=>OpenSelected()).End();
+                builder.New("Open in system editor...").Handler(() => OpenSelected()).End();
                 builder.Separator();
                 builder.New("Properties...").Handler(() => ShowMultimediaProperties(selected)).End();
 
@@ -156,8 +170,8 @@ namespace BioLink.Client.Extensibility {
 
         }
 
-        protected User User { 
-            get { return PluginManager.Instance.User; } 
+        protected User User {
+            get { return PluginManager.Instance.User; }
         }
 
         private void ShowMultimediaProperties(MultimediaLinkViewModel selected) {
@@ -171,7 +185,7 @@ namespace BioLink.Client.Extensibility {
             var service = new SupportService(User);
             var model = service.GetMultimedia(selected.MultimediaID);
             if (model != null) {
-                var detailsControl = new MultimediaDetails(model, User);                
+                var detailsControl = new MultimediaDetails(model, User);
                 PluginManager.Instance.AddNonDockableContent(Plugin, detailsControl, string.Format("Multimedia details [{0}]", model.MultimediaID), SizeToContent.Manual);
             }
         }
@@ -194,7 +208,7 @@ namespace BioLink.Client.Extensibility {
 
         private void ShowLinkedItems(MultimediaLinkViewModel selected) {
             if (selected != null) {
-                selected.Icon = GraphicsUtils.GenerateThumbnail(selected.TempFilename, 48);                
+                selected.Icon = GraphicsUtils.GenerateThumbnail(selected.TempFilename, 48);
                 PluginManager.Instance.AddNonDockableContent(Plugin, new LinkedMultimediaItemsControl(selected), "Items linked to multimedia " + selected.MultimediaID, SizeToContent.Manual);
             }
         }
@@ -250,11 +264,11 @@ namespace BioLink.Client.Extensibility {
 
         private void SaveAll() {
             var dlg = new System.Windows.Forms.FolderBrowserDialog();
-            dlg.ShowNewFolderButton = true;            
+            dlg.ShowNewFolderButton = true;
             var result = dlg.ShowDialog();
             if (result == System.Windows.Forms.DialogResult.OK) {
                 JobExecutor.QueueJob(() => {
-                    
+
                     if (Progress != null) {
                         Progress.ProgressStart("Exporting files...");
                     }
@@ -278,7 +292,7 @@ namespace BioLink.Client.Extensibility {
                     if (Progress != null) {
                         Progress.ProgressEnd(string.Format("{0} files exported.", count));
                     }
-                    
+
                 });
             }
         }
@@ -318,7 +332,7 @@ namespace BioLink.Client.Extensibility {
                             return true;
                         }
                     }
-                    
+
                 }
                 return false;
             };
