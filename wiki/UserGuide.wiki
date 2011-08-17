@@ -1,0 +1,12 @@
+#summary BioLink 3.0 User Guide
+
+= User Guide =
+
+Last updated: 17th August 2011
+
+*Note:* This version of the user guide is an updated version of the  !BioLink 2.5 user guide, and may inadvertently contain information applicable only to that version. Conversely, there may be features in !BioLink 3.0 that are not covered fully by this guide. 
+
+Any corrections or suggestions for improvement can be directed to the project owners, or raised as issues.
+
+|| Section ||  || ||
+|| 01 Introduction and Starting BioLink || [http://biolink.googlecode.com/svn/wiki/UserGuide.attach/01 Introduction and Starting BioLink.doc Word Document] || [http://biolink.googlecode.com/svn/wiki/UserGuide.attach/01 Introduction and Starting BioLink.pdf PDF] ||
