@@ -5,10 +5,10 @@
 !BioLink 3.0 comes packaged with and utilizes a number of third party libraries. A brief description of these libraries is presented in the table below.
 
 
-|| Name || Description || License ||
-|| FWTools ||	http://fwtools.maptools.org/ || MIT License ||
-|| SharpMap || 	http://sharpmap.codeplex.com/ || Lesser Gnu Public License (LGPL) ||
-|| Avalon Dock ||	http://avalondock.codeplex.com/ || New BSD License (BSD) (Copyright (c) 2007-2009, Adolfo Marinucci) ||
-||Microsoft Enterprise Library || http://msdn.microsoft.com/en-us/library/ff650810.aspx || Microsoft Public License (Ms-PL) ||
-|| Json.NET (NewtonSoft) || http://james.newtonking.com/pages/json-net.aspx || MIT License (Copyright (c) 2007 James Newton-King) ||
-|| GenericParser || http://www.codeproject.com/KB/database/GenericParser.aspx || MIT License (Copyright (c) 2005 Andrew Rissing) ||
+|| *Name* || *Description* || *Link* || *License* ||
+|| FWTools || http://fwtools.maptools.org/ || || [http://en.wikipedia.org/wiki/MIT_License MIT] License ||
+|| SharpMap || http://sharpmap.codeplex.com/ || || Lesser Gnu Public License (LGPL) ||
+|| Avalon Dock || http://avalondock.codeplex.com/ || || New BSD License (BSD) (Copyright (c) 2007-2009, Adolfo Marinucci) ||
+||Microsoft Enterprise Library || http://msdn.microsoft.com/en-us/library/ff650810.aspx || || Microsoft Public License (Ms-PL) ||
+|| Json.NET (NewtonSoft) || http://james.newtonking.com/pages/json-net.aspx || || [http://en.wikipedia.org/wiki/MIT_License MIT] License (Copyright (c) 2007 James Newton-King) ||
+|| GenericParser || http://www.codeproject.com/KB/database/GenericParser.aspx || || [http://en.wikipedia.org/wiki/MIT_License MIT] License (Copyright (c) 2005 Andrew Rissing) ||
