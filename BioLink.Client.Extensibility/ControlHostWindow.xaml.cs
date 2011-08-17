@@ -1,4 +1,18 @@
-﻿using System;
+﻿/*******************************************************************************
+ * Copyright (C) 2011 Atlas of Living Australia
+ * All Rights Reserved.
+ * 
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
+ * 
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ ******************************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,19 +42,20 @@ namespace BioLink.Client.Extensibility {
         }
         #endregion
 
-        public ControlHostWindow(User user, Control element, SizeToContent sizeToContent, Boolean hideButtonBar = false) : base(user) {
-            InitializeComponent();            
+        public ControlHostWindow(User user, Control element, SizeToContent sizeToContent, Boolean hideButtonBar = false)
+            : base(user) {
+            InitializeComponent();
 
             if (element.MinWidth > 0) {
-                this.MinWidth = element.MinWidth + 15;                
+                this.MinWidth = element.MinWidth + 15;
             }
 
             if (element.MinHeight > 0) {
                 this.MinHeight = element.MinHeight + 15;
             }
 
-            this.Control = element;            
-            this.SizeToContent = sizeToContent;                        
+            this.Control = element;
+            this.SizeToContent = sizeToContent;
             ControlHost.Children.Add(element);
             if (hideButtonBar) {
                 buttonBar.Visibility = System.Windows.Visibility.Collapsed;
@@ -77,7 +92,7 @@ namespace BioLink.Client.Extensibility {
                 var result = ctl.Select();
                 if (result != null) {
                     _selectionCallback(result);
-                }                
+                }
             }
 
         }

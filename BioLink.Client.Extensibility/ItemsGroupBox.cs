@@ -1,4 +1,18 @@
-﻿using System;
+﻿/*******************************************************************************
+ * Copyright (C) 2011 Atlas of Living Australia
+ * All Rights Reserved.
+ * 
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
+ * 
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ ******************************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,10 +37,10 @@ namespace BioLink.Client.Extensibility {
             SelectPrevious = new RoutedCommand("SelectPreviousCommand", typeof(ItemsGroupBox));
             SelectNext = new RoutedCommand("SelectNextCommand", typeof(ItemsGroupBox));
             Unlock = new RoutedCommand("UnlockCommand", typeof(ItemsGroupBox));
-            AddNew = new RoutedCommand("AddNewCommand", typeof(ItemsGroupBox));    
+            AddNew = new RoutedCommand("AddNewCommand", typeof(ItemsGroupBox));
         }
 
-        public ItemsGroupBox() {            
+        public ItemsGroupBox() {
             this.CommandBindings.Add(new CommandBinding(SelectPrevious, ExecutedSelectedPrevious, CanExecuteSelectPrevious));
             this.CommandBindings.Add(new CommandBinding(SelectNext, ExecutedSelectedNext, CanExecuteSelectNext));
             this.CommandBindings.Add(new CommandBinding(Unlock, ExecutedUnlock, CanExecuteUnlock));
@@ -70,7 +84,7 @@ namespace BioLink.Client.Extensibility {
         protected virtual void OnPrevClicked(RoutedEventArgs e) {
 
             if (_items != null) {
-                if (SelectedIndex > 0) {                    
+                if (SelectedIndex > 0) {
                     SelectedItem = _items[SelectedIndex - 1];
                 }
             }
@@ -82,9 +96,9 @@ namespace BioLink.Client.Extensibility {
 
         protected virtual void OnUnlock(RoutedEventArgs e) {
             IsUnlocked = true;
-            if (EditClicked != null) {                
+            if (EditClicked != null) {
                 EditClicked(this, e);
-            }            
+            }
 
         }
 
@@ -104,8 +118,8 @@ namespace BioLink.Client.Extensibility {
 
                 if (_items != null) {
                     _items.CollectionChanged += _collectionChangedHandler;
-                }                
-                if (value != null && value.Count > 0) {                    
+                }
+                if (value != null && value.Count > 0) {
                     this.SelectedItem = value[0];
                 } else {
                     SelectedItem = null;
@@ -130,7 +144,7 @@ namespace BioLink.Client.Extensibility {
                 if (value != null) {
                     SelectedIndex = _items.IndexOf(value);
                     if (SelectedIndex >= 0) {
-                        _selectedItem = value;                        
+                        _selectedItem = value;
                     } else {
                         _selectedItem = null;
                     }
@@ -145,7 +159,7 @@ namespace BioLink.Client.Extensibility {
 
                 UpdateCurrentPosition();
 
-                this.DataContext = _selectedItem;                
+                this.DataContext = _selectedItem;
             }
         }
 
@@ -153,7 +167,7 @@ namespace BioLink.Client.Extensibility {
 
         #region Dependency Properties
 
-        public static readonly DependencyProperty EditButtonVisibilityProperty = DependencyProperty.Register("EditButtonVisibility", typeof(Visibility), typeof(ItemsGroupBox), new FrameworkPropertyMetadata(Visibility.Visible,  new PropertyChangedCallback(OnEditVisibilityChanged)));
+        public static readonly DependencyProperty EditButtonVisibilityProperty = DependencyProperty.Register("EditButtonVisibility", typeof(Visibility), typeof(ItemsGroupBox), new FrameworkPropertyMetadata(Visibility.Visible, new PropertyChangedCallback(OnEditVisibilityChanged)));
 
         public Visibility EditButtonVisibility {
             get { return (Visibility)GetValue(EditButtonVisibilityProperty); }
@@ -210,14 +224,14 @@ namespace BioLink.Client.Extensibility {
                 if ((bool)args.NewValue) {
                     c.LockIcon = ImageCache.GetImage("pack://application:,,,/BioLink.Client.Extensibility;component/images/Unlocked.png");
                 } else {
-                    c.LockIcon = ImageCache.GetImage("pack://application:,,,/BioLink.Client.Extensibility;component/images/Locked.png");                    
+                    c.LockIcon = ImageCache.GetImage("pack://application:,,,/BioLink.Client.Extensibility;component/images/Locked.png");
                 }
 
                 if (c.IsUnlockedChanged != null) {
-                    c.IsUnlockedChanged(c, (bool) args.NewValue);
+                    c.IsUnlockedChanged(c, (bool)args.NewValue);
                 }
             }
-            
+
         }
 
         public static readonly DependencyProperty HeaderProperty = DependencyProperty.Register("Header", typeof(string), typeof(ItemsGroupBox), new FrameworkPropertyMetadata(""));
@@ -250,7 +264,7 @@ namespace BioLink.Client.Extensibility {
 
         public static readonly DependencyProperty HeaderBackgroundProperty = DependencyProperty.Register("HeaderBackground", typeof(Brush), typeof(ItemsGroupBox), new FrameworkPropertyMetadata(SystemColors.WindowBrush));
 
-        public Brush HeaderBackground{
+        public Brush HeaderBackground {
             get { return (Brush)GetValue(HeaderBackgroundProperty); }
             set { SetValue(HeaderBackgroundProperty, value); }
         }
@@ -318,7 +332,7 @@ namespace BioLink.Client.Extensibility {
         private void ExecutedUnlock(object sender, ExecutedRoutedEventArgs e) {
             ItemsGroupBox target = e.Source as ItemsGroupBox;
             if (target != null) {
-                target.OnUnlock(e);                
+                target.OnUnlock(e);
             }
         }
 

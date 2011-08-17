@@ -1,4 +1,18 @@
-﻿using System;
+﻿/*******************************************************************************
+ * Copyright (C) 2011 Atlas of Living Australia
+ * All Rights Reserved.
+ * 
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
+ * 
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ ******************************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Documents;
@@ -15,8 +29,8 @@ namespace BioLink.Client.Extensibility.Export {
         public CSVExporterOptionsWindow() {
             InitializeComponent();
             List<DelimiterItem> model = new List<DelimiterItem>();
-            model.Add( new DelimiterItem(",", ","));
-            model.Add( new DelimiterItem("Tab", "\t"));
+            model.Add(new DelimiterItem(",", ","));
+            model.Add(new DelimiterItem("Tab", "\t"));
             model.Add(new DelimiterItem("|", "|"));
             model.Add(new DelimiterItem(";", ";"));
 
@@ -39,8 +53,8 @@ namespace BioLink.Client.Extensibility.Export {
 
         }
 
-        public CSVExporterOptions Options { 
-            get { 
+        public CSVExporterOptions Options {
+            get {
                 var item = cmbDelimiter.SelectedItem as DelimiterItem;
                 var options = new CSVExporterOptions();
                 options.Delimiter = (item == null ? cmbDelimiter.Text : item.Value);
@@ -76,7 +90,7 @@ namespace BioLink.Client.Extensibility.Export {
             dlg.Filter = "Text documents (.txt)|*.txt|All files (*.*)|*.*"; // Filter files by extension            
             Nullable<bool> result = dlg.ShowDialog();
             if (result == true) {
-                
+
                 txtFilename.Text = dlg.FileName;
             }
         }
