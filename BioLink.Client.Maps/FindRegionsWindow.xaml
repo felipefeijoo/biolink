@@ -23,7 +23,7 @@
         <Grid Grid.Row="2" Background="{x:Static SystemColors.ControlBrush}">
             <Button Content="_Cancel" Height="23" HorizontalAlignment="Right" Margin="0,7,6,0" Name="btnCancel" VerticalAlignment="Top" Width="75" IsCancel="True" Click="btnCancel_Click" />
             <Button Content="_Select" Height="23" HorizontalAlignment="Right" Margin="0,7,87,0" Name="btnApply" VerticalAlignment="Top" Width="75" Click="btnApply_Click" />
-            <Button Content="_Ok" Height="23" HorizontalAlignment="Right" Margin="0,7,168,0" Name="btnOk" VerticalAlignment="Top" Width="75" IsDefault="True" Click="btnOk_Click" />
+            <Button Content="_OK" Height="23" HorizontalAlignment="Right" Margin="0,7,168,0" Name="btnOk" VerticalAlignment="Top" Width="75" IsDefault="True" Click="btnOk_Click" />
         </Grid>
     </Grid>
 </Window>

@@ -44,7 +44,7 @@
         </Grid>
         <Grid Grid.Row="2" Background="{x:Static SystemColors.ControlBrush}" >
             <Button Content="_Cancel" Height="23" HorizontalAlignment="Right" Margin="0,6,12,0" Name="btnCancel" VerticalAlignment="Top" Width="75" IsCancel="True" />
-            <Button Content="_Ok" Height="23" HorizontalAlignment="Right" IsCancel="False" Margin="0,7,94,0" Name="btnOK" VerticalAlignment="Top" Width="75" IsDefault="True" Click="btnOK_Click" />
+            <Button Content="_OK" Height="23" HorizontalAlignment="Right" IsCancel="False" Margin="0,7,94,0" Name="btnOK" VerticalAlignment="Top" Width="75" IsDefault="True" Click="btnOK_Click" />
         </Grid>
     </Grid>
 </Window>

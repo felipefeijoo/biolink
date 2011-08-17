@@ -18,7 +18,7 @@
 
             <Grid Grid.Row="1" Background="{x:Static SystemColors.ControlBrush}">
                 <Button Content="_Cancel" Height="23" HorizontalAlignment="Right" Margin="0,6,6,0" Name="btnCancel" VerticalAlignment="Top" Width="75" IsCancel="True" Click="btnCancel_Click" />
-                <Button Content="_Ok" Height="23" HorizontalAlignment="Right" IsCancel="False" Margin="0,6,87,0" Name="btnOk" VerticalAlignment="Top" Width="75" Click="btnOk_Click" />
+                <Button Content="_OK" Height="23" HorizontalAlignment="Right" IsCancel="False" Margin="0,6,87,0" Name="btnOk" VerticalAlignment="Top" Width="75" Click="btnOk_Click" />
                 <Label Content="&lt;Preview&gt;" Height="28" Margin="0,5,168,0" Name="lblPreview" VerticalAlignment="Top" />
             </Grid>
 

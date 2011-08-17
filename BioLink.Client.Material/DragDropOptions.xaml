@@ -9,6 +9,6 @@
         <RadioButton Content="Create as child" Height="16" HorizontalAlignment="Left" Margin="32,32,0,0" Name="optCreateAsChild" VerticalAlignment="Top" />
         <RadioButton Content="Merge data" Height="16" HorizontalAlignment="Left" Margin="32,65,0,0" Name="radioButton1" VerticalAlignment="Top" />
         <Button Content="_Cancel" Height="23" HorizontalAlignment="Right" Margin="0,0,12,12" Name="btnCancel" VerticalAlignment="Bottom" Width="75" IsCancel="True" Click="btnCancel_Click" />
-        <Button Content="_Ok" Height="23" HorizontalAlignment="Right" IsCancel="False" Margin="0,0,93,12" Name="button1" VerticalAlignment="Bottom" Width="75" IsDefault="True" Click="button1_Click" />
+        <Button Content="_OK" Height="23" HorizontalAlignment="Right" IsCancel="False" Margin="0,0,93,12" Name="button1" VerticalAlignment="Bottom" Width="75" IsDefault="True" Click="button1_Click" />
     </Grid>
 </Window>

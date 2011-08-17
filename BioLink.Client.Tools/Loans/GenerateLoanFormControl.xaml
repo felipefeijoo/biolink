@@ -31,7 +31,7 @@
         
         <Grid Grid.Row="1" Background="{x:Static SystemColors.ControlBrush}" Margin="0">
             <Button Content="_Cancel" Width="80" Height="23" Margin="0,6,6,6" HorizontalAlignment="Right" Name="btnCancel" IsCancel="True" Click="btnCancel_Click" />
-            <Button Content="_Ok" Height="23" HorizontalAlignment="Right" Margin="0,7,92,6" Width="80" Name="btnOk" Click="btnOk_Click" />
+            <Button Content="_OK" Height="23" HorizontalAlignment="Right" Margin="0,7,92,6" Width="80" Name="btnOk" Click="btnOk_Click" />
             <Button Content="_Manage forms..." Height="23" HorizontalAlignment="Left" Margin="6,7,0,6" Name="btnManageForms" Width="107" Click="btnManageForms_Click" />
         </Grid >
         

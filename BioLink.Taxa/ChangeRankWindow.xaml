@@ -13,7 +13,7 @@
 
         <Grid Grid.Row="1" Background="{x:Static SystemColors.ControlBrush}">
             <Button Content="_Cancel" Height="23" HorizontalAlignment="Right" Margin="0,7,6,0" Name="btnCancel" VerticalAlignment="Top" Width="75" IsCancel="True" />
-            <Button Content="_Ok" Height="23" HorizontalAlignment="Right" Margin="0,7,87,0" Name="btnOk" VerticalAlignment="Top" Width="75" IsDefault="True" Click="btnOk_Click" />
+            <Button Content="_OK" Height="23" HorizontalAlignment="Right" Margin="0,7,87,0" Name="btnOk" VerticalAlignment="Top" Width="75" IsDefault="True" Click="btnOk_Click" />
         </Grid>
         <RadioButton Content="Change to Unranked" Height="16" Margin="12,12,23,0" Name="optUnranked" VerticalAlignment="Top" IsChecked="True" />
         <RadioButton Content="Change to valid type" Height="16" Margin="12,50,23,0" Name="optValidType" VerticalAlignment="Top" />
