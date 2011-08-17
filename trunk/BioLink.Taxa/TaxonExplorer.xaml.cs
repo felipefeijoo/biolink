@@ -1003,7 +1003,34 @@ namespace BioLink.Client.Taxa {
         }
 
         internal void AddNewTaxonAllRanks(TaxonViewModel parent) {
-            throw new NotImplementedException();
+            var frm = new SelectRankWindow();
+            frm.Owner = this.FindParentWindow();
+            frm.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            if (frm.ShowDialog() == true) {
+                var rank = frm.SelectedRank;
+                if (rank != null) {
+
+                    var t = new Taxon() { TaxaID = GetNewTaxonID(), TaxaParentID = 0, Rank = rank.Code, ElemType = rank.Code, KingdomCode = rank.KingdomCode };
+
+                    TaxonViewModel viewModel = new TaxonViewModel(parent, t, GenerateTaxonDisplayLabel);
+
+                    viewModel.Author = "";
+                    viewModel.YearOfPub = "";
+                    viewModel.Epithet = "";
+                    parent.IsExpanded = true;
+
+                    try {
+                        parent.Children.Add(viewModel);
+                        // Move to the top of the list, until it is saved...
+                        parent.Children.Move(parent.Children.IndexOf(viewModel), 0);
+                        viewModel.IsSelected = true;
+                        RenameTaxon(viewModel);
+                        RegisterPendingChange(new InsertTaxonDatabaseCommand(viewModel), this);
+                    } catch (Exception ex) {
+                        ErrorMessage.Show(ex.Message);
+                    }
+                }
+            }
         }
 
         internal void AddAvailableName(TaxonViewModel parent) {
