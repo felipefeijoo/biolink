@@ -122,6 +122,12 @@
     <Compile Include="Styles.xaml.cs">
       <DependentUpon>Styles.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ThirdPartyComponentControl.xaml.cs">
+      <DependentUpon>ThirdPartyComponentControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ThirdPartyLicenses.xaml.cs">
+      <DependentUpon>ThirdPartyLicenses.xaml</DependentUpon>
+    </Compile>
     <Page Include="About.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -168,6 +174,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Styles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ThirdPartyComponentControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ThirdPartyLicenses.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -248,6 +262,18 @@
   <ItemGroup>
     <Resource Include="images\biolink.png" />
     <Resource Include="images\BiolinkIcon_32x32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="licenses\LGPL.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="licenses\NewBSD.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="licenses\MIT.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="licenses\MsPL.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

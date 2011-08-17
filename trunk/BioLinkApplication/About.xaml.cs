@@ -34,6 +34,17 @@ namespace BioLinkApplication {
             lvw.ItemsSource = model;
         }
 
+        private void label2_MouseUp(object sender, MouseButtonEventArgs e) {            
+            ShowCredits();
+        }
+
+        private void ShowCredits() {
+            var frm = new ThirdPartyLicenses();
+            frm.Owner = this;
+            frm.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
+            frm.ShowDialog();
+        }
+
     }
     
 }
