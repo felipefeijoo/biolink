@@ -19,5 +19,5 @@ Any corrections or suggestions for improvement can be directed to the project ow
 || 08 Map tool || [http://biolink.googlecode.com/svn/wiki/UserGuide.attach/08%20Map%20tool.doc Word Document] || [http://biolink.googlecode.com/svn/wiki/UserGuide.attach/08%20Map%20tool.pdf PDF] ||
 || 09 Loans || [http://biolink.googlecode.com/svn/wiki/UserGuide.attach/09%20Loans.doc Word Document] || [http://biolink.googlecode.com/svn/wiki/UserGuide.attach/09%20Loans.pdf PDF] ||
 || 10 Distribution Modelling || [http://biolink.googlecode.com/svn/wiki/UserGuide.attach/10%20Distribution%20Modelling Word Document] || [http://biolink.googlecode.com/svn/wiki/UserGuide.attach/10%20Distribution%20Modelling.pdf PDF] ||
-|| 11 Import Wizard || [http://biolink.googlecode.com/svn/wiki/UserGuide.attach/11%20Import%20Wizard.doc Word Document] || [http://biolink.googlecode.com/svn/wiki/UserGuide.attach/11%20Import%20Wizard.doc.pdf PDF] ||
+|| 11 Import Wizard || [http://biolink.googlecode.com/svn/wiki/UserGuide.attach/11%20Import%20Wizard.doc Word Document] || [http://biolink.googlecode.com/svn/wiki/UserGuide.attach/11%20Import%20Wizard.pdf PDF] ||
 || 12 Data Transfer || [http://biolink.googlecode.com/svn/wiki/UserGuide.attach/12%20Data%20Transfer.doc Word Document] || [http://biolink.googlecode.com/svn/wiki/UserGuide.attach/12%20Data%20Transfer.pdf PDF] ||
