@@ -7,8 +7,8 @@
 
 || *Name* || *Description* || *Link* || *License* ||
 || FWTools || http://fwtools.maptools.org/ || || [http://en.wikipedia.org/wiki/MIT_License MIT] License ||
-|| SharpMap || http://sharpmap.codeplex.com/ || || Lesser Gnu Public License (LGPL) ||
-|| Avalon Dock || http://avalondock.codeplex.com/ || || New BSD License (BSD) (Copyright (c) 2007-2009, Adolfo Marinucci) ||
-||Microsoft Enterprise Library || http://msdn.microsoft.com/en-us/library/ff650810.aspx || || Microsoft Public License (Ms-PL) ||
+|| SharpMap || http://sharpmap.codeplex.com/ || || Lesser Gnu Public License ([http://en.wikipedia.org/wiki/GNU_Lesser_General_Public_License LGPL]) ||
+|| Avalon Dock || http://avalondock.codeplex.com/ || || New BSD License ([http://en.wikipedia.org/wiki/BSD_licenses#3-clause_license_.28.22New_BSD_License.22_or_.22Modified_BSD_License.22.29 Modified BSD]) (Copyright (c) 2007-2009, Adolfo Marinucci) ||
+||Microsoft Enterprise Library || http://msdn.microsoft.com/en-us/library/ff650810.aspx || || Microsoft Public License ([http://en.wikipedia.org/wiki/Shared_source#Microsoft_Public_License_.28Ms-PL.29 Ms-PL]) ||
 || Json.NET (NewtonSoft) || http://james.newtonking.com/pages/json-net.aspx || || [http://en.wikipedia.org/wiki/MIT_License MIT] License (Copyright (c) 2007 James Newton-King) ||
 || GenericParser || http://www.codeproject.com/KB/database/GenericParser.aspx || || [http://en.wikipedia.org/wiki/MIT_License MIT] License (Copyright (c) 2005 Andrew Rissing) ||
