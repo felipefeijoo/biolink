@@ -9,4 +9,4 @@ Last updated: 17th August 2011
 Any corrections or suggestions for improvement can be directed to the project owners, or raised as issues.
 
 || Section ||  || ||
-|| 01 Introduction and Starting BioLink || [http://biolink.googlecode.com/svn/wiki/UserGuide.attach/01 Introduction and Starting BioLink.doc Word Document] || [http://biolink.googlecode.com/svn/wiki/UserGuide.attach/01 Introduction and Starting BioLink.pdf PDF] ||
+|| 01 Introduction and Starting !BioLink || [http://biolink.googlecode.com/svn/wiki/UserGuide.attach/01%20Introduction and%20Starting%20BioLink.doc Word Document] || [http://biolink.googlecode.com/svn/wiki/UserGuide.attach/01 Introduction and Starting BioLink.pdf PDF] ||
