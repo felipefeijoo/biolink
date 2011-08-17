@@ -27,6 +27,8 @@ namespace BioLink.Client.Utilities {
     /// </summary>
     public static class Logger {
 
+        private static bool _loggingFailed = false;
+
         static Logger() {
             Debug("Logging established");
         }
@@ -57,8 +59,17 @@ namespace BioLink.Client.Utilities {
         }
 
         private static void WriteEntry(LogEntry entry) {
-            LogWriter writer = EnterpriseLibraryContainer.Current.GetInstance<LogWriter>();
-            writer.Write(entry);
+            try {
+                if (!_loggingFailed) {
+                    LogWriter writer = EnterpriseLibraryContainer.Current.GetInstance<LogWriter>();
+                    if (writer.IsLoggingEnabled()) {
+                        writer.Write(entry);
+                    }
+                }
+            } catch (Exception ex) {
+                _loggingFailed = true;
+                ErrorMessage.Show(string.Format("{0}\n\nLogging will be disabled.", ex.Message));
+            }
         }
 
         public static LogEntryBuilder Log(string message) {

@@ -18,9 +18,9 @@
         <TextBox Height="23" HorizontalAlignment="Left" Margin="128,87,0,0" Name="txtUsername" VerticalAlignment="Top" Width="209" />
         <ComboBox Height="23" HorizontalAlignment="Right" Margin="0,32,43,0" Name="cmbServer" VerticalAlignment="Top" Width="209" IsEditable="True" />
         <Label Content="Server/Instance:" Height="28" HorizontalAlignment="Left" Margin="26,27,0,0" Name="label1" VerticalAlignment="Top" Width="94" />
-        <Label Content="Username:" Height="28" HorizontalAlignment="Left" Margin="28,85,0,0" Name="label2" VerticalAlignment="Top" Width="94" IsEnabled="{Binding ElementName=chkIntegratedSecurity, Converter={StaticResource negatingConverter}}" />
-        <Label Content="Password:" Height="28" HorizontalAlignment="Left" Margin="28,116,0,0" Name="label3" VerticalAlignment="Top" Width="94" IsEnabled="{Binding ElementName=chkIntegratedSecurity, Converter={StaticResource negatingConverter}}" />
-        <PasswordBox Height="23" HorizontalAlignment="Left" Margin="128,116,0,0" Name="txtPassword" VerticalAlignment="Top" Width="209" IsEnabled="{Binding ElementName=chkIntegratedSecurity, Converter={StaticResource negatingConverter}}" />
-        <CheckBox Content="Use integrated security" Height="16" HorizontalAlignment="Left" Margin="128,65,0,0" Name="chkIntegratedSecurity" VerticalAlignment="Top" Width="209" IsEnabled="{Binding ElementName=chkIntegratedSecurity, Converter={StaticResource negatingConverter}}" />
+        <Label Content="Username:" Height="28" HorizontalAlignment="Left" Margin="28,85,0,0" Name="label2" VerticalAlignment="Top" Width="94" IsEnabled="{Binding ElementName=chkIntegratedSecurity, Path=IsChecked, Converter={StaticResource negatingConverter}}" />
+        <Label Content="Password:" Height="28" HorizontalAlignment="Left" Margin="28,116,0,0" Name="label3" VerticalAlignment="Top" Width="94" IsEnabled="{Binding ElementName=chkIntegratedSecurity, Path=IsChecked, Converter={StaticResource negatingConverter}}" />
+        <PasswordBox Height="23" HorizontalAlignment="Left" Margin="128,116,0,0" Name="txtPassword" VerticalAlignment="Top" Width="209" IsEnabled="{Binding ElementName=chkIntegratedSecurity, Path=IsChecked, Converter={StaticResource negatingConverter}}" />
+        <CheckBox Content="Use integrated security" Height="16" HorizontalAlignment="Left" Margin="128,65,0,0" Name="chkIntegratedSecurity" VerticalAlignment="Top" Width="209" IsEnabled="{Binding ElementName=chkIntegratedSecurity, Path=IsChecked, Converter={StaticResource negatingConverter}}" />
     </Grid>
 </Window>
