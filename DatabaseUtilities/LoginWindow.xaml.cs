@@ -13,6 +13,10 @@ using System.Windows.Shapes;
 using Microsoft.SqlServer.Management.Smo;
 using Microsoft.SqlServer.Management.Common;
 using BioLink.Client.Utilities;
+using BioLink.Client.Extensibility;
+using System.Data;
+using BioLink.Data;
+using BioLink.Data.Model;
 
 namespace BioLink.DatabaseUtilities {
     /// <summary>
@@ -20,28 +24,52 @@ namespace BioLink.DatabaseUtilities {
     /// </summary>
     public partial class LoginWindow : Window {
 
-        public LoginWindow() {
+        public LoginWindow(string serverName) {
             InitializeComponent();
+            ServerName = serverName;
         }
 
         private void btnOk_Click(object sender, RoutedEventArgs e) {
-            Connect();
+            if (Connect()) {
+                this.DialogResult = true;
+                this.Close();
+            }
         }
 
-        private void Connect() {
-            if (string.IsNullOrWhiteSpace(cmbServer.Text)) {
-                ErrorMessage.Show("You must supply a database server or instance name!");
-                return;
+        protected string ServerName { get; private set; }
+
+        private bool Connect() {
+
+            try {
+                using (new OverrideCursor(Cursors.Wait)) {
+
+                    ServerConnection conn = new ServerConnection(ServerName);
+                    if (chkIntegratedSecurity.IsChecked == true) {
+                        conn.LoginSecure = true;
+                    } else {
+                        conn.LoginSecure = false;
+                        conn.Login = txtUsername.Text;
+                        conn.Password = txtPassword.Password;
+                    }
+
+                    Server = new Server(conn);
+                    Server.ConnectionContext.Connect();
+                }
+                return true;
+            } catch (Exception ex) {
+                ErrorMessage.Show(ex.Message);
+                Server = null;
+                return false;
             }
 
-            if (string.IsNullOrWhiteSpace(cmbServer.Text)) {
-                ErrorMessage.Show("You must supply a database server or instance name!");
-                return;
-            }
 
         }
 
         public Server Server { get; private set; }
+
+        private void btnCancel_Click(object sender, RoutedEventArgs e) {
+            this.Close();
+        }
 
     }
 }
