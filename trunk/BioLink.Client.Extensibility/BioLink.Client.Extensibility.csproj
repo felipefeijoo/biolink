@@ -135,14 +135,13 @@
     <Compile Include="IIconHolder.cs" />
     <Compile Include="ILabelSetItemTarget.cs" />
     <Compile Include="IPreferredSizeHolder.cs" />
-    <Compile Include="JobExecutor.cs" />
     <Compile Include="MultimediaThumbnailViewer.xaml.cs">
       <DependentUpon>MultimediaThumbnailViewer.xaml</DependentUpon>
     </Compile>
     <Compile Include="MultiMedia\FindMultimediaDialog.xaml.cs">
       <DependentUpon>FindMultimediaDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="images\Import\ExcelImporterOptionsWindow.xaml.cs">
+    <Compile Include="Import\ExcelImporterOptionsWindow.xaml.cs">
       <DependentUpon>ExcelImporterOptionsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Export\ExportData.xaml.cs">
@@ -177,27 +176,28 @@
     <Compile Include="IChangeContainer.cs" />
     <Compile Include="IClosable.cs" />
     <Compile Include="IMapProvider.cs" />
-    <Compile Include="images\Import\CellEditorWindow.xaml.cs">
+    <Compile Include="Import\CellEditorWindow.xaml.cs">
       <DependentUpon>CellEditorWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="images\Import\CSVImportOptionsWindow.xaml.cs">
+    <Compile Include="Import\CSVImportOptionsWindow.xaml.cs">
       <DependentUpon>CSVImportOptionsWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="images\Import\ErrorDatabaseImporter.cs" />
-    <Compile Include="images\Import\ErrorDatabaseImportOptionsWindow.xaml.cs">
+    <Compile Include="Import\ErrorDatabaseImporter.cs" />
+    <Compile Include="Import\ErrorDatabaseImportOptionsWindow.xaml.cs">
       <DependentUpon>ErrorDatabaseImportOptionsWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="images\Import\ExcelImporter.cs" />
-    <Compile Include="images\Import\Import.cs" />
-    <Compile Include="images\Import\CSVImporter.cs" />
-    <Compile Include="images\Import\ImportStagingService.cs" />
-    <Compile Include="images\Import\ImportRowSource.cs" />
-    <Compile Include="images\Import\ImportWizardContext.cs" />
-    <Compile Include="images\Import\RowEditorWindow.xaml.cs">
+    <Compile Include="Import\ExcelImporter.cs" />
+    <Compile Include="Import\Import.cs" />
+    <Compile Include="Import\CSVImporter.cs" />
+    <Compile Include="Import\ImportStagingService.cs" />
+    <Compile Include="Import\ImportRowSource.cs" />
+    <Compile Include="Import\ImportWizardContext.cs" />
+    <Compile Include="Import\RowEditorWindow.xaml.cs">
       <DependentUpon>RowEditorWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="IRegionSelector.cs" />
     <Compile Include="ItemsGroupBox.cs" />
+    <Compile Include="JobExecutor.cs" />
     <Compile Include="LatLongInput.xaml.cs">
       <DependentUpon>LatLongInput.xaml</DependentUpon>
     </Compile>
@@ -422,7 +422,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="images\Import\ExcelImporterOptionsWindow.xaml">
+    <Page Include="Import\ExcelImporterOptionsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -442,19 +442,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="images\Import\CellEditorWindow.xaml">
+    <Page Include="Import\CellEditorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="images\Import\CSVImportOptionsWindow.xaml">
+    <Page Include="Import\CSVImportOptionsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="images\Import\ErrorDatabaseImportOptionsWindow.xaml">
+    <Page Include="Import\ErrorDatabaseImportOptionsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="images\Import\RowEditorWindow.xaml">
+    <Page Include="Import\RowEditorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
