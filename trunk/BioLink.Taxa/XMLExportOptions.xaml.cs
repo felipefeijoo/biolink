@@ -15,6 +15,7 @@ using BioLink.Client.Extensibility;
 using BioLink.Client.Utilities;
 using BioLink.Data;
 using BioLink.Data.Model;
+using System.IO;
 
 namespace BioLink.Client.Taxa {
     /// <summary>
@@ -29,8 +30,20 @@ namespace BioLink.Client.Taxa {
             TaxonIDs = taxonIds;
             this.User = user;
 
-            txtFilename.Text = Config.GetUser(User, "XMLIOExport.LastExportFile", "");
-            
+            var lastFile = Config.GetUser(User, "XMLIOExport.LastExportFile", "");            
+            if (!string.IsNullOrEmpty(lastFile)) {
+                if (taxonIds.Count == 1) {
+                    var service = new TaxaService(user);
+                    var taxon = service.GetTaxon(taxonIds[0]);
+                    if (taxon != null) {
+                        var f = new FileInfo(lastFile);
+                        var directory = f.DirectoryName;
+                        txtFilename.Text = System.IO.Path.Combine(f.DirectoryName, SystemUtils.StripIllegalFilenameChars(taxon.TaxaFullName) + ".xml");
+                    }
+                } else {
+                    txtFilename.Text = lastFile;
+                }
+            }
         }
 
         private void btnClose_Click(object sender, RoutedEventArgs e) {
