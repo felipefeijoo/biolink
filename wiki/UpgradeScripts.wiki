@@ -5,7 +5,7 @@
 
 A small number of enhancements have been made to the BioLink database schema since version 2.5. In addition, an issue has been discovered in the stored procedure that is used to generate the Associates for Taxon report that can lead to incorrect or missing results, even though associates are known to exist. 
 
-== !How to execute the scripts ==
+== How to execute the scripts ==
 
 *Note:* You will need administrator access to the SQL Server instance which holds the BioLink database. You will also need Microsoft SQL Server Management Studio (or some other tool for executing SQL scripts against your database).
 
