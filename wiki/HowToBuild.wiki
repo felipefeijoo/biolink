@@ -5,10 +5,19 @@
   * Visual Studio 2010 or [http://www.microsoft.com/visualstudio/en-us/products/2010-editions/visual-csharp-express Visual C# 2010 Express]
   * Dot NET Framework version 4.0 (*Note* this will be installed with Visual Studio Express)
   * The [http://nsis.sourceforge.net/Download NullSoft Scriptable Install System] (Install with default settings) 
+  * Subversion client (http://subversion.tigris.org/)
  
 
 = Building BioLink =
 
   * Checkout the source code from the Google Code Repository
+_For example_
+{{{
+C:\>mkdir Biolink
+C:\>cd Biolink
+C:\Biolink>svn checkout http://biolink.googlecode.com/svn/trunk/ biolink-read-only
+}}}
+
+
   * TODO: Configure NSIS
   * TODO: Build
