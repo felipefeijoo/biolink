@@ -3,6 +3,25 @@
 
 = Release Notes =
 
+== !BioLink Version 3.0 Final ==
+
+!BioLink 3.0.459 19 August 2011
+
+=== New Features ===
+
+No new features in this release
+
+=== Issues addressed in this release ===
+
+  * Issue 116 Add 'All ranks' not implemented
+  * Issue 118 About box needs updating to include ALA information
+  * Issue 119 Debug logging needs to be turned off by defaut in Release 3.0
+  * Issue 120 User guide needs to be put up in Wiki somewhere (PDF and DOC)
+
+=== Known Issues ===
+
+There is an issue that can (rarely) cause a XML Import failure that is currently being investigated. It appears as if there is a size constraint  mismatch between the import stored procedures and the exported data. A fix will be made available in a future release.
+
 == Release Candidate 4 (RC4) ==
 !BioLink 3.0.443 16 August 2011
 
