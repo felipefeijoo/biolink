@@ -42,7 +42,7 @@ Check the results window for any errors or messages.
 
 == !BioLink Web Extensions ==
 
-*Priority:* Optional. Although this update is not necessary, it adds features that improve and simplify using the Query Tool.
+*Priority:* _Optional_. Although this update is not necessary, it adds features that improve and simplify using the Query Tool.
 
 This script adds:
   * new columns to the biota table which hold specific rank values of each taxons parentage (Kingdom, Phylum, Class, Order, Family, Genus, Species, Subspecies)
@@ -51,5 +51,7 @@ This script adds:
   * A number of user defined functions and triggers to support the above changes.
 
 == !AssociateReportsPatch ==
+
+*Priority:* _Recommended_. It is highly likely that the Associates for Taxa report will not return any results unless this patch has been applied.
 
 This script addresses an issue in the stored procedure used by the Associates For Taxa report that, on some installations, will cause incorrect or no results to be returned.
