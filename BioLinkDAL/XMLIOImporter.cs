@@ -38,6 +38,8 @@ namespace BioLink.Data {
         public void Import() {
             if (InitImport()) {
 
+                ProgressMessage("Importing data...");
+                
                 ImportMultimedia();
 
                 ImportJournals();
@@ -79,9 +81,12 @@ namespace BioLink.Data {
                 // Associates...
                 ImportAssociates();
 
+                ProgressMessage("Import finished.");
+
                 if (Observer != null) {
                     Observer.ImportCompleted();
                 }
+                
             }
         }
 
@@ -96,8 +101,7 @@ namespace BioLink.Data {
         }
 
         private bool ImportAssociates() {
-    
-            Log("Importing Associates");
+                
             var XMLAssocParent = _xmlDoc.SelectSingleNode("//*/DATA/ASSOCIATES");    
             
             if (XMLAssocParent == null) {
@@ -317,8 +321,6 @@ namespace BioLink.Data {
         }
 
         private bool ImportPoliticalRegions(XmlElement xmlParentNode, int ParentID ) {
-    
-            Log("Importing Political Regions...");
     
             if (xmlParentNode == null) {             
                 Log("[ImportPoliticalRegions()] Parent Node is nothing! - Internal Error.");
@@ -1063,7 +1065,7 @@ namespace BioLink.Data {
 
 
             var XMLMMParent = _xmlDoc.SelectSingleNode("//*/DATA/MULTIMEDIALIST");
-
+           
             Log("Importing Multimedia");
             if (XMLMMParent == null) {
                 Log("Failed to get MULTIMEDIALIST node from XML File (No Multimedia Imported)");
@@ -1473,6 +1475,7 @@ namespace BioLink.Data {
 
         protected void ProgressMessage(string message) {
             if (Observer != null) {
+                Log(message);
                 Observer.ProgressMessage(message);
             }
         }

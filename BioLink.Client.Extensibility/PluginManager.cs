@@ -80,7 +80,11 @@ namespace BioLink.Client.Extensibility {
         public Window ParentWindow { get; private set; }
 
         public void LoadPlugins(PluginAction pluginAction) {
-            LoadPlugins(pluginAction, ".|^BioLink[.].*[.]dll$", "./plugins");
+
+            var path1 = string.Format("{0}|^BioLink[.].*[.]dll$", AppDomain.CurrentDomain.BaseDirectory);
+            var path2 = string.Format("{0}/plugins", AppDomain.CurrentDomain.BaseDirectory);
+
+            LoadPlugins(pluginAction, path1, path2);
 
             NotifyProgress("Loading html...", 99, ProgressEventType.Update);
 
