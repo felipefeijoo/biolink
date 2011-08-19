@@ -78,9 +78,13 @@ namespace BioLink.DatabaseUtilities {
             if (frm.ShowDialog() == true) {
                 server.Server = frm.Server;
                 foreach (Database db in server.Server.Databases) {
-                    if (db.Tables.Contains("tblMaterial") && db.Tables.Contains("tblBiota")) {
-                        var vm = new DatabaseViewModel(db);
-                        server.Children.Add(vm);
+                    try {
+                        if (db.Tables.Contains("tblMaterial") && db.Tables.Contains("tblBiota")) {
+                            var vm = new DatabaseViewModel(db);
+                            server.Children.Add(vm);
+                        }
+                    } catch (Exception) {
+
                     }
                 }
                 server.IsExpanded = true;
