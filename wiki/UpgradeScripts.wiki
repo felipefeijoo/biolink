@@ -1,8 +1,7 @@
 #summary Scripts that modify existing BioLink databases to work correctly with version 3.0
+#labels Phase-Support
 
-<wiki:toc max_depth="1" />
-
-= !BioLink Database Upgrade SQL Scripts =
+<wiki:toc max_depth="2" />
 
 A small number of enhancements have been made to the BioLink database schema since version 2.5. In addition, an issue has been discovered in the stored procedure that is used to generate the Associates for Taxon report that can lead to incorrect or missing results, even though associates are known to exist. 
 
@@ -15,6 +14,30 @@ First download the script(s) from the [http://code.google.com/p/biolink/download
 Start Microsoft SQL Server Management Studio, and connect to the server which holds your BioLink database.
 
 [http://biolink.googlecode.com/svn/wiki/UpgradeScripts.attach/Connect.png]
+
+The select the Open -> File from the top level File menu
+
+[http://biolink.googlecode.com/svn/wiki/UpgradeScripts.attach/OpenFile.png]
+
+Navigate to where you saved the downloaded scripts, and select which script you would like to execute (one at a time).
+
+You must then select which database you would like to execute this script against. Use the drop down list in the toolbar to selected your !BioLink database.
+
+[http://biolink.googlecode.com/svn/wiki/UpgradeScripts.attach/SelectDatabase.png]
+
+Once the correct database has been selected, press the 'Execute' button to execute the script.
+
+[http://biolink.googlecode.com/svn/wiki/UpgradeScripts.attach/Execute.png]
+
+Check the results window for any errors or messages.
+
+[http://biolink.googlecode.com/svn/wiki/UpgradeScripts.attach/Completed.png]
+
+
+
+
+
+
 
 
 == !BioLink Web Extensions ==
