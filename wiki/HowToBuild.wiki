@@ -1,6 +1,6 @@
 #summary How to build BioLink from source
 
-There are two ways to build BioLink from the source code. The first, and easiest, way is to check out the source code and simply open the BioLink.sln file in Visual Studio 2010 and build it using the build command. This method will not build an installer, or stamp the executables with the build version number, however. The second method, detailed below, uses MSBuild, and requires a little more set up.
+There are two ways to build !BioLink from the source code. The first, and easiest, way is to check out the source code and simply open the !BioLink.sln file in Visual Studio 2010 and build it using the build command. This method will not build an installer, or stamp the executables with the build version number, however. The second method, detailed below, uses MSBuild, and requires a little more set up.
 
 *Note* BioLink source code can be edited and built using the free editions of tools supplied by Microsoft. See [http://www.microsoft.com/visualstudio/en-us/products/2010-editions/visual-csharp-express Visual C# 2010 Express]
 
@@ -25,11 +25,11 @@ C:\Biolink>svn checkout http://biolink.googlecode.com/svn/trunk/ biolink-read-on
 
 == Edit BuildBiolink.proj file ==
 
-BioLink is built using MSBuild, which comes with the .NET Framework. The Atlas of Living Australia uses a continuous integration server that rebuilds BioLink whenever changes are committed to the repository, and the build project has been configured to work on this server. For this reason you may need to edit the build project file slightly in order for it to work on your own system, depending on the nature of your system.
+!BioLink is built using MSBuild, which comes with the .NET Framework. The Atlas of Living Australia uses a continuous integration server that rebuilds !BioLink whenever changes are committed to the repository, and the build project has been configured to work on this server. For this reason you may need to edit the build project file slightly in order for it to work on your own system, depending on the nature of your system.
 
-Navigate to the 'build' directory under the directory where the BioLink source code has been checked out, and modify {{{BuildBiolink.proj}}} so  that the {{{NSISPath}}} property points to the actual install location of the NullSoft Scriptable Install System (NSIS) on your machine.
+Navigate to the 'build' directory under the directory where the source code has been checked out, and modify {{{BuildBiolink.proj}}} so  that the {{{NSISPath}}} property points to the actual install location of the NullSoft Scriptable Install System (NSIS) on your machine.
 
-  On 32bit systems this will most probably be:
+On 32bit systems this will most probably be:
 
 {{{
     <NSISPath>&quot;C:\Program Files\NSIS\makensis.exe&quot;</NSISPath>
@@ -40,7 +40,8 @@ Navigate to the 'build' directory under the directory where the BioLink source c
 {{{
     <NSISPath>&quot;C:\Program Files (x86)\NSIS\makensis.exe&quot;</NSISPath>
 }}}
-  *Note:* the &quot;'s are necessary because of spaces in the path.
+
+*Note:* the &quot;'s are necessary because of the spaces in the path.
 
 == Build BioLink ==
 
