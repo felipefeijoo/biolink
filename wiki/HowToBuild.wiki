@@ -1,12 +1,14 @@
 #summary How to build BioLink from source
 
-There are two ways to build BioLink from the source code. The first, and easiest way is to check out the source code and simply open the BioLink.sln file in Visual Studio 2010 or Visual C# 2010 Express and build it using the build command. This method will not build an installer, or stamp the executables with the build version number. The second method, detailed below, uses MSBuild, and requires a little more set up.
+There are two ways to build BioLink from the source code. The first, and easiest, way is to check out the source code and simply open the BioLink.sln file in Visual Studio 2010 and build it using the build command. This method will not build an installer, or stamp the executables with the build version number, however. The second method, detailed below, uses MSBuild, and requires a little more set up.
+
+*Note* BioLink source code can be edited and built using the free editions of tools supplied by Microsoft. See [http://www.microsoft.com/visualstudio/en-us/products/2010-editions/visual-csharp-express Visual C# 2010 Express]
+
 
 = Required tools =
 
   * Subversion client (http://subversion.tigris.org/) - SlikSVN, for example. 
-  * Visual Studio 2010 or [http://www.microsoft.com/visualstudio/en-us/products/2010-editions/visual-csharp-express Visual C# 2010 Express]
-  * Dot NET Framework version 4.0 (*Note* this will be installed with Visual Studio Express)
+  * Dot NET Framework version 4.0 (*Note* this will be installed with Visual Studio or Visual C# 2010 Express)
   * The [http://nsis.sourceforge.net/Download NullSoft Scriptable Install System] (Install with default settings) 
   * MSBuild extension pack (http://msbuildextensionpack.codeplex.com/) (Download and install the MSI 4.0.3 version)
  
