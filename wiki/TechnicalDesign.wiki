@@ -9,6 +9,15 @@ The original !BioLink (versions 2.5 and prior) where primarily written in Micros
 
 == Version 3.0 Design ==
 
+Generally the overall design of version 3 is a simplification of its predecessor. Logically the three separate tiers still exist, but rather than having an active middle tier that can be run out of process, data access and typical "middle" tier concerns are implemented as in-process library calls. This greatly simplifies deployment, but still allows for data access code to be decoupled from the UI should an alternate front end be required (such as a web interface, for example).
+
+=== Packaging overview ===
+
+[http://biolink.googlecode.com/svn/wiki/TechnicalDesign.attach/Overview.png]
+
+
+= TODO =
+
   * Data access design
   * Database Command pattern
   * Model View View-Model pattern
