@@ -4,16 +4,14 @@ There are two ways to build !BioLink from the source code. The first, and easies
 
 *Note* BioLink source code can be edited and built using the free editions of tools supplied by Microsoft. See [http://www.microsoft.com/visualstudio/en-us/products/2010-editions/visual-csharp-express Visual C# 2010 Express]
 
+<wiki:toc max_depth="2" />
 
-= Required tools =
+== Required tools ==
 
   * Subversion client (http://subversion.tigris.org/) - SlikSVN, for example. 
   * Dot NET Framework version 4.0 (*Note* this will be installed with Visual Studio or Visual C# 2010 Express)
   * The [http://nsis.sourceforge.net/Download NullSoft Scriptable Install System] (Install with default settings) 
   * MSBuild extension pack (http://msbuildextensionpack.codeplex.com/) (Download and install the MSI 4.0.3 version)
- 
-
-= Building BioLink =
 
 == Checkout the source code from the Google Code Repository ==
 _For example_
