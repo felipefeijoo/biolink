@@ -20,7 +20,7 @@ _For example_
 {{{
 C:\>mkdir Biolink
 C:\>cd Biolink
-C:\Biolink>svn checkout http://biolink.googlecode.com/svn/trunk/ biolink-read-only
+C:\Biolink>svn checkout http://biolink.googlecode.com/svn/trunk/ .
 }}}
 
 == Edit the !BuildBiolink.proj file ==
