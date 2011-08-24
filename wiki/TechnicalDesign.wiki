@@ -29,7 +29,19 @@ Communication with the database server is achieved via ADO.NET (System.Sata.SqlC
 
 ==== Model objects ====
 
-Key nouns in BioLink are modelled by classes ({{{Taxon}}}, {{{Material}}}, {{{Loan}}} for example). Model objects (also sometimes known as Data Transfer Objects, or more simply Transfer Objects) are simple 'structures' with properties (in actual fact, they are reference types - {{{class}}} not {{{struct}}}) that basically hold a single row of data from the results of a stored procedure (or SQL Query). Model objects should not have any logic in them, but rather are a vehicle for a collection of related data. All model objects inherit from {{{BioLinkDataObject}}} (or one of it's intermediate descendants). {{{BioLinkDataObject}}} itself has no members, but is rather a marker class. Some model objects have GUID's associated with them, and inherit from {{{GUIDObject}}}. Some model objects also contain ownership information (who created, last updated etc.). These objects inherit from {{{OwnedDataObject}}}.
+Key nouns in BioLink are modelled by classes ({{{Taxon}}}, {{{Material}}}, {{{Loan}}} for example). Model objects (also sometimes known as Data Transfer Objects, or more simply Transfer Objects) are simple 'structures' with properties (in actual fact, they are reference types - {{{class}}} not {{{struct}}}) that basically hold a single row of data from the results of a stored procedure (or SQL Query). Model objects should not have any logic in them, but rather are a vehicle for a collection of related data. All model objects inherit from {{{BioLinkDataObject}}} (or one of it's intermediate descendants). {{{BioLinkDataObject}}} itself has no members (other than ObjectID, discussed below), but is rather like a marker class. Some model objects have GUID's associated with them, and inherit from {{{GUIDObject}}}. Some model objects also contain ownership information (who created, last updated etc.). These objects inherit from {{{OwnedDataObject}}}.
+
+===== ObjectID =====
+
+Just about all objects in !BioLink have an integer id that corresponds to its (internal) database identifier. Because of this it makes sense for the base class for all model objects to expose that object id. Each object, however, has a different column that holds it's id ({{{intTaxonID}}} vs {{{intMaterialID}}}, for example). Because of this !BioLinkDataObject exposes a single {{{ObjectID}}} property, and declares an abstract {{{Expression}}} property called {{{IdentityExpression}}} that all subclasses must implement. This expression property should yield a function that returns an integer (which would be the Object ID for the instance being queried). In this way a {{{BioLinkDataObject}}} subclass can (optionally) provide an expression that yields its object identifier that will be exposed via the {{{ObjectID}}} property.
+
+For example, in the {{{Taxon}}} class:
+
+{{{
+    protected override Expression<Func<int>> IdentityExpression {
+        get { return () => this.TaxaID.Value; }
+    }
+}}}
 
 ==== Mapping (Object Relational Mapping) ====
 
@@ -60,12 +72,23 @@ Some service methods return raw table results that do not conform to a Model obj
 
 === The 'Database Command' pattern ===
 
-One of the key usability features of !BioLink is the way that changes are not applied immediately, but rather are held in a pending state until they are committed either by pressing 'OK' or 'Apply'. This means that a series of changes can be backed out by simply pressing cancel. In version 2.5 and earlier this was achieved by storing all changes in fairly complex arrays 2 dimensional arrays, along with a flag indicating what kind of change is required (insert, update or delete). It was up to the middle layer, then, to interpret  the change flag, and apply the correct stored procedure depending on the nature of the data in the array. In version 3.0 this scheme has been replaced with a database 'Command' pattern.
+One of the key usability features of !BioLink is the way that changes are not applied immediately, but rather are held in a pending state until they are committed either by pressing 'OK' or 'Apply'. This means that a series of changes can be backed out by simply pressing cancel. In version 2.5 and earlier this was achieved by storing all changes in fairly complex arrays 2 dimensional arrays, along with a flag indicating what kind of change is required (insert, update or delete). It was up to the middle layer, then, to interpret  the change flag, and apply the correct stored procedure depending on the nature of the data in the array. In version 3.0 this scheme has been replaced with a database 'Command' pattern. Typically user interface elements (such as WPF Controls or Windows) allow users to modify data that is held in _ViewModels_. _ViewModels_ raise property change events when bound data has been modified, and these change events can be hooked by the containing control or window. If the parent container is a Window, it should extend {{{ChangeContainerWindow}}}. If it is a control it should extend {{{ChangeContainerControl}}}. Either way, once a modification to data has been detected, a {{{DatabaseCommand}}} object can be registered with a {{{ChangeContainer}}}. a {{{DatabaseCommand}}} holds all the required information to commit that change. Many of the {{{DatabaseCommand}}}s contain references to a Model object, so that changes to multiple properties can be committed with a single {{{Update}}} command. For this reason there exists two methods of registering a database command: {{{RegisterPendingChange}}} and {{{RegisterUniquePendingChange}}}. {{{RegisterUniquePendingChange}}} will search any existing pending database commands for the same command (with the same arguments), and will only add it to the list of pending commands if one does not already exist. Insertions and Deletes happen in the same way - when an object is marked for delete, for example, the user interface is update to indicate the result of the delete (in some cases this is via strike through text, in other cases the element is removed), and a database command is registered that will actually perform the deletion within the database. Regardless of the type of database command (Insert, Update and Delete), the commands are held in a {{{Queue}}} until the users indicates that they should be committed (by either pressing Apply or Ok). A {{{Queue}}} is used to ensure that operations are committed in the sane order in which the user triggered them. For example, an {{{insert}}} is usually followed immediately with an {{{Update}}}. If the {{{Update}}} command precedes the {{{Insert}}} and error will occur because the object being update won't exist.
 
+The following steps are undertaken when the queue of pending changes is committed:
+
+  * Each database command is given an opportunity to validate its data  
+  * Each pending database command is then queried for which security permissions are required in order to for it to execute
+  * A new transaction is created via the {{{User}}} object.
+  * For each database command
+    * {{{User}}}s permissions are confirmed against the list of required permissions. If permission is not granted the save is aborted with an error message.
+    * If so, each action is the executed
+    * If an error occurs the entire transaction is rolled back, and an error message is displayed
+  * If all database commands succeed, then the transaction is committed, and the list of pending database commands list cleared.
+
+The database command pattern facilitates a single level of 'Undo', as well as providing a single point where permission checks can be performed. It also means that individual update, insert and delete operations can be described in a single class each with low coupling to other code. Change containers provide events that can be hooked that allow for meaningful user interface cues, indicating if there are unsaved changes or not.
 
 = TODO =
 
-  * Database Command pattern
   * Model View View-Model pattern
   * Plugin architecture
   * "Pinnable" objects and inter-plugin communication
