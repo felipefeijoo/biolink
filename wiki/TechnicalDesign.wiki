@@ -23,7 +23,44 @@ Nearly all of the interaction between the application and the database is achiev
   * New features for which no stored procedures yet exist
   * temporary workarounds for issues with current stored procedures
 
+Communication with the database server is achieved via ADO.NET (System.Sata.SqlClient). BioLink functions a grouped under individual 'service' objects (taxa, material, for example). All service objects inherit from {{{BioLinkService}}} which provides convenience methods for calling stored procedures and mapping results to model objects. Services return model (or lists of model) objects, and some service methods (such as update and insert) accept model objects as parameters. The service layer in this sense abstracts away SQL Server as an implementation detail of the storage platform. The rule of thumb, then, is that no SQL Server implementation details are leaked outside of the service layer (i.e. it should be possible to re-implement the service layer using another RDBMS and clients need not be aware of the change.
 
+
+
+==== Model objects ====
+
+Key nouns in BioLink are modelled by classes ({{{Taxon}}}, {{{Material}}}, {{{Loan}}} for example). Model objects (also sometimes known as Data Transfer Objects, or more simply Transfer Objects) are simple 'structures' with properties (in actual fact, they are reference types - {{{class}}} not {{{struct}}}) that basically hold a single row of data from the results of a stored procedure (or SQL Query). Model objects should not have any logic in them, but rather are a vehicle for a collection of related data. All model objects inherit from {{{BioLinkDataObject}}} (or one of it's intermediate descendants). {{{BioLinkDataObject}}} itself has no members, but is rather a marker class. Some model objects have GUID's associated with them, and inherit from {{{GUIDObject}}}. Some model objects also contain ownership information (who created, last updated etc.). These objects inherit from {{{OwnedDataObject}}}.
+
+==== Mapping (Object Relational Mapping) ====
+
+Data is returned from SQL Server via a {{{SqlDataReader}}} object. Because the service layer should only return model objects the data held by the reader objects needs to be mapped into a model object (or a list of model objects if the operation returns multiple rows). Many of the convenience methods provided by {{{BiolinkService}}} accept a {{{GenericMapper<T>}}} that can convert the row data into instances of type T. A {{{GenericMapper}}} can be built automatically using the {{{GenericMapperBuilder<T>}}}, which will generate a mapper for type T that uses type introspection (or reflection) to extract column data from the data reader based on the property names held in type T. 
+
+For example, here is the service method for retrieving the {{{Loan}}}s for a contact.
+{{{
+    public List<Loan> ListLoansForContact(int contactID) {
+        var mapper = new GenericMapperBuilder<Loan>().build();
+        return StoredProcToList("spLoanListForContact", mapper, _P("intContactID", contactID));
+    }
+}}}
+
+Reflective/Introspective mapping works by going through every column in the record set and attempting to locate a property whose name matches the column name, and setting the value of that property with the value held in the column for the current row. The following list describes the heuristics used by the reflective mapper, and how it can be otherwise influenced:
+
+  * A {{{MappingInfo}}} attribute can be applied to a model property in order to force a column name to be mapped explicitly to that property
+  * If no mapping info is supplied, a property with the same name as the column is searched for
+  * If no property is found, columns that start with the prefixes {{{chr}}},{{{vchr}}},{{{bit}}},{{{int}}},{{{txt}}},{{{flt}}},{{{tint}}},{{{dt}}},{{{sint}}} or {{{img}}} have this prefix stripped, and a property is searched for whose name matches the modified name
+
+The reason for these heuristics is that the !BioLink stored procedures return inconsistent results. Some return column names that include the type prefix ({{{vchr}}}, {{{int}}} etc.), and others don't. Also, some stored procedures return the same logical column using different abbreviations, making automatic mapping using just the name impossible.
+
+*Note* Is was originally anticipated that reflective mapping would prove too inefficient to be used in all circumstances (like retrieving long lists of results). The contingency planned for these cases was the intention of writing 'custom' mappers that explicitly map columns to properties without the cost of reflection. The actual performance of the reflective mapper, however, has proved sufficient that no custom mappers have yet been required.
+
+==== Data matrices ====
+
+Some service methods return raw table results that do not conform to a Model object (such as query and report results whose columns may not be known at design time). These methods return a {{{DataMatrix}}} which is a simple abstraction of tabular data. A {{{DataMatrix}}} has columns and rows, and not much else. There is the facility to programmatically add 'virtual' columns whose values are computed, possibly by aggregating other column values, but usually the matrix is a direct replication of the rowset returned from the stored procedure/query. The reason for this is to prevent the implementation detail of SQL Server from being leaked from the service layer. Data matrices are almost always displayed in a {{{TabularReportViewer}}}.
+
+
+=== The 'Database Command' pattern ===
+
+One of the key usability features of !BioLink is the way that changes are not applied immediately, but rather are held in a pending state until they are committed either by pressing 'OK' or 'Apply'. This means that a series of changes can be backed out by simply pressing cancel. In version 2.5 and earlier this was achieved by storing all changes in fairly complex arrays 2 dimensional arrays, along with a flag indicating what kind of change is required (insert, update or delete). It was up to the middle layer, then, to interpret  the change flag, and apply the correct stored procedure depending on the nature of the data in the array. In version 3.0 this scheme has been replaced with a database 'Command' pattern.
 
 
 = TODO =
