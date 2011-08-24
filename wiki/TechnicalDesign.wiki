@@ -15,10 +15,19 @@ Generally the overall design of version 3 is a simplification of its predecessor
 
 [http://biolink.googlecode.com/svn/wiki/TechnicalDesign.attach/Overview.png]
 
+=== Data Access Layer ===
+
+Nearly all of the interaction between the application and the database is achieved via stored procedures. The only exceptions to this are:
+
+  * The extraction of multimedia bytes
+  * New features for which no stored procedures yet exist
+  * temporary workarounds for issues with current stored procedures
+
+
+
 
 = TODO =
 
-  * Data access design
   * Database Command pattern
   * Model View View-Model pattern
   * Plugin architecture
