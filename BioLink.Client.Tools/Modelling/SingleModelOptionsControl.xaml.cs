@@ -29,6 +29,26 @@ namespace BioLink.Client.Tools {
             txtFilename.Text = TempFileManager.NewTempFilename("grd", "model");
 
             cmbModelType.SelectionChanged += new SelectionChangedEventHandler(cmbModelType_SelectionChanged);
+
+            Loaded += new RoutedEventHandler(SingleModelOptionsControl_Loaded);
+            Unloaded += new RoutedEventHandler(SingleModelOptionsControl_Unloaded);
+        }
+
+        void SingleModelOptionsControl_Unloaded(object sender, RoutedEventArgs e) {
+            // Save the color preferences
+            Config.SetUser(PluginManager.Instance.User, "Modelling.SingleModel.LowColor", ctlLowColor.SelectedColor);
+            Config.SetUser(PluginManager.Instance.User, "Modelling.SingleModel.HighColor", ctlHighColor.SelectedColor);
+            Config.SetUser(PluginManager.Instance.User, "Modelling.SingleModel.NoColor", ctlNoValColor.SelectedColor);
+            Config.SetUser(PluginManager.Instance.User, "Modelling.SingleModel.Cutoff", txtCutOff.Text);
+            Config.SetUser(PluginManager.Instance.User, "Modelling.SingleModel.Intervals", txtIntervals.Text);
+        }
+
+        void SingleModelOptionsControl_Loaded(object sender, RoutedEventArgs e) {
+            ctlLowColor.SelectedColor = Config.GetUser(PluginManager.Instance.User, "Modelling.SingleModel.LowColor", ctlLowColor.SelectedColor);
+            ctlHighColor.SelectedColor = Config.GetUser(PluginManager.Instance.User, "Modelling.SingleModel.HighColor", ctlHighColor.SelectedColor);
+            ctlNoValColor.SelectedColor = Config.GetUser(PluginManager.Instance.User, "Modelling.SingleModel.NoColor", ctlNoValColor.SelectedColor);
+            txtCutOff.Text = Config.GetUser(PluginManager.Instance.User, "Modelling.SingleModel.Cutoff", txtCutOff.Text);
+            txtIntervals.Text = Config.GetUser(PluginManager.Instance.User, "Modelling.SingleModel.Intervals", txtIntervals.Text);
         }
 
         void cmbModelType_SelectionChanged(object sender, SelectionChangedEventArgs e) {

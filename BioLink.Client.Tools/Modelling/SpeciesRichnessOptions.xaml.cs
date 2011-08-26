@@ -27,7 +27,26 @@ namespace BioLink.Client.Tools {
             txtFilename.Text = TempFileManager.NewTempFilename("grd", "richness");
 
             cmbModel.SelectionChanged += new SelectionChangedEventHandler(cmbModel_SelectionChanged);
+            this.Loaded += new RoutedEventHandler(SpeciesRichnessOptions_Loaded);
+            this.Unloaded += new RoutedEventHandler(SpeciesRichnessOptions_Unloaded);
 
+        }
+
+        void SpeciesRichnessOptions_Unloaded(object sender, RoutedEventArgs e) {
+            // Save the color preferences
+            Config.SetUser(PluginManager.Instance.User, "Modelling.SpeciesRichness.LowColor", ctlLowValueColor.SelectedColor);
+            Config.SetUser(PluginManager.Instance.User, "Modelling.SpeciesRichness.HighColor", ctlHighValueColor.SelectedColor);
+            Config.SetUser(PluginManager.Instance.User, "Modelling.SpeciesRichness.NoColor", ctlNoValueColor.SelectedColor);
+            Config.SetUser(PluginManager.Instance.User, "Modelling.SpeciesRichness.Cutoff", txtCutOff.Text);
+            Config.SetUser(PluginManager.Instance.User, "Modelling.SpeciesRichness.RetainIntermediate", chkRetainFiles.IsChecked);
+        }
+
+        void SpeciesRichnessOptions_Loaded(object sender, RoutedEventArgs e) {
+            ctlLowValueColor.SelectedColor = Config.GetUser(PluginManager.Instance.User, "Modelling.SpeciesRichness.LowColor", ctlLowValueColor.SelectedColor);
+            ctlHighValueColor.SelectedColor = Config.GetUser(PluginManager.Instance.User, "Modelling.SpeciesRichness.HighColor", ctlHighValueColor.SelectedColor);
+            ctlNoValueColor.SelectedColor = Config.GetUser(PluginManager.Instance.User, "Modelling.SpeciesRichness.NoColor", ctlNoValueColor.SelectedColor);
+            txtCutOff.Text = Config.GetUser(PluginManager.Instance.User, "Modelling.SpeciesRichness.Cutoff", txtCutOff.Text);
+            chkRetainFiles.IsChecked = Config.GetUser(PluginManager.Instance.User, "Modelling.SpeciesRichness.RetainIntermediate", chkRetainFiles.IsChecked);            
         }
 
         void cmbModel_SelectionChanged(object sender, SelectionChangedEventArgs e) {
