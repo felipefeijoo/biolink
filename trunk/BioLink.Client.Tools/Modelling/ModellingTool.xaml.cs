@@ -335,7 +335,8 @@ namespace BioLink.Client.Tools {
                         this.InvokeIfRequired(() => {
                             var range = result.GetRange();
                             var imageFilename = SystemUtils.ChangeExtension(_richnessOptions.txtFilename.Text, "bmp");
-                            ShowGridLayerInMap(result, (int) range.Range, 0, _richnessOptions, imageFilename);
+                            int r = (range == null ? 0 : (int) range.Range);
+                            ShowGridLayerInMap(result, r, 0, _richnessOptions, imageFilename);
                             result.SaveToGRDFile(_richnessOptions.txtFilename.Text);
                         });
                     }

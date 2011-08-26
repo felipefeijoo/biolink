@@ -94,10 +94,19 @@ namespace BioLink.Client.Tools {
         private void AddPointSet(MapPointSet set) {
             var viewModel = new PointSetViewModel(set);
             _model.Add(viewModel);
+            var killlist = new List<PointViewModel>();
             foreach (MapPoint p in set) {
                 var childVM = new PointViewModel(p);
                 childVM.Parent = viewModel;
                 viewModel.Children.Add(childVM);
+                if (p.Latitude == 0 && p.Longitude == 0) {
+                    killlist.Add(childVM);
+                }
+
+            }
+
+            foreach (PointViewModel p in killlist) {
+                viewModel.RemovePoint(p);
             }
         }
 
@@ -299,6 +308,9 @@ namespace BioLink.Client.Tools {
             if (selected != null && pointSet != null) {
                 pointSet.RemovePoint(selected);
             }
+        }
+
+        private void RemovePoint(PointViewModel point, MapPointSet set) {
         }
 
         private void Button_Click_9(object sender, RoutedEventArgs e) {

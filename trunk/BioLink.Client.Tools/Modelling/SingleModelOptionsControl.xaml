@@ -28,15 +28,7 @@
             <ext:FilenameTextBox Grid.Column="1" Grid.ColumnSpan="3" Height="23" Name="txtFilename" />
 
             <Label Content="Model type:" Grid.Row="1"/>
-            <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Height="23" Name="cmbModelType" >
-                <ComboBox.Resources>
-                    <DataTemplate DataType="{x:Type tools:DistributionModel}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding Path=Name}" />
-                        </StackPanel>
-                    </DataTemplate>
-                </ComboBox.Resources>
-            </ComboBox>
+            <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Height="23" Name="cmbModelType" DisplayMemberPath="Name" />
 
             <CheckBox Grid.Row="2" Grid.Column="1" Content="Generate image" VerticalAlignment="Center" Name="chkGenerateImage" IsChecked="True" />
 
