@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using BioLink.Data.Model;
 using BioLink.Client.Utilities;
 
@@ -620,19 +621,25 @@ namespace BioLink.Data {
 
             strCriteria = "(";
             var service = new SupportService(User);
-            service.StoredProcReaderForEach("spQieryBiotaDistLookup", (reader) => {
+            service.StoredProcReaderForEach("spQueryBiotaDistLookup", (reader) => {
                 // Extract the components
                 var strID = reader["intDistributionRegionID"].ToString().Trim();
                 var strParentage = reader["vchrParentage"].ToString().Trim();
-                strParentage = strParentage.Substring(0, strParentage.IndexOf("\\" + strID) - 1);
-                strParentage = strParentage.Replace("\\", ",");
 
-                // Perform the join for multiple selectors
-                if (strCriteria != "(") {
-                    strCriteria += " OR ";
+                var regex = new Regex(string.Format(@"^[\\](.*?)[\\]*{0}$", strID));
+
+                var match = regex.Match(strParentage);
+                if (match.Success && match.Groups.Count > 1) {
+                    strParentage = match.Groups[1].Value;
+                    if (!string.IsNullOrEmpty(strParentage)) {
+                        strParentage = strParentage.Replace("\\", ",");
+                        // Perform the join for multiple selectors
+                        if (strCriteria != "(") {
+                            strCriteria += " OR ";
+                        }
+                        strCriteria += "((" + strTABLE_BIOTA_DIST_ABBREV + ".intDistributionRegionID IN (" + strParentage + ") AND " + strTABLE_BIOTA_DIST_ABBREV + ".bitThroughoutRegion = 1) OR " + strTABLE_BIOTA_DIST_ABBREV + ".intDistributionRegionID = " + strID + " OR " + strTABLE_DIST_REGION_ABBREV + ".vchrParentage LIKE '" + reader["vchrParentage"].ToString().Trim() + "\\%')";
+                    }
                 }
-
-                strCriteria += "((" + strTABLE_BIOTA_DIST_ABBREV + ".intDistributionRegionID IN (" + strParentage + ") AND " + strTABLE_BIOTA_DIST_ABBREV + ".bitThroughoutRegion = 1) OR " + strTABLE_BIOTA_DIST_ABBREV + ".intDistributionRegionID = " + strID + " OR " + strTABLE_DIST_REGION_ABBREV + ".vchrParentage LIKE '" + reader["vchrParentage"].ToString().Trim() + "\\%')";
 
             }, service._P("txtCriteria", pstrCriteria));
 
