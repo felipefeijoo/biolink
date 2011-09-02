@@ -25,6 +25,16 @@ Nearly all of the interaction between the application and the database is achiev
 
 Communication with the database server is achieved via ADO.NET (System.Sata.SqlClient). BioLink functions are grouped under individual 'service' objects (taxa, material, for example). All service objects inherit from {{{BioLinkService}}}, which provides convenience methods for calling stored procedures and mapping results to model objects. Services return model (or lists of model) objects, and some service methods (such as update and insert methods) accept model objects as parameters. The service layer in this sense abstracts away SQL Server as an implementation detail of the storage platform. The rule of thumb, then, is that no SQL Server implementation details are leaked outside of the service layer (i.e. it should be possible to re-implement the service layer using another RDBMS and clients need not be aware of the change.
 
+==== Services ====
+
+Services are the objects through which data is retrieved, inserted and updated in BioLink. Using the service paradigm provides a layer of abstraction between the application code and the database, and simplifies client code that is concerned with interacting with data. There are currently two main service types in !BioLink: {{{BioLinkService}}} services are those that interact with the main SQL Server database that holds !BioLink data. 
+
+[http://biolink.googlecode.com/svn/wiki/TechnicalDesign.attach/ServiceClasses.png]
+
+The {{{SQLiteServiceBase}}} services are responsible for managing data held in local (to the client application) SQLite database instances. 
+
+[http://biolink.googlecode.com/svn/wiki/TechnicalDesign.attach/SQLiteServiceClasses.png]
+
 ==== Model objects ====
 
 Key nouns in !BioLink are modelled by classes ({{{Taxon}}}, {{{Material}}}, {{{Loan}}} for example). Model objects (also sometimes known as Data Transfer Objects, or more simply Transfer Objects) are simple 'structures' with properties (in actual fact, they are reference types - {{{class}}} not {{{struct}}}) that basically hold a single row of data from the results of a stored procedure (or SQL Query). Model objects should not have any logic in them, but rather are a vehicle for a collection of related data. All model objects inherit from {{{BioLinkDataObject}}} (or one of it's intermediate descendants). {{{BioLinkDataObject}}} itself has no members (other than ObjectID, discussed below), but is rather like a marker class. Some model objects have GUID's associated with them, and inherit from {{{GUIDObject}}}. Some model objects also contain ownership information (who created, last updated etc.). These objects inherit from {{{OwnedDataObject}}}.
