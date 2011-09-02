@@ -39,6 +39,8 @@ The {{{SQLiteServiceBase}}} services are responsible for managing data held in l
 
 Key nouns in !BioLink are modelled by classes ({{{Taxon}}}, {{{Material}}}, {{{Loan}}} for example). Model objects (also sometimes known as Data Transfer Objects, or more simply Transfer Objects) are simple 'structures' with properties (in actual fact, they are reference types - {{{class}}} not {{{struct}}}) that basically hold a single row of data from the results of a stored procedure (or SQL Query). Model objects should not have any logic in them, but rather are a vehicle for a collection of related data. All model objects inherit from {{{BioLinkDataObject}}} (or one of it's intermediate descendants). {{{BioLinkDataObject}}} itself has no members (other than ObjectID, discussed below), but is rather like a marker class. Some model objects have GUID's associated with them, and inherit from {{{GUIDObject}}}. Some model objects also contain ownership information (who created, last updated etc.). These objects inherit from {{{OwnedDataObject}}}.
 
+[http://biolink.googlecode.com/svn/wiki/TechnicalDesign.attach/DataObjects.png]
+
 ===== ObjectID =====
 
 Just about all objects in !BioLink have an integer id that corresponds to its (internal) database identifier. Because of this it makes sense for the base class for all model objects to expose that object id. Each object, however, has a different column that holds it's id ({{{intTaxonID}}} vs {{{intMaterialID}}}, for example). Because of this !BioLinkDataObject exposes a single {{{ObjectID}}} property, and declares an abstract {{{Expression}}} property called {{{IdentityExpression}}} that all subclasses must implement. This expression property should yield a function that returns an integer (which would be the Object ID for the instance being queried). In this way a {{{BioLinkDataObject}}} subclass provides an expression that yields its object identifier that will be exposed via the {{{ObjectID}}} property.
@@ -96,6 +98,12 @@ The following steps are undertaken when the queue of pending changes is committe
   * If all database commands succeed, then the transaction is committed, and the list of pending database commands list cleared.
 
 The database command pattern facilitates a single level of 'Undo', as well as providing a single point where permission checks can be performed. It also means that individual update, insert and delete operations can be described in a single class each with low coupling to other code. Change containers provide events that can be hooked that allow for meaningful user interface cues, indicating if there are unsaved changes or not.
+
+=== The Model View ViewModel pattern ===
+
+The !BioLink application UI uses the {{{Model View ViewModel}}} (MVVM) pattern quite extensively. More information about MVVM can be found at [http://msdn.microsoft.com/en-us/magazine/dd419663.aspx]. !BioLink's particular implementation of makes use of wrapping {{{Model}}} objects with {{{ViewModel}}} objects, and reimplementing the relevant {{{Model}}} members as required. 
+
+...
 
 = TODO =
 
