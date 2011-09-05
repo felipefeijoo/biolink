@@ -18,6 +18,7 @@ using System.Linq;
 using System.Text;
 using BioLink.Client.Extensibility;
 using BioLink.Client.Utilities;
+using System.Windows;
 
 namespace BioLink.Client.Tools {
 
@@ -29,25 +30,31 @@ namespace BioLink.Client.Tools {
 
             double noValue = targetLayer.NoValueMarker;
 
+            var pointsArray = points.Points.ToArray();
+            var layerArray = layers.ToArray();
+
             // Preprocess points...
             layers.ForEachIndex((layer, i) => {
-                foreach (ModelPoint p in points.Points) {
+                foreach (ModelPoint p in pointsArray) {
                     var value = layer.GetValueAt(p.Y, p.X, noValue);
-                    p.SetValueForLayer(i, value);
+                    p.LayerValues[i] = value;                    
                     p.UsePoint = value != noValue;
                 }
             });
 
             double[] range = new double[layers.Count()];
             // Find ranges;
-            layers.ForEachIndex((layer, layerIndex) => {
+            for (int layerIndex = 0; layerIndex < layerArray.Length; ++layerIndex) {
+
                 bool rangeSet = false;
                 double min = 0;
                 double max = 0;
 
-                points.Points.ForEach((p) => {
+                for (int i = 0; i < pointsArray.Length; ++i) {
+                    var p = pointsArray[i];
+
                     if (p.UsePoint) {
-                        var value = p.GetValueForLayer(layerIndex);
+                        var value = p.LayerValues[layerIndex];
                         if (!rangeSet) {
                             min = value;
                             max = value;
@@ -60,35 +67,34 @@ namespace BioLink.Client.Tools {
                             }
                         }
                     }
-                });
+                }
 
                 var tmp = Math.Abs(max - min);
                 range[layerIndex] = tmp == 0 ? 1 : tmp;
-            });
+            }
 
             int height = targetLayer.Height;
             int width = targetLayer.Width;
+
 
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
                     var fMinDist = noValue;
                     var minSet = false;
 
-                    foreach (ModelPoint p in points.Points) {
+                    for (int i = 0; i < pointsArray.Length; ++i) {
                         double fdist = 0;
+                        var p = pointsArray[i];
 
                         if (p.UsePoint) {
                             for (int layerIndex = 0; layerIndex < layerCount; layerIndex++) {
 
-                                var layer = layers.ElementAt(layerIndex);
-
-                                var fVal = p.GetValueForLayer(layerIndex);
-                                var fCellVal = layer.GetCellValue(x, y);
+                                var fCellVal = layerArray[layerIndex].Data[x, y];
                                 if (fCellVal == noValue) {
                                     fMinDist = noValue;
                                     goto SetPoint;
                                 }
-                                fdist = fdist + (Math.Abs(fCellVal - fVal) / range[layerIndex]);
+                                fdist = fdist + (Math.Abs(fCellVal - p.LayerValues[layerIndex]) / range[layerIndex]);
                             };
 
                             fdist = fdist / layers.Count();
@@ -105,7 +111,7 @@ namespace BioLink.Client.Tools {
 
                     fMinDist = (1.0 - fMinDist) * 100.0;
                 SetPoint:
-                    targetLayer.SetCellValue(x, y, fMinDist);
+                    targetLayer.Data[x, y] = fMinDist;
                 }
 
                 if (y % 20 == 0) {
@@ -118,6 +124,7 @@ namespace BioLink.Client.Tools {
                         return;
                     }
                 }
+
             }
         }
 
