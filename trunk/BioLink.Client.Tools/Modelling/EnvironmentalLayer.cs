@@ -27,12 +27,12 @@ namespace BioLink.Client.Tools {
 
         private static Int32 GRD_MAGIC = 0xCAFA;
 
-        private double[,] _data = null;
+        public double[,] Data = null;
 
         public GridLayer(int width, int height) {
             Width = width;
             Height = height;
-            _data = new double[Width, Height];
+            Data = new double[Width, Height];
             this.Name = "model";
         }
 
@@ -64,7 +64,7 @@ namespace BioLink.Client.Tools {
 
                     for (int lngRow = (Height - 1); lngRow >= 0; --lngRow) {
                         for (int lngCol = 0; lngCol < Width; ++lngCol) {
-                            writer.Write("{0:#.######} ", _data[lngCol, lngRow]);
+                            writer.Write("{0:#.######} ", Data[lngCol, lngRow]);
                         }
                         writer.Write("\n");
                     }
@@ -83,10 +83,10 @@ namespace BioLink.Client.Tools {
                     NoValueMarker = reader.ReadRegexDouble(@"^NODATA_value\s+([-\d.]+)\s*$");
                     DeltaLongitude = DeltaLatitude;
 
-                    _data = new double[Width, Height];
+                    Data = new double[Width, Height];
                     for (int y = Height - 1; y >= 0; --y) {
                         for (int x = 0; x < Width; ++x) {
-                             _data[x,y] = reader.ReadDouble();
+                             Data[x,y] = reader.ReadDouble();
                         }
                     }
                 }
@@ -95,7 +95,12 @@ namespace BioLink.Client.Tools {
 
 
         public void SaveToGRDFile(string filename) {
-            using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.Write)) {
+
+            if (File.Exists(filename)) {
+                File.Delete(filename);
+            }
+
+            using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write)) {
                 using (var writer = new BinaryWriter(fs, Encoding.ASCII)) {                    
                     writer.Write((Int32) GRD_MAGIC);
                     writer.Write((Int32)0x38); // header size
@@ -109,7 +114,7 @@ namespace BioLink.Client.Tools {
                     writer.Write((Int32) Flags);
                     for (int row = 0; row < Height; row++) {
                         for (int col = 0; col < Width; col++) {
-                            writer.Write((float) _data[col, row]);
+                            writer.Write((float) Data[col, row]);
                         }
                     }
                 }
@@ -151,7 +156,7 @@ namespace BioLink.Client.Tools {
                 }
             }
 
-            _data = data;
+            Data = data;
         }
 
         
@@ -169,16 +174,16 @@ namespace BioLink.Client.Tools {
 
 	        if ((lngX < 0) || (lngY < 0)) return novalue;
 
-            double val = _data[lngX, lngY];
+            double val = Data[lngX, lngY];
 	        return (val  == NoValueMarker ? novalue : val);
         }
 
         public double GetCellValue(int x, int y) {
-            return _data[x, y];
+            return Data[x, y];
         }
 
         public void SetCellValue(int x, int y, double value) {
-            _data[x, y] = value;
+            Data[x, y] = value;
         }
 
         public EnvironmentalLayerRange GetRange(double? percentile = null) {
@@ -229,14 +234,14 @@ namespace BioLink.Client.Tools {
 
         public void SetAllCells(double value) {
             TraverseCells((x, y, current) => {
-                _data[x, y] = value;
+                Data[x, y] = value;
             });
         }
 
         public void TraverseCells(Action<int, int, double> action) {
             for (int y = 0; y < Height; y++) {
                 for (int x = 0; x < Width; x++) {
-                    action(x, y, _data[x, y]);
+                    action(x, y, Data[x, y]);
                 }
             }
         }

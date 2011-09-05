@@ -7,11 +7,11 @@ namespace BioLink.Client.Tools {
 
     public class ModelPoint {
 
-        private double[] _layerValues;
+        public double[] LayerValues;
 
         public ModelPoint(int layerCount) {
             UsePoint = true;
-            _layerValues = new double[layerCount];
+            LayerValues = new double[layerCount];
         }
 
         public double X { get; set; }
@@ -21,11 +21,11 @@ namespace BioLink.Client.Tools {
         public bool UsePoint { get; set; }
 
         public void SetValueForLayer(int index, double value) {
-            _layerValues[index] = value;
+            LayerValues[index] = value;
         }
 
         public double GetValueForLayer(int index) {
-            return _layerValues[index];
+            return LayerValues[index];
         }
     }
 
