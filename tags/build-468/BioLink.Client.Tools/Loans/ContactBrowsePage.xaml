@@ -1,0 +1,38 @@
+﻿<UserControl x:Class="BioLink.Client.Tools.ContactBrowsePage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="327" d:DesignWidth="463">
+    <Grid>
+        <Grid.Resources>
+            <Style x:Key="hcs" TargetType="{x:Type GridViewColumnHeader}">
+                <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
+            </Style>
+        </Grid.Resources>
+
+        <Label Content="Contacts - A-C" Height="28" Margin="6,6,6,0" Name="lblPageHeader" VerticalAlignment="Top" HorizontalContentAlignment="Center" Foreground="White" Background="Gray" FontWeight="Normal" FontSize="13" />
+        <ListView x:Name="lvw" Grid.Row="1" Margin="6">
+            <ListView.Resources>
+                <DataTemplate x:Key="IconColumnTemplate">
+                    <StackPanel Orientation="Horizontal" ToolTip="{Binding Path=TooltipContent}" ToolTipService.ShowDuration="30000">
+                        <Image Source="{Binding Path=Icon}" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True"/>
+                        <TextBlock Text="{Binding Path=FullName}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.Resources>
+            <ListView.View>
+                <GridView>
+                    <GridView.Columns>
+                        <GridViewColumn Width="140" Header="Name" CellTemplate="{StaticResource IconColumnTemplate}" HeaderContainerStyle="{StaticResource hcs}" />
+                        <GridViewColumn Width="140" Header="Institution" HeaderContainerStyle="{StaticResource hcs}" DisplayMemberBinding="{Binding Institution}" />
+                        <GridViewColumn Width="140" Header="Job title" HeaderContainerStyle="{StaticResource hcs}" DisplayMemberBinding="{Binding JobTitle}" />
+                    </GridView.Columns>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+    </Grid>
+    
+</UserControl>
