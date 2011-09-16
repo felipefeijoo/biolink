@@ -1,0 +1,81 @@
+﻿<src:DatabaseCommandControl x:Class="BioLink.Client.Extensibility.MultimediaControl"                           
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:src="clr-namespace:BioLink.Client.Extensibility"
+             xmlns:data="clr-namespace:BioLink.Data;assembly=BioLink.Data"                           
+             xmlns:model="clr-namespace:BioLink.Data.Model;assembly=BioLink.Data"             
+             mc:Ignorable="d" 
+             d:DesignHeight="404" d:DesignWidth="774">
+    <Grid UseLayoutRounding="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="120" />
+        </Grid.RowDefinitions>
+
+        <ToolBar Grid.Row="0" Name="toolBar">
+            <Button x:Name="btnAdd" Click="btnAdd_Click" ToolTip="Add a piece of multimedia">
+                <Button.Content>
+                    <Image Source="../images/AddNew.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True"/>
+                </Button.Content>
+            </Button>
+            
+            <Button x:Name="btnDelete" Click="btnDelete_Click" ToolTip="Delete the selected piece of multimedia">
+                <Button.Content>
+                    <Image Source="../images/Delete.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True"/>
+                </Button.Content>
+            </Button>
+            
+            <Separator />
+
+            <Button x:Name="btnProperties" Click="btnProperties_Click" ToolTip="Edit multimedia details">
+                <Button.Content>
+                    <Image Source="../images/Properties.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True"/>
+                </Button.Content>
+            </Button>
+
+            <Button x:Name="btnLinkToExisting" Click="btnLinkToExisting_Click"  ToolTip="Link to existing multimedia">
+                <Button.Content>
+                    <Image Source="../images/Link.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True"/>
+                </Button.Content>
+            </Button>
+
+
+        </ToolBar>
+
+        <ListBox Grid.Row="1" x:Name="thumbList" HorizontalContentAlignment="Center" MouseRightButtonUp="thumbList_MouseRightButtonUp" MouseDoubleClick="thumbList_MouseDoubleClick" AllowDrop="True" DragOver="thumbList_DragOver" Drop="thumbList_Drop">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel IsItemsHost="True" Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ScrollContentPresenter}}}" />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.Resources>
+                <DataTemplate DataType="{x:Type src:MultimediaLinkViewModel}">
+                    <Border Margin="3" BorderThickness="1" BorderBrush="{x:Static SystemColors.ControlDarkBrush}" Background="{x:Static SystemColors.ControlBrush}" CornerRadius="3" Height="130" Padding="5" ToolTip="{Binding Path=TooltipContent}" ToolTipService.ShowDuration="30000">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120">
+                            <Image Source="{Binding Thumbnail}" Stretch="None" SnapsToDevicePixels="True" />
+                            <TextBlock MinHeight="20" TextAlignment="Center" Text="{Binding Fullname}" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" FontSize="10" Foreground="Black"/>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+                
+                <Style TargetType="ListBoxItem">
+                    <Style.Resources>                        
+                    </Style.Resources>
+                </Style>
+                
+            </ListBox.Resources>
+        </ListBox>
+        <Grid x:Name="detailGrid" Grid.Row="2">
+            <Label Content="Type:" Height="28" HorizontalAlignment="Left" Margin="6,8,0,0" Name="label1" VerticalAlignment="Top" Width="92" />
+            <Label Content="Name:" Height="28" HorizontalAlignment="Left" Margin="6,40,0,0" Name="label2" VerticalAlignment="Top" />
+            <Label Content="Caption" Height="28" HorizontalAlignment="Left" Margin="6,71,0,0" Name="label3" VerticalAlignment="Top" />
+            <src:PickListControl Height="23" Margin="72,10,6,0" x:Name="txtMultimediaType" VerticalAlignment="Top" Text="{Binding MultimediaType}"/>
+            <src:TextBox Height="23" Margin="72,42,6,0" x:Name="txtName" VerticalAlignment="Top" Text="{Binding Name}"/>
+            <src:BindableRichTextBox Height="43" Margin="72,71,6,0" x:Name="txtCaption" VerticalAlignment="Top" RTF="{Binding Caption}" />            
+        </Grid>
+        
+    </Grid>
+</src:DatabaseCommandControl>
