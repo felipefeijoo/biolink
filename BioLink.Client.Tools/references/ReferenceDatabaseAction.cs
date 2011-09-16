@@ -53,6 +53,16 @@ namespace BioLink.Client.Tools {
             required.Add(PermissionCategory.SUPPORT_REFS, PERMISSION_MASK.INSERT);
         }
 
+        public override List<string> Validate() {
+            var errors = new List<String>();
+
+            if (String.IsNullOrEmpty(Model.RefCode)) {
+                errors.Add("You must supply a Reference Code before you can continue");
+            }
+
+            return errors;
+        }
+
     }
 
     public class DeleteReferenceCommand : DatabaseCommand {

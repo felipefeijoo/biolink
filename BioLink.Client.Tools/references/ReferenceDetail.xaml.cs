@@ -92,12 +92,20 @@ namespace BioLink.Client.Tools {
             _mmTab = tabRef.AddTabItem("Multimedia", new MultimediaControl(User, TraitCategoryType.Reference, _viewModel) { IsReadOnly = readOnly });
             _linksTab = tabRef.AddTabItem("Taxon Links", new OneToManyControl(new TaxonRefLinksControl(User, _viewModel.RefID)) { IsReadOnly = readOnly });
 
+            _viewModel.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(_viewModel_PropertyChanged);
+
             tabRef.AddTabItem("Ownership", new OwnershipDetails(_viewModel.Model));
 
             cmbRefType.SelectionChanged += new SelectionChangedEventHandler(cmbRefType_SelectionChanged);
 
             this.ChangesCommitted += new PendingChangesCommittedHandler(ReferenceDetail_ChangesCommitted);
 
+        }
+
+        void _viewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+            if (e.PropertyName == "Pages") {
+                parsePages();
+            }
         }
 
         void cmbRefType_SelectionChanged(object sender, SelectionChangedEventArgs e) {
@@ -391,6 +399,25 @@ namespace BioLink.Client.Tools {
                 var readOnly = (bool)args.NewValue;
                 control.SetReadOnlyRecursive(readOnly);
             }
+        }
+
+        private void parsePages() {
+            var pages = _viewModel.Pages;
+            if (string.IsNullOrEmpty(pages)) {
+                _viewModel.StartPage = null;
+                _viewModel.EndPage = null;
+            } else {
+                if (pages.Contains('-')) {
+                    var left = pages.Substring(0, pages.IndexOf('-'));
+                    var right = pages.Substring(pages.IndexOf('-'));
+                    _viewModel.StartPage = left.StripNonInteger();
+                    _viewModel.EndPage = right.StripNonInteger();
+                } else {
+                    _viewModel.StartPage = null;
+                    _viewModel.EndPage = pages.StripNonInteger();
+                }
+            }
+
         }
 
     }

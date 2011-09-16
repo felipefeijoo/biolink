@@ -195,6 +195,22 @@ namespace BioLink.Client.Utilities {
             return value;
         }
 
+        public static int? StripNonInteger(this string value) {
+            var b = new StringBuilder();
+            foreach (char ch in value) {
+                if (Char.IsNumber(ch)) {
+                    b.Append(ch);
+                }
+            }
+
+            if (b.Length == 0) {
+                return null;
+            } else {
+                return Int32.Parse(b.ToString());
+            }
+
+        }
+
         /// <summary>
         /// Returns turn if the type to check is a subclass of generic type
         /// </summary>
