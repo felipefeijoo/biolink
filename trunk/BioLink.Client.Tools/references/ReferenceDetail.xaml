@@ -28,7 +28,7 @@
                     <Label Content="Title:" Height="28" HorizontalAlignment="Left" Margin="6,102,0,0" Name="label6" VerticalAlignment="Top" Width="80" />
                     <ext:BindableRichTextBox Height="45" Margin="92,102,6,0" Name="txtTitle" VerticalAlignment="Top" VerticalScrollBarVisibility="Visible" RTF="{Binding Title}"/>
                     <Label Content="Pages:" Height="28" HorizontalAlignment="Left" Margin="6,151,0,0" Name="label7" VerticalAlignment="Top" Width="80" />
-                    <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="92,153,0,0" Name="txtPages" VerticalAlignment="Top" Width="202" Text="{Binding Pages}"/>
+                    <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="92,153,0,0" Name="txtPages" VerticalAlignment="Top" Width="202" Text="{Binding Pages}" />
                     <Label Content="(" Height="28" HorizontalAlignment="Left" Margin="324,151,0,0" Name="label8" VerticalAlignment="Top" Width="18" />
                     <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="340,153,0,0" Name="txtStartPage" VerticalAlignment="Top" Width="41" Text="{Binding StartPage}" />
                     <Label Content="to" Height="28" HorizontalAlignment="Left" Margin="387,151,0,0" Name="label9" VerticalAlignment="Top" Width="28" />
