@@ -28,17 +28,20 @@ namespace BioLink.Client.Utilities {
         private ParserState _parserState;
         private long _cbBin = 0;
         private StringBuilder _headerGroupBuffer = new StringBuilder();
+        private bool _strict = true;
 
         private RTFHandler _handler;
 
-        public RTFReader(TextReader reader, RTFHandler handler) {
+        public RTFReader(TextReader reader, RTFHandler handler, bool strict = true) {
             _stream = new PushbackReader(reader);
             _handler = handler;
+            _strict = strict;
         }
 
-        public RTFReader(String rtf, RTFHandler handler) {
+        public RTFReader(String rtf, RTFHandler handler, bool strict = true) {
             _stream = new PushbackReader(new StringReader(rtf));
             _handler = handler;
+            _strict = strict;
         }
 
         public void parse() {
@@ -54,7 +57,9 @@ namespace BioLink.Client.Utilities {
             while ((intCh = _stream.Read()) >= 0) {
                 char ch = (char)intCh;
                 if (_cGroup < 0) {
-                    throw new Exception("Group stack underflow exception");
+                    if (_strict) {
+                        throw new Exception("Group stack underflow exception");
+                    }
                 }
 
                 if (_parserState.ris == ParserInternalState.Binary) {
@@ -78,7 +83,9 @@ namespace BioLink.Client.Utilities {
                                 parseChar(ch);
                             } else {
                                 if (_parserState.ris != ParserInternalState.Hex) {
-                                    throw new Exception("Invalid parser state - expected Hex");
+                                    if (_strict) {
+                                        throw new Exception("Invalid parser state - expected Hex");
+                                    }
                                 }
 
                                 b = (short)(b << 4);
@@ -87,14 +94,20 @@ namespace BioLink.Client.Utilities {
                                 } else {
                                     if (char.IsLower(ch)) {
                                         if (ch < 'a' || ch > 'f') {
-                                            throw new Exception("Invalid Hex char: " + ch);
+                                            if (_strict) {
+                                                throw new Exception("Invalid Hex char: " + ch);
+                                            }
+                                        } else {
+                                            b += (short)(ch - 'a');
                                         }
-                                        b += (short)(ch - 'a');
                                     } else {
                                         if (ch < 'A' || ch > 'F') {
-                                            throw new Exception("Invalid Hex char: " + ch);
+                                            if (_strict) {
+                                                throw new Exception("Invalid Hex char: " + ch);
+                                            }
+                                        } else {
+                                            b += (short)(ch - 'A');
                                         }
-                                        b += (short)(ch - 'A');
                                     }
                                 }
                                 cNibble--;
@@ -110,11 +123,15 @@ namespace BioLink.Client.Utilities {
                 }
             }
             if (_cGroup < 0) {
-                throw new Exception("Group Stack Underflow");
+                if (_strict) {
+                    throw new Exception("Group Stack Underflow");
+                }
             }
 
             if (_cGroup > 0) {
-                throw new Exception("Unmatched '{'");
+                if (_strict) {
+                    throw new Exception("Unmatched '{'");
+                }
             }
 
             if (_handler != null) {

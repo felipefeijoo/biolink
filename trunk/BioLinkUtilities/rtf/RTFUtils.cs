@@ -27,21 +27,21 @@ namespace BioLink.Client.Utilities {
     /// </summary>
     public static class RTFUtils {
 
-        public static String filter(String rtf, bool newLinesToSpace, params String[] allowedKeywords) {
+        public static String filter(String rtf, bool newLinesToSpace, bool strict, params String[] allowedKeywords) {
 
 		    if (string.IsNullOrWhiteSpace(rtf)) {
 			    return rtf;
 		    }
 
 		    FilteringRTFHandler handler = new FilteringRTFHandler(newLinesToSpace, allowedKeywords);
-		    RTFReader reader = new RTFReader(rtf, handler);
+		    RTFReader reader = new RTFReader(rtf, handler, strict);
 		    
 			reader.parse();
 		    return handler.getFilteredText();
 	    }
 
         public static String StripMarkup(String rtf, bool newlinesToSpace = true) {
-            return filter(rtf, newlinesToSpace);
+            return filter(rtf, newlinesToSpace, false);
         }
 
         public static string EscapeUnicode(string value) {
