@@ -60,6 +60,13 @@
                 </ToggleButton.Content>
             </ToggleButton>
 
+            <Button Name="btnPointFeatures" ToolTip="Run Feature for Points report" Click="btnPointFeatures_Click">
+                <Button.Content>
+                    <Image Source="images/PointFeatures.png" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True" />
+                </Button.Content>
+            </Button>
+
+
             <Button x:Name="btnFindRegion" Click="btnFindRegion_Click" ToolTip="Find a region by name" >
                 <Button.Content>
                     <Image Source="images/FindRegion.png" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True"/>

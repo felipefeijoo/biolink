@@ -206,6 +206,10 @@ namespace BioLink.Client.Maps {
             set { SetProperty("Symbol", ref _symbol, value); }
         }
 
+        public override string ToString() {
+            return DisplayLabel;
+        }
+
     }
 
     public class HatchStyleConverter : IValueConverter {

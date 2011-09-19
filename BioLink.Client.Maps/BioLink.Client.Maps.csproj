@@ -111,6 +111,10 @@
       <DependentUpon>MapControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="MapPlugin.cs" />
+    <Compile Include="PointFeaturesOptions.xaml.cs">
+      <DependentUpon>PointFeaturesOptions.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PointsFeaturesReport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -176,6 +180,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="PointFeaturesOptions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="SelectedObjectChooser.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -221,6 +229,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="images\FindRegion.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\PointFeatures.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
