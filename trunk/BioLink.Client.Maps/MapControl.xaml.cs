@@ -622,7 +622,7 @@ namespace BioLink.Client.Maps {
             return list;
         }
 
-        private bool PointInsidePolygon(Point p, SharpMap.Geometries.Polygon polygon) {
+        public static bool PointInsidePolygon(Point p, SharpMap.Geometries.Polygon polygon) {
 
             var points = polygon.ExteriorRing.Vertices;
             int counter = 0;
@@ -1096,6 +1096,47 @@ namespace BioLink.Client.Maps {
                 frm.Owner = this.FindParentWindow();
                 frm.ShowDialog();
             }
+        }
+
+        private void btnPointFeatures_Click(object sender, System.Windows.RoutedEventArgs e) {
+            RunPointFeaturesReport();
+        }
+
+        private void RunPointFeaturesReport() {
+
+            var pointLayers = new List<VectorLayer>();
+            var featureLayers = new List<VectorLayer>();
+
+            foreach (ILayer layer in mapBox.Map.Layers) {
+                if (layer is VectorLayer) {
+                    if (IsPointLayer(layer)) {
+                        pointLayers.Add(layer as VectorLayer);
+                    } else {
+                        featureLayers.Add(layer as VectorLayer);
+                    }
+                }
+            }
+
+            if (pointLayers.Count == 0) {
+                ErrorMessage.Show("No point layers found!");
+                return;
+            }
+
+            if (featureLayers.Count == 0) {
+                ErrorMessage.Show("No polygon (feature) layers found!");
+            }
+
+            PluginManager.Instance.RunReport(null, new PointsFeaturesReport(PluginManager.Instance.User, pointLayers, featureLayers));
+        }
+
+
+
+        public bool IsPointLayer(ILayer layer) {
+            if (layer != null && layer is VectorLayer) {
+                var vm = new VectorLayerViewModel(layer as VectorLayer);                
+                return vm.Symbol != null;
+            }
+            return false;
         }
 
     }
