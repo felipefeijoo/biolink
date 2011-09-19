@@ -395,12 +395,14 @@ namespace BioLink.Data {
                 multimediaType = "";
             }
 
+            var strippedCaption = RTFUtils.StripMarkup(caption);
+
             StoredProcUpdate("spMultimediaLinkInsert",
                 _P("vchrCategory", category.ToString()),
                 _P("intIntraCatID", intraCatID),
                 _P("vchrMultimediaType", multimediaType),
                 _P("intMultimediaID", multimediaID),
-                _P("vchrCaption", caption),
+                _P("vchrCaption", strippedCaption),
                 retval);
 
             return (int)retval.Value;
@@ -420,11 +422,14 @@ namespace BioLink.Data {
         }
 
         public void UpdateMultimediaLink(int multimediaLinkID, string category, string multimediaType, string caption) {
+
+            var strippedCaption = RTFUtils.StripMarkup(caption);
+
             StoredProcUpdate("spMultimediaLinkUpdate",
                 _P("intMultimediaLinkID", multimediaLinkID),
                 _P("vchrCategory", category),
                 _P("vchrMultimediaType", multimediaType),
-                _P("vchrCaption", caption)
+                _P("vchrCaption", strippedCaption)
             );
         }
 
