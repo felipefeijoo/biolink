@@ -60,9 +60,13 @@ namespace BioLink.Client.Maps {
 
                 var list = new ObservableCollection<DataColumnViewModel>();
 
-                foreach (DataColumn col in tbl.Columns) {
+                var ignore = new String[] { "BLREGHIER", "BLAUTH" };
+
+                foreach (DataColumn col in tbl.Columns) {                    
                     var vm = new DataColumnViewModel(col);
-                    vm.IsSelected = true;
+                    if (!ignore.Contains(col.ColumnName)) {
+                        vm.IsSelected = true;
+                    }
                     list.Add(vm);
                 }
 
@@ -145,6 +149,12 @@ namespace BioLink.Client.Maps {
         public bool IncludeRowForUnmatchedPoints {
             get {
                 return chkIncludeUnmatchedPoints.IsChecked == true;
+            }
+        }
+
+        public bool IsGroupedByTaxonName {
+            get {
+                return chkGroupByTaxon.IsChecked == true;
             }
         }
 
