@@ -31,6 +31,7 @@ namespace BioLink.Client.Maps {
                 this.SelectedColumns = frm.SelectedColumns;
                 this.SelectedFeatureLayer = frm.SelectedFeatureLayer;
                 this.SelectedPointLayers = frm.SelectedPointLayers;
+                this.IncludeUnmatchedPointRow = frm.IncludeRowForUnmatchedPoints;
                 return true;
             }
 
@@ -103,8 +104,10 @@ namespace BioLink.Client.Maps {
                 matrixRow[countIndex] = pair.Second;
             }
 
-            var unmatched = matrix.AddRow();
-            unmatched[countIndex] = notFoundCount;
+            if (IncludeUnmatchedPointRow && notFoundCount > 0) {
+                var unmatched = matrix.AddRow();
+                unmatched[countIndex] = notFoundCount;
+            }
 
             if (progress != null) {
                 progress.ProgressEnd(String.Format("{0} points processed.", pointCount));
@@ -171,10 +174,20 @@ namespace BioLink.Client.Maps {
 
         private VectorLayer SelectedFeatureLayer { get; set; }
 
-        public List<String> SelectedColumns { get; set; }
+        private List<String> SelectedColumns { get; set; }
+
+        private bool IncludeUnmatchedPointRow { get; set; }
 
         public override string Name {
-            get { return "Points Features"; }
+            get {
+                var sb = new StringBuilder("Features for points (");
+                foreach (VectorLayer layer in SelectedPointLayers) {
+                    sb.Append(layer.LayerName).Append(",");
+                }
+                sb.Remove(sb.Length - 1, 1).Append(")");
+
+                return sb.ToString(); 
+            }
         }
     }
 

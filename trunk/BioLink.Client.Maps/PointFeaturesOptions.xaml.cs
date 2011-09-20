@@ -142,6 +142,12 @@ namespace BioLink.Client.Maps {
             }
         }
 
+        public bool IncludeRowForUnmatchedPoints {
+            get {
+                return chkIncludeUnmatchedPoints.IsChecked == true;
+            }
+        }
+
         private void btnSelectAll_Click(object sender, RoutedEventArgs e) {
             SelectAllColumns(true);
         }
