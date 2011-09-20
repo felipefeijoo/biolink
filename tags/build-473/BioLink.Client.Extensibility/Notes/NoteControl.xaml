@@ -1,0 +1,48 @@
+﻿<UserControl x:Class="BioLink.Client.Extensibility.NoteControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ext="clr-namespace:BioLink.Client.Extensibility"
+             mc:Ignorable="d" 
+             d:DesignHeight="129" d:DesignWidth="759">
+    <UserControl.Resources>
+        <Style TargetType="{x:Type Button}" x:Key="formatTextStyle">
+            <Setter Property="FontFamily" Value="Arial"></Setter>
+            <Setter Property="Width" Value="30"></Setter>
+            <Setter Property="FontSize" Value ="14"></Setter>
+            <Setter Property="CommandTarget" Value="{Binding ElementName=mainRTB}"></Setter>
+        </Style>
+
+        <Style TargetType="{x:Type Button}" x:Key="formatImageStyle">
+            <Setter Property="Width" Value="30"></Setter>
+            <Setter Property="CommandTarget" Value="{Binding ElementName=mainRTB}"></Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>        
+        <Expander Background="{x:Static SystemColors.ControlBrush}" x:Name="expander">            
+            <Expander.Header>
+                <DockPanel Height="30" Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Expander}}, Path=ActualWidth}">
+                    <TextBlock DockPanel.Dock="Left" Text="{Binding NoteType}" FontWeight="Bold" TextAlignment="Left" VerticalAlignment="Center" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button x:Name="btnProperties" Height="23" Width="23" Margin="0,0,5,0" Focusable="False" Click="btnProperties_Click" ToolTip="Notes properties...">
+                            <Image Source="..\images\Properties.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" />
+                        </Button>
+
+                        <Button x:Name="btnDelete" Height="23" Width="23" Margin="0,0,30,0" Focusable="False" Click="btnDelete_Click" ToolTip="Delete Note">
+                            <Image Source="..\images\Delete.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" />
+                        </Button>
+                    </StackPanel>
+                </DockPanel>
+            </Expander.Header>
+            
+            <Grid>
+                <Grid.RowDefinitions>                    
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <ext:BindableRichTextBox Margin="24,0,3,3" RTF="{Binding NoteRTF}" AcceptsTab="True" x:Name="txtNote" x:FieldModifier="public"/>
+            </Grid>
+        </Expander>        
+    </Grid>
+</UserControl>
