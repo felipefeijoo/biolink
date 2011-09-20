@@ -25,6 +25,8 @@ namespace BioLink.Client.Maps {
 
         public override bool DisplayOptions(User user, System.Windows.Window parentWindow) {
             var frm = new PointFeaturesOptions(PointLayers, FeatureLayers);
+            frm.Owner = parentWindow;
+            frm.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
             if (frm.ShowDialog() == true) {
                 this.SelectedColumns = frm.SelectedColumns;
                 this.SelectedFeatureLayer = frm.SelectedFeatureLayer;
