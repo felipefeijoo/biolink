@@ -17,6 +17,8 @@ namespace BioLink.Client.Maps {
 
     public class PointsFeaturesReport : ReportBase {
 
+        private Dictionary<int, Taxon> _taxonCache = new Dictionary<int,Taxon>();
+
         public PointsFeaturesReport(User user, List<VectorLayer> pointLayers, List<VectorLayer> featureLayers) : base(user) {
             RegisterViewer(new TabularDataViewerSource());
             this.PointLayers = pointLayers;
@@ -32,6 +34,7 @@ namespace BioLink.Client.Maps {
                 this.SelectedFeatureLayer = frm.SelectedFeatureLayer;
                 this.SelectedPointLayers = frm.SelectedPointLayers;
                 this.IncludeUnmatchedPointRow = frm.IncludeRowForUnmatchedPoints;
+                this.IsGroupedByTaxon = frm.IsGroupedByTaxonName;
                 return true;
             }
 
@@ -42,11 +45,16 @@ namespace BioLink.Client.Maps {
 
             var matrix = new DataMatrix();
 
-            foreach (string colname in SelectedColumns) {
-                matrix.Columns.Add(new MatrixColumn { Name = colname });
+            if (IsGroupedByTaxon) {
+                matrix.Columns.Add(new MatrixColumn { Name = "TaxonName" });
+                matrix.Columns.Add(new MatrixColumn { Name = "BiotaID", IsHidden = true });
             }
 
             matrix.Columns.Add(new MatrixColumn { Name = "Count" });
+
+            foreach (string colname in SelectedColumns) {
+                matrix.Columns.Add(new MatrixColumn { Name = colname });
+            }
 
             // Open the feature layer data
             SelectedFeatureLayer.DataSource.Open();
@@ -70,13 +78,34 @@ namespace BioLink.Client.Maps {
 
             int processed = 0;
             int notFoundCount = 0;
+
+            var materialService = new MaterialService(User);
+            var taxaService = new TaxaService(User);
+
             foreach (VectorLayer pointLayer in SelectedPointLayers) {
-                var ds = pointLayer.DataSource;
-                ds.Open();
-                for (uint i = 0; i < ds.GetFeatureCount(); ++i) {
-                    var row = ds.GetFeature(i);
+                var pointProvider = pointLayer.DataSource;
+                pointProvider.Open();
+                for (uint i = 0; i < pointProvider.GetFeatureCount(); ++i) {
+                    var row = pointProvider.GetFeature(i);
+                    
+                    Taxon taxon = null;
+                    if (IsGroupedByTaxon) {
+                        int? materialId = (int?)row["MaterialID"];
+                        if (materialId.HasValue) {
+                            var m = materialService.GetMaterial(materialId.Value);
+                            if (m.BiotaID > 0) {
+                                if (_taxonCache.ContainsKey(m.BiotaID)) {
+                                    taxon = _taxonCache[m.BiotaID];
+                                } else {
+                                    taxon = taxaService.GetTaxon(m.BiotaID);
+                                    _taxonCache[m.BiotaID] = taxon;
+                                }
+                            }
+                        }
+                    }
+
                     SharpMap.Geometries.Point p = row.Geometry as Point;
-                    if (!ProcessPoint(SelectedFeatureLayer.DataSource, pointLayer, p, map)) {
+                    if (!ProcessPoint(SelectedFeatureLayer.DataSource, pointLayer, p, map, taxon)) {
                         notFoundCount++;
                     }
                     processed++;
@@ -92,6 +121,8 @@ namespace BioLink.Client.Maps {
             }
 
             int countIndex = matrix.IndexOf("Count");
+            int taxaIndex = matrix.IndexOf("TaxonName");
+            int biotaIDIndex = matrix.IndexOf("BiotaID");
 
             foreach (FeatureCountPair pair in map.Values) {
                 var matrixRow = matrix.AddRow();
@@ -102,6 +133,10 @@ namespace BioLink.Client.Maps {
                     }
                 }
                 matrixRow[countIndex] = pair.Second;
+                if (IsGroupedByTaxon) {
+                    matrixRow[taxaIndex] = pair.Taxon == null ? "Unidentified" : pair.Taxon.TaxaFullName;
+                    matrixRow[biotaIDIndex] = pair.Taxon == null ? -1 : pair.Taxon.TaxaID.Value;
+                }
             }
 
             if (IncludeUnmatchedPointRow && notFoundCount > 0) {
@@ -116,7 +151,7 @@ namespace BioLink.Client.Maps {
             return matrix;            
         }
 
-        private bool ProcessPoint(IProvider featureProvider, VectorLayer pointLayer, Point p, Dictionary<string, FeatureCountPair> map) {
+        private bool ProcessPoint(IProvider featureProvider, VectorLayer pointLayer, Point p, Dictionary<string, FeatureCountPair> map, Taxon taxon) {
             SharpMap.Data.FeatureDataSet ds = new SharpMap.Data.FeatureDataSet();
             featureProvider.ExecuteIntersectionQuery(p.GetBoundingBox(), ds);
             DataTable tbl = ds.Tables[0] as SharpMap.Data.FeatureDataTable;
@@ -126,24 +161,24 @@ namespace BioLink.Client.Maps {
             for (int i = 0; i < tbl.Rows.Count; ++i) {
                 var data = tbl.Rows[i] as FeatureDataRow;
 
-                string featurekey = MakeFeatureKey(data);
+                string featurekey = MakeFeatureKey(data, taxon);
                 if (data.Geometry is MultiPolygon) {
                     MultiPolygon mp = data.Geometry as MultiPolygon;
                     foreach (SharpMap.Geometries.Polygon polygon in mp) {
                         if (MapControl.PointInsidePolygon(p, polygon)) {
-                            IncrementFeaturePointCount(map, featurekey, data);
+                            IncrementFeaturePointCount(map, featurekey, data, taxon);
                             found = true;
                         }
                     }
                 } else if (data.Geometry is Polygon) {
                     var polygon = data.Geometry as Polygon;
                     if (MapControl.PointInsidePolygon(p, polygon)) {
-                        IncrementFeaturePointCount(map, featurekey, data);
+                        IncrementFeaturePointCount(map, featurekey, data, taxon);
                         found = true;
                     }
                 } else {
                     // ??? Dunno...
-                    IncrementFeaturePointCount(map, featurekey, data);
+                    IncrementFeaturePointCount(map, featurekey, data, taxon);
                     found = true;
                 }
             }
@@ -151,17 +186,24 @@ namespace BioLink.Client.Maps {
             return found;
         }
 
-        private void IncrementFeaturePointCount(Dictionary<string, FeatureCountPair> map, string featurekey, FeatureDataRow data) {
+        private void IncrementFeaturePointCount(Dictionary<string, FeatureCountPair> map, string featurekey, FeatureDataRow data, Taxon taxon) {
             if (!map.ContainsKey(featurekey)) {
                 map[featurekey] = new FeatureCountPair { First = data, Second = 0 };
+                map[featurekey].Taxon = taxon;
             }
             map[featurekey].Second++;
         }
 
-        private string MakeFeatureKey(FeatureDataRow data) {
+        private string MakeFeatureKey(FeatureDataRow data, Taxon taxon) {
             var b = new StringBuilder("rowkey");
             foreach (DataColumn col in data.Table.Columns) {
                 b.Append("_").Append(data[col]);
+            }
+
+            if (taxon != null) {
+                b.Append("_").Append(taxon.Epithet);
+            } else {
+                b.Append("_Unidentified");
             }
             return b.ToString();            
         }
@@ -178,6 +220,8 @@ namespace BioLink.Client.Maps {
 
         private bool IncludeUnmatchedPointRow { get; set; }
 
+        private bool IsGroupedByTaxon { get; set; }
+
         public override string Name {
             get {
                 var sb = new StringBuilder("Features for points (");
@@ -192,5 +236,7 @@ namespace BioLink.Client.Maps {
     }
 
     public class FeatureCountPair : Pair<FeatureDataRow, int> {
+
+        public Taxon Taxon { get; set; }
     }
 }
