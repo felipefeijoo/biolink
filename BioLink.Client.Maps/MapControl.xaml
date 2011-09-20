@@ -60,7 +60,7 @@
                 </ToggleButton.Content>
             </ToggleButton>
 
-            <Button Name="btnPointFeatures" ToolTip="Run Feature for Points report" Click="btnPointFeatures_Click">
+            <Button Name="btnPointFeatures" ToolTip="Run 'Features for Points' report" Click="btnPointFeatures_Click">
                 <Button.Content>
                     <Image Source="images/PointFeatures.png" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True" />
                 </Button.Content>

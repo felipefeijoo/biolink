@@ -15,7 +15,8 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="38" />
                 <RowDefinition Height="28" />
-                <RowDefinition Height="2*" />                
+                <RowDefinition Height="2*" />
+                <RowDefinition Height="28" />
             </Grid.RowDefinitions>
             
             <Label Content="Select which point layers to use:" />
@@ -48,6 +49,7 @@
             </ListBox>
             <Button Content="Select _all" Grid.Row="4" Height="23" HorizontalAlignment="Right" Margin="0,7,6,0" Name="btnSelectAll" VerticalAlignment="Top" Width="75" Click="btnSelectAll_Click" />
             <Button Content="_Deselect all" Grid.Row="4" Height="23" HorizontalAlignment="Right" Margin="0,37,6,0" Name="btnDeselectAll" VerticalAlignment="Top" Width="75" Click="btnDeselectAll_Click" />
+            <CheckBox Content="Include a row for points not within a region (fields will be blank)" Grid.Row="5" Height="16" Margin="6,6,6,0" Name="chkIncludeUnmatchedPoints" VerticalAlignment="Top" IsChecked="True" />
         </Grid>
 
         
