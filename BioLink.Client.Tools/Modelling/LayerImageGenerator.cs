@@ -32,11 +32,16 @@ namespace BioLink.Client.Tools {
 
             var range = layer.GetRange();
 
-            if (cutoff == 0) {
+            if (cutoff == 0 && range != null) {
                 cutoff = range.Min;
             }
 
-            double dx = Math.Abs(range.Max - cutoff) / (intervals - 1);
+            double max = 0;
+            if (range != null) {
+                max = range.Max;
+            }
+
+            double dx = Math.Abs(max - cutoff) / (intervals - 1);
             byte[] array = new byte[layer.Width * layer.Height];
             byte index = 0;
             for (int y = 0; y < layer.Height; y++) {
