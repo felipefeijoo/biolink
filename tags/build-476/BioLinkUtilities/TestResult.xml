@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!--This file represents the results of running a test suite-->
+<test-results name="C:\Users\baird\dev\BioLink\BioLinkUtilities\BioLinkUtilities.csproj" total="11" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2010-07-06" time="17:24:43">
+  <environment nunit-version="2.5.5.10112" clr-version="2.0.50727.4927" os-version="Microsoft Windows NT 6.1.7600.0" platform="Win32NT" cwd="C:\Users\baird\dev\BioLink\BioLinkUtilities" machine-name="BIOLINKDEV-W7" user="baird" user-domain="BiolinkDev-W7" />
+  <culture-info current-culture="en-AU" current-uiculture="en-US" />
+  <test-suite type="Project" name="C:\Users\baird\dev\BioLink\BioLinkUtilities\BioLinkUtilities.csproj" executed="True" result="Success" success="True" time="1.907" asserts="0">
+    <results>
+      <test-suite type="Assembly" name="C:\Users\baird\dev\BioLink\BioLinkUtilities\bin\Debug\BioLinkUtilities.dll" executed="True" result="Success" success="True" time="1.904" asserts="0">
+        <results>
+          <test-suite type="Namespace" name="BioLink" executed="True" result="Success" success="True" time="1.901" asserts="0">
+            <results>
+              <test-suite type="Namespace" name="Utilities" executed="True" result="Success" success="True" time="1.895" asserts="0">
+                <results>
+                  <test-suite type="TestFixture" name="PreferencesTests" executed="True" result="Success" success="True" time="1.894" asserts="0">
+                    <results>
+                      <test-case name="BioLink.Utilities.PreferencesTests.Setup" executed="True" result="Success" success="True" time="0.379" asserts="0" />
+                      <test-case name="BioLink.Utilities.PreferencesTests.testBadType" executed="True" result="Success" success="True" time="0.053" asserts="0" />
+                      <test-case name="BioLink.Utilities.PreferencesTests.testBool" executed="True" result="Success" success="True" time="0.016" asserts="1" />
+                      <test-case name="BioLink.Utilities.PreferencesTests.testDate" executed="True" result="Success" success="True" time="0.042" asserts="1" />
+                      <test-case name="BioLink.Utilities.PreferencesTests.testInt1" executed="True" result="Success" success="True" time="0.023" asserts="1" />
+                      <test-case name="BioLink.Utilities.PreferencesTests.testInt2" executed="True" result="Success" success="True" time="0.019" asserts="1" />
+                      <test-case name="BioLink.Utilities.PreferencesTests.testInt64" executed="True" result="Success" success="True" time="0.021" asserts="1" />
+                      <test-case name="BioLink.Utilities.PreferencesTests.testJSON" executed="True" result="Success" success="True" time="0.278" asserts="0" />
+                      <test-case name="BioLink.Utilities.PreferencesTests.testLong" executed="True" result="Success" success="True" time="0.010" asserts="1" />
+                      <test-case name="BioLink.Utilities.PreferencesTests.testManyInserts" executed="True" result="Success" success="True" time="0.926" asserts="0" />
+                      <test-case name="BioLink.Utilities.PreferencesTests.TestSet" executed="True" result="Success" success="True" time="0.042" asserts="1" />
+                    </results>
+                  </test-suite>
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>
