@@ -84,10 +84,10 @@ namespace BioLink.Client.Taxa {
 
         private void StartDrag(MouseEventArgs mouseEventArgs, TreeView treeView, TreeViewItem item) {
 
-            // Can only drag actual favorites (or favorite groups)...
+            // dragging actual favorites (or favorite groups)...
             var selected = treeView.SelectedItem as TaxonFavoriteViewModel;
             if (selected != null) {
-                
+
                 string desc = "";
                 var data = new DataObject("TaxonFavorite", selected);
 
@@ -95,12 +95,12 @@ namespace BioLink.Client.Taxa {
                     desc = String.Format("Favorite Folder: Name={0} [FavoriteID={1}]", selected.TaxaFullName, selected.FavoriteID);
                 } else {
                     desc = String.Format("Taxon Favorite: Name={0} [TaxonID={1}, FavoriteID={2}]", selected.TaxaFullName, selected.TaxaID, selected.FavoriteID);
-                    data.SetData(PinnableObject.DRAG_FORMAT_NAME, TaxonExplorer.Owner.CreatePinnableTaxon(selected.TaxaID));                        
+                    data.SetData(PinnableObject.DRAG_FORMAT_NAME, TaxonExplorer.Owner.CreatePinnableTaxon(selected.TaxaID));
                 }
 
-                
+
                 data.SetData(DataFormats.Text, desc);
-                
+
 
                 _dropScope = treeView;
                 _dropScope.AllowDrop = true;
@@ -110,9 +110,9 @@ namespace BioLink.Client.Taxa {
 
                 var handler = new DragEventHandler((s, e) => {
                     TreeViewItem destItem = GetHoveredTreeViewItem(e);
-                    e.Effects = DragDropEffects.None;                    
+                    e.Effects = DragDropEffects.None;
                     if (destItem != null) {
-                        destItem.IsSelected = true;                                                
+                        destItem.IsSelected = true;
                         var destModel = destItem.Header as TaxonFavoriteViewModel;
                         if (destModel != null) {
                             if (destModel.IsGroup) {
@@ -133,7 +133,7 @@ namespace BioLink.Client.Taxa {
                 var dropHandler = new DragEventHandler(treeView_Drop);
                 treeView.Drop += dropHandler;
 
-                
+
                 try {
                     _IsDragging = true;
                     DragDrop.DoDragDrop(item, data, DragDropEffects.Copy | DragDropEffects.Move | DragDropEffects.Link);
@@ -142,7 +142,26 @@ namespace BioLink.Client.Taxa {
                     treeView.PreviewDragEnter -= handler;
                     treeView.PreviewDragOver -= handler;
                     treeView.Drop -= dropHandler;
-                }                
+                }
+            } else {
+                var taxon = treeView.SelectedItem as TaxonViewModel;
+
+                if (taxon != null) {
+                    DataObject data = new DataObject("Taxon", taxon);
+                    data.SetData(PinnableObject.DRAG_FORMAT_NAME, TaxonExplorer.Owner.CreatePinnableTaxon(taxon.TaxaID.Value));
+                    data.SetData(DataFormats.Text, taxon.TaxaFullName);
+                    data.SetData(DataFormats.UnicodeText, taxon.TaxaFullName);
+                    data.SetData(DataFormats.StringFormat, taxon.TaxaFullName);
+
+                    try {
+                        _IsDragging = true;
+                        DragDrop.DoDragDrop(item, data, DragDropEffects.Copy | DragDropEffects.Move | DragDropEffects.Link);
+                    } finally {
+                        _IsDragging = false;
+                    }
+                }
+
+
             }
 
             InvalidateVisual();
