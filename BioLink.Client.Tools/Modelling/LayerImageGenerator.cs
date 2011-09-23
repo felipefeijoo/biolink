@@ -32,7 +32,7 @@ namespace BioLink.Client.Tools {
 
             var range = layer.GetRange();
 
-            if (cutoff == 0 && range != null) {
+            if (cutoff == 0 && range != null && range.Range > 0) {
                 cutoff = range.Min;
             }
 
