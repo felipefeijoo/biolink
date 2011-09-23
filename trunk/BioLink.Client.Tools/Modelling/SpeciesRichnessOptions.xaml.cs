@@ -36,11 +36,14 @@ namespace BioLink.Client.Tools {
         public SpeciesRichnessOptions() {
             InitializeComponent();
             var models = PluginManager.Instance.GetExtensionsOfType<DistributionModel>();
+
+            cmbModel.SelectionChanged += new SelectionChangedEventHandler(cmbModel_SelectionChanged);
+
             cmbModel.ItemsSource = models;
             cmbModel.SelectedIndex = 0;
             txtFilename.Text = TempFileManager.NewTempFilename("grd", "richness");
 
-            cmbModel.SelectionChanged += new SelectionChangedEventHandler(cmbModel_SelectionChanged);
+            
             this.Loaded += new RoutedEventHandler(SpeciesRichnessOptions_Loaded);
             this.Unloaded += new RoutedEventHandler(SpeciesRichnessOptions_Unloaded);
 

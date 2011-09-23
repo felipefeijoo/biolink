@@ -37,15 +37,16 @@ namespace BioLink.Client.Tools {
         public SingleModelOptionsControl() {
             InitializeComponent();
 
-            var models = PluginManager.Instance.GetExtensionsOfType<DistributionModel>();
-            cmbModelType.ItemsSource = models;
-            cmbModelType.SelectedIndex = 0;
             txtFilename.Text = TempFileManager.NewTempFilename("grd", "model");
 
             cmbModelType.SelectionChanged += new SelectionChangedEventHandler(cmbModelType_SelectionChanged);
 
             Loaded += new RoutedEventHandler(SingleModelOptionsControl_Loaded);
             Unloaded += new RoutedEventHandler(SingleModelOptionsControl_Unloaded);
+
+            var models = PluginManager.Instance.GetExtensionsOfType<DistributionModel>();
+            cmbModelType.ItemsSource = models;
+            cmbModelType.SelectedIndex = 0;
         }
 
         void SingleModelOptionsControl_Unloaded(object sender, RoutedEventArgs e) {

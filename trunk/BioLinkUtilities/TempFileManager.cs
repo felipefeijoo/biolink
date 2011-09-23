@@ -30,6 +30,11 @@ namespace BioLink.Client.Utilities {
         static TempFileManager() {
         }
 
+        public static string GetTemporaryFolder() {
+            var dirName = System.IO.Path.GetTempPath() + "BiolinkTempFiles/";
+            return dirName;
+        }
+
         public static string NewTempFilename(string extension, string prefix = "") {
             if (!extension.StartsWith(".")) {
                 extension = "." + extension;
@@ -37,7 +42,7 @@ namespace BioLink.Client.Utilities {
 
             Func<string> generateUniqueName = () => {
 
-                var dirName = System.IO.Path.GetTempPath() + "BiolinkTempFiles/";
+                var dirName = GetTemporaryFolder();
                 if (!Directory.Exists(dirName)) {
                     Directory.CreateDirectory(dirName);
                 }
@@ -147,7 +152,7 @@ namespace BioLink.Client.Utilities {
                 ext = "." + ext;
             }
 
-            var dirName = System.IO.Path.GetTempPath() + "BiolinkTempFiles/";
+            var dirName = TempFileManager.GetTemporaryFolder();
             if (!Directory.Exists(dirName)) {
                 Directory.CreateDirectory(dirName);
             }

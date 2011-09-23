@@ -58,7 +58,30 @@ namespace BioLink.Client.Tools {
             }
 
             gridSingle.Children.Add(_singleModelOptions = new SingleModelOptionsControl());
-            grdRichness.Children.Add(_richnessOptions = new SpeciesRichnessOptions());            
+            grdRichness.Children.Add(_richnessOptions = new SpeciesRichnessOptions());
+            lvwRichness.MouseRightButtonUp += new MouseButtonEventHandler(lvwRichness_MouseRightButtonUp);
+        }
+
+        void lvwRichness_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            lvwRichness.ContextMenu = null;
+            var vm = lvwRichness.SelectedItem as SpeciesRichnessPointSetViewModel;
+            if (vm != null) {
+                var builder = new ContextMenuBuilder(null);
+                if (!string.IsNullOrEmpty(vm.Filename)) {
+                    builder.New("Show layer as image").Handler(() => ShowGridLayerImage(vm.Filename)).End();                    
+                }
+
+                if (builder.HasItems) {
+                    lvwRichness.ContextMenu = builder.ContextMenu;
+                }
+
+            }
+        }
+
+        private void ShowGridLayerImage(string filename) {
+            var layer = new GridLayer(filename);
+            var image = filename = LayerImageGenerator.GenerateTemporaryImageFile(layer, "layer_", _richnessOptions.LowColor, _richnessOptions.HighColor, _richnessOptions.NoValueColor, 0, 255);
+            SystemUtils.ShellExecute(image);
         }
 
         protected User User { get; private set; }
@@ -326,17 +349,17 @@ namespace BioLink.Client.Tools {
             btnStartRichness.IsEnabled = false;
             btnStopRichness.IsEnabled = true;
 
-            var pointsModel = pointSets.PointSets.Select((m) => {
+            var pointsModel = new ObservableCollection<SpeciesRichnessPointSetViewModel>(pointSets.PointSets.Select((m) => {
                 var vm = new SpeciesRichnessPointSetViewModel(m);
                 vm.Status = "Pending";
                 return vm;
-            });
+            }));
 
-            lvwRichness.ItemsSource = new ObservableCollection<SpeciesRichnessPointSetViewModel>(pointsModel);
+            lvwRichness.ItemsSource = pointsModel;
 
             var cutOff = _richnessOptions.CutOff;
 
-            var processor = new SpeciesRichnessProcessor(_richnessOptions.SelectedModel, pointSets.PointSets, _layerFilenames.Select(m => m.Name), cutOff);
+            var processor = new SpeciesRichnessProcessor(_richnessOptions.SelectedModel, pointsModel, _layerFilenames.Select(m => m.Name), cutOff, _richnessOptions.chkRetainFiles.IsChecked == true);
             processor.ProgressObserver = new SpeciesRichnessProgressAdapter(this);
             processor.PointSetModelStarted += new Action<MapPointSet>(processor_PointSetModelStarted);
             processor.PointSetModelCompleted += new Action<MapPointSet>(processor_PointSetModelCompleted);
@@ -345,12 +368,12 @@ namespace BioLink.Client.Tools {
             JobExecutor.QueueJob(() => {
                 try {                    
                     var result = processor.RunSpeciesRichness();
-                    if (result != null) {                        
+                    if (result != null) {
                         this.InvokeIfRequired(() => {
-                            var range = result.GetRange();
+                            this.progressRichness.Value = 0;
+                            this.lblRichnessStatus.Content = "Showing map";
                             var imageFilename = SystemUtils.ChangeExtension(_richnessOptions.txtFilename.Text, "bmp");
-                            int r = (range == null ? 0 : (int) range.Range);
-                            ShowGridLayerInMap(result, r, 0, _richnessOptions, imageFilename);
+                            ShowGridLayerInMap(result, pointsModel.Count, 0, _richnessOptions, imageFilename);
                             result.SaveToGRDFile(_richnessOptions.txtFilename.Text);
                         });
                     }
@@ -358,6 +381,7 @@ namespace BioLink.Client.Tools {
                     this.InvokeIfRequired(() => {
                         btnStartRichness.IsEnabled = true;
                         btnStopRichness.IsEnabled = false;
+                        this.lblRichnessStatus.Content = "";
                     });
                 }
             });
@@ -445,11 +469,12 @@ namespace BioLink.Client.Tools {
 
     class SpeciesRichnessProcessor : IProgressObserver {
 
-        public SpeciesRichnessProcessor(DistributionModel model, IEnumerable<MapPointSet> pointSets, IEnumerable<string> layerFiles, double cutOff) {
+        public SpeciesRichnessProcessor(DistributionModel model, IEnumerable<SpeciesRichnessPointSetViewModel> pointSets, IEnumerable<string> layerFiles, double cutOff, bool retainLayers) {
             this.Model = model;
             this.MapPointSets = pointSets;
             this.LayerFiles = layerFiles;
             this.CutOff = cutOff;
+            this.RetainLayers = retainLayers;
         }
 
         protected MapPointSet _currentPointSet;
@@ -478,9 +503,9 @@ namespace BioLink.Client.Tools {
             var first = layers[0];
 
             int setIndex = 0;
-            foreach (MapPointSet pointset in MapPointSets) {
+            foreach (SpeciesRichnessPointSetViewModel pointset in MapPointSets) {
 
-                _currentPointSet = pointset;
+                _currentPointSet = pointset.Model;
 
                 var percent = ((double)setIndex / (double) MapPointSets.Count()) * 100.0;
 
@@ -488,12 +513,18 @@ namespace BioLink.Client.Tools {
                     ProgressObserver.ProgressMessage("Running model on pointset " + pointset.Name, percent);
                 }
 
-                FireStartPointSet(pointset);
+                FireStartPointSet(pointset.Model);
 
                 var list = new List<MapPointSet>();
-                list.Add(pointset);
+                list.Add(pointset.Model);
                 var modelLayer = Model.RunModel(layers, list);
                 if (modelLayer != null) {
+
+                    if (RetainLayers) {
+                        pointset.Filename = string.Format("{0}{1}_{2}.grd", TempFileManager.GetTemporaryFolder(), SystemUtils.StripIllegalFilenameChars(pointset.Name), setIndex);
+                        modelLayer.SaveToGRDFile(pointset.Filename);                        
+                    }
+
                     resultLayers.Add(modelLayer);
                 }
 
@@ -501,12 +532,12 @@ namespace BioLink.Client.Tools {
                     return null;
                 }
 
-                FireEndPointSet(pointset);
+                FireEndPointSet(pointset.Model);
 
                 setIndex++;
             }
 
-            var target = new GridLayer(first.Width, first.Height) { DeltaLatitude = first.DeltaLatitude, DeltaLongitude = first.DeltaLongitude, Flags = first.Flags, Latitude0 = first.Latitude0, Longitude0 = first.Longitude0, NoValueMarker = first.NoValueMarker };            
+            var target = new GridLayer(first.Width, first.Height) { DeltaLatitude = first.DeltaLatitude, DeltaLongitude = first.DeltaLongitude, Flags = first.Flags, Latitude0 = first.Latitude0, Longitude0 = first.Longitude0, NoValueMarker = 0 };            
             target.SetAllCells(0);
             foreach (GridLayer result in resultLayers) {
                 for (int y = 0; y < target.Height; ++y) {
@@ -547,11 +578,13 @@ namespace BioLink.Client.Tools {
 
         public DistributionModel Model { get; private set; }
 
-        public IEnumerable<MapPointSet> MapPointSets { get; private set; }
+        public IEnumerable<SpeciesRichnessPointSetViewModel> MapPointSets { get; private set; }
 
         public IEnumerable<string> LayerFiles { get; private set; }
 
         public double CutOff { get; private set; }
+
+        public bool RetainLayers { get; private set; }
 
         public bool IsCancelled { get; set; }
 
