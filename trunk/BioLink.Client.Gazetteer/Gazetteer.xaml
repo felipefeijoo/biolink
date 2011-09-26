@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:src="clr-namespace:BioLink.Client.Gazetteer"
              mc:Ignorable="d" 
-             d:DesignHeight="460" d:DesignWidth="548" xmlns:my="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility">
+             d:DesignHeight="460" d:DesignWidth="548" xmlns:my="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+             MinHeight="400">
     
     <UserControl.Resources>
         <ResourceDictionary>

@@ -26,13 +26,16 @@ namespace BioLink.Client.Gazetteer {
 
     public class GazetterPlugin : BiolinkPluginBase {
 
-        private ExplorerWorkspaceContribution<Gazetteer> _gazetter;
+        private Gazetteer _gazetteer;
+
+        private ExplorerWorkspaceContribution<Gazetteer> _gazetteerContrib;
 
         public const string GAZETTEER_PLUGIN_NAME = "Gazetteer";
 
 
         private GazetteerConverter _gazConverter;
         private FindNearestNamePlace _nearestNamePlace;
+        private ControlHostWindow _gazWindow;
 
         public GazetterPlugin() {
         }
@@ -43,7 +46,7 @@ namespace BioLink.Client.Gazetteer {
 
         public override List<IWorkspaceContribution> GetContributions() {
             List<IWorkspaceContribution> contrib = new List<IWorkspaceContribution>();
-            contrib.Add(new MenuWorkspaceContribution(this, "ShowGazetteer", (obj, e) => { PluginManager.EnsureVisible(this, "Gazetteer"); },
+            contrib.Add(new MenuWorkspaceContribution(this, "ShowGazetteer", (obj, e) => { ShowEGaz(); },
                 String.Format("{{'Name':'View', 'Header':'{0}','InsertAfter':'File'}}", _R("Gazetteer.Menu.View")),
                 String.Format("{{'Name':'ShowGazetteer', 'Header':'{0}'}}", _R("Gazetteer.Menu.ShowExplorer"))
             ));
@@ -64,11 +67,47 @@ namespace BioLink.Client.Gazetteer {
             ));
 
 
-            _gazetter = new ExplorerWorkspaceContribution<Gazetteer>(this, "Gazetteer", new Gazetteer(this), _R("Gazetteer.Title"), (explorer) => {});
-
-            contrib.Add(_gazetter);
+            var floating = Config.GetUser(PluginManager.Instance.User, "Gazetteer.ShowEgazFloating", false);
+            _gazetteer = new Gazetteer(this);
+            if (!floating) {                
+                _gazetteerContrib = new ExplorerWorkspaceContribution<Gazetteer>(this, "Gazetteer", _gazetteer, _R("Gazetteer.Title"), (explorer) => { });
+                contrib.Add(_gazetteerContrib);
+            }
 
             return contrib;            
+        }
+
+        private Gazetteer ShowEGaz() {
+
+            var floating = Config.GetUser(PluginManager.Instance.User, "Gazetteer.ShowEgazFloating", false);
+
+            if (floating) {
+                if (_gazetteerContrib != null) {
+                    ErrorMessage.Show("You will need to restart BioLink so that your preferences can be applied");
+                    return null;
+                }
+
+                if (_gazWindow == null) {                    
+                    _gazWindow = PluginManager.AddNonDockableContent(this, _gazetteer, _R("Gazetteer.Title"), SizeToContent.Manual, true);
+                    _gazWindow.Owner = PluginManager.Instance.ParentWindow;
+                    _gazWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                    _gazWindow.Closed += new EventHandler((s, e) => {                        
+                        _gazWindow = null;
+                    });
+                }
+
+                _gazWindow.Show();
+                _gazWindow.Focus();
+                return _gazWindow.Control as Gazetteer;
+            } else {
+                if (_gazetteerContrib != null) {
+                    PluginManager.EnsureVisible(this, "Gazetteer");
+                    return _gazetteerContrib.ContentControl as Gazetteer;
+                } else {
+                    ErrorMessage.Show("You will need to restart BioLink so that your preferences can be applied");
+                    return null;
+                }
+            }
         }
 
         private void ShowCoordCalculator() {
@@ -81,7 +120,9 @@ namespace BioLink.Client.Gazetteer {
                 _gazConverter.Owner = PluginManager.Instance.ParentWindow;
                 _gazConverter.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                 _gazConverter.Closed += new EventHandler((source,e) => {
+                    _gazConverter.Content = null;
                     _gazConverter = null;
+                    
                 });
             }
 
@@ -105,8 +146,16 @@ namespace BioLink.Client.Gazetteer {
         }
 
         public override void Dispose() {
-            if (_gazetter != null) {
-                (_gazetter.Content as Gazetteer).Dispose();
+            if (_gazetteerContrib != null) {
+                (_gazetteerContrib.Content as Gazetteer).Dispose();
+            }
+
+            if (_gazetteer != null) {
+                _gazetteer.Dispose();
+            }
+
+            if (_gazWindow != null) {
+                _gazWindow.Dispose();
             }
         }
 
@@ -129,8 +178,9 @@ namespace BioLink.Client.Gazetteer {
 
         public GazetteerService CurrentGazetteer {
             get {
-                if (_gazetter != null) {
-                    return (_gazetter.Content as Gazetteer).Service;
+
+                if (_gazetteer!= null) {
+                    return (_gazetteer).Service;
                 }
 
                 return null;
@@ -139,11 +189,8 @@ namespace BioLink.Client.Gazetteer {
 
         public PlaceName CurrentSelectedPlace {
             get {
-                if (_gazetter != null) {
-                    var gaz = _gazetter.Content as Gazetteer;
-                    if (gaz != null) {
-                        return gaz.SelectedPlace;
-                    }
+                if (_gazetteer != null) {
+                    return _gazetteer.SelectedPlace;
                 }
 
                 return null;
@@ -151,8 +198,8 @@ namespace BioLink.Client.Gazetteer {
         }
 
         public override void Select<T>(LookupOptions options, Action<SelectionResult> success) {
-            PluginManager.EnsureVisible(this, "Gazetteer");
-            var g = _gazetter.Content as Gazetteer;
+            Gazetteer g = ShowEGaz();
+
             if (g != null) {
                 g.BindSelectCallback(success);
             }

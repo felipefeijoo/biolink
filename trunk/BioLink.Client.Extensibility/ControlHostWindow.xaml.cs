@@ -76,10 +76,15 @@ namespace BioLink.Client.Extensibility {
         }
 
         void ControlHostWindow_Closed(object sender, EventArgs e) {
-            if (Control != null && Control is IDisposable) {
-                (Control as IDisposable).Dispose();
+            if (Control != null) {
+                if (Control is IDisposable) {
+                    (Control as IDisposable).Dispose();
+                }
+
+                ControlHost.Children.Remove(Control);
                 Control = null;
             }
+           
         }
 
         void btnSelect_Click(object sender, RoutedEventArgs e) {
