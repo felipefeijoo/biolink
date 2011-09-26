@@ -73,6 +73,9 @@ namespace BioLink.Client.Tools {
             chkCheckDuplicateAccessionNumbers.IsChecked = Config.GetGlobal("Material.CheckUniqueAccessionNumbers", true);
 
             chkUsePostHestControl.IsChecked = Config.GetUser(PluginManager.Instance.User, "Associates.UsePestHostControl", false);
+
+            chkFloatingEgaz.IsChecked = Config.GetUser(PluginManager.Instance.User, "Gazetteer.ShowEgazFloating", false);
+
         }
 
         public User User {
@@ -98,6 +101,8 @@ namespace BioLink.Client.Tools {
             Config.SetGlobal("Material.CheckUniqueAccessionNumbers", chkCheckDuplicateAccessionNumbers.IsChecked.GetValueOrDefault(true));
 
             Config.SetUser(PluginManager.Instance.User, "Associates.UsePestHostControl", chkUsePostHestControl.IsChecked.ValueOrFalse());
+
+            Config.SetUser(PluginManager.Instance.User, "Gazetteer.ShowEgazFloating", chkFloatingEgaz.IsChecked.ValueOrFalse());
         }
     }
 }
