@@ -15,11 +15,11 @@
         <Label Content="Colour:" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" Width="59" />
         <ext:CustomColorPicker Margin="71,11,0,0"  VerticalAlignment="Top" HorizontalAlignment="Left" Width="50" SelectedColor="{Binding FillColor, Converter={StaticResource ColorConverter}}" />
         <Label Content="Style:" Height="28" HorizontalAlignment="Left" Margin="6,40,0,0" Name="label2" VerticalAlignment="Top" Width="59" />
-        <ComboBox Height="23" HorizontalAlignment="Left" Margin="71,40,0,0" Name="cmbStyle" VerticalAlignment="Top" Width="50" SelectedItem="{Binding HatchStyle, Converter={StaticResource HatchStyleConverter}}">
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="71,40,0,0" Name="cmbStyle" VerticalAlignment="Top" Width="50" SelectedItem="{Binding FillBrush, Converter={StaticResource HatchStyleConverter}}" UseLayoutRounding="True" SnapsToDevicePixels="True">
             <ComboBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type src:StyleViewModel}">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
-                        <Image Source="{Binding Icon}" Height="15" Width="15" UseLayoutRounding="True" SnapsToDevicePixels="True" Margin="0,1,0,0" />
+                        <Image Source="{Binding Icon}" Height="15" Width="15" UseLayoutRounding="True" SnapsToDevicePixels="True" Margin="0,1,0,0" Stretch="None" />
                     </StackPanel>
                 </DataTemplate>
             </ComboBox.ItemTemplate>

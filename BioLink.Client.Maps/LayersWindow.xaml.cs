@@ -65,6 +65,10 @@ namespace BioLink.Client.Maps {
 
             lstLayers.ItemsSource = _model;
 
+            if (_model.Count > 0) {
+                lstLayers.SelectedIndex = 0;
+            }
+
             this.MapBackColor = mapControl.mapBox.BackColor;
 
             backgroundColorPicker.DataContext = this;
@@ -112,7 +116,7 @@ namespace BioLink.Client.Maps {
                         if (vl.Style.Symbol != null) {
                             vl.Style.Symbol = (m as VectorLayerViewModel).Symbol;
                         } else {
-                            vl.Style.Fill = (m as VectorLayerViewModel).FillBrush();
+                            vl.Style.Fill = (m as VectorLayerViewModel).FillBrush;
                             vl.Style.EnableOutline = (m as VectorLayerViewModel).DrawOutline;
                         }
                     }
