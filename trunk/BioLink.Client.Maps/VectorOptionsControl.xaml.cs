@@ -40,10 +40,11 @@ namespace BioLink.Client.Maps {
 
         static VectorOptionsControl() {
             _styleModel = new List<StyleViewModel>();
-            _styleModel.Add(new StyleViewModel(null));
+            _styleModel.Add(new StyleViewModel(new System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(0,0,0,0))));
+            _styleModel.Add(new StyleViewModel(new System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(255, 0, 0, 0))));
 
             foreach (HatchStyle item in Enum.GetValues(typeof(HatchStyle))) {
-                _styleModel.Add(new StyleViewModel(item));
+                _styleModel.Add(new StyleViewModel(new HatchBrush(item, System.Drawing.Color.Black, System.Drawing.Color.White)));
             }
 
         }
@@ -53,39 +54,54 @@ namespace BioLink.Client.Maps {
             InitializeComponent();
             DataContext = layer;
             cmbStyle.ItemsSource = _styleModel;
+            cmbStyle.SelectionChanged += new SelectionChangedEventHandler(cmbStyle_SelectionChanged);
+        }
+
+        void cmbStyle_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+
+            var currentLayer = DataContext as VectorLayerViewModel;
+            if (currentLayer == null) {
+                return;
+            }
+
+            var vm = e.AddedItems[0] as StyleViewModel;
+            if (vm != null) {
+                if (vm.Brush is System.Drawing.SolidBrush) {
+                    var sb = vm.Brush as System.Drawing.SolidBrush;
+                    if (sb.Color.A > 0) {
+                        currentLayer.FillColor = System.Drawing.Color.FromArgb(255, currentLayer.FillColor);
+                    }
+                } else if (vm.Brush is HatchBrush && currentLayer.FillColor.A == 0) {                    
+                    currentLayer.FillColor = System.Drawing.Color.FromArgb(255, currentLayer.FillColor);
+                }
+            }
         }
 
     }
 
     internal class StyleViewModel : ViewModelBase {
 
-        protected int _iconSize = 15;
+        protected int _iconSize = 15;        
 
-        public StyleViewModel(HatchStyle? hatchStyle) {
-            this.HatchStyle = hatchStyle;
-            this.Icon = MakeHatchIcon(hatchStyle);
+        public StyleViewModel(System.Drawing.Brush brush) {
+            this.Brush = brush;
+            this.Icon = MakeHatchIcon(brush);
+            
         }
 
-        private BitmapSource MakeHatchIcon(HatchStyle? hatchStyle) {
+        private BitmapSource MakeHatchIcon(System.Drawing.Brush brush) {
 
-            System.Drawing.Color foreColor = System.Drawing.Color.Black;
-            System.Drawing.Color backColor = System.Drawing.Color.White;
             System.Drawing.Bitmap bm = new System.Drawing.Bitmap(_iconSize, _iconSize);
             using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bm)) {
-
                 var rect = new System.Drawing.Rectangle(0, 0, _iconSize - 1, _iconSize - 1);
-                if (hatchStyle != null && hatchStyle.HasValue) {
-                    g.FillRectangle(new HatchBrush(hatchStyle.Value, foreColor, backColor), rect);
-                    g.DrawRectangle(new System.Drawing.Pen(foreColor), rect);
-                } else {
-                    g.FillRectangle(new System.Drawing.SolidBrush(foreColor), rect);
-                }
+                g.FillRectangle(brush, rect);
+                g.DrawRectangle(new System.Drawing.Pen(System.Drawing.Color.Black), rect);
             }
 
             return GraphicsUtils.SystemDrawingImageToBitmapSource(bm);
         }
 
-        public HatchStyle? HatchStyle { get; set; }
+        public System.Drawing.Brush Brush { get; set; }
 
         public override int? ObjectID {
             get { return null; }
@@ -155,13 +171,14 @@ namespace BioLink.Client.Maps {
         private bool _drawOutline;
         private System.Drawing.Image _symbol;
         private System.Drawing.Color _fillColor;
-        private HatchStyle? _hatchStyle;
+        private System.Drawing.Brush _brush;
 
         public VectorLayerViewModel(VectorLayer model) : base(model) {            
             ConnectionID = model.DataSource.ConnectionID;
 
-            _fillColor = GraphicsUtils.GetColorFromBrush(model.Style.Fill);
-            _hatchStyle = GraphicsUtils.GetHatchStyleFromBrush(model.Style.Fill);
+            var brush = model.Style.Fill;
+            _fillColor = GraphicsUtils.GetColorFromBrush(brush);
+            _brush = model.Style.Fill;
             _Line = model.Style.Line;
             _drawOutline = model.Style.EnableOutline;
             _symbol = model.Style.Symbol;
@@ -184,9 +201,28 @@ namespace BioLink.Client.Maps {
             set { SetProperty("FillColor", ref _fillColor, value); }
         }
 
-        public HatchStyle? HatchStyle {
-            get { return _hatchStyle; }
-            set { SetProperty("HatchStyle", ref _hatchStyle, value); }
+        public System.Drawing.Brush FillBrush {
+            get {
+                if (_brush is HatchBrush) {
+                    var hb = _brush as HatchBrush;
+                    return new HatchBrush(hb.HatchStyle, System.Drawing.Color.FromArgb(255, FillColor.R, FillColor.G, FillColor.B), System.Drawing.Color.FromArgb(0, FillColor.R, FillColor.G, FillColor.B));
+                }
+
+                if (_brush is System.Drawing.SolidBrush) {
+                    var sb = _brush as System.Drawing.SolidBrush;
+                    var color = sb.Color;
+                    if (color.A > 0) {
+                        return new System.Drawing.SolidBrush(FillColor);
+                    } else {
+                        return new System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(0, FillColor));
+                    }
+                }
+
+                return _brush; 
+            }
+            set {
+                SetProperty("FillBrush", ref _brush, value); 
+            }
         }
 
         public bool DrawOutline {
@@ -195,11 +231,6 @@ namespace BioLink.Client.Maps {
         }
 
         public string ConnectionID { get; private set; }
-
-
-        internal System.Drawing.Brush FillBrush() {
-            return GraphicsUtils.CreateBrush(FillColor, HatchStyle);
-        }
 
         public System.Drawing.Image Symbol {
             get { return _symbol; }
@@ -213,23 +244,56 @@ namespace BioLink.Client.Maps {
     }
 
     public class HatchStyleConverter : IValueConverter {
+
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
-            var hs = value as HatchStyle?;
-            foreach (StyleViewModel vm in VectorOptionsControl._styleModel) {
-                if (vm.HatchStyle == hs) {
-                    return vm;
+            var hb = value as HatchBrush;
+            if (hb != null) {
+                foreach (StyleViewModel vm in VectorOptionsControl._styleModel) {
+                    if (vm.Brush is HatchBrush) {
+                        var otherHb = vm.Brush as HatchBrush;
+                        if (otherHb.HatchStyle == hb.HatchStyle) {
+                            return vm;
+                        }
+                    }
                 }
             }
-            return new StyleViewModel(hs);
+
+            var sb = value as System.Drawing.SolidBrush;
+            if (sb != null) {
+                foreach (StyleViewModel vm in VectorOptionsControl._styleModel) {
+                    if (vm.Brush is System.Drawing.SolidBrush) {
+                        var otherSb = vm.Brush as System.Drawing.SolidBrush;
+                        if (otherSb.Color.A == sb.Color.A) {
+                            return vm;
+                        }
+                    }
+                }
+                
+            }
+
+            return new StyleViewModel(hb);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
             var vm = value as StyleViewModel;
             if (vm != null) {
-                return vm.HatchStyle;
+                return vm.Brush;
             }
-            return default(HatchStyle);
+            return new BioLinkHatchStyle(default(HatchStyle));
         }
     }
 
+    public class BioLinkHatchStyle {
+
+        public BioLinkHatchStyle(HatchStyle? style, bool isTransparent = false) {
+            this.HatchStyle = style;
+            this.IsTransparent = IsTransparent;
+        }
+
+        public HatchStyle? HatchStyle { get; set; }
+        public bool IsTransparent { get; set; }
+    }
+
 }
+
+
