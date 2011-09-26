@@ -65,11 +65,9 @@ namespace BioLink.Client.Gazetteer {
                 String.Format("{{'Name':'Tools', 'Header':'_Tools','InsertAfter':'File'}}"),
                 String.Format("{{'Name':'eGaz', 'Header':'eGaz'}}"), String.Format("{{'Name':'ShowCoordCalculator', 'Header':'_Coordinate calculator'}}")
             ));
-
-
-            var floating = Config.GetUser(PluginManager.Instance.User, "Gazetteer.ShowEgazFloating", false);
+            
             _gazetteer = new Gazetteer(this);
-            if (!floating) {                
+            if (!Preferences.UseFloatingEGaz.Value) {                
                 _gazetteerContrib = new ExplorerWorkspaceContribution<Gazetteer>(this, "Gazetteer", _gazetteer, _R("Gazetteer.Title"), (explorer) => { });
                 contrib.Add(_gazetteerContrib);
             }
@@ -79,9 +77,7 @@ namespace BioLink.Client.Gazetteer {
 
         private Gazetteer ShowEGaz() {
 
-            var floating = Config.GetUser(PluginManager.Instance.User, "Gazetteer.ShowEgazFloating", false);
-
-            if (floating) {
+            if (Preferences.UseFloatingEGaz.Value) {
                 if (_gazetteerContrib != null) {
                     ErrorMessage.Show("You will need to restart BioLink so that your preferences can be applied");
                     return null;

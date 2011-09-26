@@ -589,9 +589,9 @@ namespace BioLink.Client.Extensibility {
 
         public bool CheckSearchResults(System.Collections.ICollection list) {
             if (list != null) {
-                var searchLimit = Config.GetUser(User, "SearchResults.MaxSearchResults", 2000);
-                if (list.Count > searchLimit) {
-                    ErrorMessage.Show("Your search returned too many results (more than {0} rows). Please refine your search criteria and try again.", searchLimit);
+                var limit = Preferences.MaxSearchResults.Value;                
+                if (list.Count > limit) {
+                    ErrorMessage.Show("Your search returned too many results (more than {0} rows). Please refine your search criteria and try again.", limit);
                     return false;
                 }
             }

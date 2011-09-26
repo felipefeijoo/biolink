@@ -76,7 +76,7 @@ namespace BioLink.Client.Material {
         }
 
         public override bool Validate(List<string> messages) {
-            if (Config.GetGlobal("Material.CheckUniqueAccessionNumbers", true)) {                
+            if (Preferences.UniqueAccessionNumbers.Value) {
                 if (MaterialControl != null) {
                     var material = grpMaterial.Items.Select((vm) => {
                         return vm as RDEMaterialViewModel;
