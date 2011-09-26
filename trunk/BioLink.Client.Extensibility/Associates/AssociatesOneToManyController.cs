@@ -72,7 +72,7 @@ namespace BioLink.Client.Extensibility {
 
         public bool UsePestHostControl(AssociateViewModel associate) {
 
-            if (associate != null && Config.GetUser(User, "Associates.UsePestHostControl", false)) {
+            if (associate != null && Preferences.UseSimplifiedAssociates.Value) {
 
                 // New associate, or the relationships haven't been set yet - we can use the pest/host control in this case...
                 if (string.IsNullOrWhiteSpace(associate.RelationFromTo) && string.IsNullOrWhiteSpace(associate.RelationToFrom)) {

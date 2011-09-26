@@ -101,7 +101,7 @@ namespace BioLink.Client.Material {
 
         public override bool Validate(List<string> messages) {
 
-            if (Config.GetGlobal("Material.CheckUniqueAccessionNumbers", true)) {
+            if (Preferences.UniqueAccessionNumbers.Value) {            
                 if (!string.IsNullOrWhiteSpace(_viewModel.AccessionNumber)) {
 
                     var service = new MaterialService(User);
