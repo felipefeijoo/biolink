@@ -380,14 +380,23 @@ namespace BioLink.Client.Material {
         void materialViewModel_DataChanged(ChangeableModelBase viewmodel) {
             var material = viewmodel as RDEMaterialViewModel;
             if (material != null) {
-                RegisterUniquePendingChange(new UpdateRDEMaterialCommand(material.Model));
+                RegisterUniquePendingChange(new UpdateRDEMaterialCommand(material.Model) {
+                    SuccessAction = () => {
+                        // the material name may have changed...
+                        material.Touch();
+                    }
+                });
             }
         }
 
         void siteVisitViewModel_DataChanged(ChangeableModelBase viewmodel) {
             var siteVisit = viewmodel as RDESiteVisitViewModel;
             if (siteVisit != null) {
-                RegisterUniquePendingChange(new UpdateRDESiteVisitCommand(siteVisit.Model));
+                RegisterUniquePendingChange(new UpdateRDESiteVisitCommand(siteVisit.Model) {
+                    SuccessAction = () => {
+                        siteVisit.Touch();
+                    }
+                });
             }
         }
 
@@ -620,7 +629,11 @@ namespace BioLink.Client.Material {
 
             siteVisit.DataChanged +=new DataChangedHandler(siteVisitViewModel_DataChanged);
             RegisterPendingChange(new InsertRDESiteVisitCommand(siteVisit.Model, site.Model));
-            RegisterPendingChange(new UpdateRDESiteVisitCommand(siteVisit.Model));
+            RegisterPendingChange(new UpdateRDESiteVisitCommand(siteVisit.Model) {
+                SuccessAction = () => {
+                    siteVisit.Touch();
+                }
+            });
             return siteVisit;
         }
 
@@ -638,7 +651,11 @@ namespace BioLink.Client.Material {
                 var materialViewModel = new RDEMaterialViewModel(material);
 
                 RegisterPendingChange(new InsertRDEMaterialCommand(material, siteVisit.Model));
-                RegisterUniquePendingChange(new UpdateRDEMaterialCommand(material));
+                RegisterUniquePendingChange(new UpdateRDEMaterialCommand(material) {
+                    SuccessAction = () => {
+                        materialViewModel.MaterialName = material.MaterialName;
+                    }
+                });
 
                 if (traits != null && traits.Count > 0) {
                     foreach (Trait t in traits) {

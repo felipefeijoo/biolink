@@ -115,7 +115,7 @@
                     <RowDefinition Height="2*" />
                 </Grid.RowDefinitions>
                 <ext:ItemsGroupBox Margin="6,0,6,0" Name="grpSites" HeaderPrefix="Site:" Header="{Binding SiteName}" HeaderFontWeight="Bold" IsUnlocked="{Binding Locked, Converter={StaticResource NegatingConverter}}" HeaderForeground="{Binding HeaderForeground}" AddNewClicked="grpSites_AddNewClicked" Focusable="false"/>
-                <ext:ItemsGroupBox Grid.Row="1" Margin="6,0,6,0" Name="grpSiteVisits" HeaderPrefix="Visit:" Header="{Binding SiteVisitName}" HeaderFontWeight="Bold" IsUnlocked="{Binding Locked, Converter={StaticResource NegatingConverter}}" HeaderForeground="{Binding HeaderForeground}" AddNewClicked="grpSiteVisits_AddNewClicked" Focusable="False" />
+                <ext:ItemsGroupBox Grid.Row="1" Margin="6,0,6,0" Name="grpSiteVisits" HeaderPrefix="Visit:" Header="{Binding VisitName}" HeaderFontWeight="Bold" IsUnlocked="{Binding Locked, Converter={StaticResource NegatingConverter}}" HeaderForeground="{Binding HeaderForeground}" AddNewClicked="grpSiteVisits_AddNewClicked" Focusable="False" />
                 <ext:ItemsGroupBox Grid.Row="2" Margin="6,0,6,6" Name="grpMaterial" HeaderPrefix="Material:" Header="{Binding MaterialName}" HeaderFontWeight="Bold" IsUnlocked="{Binding Locked, Converter={StaticResource NegatingConverter}}" HeaderForeground="{Binding HeaderForeground}" AddNewClicked="grpMaterial_AddNewClicked" Focusable="False" />
             </Grid>
         </ScrollViewer>

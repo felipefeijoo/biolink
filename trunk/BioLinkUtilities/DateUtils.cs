@@ -116,6 +116,11 @@ namespace BioLink.Client.Utilities {
         /// <returns>Human readable date in the form &lt;day&gt; &lt;short month&gt;, &lt;year&gt;</returns>
         public static string BLDateToStr(int bldate) {
             String datestr = bldate.ToString();
+
+            if (datestr.Equals("0")) {
+                return "";
+            }
+
             Match m = BLDateRegex.Match(datestr);
             if (m.Success) {
                 int Y = Int32.Parse(m.Groups[1].Value);

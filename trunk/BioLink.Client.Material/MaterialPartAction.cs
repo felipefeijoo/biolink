@@ -89,7 +89,7 @@ namespace BioLink.Client.Material {
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
 
-            if (String.IsNullOrWhiteSpace(Model.PartName)) {
+            if (String.IsNullOrWhiteSpace(Model.PartName) || Preferences.AutoGenerateMaterialNames.Value) {
                 Model.PartName = InsertMaterialPartCommand.GeneratePartName(Model);
             }
             service.UpdateMaterialPart(Model);

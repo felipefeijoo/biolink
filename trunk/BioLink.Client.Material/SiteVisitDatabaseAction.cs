@@ -88,6 +88,11 @@ namespace BioLink.Client.Material {
             } else {
                 Model.DateType = 1;
             }
+
+            if (Preferences.AutoGenerateSiteVisitNames.Value) {
+                Model.SiteVisitName = NameFormatter.FormatSiteVisitName(Model);
+            }
+
             service.UpdateSiteVisit(Model);
         }
 
@@ -182,17 +187,8 @@ namespace BioLink.Client.Material {
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
 
-            if (string.IsNullOrEmpty(Model.VisitName)) {
-                int? date = Model.DateStart;
-                if (!date.HasValue || date.Value == 0) {
-                    date = Model.DateEnd;
-                }
-
-                if (date.HasValue && date.Value != 0) {
-                    Model.VisitName = string.Format("{0} {1}", Model.Collector, DateControl.DateToStr(date.ToString()));
-                } else {
-                    Model.VisitName = Model.Collector;
-                }
+            if (string.IsNullOrEmpty(Model.VisitName) || Preferences.AutoGenerateSiteVisitNames.Value) {
+                Model.VisitName = NameFormatter.FormatSiteVisitName(Model);
             }
 
             service.UpdateSiteVisitRDE(Model);
