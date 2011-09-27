@@ -115,6 +115,12 @@ namespace BioLink.Client.Maps {
             if (_map != null && _map.IsVisible) {
                 (_map.Control as MapControl).AddRasterLayer(filename);
             }
+        }
+
+        public void RemoveRasterLayer(string filename) {
+            if (_map != null && _map.IsVisible) {
+                (_map.Control as MapControl).RemoveRasterLayer(filename);
+            }
 
         }
     }

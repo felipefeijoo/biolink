@@ -27,6 +27,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using BioLink.Client.Extensibility;
 using BioLink.Client.Utilities;
+using Microsoft.Windows.Controls;
 
 namespace BioLink.Client.Tools {
     /// <summary>

@@ -1080,10 +1080,14 @@ namespace BioLink.Client.Maps {
         }
 
 
-        internal void AddRasterLayer(string filename) {
+        public void AddRasterLayer(string filename) {
+            RemoveRasterLayer(filename);
+            AddLayer(filename, false, false);
+        }
+
+        public void RemoveRasterLayer(string filename) {
             string layername = System.IO.Path.GetFileNameWithoutExtension(filename);
             RemoveLayerByName(layername);
-            AddLayer(filename, false, false);
         }
 
         private void btnFindRegion_Click(object sender, System.Windows.RoutedEventArgs e) {

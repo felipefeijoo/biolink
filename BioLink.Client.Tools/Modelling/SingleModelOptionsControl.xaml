@@ -4,7 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
-             xmlns:tools="clr-namespace:BioLink.Client.Tools"
+             xmlns:extToolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
+             xmlns:tools="clr-namespace:BioLink.Client.Tools"             
              mc:Ignorable="d" 
              d:DesignHeight="315" d:DesignWidth="442">
     <GroupBox Header="Model options">
@@ -39,13 +40,13 @@
             <ext:TextBox Grid.Row="4" Grid.Column="1" x:Name="txtCutOff" Height="23" Text="80" Width="50" HorizontalAlignment="Left" />
 
             <Label Grid.Row="3" Grid.Column="2" Content="Low colour:" />
-            <ext:CustomColorPicker Grid.Row="3" Grid.Column="3" x:Name="ctlLowColor" Width="40" HorizontalAlignment="Left" VerticalAlignment="Center" SelectedColor="White" />
+            <extToolkit:ColorPicker Grid.Row="3" Grid.Column="3" x:Name="ctlLowColor" Width="40" HorizontalAlignment="Left" VerticalAlignment="Center" SelectedColor="White" />
 
             <Label Grid.Row="4" Grid.Column="2" Content="High colour:" />
-            <ext:CustomColorPicker Grid.Row="4" Grid.Column="3" x:Name="ctlHighColor" Width="40" HorizontalAlignment="Left" VerticalAlignment="Center" SelectedColor="Red" />
+            <extToolkit:ColorPicker Grid.Row="4" Grid.Column="3" x:Name="ctlHighColor" Width="40" HorizontalAlignment="Left" VerticalAlignment="Center" SelectedColor="Red" />
 
             <Label Grid.Row="5" Grid.Column="2" Content="No Value colour:" />
-            <ext:CustomColorPicker Grid.Row="5" Grid.Column="3" x:Name="ctlNoValColor" Width="40" HorizontalAlignment="Left" VerticalAlignment="Center" SelectedColor="White" />
+            <extToolkit:ColorPicker Grid.Row="5" Grid.Column="3" x:Name="ctlNoValColor" Width="40" HorizontalAlignment="Left" VerticalAlignment="Center" SelectedColor="White" />
 
         </Grid>
         

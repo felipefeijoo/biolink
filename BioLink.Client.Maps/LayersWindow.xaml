@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:src="clr-namespace:BioLink.Client.Maps"
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+             xmlns:extToolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
              mc:Ignorable="d" 
              Height="314" Width="601">
     <Window.Resources>
@@ -57,8 +58,8 @@
             </ListBox>
             <GroupBox Grid.Column="1" Header="Layer Properties" Height="166" Margin="5,5,5,0" VerticalAlignment="top" x:Name="grpLayer" IsEnabled="False">
             </GroupBox>
-            <Label Content="Map background:" Grid.Column="1" Height="28" HorizontalAlignment="Right" Margin="0,177,58,0" VerticalAlignment="Top" Width="124" />
-            <ext:CustomColorPicker HorizontalAlignment="Right" Margin="0,177,6,0" SelectedColor="{Binding MapBackColor, Converter={StaticResource ColorConverter}}" VerticalAlignment="Top" Width="50" Grid.Column="1" Name="backgroundColorPicker" />
+            <extToolkit:ColorPicker HorizontalAlignment="Right" Margin="0,177,6,0" SelectedColor="{Binding MapBackColor, Converter={StaticResource ColorConverter}}" VerticalAlignment="Top" Width="50" Grid.Column="1" Name="backgroundColorPicker" />
+            <Label Content="Map background:" Grid.Column="1" Height="28" HorizontalAlignment="Right" Margin="0,177,58,0" VerticalAlignment="Top" Width="124" />            
         </Grid>
         <Grid Grid.Row="2" x:Name="buttonGrid" Background="{x:Static SystemColors.ControlBrush}">
             <Button Content="Cancel" Height="23" HorizontalAlignment="Right" Margin="0,8,6,0" Name="btnCancel" VerticalAlignment="Top" Width="85" IsCancel="True" />

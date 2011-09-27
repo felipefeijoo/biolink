@@ -69,6 +69,12 @@ namespace BioLink.Client.Extensibility {
                 ctlColor.SelectedColor = Color.FromArgb(info.Color.A, info.Color.R, info.Color.G, info.Color.B);
                 this.Shape = info.Shape;
             }
+
+            ctlColor.SelectedColorChanged += new RoutedPropertyChangedEventHandler<System.Windows.Media.Color>(ctlColor_SelectedColorChanged);
+        }
+
+        void ctlColor_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color> e) {
+            UpdatePreview();
         }
 
         void PointOptionsControl_Loaded(object sender, RoutedEventArgs e) {
@@ -81,10 +87,6 @@ namespace BioLink.Client.Extensibility {
                 this.Shape = vm.Shape;
             }
             this.UpdatePreview();
-        }
-
-        private void ctlColor_SelectedColorChanged(Color obj) {
-            UpdatePreview();
         }
 
         private void UpdatePreview() {

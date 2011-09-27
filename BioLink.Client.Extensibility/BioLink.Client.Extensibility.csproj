@@ -62,6 +62,9 @@
     <Reference Include="UIAutomationProvider" />
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
+    <Reference Include="WPFToolkit.Extended">
+      <HintPath>..\shared\lib\WPFToolkit.Extended.dll</HintPath>
+    </Reference>
     <Reference Include="xunit, Version=1.6.1.1521, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\shared\lib\xunit.dll</HintPath>
@@ -92,12 +95,7 @@
     <Compile Include="BooleanVisibilityConverter.cs" />
     <Compile Include="ChangeContainerControl.cs" />
     <Compile Include="ChangeContainerWindow.cs" />
-    <Compile Include="ColorPicker\CustomColorPicker.xaml.cs">
-      <DependentUpon>CustomColorPicker.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ColorPicker\CustomColorSelector.xaml.cs">
-      <DependentUpon>CustomColorSelector.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="ColorConverters.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="ControlHostWindow.xaml.cs">
       <DependentUpon>ControlHostWindow.xaml</DependentUpon>
@@ -370,14 +368,6 @@
     <Page Include="AutoNumber\AutoNumberOptions.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ColorPicker\CustomColorPicker.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="ColorPicker\CustomColorSelector.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="ControlHostWindow.xaml">
       <SubType>Designer</SubType>

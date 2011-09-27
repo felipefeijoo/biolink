@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility"
+             xmlns:extToolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
              mc:Ignorable="d" 
              d:DesignHeight="285" d:DesignWidth="765" SnapsToDevicePixels="True" UseLayoutRounding="True">
     <UserControl.Resources>
@@ -109,7 +110,7 @@
                 <Image Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" Source="..\images\Font.png" ></Image>
             </Button>
 
-            <ext:CustomColorPicker VerticalAlignment="Center" x:Name="btnColor"/>
+            <extToolkit:ColorPicker VerticalAlignment="Center" x:Name="btnColor"/>
 
         </ToolBar>
 
