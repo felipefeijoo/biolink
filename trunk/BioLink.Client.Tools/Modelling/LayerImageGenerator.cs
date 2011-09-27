@@ -71,8 +71,12 @@ namespace BioLink.Client.Tools {
             var image = LayerImageGenerator.GetImageForLayer(layer, lowcolor, highcolor, novaluecolor, cutoff, intervals);
 
             BitmapEncoder encoder = new BmpBitmapEncoder();
-            encoder.Frames.Add(BitmapFrame.Create(image));            
-            using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.Write)) {
+            encoder.Frames.Add(BitmapFrame.Create(image));
+            if (File.Exists(filename)) {
+                File.Delete(filename);
+            }
+
+            using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write)) {
                 encoder.Save(fs);
             }
 

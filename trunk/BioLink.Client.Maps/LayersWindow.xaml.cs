@@ -33,6 +33,7 @@ using SharpMap;
 using BioLink.Client.Utilities;
 using Microsoft.Win32;
 using System.Drawing.Drawing2D;
+using Microsoft.Windows.Controls;
 
 namespace BioLink.Client.Maps {
     /// <summary>
@@ -123,6 +124,11 @@ namespace BioLink.Client.Maps {
                 } else {
                     throw new Exception("Could not load layer " + (m as VectorLayerViewModel).ConnectionID + "!");
                 }
+            }
+
+            // Alpha not allowed in map back color!
+            if (MapBackColor.A != 255) {
+                MapBackColor = System.Drawing.Color.FromArgb(255, MapBackColor);
             }
 
             _mapControl.mapBox.BackColor = MapBackColor;

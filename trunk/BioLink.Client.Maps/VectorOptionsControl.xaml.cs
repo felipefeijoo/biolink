@@ -29,6 +29,7 @@ using BioLink.Client.Extensibility;
 using BioLink.Client.Utilities;
 using System.Drawing.Drawing2D;
 using SharpMap.Layers;
+using Microsoft.Windows.Controls;
 
 namespace BioLink.Client.Maps {
     /// <summary>

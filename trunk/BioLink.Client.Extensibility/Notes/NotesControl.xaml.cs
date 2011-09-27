@@ -49,12 +49,12 @@ namespace BioLink.Client.Extensibility {
             InitializeComponent();            
             TraitCategory = category;
             this.Owner = owner;
-            btnColor.ColorSelected += new Action<Color>(btnColor_SelectedColorChanged);
+            btnColor.SelectedColorChanged += new RoutedPropertyChangedEventHandler<Color>(btnColor_SelectedColorChanged);
         }
 
-        void btnColor_SelectedColorChanged(Color color) {
+        void btnColor_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color> e) {
             if (_currentNoteControl != null) {
-                _currentNoteControl.txtNote.Selection.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(color));
+                _currentNoteControl.txtNote.Selection.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(e.NewValue));
             }
         }
 

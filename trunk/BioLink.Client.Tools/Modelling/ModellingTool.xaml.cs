@@ -143,13 +143,17 @@ namespace BioLink.Client.Tools {
                 if (f.Exists) {
                     prefix = f.Name.Substring(0, f.Name.LastIndexOf("."));
                 }
+
+                var map = PluginManager.Instance.GetMap();
+
                 if (filename == null) {
                     filename = LayerImageGenerator.GenerateTemporaryImageFile(grid, prefix, options.LowColor, options.HighColor, options.NoValueColor, cutoff, intervals);
                 } else {
+                    map.RemoveRasterLayer(filename);
                     LayerImageGenerator.CreateImageFileFromGrid(grid, filename, options.LowColor, options.HighColor, options.NoValueColor, cutoff, intervals);
                 }
 
-                var map = PluginManager.Instance.GetMap();
+                
                 map.Show();
                 map.AddRasterLayer(filename);
             });

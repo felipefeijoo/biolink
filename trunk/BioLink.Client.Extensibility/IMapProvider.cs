@@ -34,6 +34,7 @@ namespace BioLink.Client.Extensibility {
         void PlotPoints(MapPointSet points);
         void ClearPoints();
         void AddRasterLayer(string filename);
+        void RemoveRasterLayer(string filename);
     }
 
     public abstract class MapPointSet : IEnumerable<MapPoint>, INotifyCollectionChanged {
