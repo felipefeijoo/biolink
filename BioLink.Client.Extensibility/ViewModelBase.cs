@@ -229,6 +229,10 @@ namespace BioLink.Client.Extensibility {
 
         public abstract int? ObjectID { get; }
 
+        public void Touch() {
+            RaisePropertyChanged("");
+        }
+
     }
 
     public class DefaultTooltipContent : TooltipContentBase {

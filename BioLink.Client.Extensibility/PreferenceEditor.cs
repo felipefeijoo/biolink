@@ -16,6 +16,10 @@ namespace BioLink.Client.Extensibility {
         public static PreferenceEditor<bool> UseSimplifiedAssociates = new PreferenceEditor<bool>("Associates.UsePestHostControl", "Use the simplified Pest/Host associates editor, if possible?", PreferenceScope.User, false);
 
         public static PreferenceEditor<bool> UseFloatingEGaz = new PreferenceEditor<bool>("Gazetteer.ShowEgazFloating", "Always show EGaz in a floating window?", PreferenceScope.User, false);
+
+        public static PreferenceEditor<bool> AutoGenerateMaterialNames = new PreferenceEditor<bool>("Material.AlwaysRegenerateMaterialName", "Always re-generate Material names when details are changed?", PreferenceScope.Profile, false);
+
+        public static PreferenceEditor<bool> AutoGenerateSiteVisitNames = new PreferenceEditor<bool>("Material.AlwaysRegenerateSiteVisitName", "Always re-generate Site Visit names when details are changed?", PreferenceScope.Profile, false);
         
     }
 

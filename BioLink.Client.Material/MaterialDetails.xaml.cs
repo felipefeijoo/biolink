@@ -143,7 +143,11 @@ namespace BioLink.Client.Material {
         void viewModel_DataChanged(ChangeableModelBase viewmodel) {
             var mvm = viewmodel as MaterialViewModel;
             if (mvm != null) {
-                RegisterUniquePendingChange(new UpdateMaterialCommand(mvm.Model));
+                RegisterUniquePendingChange(new UpdateMaterialCommand(mvm.Model) {
+                    SuccessAction = () => {
+                        mvm.Touch();
+                    }
+                });
             }
 
         }

@@ -168,7 +168,7 @@ namespace BioLink.Client.Material {
                     var sitevisit = service.GetSiteVisit(objectID);
                     if (sitevisit != null) {
                         model.ElemID = sitevisit.SiteVisitID;
-                        model.Name = sitevisit.SiteName;
+                        model.Name = sitevisit.SiteVisitName;
                         model.IsTemplate = sitevisit.IsTemplate;
                         return new SiteExplorerNodeViewModel(model);
                     }

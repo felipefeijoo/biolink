@@ -34,6 +34,9 @@ namespace BioLink.Data {
         public void Process(User user) {
             CheckPermissions(user);
             ProcessImpl(user);
+            if (SuccessAction != null) {
+                SuccessAction();
+            }
         }
 
         public void CheckPermissions(User user) {
@@ -55,6 +58,8 @@ namespace BioLink.Data {
         protected abstract void BindPermissions(PermissionBuilder required);
 
         protected abstract void ProcessImpl(User user);
+
+        public Action SuccessAction { get; set; }
 
         public virtual List<string> Validate() {
             return null;

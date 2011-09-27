@@ -194,7 +194,7 @@ namespace BioLink.Client.Extensibility {
             }
 
             // It may be that this control is aggregated as part of a larger control. This means that, come save time, there
-            // may already be a transaction pending. If so, don'note create a new one, just piggy back on the existing
+            // may already be a transaction pending. If so, don't create a new one, just piggy back on the existing
             bool commitTrans = false;  // flag to let us know if we are responsible for the transaction...
 
             if (!User.InTransaction) {

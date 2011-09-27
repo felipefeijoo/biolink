@@ -62,7 +62,11 @@ namespace BioLink.Client.Material {
         }
 
         void viewModel_DataChanged(ChangeableModelBase viewmodel) {
-            RegisterUniquePendingChange(new UpdateSiteVisitCommand((viewmodel as SiteVisitViewModel).Model));
+            RegisterUniquePendingChange(new UpdateSiteVisitCommand((viewmodel as SiteVisitViewModel).Model) {
+                SuccessAction = () => {
+                    (viewmodel as SiteVisitViewModel).Touch();
+                }
+            });
         }
 
         public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(SiteVisitDetails), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnIsReadOnlyChanged)));

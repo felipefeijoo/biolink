@@ -80,6 +80,11 @@ namespace BioLink.Client.Material {
         public UpdateMaterialCommand(BioLink.Data.Model.Material model) : base(model) { }
 
         protected override void ProcessImpl(User user) {
+
+            if (Preferences.AutoGenerateMaterialNames.Value) {
+                Model.MaterialName = NameFormatter.FormatMaterialName(Model);
+            }
+
             var service = new MaterialService(user);
             service.UpdateMaterial(Model);
         }
@@ -172,24 +177,15 @@ namespace BioLink.Client.Material {
 
         protected override void ProcessImpl(User user) {
             var service = new MaterialService(user);
-            if (String.IsNullOrEmpty(Model.MaterialName)) {
-                var name = new StringBuilder();
-                if (!string.IsNullOrEmpty(Model.AccessionNo)) {
-                    name.Append(Model.AccessionNo).Append("; ");
-                } else {
-                    if (!string.IsNullOrEmpty(Model.RegNo)) {
-                        name.Append(Model.RegNo).Append("; ");
-                    }
-                }
-                name.Append(Model.TaxaDesc);
-                Model.MaterialName = name.ToString();
+            if (String.IsNullOrEmpty(Model.MaterialName) || Preferences.AutoGenerateMaterialNames.Value) {
+                Model.MaterialName = NameFormatter.FormatMaterialName(Model);
             }
 
             service.UpdateMaterialRDE(Model);
         }
 
         protected override void BindPermissions(PermissionBuilder required) {
-            required.Add(PermissionCategory.SPARC_MATERIAL, PERMISSION_MASK.UPDATE);
+            required.Add(PermissionCategory.SPARC_MATERIAL, PERMISSION_MASK.UPDATE);        
         }
 
     }

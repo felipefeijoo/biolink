@@ -822,11 +822,23 @@ namespace BioLink.Client.Material {
         }
 
         internal void EditSiteVisit(SiteExplorerNodeViewModel sitevisit) {
-            EditNode(sitevisit, (readOnly) => { return new SiteVisitDetails(User, sitevisit.ElemID, readOnly); }, PermissionCategory.SPARC_SITEVISIT);
+            EditNode(sitevisit, (readOnly) => { 
+                var form = new SiteVisitDetails(User, sitevisit.ElemID, readOnly);
+                form.ChangesCommitted += new PendingChangesCommittedHandler((s) => {
+                    Refresh();
+                });
+                return form;
+            }, PermissionCategory.SPARC_SITEVISIT);
         }
 
         internal void EditMaterial(SiteExplorerNodeViewModel material) {
-            EditNode(material, (readOnly) => { return new MaterialDetails(User, material.ElemID, readOnly); }, PermissionCategory.SPARC_MATERIAL);
+            EditNode(material, (readOnly) => { 
+                var form = new MaterialDetails(User, material.ElemID, readOnly);
+                form.ChangesCommitted += new PendingChangesCommittedHandler((s) => {
+                    Refresh();
+                });
+                return form;
+            }, PermissionCategory.SPARC_MATERIAL);
         }
 
         internal void EditTrap(SiteExplorerNodeViewModel trap) {
@@ -1047,6 +1059,10 @@ namespace BioLink.Client.Material {
             } else {
                 control = new RapidDataEntry(this, User, -1, SiteExplorerNodeType.Site, null);
             }
+
+            control.ChangesCommitted += new PendingChangesCommittedHandler((s) => {
+                Refresh();
+            });
 
             PluginManager.Instance.AddNonDockableContent(Owner, control, "RDE", SizeToContent.Manual);            
         }

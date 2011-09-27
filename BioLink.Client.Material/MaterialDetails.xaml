@@ -19,7 +19,7 @@
         <Label Content="Site Visit:" Height="28" HorizontalAlignment="Left" Margin="12,46,0,0" Name="label2" VerticalAlignment="Top" />
         <ext:TextBox Height="23" Margin="109,48,12,0" Name="txtSiteVisitName" VerticalAlignment="Top" IsEnabled="False" Text="{Binding SiteVisitName}" />
         <Label Content="Material Name:" Height="28" HorizontalAlignment="Left" Margin="12,80,0,0" Name="label3" VerticalAlignment="Top" />
-        <ext:TextBox Height="23" Margin="109,82,12,0" Name="txtMaterialName" VerticalAlignment="Top" Text="{Binding MaterialName}" />
+        <ext:TextBox Height="23" Margin="109,82,12,0" Name="txtMaterialName" VerticalAlignment="Top" Text="{Binding MaterialName, Mode=TwoWay}" />
         <TabControl Margin="7,114,12,12" Name="tabMaterial">
             <TabItem Header="General" Name="tabGeneral">
                 <Grid>
