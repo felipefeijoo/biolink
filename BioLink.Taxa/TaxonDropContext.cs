@@ -30,8 +30,8 @@ namespace BioLink.Client.Taxa {
             this.TaxaPlugin = plugin;
             this.Source = source;
             this.Target = target;
-            this.SourceRank = TaxaPlugin.Service.GetTaxonRank(source.ElemType);
-            this.TargetRank = TaxaPlugin.Service.GetTaxonRank(target.ElemType);
+            this.SourceRank = TaxaPlugin.Service.GetTaxonRank(source.Taxon);
+            this.TargetRank = TaxaPlugin.Service.GetTaxonRank(target.Taxon);
             this.SourceChildRank = GetChildElementType(source);
             this.TargetChildRank = GetChildElementType(target);
         }
@@ -61,7 +61,7 @@ namespace BioLink.Client.Taxa {
                     continue;
                 }
 
-                return TaxaPlugin.Service.GetTaxonRank(child.ElemType);
+                return TaxaPlugin.Service.GetTaxonRank(child.Taxon);
             }
 
             return null;

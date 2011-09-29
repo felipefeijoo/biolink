@@ -50,7 +50,7 @@ namespace BioLink.Client.Taxa {
                 return;
             }
 
-            var elementRank = service.GetTaxonRank(Model.ElemType);
+            var elementRank = service.GetTaxonRank(Model);
 
             var header = Model.TaxaFullName;
 
@@ -63,7 +63,9 @@ namespace BioLink.Client.Taxa {
             lblHeader.Content = header;
             var rankName = (elementRank == null ? "Unranked" : elementRank.LongName + (Model.AvailableName.ValueOrFalse() ? " Available Name" : ""));
 
-            lblSystem.Content = string.Format("[{0}] {1} Last updated: {2:g} by {3}", Model.TaxaID.Value, rankName, Model.DateLastUpdated, Model.WhoLastUpdated);
+            var kingdom = string.IsNullOrEmpty(Model.KingdomCode) ? "No Kingdom" : Model.KingdomCode;
+
+            lblSystem.Content = string.Format("[{0}] {1} <{2}> Last updated: {3:g} by {4}", Model.TaxaID.Value, rankName, kingdom, Model.DateLastUpdated, Model.WhoLastUpdated);
             imgIcon.Source = TaxonViewModel.ConstructIcon(Model.AvailableName.ValueOrFalse() || Model.LiteratureName.ValueOrFalse(), Model.ElemType, false);            
 
             // Ancestry
@@ -88,7 +90,7 @@ namespace BioLink.Client.Taxa {
                 var parentIcon = new Image() { VerticalAlignment = System.Windows.VerticalAlignment.Top, UseLayoutRounding = true, SnapsToDevicePixels = true, Stretch = Stretch.None, Margin = new Thickness(6, 0, 6, 0) };                
                 parentIcon.Source = TaxonViewModel.ConstructIcon(t.AvailableName.ValueOrFalse() || t.LiteratureName.ValueOrFalse(), t.ElemType, false);                
                 parentPanel.Children.Add(parentIcon);
-                var rank = service.GetTaxonRank(t.ElemType);
+                var rank = service.GetTaxonRank(t);
                 rankName = (rank == null ? "Unranked" : rank.LongName);
                 var txt = new TextBlock() {VerticalAlignment = System.Windows.VerticalAlignment.Top, Text = string.Format("{1}   ({0})", rankName, t.TaxaFullName) };
                 parentPanel.Children.Add(txt);
