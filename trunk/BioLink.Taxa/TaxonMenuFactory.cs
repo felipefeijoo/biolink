@@ -166,13 +166,13 @@ namespace BioLink.Client.Taxa {
                         break;
                     default:
 
-                        TaxonRank rank = Explorer.Service.GetTaxonRank(Taxon.ElemType);
+                        TaxonRank rank = Explorer.Service.GetTaxonRank(Taxon.Taxon);
                         if (rank != null) {
                             List<TaxonRank> validChildRanks = Explorer.Service.GetChildRanks(rank);
                             if (validChildRanks != null && validChildRanks.Count > 0) {
                                 foreach (TaxonRank childRank in validChildRanks) {
                                     // The for loop variable is outside of the scope of the closure, so we need to create a local...
-                                    TaxonRank closureRank = Explorer.Service.GetTaxonRank(childRank.Code);
+                                    TaxonRank closureRank = Explorer.Service.GetTaxonRank(childRank.Code, Taxon.KingdomCode);
                                     addMenu.Items.Add(_builder.New(childRank.LongName).Handler(() => {
                                         Explorer.AddNewTaxon(Taxon, closureRank);
                                     }).MenuItem);
@@ -186,7 +186,7 @@ namespace BioLink.Client.Taxa {
                             addMenu.Items.Add(new Separator());
                             foreach (TaxonRank childRank in validChildRanks) {
                                 // The for loop variable is outside of the scope of the closure, so we need to create a local...
-                                TaxonRank closureRank = Explorer.Service.GetTaxonRank(childRank.Code);
+                                TaxonRank closureRank = Explorer.Service.GetTaxonRank(childRank.Code, Taxon.KingdomCode);
                                 if (childRank.UnplacedAllowed.ValueOrFalse()) {
                                     addMenu.Items.Add(_builder.New("Unplaced " + childRank.LongName).Handler(() => { Explorer.AddNewTaxon(Taxon, closureRank, true); }).MenuItem);
                                 }

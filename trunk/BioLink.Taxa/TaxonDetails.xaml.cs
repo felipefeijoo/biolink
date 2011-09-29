@@ -54,7 +54,7 @@ namespace BioLink.Client.Taxa {
             tabControl.AddTabItem("General", new TaxonNameDetails(taxon.TaxaID, User, committedAction) { IsReadOnly = readOnly });
 
             if (taxon.IsAvailableOrLiteratureName) {
-                TaxonRank rank = Service.GetTaxonRank(taxon.ElemType);
+                TaxonRank rank = Service.GetTaxonRank(taxon.Taxon);
                 switch (rank.Category.ToLower()) {
                     case "g":
                         tabControl.AddTabItem("Available Name", new GenusAvailableNameControl(taxon, user) { IsReadOnly = readOnly });

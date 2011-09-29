@@ -748,7 +748,7 @@ namespace BioLink.Data {
 
                 // Rank and Kingom are special!
                 var taxaService = new TaxaService(User);
-                var rank = taxaService.GetTaxonRank(taxon.ElemType);
+                var rank = taxaService.GetTaxonRank(taxon);
                 var kingdomLong = string.IsNullOrWhiteSpace(taxon.KingdomCode) ? "" : taxaService.GetKingdomName(taxon.KingdomCode);
 
                 CreateNamedNode(taxonNode, "RankLong", rank == null ? "" : rank.LongName);

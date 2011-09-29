@@ -113,9 +113,13 @@ namespace BioLink.Data {
             return new DataValidationResult(true);
         }
 
-        public TaxonRank GetTaxonRank(string elemType) {
+        public TaxonRank GetTaxonRank(Taxon taxon) {
+            return GetTaxonRank(taxon.ElemType, taxon.KingdomCode);
+        }
+
+        public TaxonRank GetTaxonRank(string elemType, string kingdomCode) {
             foreach (TaxonRank rank in GetTaxonRanks()) {
-                if (rank.Code == elemType) {
+                if (rank.Code == elemType && rank.KingdomCode == kingdomCode) {
                     return rank;
                 }
             }

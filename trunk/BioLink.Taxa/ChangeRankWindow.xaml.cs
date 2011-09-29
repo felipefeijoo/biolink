@@ -51,6 +51,12 @@ namespace BioLink.Client.Taxa {
             cmbTypes.ItemsSource = validRanks;
             optValidType.IsEnabled = (validRanks != null && validRanks.Count > 0);
             cmbTypes.SelectedIndex = 0;
+
+            if (string.IsNullOrEmpty(taxon.KingdomCode)) {
+                gridWarning.Visibility = System.Windows.Visibility.Visible;
+                lblWarning.Text = "The list of available ranks cannot be determined because the selected taxon does not belong to a kingdom.";
+            }
+
         }
 
         protected User User { get; private set; }

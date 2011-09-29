@@ -163,7 +163,7 @@ namespace BioLink.Client.Taxa {
                     strDisplay = taxon.Epithet + " " + strAuthorYear;
                 } else {
                     string format = "#";
-                    TaxonRank rank = Service.GetTaxonRank(taxon.ElemType);
+                    TaxonRank rank = Service.GetTaxonRank(taxon.Taxon);
                     if (rank != null) {
                         format = rank.ChecklistDisplayAs ?? "#";
                     }
@@ -622,14 +622,15 @@ namespace BioLink.Client.Taxa {
                             return null;
                         }
                     }
-                } else if (context.Source.ElemType == TaxaService.SPECIES_INQUIRENDA || context.Source.ElemType == TaxaService.INCERTAE_SEDIS) {
+                } else if (context.Source.ElemType == TaxaService.SPECIES_INQUIRENDA || context.Source.ElemType == TaxaService.INCERTAE_SEDIS || context.SourceRank == null) {
                     // Special 'unplaced' ranks - no real rules for drag and drop (TBA)...
                     return new MoveDropAction(context);
                 } else if (context.TargetChildRank == null || context.TargetChildRank.Code == context.Source.ElemType) {
                     // Not sure what this means, the old BioLink did it...
                     return new MoveDropAction(context);
                 } else {
-                    throw new IllegalTaxonMoveException(context.Source.Taxon, context.Target.Taxon, _R("TaxonExplorer.DropError.CannotCoexist", context.TargetChildRank.LongName, context.SourceRank.LongName));
+                    var sourceRank = context.SourceRank == null ? "Unranked" : context.SourceRank.LongName;
+                    throw new IllegalTaxonMoveException(context.Source.Taxon, context.Target.Taxon, _R("TaxonExplorer.DropError.CannotCoexist", context.TargetChildRank.LongName, sourceRank));
                 }
             } else if (context.Source.ElemType == context.Target.ElemType) {
                 // Determine what the user wishes to do when the drag/drop source and target are the same type.
@@ -855,7 +856,7 @@ namespace BioLink.Client.Taxa {
                     RegenerateLabel(changedModel);
                 }, readOnly);
 
-                TaxonRank taxonRank = Service.GetTaxonRank(model.ElemType);
+                TaxonRank taxonRank = Service.GetTaxonRank(model.Taxon);
 
                 String title = String.Format("Taxon Detail: {0} ({1}) [{2}] {3}", model.TaxaFullName, taxonRank == null ? "Unranked" : taxonRank.GetElementTypeLongName(model.Taxon), model.TaxaID, readOnly ? "(Read Only)" : "");
 
@@ -908,7 +909,7 @@ namespace BioLink.Client.Taxa {
                 return "Name Author, Year";
             }
 
-            TaxonRank rank = Service.GetTaxonRank(taxon.ElemType);
+            TaxonRank rank = Service.GetTaxonRank(taxon.Taxon);
             if (rank != null) {
                 if (rank.JoinToParentInFullName.ValueOrFalse()) {
                     return "OnlyEpithet Author, Year";
@@ -966,7 +967,7 @@ namespace BioLink.Client.Taxa {
                 taxon.Unplaced = unplaced;
                 string parentChildElemType = GetChildElementType(parent);
                 if (!String.IsNullOrEmpty(parentChildElemType) && taxon.ElemType != parentChildElemType) {
-                    TaxonRank parentChildRank = Service.GetTaxonRank(parentChildElemType);
+                    TaxonRank parentChildRank = Service.GetTaxonRank(parentChildElemType, parent.KingdomCode);
                     if (!Service.IsValidChild(parentChildRank, rank)) {
                         throw new Exception("Cannot insert an " + rank.LongName + " entry because this entry cannot be a valid current for the current children.");
                     } else {
@@ -1558,10 +1559,10 @@ namespace BioLink.Client.Taxa {
                 if (toplevel != null) {
                     elemType = toplevel.ElemType;
                 }
-                list.Add(Service.GetTaxonRank(elemType));
+                list.Add(Service.GetTaxonRank(elemType, taxon.KingdomCode));
             } else if (!string.IsNullOrWhiteSpace(siblingRank)) {
                 // sibling has a rank, use it...
-                list.Add(Service.GetTaxonRank(siblingRank));                
+                list.Add(Service.GetTaxonRank(siblingRank, taxon.KingdomCode));                
             } else if (string.IsNullOrWhiteSpace(parent.ElemType)) {
                 // parent is unranked, so allow all options...                
                 list.AddRange(Service.GetDefaultChildRanks("", taxon.KingdomCode));
@@ -1601,7 +1602,7 @@ namespace BioLink.Client.Taxa {
                 return;
             }
 
-            var rankCategory = Service.GetTaxonRank(taxon.ElemType).Category ?? "";
+            var rankCategory = Service.GetTaxonRank(taxon.Taxon).Category ?? "";
 
             string auxMsg = "";
 
@@ -1656,7 +1657,7 @@ namespace BioLink.Client.Taxa {
 
             // Create a list of children that need to be moved to the parent....
             taxon.IsExpanded = true;
-            var parentRank = Service.GetTaxonRank(parent.ElemType);
+            var parentRank = Service.GetTaxonRank(parent.Taxon);
 
             var deleteList = new List<TaxonViewModel>();
             foreach (TaxonViewModel sibling in parent.Children) {
@@ -1672,7 +1673,7 @@ namespace BioLink.Client.Taxa {
                 sibling.IsExpanded = true;
 
                 string strCurrentSiblingElemType = GetChildElementType(sibling);
-                var siblingChildRank = Service.GetTaxonRank(strCurrentSiblingElemType);
+                var siblingChildRank = Service.GetTaxonRank(strCurrentSiblingElemType, sibling.KingdomCode);
 
                 if (string.IsNullOrEmpty(childType)) {
                     childType = strCurrentSiblingElemType;

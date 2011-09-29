@@ -43,7 +43,7 @@ namespace BioLink.Client.Taxa {
 
             var service = new TaxaService(user);
             Taxon taxon = service.GetTaxon(taxonId.Value);
-            _rank = service.GetTaxonRank(taxon.ElemType);
+            _rank = service.GetTaxonRank(taxon);
             _kingdomList = service.GetKingdomList();
             Kingdom kingdom = _kingdomList.Find((k) => k.KingdomCode.Equals(taxon.KingdomCode));
 
@@ -62,7 +62,7 @@ namespace BioLink.Client.Taxa {
                 string phraseCategory = "ALN Name Status";
                 chkChangedCombination.Visibility = System.Windows.Visibility.Hidden;
                 if (taxon.AvailableName.ValueOrFalse()) {
-                    TaxonRank rank = service.GetTaxonRank(taxon.ElemType);
+                    TaxonRank rank = service.GetTaxonRank(taxon);
                 
                     switch (rank.Category.ToLower()) {
                         case "g": phraseCategory = "GAN Name Status";
