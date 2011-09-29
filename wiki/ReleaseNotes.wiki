@@ -7,7 +7,7 @@
 
 !BioLink 3.0.485 29 September 2011
 
-This release is the first "fix" release for BioLink 3.0. It addresses all issues raised since build 459 (exluding Issue 49).
+This release is the first "fix" release for BioLink 3.0. It addresses all issues raised since build 459 (excluding Issue 49).
 
 === New Features ===
 
