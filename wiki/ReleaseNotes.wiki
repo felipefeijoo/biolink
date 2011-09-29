@@ -3,7 +3,38 @@
 
 = Release Notes =
 
-== !BioLink Version 3.0 Final ==
+== !BioLink Version 3.0.485 ==
+
+!BioLink 3.0.485 29 September 2011
+
+This release is the first "fix" release for BioLink 3.0. It addresses all issues raised since build 459 (exluding Issue 49).
+
+=== New Features ===
+
+  * Polygon "Features for Points" report (Map tool). This report presents feature data of polygons on which a point layer is overlayed. It can optionally group by taxon if the points are from a distribution map.
+  * New option to always show the Gazetteer in a floating window (rather than docked). See Tools->Settings->Preferences...
+  * New options to always regenerate Material and Site Visit names when details are saved.
+  * General stability and performance improvements to modelling
+  * New colour picker widget (this affects all windows on which a colour can be selected including notes, modelling, layers etc).
+
+=== Issues addressed in this release ===
+
+  * Issue 121	 Colours in Modelling not sticking between runs	 
+  * Issue 122	 Query Tool SP error	 
+  * Issue 123	 Reference detail does not validate missing ref code	 
+  * Issue 124	 Pages should be parsed and placed into into page range box if possible (new journal)	 
+  * Issue 126	 RTF strip formatting is failing if unmatch { are detected.	 
+  * Issue 127	 Multimedia captions are not being saved.	 
+  * Issue 128	 Can't drag from a child of a Taxon favorite	 
+  * Issue 129	 Raster maps should be added to the bottom of the layers list (i.e models)	 
+  * Issue 130	 When new layers are added, the map should retain its existing extents	 
+  * Issue 131	 Should be an easier way to set a vector layer fill to be transparent	 
+  * Issue 132	 Auto naming of material and subparts (sites and visits too?)	 
+  * Issue 133	 Can't set map background colour to a transparent (or partially transparent) colour	 
+  * Issue 134	 Can't drag an unranked element to another that already has children	 
+  * Issue 135	 Add taxon menu does not take into account the kingdom code (gets incorrect list for Plantae)
+
+== !BioLink Version 3.0 Release ==
 
 !BioLink 3.0.459 19 August 2011
 
