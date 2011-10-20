@@ -39,12 +39,15 @@ namespace BioLink.Client.Extensibility {
                 object objlong = row[longCol];
                 object objAreaType = row[areaTypeCol];
 
-                if (objAreaType != null && objLat != null && objlong != null) {
-                    int areaType = int.Parse(objAreaType.ToString());
+                AreaType areaType = AreaType.Point;
+                if (objAreaType != null) {
+                    areaType = (AreaType) int.Parse(objAreaType.ToString());
+                }
+
+                if (objLat != null && objlong != null) {
                     double lat = (double)objLat;
                     double @long = (double)objlong;
-                    AreaType t = (AreaType)areaType;
-                    switch (t) {
+                    switch (areaType) {
                         case AreaType.Point:
                             return string.Format("{0}, {1}", GeoUtils.DecDegToDMS(lat, CoordinateType.Latitude), GeoUtils.DecDegToDMS(@long, CoordinateType.Longitude));
                         case AreaType.Line:

@@ -63,11 +63,9 @@ namespace BioLink.Client.Taxa {
             _searchModel = new ObservableCollection<TaxonViewModel>();
             tvwResults.ItemsSource = _searchModel;
 
-
             ListCollectionView dataView = CollectionViewSource.GetDefaultView(tvwResults.ItemsSource) as ListCollectionView;
             dataView.SortDescriptions.Clear();
-            dataView.SortDescriptions.Add(new SortDescription("IsAvailableOrLiteratureName", ListSortDirection.Ascending));
-            dataView.SortDescriptions.Add(new SortDescription("TaxaFullName", ListSortDirection.Ascending));
+            dataView.CustomSort = new TaxonComparer();
             dataView.Refresh();
 
             IsManualSort = Config.GetUser(Owner.User, "Taxa.ManualSort", false);

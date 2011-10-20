@@ -454,6 +454,10 @@ namespace BioLink.Client.Extensibility {
 
         internal Action<SelectionResult> SelectedAction { get; private set; }
 
+        public IHierarchicalSelectorContentProvider ContentProvider {
+            get { return _content; }
+        }
+
         #endregion
 
         private void btnApply_Click(object sender, RoutedEventArgs e) {
