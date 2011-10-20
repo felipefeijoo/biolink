@@ -414,17 +414,19 @@ namespace BioLink.Client.Taxa {
                     styleFactor = "5";
                 }
 
-                string strOrder = string.Format("{0:0000000}", Order.GetValueOrDefault(0));
+                string result = "";
 
                 if (AvailableName.ValueOrFalse()) {
                     string strYearOfPub = YearOfPub;
                     if (string.IsNullOrWhiteSpace(YearOfPub) || YearOfPub.Length < 4) {
                         strYearOfPub = "0000";
                     }
-                    return string.Format("{0}{1}{2}{3}", styleFactor, strYearOfPub, Epithet, Author);                        
+                    result = string.Format("{0}{1}{2}{3}", styleFactor, strYearOfPub, Epithet, Author);                        
                 } else {
-                    return string.Format("{0}{1}{2}", styleFactor, Epithet, Author);
+                    result = string.Format("{0}{1}{2}", styleFactor, Epithet, Author);
                 }
+
+                return result;
             }
         }
 

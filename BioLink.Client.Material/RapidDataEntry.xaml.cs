@@ -442,6 +442,7 @@ namespace BioLink.Client.Material {
                 ret = new RDESite();
             }
 
+            ret.PosAreaType = (int)AreaType.Point;  // RDE only shows one set of coords, so its always going to be a point
             ret.LocalType = 0; // Locality
 
             ret.Locked = false;

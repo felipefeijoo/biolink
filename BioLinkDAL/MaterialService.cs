@@ -368,6 +368,13 @@ namespace BioLink.Data {
         }
 
         public void UpdateSiteRDE(RDESite site) {
+
+            if (!site.PosAreaType.HasValue) {
+                if (site.Latitude.GetValueOrDefault(0) != 0 || site.Longitude.GetValueOrDefault(0) != 0) {
+                    site.PosAreaType = (int)AreaType.Point;
+                }
+            }
+
             StoredProcUpdate("spSiteUpdateRDE",
                 _P("intSiteID", site.SiteID),
                 _P("vchrSiteName", site.SiteName),
@@ -391,6 +398,13 @@ namespace BioLink.Data {
         }
 
         public void UpdateSite(Site site) {
+
+            if (site.PosAreaType == 0) {
+                if (site.PosX1.GetValueOrDefault(0) != 0 || site.PosY1.GetValueOrDefault(0) != 0) {
+                    site.PosAreaType = (int)AreaType.Point;
+                }
+            }
+
             StoredProcUpdate("spSiteUpdate",
                 _P("intSiteID", site.SiteID),
                 _P("vchrSiteName", site.SiteName),

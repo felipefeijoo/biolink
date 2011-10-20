@@ -99,6 +99,7 @@
     <Compile Include="SelectRankWindow.xaml.cs">
       <DependentUpon>SelectRankWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="TaxonComparer.cs" />
     <Compile Include="TaxonFavorites.xaml.cs">
       <DependentUpon>TaxonFavorites.xaml</DependentUpon>
     </Compile>

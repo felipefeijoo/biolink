@@ -81,9 +81,20 @@ namespace BioLink.Client.Taxa {
                 return _options == LookupOptions.TaxonExcludeAvailableNames ? !taxon.AvailableName.ValueOrFalse() : true;
             });
 
-            return new List<HierarchicalViewModelBase>(list.Select((m) => {
+            var results = new List<HierarchicalViewModelBase>(list.Select((m) => {
                 return new TaxonViewModel(null, m, _explorer.GenerateTaxonDisplayLabel);
             }));
+
+            
+            results.Sort(new TaxonComparer());
+            
+            //(vm1, vm2) => {                
+            //    var t1 = vm1 as TaxonViewModel;
+            //    var t2 = vm2 as TaxonViewModel;
+            //    return StringComparer.CurrentCultureIgnoreCase.Compare(t2.DefaultSortOrder, t1.DefaultSortOrder);
+            //});
+
+            return results;
         }
 
         public bool CanSelectItem(HierarchicalViewModelBase candidate) {

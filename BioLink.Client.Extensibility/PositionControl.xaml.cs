@@ -108,6 +108,14 @@ namespace BioLink.Client.Extensibility {
                 PlaceName placeName = pinnable.GetState<PlaceName>();
                 this.lat.Value = placeName.Latitude;
                 lon.Value = placeName.Longitude;
+                if (LocationChanged != null) {
+                    var locality = placeName.Name;
+                    if (placeName.PlaceNameType == PlaceNameType.OffsetAndDirection) {
+                        locality = string.Format("{0} {1} {2} of {3}", placeName.Offset, placeName.Units, placeName.Direction, placeName.Name);
+                    }
+                    LocationChanged(placeName.Latitude, placeName.Longitude, null, null, locality, "EGaz");
+                }
+
             }
             e.Handled = true;
         }
