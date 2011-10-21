@@ -15,7 +15,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
 
@@ -32,8 +31,8 @@ namespace BioLink.Client.Utilities {
     /// </summary>
     public class IniFile {
 
-        private static Regex SectionRegex = new Regex(@"^\s*[[](.*)[]]\s*$");
-        private static Regex KeyRegex = new Regex("^(.*?)=(.*)$");
+        private static readonly Regex SectionRegex = new Regex(@"^\s*[[](.*)[]]\s*$");
+        private static readonly Regex KeyRegex = new Regex("^(.*?)=(.*)$");
 
         // An ini file is a keyed collection of sections, and a section is a collection of key value pairs
         public Dictionary<string, IniFileSection> Sections;
@@ -123,11 +122,10 @@ namespace BioLink.Client.Utilities {
         public IniFileSection GetSection(string name) {
             if (Sections.ContainsKey(name)) {
                 return Sections[name];
-            } else {
-                var newSection = new IniFileSection { Name = name };
-                Sections[name] = newSection;
-                return newSection;
             }
+            var newSection = new IniFileSection { Name = name };
+            Sections[name] = newSection;
+            return newSection;
         }
 
         /// <summary>
@@ -196,9 +194,8 @@ namespace BioLink.Client.Utilities {
             var v = GetValue(section, key);
             if (string.IsNullOrWhiteSpace(v)) {
                 return @default;
-            } else {
-                return v.StartsWith("t", StringComparison.CurrentCultureIgnoreCase) || v.StartsWith("Y", StringComparison.CurrentCultureIgnoreCase) || v.StartsWith("1");
             }
+            return v.StartsWith("t", StringComparison.CurrentCultureIgnoreCase) || v.StartsWith("Y", StringComparison.CurrentCultureIgnoreCase) || v.StartsWith("1");
         }
 
         /// <summary>
@@ -212,11 +209,10 @@ namespace BioLink.Client.Utilities {
             var v = GetValue(section, key);
             if (string.IsNullOrWhiteSpace(v)) {
                 return @default;
-            } else {
-                int result = @default;
-                if (Int32.TryParse(v, out result)) {
-                    return result;
-                }
+            }
+            int result;
+            if (Int32.TryParse(v, out result)) {
+                return result;
             }
             return @default;
         }
@@ -232,11 +228,10 @@ namespace BioLink.Client.Utilities {
             var v = GetValue(section, key);
             if (string.IsNullOrWhiteSpace(v)) {
                 return @default;
-            } else {
-                double result = @default;
-                if (Double.TryParse(v, out result)) {
-                    return result;
-                }
+            }
+            double result;
+            if (Double.TryParse(v, out result)) {
+                return result;
             }
             return @default;
         }
@@ -278,9 +273,7 @@ namespace BioLink.Client.Utilities {
         /// <returns></returns>
         public string GetValue(string key, string @default = "") {
             
-            var iniKey = Values.FirstOrDefault((kvp) => {
-                return kvp.Key.Equals(key, StringComparison.CurrentCultureIgnoreCase);
-            });
+            var iniKey = Values.FirstOrDefault(kvp => kvp.Key.Equals(key, StringComparison.CurrentCultureIgnoreCase));
 
             if (iniKey.Equals(default(KeyValuePair<string, IniFileValue>))) {
                 return @default;

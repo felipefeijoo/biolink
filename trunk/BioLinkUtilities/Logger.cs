@@ -13,9 +13,6 @@
  * rights and limitations under the License.
  ******************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Diagnostics;
 using Microsoft.Practices.EnterpriseLibrary.Logging;
 using Microsoft.Practices.EnterpriseLibrary.Common.Configuration;
@@ -27,7 +24,7 @@ namespace BioLink.Client.Utilities {
     /// </summary>
     public static class Logger {
 
-        private static bool _loggingFailed = false;
+        private static bool _loggingFailed;
 
         static Logger() {
             Debug("Logging established");
@@ -54,14 +51,14 @@ namespace BioLink.Client.Utilities {
         }
 
         private static void LogImpl(string category, TraceEventType severity, string message, params object[] args) {            
-            LogEntry entry = new LogEntry(String.Format(message, args), category, 0, 0, severity, "BioLink", null);
+            var entry = new LogEntry(String.Format(message, args), category, 0, 0, severity, "BioLink", null);
             WriteEntry(entry);
         }
 
         private static void WriteEntry(LogEntry entry) {
             try {
                 if (!_loggingFailed) {
-                    LogWriter writer = EnterpriseLibraryContainer.Current.GetInstance<LogWriter>();
+                    var writer = EnterpriseLibraryContainer.Current.GetInstance<LogWriter>();
                     if (writer.IsLoggingEnabled()) {
                         writer.Write(entry);
                     }
@@ -77,10 +74,9 @@ namespace BioLink.Client.Utilities {
         }
 
         public class LogEntryBuilder : IDisposable {
-            private LogEntry _entry;
+            private readonly LogEntry _entry;
             public LogEntryBuilder(string message) {
-                _entry = new LogEntry();
-                _entry.Message = message;
+                _entry = new LogEntry {Message = message};
             }
 
             public LogEntryBuilder Category(string category) {

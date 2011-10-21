@@ -13,7 +13,6 @@
  * rights and limitations under the License.
  ******************************************************************************/
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.IO;
 using System.Text;
@@ -30,7 +29,7 @@ namespace BioLink.Client.Utilities {
 
         public void FilterFiles(string directory, Filter filter, OnFile matchHandler, bool recurseSubdirectories) {
             DirectoryUtils.OnFileHandler fh = (filedata, dir) => {
-                FileInfo fileInfo = new FileInfo(dir + "\\" + filedata.cFileName);                
+                var fileInfo = new FileInfo(dir + "\\" + filedata.cFileName);                
                 if (filter(fileInfo)) {
                     matchHandler(fileInfo);
                 }
@@ -44,23 +43,27 @@ namespace BioLink.Client.Utilities {
     /// </summary>
     public class DirectoryUtils {
 
-        public delegate void OnFileHandler(DirectoryUtils.WIN32_FIND_DATA file, string directory);
-        public delegate void OnDirectoryHandler(DirectoryUtils.WIN32_FIND_DATA directory, string fullpath);
+        public delegate void OnFileHandler(WIN32_FIND_DATA file, string directory);
+        public delegate void OnDirectoryHandler(WIN32_FIND_DATA directory, string fullpath);
         public delegate bool CheckCancelHandler();
 
         #region "DllImports, Constants & Structs"
 
-        public const int MAX_PATH = 260;
-        public const int MAX_ALTERNATE = 14;
+        public const int MaxPath = 260;
+        public const int MaxAlternate = 14;
 
         [StructLayout(LayoutKind.Sequential)]
+// ReSharper disable InconsistentNaming
         public struct FILETIME {
+// ReSharper restore InconsistentNaming
             public uint dwLowDateTime;
             public uint dwHighDateTime;
         };
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+// ReSharper disable InconsistentNaming
         public struct WIN32_FIND_DATA {
+// ReSharper restore InconsistentNaming
             public FileAttributes dwFileAttributes;
             public FILETIME ftCreationTime;
             public FILETIME ftLastAccessTime;
@@ -69,9 +72,9 @@ namespace BioLink.Client.Utilities {
             public int nFileSizeLow;
             public int dwReserved0;
             public int dwReserved1;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = MAX_PATH)]
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = MaxPath)]
             public string cFileName;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = MAX_ALTERNATE)]
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = MaxAlternate)]
             public string cAlternate;
         }
 
@@ -84,11 +87,13 @@ namespace BioLink.Client.Utilities {
         [DllImport("kernel32.dll")]
         public static extern bool FindClose(IntPtr hFindFile);
 
+// ReSharper disable InconsistentNaming
         private const Int32 INVALID_HANDLE_VALUE = -1;
         private const Int32 OPEN_EXISTING = 3;
         private const Int32 FILE_FLAG_OPEN_REPARSE_POINT = 0x200000;
         private const Int32 FILE_FLAG_BACKUP_SEMANTICS = 0x2000000;
         private const Int32 FSCTL_GET_REPARSE_POINT = 0x900A8;
+// ReSharper restore InconsistentNaming
 
         /// <summary>
 
@@ -103,8 +108,13 @@ namespace BioLink.Client.Utilities {
         private const String NonInterpretedPathPrefix = "\\??\\";
 
         [StructLayout(LayoutKind.Sequential)]
+// ReSharper disable InconsistentNaming
         private struct REPARSE_GUID_DATA_BUFFER {
+// ReSharper restore InconsistentNaming
+// ReSharper disable FieldCanBeMadeReadOnly.Local
+// ReSharper disable MemberCanBePrivate.Local
             public UInt32 ReparseTag;
+
             public UInt16 ReparseDataLength;
             public UInt16 Reserved;
             public UInt16 SubstituteNameOffset;
@@ -112,12 +122,16 @@ namespace BioLink.Client.Utilities {
             public UInt16 PrintNameOffset;
             public UInt16 PrintNameLength;
 
+
             /// <summary>
             /// Contains the SubstituteName and the PrintName.
             /// The SubstituteName is the path of the target directory.
             /// </summary>
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x3FF0)]
             public byte[] PathBuffer;
+// ReSharper restore FieldCanBeMadeReadOnly.Local
+// ReSharper restore MemberCanBePrivate.Local
+
         }
 
         [DllImport("kernel32.dll", SetLastError = true)]
@@ -150,9 +164,8 @@ namespace BioLink.Client.Utilities {
         }
 
         public static void TraverseDirectory(string directory, OnFileHandler onfile, OnDirectoryHandler ondir, CheckCancelHandler checkCancel, bool recurse) {
-            IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1);
-            DirectoryUtils.WIN32_FIND_DATA findData;
-            IntPtr findHandle;
+            var invalidHandleValue = new IntPtr(-1);
+            WIN32_FIND_DATA findData;
 
             if (directory.StartsWith(".")) {
                 directory = Environment.CurrentDirectory + directory.Substring(1);
@@ -164,15 +177,15 @@ namespace BioLink.Client.Utilities {
                 directory = directory.Substring(0, directory.Length - 1);
             }
 
-            findHandle = DirectoryUtils.FindFirstFile(@"\\?\" + directory + @"\*", out findData);
+            IntPtr findHandle = FindFirstFile(@"\\?\" + directory + @"\*", out findData);
 
-            if (findHandle != INVALID_HANDLE_VALUE) {
+            if (findHandle != invalidHandleValue) {
 
                 do {
                     // Check if we should stop!
                     if (checkCancel != null) {
                         if (checkCancel()) {
-                            DirectoryUtils.FindClose(findHandle);
+                            FindClose(findHandle);
                             break;
                         }
                     }
@@ -186,7 +199,7 @@ namespace BioLink.Client.Utilities {
                                 }
 
                                 if (recurse) {
-                                    TraverseDirectory(subdirectory, onfile, ondir, checkCancel, recurse);
+                                    TraverseDirectory(subdirectory, onfile, ondir, checkCancel, true);
                                 }
                             }
                         }
@@ -197,9 +210,9 @@ namespace BioLink.Client.Utilities {
                         }
                         // size += (long)findData.nFileSizeLow + (long)findData.nFileSizeHigh * 4294967296;
                     }
-                } while (DirectoryUtils.FindNextFile(findHandle, out findData));
+                } while (FindNextFile(findHandle, out findData));
 
-                DirectoryUtils.FindClose(findHandle);
+                FindClose(findHandle);
             }
         }
 
@@ -214,11 +227,11 @@ namespace BioLink.Client.Utilities {
                 try {
                     // Read the reparse point data:
                     Int32 bytesReturned;
-                    Int32 readOK = DeviceIoControl(hFile, FSCTL_GET_REPARSE_POINT, IntPtr.Zero, 0, outBuffer, outBufferSize, out bytesReturned, IntPtr.Zero);
-                    if (readOK != 0) {
+                    Int32 readOk = DeviceIoControl(hFile, FSCTL_GET_REPARSE_POINT, IntPtr.Zero, 0, outBuffer, outBufferSize, out bytesReturned, IntPtr.Zero);
+                    if (readOk != 0) {
                         // Get the target directory from the reparse 
                         // point data:
-                        REPARSE_GUID_DATA_BUFFER rgdBuffer = (REPARSE_GUID_DATA_BUFFER)Marshal.PtrToStructure(outBuffer, typeof(REPARSE_GUID_DATA_BUFFER));
+                        var rgdBuffer = (REPARSE_GUID_DATA_BUFFER)Marshal.PtrToStructure(outBuffer, typeof(REPARSE_GUID_DATA_BUFFER));
                         if (rgdBuffer.ReparseTag == 0xA0000003 || rgdBuffer.ReparseTag == 0xA000000C) {
                             return true;
                         }
@@ -239,7 +252,7 @@ namespace BioLink.Client.Utilities {
                 }
             }
 
-            return targetDir != null && targetDir.Length > 0;
+            return !string.IsNullOrEmpty(targetDir);
 
         }
 
@@ -258,17 +271,18 @@ namespace BioLink.Client.Utilities {
                     try {
                         // Read the reparse point data:
                         Int32 bytesReturned;
-                        Int32 readOK = DeviceIoControl(hFile, FSCTL_GET_REPARSE_POINT, IntPtr.Zero, 0, outBuffer, outBufferSize, out bytesReturned, IntPtr.Zero);
-                        if (readOK != 0) {
+                        var readOk = DeviceIoControl(hFile, FSCTL_GET_REPARSE_POINT, IntPtr.Zero, 0, outBuffer, outBufferSize, out bytesReturned, IntPtr.Zero);
+                        if (readOk != 0) {
                             // Get the target directory from the reparse 
                             // point data:
-                            REPARSE_GUID_DATA_BUFFER rgdBuffer = (REPARSE_GUID_DATA_BUFFER)Marshal.PtrToStructure(outBuffer, typeof(REPARSE_GUID_DATA_BUFFER));
+                            var rgdBuffer = (REPARSE_GUID_DATA_BUFFER)Marshal.PtrToStructure(outBuffer, typeof(REPARSE_GUID_DATA_BUFFER));
                             targetDir = Encoding.Unicode.GetString(rgdBuffer.PathBuffer, rgdBuffer.SubstituteNameOffset, rgdBuffer.SubstituteNameLength);
                             if (targetDir.StartsWith(NonInterpretedPathPrefix)) {
                                 targetDir = targetDir.Substring(NonInterpretedPathPrefix.Length);
                             }
                         }
                     } catch (Exception) {
+                        // ignore
                     }
 
                     // Free the buffer for the reparse point data:

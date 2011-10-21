@@ -12,20 +12,18 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  ******************************************************************************/
+
 using System;
 using System.Collections.Generic;
-using System.Collections;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Runtime.InteropServices;
-using Microsoft.Win32;
-using System.Drawing;
 using System.Diagnostics;
-using System.Windows.Controls;
+using System.Drawing;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
+using System.Windows.Controls;
+using Microsoft.Win32;
 
 namespace BioLink.Client.Utilities {
-
     /// <summary>
     /// Structure that encapsulates basic information of icon embedded in a file.
     /// </summary>
@@ -38,10 +36,10 @@ namespace BioLink.Client.Utilities {
     /// A wrapper around a collection of Windows API calls and helpful lower level utilities
     /// </summary>
     public class SystemUtils {
-
         public const int KBYTES = 1024;
-        public const int MBYTES = KBYTES * 1024;
-        public const int GBYTES = MBYTES * 1024;
+        public const int MBYTES = KBYTES*1024;
+        public const int GBYTES = MBYTES*1024;
+        private static readonly Regex ILLEGAL_FILENAME_CHARS_REGEX = new Regex(string.Format("[{0}]", Regex.Escape(new string(Path.GetInvalidFileNameChars()))));
 
         [DllImport("shell32.dll", EntryPoint = "ExtractIconA", CharSet = CharSet.Ansi, SetLastError = true, ExactSpelling = true)]
         private static extern IntPtr ExtractIcon(int hInst, string lpszExeFileName, int nIconIndex);
@@ -56,7 +54,6 @@ namespace BioLink.Client.Utilities {
         public static extern bool DeleteObject(IntPtr hObject);
 
         public static Icon GetIconFromExtension(string extension) {
-
             RegistryKey rkRoot = Registry.ClassesRoot;
             RegistryKey rkFileType = rkRoot.OpenSubKey("." + extension);
             try {
@@ -69,16 +66,15 @@ namespace BioLink.Client.Utilities {
                     return null;
                 }
 
-                RegistryKey itemKey = rkRoot.OpenSubKey(defaultValue as string);
-
-                if (itemKey == null) {
-                    return null;
+                RegistryKey itemKey = null;
+                var defValue = defaultValue as string;
+                if (!string.IsNullOrEmpty(defValue)) {
+                    itemKey = rkRoot.OpenSubKey(defValue);
+                    if (itemKey == null) {
+                        return null;
+                    }
                 }
 
-
-
-                string defaultIcon = defaultValue.ToString() + "\\DefaultIcon";
-                
                 using (RegistryKey rkFileIcon = FindDefaultIconKey(itemKey)) {
                     if (rkFileIcon != null) {
                         object value = rkFileIcon.GetValue("");
@@ -88,7 +84,6 @@ namespace BioLink.Client.Utilities {
                         }
                     }
                 }
-
             } finally {
                 rkRoot.Close();
                 if (rkFileType != null) {
@@ -106,7 +101,11 @@ namespace BioLink.Client.Utilities {
 
             key = itemKey.OpenSubKey("CurVer");
             if (key != null) {
-                RegistryKey currentVersionKey = Registry.ClassesRoot.OpenSubKey(key.GetValue("") as string);
+                var value = key.GetValue("") as string;
+                RegistryKey currentVersionKey = null;
+                if (!string.IsNullOrEmpty((value))) {
+                    currentVersionKey = Registry.ClassesRoot.OpenSubKey(value);
+                }
                 key.Close();
                 if (currentVersionKey != null) {
                     return FindDefaultIconKey(currentVersionKey);
@@ -128,23 +127,17 @@ namespace BioLink.Client.Utilities {
         }
 
         public static Icon ExtractIconFromFile(string fileAndParam, bool isLarge) {
-
-            uint readIconCount = 0;
-            IntPtr[] hDummy = new IntPtr[1] { IntPtr.Zero };
-            IntPtr[] hIconEx = new IntPtr[1] { IntPtr.Zero };
+            var hDummy = new[] {IntPtr.Zero};
+            var hIconEx = new[] {IntPtr.Zero};
 
             try {
                 EmbeddedIconInfo embeddedIcon = GetEmbeddedIconInfo(fileAndParam);
 
-                if (isLarge) {
-                    readIconCount = ExtractIconEx(embeddedIcon.FileName, 0, hIconEx, hDummy, 1);
-                } else {
-                    readIconCount = ExtractIconEx(embeddedIcon.FileName, 0, hDummy, hIconEx, 1);
-                }
+                uint readIconCount = isLarge ? ExtractIconEx(embeddedIcon.FileName, 0, hIconEx, hDummy, 1) : ExtractIconEx(embeddedIcon.FileName, 0, hDummy, hIconEx, 1);
 
                 if (readIconCount > 0 && hIconEx[0] != IntPtr.Zero) {
                     // Get first icon.
-                    Icon extractedIcon = (Icon)Icon.FromHandle(hIconEx[0]).Clone();
+                    var extractedIcon = (Icon) Icon.FromHandle(hIconEx[0]).Clone();
                     return extractedIcon;
                 } else {
                     return null;
@@ -153,24 +146,26 @@ namespace BioLink.Client.Utilities {
                 throw new ApplicationException("Could not extract icon", exc);
             } finally {
                 foreach (IntPtr ptr in hIconEx)
-                    if (ptr != IntPtr.Zero)
+                    if (ptr != IntPtr.Zero) {
                         DestroyIcon(ptr);
+                    }
 
                 foreach (IntPtr ptr in hDummy)
-                    if (ptr != IntPtr.Zero)
+                    if (ptr != IntPtr.Zero) {
                         DestroyIcon(ptr);
+                    }
             }
         }
 
         protected static EmbeddedIconInfo GetEmbeddedIconInfo(string fileAndParam) {
-            EmbeddedIconInfo embeddedIcon = new EmbeddedIconInfo();
+            var embeddedIcon = new EmbeddedIconInfo();
 
             if (String.IsNullOrEmpty(fileAndParam)) {
                 return embeddedIcon;
             }
 
             //Use to store the file contains icon.
-            string fileName = String.Empty;
+            string fileName;
 
             //The index of the icon in the file.
             int iconIndex = 0;
@@ -188,8 +183,9 @@ namespace BioLink.Client.Utilities {
             if (!String.IsNullOrEmpty(iconIndexString)) {
                 //Get the index of icon.
                 iconIndex = int.Parse(iconIndexString);
-                if (iconIndex < 0)
-                    iconIndex = 0;  //To avoid the invalid index.
+                if (iconIndex < 0) {
+                    iconIndex = 0; //To avoid the invalid index.
+                }
             }
 
             embeddedIcon.FileName = fileName;
@@ -199,23 +195,21 @@ namespace BioLink.Client.Utilities {
         }
 
         public static byte[] GetBytesFromFile(string filename) {
-
             Logger.Debug("Reading the bytes from file {0}", filename);
 
-            var fileInfo = new System.IO.FileInfo(filename);
-            var stream = fileInfo.OpenRead();
-            int byteCount = (int) stream.Length;
+            var fileInfo = new FileInfo(filename);
+            FileStream stream = fileInfo.OpenRead();
+            var byteCount = (int) stream.Length;
 
             if (byteCount > 0) {
-                byte[] fileData = new byte[byteCount];
+                var fileData = new byte[byteCount];
                 stream.Read(fileData, 0, byteCount);
                 stream.Close();
                 Logger.Debug("Read {0} the bytes from {1}", byteCount, filename);
                 return fileData;
-            } else {
-                Logger.Debug("No bytes read from {0}!", filename);
-                return new byte[] {};
             }
+            Logger.Debug("No bytes read from {0}!", filename);
+            return new byte[] {};
         }
 
         /// <summary>
@@ -224,7 +218,7 @@ namespace BioLink.Client.Utilities {
         /// <param name="filename"></param>
         public static void ShellExecute(string filename) {
             try {
-                System.Diagnostics.Process.Start(filename);
+                Process.Start(filename);
             } catch (Exception ex) {
                 ErrorMessage.Show("Unable to launch file '{0}': {1}", filename, ex.Message);
             }
@@ -232,12 +226,9 @@ namespace BioLink.Client.Utilities {
 
         public static List<string> GetVerbs(string filename) {
             var verbs = new List<string>();
-            ProcessStartInfo pinfo = new ProcessStartInfo(filename);
-            if (pinfo != null && pinfo.Verbs.Length > 0) {
-
-                foreach (string v in pinfo.Verbs) {
-                    verbs.Add(v);
-                }
+            var pinfo = new ProcessStartInfo(filename);
+            if (pinfo.Verbs.Length > 0) {
+                verbs.AddRange(pinfo.Verbs);
             }
 
             return verbs;
@@ -245,53 +236,46 @@ namespace BioLink.Client.Utilities {
 
         public static List<MenuItem> GetVerbsAsMenuItems(string filename) {
             var items = new List<MenuItem>();
-            ProcessStartInfo pinfo = new ProcessStartInfo(filename);
-            if (pinfo != null && pinfo.Verbs.Length > 0) {
+            var pinfo = new ProcessStartInfo(filename);
+            if (pinfo.Verbs.Length > 0) {
                 foreach (string v in pinfo.Verbs) {
                     string verb = v;
                     string caption = "_" + verb.Substring(0, 1).ToUpper() + verb.Substring(1);
-                    var item = new MenuItem();
-                    item.Header = caption;
-                    item.Click +=new System.Windows.RoutedEventHandler((s,e) => {
-                        try {
-                            pinfo.Verb = verb;
-                            Process p = new Process();
-                            p.StartInfo = pinfo;
-                            p.Start();
-                        } catch (Exception ex) {
-                            ErrorMessage.Show(ex.Message);
-                        }
-                    });
+                    var item = new MenuItem {Header = caption};
+                    item.Click += (s, e) => {
+                                      try {
+                                          pinfo.Verb = verb;
+                                          var p = new Process {StartInfo = pinfo};
+                                          p.Start();
+                                      } catch (Exception ex) {
+                                          ErrorMessage.Show(ex.Message);
+                                      }
+                                  };
 
                     items.Add(item);
                 }
             } else {
-                var item = new MenuItem();
-                item.Header = "_Open";
-                item.Click +=new System.Windows.RoutedEventHandler((s,e) => {
-                    SystemUtils.ShellExecute(filename);
-                });
+                var item = new MenuItem {Header = "_Open"};
+                item.Click += (s, e) => ShellExecute(filename);
                 items.Add(item);
             }
             return items;
         }
 
-        public static string ChangeExtension(string filename, string newExtension) {            
+        public static string ChangeExtension(string filename, string newExtension) {
             int index = filename.LastIndexOf(".");
             if (index > 0) {
                 return string.Format("{0}.{1}", filename.Substring(0, index), newExtension);
             }
 
-            return string.Format("{0}.{1}", filename, newExtension);            
+            return string.Format("{0}.{1}", filename, newExtension);
         }
-
-        private static Regex ILLEGAL_FILENAME_CHARS_REGEX = new Regex(string.Format("[{0}]", Regex.Escape(new string(Path.GetInvalidFileNameChars()))));
 
         public static string StripIllegalFilenameChars(string filename) {
             return ILLEGAL_FILENAME_CHARS_REGEX.Replace(filename, "_");
         }
 
-        static public string GetUserDataPath() {
+        public static string GetUserDataPath() {
             string dir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             dir = Path.Combine(dir, "MySoftware");
             if (!Directory.Exists(dir)) {
@@ -300,7 +284,5 @@ namespace BioLink.Client.Utilities {
 
             return dir;
         }
-
     }
 }
-

@@ -15,8 +15,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using Microsoft.VisualBasic;
@@ -38,12 +36,12 @@ namespace BioLink.Client.Utilities {
     public static class DateUtils {
 
         /* The symbols of the months as Roman Numerals, in order from Jan - Dec */
-        private static ReadOnlyCollection<string> ROMAN_MONTHS = new List<string> { "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x", "xi", "xii" }.AsReadOnly();
+        private static readonly ReadOnlyCollection<string> RomanMonths = new List<string> { "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x", "xi", "xii" }.AsReadOnly();
         /* Month names */
-        private static ReadOnlyCollection<string> JULIAN_MONTHS = new List<string> { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" }.AsReadOnly();
+        private static readonly ReadOnlyCollection<string> JulianMonths = new List<string> { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" }.AsReadOnly();
 
         /* A regular expression used to match a BLDate */
-        private static Regex BLDateRegex = new Regex(@"^(\d\d\d\d)(\d\d)(\d\d)$");
+        private static readonly Regex BLDateRegex = new Regex(@"^(\d\d\d\d)(\d\d)(\d\d)$");
 
         /// <summary>
         /// Returns string representing the supplied BLDate formatted with a Roman Numeral month
@@ -52,18 +50,18 @@ namespace BioLink.Client.Utilities {
         /// <returns></returns>
         public static string DateRomanMonth(int bldate) {
             String datestr = bldate.ToString();
-            Match m = BLDateRegex.Match(datestr);
-            if (m.Success) {
-                int Y = Int32.Parse(m.Groups[1].Value);
-                int M = Int32.Parse(m.Groups[2].Value);
-                int D = Int32.Parse(m.Groups[3].Value);
-                if (M == 0) {
-                    return Y.ToString();
-                } else if (D == 0) {
-                    return String.Format("{0}.{1:0000}", ROMAN_MONTHS[M - 1], Y);
-                } else {
-                    return String.Format("{0}.{1}.{2:0000}", D, ROMAN_MONTHS[M - 1], Y);
+            Match match = BLDateRegex.Match(datestr);
+            if (match.Success) {
+                int y = Int32.Parse(match.Groups[1].Value);
+                int m = Int32.Parse(match.Groups[2].Value);
+                int d = Int32.Parse(match.Groups[3].Value);
+                if (m == 0) {
+                    return y.ToString();
                 }
+                if (d == 0) {
+                    return String.Format("{0}.{1:0000}", RomanMonths[m - 1], y);
+                }
+                return String.Format("{0}.{1}.{2:0000}", d, RomanMonths[m - 1], y);
             }
             return datestr;
         }
@@ -75,8 +73,8 @@ namespace BioLink.Client.Utilities {
         /// <param name="default">What to return if the month number is outside the range 1-12</param>
         /// <returns>The roman numeral equivalent of the month number 1=i, 12=xii</returns>
         public static string RomanMonth(int month, string @default="???") {
-            if (month >= 0 && month < ROMAN_MONTHS.Count) {
-                return ROMAN_MONTHS[month - 1];
+            if (month >= 0 && month < RomanMonths.Count) {
+                return RomanMonths[month - 1];
             }
             return @default;
         }
@@ -88,8 +86,8 @@ namespace BioLink.Client.Utilities {
         /// <param name="default">What to return if the month number is outside the range 1 - 12</param>
         /// <returns>The first three letters of the month name</returns>
         public static string MidMonth(int month, string @default="???") {
-            if (month >= 0 && month < JULIAN_MONTHS.Count) {
-                return JULIAN_MONTHS[month - 1].Substring(0,3);
+            if (month >= 0 && month < JulianMonths.Count) {
+                return JulianMonths[month - 1].Substring(0,3);
             }
             return @default;
 
@@ -112,7 +110,6 @@ namespace BioLink.Client.Utilities {
         /// Converts a BLDate to human readable date string
         /// </summary>
         /// <param name="bldate">8 digit BLDate</param>
-        /// <param name="default">What to return the bldate is null</param>
         /// <returns>Human readable date in the form &lt;day&gt; &lt;short month&gt;, &lt;year&gt;</returns>
         public static string BLDateToStr(int bldate) {
             String datestr = bldate.ToString();
@@ -121,19 +118,19 @@ namespace BioLink.Client.Utilities {
                 return "";
             }
 
-            Match m = BLDateRegex.Match(datestr);
-            if (m.Success) {
-                int Y = Int32.Parse(m.Groups[1].Value);
-                int M = Int32.Parse(m.Groups[2].Value);
-                int D = Int32.Parse(m.Groups[3].Value);
+            Match match = BLDateRegex.Match(datestr);
+            if (match.Success) {
+                int y = Int32.Parse(match.Groups[1].Value);
+                int m = Int32.Parse(match.Groups[2].Value);
+                int d = Int32.Parse(match.Groups[3].Value);
 
-                if (M < 1 || M > 12) {
-                    return Y.ToString();
-                } else if (D == 0) {
-                    return String.Format("{0}, {1:0000}", CultureInfo.CurrentCulture.DateTimeFormat.AbbreviatedMonthNames[M - 1], Y);
-                } else {
-                    return String.Format("{0} {1}, {2:0000}", D, CultureInfo.CurrentCulture.DateTimeFormat.AbbreviatedMonthNames[M - 1], Y);
+                if (m < 1 || m > 12) {
+                    return y.ToString();
                 }
+                if (d == 0) {
+                    return String.Format("{0}, {1:0000}", CultureInfo.CurrentCulture.DateTimeFormat.AbbreviatedMonthNames[m - 1], y);
+                }
+                return String.Format("{0} {1}, {2:0000}", d, CultureInfo.CurrentCulture.DateTimeFormat.AbbreviatedMonthNames[m - 1], y);
             }
             return datestr;
 
@@ -156,12 +153,11 @@ namespace BioLink.Client.Utilities {
         /// <param name="abbrev">Whether or not to abbreviate the month name</param>
         /// <returns>Either a full or abbreviated month name</returns>
         public static string GetMonthName(int month, bool abbrev) {
-            DateTime date = new DateTime(1900, month, 1);
+            var date = new DateTime(1900, month, 1);
             if (abbrev) {
                 return date.ToString("MMM");
-            } else {
-                return date.ToString("MMMM");
             }
+            return date.ToString("MMMM");
         }
 
         /// <summary>
@@ -198,7 +194,6 @@ namespace BioLink.Client.Utilities {
 
             Match m = BLDateRegex.Match(date);
             if (m.Success) {
-                int iYear = Int32.Parse(m.Groups[1].Value);
                 int iMonth = Int32.Parse(m.Groups[2].Value);
                 int iDay = Int32.Parse(m.Groups[3].Value);
 
@@ -255,13 +250,13 @@ namespace BioLink.Client.Utilities {
             return string.Format("{0:0000}{1:00}{2:00}", dt.Year, dt.Month, dt.Day);
         }
 
-        public static int StrToBLTime(string TimeStr) {
+        public static int StrToBLTime(string timeStr) {
             try {
-                if (TimeStr == null) {
+                if (timeStr == null) {
                     return 0;
                 }
 
-                var time = Microsoft.VisualBasic.DateAndTime.TimeValue(TimeStr);
+                var time = DateAndTime.TimeValue(timeStr);
                 return (DateAndTime.Hour(time) * 100) + DateAndTime.Minute(time);
             } catch (Exception) {
                 return 0;
@@ -283,9 +278,8 @@ namespace BioLink.Client.Utilities {
 
             if (asRomanMonth) {
                 return DateRomanMonth(d);
-            } else {
-                return BLDateToStr(d);
             }
+            return BLDateToStr(d);
         }
 
         /// <summary>
@@ -299,22 +293,24 @@ namespace BioLink.Client.Utilities {
         public static string FormatDates(int dateType, int? startDate, int? endDate, string casualDate) {
             if (dateType == 2) {
                 return casualDate;
-            } else {
-                if (startDate.HasValue && endDate.HasValue) {
-                    if (startDate == endDate) {
-                        return FormatDate(startDate.Value);
-                    } else if (startDate.Value == 0) {
-                        return "Before " + FormatDate(endDate.Value, false);
-                    } else if (endDate == 0) {
-                        return FormatDate(startDate.Value, false);
-                    } else {
-                        return string.Format("{0} to {1}", FormatDate(startDate.Value), FormatDate(endDate.Value));
-                    }
-                } else if (startDate.HasValue) {
+            }
+            if (startDate.HasValue && endDate.HasValue) {
+                if (startDate == endDate) {
                     return FormatDate(startDate.Value);
-                } else if (endDate.HasValue) {
+                }
+                if (startDate.Value == 0) {
                     return "Before " + FormatDate(endDate.Value);
                 }
+                if (endDate == 0) {
+                    return FormatDate(startDate.Value);
+                }
+                return string.Format("{0} to {1}", FormatDate(startDate.Value), FormatDate(endDate.Value));
+            }
+            if (startDate.HasValue) {
+                return FormatDate(startDate.Value);
+            }
+            if (endDate.HasValue) {
+                return "Before " + FormatDate(endDate.Value);
             }
             return "";
         }

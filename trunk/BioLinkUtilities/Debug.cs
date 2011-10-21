@@ -13,9 +13,6 @@
  * rights and limitations under the License.
  ******************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace BioLink.Client.Utilities {
 
@@ -31,7 +28,7 @@ namespace BioLink.Client.Utilities {
         /// <param name="message"></param>
         public static void Assert(bool predicate, string message = "Assertion failed!") {
 #if (DEBUG)
-                if (!predicate) {
+                if (predicate == false) {
                     Logger.Debug("Predicate Assertion failed! {0}", message);
                     throw new AssertionFailedException(message);
                 }

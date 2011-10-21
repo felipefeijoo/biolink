@@ -14,9 +14,6 @@
  ******************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Data;
 
 namespace BioLink.Client.Utilities {
@@ -29,11 +26,11 @@ namespace BioLink.Client.Utilities {
         /// <summary>
         /// Default Scale is 1024 bytes to a kilobyte, etc.
         /// </summary>
-        private const int SCALE = 1024;
+        private const int Scale = 1024;
         /// <summary>
         /// Suffixes used to denote magnitude in descending order
         /// </summary>
-        private static readonly string[] UNITS = new string[] { "TB", "GB", "MB", "KB", "Bytes" };
+        private static readonly string[] Units = new[] { "TB", "GB", "MB", "KB", "Bytes" };
 
         /// <summary>
         /// Converts a long value to size description with the most appropriate suffix
@@ -44,7 +41,7 @@ namespace BioLink.Client.Utilities {
         /// <param name="culture"></param>
         /// <returns></returns>
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
-            int bytes = (int)value;
+            var bytes = (int)value;
             return FormatBytes(bytes);
         }
 
@@ -66,13 +63,13 @@ namespace BioLink.Client.Utilities {
         /// <param name="bytes"></param>
         /// <returns></returns>
         public static string FormatBytes(long bytes) {
-            long min = (long)Math.Pow(SCALE, UNITS.Length - 1);
+            var min = (long)Math.Pow(Scale, Units.Length - 1);
             // Starting with the biggest order of magnitude, work through until the number bytes is greater the minimum number of bytes that can be display (whole number) with that scale
-            foreach (string order in UNITS) {
+            foreach (string order in Units) {
                 if (bytes > min) {
                     return string.Format("{0:##.##} {1}", decimal.Divide(bytes, min), order);
                 }
-                min /= SCALE;
+                min /= Scale;
             }
             return "0 Bytes";
         }

@@ -13,13 +13,11 @@
  * rights and limitations under the License.
  ******************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Media;
 
+// ReSharper disable FieldCanBeMadeReadOnly.Local
 namespace BioLink.Client.Utilities {
 
     /// <summary>
@@ -37,9 +35,9 @@ namespace BioLink.Client.Utilities {
         private static extern bool GetCursorPos(ref Win32Point pt);
 
         public static Point GetMousePosition(Visual relativeTo) {
-            Win32Point mouse = new Win32Point();
+            var mouse = new Win32Point();
             GetCursorPos(ref mouse);
-            return relativeTo.PointFromScreen(new Point((double)mouse.X, (double)mouse.Y));
+            return relativeTo.PointFromScreen(new Point(mouse.X, mouse.Y));
         }
 
 

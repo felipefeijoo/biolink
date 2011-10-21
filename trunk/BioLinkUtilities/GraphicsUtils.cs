@@ -14,8 +14,6 @@
  ******************************************************************************/
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using System.Drawing;
@@ -31,21 +29,21 @@ namespace BioLink.Client.Utilities {
         /// <summary>
         /// This map is a cache of filename extension to icon
         /// </summary>
-        private static Dictionary<string, BitmapSource> _ExtensionIconMap = new Dictionary<string, BitmapSource>();
+        private static readonly Dictionary<string, BitmapSource> ExtensionIconMap = new Dictionary<string, BitmapSource>();
 
         /// <summary>
         /// Converts a (legacy) System Drawing Image to a WPF bitmap source
         /// </summary>
         /// <param name="image"></param>
         /// <returns></returns>
-        public static BitmapSource SystemDrawingImageToBitmapSource(System.Drawing.Image image) {
-            using (System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap(image)) {
+        public static BitmapSource SystemDrawingImageToBitmapSource(Image image) {
+            using (var bitmap = new Bitmap(image)) {
                 IntPtr hBitmap = bitmap.GetHbitmap();
-                System.Windows.Media.Imaging.BitmapSource bitmapSource = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
+                BitmapSource bitmapSource = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
                     hBitmap,
                     IntPtr.Zero,
                     System.Windows.Int32Rect.Empty,
-                    System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
+                    BitmapSizeOptions.FromEmptyOptions());
                 SystemUtils.DeleteObject(hBitmap);
                 return bitmapSource;
             }
@@ -70,8 +68,8 @@ namespace BioLink.Client.Utilities {
         /// <returns></returns>
         public static System.Drawing.Color GetColorFromBrush(System.Drawing.Brush brush) {
 
-            if (brush is System.Drawing.SolidBrush) {
-                return (brush as System.Drawing.SolidBrush).Color;
+            if (brush is SolidBrush) {
+                return (brush as SolidBrush).Color;
             }
 
             if (brush is System.Drawing.Drawing2D.HatchBrush) {
@@ -88,11 +86,10 @@ namespace BioLink.Client.Utilities {
         /// <param name="hatchStyle"></param>
         /// <returns></returns>
         public static System.Drawing.Brush CreateBrush(System.Drawing.Color color, System.Drawing.Drawing2D.HatchStyle? hatchStyle) {
-            if (hatchStyle != null && hatchStyle.HasValue) {
+            if (hatchStyle != null) {
                 return new System.Drawing.Drawing2D.HatchBrush(hatchStyle.Value, color, System.Drawing.Color.FromArgb(0, 0, 0, 0));
-            } else {
-                return new System.Drawing.SolidBrush(color);
             }
+            return new SolidBrush(color);
         }
 
         /// <summary>
@@ -102,16 +99,16 @@ namespace BioLink.Client.Utilities {
         /// <returns></returns>
         public static BitmapSource ExtractIconForExtension(string ext) {
             if (ext != null) {
-                lock (_ExtensionIconMap) {
+                lock (ExtensionIconMap) {
                     var key = ext.ToUpper();
-                    if (_ExtensionIconMap.ContainsKey(key)) {
-                        return _ExtensionIconMap[key];
+                    if (ExtensionIconMap.ContainsKey(key)) {
+                        return ExtensionIconMap[key];
                     }
 
-                    System.Drawing.Icon icon = SystemUtils.GetIconFromExtension(ext);
+                    Icon icon = SystemUtils.GetIconFromExtension(ext);
                     if (icon != null) {                    
                         var bitmap = SystemDrawingIconToBitmapSource(icon);
-                        _ExtensionIconMap[key] = bitmap;
+                        ExtensionIconMap[key] = bitmap;
                         return bitmap;
                     } 
                 }
@@ -148,7 +145,7 @@ namespace BioLink.Client.Utilities {
         /// </summary>
         /// <param name="icon"></param>
         /// <returns></returns>
-        public static System.Windows.Media.Imaging.BitmapSource SystemDrawingIconToBitmapSource(Icon icon) {
+        public static BitmapSource SystemDrawingIconToBitmapSource(Icon icon) {
             //Create bitmap
             var bmp = icon.ToBitmap();
             return SystemDrawingBitmapToBitmapSource(bmp);
@@ -159,17 +156,17 @@ namespace BioLink.Client.Utilities {
         /// </summary>
         /// <param name="bitmap"></param>
         /// <returns></returns>
-        public static System.Windows.Media.Imaging.BitmapSource SystemDrawingBitmapToBitmapSource(System.Drawing.Bitmap bitmap) {
+        public static BitmapSource SystemDrawingBitmapToBitmapSource(Bitmap bitmap) {
 
             // allocate the memory for the bitmap            
             IntPtr bmpPt = bitmap.GetHbitmap();
 
             // create the bitmapSource
-            System.Windows.Media.Imaging.BitmapSource bitmapSource = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
+            BitmapSource bitmapSource = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
                 bmpPt,
                 IntPtr.Zero,
                 System.Windows.Int32Rect.Empty,
-                System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
+                BitmapSizeOptions.FromEmptyOptions());
 
             // freeze the bitmap to avoid hooking events to the bitmap
             bitmapSource.Freeze();
@@ -208,13 +205,13 @@ namespace BioLink.Client.Utilities {
         /// <param name="path"></param>
         /// <returns></returns>
         public static BitmapSource GetIconForFilePath(string path) {
-            
             try {
-                var result = Icon.ExtractAssociatedIcon(path);
-                if (result != null) {
-                    return SystemDrawingIconToBitmapSource(result);
+                var icon = Icon.ExtractAssociatedIcon(path);
+                if (icon != null) {
+                    return SystemDrawingIconToBitmapSource(icon);
                 }
             } catch (Exception) {
+                return null;
             }
 
             return null;
@@ -237,20 +234,16 @@ namespace BioLink.Client.Utilities {
                         int width = maxDimension;
 
                         if (image.Height > image.Width) {
-                            width = (int)(image.Width * ((double)maxDimension / image.Height));
+                            width = (int)(image.Width * (maxDimension / image.Height));
                         } else {
-                            height = (int)(image.Height * ((double)maxDimension / image.Width));
+                            height = (int)(image.Height * (maxDimension / image.Width));
                         }
 
-                        return GraphicsUtils.Resize(image, width, height, BitmapScalingMode.HighQuality);
+                        return Resize(image, width, height, BitmapScalingMode.HighQuality);
                     }
                 } catch (Exception) {
-                    FileInfo finfo = new FileInfo(filename);
-                    var result = GraphicsUtils.ExtractIconForExtension(finfo.Extension.Substring(1));
-                    if (result == null) {
-                        result = GraphicsUtils.GetIconForFilePath(filename);
-                    }
-                    return result;
+                    var finfo = new FileInfo(filename);
+                    return ExtractIconForExtension(finfo.Extension.Substring(1)) ?? GetIconForFilePath(filename);                    
                 }
             }
 

@@ -14,9 +14,6 @@
  ******************************************************************************/
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
 using System.Windows.Input;
 
 namespace BioLink.Client.Utilities {
@@ -29,7 +26,7 @@ namespace BioLink.Client.Utilities {
     /// </summary>
     public class OverrideCursor : IDisposable {
 
-        static Stack<Cursor> _stack = new Stack<Cursor>();
+        static readonly Stack<Cursor> _stack = new Stack<Cursor>();
 
         public OverrideCursor(Cursor changeToCursor) {
             _stack.Push(changeToCursor);            
