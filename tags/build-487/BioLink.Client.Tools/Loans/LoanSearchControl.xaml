@@ -1,0 +1,69 @@
+﻿<ext:DatabaseCommandControl x:Class="BioLink.Client.Tools.LoanSearchControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+             mc:Ignorable="d" 
+             d:DesignHeight="299" d:DesignWidth="534">
+    <Grid>
+        <Grid.Resources>
+            <Style x:Key="hcs" TargetType="{x:Type GridViewColumnHeader}">
+                <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
+            </Style>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="34" />
+            <RowDefinition Height="60" />            
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <ToolBar>
+            <Button x:Name="btnAddNew" Click="btnAddNew_Click"  ToolTip="Create a new loan">
+                <Image Source="/BioLink.Client.Extensibility;component/images/AddNew.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None" />
+            </Button>
+            <Separator />            
+            <Button x:Name="btnProperties" Click="btnProperties_Click"  ToolTip="Edit selected loan details">
+                <Image Source="/BioLink.Client.Extensibility;component/images/Properties.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None" />
+            </Button>
+            <Button x:Name="btnDelete" Click="btnDelete_Click"  ToolTip="Delete the selected loan">
+                <Image Source="/BioLink.Client.Extensibility;component/images/Delete.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None" />
+            </Button>
+
+        </ToolBar>
+        <Label Content="Find:" Grid.Row="1" Height="28" HorizontalAlignment="Left" Name="lblFind" VerticalAlignment="Top" Width="40" Margin="12,6,0,0" />
+        <ext:TextBox x:Name="txtFind" Grid.Row="1" Height="23" VerticalAlignment="Center" Margin="54,3,236,25" />
+        <ComboBox Grid.Row="1" Height="23" HorizontalAlignment="Right" Margin="0,8,81,0" Name="cmbWhat" VerticalAlignment="Top" Width="149" />
+        <Button Content="_Find" Grid.Row="1" Height="23" HorizontalAlignment="Right" Margin="0,8,12,0" Name="btnFind" VerticalAlignment="Top" Width="63" Click="btnFind_Click" />
+        <CheckBox Content="Find only open loans" Grid.Row="1" Height="16" HorizontalAlignment="Left" Margin="54,36,0,0" Name="chkFindOnlyOpenLoans" VerticalAlignment="Top" Width="275" />
+
+        <ListView Grid.Row="2" Margin="6" Name="lvw" MouseDoubleClick="lvw_MouseDoubleClick" ToolTipService.ShowDuration="30000">
+            <ListView.Resources>
+                <DataTemplate x:Key="IconColumnTemplate">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{Binding Path=Icon}" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True"/>
+                        <TextBlock Text="{Binding Path=LoanNumber}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.Resources>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">                    
+                    <Setter Property="ToolTip" Value="{Binding Path=TooltipContent}" />
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.View>
+                <GridView>
+                    <GridView.Columns>
+                        <GridViewColumn Width="100" Header="Loan #" CellTemplate="{StaticResource IconColumnTemplate}" HeaderContainerStyle="{StaticResource hcs}" />
+                        <GridViewColumn Header="Requested by" Width="140" DisplayMemberBinding="{Binding Path=RequestedBy}" HeaderContainerStyle="{StaticResource hcs}"/>
+                        <GridViewColumn Header="Received by" Width="140" DisplayMemberBinding="{Binding Path=ReceivedBy}" HeaderContainerStyle="{StaticResource hcs}"/>
+                        <GridViewColumn Header="Authorized by" Width="140" DisplayMemberBinding="{Binding Path=AuthorizedBy}" HeaderContainerStyle="{StaticResource hcs}"/>
+                        <GridViewColumn Header="Status" Width="100" DisplayMemberBinding="{Binding Path=Status}" HeaderContainerStyle="{StaticResource hcs}"/>
+                        <GridViewColumn Header="Start Date" Width="100" DisplayMemberBinding="{Binding Path=StartDateStr}" HeaderContainerStyle="{StaticResource hcs}"/>
+                        <GridViewColumn Header="Due Date" Width="100" DisplayMemberBinding="{Binding Path=DueDateStr}" HeaderContainerStyle="{StaticResource hcs}"/>
+                    </GridView.Columns>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</ext:DatabaseCommandControl>
