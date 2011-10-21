@@ -10,6 +10,11 @@
 	<ItemGroup>
 		<AssemblyInfoFiles Include="../**/AssemblyInfo.cs" />
 	</ItemGroup>
+	
+	<ItemGroup>
+		<TestAssemblies Include="../Build/Debug/BioLink.Client.Utilities.dll" />
+	</ItemGroup>
+	
 	<Target Name="Build">		
 		<MSBuild.ExtensionPack.FileSystem.File 
 			TaskAction="Replace" 
@@ -25,7 +30,7 @@
 		
 		<MSBuild Projects="../BioLink.sln" />
 		
-		<NUnitTeamCity Assemblies="@(BioLink.Client.Utilities)" />
+		<NUnitTeamCity Assemblies="@(TestAssemblies)" />
 		
 		<Exec Command="$(NSISPath) setup.nsi" />
 		<Copy SourceFiles="setup.exe" DestinationFiles="BioLinkInstaller-3.0.$(BuildNumber).exe" />
