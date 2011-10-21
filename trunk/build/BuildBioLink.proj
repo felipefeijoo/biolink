@@ -24,6 +24,9 @@
 			Files="@(AssemblyInfoFiles)" />			
 		
 		<MSBuild Projects="../BioLink.sln" />
+		
+		<NUnitTeamCity Assemblies="@(BioLink.Client.Utilities)" />
+		
 		<Exec Command="$(NSISPath) setup.nsi" />
 		<Copy SourceFiles="setup.exe" DestinationFiles="BioLinkInstaller-3.0.$(BuildNumber).exe" />
 		<Delete Files="setup.exe" />
