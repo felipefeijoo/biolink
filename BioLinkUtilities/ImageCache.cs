@@ -14,8 +14,6 @@
  ******************************************************************************/
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -32,7 +30,7 @@ namespace BioLink.Client.Utilities {
     public static class ImageCache {
 
         /* Image cache */
-        private static Dictionary<String, BitmapSource> _cache = new Dictionary<string, BitmapSource>();
+        private static readonly Dictionary<String, BitmapSource> Cache = new Dictionary<string, BitmapSource>();
 
         /// <summary>
         /// Get an image by URI (may be a packed resource URI)
@@ -41,15 +39,15 @@ namespace BioLink.Client.Utilities {
         /// <returns></returns>
         public static BitmapSource GetImage(string uri) {
 
-            if (_cache.ContainsKey(uri)) {
-                return _cache[uri];
+            if (Cache.ContainsKey(uri)) {
+                return Cache[uri];
             }
 
-            BitmapImage image = new BitmapImage();
+            var image = new BitmapImage();
             image.BeginInit();
             image.UriSource = new Uri(uri);
             image.EndInit();
-            _cache.Add(uri, image);
+            Cache.Add(uri, image);
 
             return image;
         }
@@ -80,11 +78,11 @@ namespace BioLink.Client.Utilities {
             }
 
             BitmapSource overlay = GetImage(overlayUri);
-            int height = (int)image.Height;
-            int width = (int)image.Width;
-            RenderTargetBitmap bmp = new RenderTargetBitmap(width, height, image.DpiX, image.DpiY, PixelFormats.Pbgra32);
-            DrawingVisual drawingVisual = new DrawingVisual();
-            DrawingContext drawingContext = drawingVisual.RenderOpen();
+            var height = (int)image.Height;
+            var width = (int)image.Width;
+            var bmp = new RenderTargetBitmap(width, height, image.DpiX, image.DpiY, PixelFormats.Pbgra32);
+            var drawingVisual = new DrawingVisual();
+            var drawingContext = drawingVisual.RenderOpen();
             drawingContext.DrawImage(image, new Rect(new Point(0, 0), new Point(width, height)));
             drawingContext.DrawImage(overlay, new Rect(new Point(0, 0), new Point(width, height)));
             drawingContext.Close();

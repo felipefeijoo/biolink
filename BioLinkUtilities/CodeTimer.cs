@@ -13,9 +13,6 @@
  * rights and limitations under the License.
  ******************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Diagnostics;
 
 namespace BioLink.Client.Utilities {
@@ -26,9 +23,9 @@ namespace BioLink.Client.Utilities {
     public class CodeTimer : IDisposable {
 
         /* thing that is atually used to measure the time */
-        private Stopwatch _stopwatch;
+        private readonly Stopwatch _stopwatch;
         /* What to do when the timer is stopped */
-        private StopAction _stopAction;
+        private readonly StopAction _stopAction;
 
         /// <summary>
         /// Create a new timer with the supplied name, and an optional action to perform when the timer is stopped
@@ -37,11 +34,7 @@ namespace BioLink.Client.Utilities {
         /// <param name="stopAction">An action to be executed when the timer is stopped</param>
         public CodeTimer(string name, StopAction stopAction = null) {
             Name = name;
-            if (stopAction != null) {
-                _stopAction = stopAction;
-            } else {
-                _stopAction = DefaultStopAction;
-            }
+            _stopAction = stopAction ?? DefaultStopAction;
             _stopwatch = new Stopwatch();
             _stopwatch.Start();
         }

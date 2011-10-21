@@ -12,10 +12,7 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  ******************************************************************************/
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
 using System.Windows;
 
 namespace BioLink.Client.Utilities {
@@ -27,8 +24,9 @@ namespace BioLink.Client.Utilities {
 
         public static void Show(string message, string caption, FrameworkElement owner) {
             Window owningWindow = owner == null ? null : owner.FindParentWindow();
-            MessageBox.Show(owningWindow, message, caption, MessageBoxButton.OK, MessageBoxImage.Information);
+            if (owningWindow != null) {
+                MessageBox.Show(owningWindow, message, caption, MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
-
     }
 }

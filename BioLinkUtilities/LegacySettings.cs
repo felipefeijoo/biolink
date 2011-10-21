@@ -13,9 +13,6 @@
  * rights and limitations under the License.
  ******************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.Win32;
 
 namespace BioLink.Client.Utilities {
@@ -26,12 +23,14 @@ namespace BioLink.Client.Utilities {
     public class LegacySettings {
 
         public static String GetLastProfile() {
+            using (var key = Registry.LocalMachine.OpenSubKey("SOFTWARE\\CSIRO\\BioLink\\Client\\UserProfiles")) {
+                if (key != null) {
+                    var value = key.GetValue("LastUsedProfile") as String;
 
-            RegistryKey key = Registry.LocalMachine.OpenSubKey("SOFTWARE\\CSIRO\\BioLink\\Client\\UserProfiles");
-
-            String value = key.GetValue("LastUsedProfile") as String;
-
-            return value;
+                    return value;
+                }
+            }
+            return null;
         }
 
         public static T GetRegSetting<T>(String client, String section, String name, T defvalue) {
@@ -40,9 +39,8 @@ namespace BioLink.Client.Utilities {
             if (key != null) {
                 Object value = key.GetValue(name);
                 return (T)value;
-            } else {
-                return defvalue;
             }
+            return defvalue;
         }
 
         public static void TraverseSubKeys(string client, string section, RegistryKeyAction action) {

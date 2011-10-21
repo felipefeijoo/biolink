@@ -12,26 +12,28 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  ******************************************************************************/
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 
 namespace BioLink.Client.Utilities {
-
     /// <summary>
     /// Global Generic Temp file manager that simply tracks the temp file names as they are issued, and attempts to delete them when disposed.
     /// </summary>
     public class TempFileManager : IDisposable {
+        private static readonly HashSet<string> _filenames = new HashSet<string>();
 
-        private static HashSet<string> _filenames = new HashSet<string>();
+        #region IDisposable Members
 
-        static TempFileManager() {
+        public void Dispose() {
+            CleanUp();
         }
 
+        #endregion
+
         public static string GetTemporaryFolder() {
-            var dirName = System.IO.Path.GetTempPath() + "BiolinkTempFiles/";
+            string dirName = Path.GetTempPath() + "BiolinkTempFiles/";
             return dirName;
         }
 
@@ -41,18 +43,16 @@ namespace BioLink.Client.Utilities {
             }
 
             Func<string> generateUniqueName = () => {
+                                                  string dirName = GetTemporaryFolder();
+                                                  if (!Directory.Exists(dirName)) {
+                                                      Directory.CreateDirectory(dirName);
+                                                  }
 
-                var dirName = GetTemporaryFolder();
-                if (!Directory.Exists(dirName)) {
-                    Directory.CreateDirectory(dirName);
-                }
-
-                var guid = Guid.NewGuid().ToString();
-                return string.Format("{0}{1}-{2}{3}", dirName, prefix, guid.Substring(guid.LastIndexOf("-") + 1), extension);
-            };
+                                                  string guid = Guid.NewGuid().ToString();
+                                                  return string.Format("{0}{1}-{2}{3}", dirName, prefix, guid.Substring(guid.LastIndexOf("-") + 1), extension);
+                                              };
             string filename;
-            while (File.Exists(filename = generateUniqueName())) {
-            }
+            while (File.Exists(filename = generateUniqueName())) {}
 
             _filenames.Add(filename);
             return filename;
@@ -63,10 +63,9 @@ namespace BioLink.Client.Utilities {
                 Logger.Debug("Detaching file from temp file manager: {0}", filename);
                 _filenames.Remove(filename);
                 return true;
-            } else {
-                Logger.Debug("Attempt to detach file from temp file manager failed: {0}", filename);
-                return false;
             }
+            Logger.Debug("Attempt to detach file from temp file manager failed: {0}", filename);
+            return false;
         }
 
         public static void CleanUp() {
@@ -81,10 +80,6 @@ namespace BioLink.Client.Utilities {
             _filenames.Clear();
         }
 
-        public void Dispose() {
-            CleanUp();
-        }
-
 
         public static void Attach(string projFilename) {
             _filenames.Add(projFilename);
@@ -96,20 +91,26 @@ namespace BioLink.Client.Utilities {
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class KeyedObjectTempFileManager<T> : IDisposable {
-
-        private Dictionary<T, string> _tempFileMap = new Dictionary<T, string>();
-
-        private Func<T, Stream> _contentGenerator;
+        private readonly Func<T, Stream> _contentGenerator;
+        private readonly Dictionary<T, string> _tempFileMap = new Dictionary<T, string>();
 
         public KeyedObjectTempFileManager(Func<T, Stream> contentGenerator = null) {
             _contentGenerator = contentGenerator;
         }
 
+        #region IDisposable Members
+
+        public void Dispose() {
+            CleanUp();
+        }
+
+        #endregion
+
         public void CopyToTempFile(T key, string filename) {
             if (File.Exists(filename)) {
-                FileInfo finfo = new FileInfo(filename);
-                var extension = finfo.Extension.Substring(1);
-                var tempfile = NewFilename(extension);
+                var finfo = new FileInfo(filename);
+                string extension = finfo.Extension.Substring(1);
+                string tempfile = NewFilename(extension);
                 finfo.CopyTo(tempfile);
                 _tempFileMap[key] = tempfile;
             }
@@ -131,10 +132,10 @@ namespace BioLink.Client.Utilities {
             String tempFile = NewFilename(extension);
             using (Stream contentStream = _contentGenerator(key)) {
                 if (contentStream != null) {
-                    FileInfo file = new FileInfo(tempFile);
+                    var file = new FileInfo(tempFile);
                     Logger.Debug("Creating temp file {0} from stream (key={1})", tempFile, key);
                     using (Stream dest = file.OpenWrite()) {
-                        byte[] buffer = new byte[4096];
+                        var buffer = new byte[4096];
                         int bytes;
                         while ((bytes = contentStream.Read(buffer, 0, buffer.Length)) > 0) {
                             dest.Write(buffer, 0, bytes);
@@ -152,7 +153,7 @@ namespace BioLink.Client.Utilities {
                 ext = "." + ext;
             }
 
-            var dirName = TempFileManager.GetTemporaryFolder();
+            string dirName = TempFileManager.GetTemporaryFolder();
             if (!Directory.Exists(dirName)) {
                 Directory.CreateDirectory(dirName);
             }
@@ -171,10 +172,5 @@ namespace BioLink.Client.Utilities {
             }
             _tempFileMap.Clear();
         }
-
-        public void Dispose() {
-            CleanUp();
-        }
     }
-
 }

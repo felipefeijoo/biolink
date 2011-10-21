@@ -24,7 +24,7 @@ namespace BioLink.Client.Utilities {
     /// Helper class to make dealing with Legacy BioLink 'EntryPoints' easier
     ///</para>
     /// <para>
-    /// Entry points are in the format <Name>?<optionkey>=<optionvalue>&...
+    /// Entry points are in the format &lt;Name&gt;?&lt;optionkey&gt;=&lt;optionvalue&gt;&amp;...
     /// </para>
     /// <para>
     /// Entry points where used by the old BioLink as a form of 'inter-plugin' communication, and crude dispatch mechanism, very similar to a URI.
@@ -33,7 +33,7 @@ namespace BioLink.Client.Utilities {
     public class EntryPoint {
 
         private String _name;
-        private List<KeyValuePair<string, string>> _parameters;
+        private readonly List<KeyValuePair<string, string>> _parameters;
 
         public EntryPoint(string name) {
             _name = name;
@@ -56,10 +56,10 @@ namespace BioLink.Client.Utilities {
                     if (param.Contains("=")) {
                         string key = param.Substring(0, param.IndexOf("="));
                         string value = param.Substring(param.IndexOf("=") + 1);
-                        KeyValuePair<string, string> kvp = new KeyValuePair<string, string>(key, value);
+                        var kvp = new KeyValuePair<string, string>(key, value);
                         ep._parameters.Add(kvp);
                     } else {
-                        KeyValuePair<string, string> kvp = new KeyValuePair<string, string>(param, param);
+                        var kvp = new KeyValuePair<string, string>(param, param);
                         ep._parameters.Add(kvp);
                     }
                 }
@@ -75,13 +75,7 @@ namespace BioLink.Client.Utilities {
         }
 
         public bool HasParameter(string name) {
-            foreach (KeyValuePair<string, string> kvp in _parameters) {
-                if (kvp.Key.Equals(name)) {
-                    return true;
-                }
-            }
-
-            return false;
+            return _parameters.Any(kvp => kvp.Key.Equals(name));
         }
 
         public String Name {
@@ -118,11 +112,11 @@ namespace BioLink.Client.Utilities {
 
         public override string ToString() {
             var paramList = new StringBuilder();
-            foreach (KeyValuePair<string, string> pair in _parameters) {
+            foreach (var pair in _parameters) {
                 paramList.AppendFormat("{0}={1}&", pair.Key, pair.Value);
             }
             paramList.Remove(paramList.Length - 1, 1);
-            return string.Format("{0}?{1}", _name, paramList.ToString());
+            return string.Format("{0}?{1}", _name, paramList);
         }
 
     }

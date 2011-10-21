@@ -1335,7 +1335,7 @@ namespace BioLink.Data {
                         int deg;
                         double min;
                         GeoUtils.DecDegToDDecM(value, out deg, out min);
-                        return string.Format("{0}{1}{2}", deg, GeoUtils.DEGREE_SYMBOL, min);
+                        return string.Format("{0}{1}{2}", deg, GeoUtils.DegreeSymbol, min);
                 }
             }
 

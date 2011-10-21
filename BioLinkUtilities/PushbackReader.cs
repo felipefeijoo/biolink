@@ -12,29 +12,26 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  ******************************************************************************/
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
+using System.Text;
 
 namespace BioLink.Client.Utilities {
-
     /// <summary>
     /// Specialized TextReader that has the ability to 'undo' a read (logically). Useful for read-ahead parsers
     /// </summary>
     public class PushbackReader : TextReader {
-
         private const int DEFAULT_BUFFER_SIZE = 1;
-        private TextReader _reader;
-        private int _pos;
+        private readonly TextReader _reader;
         private char[] _buf;
+        private int _pos;
 
         /// <summary>
         /// Wraps an existing reader
         /// </summary>
         /// <param name="reader"></param>
-        public PushbackReader(TextReader reader) : this(reader, DEFAULT_BUFFER_SIZE) { }
+        public PushbackReader(TextReader reader) : this(reader, DEFAULT_BUFFER_SIZE) {}
 
         /// <summary>
         /// Wraps and existing reader
@@ -42,7 +39,6 @@ namespace BioLink.Client.Utilities {
         /// <param name="reader"></param>
         /// <param name="size"></param>
         public PushbackReader(TextReader reader, int size) {
-
             if (reader == null) {
                 throw new ArgumentNullException();
             }
@@ -51,38 +47,37 @@ namespace BioLink.Client.Utilities {
                 throw new Exception("Size must be positive");
             }
 
-            this._reader = reader;
-            this._buf = new char[size];
+            _reader = reader;
+            _buf = new char[size];
             _pos = size;
         }
 
         public virtual TextReader Reader {
-            get { return this._reader; }
+            get { return _reader; }
         }
 
         public override void Close() {
-
             lock (this) {
-                this._buf = null;
+                _buf = null;
             }
 
-            this._reader.Close();
+            _reader.Close();
             base.Close();
         }
 
         public override int Peek() {
-            return this._reader.Peek();
+            return _reader.Peek();
         }
 
         public override int Read() {
-            if (this._buf == null) {
+            if (_buf == null) {
                 throw new Exception("Stream has already been disposed");
             }
-            if (_pos == this._buf.Length) {
-                return this.Reader.Read();
+            if (_pos == _buf.Length) {
+                return Reader.Read();
             }
             _pos++;
-            return this._buf[_pos - 1]; 
+            return _buf[_pos - 1];
         }
 
         public override int Read(char[] buffer, int index, int count) {
@@ -103,7 +98,7 @@ namespace BioLink.Client.Utilities {
 
             int num = count - numBytes;
             if (num > 0) {
-                num = this.Reader.Read(buffer, numBytes, num);
+                num = Reader.Read(buffer, numBytes, num);
                 numBytes += num;
             }
 
@@ -111,24 +106,22 @@ namespace BioLink.Client.Utilities {
         }
 
         public int Read(char[] buffer) {
-            return this.Read(buffer, 0, buffer.Length);
+            return Read(buffer, 0, buffer.Length);
         }
 
         public override string ReadLine() {
-            int ch;
-
-            StringBuilder sb = new StringBuilder();
-            ch = this.Read();
+            var sb = new StringBuilder();
+            var ch = Read();
 
             while (true) {
                 if (ch == '\r') {
-                    if (Peek() == '\n') { 
-                        this.Reader.Read();
+                    if (Peek() == '\n') {
+                        Reader.Read();
                     }
                     break;
                 }
                 sb.Append(ch);
-                ch = this.Read();
+                ch = Read();
             }
 
             return sb.ToString();
@@ -152,7 +145,7 @@ namespace BioLink.Client.Utilities {
 
             int num = count - numBytes;
             if (num > 0) {
-                num = this.Reader.ReadBlock(buffer, numBytes, num);
+                num = Reader.ReadBlock(buffer, numBytes, num);
                 numBytes += num;
             }
 
@@ -160,9 +153,8 @@ namespace BioLink.Client.Utilities {
         }
 
         public override string ReadToEnd() {
-
-            StringBuilder sb = new StringBuilder();
-            char[] ch1 = new char[256];
+            var sb = new StringBuilder();
+            var ch1 = new char[256];
 
             while (true) {
                 int num = Reader.Read(ch1, 0, 256);
@@ -176,7 +168,6 @@ namespace BioLink.Client.Utilities {
         }
 
         public void Unread(int c) {
-
             if (_buf == null) {
                 throw new Exception("Stream has already been disposed!");
             }
@@ -186,7 +177,7 @@ namespace BioLink.Client.Utilities {
             }
 
             _pos--;
-            _buf[_pos] = (char)c; 
+            _buf[_pos] = (char) c;
         }
 
 
@@ -204,11 +195,10 @@ namespace BioLink.Client.Utilities {
             }
 
             if (length > _buf.Length) {
-                throw new System.ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException("length");
             }
             Array.Copy(buffer, offset, _buf, _pos - length, length);
             _pos -= length;
         }
-
     }
 }

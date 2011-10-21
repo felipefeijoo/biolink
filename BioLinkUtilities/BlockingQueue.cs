@@ -12,10 +12,8 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  ******************************************************************************/
-using System;
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace BioLink.Client.Utilities {
@@ -25,7 +23,7 @@ namespace BioLink.Client.Utilities {
     /// </summary>
     public class BlockingQueue<T> {
 
-        private Queue<T> _queue = new Queue<T>();
+        private readonly Queue<T> _queue = new Queue<T>();
 
         /// <summary>
         /// Push a new element to the tail of the queue

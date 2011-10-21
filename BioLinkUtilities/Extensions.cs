@@ -22,7 +22,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
-using System.Collections;
 using System.Text.RegularExpressions;
 
 namespace BioLink.Client.Utilities {
@@ -97,13 +96,16 @@ namespace BioLink.Client.Utilities {
         /// <param name="messageKey">the message key</param>
         /// <param name="args">Arguments</param>
         /// <returns></returns>
+// ReSharper disable InconsistentNaming
         public static string _R(this Control control, string messageKey, params object[] args) {
+// ReSharper restore InconsistentNaming
             string message = null;
             control.InvokeIfRequired(() => {
 
                 try {
                     message = control.FindResource(messageKey) as string;
                 } catch (Exception) {
+                    message = null;
                 }
 
                 if (message == null) {
@@ -132,7 +134,9 @@ namespace BioLink.Client.Utilities {
             MessageBoxResult result = MessageBoxResult.No;
             control.InvokeIfRequired(() => {
                 Window parent = Window.GetWindow(control);
-                result = MessageBox.Show(parent, question, caption, MessageBoxButton.YesNo, icon);
+                if (parent != null) {
+                    result = MessageBox.Show(parent, question, caption, MessageBoxButton.YesNo, icon);
+                }
             });
             return result == MessageBoxResult.Yes;
         }
@@ -141,10 +145,7 @@ namespace BioLink.Client.Utilities {
             bool discard = false;
             control.InvokeIfRequired(() => {
                 Window parent = Window.GetWindow(control);
-                var frm = new DiscardChangesWindow();
-                frm.Owner = parent;
-                frm.label1.Text = question;
-                frm.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                var frm = new DiscardChangesWindow {Owner = parent, label1 = {Text = question}, WindowStartupLocation = WindowStartupLocation.CenterOwner};
                 if (frm.ShowDialog() == true) {
                     discard = true;
                 }
@@ -205,10 +206,8 @@ namespace BioLink.Client.Utilities {
 
             if (b.Length == 0) {
                 return null;
-            } else {
-                return Int32.Parse(b.ToString());
             }
-
+            return Int32.Parse(b.ToString());
         }
 
         /// <summary>
@@ -219,11 +218,13 @@ namespace BioLink.Client.Utilities {
         /// <returns></returns>
         public static bool IsSubclassOfRawGeneric(this Type toCheck, Type generic) {
             while (toCheck != typeof(object)) {
-                var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
+                var cur = toCheck != null && toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
                 if (generic == cur) {
                     return true;
                 }
-                toCheck = toCheck.BaseType;
+                if (toCheck != null) {
+                    toCheck = toCheck.BaseType;
+                }
             }
             return false;
         }
@@ -238,30 +239,26 @@ namespace BioLink.Client.Utilities {
                 control.Document.Blocks.Clear();
             } else {
                 control.SelectAll();
-                control.Selection.Load(new MemoryStream(UTF8Encoding.Default.GetBytes(fragment)), DataFormats.Rtf);
+                control.Selection.Load(new MemoryStream(Encoding.Default.GetBytes(fragment)), DataFormats.Rtf);
             }
         }
 
         public static TabItem AddDeferredLoadingTabItem(this TabControl tab, string title, Func<UIElement> controlFactory) {
-            TabItem tabItem = new TabItem();
-            tabItem.Header = title;
-            tabItem.Content = null;
+            var tabItem = new TabItem {Header = title, Content = null};
             tab.Items.Add(tabItem);
 
-            tabItem.RequestBringIntoView += new RequestBringIntoViewEventHandler((s, e) => {
-                
+            tabItem.RequestBringIntoView += (s, e) => {                
                 if (tabItem.Content == null) {
                     var control = controlFactory();
                     tabItem.Content = control;
                     if (control is ILazyPopulateControl) {
                         var lazyLoadee = control as ILazyPopulateControl;
-                        if (lazyLoadee != null && !lazyLoadee.IsPopulated) {
+                        if (!lazyLoadee.IsPopulated) {
                             lazyLoadee.Populate();
                         }
                     }
                 }
-
-            });
+            };
 
 
             return tabItem;
@@ -277,9 +274,7 @@ namespace BioLink.Client.Utilities {
         /// <param name="content"></param>
         /// <returns></returns>
         public static TabItem AddTabItem(this TabControl tab, string title, UIElement content) {
-            TabItem tabItem = new TabItem();
-            tabItem.Header = title;
-            tabItem.Content = content;
+            var tabItem = new TabItem {Header = title, Content = content};
             tab.Items.Add(tabItem);
 
             if (content is ILazyPopulateControl) {
@@ -287,12 +282,11 @@ namespace BioLink.Client.Utilities {
                 if (tab.Items.Count == 1) {
                     lazyLoadee.Populate();
                 } else {
-                    tabItem.RequestBringIntoView += new RequestBringIntoViewEventHandler((s, e) => {
-
+                    tabItem.RequestBringIntoView += (s, e) => {
                         if (!lazyLoadee.IsPopulated) {
                             lazyLoadee.Populate();
                         }
-                    });
+                    };
                 }
             }
 
@@ -307,20 +301,20 @@ namespace BioLink.Client.Utilities {
         /// <returns></returns>
         public static TreeViewItem GetTreeViewItemClicked(this TreeView treeView, FrameworkElement sender) {
             Point p = sender.TranslatePoint(new Point(1, 1), treeView);
-            DependencyObject obj = treeView.InputHitTest(p) as DependencyObject;
+            var obj = treeView.InputHitTest(p) as DependencyObject;
             while (obj != null && !(obj is TreeViewItem)) {
                 obj = VisualTreeHelper.GetParent(obj);
             }
             return obj as TreeViewItem;
         }
 
-        public static ItemType FindAncestorOfType<ItemType>(this FrameworkElement element, FrameworkElement sender) where ItemType : class {
+        public static TItemType FindAncestorOfType<TItemType>(this FrameworkElement element, FrameworkElement sender) where TItemType : class {
            Point p = sender.TranslatePoint(new Point(1, 1), element);
-            DependencyObject obj = element.InputHitTest(p) as DependencyObject;
-            while (obj != null && !(obj is ItemType)) {
+            var obj = element.InputHitTest(p) as DependencyObject;
+            while (obj != null && !(obj is TItemType)) {
                 obj = VisualTreeHelper.GetParent(obj);
             }
-            return obj as ItemType;
+            return obj as TItemType;
 
         }
 
@@ -349,7 +343,7 @@ namespace BioLink.Client.Utilities {
             if (items.Length == 0) {
                 return "";
             }
-            StringBuilder sb = new StringBuilder(items[0].ToString());
+            var sb = new StringBuilder(items[0].ToString());
             for (int i = 1; i < items.Length; ++i) {
                 sb.Append(delimiter);
                 sb.Append(items[i] == null ? "" : items[i].ToString());
@@ -368,7 +362,7 @@ namespace BioLink.Client.Utilities {
             if (items.Count == 0) {
                 return "";
             }
-            StringBuilder sb = new StringBuilder(items[0].ToString());
+            var sb = new StringBuilder(items[0].ToString());
             for (int i = 1; i < items.Count; ++i) {
                 sb.Append(delimiter);
                 sb.Append(items[i] == null ? "" : items[i].ToString());
@@ -384,9 +378,7 @@ namespace BioLink.Client.Utilities {
         /// <param name="pattern"></param>
         /// <returns></returns>
         public static int ReadRegexInt(this StreamReader reader, string pattern) {
-            return ReadRegex<int>(reader, pattern, (str) => {
-                return Int32.Parse(str);
-            });
+            return ReadRegex(reader, pattern, Int32.Parse);
         }
 
         /// <summary>
@@ -397,9 +389,7 @@ namespace BioLink.Client.Utilities {
         /// <param name="pattern"></param>
         /// <returns></returns>
         public static double ReadRegexDouble(this StreamReader reader, string pattern) {
-            return ReadRegex<double>(reader, pattern, (str) => {
-                return Double.Parse(str);
-            });
+            return ReadRegex(reader, pattern, Double.Parse);
         }
 
         /// <summary>
@@ -426,7 +416,7 @@ namespace BioLink.Client.Utilities {
         /// <param name="reader"></param>
         /// <returns></returns>
         public static double ReadDouble(this StreamReader reader) {
-            var valid = "0123456789.-";
+            const string valid = "0123456789.-";
             int ch;
             var b = new StringBuilder();
             while ((ch = reader.Read()) >= 0 && valid.IndexOf((char) ch) >= 0) {
@@ -436,7 +426,7 @@ namespace BioLink.Client.Utilities {
                 reader.Read();
                 return ReadDouble(reader);
             }
-            double ret = 0;
+            double ret;
             if (double.TryParse(b.ToString(), out ret)) {
                 return ret;
             }

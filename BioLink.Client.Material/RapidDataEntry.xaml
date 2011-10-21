@@ -62,9 +62,9 @@
             <MenuItem Header="_File" />
             <MenuItem Header="_Edit">
                 <MenuItem Header="E_dit Detail">
-                    <MenuItem x:Name="mnuEditSite" Header="_Site..." Click="mnuEditSite_Click" />
-                    <MenuItem x:Name="mnuEditSiteVisit" Header="Site _Visit..." Click="mnuEditSiteVisit_Click" />
-                    <MenuItem x:Name="mnuEditMaterial" Header="_Material..." Click="mnuEditMaterial_Click" />
+                    <MenuItem x:Name="mnuEditSite" Header="_Site..." Click="MnuEditSiteClick" />
+                    <MenuItem x:Name="mnuEditSiteVisit" Header="Site _Visit..." Click="MnuEditSiteVisitClick" />
+                    <MenuItem x:Name="mnuEditMaterial" Header="_Material..." Click="MnuEditMaterialClick" />
                 </MenuItem>
                 <MenuItem Header="_Add">
                     <MenuItem x:Name="mnuAddSite" Header="_Site" Command="{x:Static mat:RapidDataEntry.AddNewSiteCmd}" />
@@ -72,38 +72,38 @@
                     <MenuItem x:Name="mnuAddMaterial" Header="_Material" Command="{x:Static mat:RapidDataEntry.AddNewMaterialCmd}" />
                 </MenuItem>
                 <MenuItem Header="_Move Material To">
-                    <MenuItem x:Name="mnuMoveToNewSite" Header="New _Site" Click="mnuMoveToNewSite_Click" />
-                    <MenuItem x:Name="mnuMoveToNewSiteVisit" Header="New Site _Visit" Click="mnuMoveToNewSiteVisit_Click" />
+                    <MenuItem x:Name="mnuMoveToNewSite" Header="New _Site" Click="MnuMoveToNewSiteClick" />
+                    <MenuItem x:Name="mnuMoveToNewSiteVisit" Header="New Site _Visit" Click="MnuMoveToNewSiteVisitClick" />
                 </MenuItem>
                 <Separator />
                 <MenuItem x:Name="mnuNext" Header="_Next" Command="{x:Static mat:RapidDataEntry.MoveNextCmd}" />
                 <MenuItem x:Name="mnuPrev" Header="_Previous" Command="{x:Static mat:RapidDataEntry.MovePreviousCmd}" />
                 <Separator />
                 <MenuItem Header="Auto _Fill" >
-                    <MenuItem x:Name="mnuAutoFillNone" Header="_No Auto Fill" IsCheckable="True" IsChecked="True" Click="mnuAutoFillNone_Click" />
-                    <MenuItem x:Name="mnuAutoFillCopyCurrent" Header="New items copy _Current Data" IsCheckable="True" Click="mnuAutoFillCopyCurrent_Click" />
-                    <MenuItem x:Name="mnuAutoFillTemplate" Header="New items use _Template Data" IsCheckable="True" Click="mnuAutoFillTemplate_Click" />
+                    <MenuItem x:Name="mnuAutoFillNone" Header="_No Auto Fill" IsCheckable="True" IsChecked="True" Click="MnuAutoFillNoneClick" />
+                    <MenuItem x:Name="mnuAutoFillCopyCurrent" Header="New items copy _Current Data" IsCheckable="True" Click="MnuAutoFillCopyCurrentClick" />
+                    <MenuItem x:Name="mnuAutoFillTemplate" Header="New items use _Template Data" IsCheckable="True" Click="MnuAutoFillTemplateClick" />
                     <Separator />
-                    <MenuItem x:Name="mnuAutoNumber" Header="Auto Num_ber" IsCheckable="True" Click="mnuAutoNumber_Click" />
+                    <MenuItem x:Name="mnuAutoNumber" Header="Auto Num_ber" IsCheckable="True" Click="MnuAutoNumberClick" />
                     <Separator />
-                    <MenuItem x:Name="mnuSetSiteTemplate" Header="Set _Site Template..." Click="mnuSetSiteTemplate_Click" />
-                    <MenuItem x:Name="mnuSetSiteVisitTemplate" Header="Set Site _Visit Template..." Click="mnuSetSiteVisitTemplate_Click" />
-                    <MenuItem x:Name="mnuSetMaterialTemplate" Header="Set _Material Template..." Click="mnuSetMaterialTemplate_Click" />
+                    <MenuItem x:Name="mnuSetSiteTemplate" Header="Set _Site Template..." Click="MnuSetSiteTemplateClick" />
+                    <MenuItem x:Name="mnuSetSiteVisitTemplate" Header="Set Site _Visit Template..." Click="MnuSetSiteVisitTemplateClick" />
+                    <MenuItem x:Name="mnuSetMaterialTemplate" Header="Set _Material Template..." Click="MnuSetMaterialTemplateClick" />
                 </MenuItem>
                 <Separator />
                 <MenuItem Header="Lat./Long. Format">
-                    <MenuItem x:Name="mnuLLDMS" Header="_Degrees Minutes Seconds" IsCheckable="True" IsChecked="True" Click="mnuLLDMS_Click"/>
-                    <MenuItem x:Name="mnuLLDD" Header="De_cimal Degrees" IsCheckable="True" Click="mnuLLDD_Click"/>
-                    <MenuItem x:Name="mnuLLDDM" Header="Degrees - Decimal _Minutes" IsCheckable="True" Click="mnuLLDDM_Click"/>
+                    <MenuItem x:Name="mnuLLDMS" Header="_Degrees Minutes Seconds" IsCheckable="True" IsChecked="True" Click="MnuLldmsClick"/>
+                    <MenuItem x:Name="mnuLLDD" Header="De_cimal Degrees" IsCheckable="True" Click="MnuLlddClick"/>
+                    <MenuItem x:Name="mnuLLDDM" Header="Degrees - Decimal _Minutes" IsCheckable="True" Click="MnuLlddmClick"/>
                 </MenuItem>
                 <Separator />
                 <MenuItem Header="_Unlock all" x:Name="mnuUnlockAll" Command="{x:Static mat:RapidDataEntry.UnlockAllCmd}" />
                 <MenuItem Header="Locking">
-                    <MenuItem x:Name="mnuLockAtStart" Header="Lock Existing Records at Start" IsCheckable="True" IsChecked="True" Click="mnuLockAtStart_Click"/>
-                    <MenuItem x:Name="mnuUnlockAtStart" Header="Unlock Existing Records at Start" IsCheckable="True" Click="mnuUnlockAtStart_Click"/>
+                    <MenuItem x:Name="mnuLockAtStart" Header="Lock Existing Records at Start" IsCheckable="True" IsChecked="True" Click="MnuLockAtStartClick"/>
+                    <MenuItem x:Name="mnuUnlockAtStart" Header="Unlock Existing Records at Start" IsCheckable="True" Click="MnuUnlockAtStartClick"/>
                  </MenuItem>
                 <Separator />
-                <MenuItem x:Name="mnuAddToLabelSet" Header="Add Material to Label Set" Click="mnuAddToLabelSet_Click"/>
+                <MenuItem x:Name="mnuAddToLabelSet" Header="Add Material to Label Set" Click="MnuAddToLabelSetClick"/>
             </MenuItem>
         </Menu>
         
@@ -114,9 +114,9 @@
                     <RowDefinition Height="62" />
                     <RowDefinition Height="2*" />
                 </Grid.RowDefinitions>
-                <ext:ItemsGroupBox Margin="6,0,6,0" Name="grpSites" HeaderPrefix="Site:" Header="{Binding SiteName}" HeaderFontWeight="Bold" IsUnlocked="{Binding Locked, Converter={StaticResource NegatingConverter}}" HeaderForeground="{Binding HeaderForeground}" AddNewClicked="grpSites_AddNewClicked" Focusable="false"/>
-                <ext:ItemsGroupBox Grid.Row="1" Margin="6,0,6,0" Name="grpSiteVisits" HeaderPrefix="Visit:" Header="{Binding VisitName}" HeaderFontWeight="Bold" IsUnlocked="{Binding Locked, Converter={StaticResource NegatingConverter}}" HeaderForeground="{Binding HeaderForeground}" AddNewClicked="grpSiteVisits_AddNewClicked" Focusable="False" />
-                <ext:ItemsGroupBox Grid.Row="2" Margin="6,0,6,6" Name="grpMaterial" HeaderPrefix="Material:" Header="{Binding MaterialName}" HeaderFontWeight="Bold" IsUnlocked="{Binding Locked, Converter={StaticResource NegatingConverter}}" HeaderForeground="{Binding HeaderForeground}" AddNewClicked="grpMaterial_AddNewClicked" Focusable="False" />
+                <ext:ItemsGroupBox Margin="6,0,6,0" Name="grpSites" HeaderPrefix="Site:" Header="{Binding SiteName}" HeaderFontWeight="Bold" IsUnlocked="{Binding Locked, Converter={StaticResource NegatingConverter}}" HeaderForeground="{Binding HeaderForeground}" AddNewClicked="GrpSitesAddNewClicked" Focusable="false"/>
+                <ext:ItemsGroupBox Grid.Row="1" Margin="6,0,6,0" Name="grpSiteVisits" HeaderPrefix="Visit:" Header="{Binding VisitName}" HeaderFontWeight="Bold" IsUnlocked="{Binding Locked, Converter={StaticResource NegatingConverter}}" HeaderForeground="{Binding HeaderForeground}" AddNewClicked="GrpSiteVisitsAddNewClicked" Focusable="False" />
+                <ext:ItemsGroupBox Grid.Row="2" Margin="6,0,6,6" Name="grpMaterial" HeaderPrefix="Material:" Header="{Binding MaterialName}" HeaderFontWeight="Bold" IsUnlocked="{Binding Locked, Converter={StaticResource NegatingConverter}}" HeaderForeground="{Binding HeaderForeground}" AddNewClicked="GrpMaterialAddNewClicked" Focusable="False" />
             </Grid>
         </ScrollViewer>
             
