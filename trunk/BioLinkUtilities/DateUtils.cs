@@ -103,6 +103,7 @@ namespace BioLink.Client.Utilities {
             if (!bldate.HasValue) {
                 return @default;
             }
+
             return BLDateToStr(bldate.Value);
         }
 
@@ -112,6 +113,11 @@ namespace BioLink.Client.Utilities {
         /// <param name="bldate">8 digit BLDate</param>
         /// <returns>Human readable date in the form &lt;day&gt; &lt;short month&gt;, &lt;year&gt;</returns>
         public static string BLDateToStr(int bldate) {
+
+            if (bldate < 0) {
+                return "";
+            }
+
             String datestr = bldate.ToString();
 
             if (datestr.Equals("0")) {

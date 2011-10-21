@@ -121,6 +121,7 @@
     <Compile Include="SystemUtils.cs" />
     <Compile Include="TempFileManager.cs" />
     <Compile Include="tests\ByteConverterTests.cs" />
+    <Compile Include="tests\DateUtilsTests.cs" />
     <Compile Include="tests\FileSystemTraverserTests.cs" />
     <Compile Include="UUCodec.cs" />
     <Compile Include="XmlExtensions.cs" />
