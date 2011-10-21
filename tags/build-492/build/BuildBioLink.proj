@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<Import Project="$(MSBuildExtensionsPath)\ExtensionPack\4.0\MSBuild.ExtensionPack.tasks"/>	
+	
+	<UsingTask TaskName="NUnitTeamCity" AssemblyFile="$(teamcity_dotnet_nunitlauncher_msbuild_task)" />
+	
+	<PropertyGroup>
+		<NSISPath>&quot;C:\Program Files\NSIS\makensis.exe&quot;</NSISPath>
+	</PropertyGroup>
+	<ItemGroup>
+		<AssemblyInfoFiles Include="../**/AssemblyInfo.cs" />
+	</ItemGroup>
+	
+	<ItemGroup>
+		<TestAssemblies Include="..\BioLinkApplication\bin\Debug\BioLink.Client.Utilities.dll" />
+	</ItemGroup>
+	
+	<Target Name="Build">		
+		<MSBuild.ExtensionPack.FileSystem.File 
+			TaskAction="Replace" 
+			RegexPattern="(?'leader'\[assembly: AssemblyVersion\(&quot;\d+.\d+.\d+.)\d+(?'trailer'&quot;\)\])" 
+			Replacement="${leader}$(BuildNumber)${trailer}" 
+			Files="@(AssemblyInfoFiles)" />
+			
+		<MSBuild.ExtensionPack.FileSystem.File 
+			TaskAction="Replace" 
+			RegexPattern="(?'leader'\[assembly: AssemblyFileVersion\(&quot;\d+.\d+.\d+.)\d+(?'trailer'&quot;\)\])" 
+			Replacement="${leader}$(BuildNumber)${trailer}" 
+			Files="@(AssemblyInfoFiles)" />			
+		
+		<MSBuild Projects="../BioLink.sln" />
+		
+		<NUnitTeamCity Assemblies="@(TestAssemblies)" />
+		
+		<Exec Command="$(NSISPath) setup.nsi" />
+		<Copy SourceFiles="setup.exe" DestinationFiles="BioLinkInstaller-3.0.$(BuildNumber).exe" />
+		<Delete Files="setup.exe" />
+	</Target>
+</Project>
