@@ -12,7 +12,7 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-		<TestAssemblies Include="bin\Debug\BioLink.Client.Utilities.dll" />
+		<TestAssemblies Include="..\BioLinkApplication\bin\Debug\BioLink.Client.Utilities.dll" />
 	</ItemGroup>
 	
 	<Target Name="Build">		
