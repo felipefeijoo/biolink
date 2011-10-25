@@ -13,22 +13,14 @@
  * rights and limitations under the License.
  ******************************************************************************/
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using BioLink.Data;
 using BioLink.Data.Model;
 using BioLink.Client.Utilities;
-using System.Collections.ObjectModel;
 
 namespace BioLink.Client.Extensibility {
     /// <summary>
@@ -36,27 +28,23 @@ namespace BioLink.Client.Extensibility {
     /// </summary>
     public partial class LookupControl : UserControl {
 
-        private bool _manualSet = false;
+        private bool _manualSet;
 
         public LookupControl() {
             InitializeComponent();
 
-            this.GotFocus += new RoutedEventHandler((source, e) => {
-                txt.Focus();
-            });
+            GotFocus += (source, e) => txt.Focus();
 
-            txt.PreviewDragEnter += new DragEventHandler(txt_PreviewDragEnter);
-            txt.PreviewDragOver += new DragEventHandler(txt_PreviewDragEnter);
+            txt.PreviewDragEnter += txt_PreviewDragEnter;
+            txt.PreviewDragOver += txt_PreviewDragEnter;
 
-            txt.PreviewDrop += new DragEventHandler(txt_PreviewDrop);
+            txt.PreviewDrop += txt_PreviewDrop;
 
-            txt.PreviewLostKeyboardFocus += new KeyboardFocusChangedEventHandler(txt_PreviewLostKeyboardFocus);
+            txt.PreviewLostKeyboardFocus += txt_PreviewLostKeyboardFocus;
 
-            txt.TextChanged += new TextChangedEventHandler((source, e) => {
-                this.Text = txt.Text;
-            });
+            txt.TextChanged += (source, e) => { Text = txt.Text; };
 
-            txt.PreviewKeyDown += new KeyEventHandler(txt_PreviewKeyDown);
+            txt.PreviewKeyDown += txt_PreviewKeyDown;
 
             txtWatermark.DataContext = this;
 
@@ -70,8 +58,8 @@ namespace BioLink.Client.Extensibility {
                 if (plugin != null) {
                     var viewModel = plugin.CreatePinnableViewModel(pinnable);
                     _manualSet = true;
-                    this.Text = viewModel.DisplayLabel;
-                    this.ObjectID = pinnable.ObjectID;
+                    Text = string.IsNullOrEmpty(viewModel.DisplayLabel) ? "" : viewModel.DisplayLabel.Trim();
+                    ObjectID = pinnable.ObjectID;
                     _manualSet = false;
                     e.Handled = true;
                 }
@@ -114,13 +102,8 @@ namespace BioLink.Client.Extensibility {
                     GeneralTransform transform = txt.TransformToAncestor(this);
                     var rootPoint = txt.PointToScreen(transform.Transform(new Point(0, 0)));
 
-                    var frm = new LookupResults(lookupResults);
-                    frm.Owner = this.FindParentWindow();
+                    var frm = new LookupResults(lookupResults) {Owner = this.FindParentWindow(), Top = rootPoint.Y + txt.ActualHeight, Left = rootPoint.X, Width = txt.ActualWidth, Height = 250};
 
-                    frm.Top = rootPoint.Y + txt.ActualHeight;
-                    frm.Left = rootPoint.X;
-                    frm.Width = txt.ActualWidth;
-                    frm.Height = 250;
 
                     if (frm.ShowDialog().GetValueOrDefault(false)) {
                         _manualSet = true;
@@ -174,11 +157,7 @@ namespace BioLink.Client.Extensibility {
             var service = new SupportService(User);
             var lookupResults = service.LookupSearch(txt.Text, LookupType);
             if (lookupResults != null && lookupResults.Count >= 1) {
-                foreach (LookupResult result in lookupResults) {
-                    if (result.Label.Equals(txt.Text, StringComparison.CurrentCultureIgnoreCase) && this.ObjectID == result.ObjectID) {
-                        return true;
-                    }
-                }
+                return lookupResults.Any(result => result.Label.Equals(txt.Text, StringComparison.CurrentCultureIgnoreCase) && ObjectID == result.ObjectID);
             }
 
             return false;
@@ -189,7 +168,7 @@ namespace BioLink.Client.Extensibility {
             e.Effects = DragDropEffects.None;
 
             if (pinnable != null) {
-                if (pinnable.LookupType == this.LookupType) {
+                if (pinnable.LookupType == LookupType) {
                     e.Effects = DragDropEffects.Link;
                 }
             }
@@ -250,16 +229,16 @@ namespace BioLink.Client.Extensibility {
         public LookupResult SelectedObject { get; private set; }
 
         private void GenericLookup<T>() {
-            PluginManager.Instance.StartSelect<T>((result) => {
+            PluginManager.Instance.StartSelect<T>(result => {
                 _manualSet = true;
-                this.Text = result.Description;
-                this.ObjectID = result.ObjectID;
+                Text = result.Description;
+                ObjectID = result.ObjectID;
                 if (ObjectID.HasValue) {
-                    this.SelectedObject = new LookupResult { LookupObjectID = result.ObjectID.Value, Label = result.Description, LookupType = result.LookupType };
+                    if (result.ObjectID != null) {
+                        SelectedObject = new LookupResult { LookupObjectID = result.ObjectID.Value, Label = result.Description, LookupType = result.LookupType };
+                    }
                 }
-                this.InvokeIfRequired(() => {
-                    txt.Focus();
-                });
+                this.InvokeIfRequired(() => txt.Focus());
                 if (ObjectSelected != null) {
                     ObjectSelected(this, result);
                 }
@@ -312,8 +291,9 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void EditObject() {
-            if (ObjectID.GetValueOrDefault(-1) > 0) {
-                PluginManager.Instance.EditLookupObject(LookupType, ObjectID.Value);
+            int objectId = ObjectID.GetValueOrDefault(-1);
+            if (objectId > 0) {
+                PluginManager.Instance.EditLookupObject(LookupType, objectId);
             }
         }
 
@@ -336,7 +316,7 @@ namespace BioLink.Client.Extensibility {
 
         #region Dependency Properties
 
-        public static readonly DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(LookupControl), new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnTextChanged)));
+        public static readonly DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(LookupControl), new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnTextChanged));
 
         private static void OnTextChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
             var control = (LookupControl)obj;
@@ -351,7 +331,7 @@ namespace BioLink.Client.Extensibility {
             set { SetValue(TextProperty, value); }
         }
 
-        public static readonly DependencyProperty WatermarkTextProperty = DependencyProperty.Register("WatermarkText", typeof(string), typeof(LookupControl), new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnWatermarkTextChanged)));
+        public static readonly DependencyProperty WatermarkTextProperty = DependencyProperty.Register("WatermarkText", typeof(string), typeof(LookupControl), new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnWatermarkTextChanged));
 
         private static void OnWatermarkTextChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
         }
@@ -362,7 +342,7 @@ namespace BioLink.Client.Extensibility {
         }
 
 
-        public static readonly DependencyProperty ObjectIDProperty = DependencyProperty.Register("ObjectID", typeof(int?), typeof(LookupControl), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnObjectIDChanged)));
+        public static readonly DependencyProperty ObjectIDProperty = DependencyProperty.Register("ObjectID", typeof(int?), typeof(LookupControl), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnObjectIDChanged));
 
         private static void OnObjectIDChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
             var control = (LookupControl)obj;
@@ -377,7 +357,7 @@ namespace BioLink.Client.Extensibility {
             set { SetValue(ObjectIDProperty, value); }
         }
 
-        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(LookupControl), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnIsReadOnlyChanged)));
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(LookupControl), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnIsReadOnlyChanged));
 
         public bool IsReadOnly {
             get { return (bool)GetValue(IsReadOnlyProperty); }
@@ -387,7 +367,7 @@ namespace BioLink.Client.Extensibility {
         private static void OnIsReadOnlyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
             var control = (LookupControl)obj;
             if (control != null) {
-                bool readOnly = (bool) args.NewValue;
+                var readOnly = (bool) args.NewValue;
                 control.btnLookup.IsEnabled = !readOnly;
                 control.txt.IsReadOnly = readOnly;
             }
@@ -417,14 +397,10 @@ namespace BioLink.Client.Extensibility {
 
         #endregion
 
-        public void PreSelect(int? objectID, string text, Data.LookupType lookupType) {
-            this.ObjectID = objectID;
-            this.Text = text;
-            if (objectID.HasValue) {
-                this.SelectedObject = new LookupResult { Label = text, LookupObjectID = objectID.Value, LookupType = lookupType };
-            } else {
-                this.SelectedObject = null;
-            }
+        public void PreSelect(int? objectID, string text, LookupType lookupType) {
+            ObjectID = objectID;
+            Text = text;
+            SelectedObject = objectID.HasValue ? new LookupResult { Label = text, LookupObjectID = objectID.Value, LookupType = lookupType } : null;
         }
 
     }

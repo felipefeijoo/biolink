@@ -1,16 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using BioLink.Data;
 using BioLink.Data.Model;
 using BioLink.Client.Utilities;
@@ -24,9 +13,9 @@ namespace BioLink.Client.Taxa {
     /// </summary>
     public partial class SpeciesAvailableNameControl : NameControlBase {
 
-        private SpeciesAvailableNameViewModel _model;
-        private ObservableCollection<SANTypeDataViewModel> _typeData;
-        private Dictionary<string, SANTypeDataType> _SANTypeDataTypes = new Dictionary<string, SANTypeDataType>();
+        private readonly SpeciesAvailableNameViewModel _model;
+        private readonly ObservableCollection<SANTypeDataViewModel> _typeData;
+        private readonly Dictionary<string, SANTypeDataType> _SANTypeDataTypes = new Dictionary<string, SANTypeDataType>();
 
         #region Designer Constructor
         public SpeciesAvailableNameControl() {
@@ -43,48 +32,48 @@ namespace BioLink.Client.Taxa {
             txtInstitution.BindUser(user, PickListType.Phrase, "Institution", TraitCategoryType.Taxon);
             txtSpecimen.BindUser(user, LookupType.Material);
 
-            SpeciesAvailableName data = Service.GetSpeciesAvailableName(taxon.TaxaID.Value);
-            if (data == null) {
-                data = new SpeciesAvailableName { BiotaID = taxon.TaxaID.Value };
-            }
+
+            int taxaId = taxon.TaxaID.GetValueOrDefault(-1);
+            SpeciesAvailableName data = Service.GetSpeciesAvailableName(taxaId) ?? new SpeciesAvailableName { BiotaID = taxaId };
 
             _model = new SpeciesAvailableNameViewModel(data);
 
-            _model.DataChanged += new DataChangedHandler((changed) => {
-                RegisterUniquePendingChange(new UpdateSanDatabaseCommand(_model.Model));
-            });
+            _model.DataChanged += changed => RegisterUniquePendingChange(new UpdateSanDatabaseCommand(_model.Model));
 
-            cmbPrimaryType.SelectionChanged += new SelectionChangedEventHandler((source, e) => {
-                var tstr = cmbPrimaryType.SelectedItem as string;
-                if (_SANTypeDataTypes.ContainsKey(tstr)) {
-                    var typedata = _SANTypeDataTypes[tstr];
-                    cmbSecondaryType.ItemsSource = typedata.SecondaryTypes;                       
+            cmbPrimaryType.SelectionChanged += (source, e) => {
+                                                   var tstr = cmbPrimaryType.SelectedItem as string;
+                                                   if (tstr != null && _SANTypeDataTypes.ContainsKey(tstr)) {
+                                                       var typedata = _SANTypeDataTypes[tstr];
+                                                       cmbSecondaryType.ItemsSource = typedata.SecondaryTypes;                       
+                                                   }
+                                               };
+
+            if (taxon.TaxaID != null) {
+                List<SANTypeDataType> santypes = Service.GetSANTypeDataTypes(taxon.TaxaID.Value);
+                foreach (SANTypeDataType type in santypes) {
+                    _SANTypeDataTypes[type.PrimaryType] = type;
                 }
-            });
 
-            List<SANTypeDataType> santypes = Service.GetSANTypeDataTypes(taxon.TaxaID.Value);
-            foreach (SANTypeDataType type in santypes) {
-                _SANTypeDataTypes[type.PrimaryType] = type;
+                cmbPrimaryType.ItemsSource = santypes.ConvertAll(st=>st.PrimaryType);
             }
 
-            cmbPrimaryType.ItemsSource = santypes.ConvertAll(st=>st.PrimaryType);
-
-            var tdlist = Service.GetSANTypeData(taxon.TaxaID.Value);
+            var tdlist = Service.GetSANTypeData(taxaId);
             _typeData = new ObservableCollection<SANTypeDataViewModel>(tdlist.ConvertAll(d => {
                 var viewmodel = new SANTypeDataViewModel(d);
-                viewmodel.DataChanged +=new DataChangedHandler((changed) => {
-                    if (viewmodel.SANTypeDataID >= 0) {
-                        RegisterUniquePendingChange(new UpdateSANTypeDataCommand(viewmodel.Model));
-                    }
-                    // todo
-                });
+                viewmodel.DataChanged +=changed => {
+                                            if (viewmodel.SANTypeDataID >= 0) {
+                                                RegisterUniquePendingChange(new UpdateSANTypeDataCommand(viewmodel.Model));
+                                            }
+                                        };
                 return viewmodel;
             }));
             lstTypeData.ItemsSource = _typeData;
 
-            lstTypeData.SelectionChanged +=new SelectionChangedEventHandler((source, e) => {
-                var availableTypes = new List<string>();
-                availableTypes.Add(cmbPrimaryType.Text);
+            lstTypeData.SelectionChanged +=(source, e) => {
+
+                gridTypeData.IsEnabled = lstTypeData.SelectedItem != null;
+
+                var availableTypes = new List<string> {cmbPrimaryType.Text};
                 var secondaries = cmbSecondaryType.ItemsSource as IEnumerable<string>;
 
                 if (secondaries != null) {
@@ -93,9 +82,11 @@ namespace BioLink.Client.Taxa {
 
                 cmbType.ItemsSource = availableTypes;
                 gridTypeData.DataContext = lstTypeData.SelectedItem;
-            });
+            };
 
-            this.DataContext = _model;
+            DataContext = _model;
+
+            gridTypeData.IsEnabled = false;
 
 
             this.BackgroundInvoke(() => {
@@ -111,9 +102,7 @@ namespace BioLink.Client.Taxa {
         }
 
         public void AddNewSANTypeData() {
-            var td = new SANTypeData();
-            td.SANTypeDataID = -1;
-            td.BiotaID = Taxon.TaxaID.Value;
+            var td = new SANTypeData {SANTypeDataID = -1, BiotaID = Taxon.TaxaID.GetValueOrDefault(-1)};
             var viewModel = new SANTypeDataViewModel(td);
             viewModel.Museum = NextNewName("<New {0}>", _typeData, () => viewModel.Museum);            
             _typeData.Add(viewModel);
@@ -140,7 +129,7 @@ namespace BioLink.Client.Taxa {
 
         public TaxaService Service { get { return new TaxaService(User); } }
 
-        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(SpeciesAvailableNameControl), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnIsReadOnlyChanged)));
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(SpeciesAvailableNameControl), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnIsReadOnlyChanged));
 
         public bool IsReadOnly {
             get { return (bool)GetValue(IsReadOnlyProperty); }
