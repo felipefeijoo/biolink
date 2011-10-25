@@ -65,7 +65,6 @@ namespace BioLink.Client.Utilities {
                 }
             } catch (Exception ex) {
                 _loggingFailed = true;
-                ErrorMessage.Show(string.Format("{0}\n\nLogging will be disabled.", ex.Message));
             }
         }
 
