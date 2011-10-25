@@ -26,7 +26,7 @@ namespace BioLink.Data {
 
     public class User {
 
-        private String Password;
+        private readonly String Password;
         private SqlTransaction _transaction;
         private string _username;
         private string _connectionString;
@@ -47,9 +47,7 @@ namespace BioLink.Data {
                     var user = service.GetUser(Username);
                     if (user != null) {
                         var permissions = service.GetPermissions(user.GroupID);
-                        _permissions = permissions.ToDictionary((p) => {
-                            return (PermissionCategory)p.PermissionID;
-                        });
+                        _permissions = permissions.ToDictionary(p => (PermissionCategory)p.PermissionID);
 
                         if (user.CanCreateUsers) {
                             _permissions[PermissionCategory.USERMANAGER_USER] = new Permission { Mask1 = 199 };

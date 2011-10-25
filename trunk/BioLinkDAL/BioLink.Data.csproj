@@ -44,6 +44,10 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\shared\lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="nunit.framework, Version=2.5.10.11092, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\shared\lib\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -115,6 +119,8 @@
     <Compile Include="Model\XMLIOSite.cs" />
     <Compile Include="Model\XMLIOSiteVisit.cs" />
     <Compile Include="Model\XMLIOTrait.cs" />
+    <Compile Include="tests\TaxaTests.cs" />
+    <Compile Include="tests\UserTests.cs" />
     <Compile Include="XMLExportObject.cs" />
     <Compile Include="XMLIOExporter.cs" />
     <Compile Include="XMLIOExportOptions.cs" />
