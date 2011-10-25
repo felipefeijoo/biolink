@@ -1,0 +1,67 @@
+﻿<Window x:Class="BioLink.Client.Gazetteer.FindNearestNamePlace"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:sys="clr-namespace=System,assembly=mscorlib"
+             xmlns:my="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility" 
+             xmlns:utl="clr-namespace:BioLink.Client.Utilities;assembly=BioLink.Client.Utilities"
+             mc:Ignorable="d" 
+             Height="463" Width="812" Title="Find nearest named place">
+    <Grid>
+        <Grid.Resources>
+            <Style x:Key="hcs" TargetType="{x:Type GridViewColumnHeader}">
+                <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
+            </Style>
+        </Grid.Resources>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="23" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="36" />
+        </Grid.RowDefinitions>
+
+        <Menu>
+            <MenuItem Header="_Options">
+                <MenuItem Header="Degrees Minutes _Seconds"  x:Name="mnuDMS" Click="mnuPositionMode_Click"  IsChecked="True" IsCheckable="True" Tag="{x:Static Member=my:LatLongMode.DegreesMinutesSeconds}"/>
+                <MenuItem Header="_Decimal Degrees"  x:Name="mnuDecDeg" Click="mnuPositionMode_Click" IsCheckable="True" Tag="{x:Static Member=my:LatLongMode.DecimalDegrees}"/>
+                <MenuItem Header="Degrees Decimal _Minutes" x:Name="mnuDegDecMin" Click="mnuPositionMode_Click" IsCheckable="True" Tag="{x:Static Member=my:LatLongMode.DegreesDecimalMinutes}"/>
+                <MenuItem Header="Degrees Decimal _Minutes Direction" x:Name="mnuDegDecMinDir" Click="mnuPositionMode_Click" IsCheckable="True" Tag="{x:Static Member=my:LatLongMode.DegreesDecimalMinutesDirection}"/>
+                <Separator />
+                <MenuItem Header="Kilometers" x:Name="mnuKilometers" Click="mnuKilometers_Click"  IsCheckable="True" Tag="{x:Static Member=utl:DistanceUnits.Kilometers}"/>
+                <MenuItem Header="Miles" x:Name="mnuMiles" Click="mnuKilometers_Click"  IsCheckable="True" Tag="{x:Static Member=utl:DistanceUnits.Miles}"/>
+            </MenuItem>
+        </Menu>
+
+        <Grid Grid.Row="1">
+            <my:PositionControl HorizontalAlignment="Left" Margin="12,46,0,0" Name="ctlPosition" VerticalAlignment="Top" ShowHeaderLabels="True" IsManipulationEnabled="False" Width="430" />
+            <CheckBox Content="Return only places of type:" Height="16" HorizontalAlignment="Left" Margin="12,104,0,0" Name="chkRestrictPlaceType" VerticalAlignment="Top" Width="177" />
+            <ComboBox Height="23" HorizontalAlignment="Left" Margin="176,101,0,0" Name="cmbPlaceType" VerticalAlignment="Top" Width="266" />
+            <Label Content="Return the nearest " Height="28" HorizontalAlignment="Left" Margin="11,131,0,0" Name="label1" VerticalAlignment="Top" />
+            <TextBox Height="23" HorizontalAlignment="Left" Margin="128,133,0,0" Name="txtMaxResults" VerticalAlignment="Top" Width="42" Text="300" />
+            <Label Content="places." Height="28" HorizontalAlignment="Left" Margin="176,131,0,0" Name="label2" VerticalAlignment="Top" />
+            <ListView Margin="6,167,6,6" Name="lstResults">
+                <ListView.View>
+                    <GridView>
+                        <GridView.Columns>
+                            <GridViewColumn Width="120" Header="Distance" DisplayMemberBinding="{Binding Path=Offset}" HeaderContainerStyle="{StaticResource hcs}" />
+                            <GridViewColumn Width="200" Header="Place" DisplayMemberBinding="{Binding Path=Name}" HeaderContainerStyle="{StaticResource hcs}"/>
+                            <GridViewColumn Width="150" Header="Position" DisplayMemberBinding="{Binding Path=Position}" HeaderContainerStyle="{StaticResource hcs}"/>
+                            <GridViewColumn Width="80" Header="Type" DisplayMemberBinding="{Binding Path=PlaceType}" HeaderContainerStyle="{StaticResource hcs}"/>
+                            <GridViewColumn Width="80" Header="Division" x:Name="colDivision" DisplayMemberBinding="{Binding Path=Division}" HeaderContainerStyle="{StaticResource hcs}" />
+                        </GridView.Columns>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            <Label Height="28" Margin="12,12,12,0" Name="lblGaz" VerticalAlignment="Top" />
+
+        </Grid>
+        <Grid Grid.Row="2" Background="{x:Static SystemColors.ControlBrush}">
+            <Button Content="_Close" Height="23" HorizontalAlignment="Right" Margin="0,7,6,0" Name="btnClose" VerticalAlignment="Top" Width="75" IsCancel="True" Click="btnClose_Click" />
+            <Button Content="_Search" Height="23" HorizontalAlignment="Right" Margin="0,7,87,0" Name="btnSearch" VerticalAlignment="Top" Width="75" IsDefault="True" Click="btnSearch_Click" />
+            <Label Height="28" Margin="6,4,348,0" Name="lblStatus" VerticalAlignment="Top" />
+            <Button Content="_Cancel" Height="23" HorizontalAlignment="Right" Margin="0,7,168,0" Name="btnCancel" VerticalAlignment="Top" Width="75" IsCancel="True" IsEnabled="False" Click="btnCancel_Click" />
+            <Button Content="Show on _map" Height="23" HorizontalAlignment="Right" Margin="0,6,249,0" Name="btnPlot" VerticalAlignment="Top" Width="93" Click="btnPlot_Click" />
+        </Grid>
+    </Grid>
+</Window>
