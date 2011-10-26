@@ -195,7 +195,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="tests\testData\query1.blq">
+    <None Include="tests\testQueries\query1.blq">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
