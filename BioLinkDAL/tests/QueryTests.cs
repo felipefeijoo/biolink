@@ -10,7 +10,7 @@ namespace BioLink.Data.tests {
     [TestFixture]
     public class QueryTests : DatabaseTestBase {
 
-        const string testDataDir = "./tests/testData";
+        const string testQueriesDir = "./tests/testQueries";
 
         private List<FieldDescriptor> _fields;
 
@@ -28,7 +28,7 @@ namespace BioLink.Data.tests {
 
         [Test]
         public void TestQuery1() {
-            var queryFile = Path.Combine(testDataDir, "query1.blq");
+            var queryFile = Path.Combine(testQueriesDir, "query1.blq");
             var criteria = Service.LoadQueryFile(queryFile);
             Service.ExecuteQuery(criteria, false);
         }
