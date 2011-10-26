@@ -31,7 +31,7 @@
                 <MenuItem Header="_Show SQL" Command="{x:Static src:QueryTool.ShowSQL}"/>
                 <Separator />
                 <MenuItem Header="_Options">
-                    <MenuItem Header="_Distinct" IsCheckable="True" />
+                    <MenuItem Header="_Distinct" IsCheckable="True" IsChecked="{Binding Path=IsDistinct}"/>
                 </MenuItem>
             </MenuItem>
 

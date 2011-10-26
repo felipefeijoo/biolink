@@ -592,10 +592,12 @@ namespace BioLink.Data {
             var service = new SupportService(User);
             var criteria = "(";
             service.StoredProcReaderForEach("spQueryHierLookup", (reader) => {
+// ReSharper disable AccessToModifiedClosure
                 if (criteria != "(") {
                     criteria += " OR ";
                 }
                 criteria += GetTableAlias(pstrTable) + ".vchrParentage LIKE '" + reader["vchrParentage"].ToString().Trim() + "%'";
+// ReSharper restore AccessToModifiedClosure
             }, service._P("vchrTableName", pstrTable), service._P("txtCriteria", pstrFieldName + " " + pstrCriteria));
 
             criteria += ")";
@@ -613,13 +615,6 @@ namespace BioLink.Data {
             // If the field is Biota Distribution, the 'ONLY' keyword at the end means only that item. If the 'only' keyword is
             // missing, all elements under the Distribution as well as above are included.
             //
-
-            //On Error GoTo BuildBiotaDistCriteria_ErrH
-            //Dim strCriteria As String
-            //Dim rs As ADODB.Recordset
-            //Dim bOk As Boolean
-            //Dim strParentage As String
-            //Dim strID As String
 
             var strCriteria = pstrCriteria.Trim();
 
@@ -648,8 +643,11 @@ namespace BioLink.Data {
                     if (!string.IsNullOrEmpty(strParentage)) {
                         strParentage = strParentage.Replace("\\", ",");
                         // Perform the join for multiple selectors
+// ReSharper disable AccessToModifiedClosure
                         if (strCriteria != "(") {
+
                             strCriteria += " OR ";
+// ReSharper restore AccessToModifiedClosure
                         }
                         strCriteria += "((" + strTABLE_BIOTA_DIST_ABBREV + ".intDistributionRegionID IN (" + strParentage + ") AND " + strTABLE_BIOTA_DIST_ABBREV + ".bitThroughoutRegion = 1) OR " + strTABLE_BIOTA_DIST_ABBREV + ".intDistributionRegionID = " + strID + " OR " + strTABLE_DIST_REGION_ABBREV + ".vchrParentage LIKE '" + reader["vchrParentage"].ToString().Trim() + "\\%')";
                     }

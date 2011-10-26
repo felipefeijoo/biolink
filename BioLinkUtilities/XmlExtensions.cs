@@ -57,7 +57,7 @@ namespace BioLink.Client.Utilities {
         }
 
         public static string GetCData(this XmlElement element) {
-            return element.ChildNodes.OfType<XmlCDataSection>().Select(child => (child as XmlCDataSection).Value).FirstOrDefault();
+            return element.ChildNodes.OfType<XmlCDataSection>().Select(child => child.Value).FirstOrDefault();
         }
     }
 }

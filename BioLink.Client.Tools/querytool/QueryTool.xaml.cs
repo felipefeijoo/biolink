@@ -14,17 +14,9 @@
  ******************************************************************************/
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using BioLink.Client.Extensibility;
 using BioLink.Client.Utilities;
 using BioLink.Data;
@@ -39,8 +31,7 @@ namespace BioLink.Client.Tools {
     public partial class QueryTool : UserControl {
 
         private ObservableCollection<QueryCriteria> _model;
-        private List<FieldDescriptor> _fields;
-        private bool _distinct = false;
+        private readonly List<FieldDescriptor> _fields;        
 
         static QueryTool() {
             AddCriteria = new RoutedCommand("AddCriteriaCommand", typeof(QueryTool));
@@ -58,35 +49,37 @@ namespace BioLink.Client.Tools {
 
         public QueryTool(User user, ToolsPlugin owner) {
 
-            this.CommandBindings.Add(new CommandBinding(AddCriteria, ExecutedAddCriteria, CanExecuteAddCriteria));
-            this.CommandBindings.Add(new CommandBinding(RemoveCriteria, ExecutedRemoveCriteria, CanExecuteRemoveCriteria));
-            this.CommandBindings.Add(new CommandBinding(RemoveAllCriteria, ExecutedRemoveAllCriteria, CanExecuteRemoveAllCriteria));
-            this.CommandBindings.Add(new CommandBinding(MoveCriteriaUp, ExecutedMoveCriteriaUp, CanExecuteMoveCriteriaUp));
-            this.CommandBindings.Add(new CommandBinding(MoveCriteriaDown, ExecutedMoveCriteriaDown, CanExecuteMoveCriteriaDown));
-            this.CommandBindings.Add(new CommandBinding(NewQuery, ExecutedNewQuery, CanExecuteNewQuery));
-            this.CommandBindings.Add(new CommandBinding(OpenQuery, ExecutedOpenQuery, CanExecuteOpenQuery));
-            this.CommandBindings.Add(new CommandBinding(SaveQuery, ExecutedSaveQuery, CanExecuteSaveQuery));
-            this.CommandBindings.Add(new CommandBinding(ShowSQL, ExecutedShowSQL, CanExecuteShowSQL));
-            this.CommandBindings.Add(new CommandBinding(ExecuteQuery, ExecutedExecuteQuery, CanExecuteExecuteQuery));
+            CommandBindings.Add(new CommandBinding(AddCriteria, ExecutedAddCriteria, CanExecuteAddCriteria));
+            CommandBindings.Add(new CommandBinding(RemoveCriteria, ExecutedRemoveCriteria, CanExecuteRemoveCriteria));
+            CommandBindings.Add(new CommandBinding(RemoveAllCriteria, ExecutedRemoveAllCriteria, CanExecuteRemoveAllCriteria));
+            CommandBindings.Add(new CommandBinding(MoveCriteriaUp, ExecutedMoveCriteriaUp, CanExecuteMoveCriteriaUp));
+            CommandBindings.Add(new CommandBinding(MoveCriteriaDown, ExecutedMoveCriteriaDown, CanExecuteMoveCriteriaDown));
+            CommandBindings.Add(new CommandBinding(NewQuery, ExecutedNewQuery, CanExecuteNewQuery));
+            CommandBindings.Add(new CommandBinding(OpenQuery, ExecutedOpenQuery, CanExecuteOpenQuery));
+            CommandBindings.Add(new CommandBinding(SaveQuery, ExecutedSaveQuery, CanExecuteSaveQuery));
+            CommandBindings.Add(new CommandBinding(ShowSQL, ExecutedShowSQL, CanExecuteShowSQL));
+            CommandBindings.Add(new CommandBinding(ExecuteQuery, ExecutedExecuteQuery, CanExecuteExecuteQuery));
 
             ExecuteQuery.InputGestures.Add(new KeyGesture(Key.F5, ModifierKeys.Control));
 
             InitializeComponent();
-            this.User = user;
-            this.Owner = owner;
+            User = user;
+            Owner = owner;
 
             var service = new SupportService(user);
             _fields = service.GetFieldMappings();
             lvwFields.ItemsSource = _fields;
 
-            CollectionView myView = (CollectionView)CollectionViewSource.GetDefaultView(lvwFields.ItemsSource);
-            PropertyGroupDescription groupDescription = new PropertyGroupDescription("Category");
-            myView.GroupDescriptions.Add(groupDescription);
+            var myView = (CollectionView)CollectionViewSource.GetDefaultView(lvwFields.ItemsSource);
+            var groupDescription = new PropertyGroupDescription("Category");
+            if (myView.GroupDescriptions != null) {
+                myView.GroupDescriptions.Add(groupDescription);
+            }
 
             _model = new ObservableCollection<QueryCriteria>();
             criteriaGrid.ItemsSource = _model;
 
-            var sortItems = new List<String>(new string[] { CriteriaSortConverter.NOT_SORTED, "Ascending", "Descending" });
+            var sortItems = new List<String>(new[] { CriteriaSortConverter.NOT_SORTED, "Ascending", "Descending" });
             sortColumn.ItemsSource = sortItems;
 
         }
@@ -143,81 +136,27 @@ namespace BioLink.Client.Tools {
         }
 
         private void OpenQueryImpl() {
-            var dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.Title = "Load Query";
-            dlg.DefaultExt = "blq"; // Default file extension
-            dlg.Filter = "Query Files (*.blq)|*.blq|All files (*.*)|*.*"; // Filter files by extension
-            Nullable<bool> result = dlg.ShowDialog();
+            var dlg = new Microsoft.Win32.OpenFileDialog {Title = "Load Query", DefaultExt = "blq", Filter = "Query Files (*.blq)|*.blq|All files (*.*)|*.*"};
+            var result = dlg.ShowDialog();
             if (result == true) {                
-                _model = LoadQueryFile(dlg.FileName);
+                _model = new SupportService(User).LoadQueryFile(dlg.FileName);
                 criteriaGrid.ItemsSource = _model;
             }
             
         }
 
-        private ObservableCollection<QueryCriteria> LoadQueryFile(string filename) {
-            var model = new ObservableCollection<QueryCriteria>();
-            using (var reader = new StreamReader(filename)) {
-                string strLine = reader.ReadLine(); // Skip first line (contains header...);
-                string expected = string.Format("Field{0}Criteria{0}Output{0}Alias{0}Sort", (char)2);
-                if (strLine != expected) {
-                    throw new Exception("Invalid query file. Header mismatch.");
-                }
-
-                int lineCount = 0;
-                while ((strLine = reader.ReadLine()) != null) {
-                    if (strLine.Trim().Length > 0) {
-                        lineCount++;
-                        String[] bits = strLine.Split((char)2);
-                        if (bits.Length != 5) {
-                            throw new Exception("Invalid query file. Incorrect number of delimiters on line " + lineCount);
-                        }
-
-                        // first find the field given its category/name combo...
-                        var field = FindFieldByLongName(bits[0]);
-                        if (field != null) {
-                            var c = new QueryCriteria { Field = field, Criteria = bits[1], Output = (bits[2].Trim() == "1"), Alias = bits[3], Sort = bits[4] };
-                            model.Add(c);
-                        } else {
-                            // Could not locate the field...what to do? Ignore or throw?
-                        }
-                    }
-                }
-            }
-            return model;
-        }
-
-        private FieldDescriptor FindFieldByLongName(string name) {
-            int index = name.IndexOf(".");
-            if (index > 0) {
-                string category = name.Substring(0, index);
-                string displayName = name.Substring(index + 1);
-
-                foreach (FieldDescriptor f in _fields) {
-                    if (f.Category == category && f.DisplayName == displayName) {
-                        return f;
-                    }
-                }
-            }
-
-            return null;
-        }
+        public bool IsDistinct { get; set; }
 
         private void SaveQueryImpl() {
-            var dlg = new Microsoft.Win32.SaveFileDialog();
-            dlg.Title = "Save Query";
-            dlg.FileName = "query"; // Default file name
-            dlg.DefaultExt = "blq"; // Default file extension
-            dlg.OverwritePrompt = true;
-            dlg.Filter = "Query Files (*.blq)|*.blq|All files (*.*)|*.*"; // Filter files by extension
-            Nullable<bool> result = dlg.ShowDialog();
+            var dlg = new Microsoft.Win32.SaveFileDialog {Title = "Save Query", FileName = "query", DefaultExt = "blq", OverwritePrompt = true, Filter = "Query Files (*.blq)|*.blq|All files (*.*)|*.*"};
+            var result = dlg.ShowDialog();
             if (result == true) {
                 SaveQueryFile(_model, dlg.FileName);                
             }
         }
 
-        private void SaveQueryFile(ObservableCollection<QueryCriteria> model, string filename) {
-            using (StreamWriter writer = new StreamWriter(filename)) {
+        private void SaveQueryFile(IEnumerable<QueryCriteria> model, string filename) {
+            using (var writer = new StreamWriter(filename)) {
                 writer.WriteLine(string.Format("Field{0}Criteria{0}Output{0}Alias{0}Sort", (char)2));
                 foreach (QueryCriteria c in model) {
                     writer.WriteLine(string.Format("{1}.{2}{0}{3}{0}{4}{0}{5}{0}{6}", (char)2, c.Field.Category, c.Field.DisplayName, c.Criteria, c.Output ? "1" : "0", c.Alias, c.Sort));
@@ -227,18 +166,17 @@ namespace BioLink.Client.Tools {
 
         private void ShowSQLImpl() {
             var service = new SupportService(User);
-            var sql = service.GenerateQuerySQL(_model, _distinct);
-            var frm = new SQLViewer(sql);
-            frm.Owner = this.FindParentWindow();
+            var sql = service.GenerateQuerySQL(_model, IsDistinct);
+            var frm = new SQLViewer(sql) {Owner = this.FindParentWindow()};
             frm.ShowDialog();            
         }
 
         private void ExecuteQueryImpl() {
 
             try {
-                var report = new QueryReport(User, _model, _distinct);
-                ReportResults results = new ReportResults(report);
-                PluginManager.Instance.AddDocumentContent(this.Owner, results, report.Name);            
+                var report = new QueryReport(User, _model, IsDistinct);
+                var results = new ReportResults(report);
+                PluginManager.Instance.AddDocumentContent(Owner, results, report.Name);            
             } catch (Exception ex) {
                 ErrorMessage.Show(ex.Message);
             }
@@ -251,7 +189,7 @@ namespace BioLink.Client.Tools {
 
         private void CanExecuteAddCriteria(object sender, CanExecuteRoutedEventArgs e) {
 
-            QueryTool target = e.Source as QueryTool;
+            var target = e.Source as QueryTool;
 
             if (target != null) {
                 e.CanExecute = target.lvwFields.SelectedItem != null;
@@ -261,7 +199,7 @@ namespace BioLink.Client.Tools {
         }
 
         private void ExecutedAddCriteria(object sender, ExecutedRoutedEventArgs e) {
-            QueryTool target = e.Source as QueryTool;
+            var target = e.Source as QueryTool;
             if (target != null) {
                 target.AddCriteriaImpl();
             }
@@ -271,7 +209,7 @@ namespace BioLink.Client.Tools {
 
         private void CanExecuteRemoveCriteria(object sender, CanExecuteRoutedEventArgs e) {
 
-            QueryTool target = e.Source as QueryTool;
+            var target = e.Source as QueryTool;
 
             if (target != null) {
                 e.CanExecute = target.criteriaGrid.SelectedItem != null;
@@ -281,7 +219,7 @@ namespace BioLink.Client.Tools {
         }
 
         private void ExecutedRemoveCriteria(object sender, ExecutedRoutedEventArgs e) {
-            QueryTool target = e.Source as QueryTool;
+            var target = e.Source as QueryTool;
             if (target != null) {
                 target.RemoveCriteriaImpl();
             }
@@ -291,7 +229,7 @@ namespace BioLink.Client.Tools {
 
         private void CanExecuteRemoveAllCriteria(object sender, CanExecuteRoutedEventArgs e) {
 
-            QueryTool target = e.Source as QueryTool;
+            var target = e.Source as QueryTool;
 
             if (target != null) {
                 e.CanExecute = target.criteriaGrid.Items.Count > 0;
@@ -301,7 +239,7 @@ namespace BioLink.Client.Tools {
         }
 
         private void ExecutedRemoveAllCriteria(object sender, ExecutedRoutedEventArgs e) {
-            QueryTool target = e.Source as QueryTool;
+            var target = e.Source as QueryTool;
             if (target != null) {
                 target.RemoveAllCriteriaImpl();
             }
@@ -311,7 +249,7 @@ namespace BioLink.Client.Tools {
 
         private void CanExecuteMoveCriteriaUp(object sender, CanExecuteRoutedEventArgs e) {
 
-            QueryTool target = e.Source as QueryTool;
+            var target = e.Source as QueryTool;
 
             if (target != null) {
                 e.CanExecute = target.criteriaGrid.SelectedIndex > 0;
@@ -321,7 +259,7 @@ namespace BioLink.Client.Tools {
         }
 
         private void ExecutedMoveCriteriaUp(object sender, ExecutedRoutedEventArgs e) {
-            QueryTool target = e.Source as QueryTool;
+            var target = e.Source as QueryTool;
             if (target != null) {
                 target.MoveCriteriaUpImpl();
             }
@@ -331,7 +269,7 @@ namespace BioLink.Client.Tools {
 
         private void CanExecuteMoveCriteriaDown(object sender, CanExecuteRoutedEventArgs e) {
 
-            QueryTool target = e.Source as QueryTool;
+            var target = e.Source as QueryTool;
 
             if (target != null) {
                 e.CanExecute = target.criteriaGrid.SelectedIndex < target._model.Count - 1 && target.criteriaGrid.SelectedIndex >= 0;
@@ -341,7 +279,7 @@ namespace BioLink.Client.Tools {
         }
 
         private void ExecutedMoveCriteriaDown(object sender, ExecutedRoutedEventArgs e) {
-            QueryTool target = e.Source as QueryTool;
+            var target = e.Source as QueryTool;
             if (target != null) {
                 target.MoveCriteriaDownImpl();
             }
@@ -354,7 +292,7 @@ namespace BioLink.Client.Tools {
         }
 
         private void ExecutedNewQuery(object sender, ExecutedRoutedEventArgs e) {
-            QueryTool target = e.Source as QueryTool;
+            var target = e.Source as QueryTool;
             if (target != null) {
                 target.NewQueryImpl();
             }
@@ -367,7 +305,7 @@ namespace BioLink.Client.Tools {
         }
 
         private void ExecutedOpenQuery(object sender, ExecutedRoutedEventArgs e) {
-            QueryTool target = e.Source as QueryTool;
+            var target = e.Source as QueryTool;
             if (target != null) {
                 target.OpenQueryImpl();
             }
@@ -376,7 +314,7 @@ namespace BioLink.Client.Tools {
         public static RoutedCommand SaveQuery { get; private set; }
 
         private void CanExecuteSaveQuery(object sender, CanExecuteRoutedEventArgs e) {
-            QueryTool target = e.Source as QueryTool;
+            var target = e.Source as QueryTool;
             if (target != null) {
                 e.CanExecute = target._model.Count > 0;
             } else {
@@ -385,7 +323,7 @@ namespace BioLink.Client.Tools {
         }
 
         private void ExecutedSaveQuery(object sender, ExecutedRoutedEventArgs e) {
-            QueryTool target = e.Source as QueryTool;
+            var target = e.Source as QueryTool;
             if (target != null) {
                 target.SaveQueryImpl();
             }
@@ -394,7 +332,7 @@ namespace BioLink.Client.Tools {
         public static RoutedCommand ShowSQL { get; private set; }
 
         private void CanExecuteShowSQL(object sender, CanExecuteRoutedEventArgs e) {
-            QueryTool target = e.Source as QueryTool;
+            var target = e.Source as QueryTool;
             if (target != null) {
                 e.CanExecute = target._model.Count > 0;
             } else {
@@ -403,7 +341,7 @@ namespace BioLink.Client.Tools {
         }
 
         private void ExecutedShowSQL(object sender, ExecutedRoutedEventArgs e) {
-            QueryTool target = e.Source as QueryTool;
+            var target = e.Source as QueryTool;
             if (target != null) {
                 target.ShowSQLImpl();
             }
@@ -412,7 +350,7 @@ namespace BioLink.Client.Tools {
         public static RoutedCommand ExecuteQuery { get; private set; }
 
         private void CanExecuteExecuteQuery(object sender, CanExecuteRoutedEventArgs e) {
-            QueryTool target = e.Source as QueryTool;
+            var target = e.Source as QueryTool;
             if (target != null) {
                 e.CanExecute = target._model.Count > 0;
             } else {
@@ -421,7 +359,7 @@ namespace BioLink.Client.Tools {
         }
 
         private void ExecutedExecuteQuery(object sender, ExecutedRoutedEventArgs e) {
-            QueryTool target = e.Source as QueryTool;
+            var target = e.Source as QueryTool;
             if (target != null) {
                 target.ExecuteQueryImpl();
             }
@@ -438,36 +376,40 @@ namespace BioLink.Client.Tools {
 
         private void ApplyFilter(string text) {
 
-            ListCollectionView dataView = CollectionViewSource.GetDefaultView(lvwFields.ItemsSource) as ListCollectionView;
+            var dataView = CollectionViewSource.GetDefaultView(lvwFields.ItemsSource) as ListCollectionView;
 
             if (String.IsNullOrEmpty(text)) {
-                dataView.Filter = null;
+                if (dataView != null) {
+                    dataView.Filter = null;
+                }
                 return;
             }
-            
+
             text = text.ToLower();
-            dataView.Filter = (obj) => {
-                var field = obj as FieldDescriptor;
+            if (dataView != null) {
+                dataView.Filter = obj => {
+                    var field = obj as FieldDescriptor;
 
-                if (field != null) {
-                    if (field.DisplayName.ToLower().Contains(text)) {
-                        return true;
+                    if (field != null) {
+                        if (field.DisplayName.ToLower().Contains(text)) {
+                            return true;
+                        }
+
+                        if (field.FieldName.ToLower().Contains(text)) {
+                            return true;
+                        }
+
+                        if (field.TableName.ToLower().Contains(text)) {
+                            return true;
+                        }
+
+                        return false;
                     }
+                    return true;
+                };
 
-                    if (field.FieldName.ToLower().Contains(text)) {
-                        return true;
-                    }
-
-                    if (field.TableName.ToLower().Contains(text)) {
-                        return true;
-                    }
-
-                    return false;
-                }
-                return true;
-            };
-
-            dataView.Refresh();
+                dataView.Refresh();
+            }
         }
 
     }
@@ -512,8 +454,8 @@ namespace BioLink.Client.Tools {
     internal class QueryReport : ReportBase {
 
         public QueryReport(User user, IEnumerable<QueryCriteria> criteria, bool distinct) : base(user) {
-            this.Criteria = criteria;
-            this.Distinct = distinct;
+            Criteria = criteria;
+            Distinct = distinct;
             RegisterViewer(new TabularDataViewerSource());
         }
 

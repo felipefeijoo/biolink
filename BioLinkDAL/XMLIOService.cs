@@ -194,10 +194,11 @@ namespace BioLink.Data {
                 } else {
                     if (!string.IsNullOrWhiteSpace(item.Caption)) {
                         try {
+                            XMLImportMultimediaLink item1 = item;
                             Command((con, cmd) => {
                                 cmd.CommandText = "UPDATE tblMultimediaLink SET vchrCaption = @vchrCaption WHERE intMultimediaLinkID = @linkid";
-                                cmd.Parameters.Add(_P("@vchrCaption", item.Caption));
-                                cmd.Parameters.Add(_P("@linkid", item.ID));
+                                cmd.Parameters.Add(_P("@vchrCaption", item1.Caption));
+                                cmd.Parameters.Add(_P("@linkid", item1.ID));
                                 cmd.ExecuteNonQuery();
                             });
                         } catch (Exception ex) {
@@ -208,10 +209,11 @@ namespace BioLink.Data {
                                 if (caption.Length > 255) {
                                     caption = caption.Truncate(255);
                                 }
+                                XMLImportMultimediaLink item1 = item;
                                 Command((con, cmd) => {
                                     cmd.CommandText = "UPDATE tblMultimediaLink SET vchrCaption = @vchrCaption WHERE intMultimediaLinkID = @linkid";
                                     cmd.Parameters.Add(_P("@vchrCaption", caption));
-                                    cmd.Parameters.Add(_P("@linkid", item.ID));
+                                    cmd.Parameters.Add(_P("@linkid", item1.ID));
                                     cmd.ExecuteNonQuery();
                                 });
                             } catch (Exception ex2) {
