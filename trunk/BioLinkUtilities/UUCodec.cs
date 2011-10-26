@@ -74,7 +74,9 @@ namespace BioLink.Client.Utilities {
 
                 // ascii printable to 0-63 and 4-byte to 3-byte conversion
                 long end = didx + line_len;
+// ReSharper disable TooWideLocalVariableScope
                 byte A, B, C, D;
+// ReSharper restore TooWideLocalVariableScope
                 if (end > 2) {
                     while (didx < end - 2) {
                         A = UUDecMap[input.ReadByte()];

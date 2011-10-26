@@ -14,14 +14,15 @@
  ******************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data;
+using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using BioLink.Data.Model;
-using System.Data.SqlClient;
 using System.Reflection;
-using System.Data;
 using BioLink.Client.Utilities;
+using BioLink.Data.Model;
 using Microsoft.VisualBasic;
 
 namespace BioLink.Data {
@@ -262,7 +263,7 @@ namespace BioLink.Data {
         //}
 
         public List<Trait> GetTraits(string category, int intraCategoryID) {
-            var mapper = new GenericMapperBuilder<Trait>().Map("Trait", "Name").PostMapAction((t) => {
+            var mapper = new GenericMapperBuilder<Trait>().Map("Trait", "Name").PostMapAction(t => {
                 t.Category = category;
             }).build();
             return StoredProcToList("spTraitList", mapper, _P("vchrCategory", category), _P("vchrIntraCatID", intraCategoryID + ""));
@@ -270,9 +271,7 @@ namespace BioLink.Data {
 
         public List<String> GetTraitDistinctValues(string traitName, string category) {
             var results = new List<string>();
-            StoredProcReaderForEach("spTraitDistinctValues", (reader) => {
-                results.Add(reader[0] as string);
-            }, _P("vchrTraitType", traitName), _P("vchrCategory", category));
+            StoredProcReaderForEach("spTraitDistinctValues", reader => results.Add(reader[0] as string), _P("vchrTraitType", traitName), _P("vchrCategory", category));
 
             return results;
         }
@@ -290,14 +289,10 @@ namespace BioLink.Data {
             if (phraseCatId > 0) {
                 Logger.Debug("Using phrase category {0} (id={1}) for Distinct List lookup", phraseCat, phraseCatId);
                 var phrases = supportService.GetPhrases(phraseCatId);
-                results = phrases.ConvertAll((phrase) => {
-                    return phrase.PhraseText;
-                });
+                results = phrases.ConvertAll(phrase => phrase.PhraseText);
             } else {
                 Logger.Debug("Selecting distinct values for field {0} from table {1}", field, table);
-                StoredProcReaderForEach("spSelectDistinct", (reader) => {
-                    results.Add(reader[0] as string);
-                }, _P("vchrTableName", table), _P("vchrFieldName", field));
+                StoredProcReaderForEach("spSelectDistinct", reader => results.Add(reader[0] as string), _P("vchrTableName", table), _P("vchrFieldName", field));
             }
 
             return results;
@@ -310,15 +305,13 @@ namespace BioLink.Data {
 
         public List<String> GetTraitNamesForCategory(string traitCategory) {
             var results = new List<string>();
-            StoredProcReaderForEach("spTraitTypeListForCategory", (reader) => {
-                results.Add(reader["Trait"] as string);
-            }, _P("vchrCategory", traitCategory));
+            StoredProcReaderForEach("spTraitTypeListForCategory", reader => results.Add(reader["Trait"] as string), _P("vchrCategory", traitCategory));
             return results;
         }
 
         public int InsertOrUpdateTrait(Trait trait) {
             if (trait.TraitID < 0) {
-                var retval = ReturnParam("NewTraitId", SqlDbType.Int);
+                var retval = ReturnParam("NewTraitId");
                 StoredProcUpdate("spTraitInsert",
                     _P("vchrCategory", trait.Category),
                     _P("intIntraCatID", trait.IntraCatID),
@@ -327,16 +320,16 @@ namespace BioLink.Data {
                     _P("vchrComment", trait.Comment ?? ""),
                     retval);
                 return (int)retval.Value;
-            } else {
-                StoredProcUpdate("spTraitUpdate",
-                    _P("intTraitID", trait.TraitID),
-                    _P("vchrCategory", trait.Category),
-                    _P("vchrTrait", trait.Name),
-                    _P("vchrValue", trait.Value),
-                    _P("vchrComment", trait.Comment));
-
-                return trait.TraitID;
             }
+
+            StoredProcUpdate("spTraitUpdate",
+                             _P("intTraitID", trait.TraitID),
+                             _P("vchrCategory", trait.Category),
+                             _P("vchrTrait", trait.Name),
+                             _P("vchrValue", trait.Value),
+                             _P("vchrComment", trait.Comment));
+
+            return trait.TraitID;
         }
 
         #endregion
@@ -351,7 +344,7 @@ namespace BioLink.Data {
 
         public byte[] GetMultimediaBytes(int mediaId) {
             byte[] ret = null;
-            StoredProcReaderFirst("spMultimediaGetOne", (reader) => {
+            StoredProcReaderFirst("spMultimediaGetOne", reader => {
                 if (!reader.IsDBNull(0)) {
                     var x = reader.GetSqlBinary(0);
                     ret = x.Value;
@@ -368,7 +361,7 @@ namespace BioLink.Data {
         public Multimedia GetMultimedia(int mediaID) {
             var mapper = new GenericMapperBuilder<Multimedia>().Map("vchrname", "Name").build();
             Multimedia ret = null;
-            StoredProcReaderFirst("spMultimediaGet", (reader) => {
+            StoredProcReaderFirst("spMultimediaGet", reader => {
                 ret = mapper.Map(reader);
                 ret.MultimediaID = mediaID;
             }, _P("intMMID", mediaID));
@@ -376,11 +369,13 @@ namespace BioLink.Data {
         }
 
         public void DeleteMultimediaLink(int? multimediaLinkId) {
-            StoredProcUpdate("spMultimediaLinkDelete", _P("intMultimediaLinkID", multimediaLinkId.Value));
+            if (multimediaLinkId != null) {
+                StoredProcUpdate("spMultimediaLinkDelete", _P("intMultimediaLinkID", multimediaLinkId.Value));
+            }
         }
 
         public int InsertMultimedia(string name, string extension, byte[] bytes) {
-            var retval = ReturnParam("NewMultimediaID", SqlDbType.Int);
+            var retval = ReturnParam("NewMultimediaID");
             StoredProcUpdate("spMultimediaInsert", _P("vchrName", name), _P("vchrFileExtension", extension), _P("intSizeInBytes", bytes.Length), retval);
             // Now insert the actual bytes...
             UpdateMultimediaBytes((int)retval.Value, bytes);
@@ -389,7 +384,7 @@ namespace BioLink.Data {
         }
 
         public int InsertMultimediaLink(string category, int intraCatID, string multimediaType, int multimediaID, string caption) {
-            var retval = ReturnParam("[NewMultimediaLinkID]", SqlDbType.Int);
+            var retval = ReturnParam("[NewMultimediaLinkID]");
 
             if (multimediaType == null) {
                 multimediaType = "";
@@ -398,7 +393,7 @@ namespace BioLink.Data {
             var strippedCaption = RTFUtils.StripMarkup(caption);
 
             StoredProcUpdate("spMultimediaLinkInsert",
-                _P("vchrCategory", category.ToString()),
+                _P("vchrCategory", category),
                 _P("intIntraCatID", intraCatID),
                 _P("vchrMultimediaType", multimediaType),
                 _P("intMultimediaID", multimediaID),
@@ -437,22 +432,24 @@ namespace BioLink.Data {
             // Multimedia is the only place where we don't have a stored procedure for the insert/update. This is probably due to a 
             // limitation of ADO.NET or SQL Server back in the 90's or something like that. Either way, we need to insert the actual blob
             // "manually"...
-            Command((conn, cmd) => {
+            if (multimediaId.HasValue) {
+                Command((conn, cmd) => {
 
-                if (User.InTransaction && User.CurrentTransaction != null) {
-                    cmd.Transaction = User.CurrentTransaction;
-                }
+                            if (User.InTransaction && User.CurrentTransaction != null) {
+                                cmd.Transaction = User.CurrentTransaction;
+                            }
 
-                cmd.CommandText = "UPDATE [tblMultimedia] SET imgMultimedia = @blob, intSizeInBytes=@size WHERE intMultimediaID = @multimediaId";
-                cmd.Parameters.Add(_P("blob", bytes));
-                cmd.Parameters.Add(_P("size", bytes.Length));
-                cmd.Parameters.Add(_P("multimediaId", (int)multimediaId));
-                cmd.ExecuteNonQuery();
-            });
+                            cmd.CommandText = "UPDATE [tblMultimedia] SET imgMultimedia = @blob, intSizeInBytes=@size WHERE intMultimediaID = @multimediaId";
+                            cmd.Parameters.Add(_P("blob", bytes));
+                            cmd.Parameters.Add(_P("size", bytes.Length));
+                            cmd.Parameters.Add(_P("multimediaId", (int) multimediaId));
+                            cmd.ExecuteNonQuery();
+                        });
+            }
 
         }
 
-        public Multimedia FindDuplicateMultimedia(System.IO.FileInfo file, out int sizeInBytes) {
+        public Multimedia FindDuplicateMultimedia(FileInfo file, out int sizeInBytes) {
             var name = file.Name;
             if (file.Name.Contains(".")) {
                 name = file.Name.Substring(0, file.Name.LastIndexOf("."));
@@ -490,7 +487,7 @@ namespace BioLink.Data {
         /// <returns></returns>
         public int GetMultimediaSizeInBytes(int multimediaId) {
             int result = -1;
-            SQLReaderForEach("SELECT DATALENGTH(imgMultimedia) FROM [tblMultimedia] where intMultimediaID = @mmid", (reader) => {
+            SQLReaderForEach("SELECT DATALENGTH(imgMultimedia) FROM [tblMultimedia] where intMultimediaID = @mmid", reader => {
                 result = (int)reader[0];
             }, _P("mmid", multimediaId));
 
@@ -500,9 +497,7 @@ namespace BioLink.Data {
         public List<MultimediaLinkedItem> ListItemsLinkedToMultimedia(int multimediaID) {
             var mapper = new GenericMapperBuilder<MultimediaLinkedItem>().build();
             var list = new List<MultimediaLinkedItem>();
-            SQLReaderForEach("SELECT M.intMultimediaLinkID, M.intMultimediaTypeID, M.intCatID, M.intIntraCatID, M.intMultimediaID, M.vchrCaption, M.bitUseInReport, M.GUID, TC.vchrCategory as [CategoryName] FROM tblMultimediaLink as M INNER JOIN tblTraitCategory as TC ON TC.intTraitCategoryID = M.intCatID WHERE intMultimediaID = @mmid", (reader) => {
-                list.Add(mapper.Map(reader));
-            }, _P("mmid", multimediaID));
+            SQLReaderForEach("SELECT M.intMultimediaLinkID, M.intMultimediaTypeID, M.intCatID, M.intIntraCatID, M.intMultimediaID, M.vchrCaption, M.bitUseInReport, M.GUID, TC.vchrCategory as [CategoryName] FROM tblMultimediaLink as M INNER JOIN tblTraitCategory as TC ON TC.intTraitCategoryID = M.intCatID WHERE intMultimediaID = @mmid", reader => list.Add(mapper.Map(reader)), _P("mmid", multimediaID));
 
             return list;
         }
@@ -531,11 +526,7 @@ namespace BioLink.Data {
 
         public List<string> GetMultimediaExtensions() {
             var list = new List<string>();
-
-            StoredProcReaderForEach("spMultimediaExtensions", (reader) => {
-                list.Add(reader[0] as string);
-            });
-
+            StoredProcReaderForEach("spMultimediaExtensions", reader => list.Add(reader[0] as string));
             return list;
         }
 
@@ -555,7 +546,7 @@ namespace BioLink.Data {
         #region Notes
 
         public List<Note> GetNotes(string category, int intraCatID) {
-            var mapper = new GenericMapperBuilder<Note>().PostMapAction((n) => {
+            var mapper = new GenericMapperBuilder<Note>().PostMapAction(n => {
                 n.NoteCategory = category;
                 n.IntraCatID = intraCatID;
             }).build();
@@ -565,9 +556,7 @@ namespace BioLink.Data {
 
         public List<string> GetNoteTypesForCategory(string categoryName) {
             var results = new List<string>();
-            StoredProcReaderForEach("spNoteTypeListForCategory", (reader) => {
-                results.Add(reader["Note"] as string);
-            }, _P("vchrCategory", categoryName));
+            StoredProcReaderForEach("spNoteTypeListForCategory", reader => results.Add(reader["Note"] as string), _P("vchrCategory", categoryName));
             return results;
         }
 
@@ -576,7 +565,7 @@ namespace BioLink.Data {
         }
 
         public int InsertNote(string category, int intraCatID, string noteType, string note, string author, string comments, bool useInReports, int refID, string refPages) {
-            var retval = ReturnParam("NewNoteID", SqlDbType.Int);
+            var retval = ReturnParam("NewNoteID");
             StoredProcUpdate("spNoteInsert",
                 _P("vchrCategory", category),
                 _P("intIntraCatID", intraCatID),
@@ -612,7 +601,7 @@ namespace BioLink.Data {
 
         public List<PhraseCategory> GetPhraseCategories() {
             var mapper = new GenericMapperBuilder<PhraseCategory>().build();
-            return StoredProcToList<PhraseCategory>("spPhraseCategoryList", mapper);
+            return StoredProcToList("spPhraseCategoryList", mapper);
         }
 
         public int GetPhraseCategoryId(string categoryName, bool @fixed) {
@@ -621,12 +610,12 @@ namespace BioLink.Data {
 
         public List<Phrase> GetPhrases(int categoryId) {
             var mapper = new GenericMapperBuilder<Phrase>().Map("Phrase", "PhraseText").build();
-            return StoredProcToList<Phrase>("spPhraseList", mapper, new SqlParameter("intCategory", categoryId));
+            return StoredProcToList("spPhraseList", mapper, new SqlParameter("intCategory", categoryId));
         }
 
         public void AddPhrase(Phrase phrase) {
             // Obviously a copy-pasta error in the Stored Proc, as the return value is called NewRegionID...oh well...
-            SqlParameter retval = ReturnParam("NewRegionID", System.Data.SqlDbType.Int);
+            SqlParameter retval = ReturnParam("NewRegionID");
             StoredProcUpdate("spPhraseInsert", _P("intPhraseCatID", phrase.PhraseCatID), _P("vchrPhrase", phrase.PhraseText), retval);
             if (retval != null && retval.Value != null) {
                 phrase.PhraseID = (Int32)retval.Value;
@@ -659,7 +648,7 @@ namespace BioLink.Data {
         }
 
         public int InsertReference(Reference r) {
-            var retval = ReturnParam("NewRefID", SqlDbType.Int);
+            var retval = ReturnParam("NewRefID");
             StoredProcUpdate("spReferenceInsert",
                 _P("vchrRefCode", r.RefCode),
 			    _P("vchrAuthor", r.Author),
@@ -743,7 +732,7 @@ namespace BioLink.Data {
         }
 
         public List<RefLink> GetReferenceLinks(string categoryName, int intraCatID) {
-            var mapper = new GenericMapperBuilder<RefLink>().Map("intCatID", "CategoryID").Map("RefLink", "RefLinkType").PostMapAction((link) => {
+            var mapper = new GenericMapperBuilder<RefLink>().Map("intCatID", "CategoryID").Map("RefLink", "RefLinkType").PostMapAction(link => {
                 link.IntraCatID = intraCatID;
             }).build();
 
@@ -765,7 +754,7 @@ namespace BioLink.Data {
         }
 
         public int InsertRefLink(RefLink link, string categoryName) {
-            var retval = ReturnParam("RetVal", System.Data.SqlDbType.Int);
+            var retval = ReturnParam("RetVal");
             StoredProcUpdate("spRefLinkInsert",
                 _P("vchrCategory", categoryName),
                 _P("intIntraCatID", link.IntraCatID),                
@@ -786,14 +775,12 @@ namespace BioLink.Data {
 
         public IEnumerable<string> GetRefLinkTypes() {
             var list = new List<String>();
-            StoredProcReaderForEach("spRefLinkTypeList", (reader) => {
-                list.Add(reader["RefLink"] as string);
-            });
+            StoredProcReaderForEach("spRefLinkTypeList", reader => list.Add(reader["RefLink"] as string));
             return list;
         }
 
         public int InsertRefLinkType(string linkType, string categoryName) {
-            var retval = ReturnParam("intRefLinkTypeID", System.Data.SqlDbType.Int);
+            var retval = ReturnParam("intRefLinkTypeID");
             StoredProcUpdate("spRefLinkTypeGetSet",
                 _P("vchrRefLinkType", linkType),
                 _P("vchrCategory", categoryName),
@@ -803,7 +790,7 @@ namespace BioLink.Data {
         }
 
         public List<TaxonRefLink> GetTaxonRefLinks(int referenceID) {
-            var mapper = new GenericMapperBuilder<TaxonRefLink>().PostMapAction((model) => {
+            var mapper = new GenericMapperBuilder<TaxonRefLink>().PostMapAction(model => {
                 model.RefID = referenceID;
             }).build();
             return StoredProcToList("spRefLinkTaxonList", mapper, _P("intReferenceID", referenceID));
@@ -822,7 +809,7 @@ namespace BioLink.Data {
 
         public int? GetReferenceIDFromRefCode(string refCode) {
             int? ret = null;
-            StoredProcReaderFirst("spReferenceGetIDForCode", (reader) => {
+            StoredProcReaderFirst("spReferenceGetIDForCode", reader => {
                 ret = (int) reader["intRefID"];
             }, _P("vchrRefCode", refCode));
 
@@ -843,7 +830,7 @@ namespace BioLink.Data {
             var mapper = new GenericMapperBuilder<NewAutoNumber>().build();
             bool finished = false;
             do {
-                StoredProcReaderFirst("spAutoNumberGetNext", (reader) => {
+                StoredProcReaderFirst("spAutoNumberGetNext", reader => {
                     result = mapper.Map(reader);
                     result.AutoNumberCatID = autoNumberCatID;
                 },
@@ -862,7 +849,7 @@ namespace BioLink.Data {
         }
 
         public int InsertAutoNumber(string category, string name, string prefix, string postfix, int numLeadingZeros, bool ensureUnique) {
-            var retval = ReturnParam("identity", System.Data.SqlDbType.Int);
+            var retval = ReturnParam("identity");
             StoredProcUpdate("spAutoNumberInsert",
                 _P("vchrCategory", category),
                 _P("vchrName", name),
@@ -876,7 +863,7 @@ namespace BioLink.Data {
         }
 
         public bool CheckAutoNumberUnique(string number, string table, string field) {
-            int retval = StoredProcReturnVal<int>("spAutoNumberEnsureUnique", 
+            var retval = StoredProcReturnVal<int>("spAutoNumberEnsureUnique", 
                 _P("vchrNumber", number),
                 _P("vchrFromTable", table),
                 _P("vchrFieldName", field)
@@ -905,7 +892,7 @@ namespace BioLink.Data {
 
         public List<T> GetTopFavorites<T>(FavoriteType type, bool global, GenericMapper<T> mapper) where T : Favorite, new() {
             var results = new List<T>();            
-            StoredProcReaderForEach("spFavoriteListTop", (reader) => {
+            StoredProcReaderForEach("spFavoriteListTop", reader => {
                 var model = mapper.Map(reader);
                 model.FavoriteType = type;
                 results.Add(model);
@@ -917,7 +904,7 @@ namespace BioLink.Data {
 
         public List<T> GetFavorites<T>(FavoriteType type, bool global, int parentFavoriteId, GenericMapper<T> mapper) where T : Favorite, new() {
             var results = new List<T>();
-            StoredProcReaderForEach("spFavoriteList", (reader) => {
+            StoredProcReaderForEach("spFavoriteList", reader => {
                 var model = mapper.Map(reader);
                 model.FavoriteType = type;
                 results.Add(model);
@@ -963,18 +950,19 @@ namespace BioLink.Data {
             builder.Map("ElementIsGroup", "IsGroup");
 
             // ElementIsGroup comes back as a byte value, and needs to be coerced to a boolean...
-            var cm = new ConvertingMapper("ElementIsGroup", new Converter<object, object>((o) => {
-                if (o is byte) {
-                    var b = (byte)o;
-                    return b != 0;
-                } else if (o is short) {
-                    var s = (short)o;
-                    return s != 0;
-                }
-                return null;
-            }));
+            var cm = new ConvertingMapper("ElementIsGroup", o => {
+                                                                if (o is byte) {
+                                                                    var b = (byte)o;
+                                                                    return b != 0;
+                                                                }
+                                                                if (o is short) {
+                                                                    var s = (short)o;
+                                                                    return s != 0;
+                                                                }
+                                                                return null;
+                                                            });
 
-            builder.PostMapAction((favorite) => {
+            builder.PostMapAction(favorite => {
                 favorite.IsGlobal = isGlobal;
 
                 // Copy over the nominated value for ID1
@@ -997,42 +985,42 @@ namespace BioLink.Data {
 
         public List<TaxonFavorite> GetTopTaxaFavorites(bool global) {
             var mapper = ConfigureFavoriteMapper(new GenericMapperBuilder<TaxonFavorite>(), global, fav => fav.TaxaID, null);
-            return GetTopFavorites<TaxonFavorite>(FavoriteType.Taxa, global, mapper);
+            return GetTopFavorites(FavoriteType.Taxa, global, mapper);
         }
 
         public List<TaxonFavorite> GetTaxaFavorites(int parentFavoriteId, bool global) {
             var mapper = ConfigureFavoriteMapper(new GenericMapperBuilder<TaxonFavorite>(), global, fav => fav.TaxaID, null);
-            return GetFavorites<TaxonFavorite>(FavoriteType.Taxa, global, parentFavoriteId, mapper);
+            return GetFavorites(FavoriteType.Taxa, global, parentFavoriteId, mapper);
         }
 
         public List<SiteFavorite> GetTopSiteFavorites(bool global) {
             var mapper = ConfigureFavoriteMapper(new GenericMapperBuilder<SiteFavorite>(), global, fav => fav.ElemID, fav => fav.ElemType);
-            return GetTopFavorites<SiteFavorite>(FavoriteType.Site, global, mapper);
+            return GetTopFavorites(FavoriteType.Site, global, mapper);
         }
 
         public List<SiteFavorite> GetSiteFavorites(int parentFavoriteId, bool global) {
             var mapper = ConfigureFavoriteMapper(new GenericMapperBuilder<SiteFavorite>(), global, fav => fav.ElemID, fav => fav.ElemType);
-            return GetFavorites<SiteFavorite>(FavoriteType.Site, global, parentFavoriteId, mapper);
+            return GetFavorites(FavoriteType.Site, global, parentFavoriteId, mapper);
         }
 
         public List<ReferenceFavorite> GetTopReferenceFavorites(bool global) {
             var mapper = ConfigureFavoriteMapper(new GenericMapperBuilder<ReferenceFavorite>(), global, fav => fav.RefID, null);
-            return GetTopFavorites<ReferenceFavorite>(FavoriteType.Reference, global, mapper);
+            return GetTopFavorites(FavoriteType.Reference, global, mapper);
         }
 
         public List<ReferenceFavorite> GetReferenceFavorites(int parentFavoriteId, bool global) {
             var mapper = ConfigureFavoriteMapper(new GenericMapperBuilder<ReferenceFavorite>(), global, fav => fav.RefID, null);
-            return GetFavorites<ReferenceFavorite>(FavoriteType.Reference, global, parentFavoriteId, mapper);
+            return GetFavorites(FavoriteType.Reference, global, parentFavoriteId, mapper);
         }
 
         public List<DistRegionFavorite> GetTopDistRegionFavorites(bool global) {
             var mapper = ConfigureFavoriteMapper(new GenericMapperBuilder<DistRegionFavorite>(), global, fav => fav.DistRegionID, null);
-            return GetTopFavorites<DistRegionFavorite>(FavoriteType.DistRegion, global, mapper);
+            return GetTopFavorites(FavoriteType.DistRegion, global, mapper);
         }
 
         public List<BiotaStorageFavorite> GetTopBiotaStorageFavorites(bool global) {
             var mapper = ConfigureFavoriteMapper(new GenericMapperBuilder<BiotaStorageFavorite>(), global, fav=>fav.BiotaStorageID, null);
-            return GetTopFavorites<BiotaStorageFavorite>(FavoriteType.BiotaStorage, global, mapper);
+            return GetTopFavorites(FavoriteType.BiotaStorage, global, mapper);
         }
 
         public void DeleteFavorite(int favoriteID) {
@@ -1040,7 +1028,7 @@ namespace BioLink.Data {
         }
 
         public int InsertFavoriteGroup(FavoriteType favType, int parentID, string name, bool global) {
-            var retval = ReturnParam("intNewFavoriteID", System.Data.SqlDbType.Int);
+            var retval = ReturnParam("intNewFavoriteID");
             StoredProcUpdate("spFavoriteInsert",
                 _P("vchrType", favType.ToString()),
                 _P("intParentID", parentID),
@@ -1070,7 +1058,7 @@ namespace BioLink.Data {
         }
 
         public int InsertFavorite(FavoriteType favType, int parentID, int id1, string id2, bool global) {
-            var retval = ReturnParam("intNewFavoriteID", System.Data.SqlDbType.Int);
+            var retval = ReturnParam("intNewFavoriteID");
             StoredProcUpdate("spFavoriteInsert",
                 _P("vchrType", favType.ToString()),
                 _P("intParentID", parentID),
@@ -1096,7 +1084,7 @@ namespace BioLink.Data {
         }
 
         public int InsertAssociate(Associate a) {
-            var retval = ReturnParam("NewAssociateID", SqlDbType.Int);
+            var retval = ReturnParam("NewAssociateID");
             StoredProcUpdate("spAssociateInsert",
                 _P("intFromIntraCatID", a.FromIntraCatID),
                 _P("FromCategory", a.FromCategory),
@@ -1152,7 +1140,7 @@ namespace BioLink.Data {
         }
 
         public int InsertJournal(Journal journal) {
-            var retval = ReturnParam("NewJournalID", SqlDbType.Int);
+            var retval = ReturnParam("NewJournalID");
             StoredProcUpdate("spJournalInsert",
                 _P("vchrAbbrevName", journal.AbbrevName),
                 _P("vchrAbbrevName2", journal.AbbrevName2),
@@ -1195,13 +1183,62 @@ namespace BioLink.Data {
         }
 
         public Boolean OkToDeleteJournal(int journalID) {            
-            int refcount = StoredProcReturnVal<int>("spJournalOkToDelete", _P("intJournalID", journalID));
+            var refcount = StoredProcReturnVal<int>("spJournalOkToDelete", _P("intJournalID", journalID));
             return refcount == 0;
         }
 
         #endregion
 
         #region Query Tool
+
+        public ObservableCollection<QueryCriteria> LoadQueryFile(string filename) {
+            var model = new ObservableCollection<QueryCriteria>();
+            using (var reader = new StreamReader(filename)) {
+                string strLine = reader.ReadLine(); // Skip first line (contains header...);
+                string expected = string.Format("Field{0}Criteria{0}Output{0}Alias{0}Sort", (char)2);
+                if (strLine != expected) {
+                    throw new Exception("Invalid query file. Header mismatch.");
+                }
+
+                var fields = GetFieldMappings();
+
+                int lineCount = 0;
+                while ((strLine = reader.ReadLine()) != null) {
+                    if (strLine.Trim().Length > 0) {
+                        lineCount++;
+                        String[] bits = strLine.Split((char)2);
+                        if (bits.Length != 5) {
+                            throw new Exception("Invalid query file. Incorrect number of delimiters on line " + lineCount);
+                        }
+
+                        // first find the field given its category/name combo...
+                        var field = FindFieldByLongName(bits[0], fields);
+                        if (field != null) {
+                            var c = new QueryCriteria { Field = field, Criteria = bits[1], Output = (bits[2].Trim() == "1"), Alias = bits[3], Sort = bits[4] };
+                            model.Add(c);
+                        } else {
+                            // Could not locate the field...what to do? Ignore or throw?
+                            throw new Exception("Could not map field" + bits[0]);
+                        }
+                    }
+                }
+            }
+            return model;
+        }
+
+        private FieldDescriptor FindFieldByLongName(string name, IEnumerable<FieldDescriptor> fields) {
+            var index = name.IndexOf(".");
+            if (index > 0) {
+                var category = name.Substring(0, index);
+                var displayName = name.Substring(index + 1);
+
+                return fields.FirstOrDefault(f => f.Category == category && f.DisplayName == displayName);
+            }
+
+            return null;
+        }
+
+
 
         public List<FieldDescriptor> GetFieldMappings() {
 
@@ -1218,15 +1255,13 @@ namespace BioLink.Data {
             return list;
         }
 
-        private List<FieldDescriptor> ExtractTraits(string traitCategory, string fieldCategory, string table) {
+        private IEnumerable<FieldDescriptor> ExtractTraits(string traitCategory, string fieldCategory, string table) {
 
             var list = new List<FieldDescriptor>();
 
-            StoredProcReaderForEach("spTraitTypeListForCategory", (reader) => {
-                var desc = new FieldDescriptor { TableName = String.Format("{0}.{1}.{2}", table, reader["ID"], reader["CategoryID"]) };
-                desc.FieldName = reader["Trait"] as string;
-                desc.Category = fieldCategory;
-                desc.DisplayName = desc.FieldName;
+            StoredProcReaderForEach("spTraitTypeListForCategory", reader => {
+                                                                      var desc = new FieldDescriptor {TableName = String.Format("{0}.{1}.{2}", table, reader["ID"], reader["CategoryID"]), FieldName = reader["Trait"] as string, Category = fieldCategory};
+                                                                      desc.DisplayName = desc.FieldName;
                 desc.Description = "Trait category";
 
                 list.Add(desc);
@@ -1243,9 +1278,14 @@ namespace BioLink.Data {
         }
 
         public DataMatrix ExecuteQuery(IEnumerable<QueryCriteria> criteria, bool distinct) {
-            var formatters = BuildFormatters(criteria);
-            var query = QuerySQLGenerator.GenerateSQL(User, criteria, distinct);
-            return StoredProcDataMatrix("spQuerySelect", formatters, _P("txtSELECT", query.SelectHidden), _P("txtFROM", query.From), _P("txtWHERE", query.Where));
+            if (criteria != null) {
+// ReSharper disable PossibleMultipleEnumeration
+                var formatters = BuildFormatters(criteria);
+                var query = QuerySQLGenerator.GenerateSQL(User, criteria, distinct);
+// ReSharper restore PossibleMultipleEnumeration
+                return StoredProcDataMatrix("spQuerySelect", formatters, _P("txtSELECT", query.SelectHidden), _P("txtFROM", query.From), _P("txtWHERE", query.Where));
+            }
+            return null;
         }
 
         public static object FormatDate(object dateObj, string formatOption) {
@@ -1259,12 +1299,13 @@ namespace BioLink.Data {
             }
 
             DateTime? dt = null;
-            int day = 0, month = 0, year = 0;
+            int day = 0, month = 0;
             bool isBLDate = false;
 
             if (Information.IsDate(dateObj)) {
                 dt = DateAndTime.DateValue(dateObj.ToString());
-            } else {                
+            } else {
+                int year;
                 if (DateUtils.BLDateComponents(dateObj.ToString(), out day, out month, out year)) {
                     isBLDate = true;
                     dt = DateAndTime.DateValue(day + " " + DateUtils.MidMonth(month) + ", " + year);
@@ -1286,13 +1327,11 @@ namespace BioLink.Data {
                         if (day == 0) {
                             format = format.Replace("d", "");
                             format = format.Replace("w", "");
-                            day = 1;
                         }
 
                         if (month == 0) {
                             format = format.Replace("m", "");
                             format = format.Replace("q", "");
-                            month = 1;
                         }
 
                         format = format.Replace("\\", "\\\\");
@@ -1324,7 +1363,7 @@ namespace BioLink.Data {
                 formatOption = COORD_FORMAT_DMS;
             }
 
-            double value = 0;
+            double value;
             if (double.TryParse(coordObj.ToString(), out value)) {
                 switch (formatOption.ToLower()) {
                     case COORD_FORMAT_DMS:
@@ -1356,12 +1395,12 @@ namespace BioLink.Data {
                 if (!string.IsNullOrEmpty(c.Field.Format) && !string.IsNullOrEmpty(formatOption)) {
                     switch (c.Field.Format.ToLower()) {
                         case "date":
-                            m[alias] = new ColumnDataFormatter((value, reader) => { return FormatDate(value, formatOption); });
+                            m[alias] = (value, reader) => FormatDate(value, formatOption);
                             break;
                         case "latitude":
                         case "longitude":
                             var coordType = (CoordinateType)Enum.Parse(typeof(CoordinateType), c.Field.Format);
-                            m[alias] = new ColumnDataFormatter((value, reader) => { return FormatCoordinate(value, formatOption, coordType); });
+                            m[alias] = (value, reader) => FormatCoordinate(value, formatOption, coordType);
                             break;
                     }
                 }
@@ -1376,17 +1415,17 @@ namespace BioLink.Data {
 
         public List<UserSearchResult> GetUsers() {
             var mapper = new GenericMapperBuilder<UserSearchResult>().build();
-            return StoredProcToList<UserSearchResult>("spUserListWithIds", mapper);
+            return StoredProcToList("spUserListWithIds", mapper);
         }
 
         public List<Group> GetGroups() {
             var mapper = new GenericMapperBuilder<Group>().build();
-            return StoredProcToList<Group>("spGroupList", mapper);
+            return StoredProcToList("spGroupList", mapper);
         }
 
         public BiolinkUser GetUser(string username) {
             var mapper = new GenericMapperBuilder<BiolinkUser>().build();
-            return StoredProcGetOne<BiolinkUser>("spUserGet", mapper, _P("vchrUserName", username));
+            return StoredProcGetOne("spUserGet", mapper, _P("vchrUserName", username));
         }
 
         public List<Permission> GetPermissions(int groupID) {
@@ -1397,7 +1436,7 @@ namespace BioLink.Data {
 
         public BiotaPermission GetBiotaPermission(int groupId, int userId, int taxonId) {
             var mapper = new GenericMapperBuilder<BiotaPermission>().build();
-            return StoredProcGetOne<BiotaPermission>("spUserPermissionsForBiotaUsingIDs", mapper, _P("intGroupID", groupId), _P("intUserID", userId), _P("intBiotaID", taxonId));
+            return StoredProcGetOne("spUserPermissionsForBiotaUsingIDs", mapper, _P("intGroupID", groupId), _P("intUserID", userId), _P("intBiotaID", taxonId));
         }
 
         public bool HasBiotaPermission(int taxonID, PERMISSION_MASK mask) {
@@ -1485,8 +1524,8 @@ namespace BioLink.Data {
 
             filter = EscapeSearchTerm(filter, true);
 
-            List<LookupProcedureBinding> storedProcs = new List<LookupProcedureBinding>();
-            string paramName = "vchrFilter";
+            var storedProcs = new List<LookupProcedureBinding>();
+            const string paramName = "vchrFilter";
             switch (lookupType) {
                 case LookupType.Taxon:
                     storedProcs.Add(new LookupProcedureBinding {ProcName = "spBiotaLookup", LookupType=lookupType});
@@ -1522,14 +1561,12 @@ namespace BioLink.Data {
                     break;
             }
 
-            if (storedProcs != null && storedProcs.Count > 0) {
+            if (storedProcs.Count > 0) {
                 var results = new List<LookupResult>();
                 foreach (LookupProcedureBinding binding in storedProcs) {
-                    StoredProcReaderForEach(binding.ProcName, (reader) => {
-                        var model = new LookupResult();
-                        model.LookupType = binding.LookupType;
-                        model.LookupObjectID = (int)reader[0];
-                        model.Label = AsString(reader[1]);
+                    LookupProcedureBinding binding1 = binding;
+                    StoredProcReaderForEach(binding.ProcName, reader => {
+                        var model = new LookupResult {LookupType = binding1.LookupType, LookupObjectID = (int) reader[0], Label = AsString(reader[1])};
                         results.Add(model);
                     }, _P(paramName, filter));
                 }
@@ -1556,10 +1593,10 @@ namespace BioLink.Data {
             string strLastUser = "";
             string strLastTable = "";
 
-            StoredProcReaderForEach("spReportUserStatsInPeriod", (reader) => {
+            StoredProcReaderForEach("spReportUserStatsInPeriod", reader => {
                 anyData = true;
                 // If there is a change in the user, print the header.
-                string currentUser = reader.Get<string>("User");
+                var currentUser = reader.Get<string>("User");
                 if (strLastUser != currentUser) {
                     strLastUser = currentUser;
                     rtf.Par().Append(@"\par\pard\sb20\fs30\b ").Append(currentUser);
@@ -1567,7 +1604,7 @@ namespace BioLink.Data {
                 }
             
                 // Add the region group
-                string currentTable = reader.Get<string>("Table");
+                var currentTable = reader.Get<string>("Table");
                 if (strLastTable != currentTable) {
                     strLastTable = currentTable;
                     // Add the region
@@ -1686,9 +1723,9 @@ namespace BioLink.Data {
 
         public DistributionRegion GetDistributionRegion(int regionId) {
             var mapper = new GenericMapperBuilder<DistributionRegion>().build();
-            var sql = "SELECT intDistributionRegionID as DistRegionID, intParentID as DistRegionParentID, vchrName as DistRegionName, 0 as NumChildren from tblDistributionRegion where intDistributionRegionID = @regionid";
+            const string sql = "SELECT intDistributionRegionID as DistRegionID, intParentID as DistRegionParentID, vchrName as DistRegionName, 0 as NumChildren from tblDistributionRegion where intDistributionRegionID = @regionid";
             DistributionRegion result = null;
-            this.SQLReaderForEach(sql, (reader) => {
+            SQLReaderForEach(sql, reader => {
                 result = mapper.Map(reader);
             }, _P("@regionid", regionId));
 
@@ -1697,7 +1734,7 @@ namespace BioLink.Data {
 
         public string GetDistributionRegionParentage(int regionId) {
             var parentage = "";
-            StoredProcReaderFirst("spDistRegionGetParentage", (reader) => {
+            StoredProcReaderFirst("spDistRegionGetParentage", reader => {
                 parentage = reader[0] as string;
             }, _P("intDistributionRegionID", regionId));
             return parentage;
@@ -1723,9 +1760,7 @@ namespace BioLink.Data {
         public List<Associate> GetAssociatesById(List<int> idList) {                        
             var results = new List<Associate>();
             var mapper = new GenericMapperBuilder<Associate>().build();
-            SQLReaderForEach("SELECT * from tblAssociate WHERE intAssociateID in (" + idList.Join(",") + ")", (reader) => {
-                results.Add(mapper.Map(reader));
-            });
+            SQLReaderForEach("SELECT * from tblAssociate WHERE intAssociateID in (" + idList.Join(",") + ")", reader => results.Add(mapper.Map(reader)));
             return results;
         }
 
@@ -1742,8 +1777,8 @@ namespace BioLink.Data {
     public class RefTypeMapping {
 
         public RefTypeMapping(string code, string name) {
-            this.RefTypeCode = code;
-            this.RefTypeName = name;
+            RefTypeCode = code;
+            RefTypeName = name;
         }
 
         public string RefTypeCode { get; set; }
