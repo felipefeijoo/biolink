@@ -42,7 +42,12 @@ namespace BioLink.Client.Extensibility {
 
             txt.PreviewLostKeyboardFocus += txt_PreviewLostKeyboardFocus;
 
-            txt.TextChanged += (source, e) => { Text = txt.Text; };
+            txt.TextChanged += (source, e) => {
+                Text = txt.Text;
+                if (!_manualSet) {
+                    ObjectID = 0;
+                }
+            };
 
             txt.PreviewKeyDown += txt_PreviewKeyDown;
 
@@ -53,7 +58,7 @@ namespace BioLink.Client.Extensibility {
 
         void txt_PreviewDrop(object sender, DragEventArgs e) {
             var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;
-            if (pinnable != null) {
+            if (pinnable != null && !IsReadOnly) {
                 var plugin = PluginManager.Instance.GetPluginByName(pinnable.PluginID);
                 if (plugin != null) {
                     var viewModel = plugin.CreatePinnableViewModel(pinnable);
@@ -157,7 +162,7 @@ namespace BioLink.Client.Extensibility {
             var service = new SupportService(User);
             var lookupResults = service.LookupSearch(txt.Text, LookupType);
             if (lookupResults != null && lookupResults.Count >= 1) {
-                return lookupResults.Any(result => result.Label.Equals(txt.Text, StringComparison.CurrentCultureIgnoreCase) && ObjectID == result.ObjectID);
+                return lookupResults.Any(result => ObjectID == result.ObjectID);
             }
 
             return false;
@@ -167,7 +172,7 @@ namespace BioLink.Client.Extensibility {
             var pinnable = e.Data.GetData(PinnableObject.DRAG_FORMAT_NAME) as PinnableObject;
             e.Effects = DragDropEffects.None;
 
-            if (pinnable != null) {
+            if (pinnable != null && !IsReadOnly) {
                 if (pinnable.LookupType == LookupType) {
                     e.Effects = DragDropEffects.Link;
                 }
