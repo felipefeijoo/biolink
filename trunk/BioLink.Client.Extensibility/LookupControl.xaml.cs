@@ -40,14 +40,13 @@ namespace BioLink.Client.Extensibility {
 
             txt.PreviewDrop += txt_PreviewDrop;
 
-            txt.PreviewLostKeyboardFocus += txt_PreviewLostKeyboardFocus;
+            txt.TextChanged += (source, e) => { Text = txt.Text; };
 
-            txt.TextChanged += (source, e) => {
-                Text = txt.Text;
-                if (!_manualSet) {
-                    ObjectID = 0;
-                }
+            txt.PreviewTextInput += (source, e) => {                
+                ObjectID = 0;
             };
+
+            txt.PreviewLostKeyboardFocus += txt_PreviewLostKeyboardFocus;
 
             txt.PreviewKeyDown += txt_PreviewKeyDown;
 
@@ -84,7 +83,6 @@ namespace BioLink.Client.Extensibility {
                 e.Handled = true;
                 DoFind(txt.Text);
             }
-
         }
 
         private bool DoFind(string filter) {
