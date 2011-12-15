@@ -3,6 +3,27 @@
 
 = Release Notes =
 
+== !BioLink Version 3.0.503 ==
+
+!BioLink 3.0.503 15 December 2011
+
+This is the second "fix" release for BioLink 3.0. It address issues raised since build 485
+
+=== New Features ===
+No new features
+
+=== Issues addressed in this release ===
+
+ * Issue 136	Sites sometimes have position data (lat/long) but no geometry type	 
+ * Issue 137	Taxa Lookup controls are not correctly sorting	 
+ * Issue 138	Dragging from eGaz will not trigger locality update	 
+ * Issue 139	Sometimes dragging a taxa to a lookup control appends (or leaves) a trailing space, cause validation to fail	 
+ * Issue 140	Can edit species available name data before a type data instance has been added	 
+ * Issue 141	Can drag a taxon to the 'identification' lookup control on RDE, even if RDE is locked	 
+ * Issue 142	Dragging certain taxa to a lookup control can be problematic	 
+ * Issue 143	RDE material dropping identification data when viewed	 
+ * Issue 144	Map point colours not being changed from default	 
+
 == !BioLink Version 3.0.485 ==
 
 !BioLink 3.0.485 29 September 2011
