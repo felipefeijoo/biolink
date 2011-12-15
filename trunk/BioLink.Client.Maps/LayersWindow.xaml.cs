@@ -13,27 +13,13 @@
  * rights and limitations under the License.
  ******************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using SharpMap.Layers;
 using System.Collections.ObjectModel;
 using BioLink.Client.Extensibility;
-using SharpMap.Styles;
-using SharpMap;
 using BioLink.Client.Utilities;
 using Microsoft.Win32;
-using System.Drawing.Drawing2D;
-using Microsoft.Windows.Controls;
 
 namespace BioLink.Client.Maps {
     /// <summary>
@@ -47,8 +33,8 @@ namespace BioLink.Client.Maps {
         }
         #endregion
 
-        private MapControl _mapControl;
-        private ObservableCollection<LayerViewModel> _model;
+        private readonly MapControl _mapControl;
+        private readonly ObservableCollection<LayerViewModel> _model;
 
         public LayersWindow(MapControl mapControl) {
             InitializeComponent();
@@ -70,7 +56,7 @@ namespace BioLink.Client.Maps {
                 lstLayers.SelectedIndex = 0;
             }
 
-            this.MapBackColor = mapControl.mapBox.BackColor;
+            MapBackColor = mapControl.mapBox.BackColor;
 
             backgroundColorPicker.DataContext = this;
         }
@@ -83,11 +69,11 @@ namespace BioLink.Client.Maps {
             if (selected != null && selected is VectorLayerViewModel) {
                 var vector = selected as VectorLayerViewModel;
                 if (vector.Symbol != null) {
-                    var info = vector.Tag as SymbolInfo;
+                    var info = vector.Symbol.Tag as SymbolInfo;
                     var control = new PointOptionsControl(info);                    
-                    control.ValuesChanged += new Action<PointOptionsControl>((ctl) => {
-                        vector.Symbol = MapSymbolGenerator.GetSymbol(ctl);
-                    });
+                    control.ValuesChanged += ctl => {
+                                                 vector.Symbol = MapSymbolGenerator.GetSymbol(ctl);
+                                             };
                     grpLayer.Content = control;
                 } else {                    
                     grpLayer.Content = new VectorOptionsControl(vector);
@@ -115,14 +101,26 @@ namespace BioLink.Client.Maps {
                     if (layer is VectorLayer) {
                         var vl = layer as VectorLayer;
                         if (vl.Style.Symbol != null) {
-                            vl.Style.Symbol = (m as VectorLayerViewModel).Symbol;
+                            var vectorLayerViewModel = m as VectorLayerViewModel;
+                            if (vectorLayerViewModel != null) {
+                                vl.Style.Symbol = vectorLayerViewModel.Symbol;
+                            }
                         } else {
-                            vl.Style.Fill = (m as VectorLayerViewModel).FillBrush;
-                            vl.Style.EnableOutline = (m as VectorLayerViewModel).DrawOutline;
+                            var vectorLayerViewModel = m as VectorLayerViewModel;
+                            if (vectorLayerViewModel != null) {
+                                vl.Style.Fill = vectorLayerViewModel.FillBrush;
+                            }
+                            var layerViewModel = m as VectorLayerViewModel;
+                            if (layerViewModel != null) {
+                                vl.Style.EnableOutline = layerViewModel.DrawOutline;
+                            }
                         }
                     }
                 } else {
-                    throw new Exception("Could not load layer " + (m as VectorLayerViewModel).ConnectionID + "!");
+                    var vectorLayerViewModel = m as VectorLayerViewModel;
+                    if (vectorLayerViewModel != null) {
+                        throw new Exception("Could not load layer " + vectorLayerViewModel.ConnectionID + "!");
+                    }
                 }
             }
 
@@ -139,13 +137,12 @@ namespace BioLink.Client.Maps {
 
         private void btnOK_Click(object sender, RoutedEventArgs e) {
             ApplyChanges();
-            this.DialogResult = true;
-            this.Close();
+            DialogResult = true;
+            Close();
         }
 
         private void AddNewLayer() {
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.Filter = "Shape Files (*.shp)|*.shp|All files (*.*)|*.*";
+            var dlg = new OpenFileDialog {Filter = "Shape Files (*.shp)|*.shp|All files (*.*)|*.*"};
             if (dlg.ShowDialog().ValueOrFalse()) {
                 ILayer layer = LayerFileLoader.LoadLayer(dlg.FileName);
                 if (layer != null && layer is VectorLayer) {

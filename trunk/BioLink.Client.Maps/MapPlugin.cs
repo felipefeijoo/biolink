@@ -14,11 +14,7 @@
  ******************************************************************************/
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using BioLink.Client.Extensibility;
-using BioLink.Client.Utilities;
-using BioLink.Data;
 using System.Windows;
 
 namespace BioLink.Client.Maps {
@@ -28,21 +24,18 @@ namespace BioLink.Client.Maps {
         private ControlHostWindow _map;
         private ControlHostWindow _regionMap;
 
-        public MapPlugin() {            
-        }
-
         public override string Name {
             get { return "Map"; }
         }
 
         public override List<IWorkspaceContribution> GetContributions() {
             
-            List<IWorkspaceContribution> contrib = new List<IWorkspaceContribution>();
-
-            contrib.Add(new MenuWorkspaceContribution(this, "ShowMap", (obj, e) => { ShowMap(); },
-                "{'Name':'View', 'Header':'View','InsertAfter':'File'}",
-                "{'Name':'ShowMap', 'Header':'Show _Map'}"
-            ));
+            var contrib = new List<IWorkspaceContribution> {
+                                                               new MenuWorkspaceContribution(this, "ShowMap", (obj, e) => ShowMap(),
+                                                                                             "{'Name':'View', 'Header':'View','InsertAfter':'File'}",
+                                                                                             "{'Name':'ShowMap', 'Header':'Show _Map'}"
+                                                                   )
+                                                           };
 
             return contrib;
         }
@@ -50,9 +43,9 @@ namespace BioLink.Client.Maps {
         private void ShowMap() {
             if (_map == null) {
                 _map = PluginManager.Instance.AddNonDockableContent(this, new MapControl(MapMode.Normal), "Map Tool", SizeToContent.Manual);
-                _map.Closed += new EventHandler((sender, e) => {
-                    _map = null;
-                });
+                _map.Closed += (sender, e) => {
+                                   _map = null;
+                               };
             }
             _map.Show();
             _map.Focus();
@@ -71,11 +64,14 @@ namespace BioLink.Client.Maps {
             if (_regionMap == null) {
                 var map = new MapControl(MapMode.RegionSelect, updatefunc);
                 _regionMap = PluginManager.Instance.AddNonDockableContent(this, map, "Region Selection Tool", SizeToContent.Manual);
-                _regionMap.Closed += new EventHandler((sender, e) => {
-                    _regionMap = null;
-                });
+                _regionMap.Closed += (sender, e) => {
+                                         _regionMap = null;
+                                     };
             }
-            (_regionMap.Control as MapControl).SelectRegions(preselectedRegions);
+            var mapControl = _regionMap.Control as MapControl;
+            if (mapControl != null) {
+                mapControl.SelectRegions(preselectedRegions);
+            }
             _regionMap.Show();
             _regionMap.Focus();
         }
@@ -86,42 +82,58 @@ namespace BioLink.Client.Maps {
 
         public void DropAnchor(double longitude, double latitude, string caption) {
             if (_map != null && _map.IsVisible) {
-                (_map.Control as MapControl).DropDistanceAnchor(longitude, latitude, caption);
+                var mapControl = _map.Control as MapControl;
+                if (mapControl != null) {
+                    mapControl.DropDistanceAnchor(longitude, latitude, caption);
+                }
             }
         }
 
         public void PlotPoints(MapPointSet points) {
             if (_map != null && _map.IsVisible) {
-                (_map.Control as MapControl).PlotPoints(points);
+                var mapControl = _map.Control as MapControl;
+                if (mapControl != null) {
+                    mapControl.PlotPoints(points);
+                }
             }
         }
 
         public void ClearPoints() {
             if (_map != null && _map.IsVisible) {
-                (_map.Control as MapControl).ClearPoints();
+                var mapControl = _map.Control as MapControl;
+                if (mapControl != null) {
+                    mapControl.ClearPoints();
+                }
             }
-
         }
 
 
         public void HideAnchor() {
             if (_map != null && _map.IsVisible) {
-                (_map.Control as MapControl).HideDistanceAnchor(true);
+                var mapControl = _map.Control as MapControl;
+                if (mapControl != null) {
+                    mapControl.HideDistanceAnchor(true);
+                }
             }
         }
 
 
         public void AddRasterLayer(string filename) {
             if (_map != null && _map.IsVisible) {
-                (_map.Control as MapControl).AddRasterLayer(filename);
+                var mapControl = _map.Control as MapControl;
+                if (mapControl != null) {
+                    mapControl.AddRasterLayer(filename);
+                }
             }
         }
 
         public void RemoveRasterLayer(string filename) {
             if (_map != null && _map.IsVisible) {
-                (_map.Control as MapControl).RemoveRasterLayer(filename);
+                var mapControl = _map.Control as MapControl;
+                if (mapControl != null) {
+                    mapControl.RemoveRasterLayer(filename);
+                }
             }
-
         }
     }
 
