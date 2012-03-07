@@ -39,6 +39,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\shared\lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="nunit.framework, Version=2.5.10.11092, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\shared\lib\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="PresentationUI, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
@@ -83,6 +87,7 @@
       <DependentUpon>LabelManagerControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="LabelSetReport.cs" />
+    <Compile Include="Loans\LoanFormGenerator.cs" />
     <Compile Include="MaterialByUserWindow.xaml.cs">
       <DependentUpon>MaterialByUserWindow.xaml</DependentUpon>
     </Compile>
@@ -189,6 +194,7 @@
     <Compile Include="SpecializedMultimediaManager.xaml.cs">
       <DependentUpon>SpecializedMultimediaManager.xaml</DependentUpon>
     </Compile>
+    <Compile Include="tests\LoanFormTests.cs" />
     <Compile Include="usermanager\PermissionProperties.xaml.cs">
       <DependentUpon>PermissionProperties.xaml</DependentUpon>
     </Compile>
