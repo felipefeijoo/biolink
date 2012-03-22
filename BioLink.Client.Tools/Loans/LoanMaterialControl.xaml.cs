@@ -54,7 +54,7 @@ namespace BioLink.Client.Tools {
                 chkReturned.IsEnabled = false;
             }
 
-            this.DataContextChanged += new DependencyPropertyChangedEventHandler(LoanMaterialControl_DataContextChanged);
+            this.DataContextChanged += new DependencyPropertyChangedEventHandler(LoanMaterialControl_DataContextChanged);            
         }
 
         void LoanMaterialControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e) {

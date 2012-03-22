@@ -85,6 +85,7 @@ namespace BioLink.Client.Extensibility {
                 var viewModel = AddNew();
                 if (viewModel != null) {
                     _controller.PopulateFromPinnable(viewModel, pinnable);
+                    viewModel.DataChanged += new DataChangedHandler(viewModel_DataChanged);
                 }
                 e.Handled = true;
             }
@@ -179,6 +180,7 @@ namespace BioLink.Client.Extensibility {
                 var viewModel = _controller.AddNewItem(out command);
                 if (viewModel != null) {
                     _model.Add(viewModel);
+                    viewModel.DataChanged +=new DataChangedHandler(viewModel_DataChanged);
                     if (command != null) {
                         RegisterPendingChange(command);
                     }
@@ -222,6 +224,8 @@ namespace BioLink.Client.Extensibility {
                     return viewModel;
                 }));
 
+                _model.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(_model_CollectionChanged);
+
                 lst.ItemsSource = _model;
 
                 if (_model.Count > 0) {
@@ -229,17 +233,37 @@ namespace BioLink.Client.Extensibility {
                 }
 
                 IsPopulated = true;
+
+                if (ModelChanged != null) {
+                    ModelChanged(_model);
+                }
+            }
+        }
+
+        void _model_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
+            if (ModelChanged != null) {
+                ModelChanged(_model);
             }
         }
 
         void viewModel_DataChanged(ChangeableModelBase viewmodel) {
             if (_controller != null) {
-                var action = _controller.PrepareUpdateAction(viewmodel as ViewModelBase);
-                if (action != null) {
-                    RegisterUniquePendingChange(action);
+
+                var vm = viewmodel as ViewModelBase;
+                if (vm == null || vm.ObjectID > 0) {
+                    var action = _controller.PrepareUpdateAction(viewmodel as ViewModelBase);
+                    if (action != null) {
+                        RegisterUniquePendingChange(action);
+                    }
                 }
             }
+
+            if (ModelChanged != null) {
+                ModelChanged(_model);
+            }
         }
+
+        public event Action<Collection<ViewModelBase>> ModelChanged; 
 
         public bool IsPopulated { get; private set; }
 
