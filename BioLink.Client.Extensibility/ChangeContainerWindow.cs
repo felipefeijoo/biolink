@@ -180,17 +180,37 @@ namespace BioLink.Client.Extensibility {
 
 
             // First validate each command...Commands can produce messages if they are not valid.
-            var messageList = new List<string>();
+            var errorMessages = new List<string>();
+            var warningMessages = new List<string>();
+
+            var messages = new ValidationMessages();
+
             foreach (DatabaseCommand command in _pendingChanges) {
-                var messages = command.Validate();
-                if (messages != null && messages.Count > 0) {
-                    messageList.AddRange(messages);
+                command.Validate(messages);
+            }
+
+            if (messages != null && messages.Messages.Count > 0) {
+                foreach (ValidationMessage message in messages.Messages) {
+                    switch (message.ValidationType) {
+                        case ValidationType.Error:
+                            errorMessages.Add(message.Message);
+                            break;
+                        case ValidationType.Warning:
+                            warningMessages.Add(message.Message);
+                            break;
+                    }
                 }
             }
 
-            if (messageList.Count > 0) {
-                ErrorMessage.Show("One or more validation errors occured:\n\n{0}\n\nOperation aborted.", messageList.Join("\n\n"));
+            if (errorMessages.Count > 0) {
+                ErrorMessage.Show("One or more validation errors occured:\n\n{0}\n\nOperation aborted.", errorMessages.Join("\n\n"));
                 return;
+            }
+
+            if (warningMessages.Count > 0) {
+                if (!WarningMessage.Show("Please acknowledge the following warning(s) by clicking 'yes' to continue this operation, or 'no' to cancel this operation:\n\n{0}\n\nDo you wish to continue?", warningMessages.Join("\n\n"))) {
+                    return;
+                }
             }
 
             // It may be that this control is aggregated as part of a larger control. This means that, come save time, there

@@ -14,11 +14,10 @@
         <Grid>
             <Grid.RowDefinitions>                
                 <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-                        
-            <Grid Grid.Row="1" x:Name="gridPreferences" Margin="6">
-            </Grid>
-
+            </Grid.RowDefinitions>                        
+            <ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto">
+                <Grid Grid.Row="1" x:Name="gridPreferences" Margin="6" />
+            </ScrollViewer>
         </Grid>
         
         <Grid Grid.Row="1" Background="{x:Static SystemColors.ControlBrush}">

@@ -35,7 +35,7 @@
         <ext:LookupControl Grid.Row="1" Grid.Column="1" Height="23" x:Name="txtTaxon" ObjectID="{Binding Path=TaxonID}" Text="{Binding Path=TaxonName}" />
 
         <Label Grid.Row="2" Grid.Column="0" Content="Description:" />
-        <ext:TextBox Grid.Row="2" Grid.Column="1" TextWrapping="Wrap" x:Name="txtDescription" Text="{Binding Path=MaterialDescription}" />
+        <ext:TextBox Grid.Row="2" Grid.Column="1" TextWrapping="Wrap" x:Name="txtDescription" Text="{Binding Path=MaterialDescription}" AcceptsReturn="True" />
 
         <Label Grid.Row="3" Grid.Column="0" Content="Specimen count:" />
         <ext:TextBox Grid.Row="3" Grid.Column="1" x:Name="txtSpecimenCount" Height="23" Text="{Binding Path=NumSpecimens}" />

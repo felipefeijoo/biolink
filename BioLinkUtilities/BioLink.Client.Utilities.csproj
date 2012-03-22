@@ -124,6 +124,7 @@
     <Compile Include="tests\DateUtilsTests.cs" />
     <Compile Include="tests\FileSystemTraverserTests.cs" />
     <Compile Include="UUCodec.cs" />
+    <Compile Include="WarningMessage.cs" />
     <Compile Include="XmlExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

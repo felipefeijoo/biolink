@@ -61,10 +61,41 @@ namespace BioLink.Data {
 
         public Action SuccessAction { get; set; }
 
-        public virtual List<string> Validate() {
-            return null;
+        public virtual void Validate(ValidationMessages messages) {
         }
         
+    }
+
+    public enum ValidationType {
+        Error, Warning
+    }
+
+    public class ValidationMessage {
+       
+        public ValidationMessage(ValidationType type, string message) {            
+            ValidationType = type;
+            Message = message;
+        }
+
+        public ValidationType ValidationType { get; set; }
+        public string Message { get; set; }
+    }
+
+    public class ValidationMessages {
+
+        public ValidationMessages() {
+            Messages = new List<ValidationMessage>();
+        }
+
+        public void Warn(string message) {
+            Messages.Add(new ValidationMessage(ValidationType.Warning, message));
+        }
+
+        public void Error(string message) {
+            Messages.Add(new ValidationMessage(ValidationType.Error, message));
+        }
+
+        public List<ValidationMessage> Messages { get; private set; }
     }
 
     public abstract class GenericDatabaseCommand<T> : DatabaseCommand where T: BioLinkDataObject {

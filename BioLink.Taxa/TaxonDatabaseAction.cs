@@ -64,14 +64,14 @@ namespace BioLink.Client.Taxa {
 
         public Taxon Taxon { get; private set; }
 
-        public override List<string> Validate() {
+        public override void Validate(ValidationMessages messages) {
             var list = new List<string>();
 
             if (string.IsNullOrEmpty(Taxon.Epithet)) {
-                list.Add("The name must not be blank");
+                messages.Error("The name must not be blank");
             } else {
                 if (Taxon.Epithet.Contains(" ") && !(Taxon.AvailableName.ValueOrFalse() || Taxon.LiteratureName.ValueOrFalse())) {
-                    list.Add("The name must be only one word.");
+                    messages.Error("The name must be only one word.");
                 }
             }
 
@@ -80,13 +80,11 @@ namespace BioLink.Client.Taxa {
                     int year;
                     if (Int32.TryParse(Taxon.YearOfPub, out year)) {
                         if (year < 1700 || year > 4000) {
-                            list.Add("The year must be between the years 1700 and 4000");
+                            messages.Error("The year must be between the years 1700 and 4000");
                         }
                     }
                 }                
             }
-
-            return list;
         }
 
         protected override void ProcessImpl(User user) {
