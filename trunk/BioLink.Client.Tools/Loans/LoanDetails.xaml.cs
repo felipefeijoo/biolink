@@ -54,13 +54,12 @@ namespace BioLink.Client.Tools {
 
         void txtBorrower_ObjectIDChanged(object source, int? objectID) {
 
+            var permitNumberRegex = new Regex("permit[ -_]*(number|no[.]|#)");
             if (Preferences.UseLoanPermitNumberTrait.Value) {
                 if (objectID.HasValue) {
                     var supportService = new SupportService(User);
                     var traits = supportService.GetTraits("contact", objectID.Value);
-                    var permitNumberTrait = traits.Find((trait) => {
-                        return trait.Name.Equals("Permit Number", StringComparison.CurrentCultureIgnoreCase);
-                    });
+                    var permitNumberTrait = traits.Find((trait) => permitNumberRegex.IsMatch(trait.Name));
 
                     if (permitNumberTrait != null) {
                         txtPermitNumber.Text = permitNumberTrait.Value;
