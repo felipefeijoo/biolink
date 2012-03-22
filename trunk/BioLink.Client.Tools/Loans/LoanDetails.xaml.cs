@@ -143,7 +143,25 @@ namespace BioLink.Client.Tools {
                 _viewModel.DataChanged += new DataChangedHandler(viewModel_DataChanged);
             }
 
-            tabLoan.AddTabItem("_Material", new OneToManyControl(new LoanMaterialControl(User, model)));
+            var materialControl = new OneToManyControl(new LoanMaterialControl(User, model));
+
+            var lbl = new Label { Content = "" };
+            materialControl.AddButtonRHS(lbl);
+
+            materialControl.ModelChanged += list => {
+                var dblTotal = list.Sum(vm => {
+                    var loanMaterial = vm as LoanMaterialViewModel;
+                    decimal subtotal;
+                    if (Decimal.TryParse(loanMaterial.NumSpecimens, out subtotal)) {
+                        return subtotal;
+                    }
+                    return 0;
+                });
+
+                lbl.Content = String.Format("Total specimen count: {0}", (long) dblTotal);
+            };
+
+            tabLoan.AddTabItem("_Material", materialControl);
             tabLoan.AddTabItem("_Correspondence", new OneToManyControl(new LoanCorrespondenceControl(User, model)));
             _reminders = new OneToManyControl(new LoanRemindersControl(User, model));
             tabLoan.AddTabItem("_Reminders", _reminders);
