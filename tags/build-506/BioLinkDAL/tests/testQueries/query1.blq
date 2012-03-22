@@ -1,0 +1,14 @@
+FieldCriteriaOutputAliasSort
+Nomenclature.Full Name1
+PoliticalRegion.Region Name1
+Site.Site Name1
+Site.Longitude1
+Site.Latitude1
+SiteVisit.Start Date0
+SiteVisit.Collector(s)1
+Material.Accession number1
+MaterialPart.Number of Specimens1
+MaterialPart.Lifestage1
+MaterialPart.Gender1
+Material.Who Created= 'lem028'1
+Material.Date Createdbetween '20111014' and '20111018'1
