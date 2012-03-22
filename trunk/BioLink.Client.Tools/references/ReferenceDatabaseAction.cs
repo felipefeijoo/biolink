@@ -53,14 +53,10 @@ namespace BioLink.Client.Tools {
             required.Add(PermissionCategory.SUPPORT_REFS, PERMISSION_MASK.INSERT);
         }
 
-        public override List<string> Validate() {
-            var errors = new List<String>();
-
+        public override void Validate(ValidationMessages messages) {
             if (String.IsNullOrEmpty(Model.RefCode)) {
-                errors.Add("You must supply a Reference Code before you can continue");
+                messages.Error("You must supply a Reference Code before you can continue");
             }
-
-            return errors;
         }
 
     }

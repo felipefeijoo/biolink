@@ -20,6 +20,8 @@ namespace BioLink.Client.Extensibility {
         public static PreferenceEditor<bool> AutoGenerateMaterialNames = new PreferenceEditor<bool>("Material.AlwaysRegenerateMaterialName", "Always re-generate Material names when details are changed?", PreferenceScope.Profile, false);
 
         public static PreferenceEditor<bool> AutoGenerateSiteVisitNames = new PreferenceEditor<bool>("Material.AlwaysRegenerateSiteVisitName", "Always re-generate Site Visit names when details are changed?", PreferenceScope.Profile, false);
+
+        public static PreferenceEditor<bool> UseLoanPermitNumberTrait = new PreferenceEditor<bool>("Loans.UsePermitNumberTrait", "Seed a loans permit number from the borrowers permit number trait?", PreferenceScope.Profile, true);
         
     }
 

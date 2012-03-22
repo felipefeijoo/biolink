@@ -73,16 +73,22 @@ namespace BioLink.Client.Tools {
         }
 
         private void DoFind() {
-
-            var service = new LoanService(User);
-
+            
+            var searchTerm = txtFind.Text;
             var what = cmbWhat.SelectedItem as Pair<string, string>;
-            if (string.IsNullOrWhiteSpace(txtFind.Text) || what == null) {
+
+            if (string.IsNullOrWhiteSpace(searchTerm) || what == null) {
                 lvw.ItemsSource = new ObservableCollection<LoanViewModel>();
                 return;
             }
 
-            var list = service.FindLoans(txtFind.Text, what.Second, chkFindOnlyOpenLoans.IsChecked.ValueOrFalse());
+            var service = new LoanService(User);
+
+            if (!searchTerm.EndsWith("*") && !searchTerm.EndsWith("%")) {
+                searchTerm += "*";
+            }
+
+            var list = service.FindLoans(searchTerm, what.Second, chkFindOnlyOpenLoans.IsChecked.ValueOrFalse());
             _model = new ObservableCollection<LoanViewModel>(list.Select((m) => {
                 return new LoanViewModel(m);
             }));

@@ -47,7 +47,25 @@ namespace BioLink.Client.Tools {
             this.LoanID = loanID;
             this.ChangeContainerSet += new Action(LoanDetails_ChangeContainerSet);
             this.ChangesCommitted += new PendingChangesCommittedHandler(LoanDetails_ChangesCommitted);
+            txtBorrower.ObjectIDChanged += new ObjectIDChangedHandler(txtBorrower_ObjectIDChanged);
             
+        }
+
+        void txtBorrower_ObjectIDChanged(object source, int? objectID) {
+
+            if (Preferences.UseLoanPermitNumberTrait.Value) {
+                if (objectID.HasValue) {
+                    var supportService = new SupportService(User);
+                    var traits = supportService.GetTraits("contact", objectID.Value);
+                    var permitNumberTrait = traits.Find((trait) => {
+                        return trait.Name.Equals("Permit Number", StringComparison.CurrentCultureIgnoreCase);
+                    });
+
+                    if (permitNumberTrait != null) {
+                        txtPermitNumber.Text = permitNumberTrait.Value;
+                    }
+                }
+            }
         }
 
         void LoanDetails_ChangesCommitted(object sender) {
@@ -218,6 +236,15 @@ namespace BioLink.Client.Tools {
 
         protected override void BindPermissions(PermissionBuilder required) {
             required.None();
+        }
+
+        public override void Validate(ValidationMessages messages) {
+            var service = new LoanService(PluginManager.Instance.User);
+            // Search for loans with this loan number...
+            var existing = service.FindLoans(Model.LoanNumber, "l", false);
+            if (existing != null && existing.Count > 0) {
+                messages.Warn("A loan already exists with this loan number.");
+            }
         }
 
     }
