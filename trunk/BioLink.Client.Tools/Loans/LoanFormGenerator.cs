@@ -6,6 +6,7 @@ using BioLink.Data;
 using BioLink.Data.Model;
 using System.IO;
 using BioLink.Client.Utilities;
+using System.Text.RegularExpressions;
 
 namespace BioLink.Client.Tools {
 
@@ -41,6 +42,27 @@ namespace BioLink.Client.Tools {
             }
 
             return sb.ToString();
+        }
+
+        private static int CountTotalSpecimens(IEnumerable<LoanMaterial> material) {
+            // Count the total number of specimens currently attached to this loan. Sometimes specimen counts are represented as "1 x adult" etc,
+            // so we be a bit liberal in our interpretation.
+            var specimenCountRegex = new Regex(@"[^\d]*(\d+)[^\d]*");
+            var dblTotal = material.Sum(loanMaterial => {
+                decimal subtotal = 0;
+                var matcher = specimenCountRegex.Match(loanMaterial.NumSpecimens);
+                while (matcher.Success) {
+                    decimal d;
+                    if (Decimal.TryParse(matcher.Groups[1].Value, out d)) {
+                        subtotal += d;
+                    }
+                    matcher = matcher.NextMatch();
+                }
+
+                return subtotal;
+            });
+
+            return (int) dblTotal;
         }
 
         private static string ReadPlaceHolder(TextReader reader, StringBuilder rtfbuffer) {
@@ -94,6 +116,14 @@ namespace BioLink.Client.Tools {
 
         private static string SubstitutePlaceHolder(string key, Loan loan, IEnumerable<LoanMaterial> material, IEnumerable<Trait> traits) {
             var sb = new StringBuilder();
+
+            // Special placeholders
+
+            switch (key.ToLower()) {
+                case "totalspecimencount":
+                    return CountTotalSpecimens(material) + "";
+            }
+
             if (key.Contains('(')) {
                 // group...
                 var collectionName = key.Substring(0, key.IndexOf('('));

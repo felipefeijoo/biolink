@@ -29,6 +29,7 @@ using BioLink.Client.Extensibility;
 using BioLink.Client.Utilities;
 using BioLink.Data;
 using BioLink.Data.Model;
+using System.Text.RegularExpressions;
 
 namespace BioLink.Client.Tools {
     /// <summary>
@@ -148,14 +149,24 @@ namespace BioLink.Client.Tools {
             var lbl = new Label { Content = "" };
             materialControl.AddButtonRHS(lbl);
 
+
+            // Count the total number of specimens currently attached to this loan. Sometimes specimen counts are represented as "1 x adult" etc,
+            // so we be a bit liberal in our interpretation.
+            var specimenCountRegex = new Regex(@"[^\d]*(\d+)[^\d]*");
             materialControl.ModelChanged += list => {
                 var dblTotal = list.Sum(vm => {
                     var loanMaterial = vm as LoanMaterialViewModel;
-                    decimal subtotal;
-                    if (Decimal.TryParse(loanMaterial.NumSpecimens, out subtotal)) {
-                        return subtotal;
+                    decimal subtotal = 0;
+                    var matcher = specimenCountRegex.Match(loanMaterial.NumSpecimens);
+                    while (matcher.Success) {
+                        decimal d;
+                        if (Decimal.TryParse(matcher.Groups[1].Value, out d)) {
+                            subtotal += d;
+                        }
+                        matcher = matcher.NextMatch();
                     }
-                    return 0;
+
+                    return subtotal;
                 });
 
                 lbl.Content = String.Format("Total specimen count: {0}", (long) dblTotal);
