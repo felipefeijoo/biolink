@@ -66,6 +66,8 @@ namespace BioLink.Client.Maps {
         private Image m_Image;
         private PreviewModes m_PreviewMode;
 
+        private MapLegend _legend;
+
         /// <summary>
         /// Initializes a new mapControl
         /// </summary>
@@ -75,6 +77,7 @@ namespace BioLink.Client.Maps {
             _Map = new SharpMap.Map(ClientSize);            
             m_ActiveTool = Tools.None;
             LostFocus += new EventHandler(MapBox_LostFocus);
+            _legend = new MapLegend(this);
         }
 
 
@@ -184,7 +187,7 @@ namespace BioLink.Client.Maps {
             }
         }
 
-        private void SetCursor() {
+        public void SetCursor() {
             if (m_ActiveTool == Tools.None) {
                 Cursor = Cursors.Default;
             }
@@ -215,6 +218,12 @@ namespace BioLink.Client.Maps {
                             m_Image = _Map.GetMap();
                         } finally {
                             Cursor = c;
+                        }
+                    }
+
+                    if (m_Image != null && _legend != null) {
+                        if (_legend.IsVisible) {
+                            _legend.Draw(m_Image);
                         }
                     }
 

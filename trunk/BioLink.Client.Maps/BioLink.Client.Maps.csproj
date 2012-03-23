@@ -113,6 +113,7 @@
     <Compile Include="MapControl.xaml.cs">
       <DependentUpon>MapControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MapLegend.cs" />
     <Compile Include="MapPlugin.cs" />
     <Compile Include="PointFeaturesOptions.xaml.cs">
       <DependentUpon>PointFeaturesOptions.xaml</DependentUpon>
