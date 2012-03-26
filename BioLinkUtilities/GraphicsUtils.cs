@@ -178,6 +178,27 @@ namespace BioLink.Client.Utilities {
         }
 
         /// <summary>
+        /// Converts a WPF bitmap source to a System.Drawing image (bitmap)
+        /// </summary>
+        /// <param name="bitmapsource"></param>
+        /// <returns></returns>
+        public static System.Drawing.Image ImageFromBitmapSource(BitmapSource source) {
+            //System.Drawing.Bitmap bitmap;
+            //using (MemoryStream outStream = new MemoryStream()) {
+            //    BitmapEncoder enc = new BmpBitmapEncoder();
+            //    enc.Frames.Add(BitmapFrame.Create(source));
+            //    enc.Save(outStream);
+            //    bitmap = new System.Drawing.Bitmap(outStream);
+            //}
+            //return bitmap;
+            Bitmap bmp = new Bitmap(source.PixelWidth, source.PixelHeight, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+            System.Drawing.Imaging.BitmapData data = bmp.LockBits(new Rectangle(Point.Empty, bmp.Size), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+            source.CopyPixels(System.Windows.Int32Rect.Empty, data.Scan0, data.Height * data.Stride, data.Stride);
+            bmp.UnlockBits(data);
+            return bmp;
+        }
+
+        /// <summary>
         /// Attempts to load an image from file
         /// </summary>
         /// <param name="filename"></param>

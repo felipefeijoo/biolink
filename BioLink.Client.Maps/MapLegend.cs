@@ -4,16 +4,21 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
+using SharpMap.Layers;
+using BioLink.Client.Extensibility;
+using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Maps {
 
     public class MapLegend {
 
-        private const int RESIZE_AREA_HEIGHT = 10;
-        private const int RESIZE_AREA_WIDTH = 10;
+        private const int RESIZE_AREA_HEIGHT = 16;
+        private const int RESIZE_AREA_WIDTH = 16;
 
         private bool _hasCursor = false;
         private Point? _downPoint;
+
+        private Image _sizeHandle;
 
         public MapLegend(MapBox map) {
             this.MapBox = map;
@@ -24,9 +29,17 @@ namespace BioLink.Client.Maps {
             Height = 80;
             Width = 150;
 
+            var sizer = ImageCache.GetImage("pack://application:,,,/BioLink.Client.Maps;component/images/SizeHandle.png");
+            _sizeHandle = GraphicsUtils.ImageFromBitmapSource(sizer);
+
+            NumberOfColumns = 2;
+
             Title = "Legend";
-            TitleFont = new Font("Arial", 14, FontStyle.Regular);
+            TitleFont = new Font("Tahoma", 12, FontStyle.Regular);
             TitleBrush = SystemBrushes.WindowText;
+
+            ItemFont = new Font("Tahoma", 10, FontStyle.Regular);
+            ItemBrush = SystemBrushes.ControlText;
 
             BorderPen = new Pen(Color.Black, 2);
             BackgroundBrush = new SolidBrush(Color.FromArgb(200, Color.White));
@@ -117,25 +130,79 @@ namespace BioLink.Client.Maps {
             if (IsVisible) {
                 var g = Graphics.FromImage(destination);
                 try {
-                    g.FillRectangle(BackgroundBrush, Left, Top, Width, Height);
-                    g.DrawRectangle(BorderPen, Left, Top, Width, Height);
 
-                    g.DrawLine(BorderPen, Left + Width - RESIZE_AREA_WIDTH, Top + Height, Left + Width, Top + Height - RESIZE_AREA_HEIGHT);
+                    g.SetClip(new Rectangle(Left, Top, Width, Height));
+
+                    g.FillRectangle(BackgroundBrush, Left, Top, Width, Height);
 
                     if (!String.IsNullOrEmpty(_debugMessage)) {
                         g.DrawString(_debugMessage, MapBox.Font, Brushes.Red, 10, MapBox.Height - 50);
                     }
+
+                    g.DrawRectangle(BorderPen, Left, Top, Width, Height);
+
+                    g.DrawImage(_sizeHandle, Left + (Width - _sizeHandle.Width - BorderPen.Width), Top + (Height - _sizeHandle.Height - BorderPen.Width));
 
                     var titleSize = g.MeasureString(Title, TitleFont);
 
                     var titlePoint = new Point((int) (Left + (Width / 2) - (titleSize.Width / 2)), Top + 5);
 
                     g.DrawString(Title, TitleFont, TitleBrush, titlePoint);
+
+                    int col = 0;
+                    int row = 0;
+
+                    foreach (ILayer layer in MapBox.Map.Layers) {
+                        DrawLayerItem(g, layer, row, col);
+                        col++;
+                        if (col > NumberOfColumns) {
+                            col = 0;
+                            row++;
+                        }
+                    }
                     
+                } catch (Exception ex) {
+                    MessageBox.Show(ex.ToString());
                 } finally {
                     g.Dispose();
                 }
             }
+        }
+
+        private void DrawLayerItem(Graphics g, ILayer layer, int row, int col) {
+            
+            var titleSize = g.MeasureString(Title, TitleFont);
+            int rowHeight = (int) ItemFont.GetHeight() + 6;
+            int colWidth = Width / NumberOfColumns;
+            int top = (int) (titleSize.Height + 10) + (rowHeight * row) + Top;
+            int left = col * colWidth + Left;
+
+            Image icon = null;
+
+            if (layer is VectorLayer) {
+                var vectorLayer = layer as VectorLayer;
+                icon = vectorLayer.Style.Symbol;
+                if (icon == null) {
+                    icon = new Bitmap(12, 12);
+                    var gg = Graphics.FromImage(icon);
+                    gg.FillRectangle(vectorLayer.Style.Fill, 0, 0, 11, 11);
+                    gg.DrawRectangle(Pens.Black, 0, 0, 11, 11);
+                }
+            } 
+
+            var iconWidth = icon != null ? icon.Width : 12;
+
+            var labelRect = new RectangleF(left + iconWidth + 10 , top, colWidth - (iconWidth + 6), rowHeight);
+
+            if (icon != null) {
+                var iconLeft = left + 5;
+                var iconTop = (top + rowHeight / 2) - (icon.Height / 2);
+                g.DrawImage(icon, iconLeft, iconTop);
+            }
+
+            var format = new StringFormat();
+            format.LineAlignment = StringAlignment.Center;
+            g.DrawString(layer.LayerName, ItemFont, ItemBrush, labelRect, format);
         }
 
         public MapBox MapBox { get; private set; }
@@ -153,6 +220,11 @@ namespace BioLink.Client.Maps {
         public String Title { get; set; }
         public Font TitleFont { get; set; }
         public Brush TitleBrush { get; set; }
+
+        public Font ItemFont { get; set; }
+        public Brush ItemBrush { get; set; }
+
+        public int NumberOfColumns { get; set; }
 
     }
 }
