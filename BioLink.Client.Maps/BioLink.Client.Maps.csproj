@@ -107,6 +107,9 @@
       <DependentUpon>LayersWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="LayerViewModel.cs" />
+    <Compile Include="LegendOptionsWindow.xaml.cs">
+      <DependentUpon>LegendOptionsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MapBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -177,6 +180,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="LayersWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LegendOptionsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
