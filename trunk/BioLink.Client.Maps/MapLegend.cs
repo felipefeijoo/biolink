@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using SharpMap.Layers;
 using BioLink.Client.Extensibility;
 using BioLink.Client.Utilities;
+using BioLink.Data;
 
 namespace BioLink.Client.Maps {
 
@@ -155,7 +156,7 @@ namespace BioLink.Client.Maps {
                     foreach (ILayer layer in MapBox.Map.Layers) {
                         DrawLayerItem(g, layer, row, col);
                         col++;
-                        if (col > NumberOfColumns) {
+                        if (col >= NumberOfColumns) {
                             col = 0;
                             row++;
                         }
@@ -225,6 +226,19 @@ namespace BioLink.Client.Maps {
         public Brush ItemBrush { get; set; }
 
         public int NumberOfColumns { get; set; }
+
+        public void SaveToSettings() {            
+            Config.SetUser(User, "MapLegend.BackColor", (BackgroundBrush as SolidBrush).Color);
+        }
+
+        private User User { 
+            get { return PluginManager.Instance.User; }
+        }
+
+        public void ReadFromSettings() {
+            Color c = Config.GetUser(User, "MapLegend.BackColor", Color.White);
+            BackgroundBrush = new SolidBrush(c);
+        }
 
         public Rectangle Position {
             get {

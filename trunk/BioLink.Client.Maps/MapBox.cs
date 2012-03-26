@@ -542,6 +542,9 @@ namespace BioLink.Client.Maps {
         }
 
         public void ShowLegendOptions() {
+            var frm = new LegendOptionsWindow(_legend);
+            frm.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
+            frm.ShowDialog();
         }
 
         protected override void OnMouseUp(MouseEventArgs e) {
