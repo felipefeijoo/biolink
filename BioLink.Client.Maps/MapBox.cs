@@ -23,6 +23,7 @@ using SharpMap.Geometries;
 using SharpMap.Layers;
 using SharpMap;
 using BioLink.Client.Utilities;
+using BioLink.Client.Extensibility;
 
 namespace BioLink.Client.Maps {
 
@@ -80,6 +81,9 @@ namespace BioLink.Client.Maps {
             _legend = new MapLegend(this);
         }
 
+        public MapLegend Legend {
+            get { return _legend; }
+        }
 
         [Description("The color of selecting rectangle.")]
         [Category("Appearance")]
@@ -340,8 +344,6 @@ namespace BioLink.Client.Maps {
         protected override void OnMouseMove(MouseEventArgs e) {
             base.OnMouseMove(e);
 
-
-
             if (_Map != null) {
 
                 SharpMap.Geometries.Point p = _Map.ImageToWorld(new System.Drawing.Point(e.X, e.Y));
@@ -351,12 +353,15 @@ namespace BioLink.Client.Maps {
                 }
 
                 if (m_Image != null && e.Location != m_DragStartPoint && !m_Dragging && e.Button == MouseButtons.Left) {
-                    m_Dragging = true;
 
-                    if (m_ActiveTool == Tools.Pan || m_ActiveTool == Tools.ZoomIn || m_ActiveTool == Tools.ZoomOut) {
-                        m_DragImage = GenerateDragImage(m_PreviewMode);
-                    } else {
-                        m_DragImage = GenerateDragImage(PreviewModes.Fast);
+                    if (!_legend.Position.Contains(e.Location)) {
+                        m_Dragging = true;
+                        if (m_ActiveTool == Tools.Pan || m_ActiveTool == Tools.ZoomIn || m_ActiveTool == Tools.ZoomOut) {
+                            m_DragImage = GenerateDragImage(m_PreviewMode);
+                        } else {
+                            m_DragImage = GenerateDragImage(PreviewModes.Fast);
+                        }
+
                     }
                 }
 
@@ -536,11 +541,19 @@ namespace BioLink.Client.Maps {
             }
         }
 
+        public void ShowLegendOptions() {
+        }
+
         protected override void OnMouseUp(MouseEventArgs e) {
             base.OnMouseUp(e);
             if (_Map != null) {
+
                 if (MouseUp != null) {
                     MouseUp(_Map.ImageToWorld(new System.Drawing.Point(e.X, e.Y)), e);
+                }
+
+                if (_legend.Position.Contains(e.Location)) {
+                    return;
                 }
 
                 if (e.Button == MouseButtons.Left) {

@@ -240,6 +240,9 @@
   <ItemGroup>
     <Resource Include="images\SizeHandle.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Legend.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir "$(SolutionDir)\BiolinkApplication\bin\Debug"

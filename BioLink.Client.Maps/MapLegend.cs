@@ -226,5 +226,17 @@ namespace BioLink.Client.Maps {
 
         public int NumberOfColumns { get; set; }
 
+        public Rectangle Position {
+            get {
+                return new Rectangle(Left, Top, Width, Height);
+            }
+            set {
+                Left = value.X;
+                Top = value.Y;
+                Width = value.Width;
+                Height = value.Height;
+            }
+        }
+
     }
 }

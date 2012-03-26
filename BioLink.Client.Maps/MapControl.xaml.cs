@@ -112,6 +112,12 @@ namespace BioLink.Client.Maps {
             System.Drawing.Color backcolor = Config.GetUser(user, "MapTool." + mode.ToString() + ".MapBackColor", System.Drawing.Color.White);
             mapBox.BackColor = backcolor;
 
+            mapBox.Legend.IsVisible = Config.GetUser(user, "MapTool.LegendVisible", false);
+            System.Drawing.Rectangle? legendPos = Config.GetUser<System.Drawing.Rectangle?>(user, "MapTool.LegendPosition", null);
+            if (legendPos.HasValue) {
+                mapBox.Legend.Position = legendPos.Value;
+            }
+
             var env = Config.GetUser<SerializedEnvelope>(user, "MapTool." + mode.ToString() + ".LastExtent", null);
 
             HideInfoPanel();
@@ -235,10 +241,15 @@ namespace BioLink.Client.Maps {
 
             var user = PluginManager.Instance.User;
 
-            Config.SetUser(user, "MapTool." + Mode.ToString() + ".Layers", layers);
+            Config.SetUser(user, "MapTool." + Mode.ToString() + ".Layers", layers);            
+
+
             var env = new SerializedEnvelope(mapBox.Map.Envelope);
             Config.SetUser(user, "MapTool." + Mode.ToString() + ".LastExtent", env);
             Config.SetUser(user, "MapTool." + Mode.ToString() + ".MapBackColor", mapBox.BackColor);
+
+            Config.SetUser(user, "MapTool.LegendVisible", mapBox.Legend.IsVisible);
+            Config.SetUser(user, "MapTool.LegendPosition", mapBox.Legend.Position);
         }
 
         public MapMode Mode { get; private set; }
@@ -345,50 +356,55 @@ namespace BioLink.Client.Maps {
                 mapBox.Focus();
                 var menu = new System.Windows.Forms.ContextMenu();
 
-                var rows = Drill(pointClick);
-
-                var siteIDs = FindIDs(rows, "SiteID");
-                if (siteIDs.Count > 0) {
-                    BuildMenuItem(menu, "Edit Site...", () => EditObject(siteIDs, LookupType.Site));
-                }
-
-                var siteVisitIDs = FindIDs(rows, "SiteVisitID");
-                if (siteVisitIDs.Count > 0) {
-                    BuildMenuItem(menu, "Edit Site Visit...", () => EditObject(siteVisitIDs, LookupType.SiteVisit));
-                }
-
-                var materialIDs = FindIDs(rows, "MaterialID");
-                if (materialIDs.Count > 0) {
-                    BuildMenuItem(menu, "Edit Material...", () => EditObject(materialIDs, LookupType.Material));
-                }
-
-                if (Mode == MapMode.Normal) {
-                    if (_distanceAnchor == null) {
-                        BuildMenuItem(menu, "Drop distance anchor", DropDistanceAnchor);
-
-                    } else {
-                        BuildMenuItem(menu, "Hide distance anchor", () => {
-                            HideDistanceAnchor();
-                            mapBox.Refresh();
-                        });
-                    }
+                if (mapBox.Legend.Position.Contains(evt.Location)) {
+                    BuildMenuItem(menu, "Legend options...", () => mapBox.ShowLegendOptions());
                 } else {
-                    var feature = FindRegionFeature(pointClick);
-                    if (feature != null) {
-                        var regionPath = feature["BLREGHIER"] as string;
-                        if (regionPath != null) {
-                            var bits = regionPath.Split('\\');
-                            var sb = new StringBuilder();
-                            foreach (string bit in bits) {
-                                sb.Append("\\").Append(bit);
-                                string path = sb.ToString().Substring(1); // trim off leading backslash
-                                BuildMenuItem(menu, bit, () => SelectRegionByPath(path));
-                            }
-                            menu.MenuItems.Add("-");
-                        }
-                    }
-                    BuildMenuItem(menu, "Deselect all", DeselectAllRegions);
 
+                    var rows = Drill(pointClick);
+
+                    var siteIDs = FindIDs(rows, "SiteID");
+                    if (siteIDs.Count > 0) {
+
+                    }
+
+                    var siteVisitIDs = FindIDs(rows, "SiteVisitID");
+                    if (siteVisitIDs.Count > 0) {
+                        BuildMenuItem(menu, "Edit Site Visit...", () => EditObject(siteVisitIDs, LookupType.SiteVisit));
+                    }
+
+                    var materialIDs = FindIDs(rows, "MaterialID");
+                    if (materialIDs.Count > 0) {
+                        BuildMenuItem(menu, "Edit Material...", () => EditObject(materialIDs, LookupType.Material));
+                    }
+
+                    if (Mode == MapMode.Normal) {
+                        if (_distanceAnchor == null) {
+                            BuildMenuItem(menu, "Drop distance anchor", DropDistanceAnchor);
+
+                        } else {
+                            BuildMenuItem(menu, "Hide distance anchor", () => {
+                                HideDistanceAnchor();
+                                mapBox.Refresh();
+                            });
+                        }
+                    } else {
+                        var feature = FindRegionFeature(pointClick);
+                        if (feature != null) {
+                            var regionPath = feature["BLREGHIER"] as string;
+                            if (regionPath != null) {
+                                var bits = regionPath.Split('\\');
+                                var sb = new StringBuilder();
+                                foreach (string bit in bits) {
+                                    sb.Append("\\").Append(bit);
+                                    string path = sb.ToString().Substring(1); // trim off leading backslash
+                                    BuildMenuItem(menu, bit, () => SelectRegionByPath(path));
+                                }
+                                menu.MenuItems.Add("-");
+                            }
+                        }
+                        BuildMenuItem(menu, "Deselect all", DeselectAllRegions);
+
+                    }
                 }
 
                 menu.Show(mapBox, evt.Location);
@@ -1102,6 +1118,16 @@ namespace BioLink.Client.Maps {
                 return vm.Symbol != null;
             }
             return false;
+        }
+
+        private void btnLegend_Checked(object sender, System.Windows.RoutedEventArgs e) {
+            mapBox.Legend.IsVisible = true;
+            mapBox.Refresh();
+        }
+
+        private void btnLegend_Unchecked(object sender, System.Windows.RoutedEventArgs e) {
+            mapBox.Legend.IsVisible = false;
+            mapBox.Refresh();
         }
 
     }

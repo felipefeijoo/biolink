@@ -53,10 +53,18 @@
                     <Image Source="images/Pan.png" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True" />
                 </RadioButton.Content>
             </RadioButton>
+            
             <Separator />
-            <ToggleButton Name="btnInfo" Checked="btnPan_Checked" ToolTip="Show/Hide feature information panel">
+            
+            <ToggleButton Name="btnInfo" ToolTip="Show/Hide feature information panel">
                 <ToggleButton.Content>
                     <Image Source="images/info.png" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True" />
+                </ToggleButton.Content>
+            </ToggleButton>
+            
+            <ToggleButton Name="btnLegend" Checked="btnLegend_Checked" Unchecked="btnLegend_Unchecked" ToolTip="Show/Hide map legend">
+                <ToggleButton.Content>
+                    <Image Source="images/Legend.png" Stretch="None" UseLayoutRounding="True" SnapsToDevicePixels="True" />
                 </ToggleButton.Content>
             </ToggleButton>
 
