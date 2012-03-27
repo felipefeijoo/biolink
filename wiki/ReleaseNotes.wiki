@@ -3,6 +3,27 @@
 
 = Release Notes =
 
+== !BioLink Version 3.0.517 ==
+
+!BioLink 3.0.517 28 March 2012
+
+This is the third "fix" release for BioLink 3.0. It addresses issues reported since build 503.
+
+=== New Features ===
+
+ * Map tool now has a customizable legend, similar in functionality to the legacy BioLink map tool.
+
+=== Issues addressed in this release ===
+
+ * Issue 145	Map tool does not have a legend option	 
+ * Issue 146	Loans search needs an implied trailing wildcard	 
+ * Issue 147	Loan Material Description text edit needs to accept new line characters (multiline)	 
+ * Issue 148	Loan contacts with attached permit number traits should pre-fill permit number on loan form if selected as borrower	 
+ * Issue 150	Display an aggregated specimen count at the bottom of the Loan Material tab	 
+ * Issue 151	Duplicate Loan Numbers allowed to be saved
+
+Also fixed was an issue in Loan Form templates whereby invisible formatting markup within the templates was garbling the place holder names during loan form generation, thereby preventing correct generation
+
 == !BioLink Version 3.0.503 ==
 
 !BioLink 3.0.503 15 December 2011
