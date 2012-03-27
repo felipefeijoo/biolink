@@ -21,8 +21,7 @@ namespace BioLink.Client.Maps {
         protected MapLegend Legend { get; private set; }
 
         public LegendOptionsWindow() {
-            InitializeComponent();
-            
+            InitializeComponent();            
         }
 
         public LegendOptionsWindow(MapLegend legend) {
@@ -39,6 +38,11 @@ namespace BioLink.Client.Maps {
             NumberOfColumns = Legend.NumberOfColumns;
             ItemFont = Legend.ItemFont;
 
+            Layers = new List<LegendItemDescriptor>(legend.GetLayerDescriptors().Values);
+            Layers.Sort((a,b) => {
+                return a.LayerName.CompareTo(b.LayerName);
+            });
+
             GraphicsUtils.ApplyLegacyFont(lblTitleFont, TitleFont);
             GraphicsUtils.ApplyLegacyFont(lblItemFont, ItemFont);
         }
@@ -50,6 +54,8 @@ namespace BioLink.Client.Maps {
         public String LegendTitle { get; set; }
         public int NumberOfColumns { get; set; }
         public Font ItemFont { get; set; }
+
+        public List<LegendItemDescriptor> Layers { get; set; }
 
         private void btnOk_Click(object sender, RoutedEventArgs e) {
             if (ApplyChanges()) {

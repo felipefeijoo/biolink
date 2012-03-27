@@ -230,7 +230,7 @@ namespace BioLink.Client.Maps {
             get { return PluginManager.Instance.User; }
         }
 
-        private Dictionary<String, LegendItemDescriptor> GetLayerDescriptors() {
+        public Dictionary<String, LegendItemDescriptor> GetLayerDescriptors() {
             var items = Config.GetUser(User, "MapLegend.LayerDescriptors", new Dictionary<String, LegendItemDescriptor>());
             var found = new List<String>();
             foreach (ILayer layer in MapBox.Map.Layers) {
