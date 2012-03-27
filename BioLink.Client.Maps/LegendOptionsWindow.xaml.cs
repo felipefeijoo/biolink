@@ -9,6 +9,8 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Shapes;
 using System.Drawing;
+using BioLink.Client.Utilities;
+using BioLink.Client.Extensibility;
 
 namespace BioLink.Client.Maps {
     /// <summary>
@@ -29,10 +31,25 @@ namespace BioLink.Client.Maps {
 
             this.DataContext = this;
 
-            BackgroundColor = (Legend.BackgroundBrush as SolidBrush).Color;
+            BackgroundColor = Legend.BackgroundColor;
+            BorderColor = Legend.BorderColor;
+            BorderWidth = Legend.BorderWidth;
+            LegendTitle = Legend.Title;
+            TitleFont = Legend.TitleFont;
+            NumberOfColumns = Legend.NumberOfColumns;
+            ItemFont = Legend.ItemFont;
+
+            GraphicsUtils.ApplyLegacyFont(lblTitleFont, TitleFont);
+            GraphicsUtils.ApplyLegacyFont(lblItemFont, ItemFont);
         }
 
         public Color BackgroundColor { get; set; }
+        public Color BorderColor { get; set; }
+        public int BorderWidth { get; set; }
+        public Font TitleFont { get; set; }
+        public String LegendTitle { get; set; }
+        public int NumberOfColumns { get; set; }
+        public Font ItemFont { get; set; }
 
         private void btnOk_Click(object sender, RoutedEventArgs e) {
             if (ApplyChanges()) {
@@ -42,11 +59,47 @@ namespace BioLink.Client.Maps {
 
         private bool ApplyChanges() {
 
-            Legend.BackgroundBrush = new SolidBrush(BackgroundColor);
+            Legend.BackgroundColor = BackgroundColor;
+            Legend.BorderColor = BorderColor;
+            Legend.BorderWidth = BorderWidth;
+            Legend.Title = LegendTitle;
+            Legend.TitleFont = GraphicsUtils.GetLegacyFont(lblTitleFont);
+            Legend.NumberOfColumns = NumberOfColumns;
+            Legend.ItemFont = GraphicsUtils.GetLegacyFont(lblItemFont);
+            Legend.SaveToSettings();
 
             Legend.MapBox.Refresh();
 
             return true;
+        }
+
+        private void btnTitleFont_Click(object sender, RoutedEventArgs e) {
+            SelectFont(lblTitleFont);
+        }
+
+        private void SelectFont(TextBlock control) {
+            var fontDlg = new FontChooser();
+            fontDlg.SelectedFontFamily = control.FontFamily;
+            fontDlg.SelectedFontSize = control.FontSize;
+            fontDlg.SelectedFontStyle = control.FontStyle;
+            fontDlg.SelectedFontWeight = control.FontWeight;
+            fontDlg.Owner = this;
+            if (fontDlg.ShowDialog() == true) {
+                control.FontFamily = fontDlg.SelectedFontFamily;
+                control.FontSize = fontDlg.SelectedFontSize;
+                control.FontStyle = fontDlg.SelectedFontStyle;
+                control.FontWeight = fontDlg.SelectedFontWeight;
+                control.TextDecorations = fontDlg.SelectedTextDecorations;
+                control.Text = String.Format("{0}, {1} pt", control.FontFamily.Source, control.FontSize);
+            }
+        }
+
+        private void btnItemFont_Click(object sender, RoutedEventArgs e) {
+            SelectFont(lblItemFont);
+        }
+
+        private void btnApply_Click(object sender, RoutedEventArgs e) {
+            ApplyChanges();
         }
 
     }

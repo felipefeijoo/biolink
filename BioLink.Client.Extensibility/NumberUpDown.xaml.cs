@@ -67,13 +67,20 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void NumberUp() {
-            Number += Delta;
+            var temp = Number + Delta;
+            if (Maximum.HasValue && temp > Maximum.Value) {
+                temp = Maximum.Value;
+            }
+            Number = temp;
         }
 
         private void NumberDown() {
             var temp = Number - Delta;
             if (temp < 0 && !AllowNegative) {
                 temp = 0;
+            }
+            if (Minimum.HasValue && temp < Minimum.Value) {
+                temp = Minimum.Value;
             }
             Number = temp;
         }
@@ -96,5 +103,9 @@ namespace BioLink.Client.Extensibility {
                 return true;
             }
         }
+
+        public int? Minimum { get; set; }
+        public int? Maximum { get; set; }
+
     }
 }

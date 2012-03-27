@@ -8,6 +8,7 @@ using SharpMap.Layers;
 using BioLink.Client.Extensibility;
 using BioLink.Client.Utilities;
 using BioLink.Data;
+using System.Drawing.Text;
 
 namespace BioLink.Client.Maps {
 
@@ -33,20 +34,12 @@ namespace BioLink.Client.Maps {
             var sizer = ImageCache.GetImage("pack://application:,,,/BioLink.Client.Maps;component/images/SizeHandle.png");
             _sizeHandle = GraphicsUtils.ImageFromBitmapSource(sizer);
 
-            NumberOfColumns = 2;
-
-            Title = "Legend";
-            TitleFont = new Font("Tahoma", 12, FontStyle.Regular);
-            TitleBrush = SystemBrushes.WindowText;
-
-            ItemFont = new Font("Tahoma", 10, FontStyle.Regular);
-            ItemBrush = SystemBrushes.ControlText;
-
-            BorderPen = new Pen(Color.Black, 2);
-            BackgroundBrush = new SolidBrush(Color.FromArgb(200, Color.White));
+            TitleColor = Color.Black;
 
             MapBox.MouseMove += new Maps.MapBox.MouseEventHandler(MapBox_MouseMove);
             MapBox.MouseDown += new Maps.MapBox.MouseEventHandler(MapBox_MouseDown);
+
+            ReadFromSettings();
             
         }
 
@@ -67,11 +60,11 @@ namespace BioLink.Client.Maps {
         }
 
         private bool IsMouseInResizeBox(MouseEventArgs ImagePos) {
-            return (ImagePos.X >= (Left + Width - RESIZE_AREA_WIDTH) && ImagePos.X <= Left + Width) && (ImagePos.Y >= (Top + Height - RESIZE_AREA_HEIGHT) && ImagePos.Y <= Top + Height);
+            return IsMouseInResizeBox(ImagePos.Location);
         }
 
         private bool IsMouseInResizeBox(Point p) {
-            return (p.X >= (Left + Width - RESIZE_AREA_WIDTH) && p.X <= Left + Width) && (p.Y >= (Top + Height - RESIZE_AREA_HEIGHT) && p.Y <= Top + Height);
+            return (p.X >= (Left + Width - RESIZE_AREA_WIDTH - BorderWidth) && p.X <= Left + Width) && (p.Y >= (Top + Height - RESIZE_AREA_HEIGHT - BorderWidth) && p.Y <= Top + Height);
         }
 
         void MapBox_MouseMove(SharpMap.Geometries.Point WorldPos, System.Windows.Forms.MouseEventArgs ImagePos) {
@@ -124,41 +117,45 @@ namespace BioLink.Client.Maps {
 
         }
 
-        private String _debugMessage = "";
-
         public void Draw(Image destination) {
 
             if (IsVisible) {
+                var titleFont = GraphicsUtils.ScaleFont(TitleFont, destination);
                 var g = Graphics.FromImage(destination);
-                try {
+                g.TextRenderingHint = TextRenderingHint.AntiAlias;
+                try {                    
+                    g.SetClip(new Rectangle(Left - BorderWidth, Top - BorderWidth, Width + (BorderWidth * 2), Height + (BorderWidth * 2)));
 
-                    g.SetClip(new Rectangle(Left, Top, Width, Height));
+                    g.FillRectangle(new SolidBrush(BackgroundColor), Left, Top, Width, Height);
 
-                    g.FillRectangle(BackgroundBrush, Left, Top, Width, Height);
+                    if (BorderWidth > 0) {
+                        var borderPen = new Pen(BorderColor, BorderWidth);
+                        borderPen.Alignment = System.Drawing.Drawing2D.PenAlignment.Inset;
 
-                    if (!String.IsNullOrEmpty(_debugMessage)) {
-                        g.DrawString(_debugMessage, MapBox.Font, Brushes.Red, 10, MapBox.Height - 50);
+                        g.DrawRectangle(borderPen, Left, Top, Width, Height);
                     }
 
-                    g.DrawRectangle(BorderPen, Left, Top, Width, Height);
+                    g.DrawImage(_sizeHandle, Left + (Width - _sizeHandle.Width - BorderWidth), Top + (Height - _sizeHandle.Height - BorderWidth));
 
-                    g.DrawImage(_sizeHandle, Left + (Width - _sizeHandle.Width - BorderPen.Width), Top + (Height - _sizeHandle.Height - BorderPen.Width));
+                    var titleSize = g.MeasureString(Title, titleFont);
+                    var titlePoint = new Point((int) (Left + (Width / 2) - (titleSize.Width / 2)), Top + 5 + BorderWidth);
 
-                    var titleSize = g.MeasureString(Title, TitleFont);
-
-                    var titlePoint = new Point((int) (Left + (Width / 2) - (titleSize.Width / 2)), Top + 5);
-
-                    g.DrawString(Title, TitleFont, TitleBrush, titlePoint);
+                    g.DrawString(Title, titleFont, new SolidBrush(TitleColor), titlePoint);
 
                     int col = 0;
                     int row = 0;
 
+                    var layerItems = GetLayerDescriptors();
+
                     foreach (ILayer layer in MapBox.Map.Layers) {
-                        DrawLayerItem(g, layer, row, col);
-                        col++;
-                        if (col >= NumberOfColumns) {
-                            col = 0;
-                            row++;
+                        var desc = layerItems[layer.LayerName];
+                        if (desc.IsVisible) {
+                            DrawLayerItem(g, layer, row, col, desc, titleSize, destination);
+                            col++;
+                            if (col >= NumberOfColumns) {
+                                col = 0;
+                                row++;
+                            }
                         }
                     }
                     
@@ -170,13 +167,14 @@ namespace BioLink.Client.Maps {
             }
         }
 
-        private void DrawLayerItem(Graphics g, ILayer layer, int row, int col) {
-            
-            var titleSize = g.MeasureString(Title, TitleFont);
-            int rowHeight = (int) ItemFont.GetHeight() + 6;
+        private void DrawLayerItem(Graphics g, ILayer layer, int row, int col,  LegendItemDescriptor desc, SizeF titleSize, Image dest) {
+
+            var itemFont = GraphicsUtils.ScaleFont(ItemFont, dest);
+
+            int rowHeight = (int) itemFont.GetHeight() + 6;
             int colWidth = Width / NumberOfColumns;
-            int top = (int) (titleSize.Height + 10) + (rowHeight * row) + Top;
-            int left = col * colWidth + Left;
+            int top = (int) (titleSize.Height + 10 + BorderWidth) + (rowHeight * row) + Top;
+            int left = col * colWidth + Left + BorderWidth;
 
             Image icon = null;
 
@@ -193,7 +191,7 @@ namespace BioLink.Client.Maps {
 
             var iconWidth = icon != null ? icon.Width : 12;
 
-            var labelRect = new RectangleF(left + iconWidth + 10 , top, colWidth - (iconWidth + 6), rowHeight);
+            var labelRect = new RectangleF(left + iconWidth + 10, top, colWidth - (iconWidth + 10), rowHeight);
 
             if (icon != null) {
                 var iconLeft = left + 5;
@@ -203,7 +201,7 @@ namespace BioLink.Client.Maps {
 
             var format = new StringFormat();
             format.LineAlignment = StringAlignment.Center;
-            g.DrawString(layer.LayerName, ItemFont, ItemBrush, labelRect, format);
+            g.DrawString(desc.Title, itemFont, new SolidBrush(desc.TitleColor), labelRect, format);
         }
 
         public MapBox MapBox { get; private set; }
@@ -215,29 +213,66 @@ namespace BioLink.Client.Maps {
         public int Width { get; set; }
         public int Height { get; set; }
 
-        public Pen BorderPen { get; set; }
-        public Brush BackgroundBrush { get; set; }
+        public Color BorderColor { get; set; }
+        public int BorderWidth { get; set; }
+
+        public Color BackgroundColor { get; set; }
 
         public String Title { get; set; }
         public Font TitleFont { get; set; }
-        public Brush TitleBrush { get; set; }
+        public Color TitleColor { get; set; }
 
         public Font ItemFont { get; set; }
-        public Brush ItemBrush { get; set; }
 
         public int NumberOfColumns { get; set; }
-
-        public void SaveToSettings() {            
-            Config.SetUser(User, "MapLegend.BackColor", (BackgroundBrush as SolidBrush).Color);
-        }
 
         private User User { 
             get { return PluginManager.Instance.User; }
         }
 
+        private Dictionary<String, LegendItemDescriptor> GetLayerDescriptors() {
+            var items = Config.GetUser(User, "MapLegend.LayerDescriptors", new Dictionary<String, LegendItemDescriptor>());
+            var found = new List<String>();
+            foreach (ILayer layer in MapBox.Map.Layers) {
+                found.Add(layer.LayerName);
+                if (!items.ContainsKey(layer.LayerName)) {
+                    items.Add(layer.LayerName, new LegendItemDescriptor { LayerName = layer.LayerName, IsVisible = true, Title = layer.LayerName, TitleColor = Color.Black });
+                }
+            }
+
+            var killList = new List<String>();
+            foreach (String name in items.Keys) {
+                if (!found.Contains(name)) {
+                    killList.Add(name);
+                }
+            }
+
+            foreach (String name in killList) {
+                items.Remove(name);
+            }
+
+            return items;
+        }
+
         public void ReadFromSettings() {
-            Color c = Config.GetUser(User, "MapLegend.BackColor", Color.White);
-            BackgroundBrush = new SolidBrush(c);
+            BackgroundColor = Config.GetUser(User, "MapLegend.BackColor", Color.White);
+            BorderColor = Config.GetUser(User, "MapLegend.BorderColor", Color.Black);
+            BorderWidth = Config.GetUser(User, "MapLegend.BorderWidth", 1);
+            Title = Config.GetUser(User, "MapLegend.Title", "Legend");
+            TitleFont = Config.GetUser(User, "MapLegend.TitleFont", new Font("Tahoma", 12));
+            NumberOfColumns = Config.GetUser(User, "MapLegend.NumberOfColumns", 1);
+            ItemFont = Config.GetUser(User, "MapLegend.ItemFont", new Font("Tahoma", 8));
+        }
+
+        public void SaveToSettings() {
+            Config.SetUser(User, "MapLegend.BackColor", BackgroundColor);
+            Config.SetUser(User, "MapLegend.BorderColor", BorderColor);
+            Config.SetUser(User, "MapLegend.BorderWidth", BorderWidth);
+            Config.SetUser(User, "MapLegend.Title", Title);
+            Config.SetUser(User, "MapLegend.TitleFont", TitleFont);
+            Config.SetUser(User, "MapLegend.NumberOfColumns", NumberOfColumns);
+            Config.SetUser(User, "MapLegend.ItemFont", ItemFont);
+            Config.SetUser(User, "MapLegend.LayerDescriptors", GetLayerDescriptors());            
         }
 
         public Rectangle Position {
@@ -252,5 +287,12 @@ namespace BioLink.Client.Maps {
             }
         }
 
+    }
+
+    public class LegendItemDescriptor {
+        public String LayerName { get; set; }
+        public bool IsVisible { get; set; }
+        public String Title { get; set; }        
+        public Color TitleColor { get; set; }
     }
 }

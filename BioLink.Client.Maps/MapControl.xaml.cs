@@ -118,6 +118,8 @@ namespace BioLink.Client.Maps {
                 mapBox.Legend.Position = legendPos.Value;
             }
 
+            btnLegend.IsChecked = mapBox.Legend.IsVisible;
+
             var env = Config.GetUser<SerializedEnvelope>(user, "MapTool." + mode.ToString() + ".LastExtent", null);
 
             HideInfoPanel();
