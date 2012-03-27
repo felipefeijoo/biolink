@@ -38,10 +38,17 @@ namespace BioLink.Client.Maps {
             NumberOfColumns = Legend.NumberOfColumns;
             ItemFont = Legend.ItemFont;
 
-            Layers = new List<LegendItemDescriptor>(legend.GetLayerDescriptors().Values);
+            Layers = new List<LegendItemDescriptor>();
+            foreach (LegendItemDescriptor desc in legend.GetLayerDescriptors().Values) {
+                Layers.Add(new LegendItemDescriptor { IsVisible = desc.IsVisible, LayerName = desc.LayerName, Title = desc.Title, TitleColor = desc.TitleColor });
+            }
+
             Layers.Sort((a,b) => {
                 return a.LayerName.CompareTo(b.LayerName);
             });
+
+            Loaded += new RoutedEventHandler((sender, e) => { if (lstLayers.Items.Count > 0) lstLayers.SelectedIndex = 0; });
+            
 
             GraphicsUtils.ApplyLegacyFont(lblTitleFont, TitleFont);
             GraphicsUtils.ApplyLegacyFont(lblItemFont, ItemFont);
@@ -72,6 +79,16 @@ namespace BioLink.Client.Maps {
             Legend.TitleFont = GraphicsUtils.GetLegacyFont(lblTitleFont);
             Legend.NumberOfColumns = NumberOfColumns;
             Legend.ItemFont = GraphicsUtils.GetLegacyFont(lblItemFont);
+
+            var origLayers = Legend.GetLayerDescriptors();
+
+            foreach (LegendItemDescriptor desc in Layers) {
+                var orig = origLayers[desc.LayerName];
+                orig.Title = desc.Title;
+                orig.IsVisible = desc.IsVisible;
+                orig.TitleColor = desc.TitleColor;                
+            }
+
             Legend.SaveToSettings();
 
             Legend.MapBox.Refresh();
