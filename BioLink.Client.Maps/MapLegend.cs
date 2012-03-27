@@ -120,7 +120,7 @@ namespace BioLink.Client.Maps {
         public void Draw(Image destination) {
 
             if (IsVisible) {
-                var titleFont = GraphicsUtils.ScaleFont(TitleFont, destination);
+                // var titleFont = GraphicsUtils.ScaleFont(TitleFont, destination);
                 var g = Graphics.FromImage(destination);
                 g.TextRenderingHint = TextRenderingHint.AntiAlias;
                 try {                    
@@ -137,10 +137,10 @@ namespace BioLink.Client.Maps {
 
                     g.DrawImage(_sizeHandle, Left + (Width - _sizeHandle.Width - BorderWidth), Top + (Height - _sizeHandle.Height - BorderWidth));
 
-                    var titleSize = g.MeasureString(Title, titleFont);
+                    var titleSize = g.MeasureString(Title, TitleFont);
                     var titlePoint = new Point((int) (Left + (Width / 2) - (titleSize.Width / 2)), Top + 5 + BorderWidth);
 
-                    g.DrawString(Title, titleFont, new SolidBrush(TitleColor), titlePoint);
+                    g.DrawString(Title, TitleFont, new SolidBrush(TitleColor), titlePoint);
 
                     int col = 0;
                     int row = 0;
@@ -169,9 +169,9 @@ namespace BioLink.Client.Maps {
 
         private void DrawLayerItem(Graphics g, ILayer layer, int row, int col,  LegendItemDescriptor desc, SizeF titleSize, Image dest) {
 
-            var itemFont = GraphicsUtils.ScaleFont(ItemFont, dest);
+            // var itemFont = GraphicsUtils.ScaleFont(ItemFont, dest);
 
-            int rowHeight = (int) itemFont.GetHeight() + 6;
+            int rowHeight = (int) ItemFont.GetHeight() + 6;
             int colWidth = Width / NumberOfColumns;
             int top = (int) (titleSize.Height + 10 + BorderWidth) + (rowHeight * row) + Top;
             int left = col * colWidth + Left + BorderWidth;
@@ -201,7 +201,7 @@ namespace BioLink.Client.Maps {
 
             var format = new StringFormat();
             format.LineAlignment = StringAlignment.Center;
-            g.DrawString(desc.Title, itemFont, new SolidBrush(desc.TitleColor), labelRect, format);
+            g.DrawString(desc.Title, ItemFont, new SolidBrush(desc.TitleColor), labelRect, format);
         }
 
         public MapBox MapBox { get; private set; }
@@ -226,32 +226,37 @@ namespace BioLink.Client.Maps {
 
         public int NumberOfColumns { get; set; }
 
+        private Dictionary<String, LegendItemDescriptor> LayerItems { get; set; }
+
         private User User { 
             get { return PluginManager.Instance.User; }
         }
 
         public Dictionary<String, LegendItemDescriptor> GetLayerDescriptors() {
-            var items = Config.GetUser(User, "MapLegend.LayerDescriptors", new Dictionary<String, LegendItemDescriptor>());
+            if (LayerItems == null) {
+                LayerItems = Config.GetUser(User, "MapLegend.LayerDescriptors", new Dictionary<String, LegendItemDescriptor>());
+            }
+
             var found = new List<String>();
             foreach (ILayer layer in MapBox.Map.Layers) {
                 found.Add(layer.LayerName);
-                if (!items.ContainsKey(layer.LayerName)) {
-                    items.Add(layer.LayerName, new LegendItemDescriptor { LayerName = layer.LayerName, IsVisible = true, Title = layer.LayerName, TitleColor = Color.Black });
+                if (!LayerItems.ContainsKey(layer.LayerName)) {
+                    LayerItems.Add(layer.LayerName, new LegendItemDescriptor { LayerName = layer.LayerName, IsVisible = true, Title = layer.LayerName, TitleColor = Color.Black });
                 }
             }
 
             var killList = new List<String>();
-            foreach (String name in items.Keys) {
+            foreach (String name in LayerItems.Keys) {
                 if (!found.Contains(name)) {
                     killList.Add(name);
                 }
             }
 
             foreach (String name in killList) {
-                items.Remove(name);
+                LayerItems.Remove(name);
             }
 
-            return items;
+            return LayerItems;
         }
 
         public void ReadFromSettings() {
