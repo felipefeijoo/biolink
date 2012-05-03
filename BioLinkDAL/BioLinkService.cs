@@ -17,6 +17,7 @@ using System.Data;
 using System.Data.SqlClient;
 using BioLink.Client.Utilities;
 using System.Collections.Generic;
+using System.Data.Common;
 
 namespace BioLink.Data {
 
@@ -46,11 +47,11 @@ namespace BioLink.Data {
 
             // Get a connection
             
-            SqlConnection connection = User.GetConnection();
+            var connection = User.GetConnection();
             
             // and create a command instance
             try {
-                using (SqlCommand command = connection.CreateCommand()) {
+                using (DbCommand command = connection.CreateCommand()) {
 
                     if (User.ConnectionProfile.Timeout.GetValueOrDefault(-1) > 0) {
                         if (User.ConnectionProfile.Timeout != null) {
@@ -69,7 +70,7 @@ namespace BioLink.Data {
             
         }
 
-        internal void SQLReaderForEach(string SQL, ServiceReaderAction action, params SqlParameter[] @params) {
+        internal void SQLReaderForEach(string SQL, ServiceReaderAction action, params DbParameter[] @params) {
             Message("Executing query...");
             using (new CodeTimer(String.Format("SQLReaderForEach '{0}'", SQL))) {
                 Logger.Debug("Calling stored procedure (reader): {0}({1})", SQL, GetParamsString(@params));
@@ -79,11 +80,11 @@ namespace BioLink.Data {
                     if (User.InTransaction && User.CurrentTransaction != null) {
                         cmd.Transaction = User.CurrentTransaction;
                     }
-                    foreach (SqlParameter param in @params) {
+                    foreach (DbParameter param in @params) {
                         cmd.Parameters.Add(param);
                     }
 
-                    using (SqlDataReader reader = cmd.ExecuteReader()) {
+                    using (var reader = cmd.ExecuteReader()) {
                         Message("Fetching records...");
                         int count = 0;
                         while (reader.Read()) {
@@ -107,7 +108,7 @@ namespace BioLink.Data {
         /// <param name="proc">The name of the stored procedure</param>
         /// <param name="action">The action to take with the reader</param>
         /// <param name="params">A params array for the arguments of the stored proc</param>
-        internal void StoredProcReaderForEach(string proc, ServiceReaderAction action, params SqlParameter[] @params) {
+        internal void StoredProcReaderForEach(string proc, ServiceReaderAction action, params DbParameter[] @params) {
             Message("Executing query...");
             using (new CodeTimer(String.Format("StoredProcReaderForEach '{0}'", proc))) {
                 Logger.Debug("Calling stored procedure (reader): {0}({1})", proc, GetParamsString(@params));
@@ -117,11 +118,11 @@ namespace BioLink.Data {
                     if (User.InTransaction && User.CurrentTransaction != null) {
                         cmd.Transaction = User.CurrentTransaction;
                     }
-                    foreach (SqlParameter param in @params) {
+                    foreach (DbParameter param in @params) {
                         cmd.Parameters.Add(param);
                     }
 
-                    using (SqlDataReader reader = cmd.ExecuteReader()) {
+                    using (var reader = cmd.ExecuteReader()) {
                         Message("Fetching records...");
                         int count = 0;
                         while (reader.Read()) {                            
@@ -137,7 +138,7 @@ namespace BioLink.Data {
             }
         }
 
-        internal void StoredProcReaderFirst(string proc, ServiceReaderAction action, params SqlParameter[] @params) {
+        internal void StoredProcReaderFirst(string proc, ServiceReaderAction action, params DbParameter[] @params) {
             using (new CodeTimer(String.Format("StoredProcReaderFirst '{0}'", proc))) {
                 Logger.Debug("Calling stored procedure (reader): {0}({1})", proc, GetParamsString(@params));
                 Command((con, cmd) => {
@@ -146,11 +147,11 @@ namespace BioLink.Data {
                     if (User.InTransaction && User.CurrentTransaction != null) {
                         cmd.Transaction = User.CurrentTransaction;
                     }
-                    foreach (SqlParameter param in @params) {
+                    foreach (DbParameter param in @params) {
                         cmd.Parameters.Add(param);
                     }
 
-                    using (SqlDataReader reader = cmd.ExecuteReader()) {
+                    using (var reader = cmd.ExecuteReader()) {
                         if (reader.Read()) {
                             if (action != null) {
                                 action(reader);
@@ -161,11 +162,11 @@ namespace BioLink.Data {
             }
         }
 
-        internal T StoredProcReturnVal<T>(string proc, params SqlParameter[] @params) {
+        internal T StoredProcReturnVal<T>(string proc, params DbParameter[] @params) {
             using (new CodeTimer(String.Format("StoredProcReaderFirst '{0}'", proc))) {
                 
                 Array.Resize(ref @params, @params.Length + 1);
-                SqlParameter ret = ReturnParam("Return Value", SqlDbType.Variant);
+                var ret = ReturnParam("Return Value", SqlDbType.Variant);
                 @params[@params.Length - 1] = ret;
 
                 Command((con, cmd) => {
@@ -174,7 +175,7 @@ namespace BioLink.Data {
                     if (User.InTransaction && User.CurrentTransaction != null) {
                         cmd.Transaction = User.CurrentTransaction;
                     }
-                    foreach (SqlParameter param in @params) {
+                    foreach (DbParameter param in @params) {
                         cmd.Parameters.Add(param);
                     }
                     cmd.ExecuteNonQuery();                    
@@ -185,7 +186,7 @@ namespace BioLink.Data {
             }
         }
 
-        internal List<T> StoredProcToList<T>(string storedproc, GenericMapper<T> mapper, params SqlParameter[] @params) where T : new() {
+        internal List<T> StoredProcToList<T>(string storedproc, GenericMapper<T> mapper, params DbParameter[] @params) where T : new() {
             var list = new List<T>();
 
             StoredProcReaderForEach(storedproc, reader => list.Add(mapper.Map(reader)), @params);
@@ -193,7 +194,7 @@ namespace BioLink.Data {
             return list;
         }
 
-        internal T StoredProcGetOne<T>(string storedproc, GenericMapper<T> mapper, params SqlParameter[] @params) where T : new() {
+        internal T StoredProcGetOne<T>(string storedproc, GenericMapper<T> mapper, params DbParameter[] @params) where T : new() {
             T ret = default(T);
             StoredProcReaderFirst(storedproc, reader => {
                 ret = mapper.Map(reader);
@@ -201,7 +202,7 @@ namespace BioLink.Data {
             return ret;
         }
 
-        internal DataTable StoredProcDataTable(string proc, params SqlParameter[] @params) {
+        internal DataTable StoredProcDataTable(string proc, params DbParameter[] @params) {
 
             DataTable table = null;
             StoredProcReaderForEach(proc, reader => {
@@ -227,11 +228,11 @@ namespace BioLink.Data {
 
         public const string HIDDEN_COLUMN_PREFIX = "HIDDEN_";
 
-        internal DataMatrix StoredProcDataMatrix(string proc, Dictionary<string, ColumnDataFormatter> formatterMap, params SqlParameter[] @params) {
+        internal DataMatrix StoredProcDataMatrix(string proc, Dictionary<string, ColumnDataFormatter> formatterMap, params DbParameter[] @params) {
             return StoredProcDataMatrix(proc, formatterMap, null, @params);
         }
 
-        public DataMatrix StoredProcDataMatrix(string proc, Dictionary<string, ColumnDataFormatter> formatterMap, List<MatrixColumn> additionalColumns, params SqlParameter[] @params) {
+        public DataMatrix StoredProcDataMatrix(string proc, Dictionary<string, ColumnDataFormatter> formatterMap, List<MatrixColumn> additionalColumns, params DbParameter[] @params) {
 
             DataMatrix[] matrix = {null};
             ColumnDataFormatter[] formatters = null;
@@ -287,7 +288,7 @@ namespace BioLink.Data {
             return matrix[0];
         }
 
-        private string GetParamsString(params SqlParameter[] @params) {
+        private string GetParamsString(params DbParameter[] @params) {
             var plist = new List<string>();
             foreach (SqlParameter p in @params) {
                 var pValue = p.Value == null ? "(null)" : p.Value.ToString().Truncate(50);
@@ -298,7 +299,7 @@ namespace BioLink.Data {
 
         }
 
-        internal int StoredProcUpdate(string proc, params SqlParameter[] @params) {
+        internal int StoredProcUpdate(string proc, params DbParameter[] @params) {
             int rowsAffected = -1;
             using (new CodeTimer(String.Format("StoredProcUpdate '{0}'", proc))) {
 
@@ -320,7 +321,7 @@ namespace BioLink.Data {
             return rowsAffected;
         }
 
-        internal SqlParameter _P(string name, object value, object defIfNull = null) {
+        internal DbParameter _P(string name, object value, object defIfNull = null) {
             if (value == null) {
                 if (defIfNull == null) {
                     value = DBNull.Value;
@@ -331,7 +332,7 @@ namespace BioLink.Data {
             return new SqlParameter(name, value);
         }
 
-        internal SqlParameter ReturnParam(string name, SqlDbType type = SqlDbType.Int) {
+        internal DbParameter ReturnParam(string name, SqlDbType type = SqlDbType.Int) {
             SqlParameter param = new SqlParameter(name, type);
             param.Direction = ParameterDirection.ReturnValue;
             return param;
@@ -387,13 +388,13 @@ namespace BioLink.Data {
 
         public event ServiceMessageDelegate ServiceMessage;
 
-        public delegate void ServiceCommandAction(SqlConnection connection, SqlCommand command);
-
-        public delegate void ServiceReaderAction(SqlDataReader reader);
-
-        public delegate void ServiceMessageDelegate(string message);
-
     }
+
+    public delegate void ServiceCommandAction(DbConnection connection, DbCommand command);
+
+    public delegate void ServiceMessageDelegate(string message);
+
+    public delegate void ServiceReaderAction(DbDataReader reader);
 
     public static class DataExtensions {
         /// <summary>
@@ -405,15 +406,32 @@ namespace BioLink.Data {
         /// <param name="field">The name of the column to extract the value from</param>
         /// <param name="defvalue">A default value to use should the actual value be null or DBNull</param>
         /// <returns></returns>
-        public static T Get<T>(this SqlDataReader reader, string field, T defvalue = default(T)) {
+        public static T Get<T>(this DbDataReader reader, string field, T defvalue = default(T)) {
             var value = reader[field];
             if (value == null || value == DBNull.Value) {
                 return defvalue;
             }
             return (T)value;
         }
+
+        public static int GetIdentityValue(this System.Data.Common.DbDataReader reader, int ordinal = 0, int @default = -1) {
+            if (ordinal >= 0) {
+                if (!reader.IsDBNull(ordinal)) {
+                    var obj = reader[ordinal];
+                    if (obj != null) {
+                        if (typeof(Int32).IsAssignableFrom(obj.GetType())) {
+                            return (Int32)reader[0];
+                        } else if (typeof(decimal).IsAssignableFrom(obj.GetType())) {
+                            return (int)(decimal)reader[0];
+                        }
+                    }
+                }
+            }
+            return @default;
+        }
+
     }
 
-    public delegate object ColumnDataFormatter(object data, SqlDataReader reader);
+    public delegate object ColumnDataFormatter(object data, DbDataReader reader);
 
 }

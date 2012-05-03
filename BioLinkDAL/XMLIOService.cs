@@ -20,6 +20,7 @@ using BioLink.Client.Utilities;
 using System.IO;
 using System.Xml;
 using BioLink.Data.Model;
+using System.Data.Common;
 using System.Data.SqlClient;
 
 namespace BioLink.Data {
@@ -226,7 +227,7 @@ namespace BioLink.Data {
             return ok;
         }
 
-        protected bool ImportObject(XMLImportObject obj, string storedProc, params SqlParameter[] @params) {
+        protected bool ImportObject(XMLImportObject obj, string storedProc, params DbParameter[] @params) {
             obj.ID = -1;            
             Array.Resize(ref @params, @params.Length + 2);
             @params[@params.Length-2] = _P("txtInsertClause", obj.InsertClause);
@@ -523,25 +524,6 @@ namespace BioLink.Data {
         public BinaryConvertingMapper(string columnName) : base(columnName, (x) => { 
             return ((System.Data.SqlTypes.SqlBinary)x).Value; }
         ) { }
-    }
-
-    public static class ReaderExtensions {
-
-        public static int GetIdentityValue(this SqlDataReader reader, int ordinal = 0, int @default = -1) {            
-            if (ordinal >= 0) {
-                if (!reader.IsDBNull(ordinal)) {
-                    var obj = reader[ordinal];
-                    if (obj != null) {
-                        if (typeof(Int32).IsAssignableFrom(obj.GetType())) {
-                            return (Int32)reader[0];
-                        } else if (typeof(decimal).IsAssignableFrom(obj.GetType())) {
-                            return (int)(decimal)reader[0];
-                        }
-                    }
-                }                
-            }
-            return @default;
-        }
     }
 
 }

@@ -244,7 +244,7 @@ namespace BioLink.Data {
         }
 
         public void InsertTaxon(Taxon taxon) {
-            SqlParameter retval = ReturnParam("newTaxonId", System.Data.SqlDbType.Int);
+            var retval = ReturnParam("newTaxonId", System.Data.SqlDbType.Int);
             StoredProcUpdate("spBiotaInsert",
                 _P("intParentID", taxon.TaxaParentID),
                 _P("vchrEpithet", taxon.Epithet),

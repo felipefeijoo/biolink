@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Data.Common;
 using System.Data.SqlClient;
 using BioLink.Client.Utilities;
 using BioLink.Data.Model;
@@ -27,7 +28,7 @@ namespace BioLink.Data {
     public class User {
 
         private readonly String Password;
-        private SqlTransaction _transaction;
+        private DbTransaction _transaction;
         private string _username;
         private string _connectionString;
 
@@ -139,11 +140,11 @@ namespace BioLink.Data {
             }
         }
 
-        public void BeginTransaction(SqlConnection connection = null) {
+        public void BeginTransaction(DbConnection connection = null) {
             if (_transaction != null) {
                 throw new Exception("A pending transaction already exists!");
             }
-            SqlConnection conn = connection;
+            var conn = connection;
             if (conn == null) {
                 conn = GetConnection();
             }
@@ -166,7 +167,7 @@ namespace BioLink.Data {
             }
         }
 
-        public SqlConnection GetConnection() {
+        public DbConnection GetConnection() {
             if (_transaction != null) {
                 Logger.Debug("Retrieving existing transaction connection to {0} (Database {1}) with username '{2}'...", ConnectionProfile.Server, ConnectionProfile.Database, Username);
                 return _transaction.Connection;
@@ -174,7 +175,7 @@ namespace BioLink.Data {
 
             Logger.Debug("Opening new connection to {0} (Database {1}) with username '{2}'...", ConnectionProfile.Server, ConnectionProfile.Database, Username);
 
-            SqlConnection conn = null;
+            DbConnection conn = null;
 
             if (_connectionString == null) {
                 _connectionString = BuildConnectionString(false);
@@ -205,7 +206,7 @@ namespace BioLink.Data {
             get { return _transaction != null; }
         }
 
-        public SqlTransaction CurrentTransaction {
+        public DbTransaction CurrentTransaction {
             get { return _transaction; }
         }
 

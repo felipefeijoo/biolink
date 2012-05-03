@@ -63,7 +63,7 @@ namespace BioLink.Data {
             return new SQLiteConnection(String.Format("Data Source={0}", FileName));            
         }
 
-        protected void SelectReader(string sql, SqliteReaderDelegate action, params SQLiteParameter[] @params) {
+        protected void SelectReader(string sql, ServiceReaderAction action, params SQLiteParameter[] @params) {
 
             Logger.Debug("Executing SQLite SelectReader: {0}", sql);
             using (new CodeTimer("SQLite SelectReader")) {
@@ -200,7 +200,5 @@ namespace BioLink.Data {
     }
 
     public delegate void SqliteCommandDelegate(SQLiteCommand command);
-
-    public delegate void SqliteReaderDelegate(SQLiteDataReader reader);
 
 }

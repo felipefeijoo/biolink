@@ -54,7 +54,7 @@ namespace BioLink.Client.Material {
                 progress.ProgressStart(string.Format("Retrieving Material records for Trap {0}", Trap.DisplayLabel), true);
             }
 
-            var serviceMessage = new BioLinkService.ServiceMessageDelegate((message) => {
+            var serviceMessage = new ServiceMessageDelegate((message) => {
                 progress.ProgressMessage(message, 0);
             });
 

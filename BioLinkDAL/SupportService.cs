@@ -346,8 +346,9 @@ namespace BioLink.Data {
             byte[] ret = null;
             StoredProcReaderFirst("spMultimediaGetOne", reader => {
                 if (!reader.IsDBNull(0)) {
-                    var x = reader.GetSqlBinary(0);
-                    ret = x.Value;
+                    var size = reader.GetBytes(0, 0, null, 0, 0);
+                    ret = new byte[size];
+                    reader.GetBytes(0, 0, ret, 0, (int) size);
                 }
             }, _P("intMultimediaID", mediaId));
             return ret;
@@ -615,7 +616,7 @@ namespace BioLink.Data {
 
         public void AddPhrase(Phrase phrase) {
             // Obviously a copy-pasta error in the Stored Proc, as the return value is called NewRegionID...oh well...
-            SqlParameter retval = ReturnParam("NewRegionID");
+            var retval = ReturnParam("NewRegionID");
             StoredProcUpdate("spPhraseInsert", _P("intPhraseCatID", phrase.PhraseCatID), _P("vchrPhrase", phrase.PhraseText), retval);
             if (retval != null && retval.Value != null) {
                 phrase.PhraseID = (Int32)retval.Value;
