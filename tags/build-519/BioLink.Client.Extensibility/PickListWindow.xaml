@@ -1,0 +1,42 @@
+﻿<Window x:Class="BioLink.Client.Extensibility.PickListWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ext="clr-namespace:BioLink.Client.Extensibility"
+             xmlns:data="clr-namespace:BioLink.Data.Model;assembly=BioLink.Data"
+             mc:Ignorable="d" 
+             d:DesignHeight="334" d:DesignWidth="291" MinWidth="260" MinHeight="200" Width="300" Height="300" Loaded="Window_Loaded" Deactivated="Window_Deactivated" UseLayoutRounding="True">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="34" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="35" />            
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Label Content="Filter:" Margin="6,3,0,0" HorizontalAlignment="Left" Width="45" Height="27" VerticalAlignment="Top" />
+            <ext:DelayedTriggerTextbox x:Name="txtFilter" Margin="57,6,6,0" Height="23" VerticalAlignment="Top" TypingPaused="txtFilter_TypingPaused" KeyUp="txtFilter_KeyUp" />
+        </Grid>
+
+        <ListView x:Name="lst" Grid.Row="1" Margin="7,0,6,0" MouseDoubleClick="lst_MouseDoubleClick" SelectionMode="Single">
+            <ListView.Resources>
+                <DataTemplate DataType="{x:Type ext:ViewModelBase}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{Binding Path=Icon}" Margin="0,1,4,0" SnapsToDevicePixels="True" UseLayoutRounding="True"/>
+                        <TextBlock Text="{Binding Path=DisplayLabel, Mode=OneWay}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.Resources>
+        </ListView>
+        
+        <Grid Grid.Row="2">
+            <Button x:Name="btnCancel" HorizontalAlignment="Right" Width="89" Margin="0,0,6,6" Height="24" VerticalAlignment="Bottom" Content="Cancel" IsCancel="True" Click="btnCancel_Click" />
+            <Button Height="24" HorizontalAlignment="Right" Margin="0,0,101,6" Name="btnSelect" VerticalAlignment="Bottom" Width="89" Content="_Select" IsDefault="True" Click="btnSelect_Click" />
+            <Button Height="24" HorizontalAlignment="Left" Margin="7,0,0,6" Name="btnAddNew" VerticalAlignment="Bottom" Width="29" ToolTip="Add a new value" Visibility="Hidden">
+                <Button.Content>
+                    <Image Source="images/AddNew.png" Stretch="None" SnapsToDevicePixels="True" Height="16" Width="16" />
+                </Button.Content>
+            </Button>
+        </Grid>
+    </Grid>
+</Window>
