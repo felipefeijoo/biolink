@@ -13,15 +13,12 @@
  * rights and limitations under the License.
  ******************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Collections.ObjectModel;
-using System.Windows.Media.Imaging;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Extensibility {
@@ -30,7 +27,7 @@ namespace BioLink.Client.Extensibility {
 
         private ObservableCollection<ViewModelBase> _items;
         private ViewModelBase _selectedItem;
-        private System.Collections.Specialized.NotifyCollectionChangedEventHandler _collectionChangedHandler;
+        private readonly System.Collections.Specialized.NotifyCollectionChangedEventHandler _collectionChangedHandler;
 
         static ItemsGroupBox() {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(ItemsGroupBox), new FrameworkPropertyMetadata(typeof(ItemsGroupBox)));
@@ -41,16 +38,14 @@ namespace BioLink.Client.Extensibility {
         }
 
         public ItemsGroupBox() {
-            this.CommandBindings.Add(new CommandBinding(SelectPrevious, ExecutedSelectedPrevious, CanExecuteSelectPrevious));
-            this.CommandBindings.Add(new CommandBinding(SelectNext, ExecutedSelectedNext, CanExecuteSelectNext));
-            this.CommandBindings.Add(new CommandBinding(Unlock, ExecutedUnlock, CanExecuteUnlock));
-            this.CommandBindings.Add(new CommandBinding(AddNew, ExecutedAddNew, CanExecuteAddNew));
+            CommandBindings.Add(new CommandBinding(SelectPrevious, ExecutedSelectedPrevious, CanExecuteSelectPrevious));
+            CommandBindings.Add(new CommandBinding(SelectNext, ExecutedSelectedNext, CanExecuteSelectNext));
+            CommandBindings.Add(new CommandBinding(Unlock, ExecutedUnlock, CanExecuteUnlock));
+            CommandBindings.Add(new CommandBinding(AddNew, ExecutedAddNew, CanExecuteAddNew));
 
-            this.LockIcon = ImageCache.GetImage("pack://application:,,,/BioLink.Client.Extensibility;component/images/Locked.png");
+            LockIcon = ImageCache.GetImage("pack://application:,,,/BioLink.Client.Extensibility;component/images/Locked.png");
 
-            _collectionChangedHandler = new System.Collections.Specialized.NotifyCollectionChangedEventHandler((s, e) => {
-                UpdateCurrentPosition();
-            });
+            _collectionChangedHandler = (s, e) => UpdateCurrentPosition();
         }
 
 
@@ -120,7 +115,7 @@ namespace BioLink.Client.Extensibility {
                     _items.CollectionChanged += _collectionChangedHandler;
                 }
                 if (value != null && value.Count > 0) {
-                    this.SelectedItem = value[0];
+                    SelectedItem = value[0];
                 } else {
                     SelectedItem = null;
                 }
@@ -128,11 +123,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         protected void UpdateCurrentPosition() {
-            if (_selectedItem == null) {
-                CurrentPosition = "???";
-            } else {
-                CurrentPosition = string.Format("{0} of {1}", SelectedIndex + 1, _items.Count);
-            }
+            CurrentPosition = _selectedItem == null ? "???" : string.Format("{0} of {1}", SelectedIndex + 1, _items.Count);
         }
 
         public ViewModelBase SelectedItem {
@@ -143,11 +134,7 @@ namespace BioLink.Client.Extensibility {
 
                 if (value != null) {
                     SelectedIndex = _items.IndexOf(value);
-                    if (SelectedIndex >= 0) {
-                        _selectedItem = value;
-                    } else {
-                        _selectedItem = null;
-                    }
+                    _selectedItem = SelectedIndex >= 0 ? value : null;
                 } else {
                     _selectedItem = null;
                     SelectedIndex = -1;
@@ -159,7 +146,7 @@ namespace BioLink.Client.Extensibility {
 
                 UpdateCurrentPosition();
 
-                this.DataContext = _selectedItem;
+                DataContext = _selectedItem;
             }
         }
 

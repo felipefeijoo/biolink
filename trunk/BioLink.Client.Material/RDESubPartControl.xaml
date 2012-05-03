@@ -6,7 +6,7 @@
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
              mc:Ignorable="d" 
              d:DesignHeight="189" d:DesignWidth="433">
-    <Grid>
+    <Grid x:Name="gridMain">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="100" />
             <ColumnDefinition Width="*" />
