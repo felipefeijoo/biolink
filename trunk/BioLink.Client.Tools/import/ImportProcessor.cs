@@ -187,7 +187,7 @@ namespace BioLink.Client.Tools {
         }
 
 
-        protected void ImportCurrentRow(int rowId, System.Data.SqlClient.SqlConnection connection) {
+        protected void ImportCurrentRow(int rowId, System.Data.Common.DbConnection connection) {
             try {
                 User.BeginTransaction(connection);
 
@@ -210,7 +210,7 @@ namespace BioLink.Client.Tools {
         }
 
 
-        protected abstract void ImportRowImpl(int rowId, System.Data.SqlClient.SqlConnection connection);
+        protected abstract void ImportRowImpl(int rowId, System.Data.Common.DbConnection connection);
 
         protected abstract void InitImportImpl();
 

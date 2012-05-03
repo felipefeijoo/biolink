@@ -118,13 +118,13 @@ namespace BioLink.Data {
 
     public class TaxonMapper : MapperBase {
 
-        public static Taxon MapTaxon(SqlDataReader reader, params ConvertingMapper[] overrides) {
+        public static Taxon MapTaxon(DbDataReader reader, params ConvertingMapper[] overrides) {
             Taxon t = new Taxon();
             ReflectMap(t, reader, null, null, overrides);
             return t;
         }
 
-        public static TaxonSearchResult MapTaxonSearchResult(SqlDataReader reader) {
+        public static TaxonSearchResult MapTaxonSearchResult(DbDataReader reader) {
             TaxonSearchResult t = new TaxonSearchResult();
             ReflectMap(t, reader, null, null);
             return t;
@@ -132,7 +132,7 @@ namespace BioLink.Data {
 
         private static ConvertingMapper _taxonMapper = new ConvertingMapper("bitAvailableNameAllowed", (@in) => ((byte?) @in).GetValueOrDefault(0) !=0);
 
-        public static TaxonRank MapTaxonRank(SqlDataReader reader) {
+        public static TaxonRank MapTaxonRank(DbDataReader reader) {
             TaxonRank tr = new TaxonRank();
             ReflectMap(tr, reader, null, null, _taxonMapper);
             return tr;
@@ -149,11 +149,11 @@ namespace BioLink.Data {
             Overrides = overrides;
         }
 
-        public T Map(SqlDataReader reader) {
+        public T Map(DbDataReader reader) {
             return Map(reader, new T());
         }
 
-        virtual public T Map(SqlDataReader reader, T t ) {
+        virtual public T Map(DbDataReader reader, T t ) {
 
             ReflectMap(t, reader, ColumnIgnores, Mappings, Overrides);
             if (PostMapAction != null) {

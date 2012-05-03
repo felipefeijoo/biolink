@@ -48,7 +48,7 @@ namespace BioLink.Client.Tools {
             _ranks = taxonService.GetOrderedRanks();
         }
 
-        protected override void ImportRowImpl(int rowId, System.Data.SqlClient.SqlConnection connection) {
+        protected override void ImportRowImpl(int rowId, System.Data.Common.DbConnection connection) {
 
             int regionNumber = -1;
             int siteNumber = -1;

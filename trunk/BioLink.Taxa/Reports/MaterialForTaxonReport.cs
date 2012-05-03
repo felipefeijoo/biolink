@@ -23,7 +23,7 @@ namespace BioLink.Client.Taxa {
                 progress.ProgressStart(string.Format("Retrieving Material records for {0}", Taxon.DisplayLabel), true);
             }
 
-            var serviceMessage = new BioLinkService.ServiceMessageDelegate((message) => {
+            var serviceMessage = new ServiceMessageDelegate((message) => {
                 progress.ProgressMessage(message, 0);
             });
 
