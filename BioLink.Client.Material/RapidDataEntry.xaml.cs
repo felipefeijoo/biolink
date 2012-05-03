@@ -405,6 +405,7 @@ namespace BioLink.Client.Material {
                     foreach (Trait t in control.GetTraits()) {
                         var newTrait = ReflectionUtils.Clone(t);
                         newTrait.IntraCatID = -1;
+                        newTrait.TraitID = -1;
                         traits.Add(newTrait);
                     }
                 }
@@ -506,6 +507,7 @@ namespace BioLink.Client.Material {
                     foreach (Associate a in copyFromAssociates) {
                         var newAssoc = ReflectionUtils.Clone(a);
                         newAssoc.AssociateID = -1;
+                        newAssoc.AssociateID = -1;
                         associates.Add(newAssoc);
                     }
                 }
@@ -514,6 +516,7 @@ namespace BioLink.Client.Material {
                     foreach (MaterialPart p in copyFromSubparts) {
                         var newSubpart = ReflectionUtils.Clone(p);
                         newSubpart.MaterialPartID = -1;
+                        newSubpart.MaterialID = -1;
                         subparts.Add(newSubpart);
                     }
                 }
