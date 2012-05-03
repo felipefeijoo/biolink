@@ -498,6 +498,7 @@ namespace BioLink.Client.Material {
                 foreach (Trait t in copyFrom.Traits) {
                     var newTrait = ReflectionUtils.Clone(t);
                     newTrait.IntraCatID = -1;
+                    newTrait.TraitID = -1;
                     traits.Add(newTrait);
                 }
 
