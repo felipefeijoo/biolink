@@ -149,14 +149,19 @@ namespace BioLinkApplication {
                     },
                     (errorMsg) => {
                         this.InvokeIfRequired(() => {
+
+                            bool authenticate = !profile.IntegratedSecurity && profile.ConnectionType != ConnectionType.Standalone;
+
                             detailsGrid.IsEnabled = true;
                             btnCancel.Visibility = Visibility.Visible;
                             btnLogin.Visibility = Visibility.Visible;
-                            txtUsername.IsEnabled = true;
-                            txtPassword.IsEnabled = true;
+                            txtUsername.IsEnabled = authenticate;
+                            txtPassword.IsEnabled = authenticate;
                             cmbProfile.IsEnabled = true;
-                            txtPassword.Focus();
-                            txtPassword.SelectAll();
+                            if (authenticate) {
+                                txtPassword.Focus();
+                                txtPassword.SelectAll();
+                            }
                             ErrorMessage("LoginControl.Status.LoginFailed", errorMsg);
                         });
                     }
@@ -215,13 +220,14 @@ namespace BioLinkApplication {
         private void cmbProfile_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             ConnectionProfile profile = cmbProfile.SelectedItem as ConnectionProfile;
             if (profile != null) {
-                txtUsername.IsEnabled = !profile.IntegratedSecurity;
-                txtPassword.IsEnabled = !profile.IntegratedSecurity;
-                lblUsername.IsEnabled = !profile.IntegratedSecurity;
-                lblPassword.IsEnabled = !profile.IntegratedSecurity;
+                bool authenticate = !profile.IntegratedSecurity && profile.ConnectionType != ConnectionType.Standalone;
+                txtUsername.IsEnabled = authenticate;
+                txtPassword.IsEnabled = authenticate;
+                lblUsername.IsEnabled = authenticate;
+                lblPassword.IsEnabled = authenticate;
 
                 txtPassword.Password = "";
-                if (profile.IntegratedSecurity) {
+                if (!authenticate) {
                     txtUsername.Text = "";                    
                 } else {
                     txtUsername.Text = profile.LastUser;

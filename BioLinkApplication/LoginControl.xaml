@@ -28,15 +28,36 @@
         <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
             <Image Name="imgSplash" Stretch="None" Source="/BioLinkApplication;component/images/biolink_logo_splash.png" />
             <Grid Width="329" Height="250" x:Name="detailsGrid">
-                <Label Content="{StaticResource LoginControl.lblProfile}" Height="28" HorizontalAlignment="Left" Margin="0,64,0,0" Name="label1" VerticalAlignment="Top" Width="98" HorizontalContentAlignment="Right" />
-                <ComboBox Height="23" HorizontalAlignment="Left" Margin="104,69,0,0" Name="cmbProfile" VerticalAlignment="Top" Width="143" ItemTemplate="{StaticResource ConnectionProfile}" SelectionChanged="cmbProfile_SelectionChanged" />                                    
-                <Button Content="{StaticResource LoginControl.btnProfile}" Height="23" HorizontalAlignment="Left" Margin="253,69,0,0" Name="btnProfile" VerticalAlignment="Top" Width="25" Click="btnProfile_Click" />
-                <Label Content="{StaticResource LoginControl.lblUsername}" Height="28" HorizontalAlignment="Left" Name="lblUsername" VerticalAlignment="Top" HorizontalContentAlignment="Right" Width="98" Margin="0,98,0,0" />
-                <Label Content="{StaticResource LoginControl.lblPassword}" Height="28" HorizontalAlignment="Left" Margin="0,132,0,0" Name="lblPassword" VerticalAlignment="Top" Width="98" HorizontalContentAlignment="Right" />
-                <TextBox Height="23" HorizontalAlignment="Left" Margin="104,100,0,0" Name="txtUsername" VerticalAlignment="Top" Width="174" />
-                <PasswordBox Height="23" HorizontalAlignment="Left" Margin="104,132,0,0" Name="txtPassword" VerticalAlignment="Top" Width="174" />
-                <Button Content="{StaticResource Button.Cancel}" Height="25" HorizontalAlignment="Left" Margin="203,172,0,53" Name="btnCancel" Width="75" IsCancel="True" Click="btnCancel_Click" />
-                <Button Content="{StaticResource LoginControl.btnLogin}" Name="btnLogin" Width="75" Click="btnLogin_Click" SnapsToDevicePixels="True" IsDefault="True" Margin="104,171,150,53" Height="25" />
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="28" />
+                    <RowDefinition Height="28" />
+                    <RowDefinition Height="28" />
+                    <RowDefinition Height="28" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="28" />
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Row="1" Grid.Column="0" Content="{StaticResource LoginControl.lblProfile}" HorizontalAlignment="Right" Name="label1"  />
+                <ComboBox Grid.Row="1" Grid.Column="1" Height="23" Name="cmbProfile" ItemTemplate="{StaticResource ConnectionProfile}" SelectionChanged="cmbProfile_SelectionChanged" />
+                <Button Grid.Row="1" Grid.Column="2" Content="{StaticResource LoginControl.btnProfile}" Name="btnProfile" Height="23" Width="23" Click="btnProfile_Click" />
+
+                <Label Grid.Row="2" Grid.Column="0" Content="{StaticResource LoginControl.lblUsername}" HorizontalAlignment="Right" Name="lblUsername"  />
+                <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Height="23" Name="txtUsername"  />
+
+                <Label Grid.Row="3" Grid.Column="0" Content="{StaticResource LoginControl.lblPassword}" HorizontalAlignment="Right" Name="lblPassword" />
+                <PasswordBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Height="23" Name="txtPassword" />
+                
+                <StackPanel Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal">
+                    <Button Content="{StaticResource Button.Cancel}" Height="23" Name="btnCancel" Width="75" IsCancel="True" Click="btnCancel_Click" />
+                    <Grid Width="10" />
+                    <Button Content="{StaticResource LoginControl.btnLogin}" Name="btnLogin" Width="75" Click="btnLogin_Click" IsDefault="True" Height="23" />
+                </StackPanel>
+
             </Grid>            
         </StackPanel>
         <Label Height="68" Name="lblStatus" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="1" Grid.Row="2" />

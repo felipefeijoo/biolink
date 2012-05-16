@@ -48,6 +48,10 @@ namespace BioLinkApplication {
             }));
 
             cmbProfiles.ItemsSource = _model;
+
+            cmbConnectionType.ItemsSource = Enum.GetValues(typeof(ConnectionType));
+            cmbConnectionType.SelectionChanged += new SelectionChangedEventHandler(cmbConnectionType_SelectionChanged);
+
             String lastProfile = Config.GetGlobal<string>("connection.lastprofile", null);
             if (!String.IsNullOrEmpty(lastProfile)) {
                 // Look in the list for the profile with the same name.
@@ -60,6 +64,24 @@ namespace BioLinkApplication {
                 profileGrid.IsEnabled = false;
             }
 
+        }
+
+        void cmbConnectionType_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            ConnectionType type = (ConnectionType)cmbConnectionType.SelectedItem;
+            switch (type) {
+                case ConnectionType.SQLServer:
+                    profileGrid.RowDefinitions[2].Height = new GridLength(28);
+                    profileGrid.RowDefinitions[4].Height = new GridLength(28);
+                    profileGrid.RowDefinitions[5].Height = new GridLength(28);
+                    profileGrid.ColumnDefinitions[3].Width = new GridLength(0);
+                    break;
+                case ConnectionType.Standalone:
+                    profileGrid.RowDefinitions[2].Height = new GridLength(0);
+                    profileGrid.RowDefinitions[4].Height = new GridLength(0);
+                    profileGrid.RowDefinitions[5].Height = new GridLength(0);
+                    profileGrid.ColumnDefinitions[3].Width = new GridLength(28);
+                    break;
+            }
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e) {

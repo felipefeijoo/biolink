@@ -6,11 +6,10 @@
     <system:String x:Key="Button.Cancel">Cancel</system:String>
     <system:String x:Key="Button.Apply">_Apply</system:String>
     
-
     <system:String x:Key="LoginControl.lblProfile">Profile:</system:String>
     <system:String x:Key="LoginControl.btnProfile">...</system:String>
     <system:String x:Key="LoginControl.lblUsername">Username:</system:String>
-    <system:String x:Key="LoginControl.lblPassword">Password:</system:String>    
+    <system:String x:Key="LoginControl.lblPassword">Password:</system:String>
     <system:String x:Key="LoginControl.btnLogin">Login</system:String>
     <system:String x:Key="LoginControl.Status.Connecting">Connecting to {0}...</system:String>
     <system:String x:Key="LoginControl.Status.LoginFailed">Login failed: {0}</system:String>
@@ -20,10 +19,12 @@
     <system:String x:Key="ConnectionProfiles.Title">Manage Connection Profiles</system:String>
     <system:String x:Key="ConnectionProfiles.lblProfile">Profile:</system:String>
     <system:String x:Key="ConnectionProfiles.btnAdd">Add new</system:String>
-    <system:String x:Key="ConnectionProfiles.lblName">Name</system:String>
-    <system:String x:Key="ConnectionProfiles.lblServer">Server/Instance</system:String>
-    <system:String x:Key="ConnectionProfiles.lblDatabase">Database</system:String>
-    <system:String x:Key="ConnectionProfiles.lblTimeout">Timeout</system:String>
+
+    <system:String x:Key="ConnectionProfiles.lblConnectionType">Type:</system:String>
+    <system:String x:Key="ConnectionProfiles.lblName">Name:</system:String>
+    <system:String x:Key="ConnectionProfiles.lblServer">Server/Instance:</system:String>
+    <system:String x:Key="ConnectionProfiles.lblDatabase">Database:</system:String>
+    <system:String x:Key="ConnectionProfiles.lblTimeout">Timeout:</system:String>
     <system:String x:Key="ConnectionProfiles.lblSeconds">seconds</system:String>
     <system:String x:Key="ConnectionProfiles.lblIntegratedSecurity">Use Integrated Security (NT Authentication)</system:String>
     <system:String x:Key="ConnectionProfiles.btnDelete">Delete</system:String>

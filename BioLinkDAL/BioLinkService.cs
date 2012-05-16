@@ -113,27 +113,7 @@ namespace BioLink.Data {
             using (new CodeTimer(String.Format("StoredProcReaderForEach '{0}'", proc))) {
                 Logger.Debug("Calling stored procedure (reader): {0}({1})", proc, GetParamsString(@params));
                 Command((con, cmd) => {
-                    cmd.CommandText = proc;
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    if (User.InTransaction && User.CurrentTransaction != null) {
-                        cmd.Transaction = User.CurrentTransaction;
-                    }
-                    foreach (DbParameter param in @params) {
-                        cmd.Parameters.Add(param);
-                    }
-
-                    using (var reader = cmd.ExecuteReader()) {
-                        Message("Fetching records...");
-                        int count = 0;
-                        while (reader.Read()) {                            
-                            if (action != null) {
-                                action(reader);
-                            }
-                            if (++count % 1000 == 0) {
-                                Message("{0} records retrieved", count);
-                            }
-                        }
-                    }
+                    User.ConnectionProvider.StoredProcReaderForEach(User, cmd, proc, action, (msg) => Message(msg), @params);
                 });
             }
         }
@@ -142,22 +122,7 @@ namespace BioLink.Data {
             using (new CodeTimer(String.Format("StoredProcReaderFirst '{0}'", proc))) {
                 Logger.Debug("Calling stored procedure (reader): {0}({1})", proc, GetParamsString(@params));
                 Command((con, cmd) => {
-                    cmd.CommandText = proc;
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    if (User.InTransaction && User.CurrentTransaction != null) {
-                        cmd.Transaction = User.CurrentTransaction;
-                    }
-                    foreach (DbParameter param in @params) {
-                        cmd.Parameters.Add(param);
-                    }
-
-                    using (var reader = cmd.ExecuteReader()) {
-                        if (reader.Read()) {
-                            if (action != null) {
-                                action(reader);
-                            }
-                        }
-                    }
+                    User.ConnectionProvider.StoredProcReaderFirst(User, cmd, proc, action, (msg) => Message(msg), @params);
                 });
             }
         }

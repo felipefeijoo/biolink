@@ -55,5 +55,10 @@ namespace BioLinkApplication {
             set { SetProperty(() => Model.LastUser, value); }
         }
 
+        public ConnectionType ConnectionType {
+            get { return Model.ConnectionType; }
+            set { SetProperty(() => Model.ConnectionType, value); }
+        }
+
     }
 }
