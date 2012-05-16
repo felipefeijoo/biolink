@@ -23,6 +23,7 @@ namespace BioLink.Data.Model {
 
     public class ConnectionProfile : OwnedDataObject {
 
+        public ConnectionType ConnectionType { get; set; }
         public String Name { get; set; }
         public String Server { get; set; }
         public String Database { get; set; }
@@ -30,10 +31,14 @@ namespace BioLink.Data.Model {
         public bool IntegratedSecurity { get; set; }
         public String LastUser { get; set; }
 
-
         protected override System.Linq.Expressions.Expression<Func<int>> IdentityExpression {
             get { return null; }
         }
+    }
+
+    public enum ConnectionType {
+        SQLServer,
+        Standalone
     }
 
 }

@@ -119,6 +119,8 @@
     <Compile Include="Model\XMLIOSite.cs" />
     <Compile Include="Model\XMLIOSiteVisit.cs" />
     <Compile Include="Model\XMLIOTrait.cs" />
+    <Compile Include="SQLiteConnectionProvider.cs" />
+    <Compile Include="SQLServerConnectionProvider.cs" />
     <Compile Include="tests\QueryTests.cs" />
     <Compile Include="tests\TaxaTests.cs" />
     <Compile Include="tests\UserTests.cs" />

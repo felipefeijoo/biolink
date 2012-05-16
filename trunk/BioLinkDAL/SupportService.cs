@@ -1456,7 +1456,7 @@ namespace BioLink.Data {
             
             StoredProcUpdate("spUserInsert",
                 _P("vchrUsername", user.UserName),
-                _P("vchrPassword", User.ManglePassword(user.UserName, user.Password)),
+                _P("vchrPassword", PasswordUtitlites.ManglePassword(user.UserName, user.Password)),
                 _P("vchrFullname", user.FullName),
                 _P("vchrDescription", user.Description),
                 _P("vchrNotes", user.Notes),
@@ -1479,7 +1479,7 @@ namespace BioLink.Data {
         public void UpdateUserPassword(string username, string password) {
             StoredProcUpdate("spUserPasswordUpdate",
                 _P("vchrUsername", username),
-                _P("vchrPassword", User.ManglePassword(username, password))
+                _P("vchrPassword", PasswordUtitlites.ManglePassword(username, password))
             );
         }
 

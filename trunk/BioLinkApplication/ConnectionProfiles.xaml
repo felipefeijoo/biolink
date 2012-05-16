@@ -18,16 +18,41 @@
         
         <Border Margin="12,45,12,49" CornerRadius="4" BorderThickness="1" Name="ProfileBorder">
             <Grid Name="profileGrid">
-                <Label Content="{StaticResource ConnectionProfiles.lblName}" Height="28" HorizontalAlignment="Left" Margin="12,6,0,0" Name="lblName" VerticalAlignment="Top" Width="143" />
-                <Label Content="{StaticResource ConnectionProfiles.lblServer}" Height="28" HorizontalAlignment="Left" Margin="12,40,0,0" Name="lblServer" VerticalAlignment="Top" Width="143" />
-                <Label Content="{StaticResource ConnectionProfiles.lblDatabase}" Height="28" HorizontalAlignment="Left" Margin="12,74,0,0" Name="lblDatabase" VerticalAlignment="Top" Width="143" />
-                <Label Content="{StaticResource ConnectionProfiles.lblTimeout}" Height="28" HorizontalAlignment="Left" Margin="12,108,0,0" Name="lblTimeout" VerticalAlignment="Top" Width="143" />
-                <TextBox Height="23" Margin="161,11,98,0" Name="txtName" VerticalAlignment="Top" Text="{Binding Name}" />
-                <TextBox Height="23" Margin="161,45,98,0" Name="txtServer" VerticalAlignment="Top" Text="{Binding Server}"/>
-                <TextBox Height="23" Margin="161,79,98,0" Name="txtDatabase" VerticalAlignment="Top" Text="{Binding Database}" />
-                <TextBox Height="23" HorizontalAlignment="Left" Margin="161,113,0,0" Name="txtTimeout" VerticalAlignment="Top" Width="71" Text="{Binding Timeout}"/>
-                <CheckBox Content="{StaticResource ConnectionProfiles.lblIntegratedSecurity}" Height="23" HorizontalAlignment="Left" Margin="161,145,0,0" Name="chkIntegratedSecurity" VerticalAlignment="Top" Width="287" VerticalContentAlignment="Top" IsChecked="{Binding IntegratedSecurity}"/>
-                <Button Content="{StaticResource ConnectionProfiles.btnDelete}" Margin="6,0,0,6" Name="btnDelete" HorizontalAlignment="Left" Width="75" Height="23" VerticalAlignment="Bottom" Click="btnDelete_Click" />
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="28" />
+                    <RowDefinition Height="28" />
+                    <RowDefinition Height="28" />
+                    <RowDefinition Height="28" />
+                    <RowDefinition Height="28" />
+                    <RowDefinition Height="28" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="5" />
+                    <ColumnDefinition Width="28" />
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Row="0" Content="{StaticResource ConnectionProfiles.lblConnectionType}" HorizontalAlignment="Right" Name="lblType" />
+                <ComboBox Grid.Row="0" Grid.Column="1" Name="cmbConnectionType" HorizontalAlignment="Left" Width="150" Height="23" SelectedItem="{Binding ConnectionType}"/>
+
+                <Label Grid.Row="1" Content="{StaticResource ConnectionProfiles.lblName}" HorizontalAlignment="Right" Name="lblName" />
+                <TextBox Grid.Row="1" Grid.Column="1" Height="23" Name="txtName" Text="{Binding Name}" HorizontalAlignment="Left" Width="150" />
+                
+                <Label Grid.Row="2" Grid.Column="0" Content="{StaticResource ConnectionProfiles.lblServer}" HorizontalAlignment="Right" Name="lblServer"  />
+                <TextBox Grid.Row="2" Grid.Column="1" Height="23" Name="txtServer" Text="{Binding Server}" />
+
+                <Label Grid.Row="3" Grid.Column="0" Content="{StaticResource ConnectionProfiles.lblDatabase}" HorizontalAlignment="Right" Name="lblDatabase" />
+                <TextBox Grid.Row="3" Grid.Column="1" Height="23" Name="txtDatabase" Text="{Binding Database}" />
+                <Button Grid.Row="3" Grid.Column="3" Height="23" Width="23" Name="btnChooseFile" Content="..." />
+
+                <Label Grid.Row="4" Grid.Column="0" Content="{StaticResource ConnectionProfiles.lblTimeout}" HorizontalAlignment="Right" Name="lblTimeout" />
+                <TextBox Grid.Row="4" Grid.Column="1" Height="23" Name="txtTimeout" Text="{Binding Timeout}" HorizontalAlignment="Left" Width="50"/>
+
+                <CheckBox Grid.Row="5" Grid.Column="1" Content="{StaticResource ConnectionProfiles.lblIntegratedSecurity}" HorizontalAlignment="Left" Name="chkIntegratedSecurity" VerticalAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding IntegratedSecurity}"/>
+                
+                <Button Grid.Row="6" Grid.Column="0" Content="{StaticResource ConnectionProfiles.btnDelete}" Margin="6,0,0,6" Name="btnDelete" HorizontalAlignment="Left" Width="75" Height="23" VerticalAlignment="Bottom" Click="btnDelete_Click" />
             </Grid>
             <Border.BorderBrush>
                 <LinearGradientBrush EndPoint="1,0.5" StartPoint="0,0.5">
