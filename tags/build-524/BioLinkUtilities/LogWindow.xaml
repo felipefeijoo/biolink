@@ -1,0 +1,34 @@
+﻿<Window x:Class="BioLink.Client.Utilities.LogWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="312" d:DesignWidth="633" SizeToContent="WidthAndHeight" Title="Log Window" Topmost="True">
+    <Grid>
+        <Grid.Resources>
+            <Style x:Key="hcs" TargetType="{x:Type GridViewColumnHeader}">
+                <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
+            </Style>
+        </Grid.Resources>        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="38" />
+        </Grid.RowDefinitions>
+        
+        <ListView x:Name="grid">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width="120" Header="Time" HeaderContainerStyle="{StaticResource hcs}" DisplayMemberBinding="{Binding TimeStampString}" />
+                    <GridViewColumn Width="100" Header="Category" HeaderContainerStyle="{StaticResource hcs}" DisplayMemberBinding="{Binding Category}" />
+                    <GridViewColumn Width="400" Header="Message" HeaderContainerStyle="{StaticResource hcs}" DisplayMemberBinding="{Binding Message}" />
+                </GridView>
+            </ListView.View>
+            
+        </ListView>
+        
+        <Grid Grid.Row="1" Background="{x:Static SystemColors.ControlBrush}">
+            <Button Name="btnClose" Height="23" Width="80" Margin="0,6,6,0" HorizontalAlignment="Right" VerticalAlignment="Top" Content="Close"></Button>
+        </Grid>
+    </Grid>
+</Window>
