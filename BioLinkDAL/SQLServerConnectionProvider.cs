@@ -123,6 +123,9 @@ namespace BioLink.Data {
             return user.Username.Equals("sa", StringComparison.CurrentCultureIgnoreCase);
         }
 
+        public DbParameter CreateParameter(string name, object value) {
+            return new SqlParameter(name, value);
+        }
     }
 
     public static class PasswordUtitlites {

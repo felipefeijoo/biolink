@@ -14,7 +14,6 @@
  ******************************************************************************/
 using System;
 using System.Data;
-using System.Data.SqlClient;
 using BioLink.Client.Utilities;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -255,7 +254,7 @@ namespace BioLink.Data {
 
         private string GetParamsString(params DbParameter[] @params) {
             var plist = new List<string>();
-            foreach (SqlParameter p in @params) {
+            foreach (DbParameter p in @params) {
                 var pValue = p.Value == null ? "(null)" : p.Value.ToString().Truncate(50);
                 plist.Add(p.ParameterName + "=" + pValue);
             }
@@ -283,11 +282,12 @@ namespace BioLink.Data {
                     value = defIfNull;
                 }
             } 
-            return new SqlParameter(name, value);
+            return User.ConnectionProvider.CreateParameter(name, value);
         }
 
         internal DbParameter ReturnParam(string name, DbType type = DbType.Int32) {
-            SqlParameter param = new SqlParameter(name, type);
+            DbParameter param = User.ConnectionProvider.CreateParameter(name, null);
+            param.DbType = type;
             param.Direction = ParameterDirection.ReturnValue;
             return param;
         }

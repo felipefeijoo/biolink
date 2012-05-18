@@ -52,6 +52,9 @@ namespace BioLink.Client.Utilities {
 
         private static void LogImpl(string category, TraceEventType severity, string message, params object[] args) {            
             var entry = new LogEntry(String.Format(message, args), category, 0, 0, severity, "BioLink", null);
+            if (MessageLogged != null) {
+                MessageLogged(entry);
+            }
             WriteEntry(entry);
         }
 
@@ -67,6 +70,8 @@ namespace BioLink.Client.Utilities {
                 _loggingFailed = true;
             }
         }
+
+        public static event Action<LogEntry> MessageLogged;
 
         public static LogEntryBuilder Log(string message) {
             return new LogEntryBuilder(message);

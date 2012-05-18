@@ -43,6 +43,10 @@ namespace BioLinkApplication {
 
         public LoginControl() {
             InitializeComponent();
+
+            var frm = new LogWindow();
+            frm.Show();
+
             if (!this.IsDesignTime()) {
                 SetupProfiles();
             }

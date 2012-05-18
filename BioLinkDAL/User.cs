@@ -39,7 +39,7 @@ namespace BioLink.Data {
             if (profile.ConnectionType == ConnectionType.SQLServer) {
                 ConnectionProvider = new SQLServerConnectionProvider();
             } else if (profile.ConnectionType == ConnectionType.Standalone) {
-                ConnectionProvider = new SQLiteConnectionProvider();
+                ConnectionProvider = new SQLiteConnectionProvider(profile, username, password);
             }
         }
 
