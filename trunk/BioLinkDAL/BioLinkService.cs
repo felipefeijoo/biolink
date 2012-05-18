@@ -127,11 +127,11 @@ namespace BioLink.Data {
             }
         }
 
-        internal T StoredProcReturnVal<T>(string proc, params DbParameter[] @params) {
+        internal int StoredProcReturnVal(string proc, params DbParameter[] @params) {
             using (new CodeTimer(String.Format("StoredProcReaderFirst '{0}'", proc))) {
                 
                 Array.Resize(ref @params, @params.Length + 1);
-                var ret = ReturnParam("Return Value", SqlDbType.Variant);
+                var ret = ReturnParam("Return Value", DbType.Int32);
                 @params[@params.Length - 1] = ret;
 
                 Command((con, cmd) => {
@@ -147,7 +147,7 @@ namespace BioLink.Data {
 
                 });
 
-                return (T) ret.Value;
+                return (int) ret.Value;
             }
         }
 
@@ -267,20 +267,9 @@ namespace BioLink.Data {
         internal int StoredProcUpdate(string proc, params DbParameter[] @params) {
             int rowsAffected = -1;
             using (new CodeTimer(String.Format("StoredProcUpdate '{0}'", proc))) {
-
                 Logger.Debug("Calling stored procedure (update): {0}({1})", proc, GetParamsString(@params));
-
-
                 Command((con, cmd) => {
-                    cmd.CommandText = proc;
-                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                    if (User.InTransaction && User.CurrentTransaction != null) {
-                        cmd.Transaction = User.CurrentTransaction;
-                    }
-                    foreach (SqlParameter param in @params) {
-                        cmd.Parameters.Add(param);
-                    }
-                    rowsAffected = cmd.ExecuteNonQuery();                    
+                    rowsAffected = User.ConnectionProvider.StoredProcUpdate(User, cmd, proc, @params);
                 });
             }
             return rowsAffected;
@@ -297,7 +286,7 @@ namespace BioLink.Data {
             return new SqlParameter(name, value);
         }
 
-        internal DbParameter ReturnParam(string name, SqlDbType type = SqlDbType.Int) {
+        internal DbParameter ReturnParam(string name, DbType type = DbType.Int32) {
             SqlParameter param = new SqlParameter(name, type);
             param.Direction = ParameterDirection.ReturnValue;
             return param;

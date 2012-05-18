@@ -606,7 +606,7 @@ namespace BioLink.Data {
         }
 
         public int GetPhraseCategoryId(string categoryName, bool @fixed) {
-            return StoredProcReturnVal<int>("spPhraseCategoryGetID", new SqlParameter("vchrCategory", categoryName), new SqlParameter("bitFixed", @fixed));
+            return StoredProcReturnVal("spPhraseCategoryGetID", new SqlParameter("vchrCategory", categoryName), new SqlParameter("bitFixed", @fixed));
         }
 
         public List<Phrase> GetPhrases(int categoryId) {
@@ -864,7 +864,7 @@ namespace BioLink.Data {
         }
 
         public bool CheckAutoNumberUnique(string number, string table, string field) {
-            var retval = StoredProcReturnVal<int>("spAutoNumberEnsureUnique", 
+            var retval = StoredProcReturnVal("spAutoNumberEnsureUnique", 
                 _P("vchrNumber", number),
                 _P("vchrFromTable", table),
                 _P("vchrFieldName", field)
@@ -1184,7 +1184,7 @@ namespace BioLink.Data {
         }
 
         public Boolean OkToDeleteJournal(int journalID) {            
-            var refcount = StoredProcReturnVal<int>("spJournalOkToDelete", _P("intJournalID", journalID));
+            var refcount = StoredProcReturnVal("spJournalOkToDelete", _P("intJournalID", journalID));
             return refcount == 0;
         }
 
@@ -1441,7 +1441,7 @@ namespace BioLink.Data {
         }
 
         public bool HasBiotaPermission(int taxonID, PERMISSION_MASK mask) {
-            var ret = StoredProcReturnVal<int>("spUserHasBiotaPermission", _P("vchrUsername", User.Username), _P("intBiotaID", taxonID), _P("intRequiredPermissionMask", (int)mask));
+            var ret = StoredProcReturnVal("spUserHasBiotaPermission", _P("vchrUsername", User.Username), _P("intBiotaID", taxonID), _P("intRequiredPermissionMask", (int)mask));
             // SP's return 0 when they succeed !
             return ret == 0;
         }

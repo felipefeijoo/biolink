@@ -244,7 +244,7 @@ namespace BioLink.Data {
         }
 
         public void InsertTaxon(Taxon taxon) {
-            var retval = ReturnParam("newTaxonId", System.Data.SqlDbType.Int);
+            var retval = ReturnParam("newTaxonId");
             StoredProcUpdate("spBiotaInsert",
                 _P("intParentID", taxon.TaxaParentID),
                 _P("vchrEpithet", taxon.Epithet),
@@ -411,7 +411,7 @@ namespace BioLink.Data {
         }
 
         public void InsertSANTypeData(SANTypeData data) {
-            var retval = ReturnParam("RetVal", System.Data.SqlDbType.Int);
+            var retval = ReturnParam("RetVal");
             StoredProcUpdate("spSANTypeDataInsert",
                 _P("intBiotaID", data.BiotaID),
                 _P("vchrType", data.Type),
@@ -471,7 +471,7 @@ namespace BioLink.Data {
         }
 
         public void InsertGANIncludedSpecies(GANIncludedSpecies model) {
-            var retval = ReturnParam("RetVal", System.Data.SqlDbType.Int);
+            var retval = ReturnParam("RetVal");
             StoredProcUpdate("spGANIncludedSpeciesInsert",
                 _P("intBiotaID", model.BiotaID),
                 _P("vchrIncludedSpecies", model.IncludedSpecies),
@@ -498,7 +498,7 @@ namespace BioLink.Data {
 
         public void InsertCommonName(CommonName commonName) {
 
-            var retval = ReturnParam("RetVal", System.Data.SqlDbType.Int);
+            var retval = ReturnParam("RetVal");
 
             StoredProcUpdate("spCommonNameInsert",                
                 _P("intBiotaID", commonName.BiotaID),
@@ -544,7 +544,7 @@ namespace BioLink.Data {
         }
 
         public int InsertBiotaDist(int? TaxonID, TaxonDistribution dist) {
-            var retval = ReturnParam("identity", System.Data.SqlDbType.Int);
+            var retval = ReturnParam("identity");
 
             StoredProcUpdate("spBiotaDistInsert",
                 _P("intBiotaID", TaxonID.Value),

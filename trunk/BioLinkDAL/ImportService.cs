@@ -206,7 +206,7 @@ namespace BioLink.Data {
         }
 
         public int ImportReference(ReferenceImport r) {
-            var retval = ReturnParam("NewRefID", SqlDbType.Int);
+            var retval = ReturnParam("NewRefID");
             StoredProcUpdate("spReferenceImport",
                 _P("vchrRefCode", r.RefCode),
                 _P("vchrAuthor", r.Author),
@@ -242,7 +242,7 @@ namespace BioLink.Data {
         }
 
         public int ImportRegion(string name, int parentId, string rank) {
-            return StoredProcReturnVal<int>("spRegionImportGetID",
+            return StoredProcReturnVal("spRegionImportGetID",
                 _P("vchrRegionName", name),
                 _P("intInsertUnderParent", parentId),
                 _P("vchrRank", rank)
@@ -251,7 +251,7 @@ namespace BioLink.Data {
         }
 
         public int ImportSite(Site site) {
-            return StoredProcReturnVal<int>("spSiteImportGetID",
+            return StoredProcReturnVal("spSiteImportGetID",
                 _P("vchrSiteName", site.SiteName),
                 _P("intPoliticalRegionID", site.PoliticalRegionID),
                 _P("tintLocalType", site.LocalityType),
@@ -297,7 +297,7 @@ namespace BioLink.Data {
         }
 
         public int ImportSiteVisit(SiteVisit siteVisit) {
-            return StoredProcReturnVal<int>("spSiteVisitImportGetID",
+            return StoredProcReturnVal("spSiteVisitImportGetID",
                 _P("vchrSiteVisitName", siteVisit.SiteVisitName),
                 _P("intSiteID", siteVisit.SiteID),
                 _P("vchrFieldNumber", siteVisit.FieldNumber),
@@ -311,7 +311,7 @@ namespace BioLink.Data {
         }
 
         public int ImportTaxon(int parentID, string epithet, string author, string yearOfPub, bool changedCombination, string elemType, bool unplaced, string rank, string kingdom, int order, bool unverified, string availnamestatus) {
-            return StoredProcReturnVal<int>("spBiotaImport",
+            return StoredProcReturnVal("spBiotaImport",
                 _P("intParentID", parentID),
                 _P("vchrEpithet", epithet),
                 _P("vchrAuthor", author),

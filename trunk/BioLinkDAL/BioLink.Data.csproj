@@ -73,6 +73,7 @@
     <Compile Include="CodeValuePair.cs" />
     <Compile Include="ConfigurationStore.cs" />
     <Compile Include="FavoriteDatabaseCommands.cs" />
+    <Compile Include="IConnectionProvider.cs" />
     <Compile Include="IgnoreFormattingChanges.cs" />
     <Compile Include="ImportService.cs" />
     <Compile Include="IXMLImportProgressObserver.cs" />
@@ -200,6 +201,9 @@
     <None Include="tests\testQueries\query1.blq">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="scripts\sqlite_init.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
