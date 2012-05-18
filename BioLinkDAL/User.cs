@@ -86,7 +86,7 @@ namespace BioLink.Data {
         }
 
         public bool IsSysAdmin {
-            get { return _username.Equals("sa", StringComparison.CurrentCultureIgnoreCase); }
+            get { return ConnectionProvider.IsSysAdmin(this); }
         }
 
         public bool HasPermission(PermissionCategory perm, PERMISSION_MASK mask) {

@@ -257,7 +257,7 @@ namespace BioLink.Data {
         }
 
         public int InsertRegion(string name, int parentID) {
-            var retval = ReturnParam("NewRegionID", System.Data.SqlDbType.Int);
+            var retval = ReturnParam("NewRegionID");
             StoredProcUpdate("spRegionInsert",
                 _P("vchrName", name),
                 _P("intParentID", parentID),
@@ -358,7 +358,7 @@ namespace BioLink.Data {
         }
 
         public int InsertSite(int politicalRegion, int siteGroupId, int basedOnSiteId = -1) {
-            var retval = ReturnParam("NewSiteID", System.Data.SqlDbType.Int);
+            var retval = ReturnParam("NewSiteID");
             StoredProcUpdate("spSiteInsert",
                 _P("intPoliticalRegionID", politicalRegion),
                 _P("intSiteGroupID", siteGroupId),
@@ -457,7 +457,7 @@ namespace BioLink.Data {
         }
 
         public int InsertSiteTemplate() {
-            var retval = ReturnParam("intNewSiteID", System.Data.SqlDbType.Int);
+            var retval = ReturnParam("intNewSiteID");
             StoredProcUpdate("spSiteInsertTemplate", _P("vchrDummy", ""), retval);
             return (int)retval.Value;
         }
@@ -564,7 +564,7 @@ namespace BioLink.Data {
         }
 
         public int InsertSiteVisit(int parentID, int basedOnSiteVisitID = -1) {
-            var retval = ReturnParam("NewSiteID", System.Data.SqlDbType.Int);
+            var retval = ReturnParam("NewSiteID");
             StoredProcUpdate("spSiteVisitInsert",
                 _P("intParentID", parentID),
                 _P("intBasedOnSiteVisitID", basedOnSiteVisitID),
@@ -624,7 +624,7 @@ namespace BioLink.Data {
         }
 
         public int InsertSiteVisitTemplate() {
-            var retval = ReturnParam("intNewSiteVisitID", System.Data.SqlDbType.Int);
+            var retval = ReturnParam("intNewSiteVisitID");
             StoredProcUpdate("spSiteVisitInsertTemplate", _P("vchrDummy", ""), retval);
             return (int)retval.Value;
         }
@@ -659,7 +659,7 @@ namespace BioLink.Data {
         }
 
         public int InsertTrap(int siteID, string trapName) {
-            var retval = ReturnParam("NewTrapID", System.Data.SqlDbType.Int);
+            var retval = ReturnParam("NewTrapID");
             StoredProcUpdate("spTrapInsert",
                 _P("intSiteID", siteID),
                 _P("vchrTrapName", trapName),
@@ -693,7 +693,7 @@ namespace BioLink.Data {
         }
 
         public int InsertMaterial(int siteVisitID, int basedOnMaterialID = -1) {
-            var retval = ReturnParam("NewMaterialID", System.Data.SqlDbType.Int);
+            var retval = ReturnParam("NewMaterialID");
 
             StoredProcUpdate("spMaterialInsert",
                 _P("intSiteVisitID", siteVisitID),
@@ -846,7 +846,7 @@ namespace BioLink.Data {
         }
 
         public int InsertMaterialTemplate() {
-            var retval = ReturnParam("intNewMaterialID", System.Data.SqlDbType.Int);
+            var retval = ReturnParam("intNewMaterialID");
             StoredProcUpdate("spMaterialInsertTemplate", _P("vchrDummy", ""), retval);
             return (int)retval.Value;
         }
@@ -881,7 +881,7 @@ namespace BioLink.Data {
         }
 
         public int InsertMaterialIdentification(MaterialIdentification i) {
-            var retval = ReturnParam("NewMaterialIdentID", System.Data.SqlDbType.Int);
+            var retval = ReturnParam("NewMaterialIdentID");
             StoredProcUpdate("spMaterialIDInsert",
                 _P("intMaterialID", i.MaterialID),
                 _P("vchrTaxa", i.Taxa),
@@ -937,7 +937,7 @@ namespace BioLink.Data {
         }
 
         public int InsertMaterialPart(MaterialPart part) {
-            var retval = ReturnParam("NewMaterialPartID", System.Data.SqlDbType.Int);
+            var retval = ReturnParam("NewMaterialPartID");
 
             StoredProcUpdate("spMaterialPartInsert",
                 _P("intMaterialID", part.MaterialID),

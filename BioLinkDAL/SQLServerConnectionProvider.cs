@@ -10,14 +10,6 @@ using System.Data;
 
 namespace BioLink.Data {
 
-    public interface IConnectionProvider {
-        DbConnection GetConnection(ConnectionProfile profile, String username, String password);
-
-        void StoredProcReaderFirst(User user, DbCommand command, string proc, ServiceReaderAction action, Action<String> message, params DbParameter[] @params);
-        void StoredProcReaderForEach(User user, DbCommand command, string proc, ServiceReaderAction action, Action<String> message, params DbParameter[] @params);
-
-    }
-
     public class SQLServerConnectionProvider : IConnectionProvider {
 
         private String _connectionString;
@@ -111,6 +103,26 @@ namespace BioLink.Data {
                 }
             }
         }
+
+        public int StoredProcUpdate(User user, DbCommand cmd, string proc, params DbParameter[] @params) {
+            cmd.CommandText = proc;
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            if (user.InTransaction && user.CurrentTransaction != null) {
+                cmd.Transaction = user.CurrentTransaction;
+            }
+            foreach (SqlParameter param in @params) {
+                cmd.Parameters.Add(param);
+            }
+            return cmd.ExecuteNonQuery();                                
+        }
+
+        public bool IsSysAdmin(User user) {
+            if (String.IsNullOrEmpty(user.Username)) {
+                return false;
+            }
+            return user.Username.Equals("sa", StringComparison.CurrentCultureIgnoreCase);
+        }
+
     }
 
     public static class PasswordUtitlites {
