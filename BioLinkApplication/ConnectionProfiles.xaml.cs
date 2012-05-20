@@ -68,6 +68,9 @@ namespace BioLinkApplication {
 
         void cmbConnectionType_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             ConnectionType type = (ConnectionType)cmbConnectionType.SelectedItem;
+
+            profileGrid.RowDefinitions[0].Height = new GridLength(0);
+
             switch (type) {
                 case ConnectionType.SQLServer:
                     profileGrid.RowDefinitions[2].Height = new GridLength(28);

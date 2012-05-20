@@ -17,7 +17,7 @@
         <Label Content="{StaticResource ConnectionProfiles.lblProfile}" Height="28" HorizontalAlignment="Left" Margin="12,11,0,0" Name="label1" VerticalAlignment="Top" Width="70" HorizontalContentAlignment="Right" />
         
         <Border Margin="12,45,12,49" CornerRadius="4" BorderThickness="1" Name="ProfileBorder">
-            <Grid Name="profileGrid">
+            <Grid Name="profileGrid" Margin="6">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="28" />
                     <RowDefinition Height="28" />
