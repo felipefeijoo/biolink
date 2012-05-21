@@ -273,8 +273,7 @@ namespace BioLink.Client.Utilities {
             if (!dt.HasValue) {
                 return "";
             }
-
-            return string.Format("{0:d}", dt.Value);
+            return dt.Value.ToString("yyyy-MM-dd");
         }
 
         public static string FormatDate(int d, bool asRomanMonth = false) {

@@ -126,6 +126,7 @@
       <DependentUpon>CSVExporterOptionsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Export\Excel2003Exporter.cs" />
+    <Compile Include="GenericModelReport.cs" />
     <Compile Include="GoogleEarth.cs" />
     <Compile Include="GoogleEarthGeoTag.xaml.cs">
       <DependentUpon>GoogleEarthGeoTag.xaml</DependentUpon>
