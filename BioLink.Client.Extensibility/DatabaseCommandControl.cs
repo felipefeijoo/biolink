@@ -34,9 +34,7 @@ namespace BioLink.Client.Extensibility {
         }
         #endregion
 
-        public DatabaseCommandControl(User user, string contentId)
-            : base() {
-
+        public DatabaseCommandControl(User user, string contentId) : base() {
             this.User = user;
             this.ContentIdentifier = contentId;
         }

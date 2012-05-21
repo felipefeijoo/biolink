@@ -30,6 +30,7 @@ using BioLink.Client.Extensibility;
 using BioLink.Data;
 using BioLink.Data.Model;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace BioLink.Client.Tools {
     /// <summary>
@@ -38,6 +39,8 @@ namespace BioLink.Client.Tools {
     public partial class LoanSearchControl : DatabaseCommandControl {
 
         private ObservableCollection<LoanViewModel> _model;
+        private GridViewColumnHeader _lastHeaderClicked = null;
+        private ListSortDirection _lastDirection = ListSortDirection.Ascending;
 
         public LoanSearchControl(User user, ToolsPlugin plugin) : base( user, "LoanSearch") {
             InitializeComponent();
@@ -49,7 +52,67 @@ namespace BioLink.Client.Tools {
 
             lvw.MouseRightButtonUp += new MouseButtonEventHandler(lvw_MouseRightButtonUp);
 
+            lvw.AddHandler(GridViewColumnHeader.ClickEvent, new RoutedEventHandler(GridViewColumnHeaderClickedHandler));
+
             ListViewDragHelper.Bind(lvw, ListViewDragHelper.CreatePinnableGenerator(ToolsPlugin.TOOLS_PLUGIN_NAME, LookupType.Loan));
+        }
+
+        private void GridViewColumnHeaderClickedHandler(object sender, RoutedEventArgs e) {
+            GridViewColumnHeader headerClicked = e.OriginalSource as GridViewColumnHeader;
+            ListSortDirection direction;
+
+            if (headerClicked != null) {
+                if (headerClicked.Role != GridViewColumnHeaderRole.Padding) {
+                    if (headerClicked != _lastHeaderClicked) {
+                        direction = ListSortDirection.Ascending;
+                    } else {
+                        if (_lastDirection == ListSortDirection.Ascending) {
+                            direction = ListSortDirection.Descending;
+                        } else {
+                            direction = ListSortDirection.Ascending;
+                        }
+                    }
+
+                    Sort(headerClicked, direction);
+
+                    if (direction == ListSortDirection.Ascending) {
+                        headerClicked.Column.HeaderTemplate = Resources["HeaderTemplateArrowUp"] as DataTemplate;
+                    } else {
+                        headerClicked.Column.HeaderTemplate = Resources["HeaderTemplateArrowDown"] as DataTemplate;
+                    }
+
+                    // Remove arrow from previously sorted header
+                    if (_lastHeaderClicked != null && _lastHeaderClicked != headerClicked) {
+                        _lastHeaderClicked.Column.HeaderTemplate = null;
+                    }
+
+                    _lastHeaderClicked = headerClicked;
+                    _lastDirection = direction;
+                }            
+            }
+        }
+
+        private void Sort(GridViewColumnHeader columnHeader, ListSortDirection direction) {
+            String columnName = columnHeader.Content as String;
+
+            String memberName = "";
+
+            if (columnHeader.Content as String == "Loan #") {
+                memberName = "LoanNumber";
+            } else {
+                var dmb = columnHeader.Column.DisplayMemberBinding;
+                if (dmb is Binding) {
+                    memberName = (dmb as Binding).Path.Path.ToString();
+                }
+            }
+
+            if (!String.IsNullOrEmpty(memberName)) {
+                ListCollectionView dataView = CollectionViewSource.GetDefaultView(lvw.ItemsSource) as ListCollectionView;
+                dataView.SortDescriptions.Clear();
+                SortDescription sd = new SortDescription(memberName, direction);
+                dataView.SortDescriptions.Add(sd);
+                dataView.Refresh();
+            }
         }
 
         void lvw_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
@@ -76,6 +139,7 @@ namespace BioLink.Client.Tools {
             
             var searchTerm = txtFind.Text;
             var what = cmbWhat.SelectedItem as Pair<string, string>;
+            lblResults.Content = "";
 
             if (string.IsNullOrWhiteSpace(searchTerm) || what == null) {
                 lvw.ItemsSource = new ObservableCollection<LoanViewModel>();
@@ -92,6 +156,8 @@ namespace BioLink.Client.Tools {
             _model = new ObservableCollection<LoanViewModel>(list.Select((m) => {
                 return new LoanViewModel(m);
             }));
+
+            lblResults.Content = String.Format("{0} matching loans found", list.Count);
 
             lvw.ItemsSource = _model;
         }
@@ -177,7 +243,10 @@ namespace BioLink.Client.Tools {
 
         }
 
-
+        private void btnExport_Click(object sender, RoutedEventArgs e) {
+            var report = new GenericModelReport<LoanViewModel>(User, "Loan report", _model, "LoanNumber", "RequestedBy", "ReceivedBy", "AuthorizedBy", "IsOverdue", "Status", "DateInitiated", "DateDue", "DateClosed", "PermitNumber" );
+            PluginManager.Instance.RunReport(Plugin, report);
+        }
 
     }
 }
