@@ -3,6 +3,21 @@
 
 = Release Notes =
 
+== !BioLink Version 3.0.526 ==
+
+!BioLink 3.0.526 22 May 2012
+
+This is the fourth "fix" release for BioLink 3.0. It addresses issues reported since build 517.
+
+=== New Features ===
+
+ * Loan search results can now be sorted
+ * Loan search results can also be exported via the reporting mechanism
+
+=== Issues addressed in this release ===
+
+ * Issue 152   RDE, autofill copy from previous material fails trait copying	 
+
 == !BioLink Version 3.0.517 ==
 
 !BioLink 3.0.517 28 March 2012
