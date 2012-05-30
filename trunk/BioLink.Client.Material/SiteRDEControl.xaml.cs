@@ -52,7 +52,12 @@ namespace BioLink.Client.Material {
             this.DataContextChanged += new DependencyPropertyChangedEventHandler(SiteRDEControl_DataContextChanged);
 
             ctlPosition.LocationChanged += new LocationSelectedEvent(ctlPosition_LocationChanged);
+            ctlPosition.BeforeLocationSelection += new BeforeNamedPlaceSelectionEvent(ctlPosition_BeforeLocationSelection);
             
+        }
+
+        void ctlPosition_BeforeLocationSelection(NamedPlaceSelectionOptions options) {
+            options.PlaceNameSeed = txtLocality.Text;
         }
 
         protected User User { get; private set; }

@@ -41,7 +41,7 @@ namespace BioLink.Client.Extensibility {
         T GetAdaptorForPinnable<T>(PinnableObject pinnable);
 
         bool CanSelect<T>();
-        void Select<T>(LookupOptions options, Action<SelectionResult> success);
+        void Select<T>(LookupOptions lookupOptions, Action<SelectionResult> success, SelectOptions selectOptions);
 
         bool CanEditObjectType(LookupType type);
         void EditObject(LookupType type, int objectID);
@@ -176,5 +176,6 @@ namespace BioLink.Client.Extensibility {
 
     }
 
-
+    public abstract class SelectOptions {
+    }
 }

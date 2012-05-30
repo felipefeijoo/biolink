@@ -220,6 +220,13 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void LaunchGazetteer() {
+
+            var selectOptions = new NamedPlaceSelectionOptions { PlaceNameSeed = "" };
+
+            if (BeforeLocationSelection != null) {
+                BeforeLocationSelection(selectOptions);
+            }
+
             PluginManager.Instance.StartSelect<PlaceName>((result) => {
                 var place = result.DataObject as PlaceName;
                 if (place != null) {
@@ -233,7 +240,7 @@ namespace BioLink.Client.Extensibility {
                         LocationChanged(place.Latitude, place.Longitude, null, null, locality, "EGaz");
                     }
                 }
-            });
+            }, LookupOptions.None, selectOptions);
         }
 
         private void btnGoogleCode_Click(object sender, RoutedEventArgs e) {
@@ -248,8 +255,16 @@ namespace BioLink.Client.Extensibility {
 
         public event LocationSelectedEvent LocationChanged;
 
+        public event BeforeNamedPlaceSelectionEvent BeforeLocationSelection;
+
     }
 
     public delegate void LocationSelectedEvent(double latitude, double longitude, int? altitude, string altitudeUnits, string locality, string source);
+
+    public delegate void BeforeNamedPlaceSelectionEvent(NamedPlaceSelectionOptions options);
+
+    public class NamedPlaceSelectionOptions : SelectOptions {
+        public String PlaceNameSeed { get; set; }
+    }
 
 }
