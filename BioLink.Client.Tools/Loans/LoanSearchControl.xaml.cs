@@ -152,6 +152,11 @@ namespace BioLink.Client.Tools {
                 searchTerm += "*";
             }
 
+            if (!searchTerm.StartsWith("*") && !searchTerm.StartsWith("%")) {
+                searchTerm = "*" + searchTerm;
+            }
+
+
             var list = service.FindLoans(searchTerm, what.Second, chkFindOnlyOpenLoans.IsChecked.ValueOrFalse());
             _model = new ObservableCollection<LoanViewModel>(list.Select((m) => {
                 return new LoanViewModel(m);

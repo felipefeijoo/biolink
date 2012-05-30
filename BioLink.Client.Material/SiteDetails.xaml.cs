@@ -387,6 +387,9 @@ namespace BioLink.Client.Material {
         }
 
         private void LaunchGazetteer(LatLongInput lat, LatLongInput lon, bool updateLocality) {
+
+            NamedPlaceSelectionOptions selectOptions = new NamedPlaceSelectionOptions { PlaceNameSeed = txtLocality.Text };
+
             PluginManager.Instance.StartSelect<PlaceName>((result) => {
                 var place = result.DataObject as PlaceName;
                 if (place != null) {
@@ -397,7 +400,7 @@ namespace BioLink.Client.Material {
                         UpdateLocality(place);
                     }
                 }
-            });
+            }, LookupOptions.None, selectOptions);
         }
 
         private void btnGE1_Click(object sender, RoutedEventArgs e) {

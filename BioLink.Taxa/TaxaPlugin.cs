@@ -196,7 +196,7 @@ namespace BioLink.Client.Taxa {
             return typeof(Taxon).IsAssignableFrom(t) || typeof(DistributionRegion).IsAssignableFrom(t);
         }
 
-        public override void Select<T>(LookupOptions options, Action<SelectionResult> success) {
+        public override void Select<T>(LookupOptions options, Action<SelectionResult> success, SelectOptions selectOptions) {
             var t = typeof(T);
             IHierarchicalSelectorContentProvider selectionContent;
             if (typeof(Taxon).IsAssignableFrom(t)) {

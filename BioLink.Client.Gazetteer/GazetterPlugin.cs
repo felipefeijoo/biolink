@@ -92,7 +92,9 @@ namespace BioLink.Client.Gazetteer {
                     });
                 }
 
+                
                 _gazWindow.Show();
+                _gazWindow.BringIntoView();
                 _gazWindow.Focus();
                 return _gazWindow.Control as Gazetteer;
             } else {
@@ -193,10 +195,14 @@ namespace BioLink.Client.Gazetteer {
             }
         }
 
-        public override void Select<T>(LookupOptions options, Action<SelectionResult> success) {
+        public override void Select<T>(LookupOptions options, Action<SelectionResult> success, SelectOptions selectOptions) {
             Gazetteer g = ShowEGaz();
 
             if (g != null) {
+                var placeNameOptions = selectOptions as NamedPlaceSelectionOptions;
+                if (placeNameOptions != null && !String.IsNullOrEmpty(placeNameOptions.PlaceNameSeed)) {
+                    g.txtFind.Text = placeNameOptions.PlaceNameSeed;
+                }
                 g.BindSelectCallback(success);
             }
         }
