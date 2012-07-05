@@ -1,5 +1,7 @@
 #summary Step-by-step instructions on hosting a BioLink database in the Amazon Web Services Extensible Cloud (EC2).
 
+= Hosting a Biolink Database in the Amazon Web Services Cloud (EC2) =
+
 <wiki:toc max_depth="2" />
 
 == Introduction ==
