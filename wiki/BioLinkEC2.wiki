@@ -79,6 +79,7 @@ In this example, we will attach the BiolinkStarter database available from the B
  * Click on the <b>Add ...</b> and locate the <b>BioLinkStarter.mdf</b> file you just downloaded.
  * In the <b>BiolinkStarter details</b> panel, select the record for the log file and click the <b>Remove</b> button. (A log file will be created automatically.)
  * Click <b>Ok</b>.
+ * You can now close *Server Management Studio* and your remote desktop. Your SQL server will remain running.
 
 = Step 6: Connect a BioLink client to your online database =
  * If you haven't done so already, download and install the BioLink client software, available from http://code.google.com/p/biolink/downloads/list.
