@@ -2,7 +2,7 @@
 
 = Introduction =
 
-I used the following steps to build a BioLink database server using Amazon's Web Services (AWS). This is a cheap and potentially free hosting solution which facilitates sharing your data.
+The following steps show you how to build a BioLink database server using Amazon's Web Services (AWS). This is a cheap and potentially free hosting solution which facilitates sharing your data.
 
 = Step 1: Create an AWS account with Amazon =
 Instructions on establishing an AWS account are at http://aws.amazon.com/.
