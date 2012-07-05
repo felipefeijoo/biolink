@@ -86,3 +86,4 @@ In this example, we will attach the BiolinkStarter database available from the B
   * <b>Database:</b> BiolinkStarter
  * Of course, you will substitute the fixed IP address for your remote server for 11.22.33.44
  * Log onto the remote server using the new profile with <b>sa</b> as the user and whatever you set as the password for <b>sa</b>.
+ * If successful, you can now use the <b>sa</b> account to create user accounts and control access privileges for collaborators and guests.
