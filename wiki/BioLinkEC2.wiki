@@ -79,3 +79,10 @@ In this example, we will attach the BiolinkStarter database available from the B
  * Click <b>Ok</b>.
 
 = Step 6: Connect a BioLink client to your online database =
+ * If you haven't done so already, download and install the BioLink client software, available from http://code.google.com/p/biolink/downloads/list.
+ * Launch BioLink and create a new profile for your online database
+  * <b>Name:</b> BioLinkStarter on 11.22.33.44
+  * <b>Server/Instance:</b> 11.22.33.44
+  * <b>Database:</b> BiolinkStarter
+ * Of course, you will substitute the fixed IP address for your remote server for 11.22.33.44
+ * Log onto the remote server using the new profile with <b>sa</b> as the user and whatever you set as the password for <b>sa</b>.
