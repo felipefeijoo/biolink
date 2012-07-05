@@ -16,7 +16,7 @@ Instructions on establishing an AWS account are at http://aws.amazon.com/.
   * On the <b>Create a New Instance</b> page, select the <b>Quick Launch Wizard</b>.
   * <b>Name Your Instance:</b> This will be the name of your server. I suggest "BioLink".
   * <b>Choose a Key Pair:</b> This is used to encrypt your Windows password. Create a new key pair with "mykey" as your key. Click on the <b>Download</b> button to save your key pair in a file, "mykey.pem", for later use. This will be saved in the default downloads folder on your local machine.
-  * <b>Choose a Launch Configuration:</b> Select "Microsoft Windows Server 2008 R2 with SQL Server Express and IIS 64 bit".
+  * <b>Choose a Launch Configuration:</b> Select "Microsoft Windows Server 2008 !R2 with SQL Server Express and IIS 64 bit".
   * Press the <b>Continue</b> button.
   * Press the <b>Launch</b> button.
   * Click the <b>View your instances on the Instances Page</b> link.
