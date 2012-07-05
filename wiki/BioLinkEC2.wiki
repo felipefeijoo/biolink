@@ -8,8 +8,8 @@ I used the following steps to build a BioLink database server using Amazon's Web
 Instructions on establishing an AWS account are at http://aws.amazon.com/.
 
 = Step 2: Build a Windows virtual machine in the cloud. =
-== 2.1 Use the wizard to build your machine ==
- * Go to http://aws.amazon.com/ and click on the <b>May Account / Console</b> link at the top of the page, then <b>AWS Management Console</b> on the drop-down list.
+== 2.1 Use the <b>Request Instances</b> wizard to build your machine ==
+ * Go to http://aws.amazon.com/ and click on the <b>My Account / Console</b> link at the top of the page, then <b>AWS Management Console</b> on the drop-down list.
  * Click on the <b>EC2</b> icon.
  * Click on the <b>Launch Instance</b> button. This launches the <b>Request Instances</b> wizard. 
 
