@@ -1,0 +1,17 @@
+#summary One-sentence summary of this page.
+
+= Introduction =
+
+I used the following steps to build a BioLink database server using Amazon's Web Services (AWS). This is a cheap and potentially free hosting solution which facilitates sharing your biodiversity data with colleagues.
+
+= Step 1: Create an AWS account with Amazon. =
+
+= Step 2: Build a Windows virtual machine in the cloud. =
+
+= Step 3: Log onto your virtual machine =
+
+= Step 4: Configure MS SQL Server on your virtual machine =
+
+= Step 5: Attach a BioLink database =
+
+= Step 6: Connect a BioLink client to your online database =
