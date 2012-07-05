@@ -1,4 +1,4 @@
-#summary One-sentence summary of this page.
+#summary UNDER CONSTRUCTION: Step-by-step instructions on hosting a BioLink database using Amazon Web Services.
 
 = Introduction =
 
