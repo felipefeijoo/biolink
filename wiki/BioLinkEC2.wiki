@@ -54,9 +54,16 @@ Instructions on establishing an AWS account are at http://aws.amazon.com/.
  * Select the <b>Security</b> page.
  * Under <b>Server authentication</b>, select <b>SQL Server and Windows Authentication mode</b>
  * Click the <b>OK</b> button.
- * Right click on the server object in the <b>Object Explorer</b> panel and select <b>Restart</b> in the drop down menu. 
+ * Right click on the server object in the <b>Object Explorer</b> panel and select <b>Restart</b> in the drop down menu.
+ * Keep <b>Server management Studio</b> open for the next step. 
 
 == 4.2 Enable "sa" user ==
+ * In the <b>Object Explorer</b> panel of the <b>Server Management Studio</b> window, click on <b>Security</b> and then <b>Logins</b>.
+ * Right click on the <b>sa</b> user and select <b>Properties</b>. 
+ * On the <b>Login Properties - sa - General</b> page, deselect <b>Enforce password policy</b> and provide a new password for <b>sa</b> 
+ * On the <b>Login Properties - sa - Status</b> page, confirm that <b>Login:</b> is enabled.
+ * Select <b>View | Refresh</b> and confirm that the little red arrow on the <b>sa</b> icon disappears. (The red arrow indicates that a user is not enabled.)
+ * Keep <b>Server management Studio</b> open for the next step. 
 
 = Step 5: Attach a BioLink database =
 == 5.1 Download a BioLink database ==
