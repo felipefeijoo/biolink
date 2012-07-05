@@ -73,5 +73,9 @@ In this example, we will attach the BiolinkStarter database available from the B
  * Navigate to the BioLink project site and download <b>BiolinkStarter.mdf</b>. Save the file at a logical location, C:\data\BiolinkStarter.mdf for example.
 
 == 5.2 Attach the database ==
+ * In the <b>Object Explorer</b> panel of the <b>Server Management Studio</b> window, right click on <b>Databases</b> and then <b>Attach ...</b>.
+ * Click on the <b>Add ...</b> and locate the <b>BioLinkStarter.mdf</b> file you just downloaded.
+ * In the <b>BiolinkStarter details</b> panel, select the record for the log file and click the <b>Remove</b> button. (A log file will be created automatically.)
+ * Click <b>Ok</b>.
 
 = Step 6: Connect a BioLink client to your online database =
