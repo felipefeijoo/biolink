@@ -12,9 +12,21 @@ Instructions on establishing an AWS account are at http://aws.amazon.com/.
 == 2.1 Use the <b>Request Instances</b> wizard to build your machine ==
  * Go to http://aws.amazon.com/ and click on the <b>My Account / Console</b> link at the top of the page, then <b>AWS Management Console</b> on the drop-down list. You will be asked for your AWS user name and password if you are not logged in.
  * Click on the <b>EC2</b> icon.
- * Click on the <b>Launch Instance</b> button. This launches the <b>Request Instances</b> wizard. 
+ * Click on the <b>Launch Instance</b> button. This launches the <b>Request Instances</b> wizard.
+  * On the <b>Create a New Instance</b> page, select the <b>Quick Launch Wizard</b>.
+  * <b>Name Your Instance:</b> This will be the name of your server. I suggest "BioLink".
+  * <b>Choose a Key Pair:</b> This is used to encrypt your Windows password. Create a new key pair with "mykey" as your key. Click on the <b>Download</b> button to save your key pair in a file, "mykey.pem", for later use. This will be saved in the default downloads folder on your local machine.
+  * <b>Choose a Launch Configuration:</b> Select "Microsoft Windows Server 2008 R2 with SQL Server Express and IIS 64 bit".
+  * Press the <b>Continue</b> button.
+  * Press the <b>Launch</b> button.
+  * Click the <b>View your instances on the Instances Page</b> link.
 
 == 2.2 Get a static IP address for your new machine ==
+ * Select your new machine on the <b>Instances</b> page.
+ * Click on the <b>Elastic IPs</b> link in the left hand frame.
+ * Click on the <b>Allocate Address</b> button.
+ * Click on the <b>Associate Address</b> button and associate the IP address with your new machine.
+
 == 2.3 Get the Windows password for your new machine ==
 
 = Step 3: Log onto your virtual machine =
