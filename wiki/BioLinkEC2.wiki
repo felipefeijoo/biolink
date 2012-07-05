@@ -28,6 +28,10 @@ Instructions on establishing an AWS account are at http://aws.amazon.com/.
  * Click on the <b>Associate Address</b> button and associate the IP address with your new machine.
 
 == 2.3 Get the Windows password for your new machine ==
+ * Right click on the record for your new machine on the <b>Instances</b> page.
+ * In the drop down menu, select <b>Get Windows password</b>.
+ * Press the ,b.Choose file</b> button and locate the "mykey.pem" file you downloaded in a previous step.
+ * Press the <b>Decrypt Password</b> button and record the decrypted password. This is the Windows password for the Administrator user of your new machine. 
 
 = Step 3: Log onto your virtual machine =
 == 3.1 Establish a Remote Desktop Connection ==
