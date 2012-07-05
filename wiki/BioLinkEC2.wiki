@@ -45,7 +45,17 @@ Instructions on establishing an AWS account are at http://aws.amazon.com/.
  * On your remote desktop click <b>Start | Windows Security | Change a Password ...</b>
 
 = Step 4: Configure MS SQL Server on your virtual machine =
+
 == 4.1 Change server authentication method ==
+ * Launch the Microsoft SQL Server Management Studio on your remote desktop.
+ * Click <b>Start | All Programs | Microsoft SQL Server 2008 R2 | SQL Server Management Studio</b>
+ * On the <b>Connect to Server</b> dialog, click the <b>Connect</b> button.
+ * Right click on the server icon which is the top most item in tree in the <b>Object Explorer</b> panel, then click on <b>Properties</b> in the drop down menu.
+ * Select the <b>Security</b> page.
+ * Under <b>Server authentication</b>, select <b>SQL Server and Windows Authentication mode</b>
+ * Click the <b>OK</b> button.
+ * Right click on the server object in the <b>Object Explorer</b> panel and select <b>Restart</b> in the drop down menu. 
+
 == 4.2 Enable "sa" user ==
 
 = Step 5: Attach a BioLink database =
