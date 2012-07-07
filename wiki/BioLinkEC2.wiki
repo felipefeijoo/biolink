@@ -52,7 +52,7 @@ Instructions on establishing an AWS account are at http://aws.amazon.com/.
 == Step 4: Configure MS SQL Server on your virtual machine ==
 
 === 4.1 Change server authentication method ===
- * Launch the Microsoft SQL Server Management Studio on your remote desktop Click *Start | All Programs | Microsoft SQL Server 2008 R2 | SQL Server Management Studio*
+ * Launch the Microsoft SQL Server Management Studio on your remote desktop: Click *Start | All Programs | Microsoft SQL Server 2008 R2 | SQL Server Management Studio*
  * On the <b>Connect to Server</b> dialog, click the <b>Connect</b> button.
  * Right click on the server icon which is the top most item in tree in the <b>Object Explorer</b> panel, then click on <b>Properties</b> in the drop down menu.
  * Select the <b>Security</b> page.
