@@ -38,11 +38,12 @@ Instructions on establishing an AWS account are at http://aws.amazon.com/.
  * Press the <b>Decrypt Password</b> button and record the decrypted password. This is the Windows password that will authenticate you as <b>Administrator</b> of your new machine. 
 
 == Step 3: Log onto your virtual machine ==
+
 === 3.1 Establish a Remote Desktop Connection ===
  * We will use the Remote Desktop Connection program provided with Windows XP and later versions.
  * Click <b>Start | All Programs | Accessories | Remote Desktop Connection</b>
  * For <b>Computer:</b>, enter the static IP (Elastic IP) address for your new computer and  press the <b>Connect</b> button.
- * Log on as Administrator using the Windows password you got in a previous step.
+ * Log on as *Administrator* using the Windows password you got in a previous step.
 
 === 3.2 Change your the Windows password for your new machine ===
  * It is recommended to change your windows password to something you are likely to remember.
