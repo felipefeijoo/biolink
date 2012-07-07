@@ -52,8 +52,7 @@ Instructions on establishing an AWS account are at http://aws.amazon.com/.
 == Step 4: Configure MS SQL Server on your virtual machine ==
 
 === 4.1 Change server authentication method ===
- * Launch the Microsoft SQL Server Management Studio on your remote desktop.
- * Click <b>Start | All Programs | Microsoft SQL Server 2008 R2 | SQL Server Management Studio</b>
+ * Launch the Microsoft SQL Server Management Studio on your remote desktop Click *Start | All Programs | Microsoft SQL Server 2008 R2 | SQL Server Management Studio*
  * On the <b>Connect to Server</b> dialog, click the <b>Connect</b> button.
  * Right click on the server icon which is the top most item in tree in the <b>Object Explorer</b> panel, then click on <b>Properties</b> in the drop down menu.
  * Select the <b>Security</b> page.
@@ -74,7 +73,7 @@ Instructions on establishing an AWS account are at http://aws.amazon.com/.
 In this example, we will attach the BiolinkStarter database available from the BioLink site at http://biolink.googlecode.com/files/BioLinkStarter.mdf. An alternative to downloading a .mdf file from the web is to copy a file from your local machine to your remote server. A simple copy and paste from the local machine to the remote desktop window works for me.
 
 === 5.1 Download a BioLink database ===
- * You will probably have to enable downloads in the Internet Explorer instance on your server. On your remote desktop, launch IE, click the tools icon, select internet options, on the security tab click <b>Custom level ...</b>, enable <b>Download | File download</b>. 
+ * You will probably have to enable downloads in the Internet Explorer instance on your server. On your remote desktop, launch IE, click the tools icon, select *Internet options*, on the *Security* tab click <b>Custom level ...</b>, enable <b>Downloads | File download</b>. 
  * Navigate to the BioLink project site and download <b>BiolinkStarter.mdf</b>. Save the file at a logical location, C:\data\BiolinkStarter.mdf for example.
 
 === 5.2 Attach the database ===
