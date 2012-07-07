@@ -2,7 +2,7 @@
 
 = Hosting a Biolink Database in the Amazon Web Services Cloud (EC2) =
 
-<wiki:toc max_depth="2" />
+<wiki:toc max_depth="3" />
 
 == Introduction ==
 
