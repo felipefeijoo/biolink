@@ -16,6 +16,7 @@ Instructions on establishing an AWS account are at http://aws.amazon.com/.
 === 2.1 Use the <b>Request Instances</b> wizard to build your machine ===
  * Go to http://aws.amazon.com/ and click on the <b>My Account / Console</b> link at the top of the page, then <b>AWS Management Console</b> on the drop-down list. You will be asked for your AWS user name and password if you are not logged in.
  * Click on the <b>EC2</b> icon.
+ * Choose a geographic region from the drop-down list at the top of the *Navigation* panel.
  * Click on the <b>Launch Instance</b> button. This launches the <b>Request Instances</b> wizard.
   * On the <b>Create a New Instance</b> page, select the <b>Quick Launch Wizard</b>.
   * <b>Name Your Instance:</b> This will be the name of your server. I suggest "BioLink".
