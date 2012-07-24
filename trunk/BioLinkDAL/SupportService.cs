@@ -1140,6 +1140,15 @@ namespace BioLink.Data {
             return StoredProcGetOne("spJournalGet", mapper, _P("intJournalID", journalID));
         }
 
+        public Journal GetJournalForReference(int referenceId) {
+            var reference = GetReference(referenceId);
+            if (reference != null && reference.JournalID.HasValue) {
+                var journal = GetJournal(reference.JournalID.Value);
+                return journal;
+            }
+            return null;
+        }
+
         public int InsertJournal(Journal journal) {
             var retval = ReturnParam("NewJournalID");
             StoredProcUpdate("spJournalInsert",

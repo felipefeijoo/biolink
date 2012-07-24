@@ -205,8 +205,8 @@ namespace BioLink.Client.Tools {
             builder.Add("Title", RTFUtils.StripMarkup(refmodel.Title));
             builder.Add("Author", refmodel.Author);
             builder.Add("Year", refmodel.YearOfPub);
-                        
-        }
+            builder.Add("Journal", refmodel.JournalName);
+       }
 
         protected override BioLinkDataObject GetModel() {
             var service = new SupportService(User);

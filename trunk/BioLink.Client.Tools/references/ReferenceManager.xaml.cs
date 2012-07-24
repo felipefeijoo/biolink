@@ -114,6 +114,9 @@ namespace BioLink.Client.Tools {
                 case "Year":
                     memberName = "YearOfPub";
                     break;
+                case "Journal":
+                    memberName = "JournalName";
+                    break;
                 default:
                     memberName = columnName;
                     break;
@@ -308,6 +311,23 @@ namespace BioLink.Client.Tools {
         public string RefRTF {
             get { return Model.RefRTF; }
             set { SetProperty(() => Model.RefRTF, value); }
+        }
+
+        private Journal Journal { get; set; }
+
+        public string JournalName {
+            get {                
+                if (RefType.Equals("j", StringComparison.CurrentCultureIgnoreCase)) {
+                    if (Journal == null) {
+                        var service = new SupportService(PluginManager.Instance.User);
+                        Journal = service.GetJournalForReference(RefID);
+                    }
+                    if (Journal != null) {
+                        return Journal.FullName;
+                    }                    
+                }
+                return "";
+            }
         }
 
     }

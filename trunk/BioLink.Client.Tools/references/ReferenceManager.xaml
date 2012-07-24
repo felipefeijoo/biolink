@@ -57,8 +57,9 @@
                                 <GridView>
                                     <GridViewColumn Width="150" Header="Code" DisplayMemberBinding="{Binding RefCode}" />
                                     <GridViewColumn Width="200" Header="Author" DisplayMemberBinding="{Binding Author}"/>
-                                    <GridViewColumn Width="80" Header="Year" DisplayMemberBinding="{Binding YearOfPub}"/>
+                                    <GridViewColumn Width="80" Header="Year" DisplayMemberBinding="{Binding YearOfPub}"/>                                    
                                     <GridViewColumn Width="400" Header="Title" DisplayMemberBinding="{Binding Title, Converter={StaticResource RtfToPlainConverter}}"/>
+                                    <GridViewColumn Width="400" Header="Journal" DisplayMemberBinding="{Binding JournalName}"/>
                                 </GridView>
                             </ListView.View>
                         </ListView>
