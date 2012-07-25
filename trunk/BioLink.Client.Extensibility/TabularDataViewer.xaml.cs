@@ -21,6 +21,7 @@ using BioLink.Client.Utilities;
 using BioLink.Data;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 
 namespace BioLink.Client.Extensibility {
     /// <summary>
@@ -136,15 +137,72 @@ namespace BioLink.Client.Extensibility {
                 }
 
                 builder.New("Export data...").Handler(() => { Export(); }).End();
-
+                builder.Separator();
+                builder.New("Copy All (including column names)").Handler(() => CopyAll(true)).End();
+                builder.New("Copy All (excluding column names)").Handler(() => CopyAll(false)).End();
+                builder.Separator();
+                builder.New("Copy Selected (including column names)").Handler(() => CopySelected(true)).End();
+                builder.New("Copy Selected (excluding column names)").Handler(() => CopySelected(false)).End();
 
                 lvw.ContextMenu = builder.ContextMenu;
             }
 
         }
 
-        private void PlotSelected(string longColName, string latColName) {
+        private void CopyAll(bool includeHeaders) {
+            copyToClipboard(null, includeHeaders);
+        }
 
+        private void CopySelected(bool includeHeaders) {
+            copyToClipboard(getSelectedRowIndexes(), includeHeaders);
+        }
+
+        private void copyToClipboard(int[] rowIndexes, bool includeHeaders) {
+
+            String DELIM = ",";
+            var sb = new StringBuilder();
+
+            if (includeHeaders) {
+                foreach (MatrixColumn column in Data.Columns) {
+                    sb.Append(column.Name);
+                    sb.Append(DELIM);
+                }
+
+                sb.Remove(sb.Length - DELIM.Length, DELIM.Length);
+                sb.Append("\n");
+            }
+
+            Action<StringBuilder, int> append = (builder, row) => {
+                for (int i = 0; i < Data.Columns.Count; ++i) {
+                    var data = Data.Rows[row][i];
+                    if (data != null) {
+                        string str = data.ToString().Trim();
+                        if (str.Contains(DELIM)) {
+                            str = "\"" + str + "\"";
+                        }
+                        sb.Append(str);
+                    }
+                    if (i < Data.Columns.Count - 1) {
+                        builder.Append(DELIM);
+                    }
+                }
+                builder.Append("\n");
+            };
+
+            if (rowIndexes == null) {
+                for (int row = 0; row < Data.Rows.Count; ++row) {
+                    append(sb, row);
+                }
+            } else {
+                foreach (int row in rowIndexes) {
+                    append(sb, row);
+                }
+            }
+
+            Clipboard.SetText(sb.ToString());
+        }
+
+        private int[] getSelectedRowIndexes() {
             var selectedRowIndexes = new int[lvw.SelectedItems.Count];
             if (lvw.SelectedItems.Count > 0) {
                 int i = 0;
@@ -153,7 +211,11 @@ namespace BioLink.Client.Extensibility {
                     selectedRowIndexes[i++] = Data.Rows.IndexOf(row);
                 }
             }
-            Plot(selectedRowIndexes, longColName, latColName);
+            return selectedRowIndexes;
+        }
+
+        private void PlotSelected(string longColName, string latColName) {
+            Plot(getSelectedRowIndexes(), longColName, latColName);
         }
 
         private void PlotAll(string longColName, string latColName) {

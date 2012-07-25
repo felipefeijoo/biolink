@@ -117,6 +117,9 @@ namespace BioLink.Client.Tools {
                 case "Journal":
                     memberName = "JournalName";
                     break;
+                case "Page(s)":
+                    memberName = "Pages";
+                    break;
                 default:
                     memberName = columnName;
                     break;
@@ -252,6 +255,16 @@ namespace BioLink.Client.Tools {
         private void btnDelete_Click(object sender, RoutedEventArgs e) {
             DeleteSelected();
         }
+
+        private void btnExport_Click(object sender, RoutedEventArgs e) {
+            ExportSearchResults();
+        }
+
+        private void ExportSearchResults() {
+            var report = new GenericModelReport<ReferenceSearchResultViewModel>(User, "Reference Search Results", _searchModel, "RefCode[Ref Code]", "Author", "YearOfPub[Year]", "PlainTitle[Title]", "JournalName[Journal]", "Volume", "Pages");
+            PluginManager.Instance.RunReport(Owner, report);           
+        }
+
     }
 
     public class ReferenceSelectionResult : SelectionResult {
@@ -266,10 +279,13 @@ namespace BioLink.Client.Tools {
 
     public class ReferenceSearchResultViewModel : GenericHierarchicalViewModelBase<ReferenceSearchResult> {
 
+        private Journal _journal;
+        private Reference _reference;
+
         public ReferenceSearchResultViewModel(ReferenceSearchResult model) : base(model, ()=>model.RefID) { }
 
         public override string DisplayLabel {
-            get { return String.Format("{0}, {1} [{2}] ({3})", Title, Author, YearOfPub, RefCode); }
+            get { return String.Format("{0}, {1} [{2}] ({3})", RTFUtils.StripMarkup(Title), Author, YearOfPub, RefCode); }
         }
 
         public override FrameworkElement TooltipContent {
@@ -313,21 +329,42 @@ namespace BioLink.Client.Tools {
             set { SetProperty(() => Model.RefRTF, value); }
         }
 
-        private Journal Journal { get; set; }
+        public Journal Journal { 
+            get {
+                if (_journal == null && RefType.Equals("j",StringComparison.CurrentCultureIgnoreCase)) {
+                    if (Reference.JournalID.HasValue) {
+                        var service = new SupportService(PluginManager.Instance.User);
+                        _journal = service.GetJournal(Reference.JournalID.Value);
+                    }
+                }
+                return _journal;
+            }
+        }
+
+        public Reference Reference {
+            get {
+                if (_reference == null) {
+                    var service = new SupportService(PluginManager.Instance.User);
+                    _reference = service.GetReference(RefID);
+                }
+                return _reference;
+            }
+        }
 
         public string JournalName {
-            get {                
-                if (RefType.Equals("j", StringComparison.CurrentCultureIgnoreCase)) {
-                    if (Journal == null) {
-                        var service = new SupportService(PluginManager.Instance.User);
-                        Journal = service.GetJournalForReference(RefID);
-                    }
-                    if (Journal != null) {
-                        return Journal.FullName;
-                    }                    
-                }
-                return "";
-            }
+            get { return Journal != null ? Journal.FullName : ""; }
+        }
+
+        public string Pages {
+            get { return Reference != null ? Reference.Pages : ""; }
+        }
+
+        public string Volume {
+            get { return Reference != null ? Reference.Volume : ""; }
+        }
+
+        public String PlainTitle {
+            get { return RTFUtils.StripMarkup(Title); }
         }
 
     }
