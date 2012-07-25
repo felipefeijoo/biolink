@@ -6,9 +6,16 @@ using BioLink.Client.Utilities;
 using BioLink.Data;
 using BioLink.Data.Model;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace BioLink.Client.Extensibility {
 
+    /// <summary>
+    /// A generic report model that accepts a ViewModel collection, and provides a convenient way to export a listview model as a report (and therefore to any other exportable format)
+    /// 
+    /// Column names are expected to be either the name of a Model member, or in the format 'memberName[display name]'
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class GenericModelReport<T> : ReportBase where T : ViewModelBase {
 
         private string _reportName;
@@ -26,14 +33,25 @@ namespace BioLink.Client.Extensibility {
 
         public override Data.DataMatrix ExtractReportData(Utilities.IProgressObserver progress) {
             DataMatrix matrix = new DataMatrix();
+            var displayNameRegex = new Regex(@"^(\w+)\[(.+)\]$");
             // Cache the property getter
             Dictionary<String, MethodInfo> getters = new Dictionary<String, MethodInfo>();            
             foreach (String colName in Columns) {
-                matrix.Columns.Add(new MatrixColumn { Name = colName, IsHidden = false });
-                var p = typeof(T).GetProperty(colName);
+                string displayName = colName;
+                string memberName = colName;
+
+                var m = displayNameRegex.Match(colName);
+                if (m.Success) {
+                    memberName = m.Groups[1].Value;
+                    displayName = m.Groups[2].Value;
+                }
+
+                matrix.Columns.Add(new MatrixColumn { Name = displayName, IsHidden = false });
+                var p = typeof(T).GetProperty(memberName);
                 if (p != null) {
                     getters[colName] = p.GetGetMethod();
                 }
+                
             }
 
             foreach (T vm in Model) {

@@ -35,7 +35,10 @@
                                 <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/Delete.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None"/>
                             </Button.Content>
                         </Button>
-
+                        <Separator />
+                        <Button x:Name="btnExport" Click="btnExport_Click"  ToolTip="Display the current search results as a report ready for export">
+                            <Image Source="/BioLink.Client.Extensibility;component/images/Export.png" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None" />
+                        </Button>
                     </ToolBar>
                     <Grid Grid.Row="1">
                         <Label Content="Author:" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" Width="74" />
@@ -60,6 +63,8 @@
                                     <GridViewColumn Width="80" Header="Year" DisplayMemberBinding="{Binding YearOfPub}"/>                                    
                                     <GridViewColumn Width="400" Header="Title" DisplayMemberBinding="{Binding Title, Converter={StaticResource RtfToPlainConverter}}"/>
                                     <GridViewColumn Width="400" Header="Journal" DisplayMemberBinding="{Binding JournalName}"/>
+                                    <GridViewColumn Width="80" Header="Volume" DisplayMemberBinding="{Binding Volume}"/>
+                                    <GridViewColumn Width="80" Header="Page(s)" DisplayMemberBinding="{Binding Pages}"/>
                                 </GridView>
                             </ListView.View>
                         </ListView>
