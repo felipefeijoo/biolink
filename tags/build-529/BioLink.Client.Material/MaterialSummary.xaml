@@ -1,0 +1,15 @@
+﻿<ext:DatabaseCommandControl x:Class="BioLink.Client.Material.MaterialSummary"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ext="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility"
+             mc:Ignorable="d" 
+             d:DesignHeight="329" d:DesignWidth="538">
+    <Grid>
+        <ext:BindableRichTextBox Margin="12,12,114,12" Name="txtSummary" />
+        <Button Content="Edit Site..." Height="23" HorizontalAlignment="Right" Margin="0,12,12,0" Name="btnEditSite" VerticalAlignment="Top" Width="96" Click="btnEditSite_Click" />
+        <Button Content="Edit Site Visit..." Height="23" HorizontalAlignment="Right" Margin="0,41,12,0" Name="btnEditSiteVisit" VerticalAlignment="Top" Width="96" Click="btnEditSiteVisit_Click" />
+        <Button Content="Refresh" Height="23" HorizontalAlignment="Right" Margin="0,70,12,0" Name="btnRefresh" VerticalAlignment="Top" Width="96" Click="btnRefresh_Click" />
+    </Grid>
+</ext:DatabaseCommandControl>
