@@ -30,3 +30,18 @@ This guide will show you how to
 1. Start the SQL Server Management Console, and connect to the SQL Server instance on which you BioLink database resides
 
 [http://biolink.googlecode.com/svn/wiki/BootStrap.attach/bootstrap_image001.png]
+
+2. Connect to your BioLink instance, right mouse click on the top level (database) node, and select Properties on the popup menu
+
+[http://biolink.googlecode.com/svn/wiki/BootStrap.attach/bootstrap_image002.png]
+
+3. Select the 'Security' section, and select the 'SQL Server and Windows Authentication' radio button
+
+[http://biolink.googlecode.com/svn/wiki/BootStrap.attach/bootstrap_image003.png]
+
+4. Ensure the 'sa' account is enabled, and supply a 'sa' password.
+
+Expand the Security folder and Logins under that. Locate the 'sa' user and right click 'Properties'
+
+[http://biolink.googlecode.com/svn/wiki/BootStrap.attach/bootstrap_image004.png]
+
