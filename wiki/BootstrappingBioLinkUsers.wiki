@@ -29,4 +29,4 @@ This guide will show you how to
 
 1. Start the SQL Server Management Console, and connect to the SQL Server instance on which you BioLink database resides
 
-[http://biolink.googlecode.com/svn/wiki/Bootstrap.attach/bootstrap_image001.png]
+[http://biolink.googlecode.com/svn/wiki/BootStrap.attach/bootstrap_image001.png]
