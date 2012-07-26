@@ -1,0 +1,42 @@
+﻿<Window x:Class="BioLink.Client.Taxa.DragDropOptions"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:data="clr-namespace:BioLink.Data.Model;assembly=BioLink.Data"
+        Title="Title" Height="255" Width="417" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="StringResources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid x:Name="grid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80" />
+            <RowDefinition Height="40" />
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="45" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>            
+        </Grid.ColumnDefinitions>
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="35,0,0,0" Name="cmbRanks" VerticalAlignment="Top" Width="184" Grid.Row="2">
+            <ComboBox.Resources>
+                <DataTemplate DataType="{x:Type data:TaxonRank}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Path=LongName}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ComboBox.Resources>
+        </ComboBox>
+        <RadioButton Content="Merge &lt;type&gt; with &lt;type&gt;" Height="21" Margin="12,12,12,0" Name="optMerge" VerticalAlignment="Top" Grid.ColumnSpan="2" Click="optMerge_Click" />
+        <CheckBox Content="Create a new Material Identification record" Height="16" Margin="35,39,12,0" Name="chkCreateIDRecord" VerticalAlignment="Top" VerticalContentAlignment="Center" IsEnabled="False" />
+        <RadioButton Content="Convert &lt;type&gt; to &lt;type&gt;" Grid.Row="1" Height="22" Margin="12,10,8,0" Name="optConvert" VerticalAlignment="Top" />
+        <Grid Grid.Row="4" Background="{x:Static SystemColors.ControlBrush}">
+            <Button Content="{StaticResource Button.Cancel}" Height="23" HorizontalAlignment="Right" Name="btnCancel" VerticalAlignment="Bottom" Width="75" IsCancel="True" Margin="0,0,12,12" />
+            <Button Content="{StaticResource Button.Ok}" Margin="0,0,93,12" Name="btnOk" IsDefault="True" Height="23" VerticalAlignment="Bottom" Click="btnOk_Click" Grid.Column="1" HorizontalAlignment="Right" Width="75" />
+        </Grid>
+        
+    </Grid>
+</Window>
