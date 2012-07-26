@@ -40,6 +40,15 @@ namespace BioLink.Client.Extensibility {
             this.Generator = generator;
             this.Caption = caption;
             this.Title = "Point options - " + caption;
+
+            Loaded +=new RoutedEventHandler(PointSetOptionsWindow_Loaded);            
+        }
+
+        void PointSetOptionsWindow_Loaded(object sender, RoutedEventArgs e) {
+            var user = PluginManager.Instance.User;
+            shapeOptions.Size = Config.GetUser<int>(user, "PointSetOptionWindow.PreviousPointSize", 9);
+            shapeOptions.Color = Config.GetUser(user, "PointSetOptionWindow.PreviousColor", Colors.Red);
+            shapeOptions.Shape = Config.GetUser(user, "PointSetOptionWindow.PreviousShape", MapPointShape.Circle);
         }
 
         protected Func<MapPointSet> Generator { get; private set; }
@@ -54,6 +63,13 @@ namespace BioLink.Client.Extensibility {
             btnOK.IsEnabled = false;
             lblStatus.Content = "Generating points...";
             this.Cursor = Cursors.Wait;
+
+            var user = PluginManager.Instance.User;
+
+            Config.SetUser<int>(user, "PointSetOptionWindow.PreviousPointSize", shapeOptions.Size);
+            Config.SetUser(user, "PointSetOptionWindow.PreviousColor", shapeOptions.Color);
+            Config.SetUser(user, "PointSetOptionWindow.PreviousShape", shapeOptions.Shape);
+
             JobExecutor.QueueJob(() => {
                 if (Generator != null) {
                     Points = Generator();

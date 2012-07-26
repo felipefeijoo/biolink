@@ -5,17 +5,21 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ext="clr-namespace:BioLink.Client.Extensibility"
              xmlns:extToolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
+             xmlns:u="clr-namespace:BioLink.Client.Utilities;assembly=BioLink.Client.Utilities"
              mc:Ignorable="d" 
              d:DesignHeight="157" d:DesignWidth="276">
     <Grid>
+        <Grid.Resources>
+            <u:IntDoubleConverter x:Key="IntDoubleConverter" />
+        </Grid.Resources>
         <Grid Grid.Row="0" x:Name="optionsGrid">
-            <extToolkit:ColorPicker HorizontalAlignment="Left" Margin="73,6,0,0" x:Name="ctlColor" Width="40" VerticalAlignment="Top" />
+            <extToolkit:ColorPicker HorizontalAlignment="Left" Margin="64,6,0,0" x:Name="ctlColor" Width="40" VerticalAlignment="Top" />
             <Label Content="Colour:" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" Width="61" />
             <Label Content="Size:" Height="28" HorizontalAlignment="Left" Margin="15,77,0,0" Name="label2" VerticalAlignment="Top" Width="43" />
-            <Slider Height="23" HorizontalAlignment="Left" Margin="73,77,0,0" Name="sizeSlider" VerticalAlignment="Top" Width="181" Value="7" Maximum="40" Minimum="3" ValueChanged="slider1_ValueChanged" TickPlacement="BottomRight" IsSnapToTickEnabled="True" />
-            <CheckBox Content="Draw outline" Height="16" HorizontalAlignment="Left" Margin="73,116,0,0" Name="chkDrawOutline" VerticalAlignment="Top" Width="129" IsChecked="True" Checked="chkDrawOutline_Checked" Unchecked="chkDrawOutline_Unchecked" />
+            <Slider Height="23" HorizontalAlignment="Left" Margin="64,77,0,0" Name="sizeSlider" VerticalAlignment="Top" Width="129" Value="7" Maximum="40" Minimum="1" ValueChanged="slider1_ValueChanged" TickPlacement="BottomRight" IsSnapToTickEnabled="True" IsMoveToPointEnabled="True" />
+            <CheckBox Content="Draw outline" Height="16" HorizontalAlignment="Left" Margin="64,114,0,0" Name="chkDrawOutline" VerticalAlignment="Top" Width="129" IsChecked="True" Checked="chkDrawOutline_Checked" Unchecked="chkDrawOutline_Unchecked" />
             <Label Content="Shape:" Height="28" HorizontalAlignment="Left" Margin="11,40,0,0" Name="label3" VerticalAlignment="Top" Width="47" />
-            <ComboBox Height="23" HorizontalAlignment="Left" Margin="73,40,0,0" Name="cmbShape" VerticalAlignment="Top" Width="40">
+            <ComboBox Height="23" HorizontalAlignment="Left" Margin="64,40,0,0" Name="cmbShape" VerticalAlignment="Top" Width="40">
                 <ComboBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type ext:PointShapeViewModel}">
                         <StackPanel Orientation="Vertical">
@@ -27,6 +31,7 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
             <Image Height="40" HorizontalAlignment="Left" Margin="200,15,0,0" Name="imgPreview" Stretch="None" VerticalAlignment="Top" Width="46" SnapsToDevicePixels="True" UseLayoutRounding="True" />
+            <ext:NumberUpDown HorizontalAlignment="Left" Margin="200,78,0,0" x:Name="sizeSpinner" VerticalAlignment="Top" Width="46" Maximum="40" Minimum="1" Number="{Binding ElementName=sizeSlider, Path=Value, Mode=TwoWay, Converter={StaticResource IntDoubleConverter}}" />
         </Grid>
 
     </Grid>

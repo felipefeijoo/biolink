@@ -776,7 +776,9 @@ namespace BioLink.Client.Maps {
             if (layer != null) {
                 var vl = layer as VectorLayer;
                 if (vl != null) {
-                    vl.Style.Fill = GraphicsUtils.CreateBrush(desc.FillColor, desc.HatchStyle);
+                    var brush = GraphicsUtils.CreateBrush(desc.FillColor, desc.HatchStyle);
+                    vl.Style.Fill = brush;
+                    vl.Style.Line = new System.Drawing.Pen(brush);
                     vl.Style.EnableOutline = desc.DrawOutline;
                 }
             }

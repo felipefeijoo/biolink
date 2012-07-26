@@ -108,11 +108,9 @@ namespace BioLink.Client.Maps {
                         } else {
                             var vectorLayerViewModel = m as VectorLayerViewModel;
                             if (vectorLayerViewModel != null) {
+                                vl.Style.Line = new System.Drawing.Pen(vectorLayerViewModel.FillBrush);
                                 vl.Style.Fill = vectorLayerViewModel.FillBrush;
-                            }
-                            var layerViewModel = m as VectorLayerViewModel;
-                            if (layerViewModel != null) {
-                                vl.Style.EnableOutline = layerViewModel.DrawOutline;
+                                vl.Style.EnableOutline = vectorLayerViewModel.DrawOutline;
                             }
                         }
                     }
