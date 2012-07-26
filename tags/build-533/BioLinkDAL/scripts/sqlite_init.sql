@@ -1,0 +1,7 @@
+﻿CREATE TABLE tblLabelSet (
+	intLabelSetID int IDENTITY PRIMARY KEY AUTOINCREMENT NOT NULL,
+	vchrUsername TEXT NOT NULL,
+	vchrLabelSetName TEXT NOT NULL,
+	GUID TEXT NULL,
+	txtDelimitedFields TEXT NULL,
+)
