@@ -20,6 +20,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using BioLink.Client.Utilities;
+using System.Windows.Input;
 
 namespace BioLink.Client.Extensibility {
     /// <summary>
@@ -106,7 +107,15 @@ namespace BioLink.Client.Extensibility {
             UpdatePreview();
         }
 
-        public MapPointShape Shape { get; set; }
+        private MapPointShape _shape;
+
+        public MapPointShape Shape {
+            get { return _shape; }
+            set {
+                _shape = value;
+                cmbShape.SelectedItem = _shapeModel.Find(vm => vm.Shape == value);                
+            }
+        }
 
         public int Size {
             get { return (int)sizeSlider.Value; }
