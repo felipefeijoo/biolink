@@ -6,6 +6,8 @@ using System.Data.SQLite;
 using BioLink.Client.Utilities;
 using System.IO;
 using System.Data.Common;
+using BioLink.Data.Model;
+using System.Reflection;
 
 namespace BioLink.Data {
 
@@ -31,29 +33,111 @@ namespace BioLink.Data {
 
             if (isNew) {
                 CreateSchema(conn);
+                conn.Close();
+                return GetConnection(profile, username, password);
             }
 
             return conn;
         }
 
         private void CreateSchema(DbConnection conn) {
-            ExecuteNonQuery(conn,   "CREATE TABLE tblMultimedia (" + 
-                                    "[intMultimediaID] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
-	                                "[vchrName] TEXT NOT NULL," +
-                                    "[vchrNumber] TEXT NULL," +
-                                    "[vchrArtist] TEXT NULL," +
-                                    "[vchrDateRecorded] TEXT NULL," +
-                                    "[vchrOwner] TEXT NULL," +
-                                    "[vchrFileExtension] TEXT NULL," +
-                                    "[intSizeInBytes] INTEGER NULL," +
-                                    "[imgMultimedia] BLOB NULL," +
-                                    "[txtCopyright] TEXT NULL," +
-                                    "[dtDateCreated] DATETIME NULL, " +
-                                    "[vchrWhoCreated] TEXT NULL,"+
-                                    "[dtDateLastUpdated] DATETIME NULL,"+
-                                    "[vchrWhoLastUpdated] TEXT NULL,"+
-                                    "[GUID] GUID NULL)");
+            CreateTable(conn, new TableOptions<Associate>());
+            CreateTable(conn, new TableOptions<AutoNumber>());
+            CreateTable(conn, new TableOptions<AvailableName>());
+            CreateTable(conn, new TableOptions<CommonName>());
+            CreateTable(conn, new TableOptions<Contact>());
+            CreateTable(conn, new TableOptions<CurationEvent>());
+            CreateTable(conn, new TableOptions<DistributionRegion>());
+            CreateTable(conn, new TableOptions<GANIncludedSpecies>());
+            CreateTable(conn, new TableOptions<GenusAvailableName>());
+            CreateTable(conn, new TableOptions<Journal>());
+            CreateTable(conn, new TableOptions<Kingdom>());
+            CreateTable(conn, new TableOptions<LabelSet>());
+            CreateTable(conn, new TableOptions<LabelSetItem>());
+            CreateTable(conn, new TableOptions<Loan>());
+            CreateTable(conn, new TableOptions<LoanCorrespondence>());
+            CreateTable(conn, new TableOptions<LoanMaterial>());
+            CreateTable(conn, new TableOptions<LoanReminder>());
+            CreateTable(conn, new TableOptions<Material>());
+            CreateTable(conn, new TableOptions<MaterialIdentification>());
+            CreateTable(conn, new TableOptions<MaterialPart>());
+            CreateTable(conn, new TableOptions<Multimedia> { });
+            CreateTable(conn, new TableOptions<MultimediaLink>());
+            CreateTable(conn, new TableOptions<Note> { });
+            CreateTable(conn, new TableOptions<Phrase> { });
+            CreateTable(conn, new TableOptions<PhraseCategory> { });
+            CreateTable(conn, new TableOptions<Site>());
+            CreateTable(conn, new TableOptions<SiteVisit>());
+            CreateTable(conn, new TableOptions<Taxon> { TableName = "tblBiota", IDField="intTaxaID" });
+            
 
+        }
+
+        private void CreateTable<T>(DbConnection conn, TableOptions<T> options = null) where T : BioLinkDataObject {
+            Type t = typeof(T);
+            if (options == null) {
+                options = new TableOptions<T>();
+            }
+
+            var properties = t.GetProperties();
+            var sb = new StringBuilder();
+            sb.Append("CREATE TABLE ").Append(options.TableName).Append(" (\r\n");
+            sb.Append("  ").Append(options.IDField).Append(" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\r\n");            
+            foreach (PropertyInfo prop in properties) {
+                string type = "TEXT";
+                string prefix = "";
+                bool nullable = false;
+                Type propertyType = prop.PropertyType;
+
+                if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(Nullable<>)) {
+                    propertyType = propertyType.GetGenericArguments()[0];
+                    nullable = true;
+                }
+
+                if (typeof(Boolean).IsAssignableFrom(propertyType)) {
+                    type = "INTEGER";
+                    prefix = "bit";
+                } else if (typeof(int).IsAssignableFrom(propertyType)) {
+                    type = "INTEGER";
+                    prefix = "int";
+                } else if (typeof(Int64).IsAssignableFrom(propertyType)) {
+                    type = "INTEGER";
+                    prefix = "int";
+                } else if (typeof(Int32).IsAssignableFrom(propertyType)) {
+                    type = "INTEGER";
+                    prefix = "int";
+                } else if (typeof(Double).IsAssignableFrom(propertyType)) {
+                    type = "REAL";
+                    prefix = "dbl";
+                } else if (typeof(String).IsAssignableFrom(propertyType)) {
+                    type = "TEXT";
+                    prefix = "vchr";
+                } else if (typeof(DateTime).IsAssignableFrom(propertyType)) {
+                    type = "TEXT";
+                    prefix = "dt";
+                } else if (typeof(Guid).IsAssignableFrom(propertyType)) {
+                    type = "GUID";
+                    prefix = "";
+                }
+
+                string columnName = String.Format("{0}{1}", prefix, prop.Name);
+
+                if (!columnName.Equals(options.IDField, StringComparison.CurrentCultureIgnoreCase)) {
+                    sb.Append("  [").Append(columnName).Append("] ").Append(type);
+                    if (!nullable) {
+                        sb.Append(" NOT NULL ");  
+                    }
+                    sb.Append(",\r\n");
+                }
+            }
+
+            sb.Remove(sb.Length - 3, 3);
+            
+            sb.Append(");");
+
+            Console.WriteLine(sb.ToString());
+
+            ExecuteNonQuery(conn, sb.ToString());
         }
 
         public override void StoredProcReaderForEach(User user, System.Data.Common.DbCommand command, string proc, ServiceReaderAction action, Action<string> message, params System.Data.Common.DbParameter[] @params) {
@@ -77,6 +161,18 @@ namespace BioLink.Data {
         public override DbParameter CreateParameter(string name, object value) {
             return new SQLiteParameter(name, value);
         }
+    }
+
+    public class TableOptions<T> where T : BioLinkDataObject {
+
+        public TableOptions() {
+            var t = typeof(T);
+            TableName = "tbl" + t.Name;
+            IDField = "int" + t.Name + "ID";
+        }
+
+        public String TableName { get; set; }
+        public String IDField { get; set; }
     }
 
     [SQLiteFunction(Name = "BLTest", Arguments = 1, FuncType = FunctionType.Scalar)]

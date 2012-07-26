@@ -159,7 +159,8 @@ namespace BioLink.Client.Extensibility {
 
         private void copyToClipboard(int[] rowIndexes, bool includeHeaders) {
 
-            String DELIM = ",";
+            const String DELIM = ",";
+            const String STRING_DELIM = "\"";
             var sb = new StringBuilder();
 
             if (includeHeaders) {
@@ -169,7 +170,7 @@ namespace BioLink.Client.Extensibility {
                 }
 
                 sb.Remove(sb.Length - DELIM.Length, DELIM.Length);
-                sb.Append("\n");
+                sb.Append(Environment.NewLine);
             }
 
             Action<StringBuilder, int> append = (builder, row) => {
@@ -178,7 +179,7 @@ namespace BioLink.Client.Extensibility {
                     if (data != null) {
                         string str = data.ToString().Trim();
                         if (str.Contains(DELIM)) {
-                            str = "\"" + str + "\"";
+                            str = String.Format("{0}{1}{0}", STRING_DELIM, str);
                         }
                         sb.Append(str);
                     }
@@ -186,7 +187,7 @@ namespace BioLink.Client.Extensibility {
                         builder.Append(DELIM);
                     }
                 }
-                builder.Append("\n");
+                builder.Append(Environment.NewLine);
             };
 
             if (rowIndexes == null) {
