@@ -50,7 +50,7 @@ or
 
 [http://biolink.googlecode.com/svn/wiki/BootStrap.attach/bootstrap_image004.png]
 
-5. Enter a password (twice) for the account under the 'General' section
+5. Enter a password (twice) for the account under the 'General' section. 
 
 [http://biolink.googlecode.com/svn/wiki/BootStrap.attach/bootstrap_image005.png]
 
@@ -80,7 +80,7 @@ You can exit the SQL Server Management studio now
 
 [http://biolink.googlecode.com/svn/wiki/BootStrap.attach/bootstrap_image011.png]
 
-12. Click on Add Group
+12. Click on New Group
 
 [http://biolink.googlecode.com/svn/wiki/BootStrap.attach/bootstrap_image013.png]
 
@@ -111,4 +111,3 @@ Also make sure the user is in the newly created administrators group (Permission
 17. You should now be able to log in, and have full update privileges.
 
 [http://biolink.googlecode.com/svn/wiki/BootStrap.attach/bootstrap_image020.png]
-
