@@ -24,11 +24,10 @@ namespace BioLink.Client.Extensibility.Export {
 
     public class CSVExporter : TabularDataExporter {
 
-        private string _quote = "\"";
+        private const string _quote = "\"";
 
         protected override object GetOptions(Window parentWindow, DataMatrix matrix) {
-            CSVExporterOptionsWindow optionsWindow = new CSVExporterOptionsWindow();
-            optionsWindow.Owner = parentWindow;
+            var optionsWindow = new CSVExporterOptionsWindow { Owner = parentWindow };
             if (optionsWindow.ShowDialog().GetValueOrDefault(false)) {
                 CSVExporterOptions options = optionsWindow.Options;
                 if (FileExistsAndNotOverwrite(options.Filename)) {
@@ -40,9 +39,9 @@ namespace BioLink.Client.Extensibility.Export {
             return null;
         }
 
-        public override void ExportImpl(Window parentWindow, Data.DataMatrix matrix, object optionsObj) {
+        public override void ExportImpl(Window parentWindow, DataMatrix matrix, object optionsObj) {
 
-            CSVExporterOptions options = optionsObj as CSVExporterOptions;
+            var options = optionsObj as CSVExporterOptions;
 
             if (options == null) {
                 return;
@@ -50,12 +49,9 @@ namespace BioLink.Client.Extensibility.Export {
 
             ProgressStart(String.Format("Exporting to {0}", options.Filename));
 
-            var encoding = options.Encoding;
-            if (encoding == null) {
-                encoding = Encoding.GetEncoding(1252);
-            }
-                
-            using (StreamWriter writer = new StreamWriter(options.Filename, false, encoding)) {
+            var encoding = options.Encoding ?? Encoding.GetEncoding(1252);
+
+            using (var writer = new StreamWriter(options.Filename, false, encoding)) {
                 int numCols = matrix.Columns.Count;
                 if (options.ColumnHeadersAsFirstRow) {
                     // write out the column headers as the first row...
@@ -79,17 +75,23 @@ namespace BioLink.Client.Extensibility.Export {
                 }
 
                 // Now emit each row...
-                int numRows = matrix.Rows.Count;
-                int currentRow = 0;
-                foreach (MatrixRow row in matrix.Rows) {
+                var numRows = matrix.Rows.Count;
+                var currentRow = 0;
+                var formatter = new MatrixValueFormatter(matrix);
+
+                for (int rowIndex = 0; rowIndex < matrix.Rows.Count; ++rowIndex) {                    
                     for (int colIndex = 0; colIndex < numCols; ++colIndex) {
                         if (!matrix.Columns[colIndex].IsHidden) {
-                            object value = row[colIndex];
-                            if (options.QuoteValues) {
+
+                            var value = formatter.FormatValue(rowIndex, colIndex);
+
+                            var quoteValue = options.QuoteValues || value.Contains(options.Delimiter);
+
+                            if (quoteValue) {
                                 writer.Write(_quote);
                             }
                             writer.Write(value);
-                            if (options.QuoteValues) {
+                            if (quoteValue) {
                                 writer.Write(_quote);
                             }
                             if (colIndex < numCols - 1) {
@@ -100,7 +102,7 @@ namespace BioLink.Client.Extensibility.Export {
                     writer.WriteLine();
                     currentRow++;
                     if ((currentRow % 1000) == 0) {
-                        double percent = (((double) currentRow) / ((double) numRows)) * 100.0;
+                        double percent = (currentRow / ((double)numRows)) * 100.0;
                         ProgressMessage(String.Format("{0} rows exported to {1}", currentRow, options.Filename), percent);
                     }
                 }

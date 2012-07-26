@@ -16,10 +16,10 @@ using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using BioLink.Client.Utilities;
 using BioLink.Data;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
@@ -27,11 +27,11 @@ namespace BioLink.Client.Extensibility {
     /// <summary>
     /// Interaction logic for TabularDataViewer.xaml
     /// </summary>
-    public partial class TabularDataViewer : UserControl, IDisposable {
+    public partial class TabularDataViewer : IDisposable {
 
         private GridViewColumnHeader _lastHeaderClicked = null;
         private ListSortDirection _lastDirection = ListSortDirection.Ascending;
-        private IProgressObserver _progress;
+        private readonly IProgressObserver _progress;
         private IBioLinkReport _report;
 
         #region DesignTime Constructor
@@ -45,7 +45,7 @@ namespace BioLink.Client.Extensibility {
             this.Data = data;
             _progress = progress;
             _report = report;
-            GridView view = new GridView();
+            var view = new GridView();
 
             var columns = report.DisplayColumns;
             if (columns == null || columns.Count == 0) {
@@ -60,7 +60,7 @@ namespace BioLink.Client.Extensibility {
                 view.Columns.Add(column);
             }
 
-            lvw.AddHandler(GridViewColumnHeader.ClickEvent, new RoutedEventHandler(GridViewColumnHeaderClickedHandler));
+            lvw.AddHandler(ButtonBase.ClickEvent, new RoutedEventHandler(GridViewColumnHeaderClickedHandler));
 
             lvw.MouseRightButtonUp += new System.Windows.Input.MouseButtonEventHandler(lvw_MouseRightButtonUp);
 
@@ -103,7 +103,7 @@ namespace BioLink.Client.Extensibility {
 
             var row = lvw.SelectedItem as MatrixRow;
             if (row != null) {
-                ContextMenuBuilder builder = new ContextMenuBuilder(null);
+                var builder = new ContextMenuBuilder(null);
 
                 AddLookupItem(builder, LookupType.Site, "SiteID", "intSiteID", "Site Identifier");
                 AddLookupItem(builder, LookupType.SiteVisit, "SiteVisitID", "intSiteVisitID", "Visit Identifier");
@@ -173,11 +173,13 @@ namespace BioLink.Client.Extensibility {
                 sb.Append(Environment.NewLine);
             }
 
+            var formatter = new MatrixValueFormatter(Data);
+
             Action<StringBuilder, int> append = (builder, row) => {
                 for (int i = 0; i < Data.Columns.Count; ++i) {
-                    var data = Data.Rows[row][i];
+                    var data = formatter.FormatValue(row, i);                    
                     if (data != null) {
-                        string str = data.ToString().Trim();
+                        string str = data.Trim();
                         if (str.Contains(DELIM)) {
                             str = String.Format("{0}{1}{0}", STRING_DELIM, str);
                         }
@@ -314,18 +316,18 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void Sort(DisplayColumnDefinition coldef, ListSortDirection direction) {
-            ListCollectionView dataView = CollectionViewSource.GetDefaultView(lvw.ItemsSource) as ListCollectionView;
-            dataView.SortDescriptions.Clear();
-            int columnIndex = Data.IndexOf(coldef.ColumnName);
-
-            SortDescription sd = new SortDescription(String.Format("[{0}]", columnIndex), direction);
-
-            dataView.SortDescriptions.Add(sd);
-            dataView.Refresh();
+            var dataView = CollectionViewSource.GetDefaultView(lvw.ItemsSource) as ListCollectionView;
+            if (dataView != null) {
+                dataView.SortDescriptions.Clear();
+                int columnIndex = Data.IndexOf(coldef.ColumnName);
+                var sd = new SortDescription(String.Format("[{0}]", columnIndex), direction);
+                dataView.SortDescriptions.Add(sd);
+                dataView.Refresh();
+            }
         }
 
         private object BuildColumnHeader(DisplayColumnDefinition coldef) {
-            TextBlock t = new TextBlock();
+            var t = new TextBlock();
             t.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
             t.TextAlignment = TextAlignment.Left;
             t.Tag = coldef;
@@ -338,7 +340,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void Export() {
-            ExportData exporter = new ExportData(Data, _progress);
+            var exporter = new ExportData(Data, _progress);
             exporter.Owner = PluginManager.Instance.ParentWindow;
             bool ok = exporter.ShowDialog().GetValueOrDefault(false);
         }
@@ -368,27 +370,27 @@ namespace BioLink.Client.Extensibility {
             if (String.IsNullOrEmpty(text)) {
                 return;
             }
-            ListCollectionView dataView = CollectionViewSource.GetDefaultView(lvw.ItemsSource) as ListCollectionView;
-            text = text.ToLower();
-            dataView.Filter = (obj) => {
-                var row = obj as MatrixRow;
+            var dataView = CollectionViewSource.GetDefaultView(lvw.ItemsSource) as ListCollectionView;
+            if (dataView != null) {
+                text = text.ToLower();
+                dataView.Filter = (obj) => {
+                    var row = obj as MatrixRow;
 
-                if (row != null) {
-                    object match = row.First((colval) => {
-                        if (colval != null) {
-                            return colval.ToString().ToLower().Contains(text);
+                    if (row != null) {
+                        object match = row.First((colval) => {
+                            if (colval != null) { return colval.ToString().ToLower().Contains(text); }
+                            return false;
+                        });
+
+                        if (match != null) {
+                            return true;
                         }
-                        return false;
-                    });
-
-                    if (match != null) {
-                        return true;
                     }
-                }
-                return false;
-            };
+                    return false;
+                };
 
-            dataView.Refresh();
+                dataView.Refresh();
+            }
             if (_progress != null) {
                 _progress.ProgressMessage(String.Format("Showing {0} of {1} rows", dataView.Count, Data.Rows.Count));
             }
