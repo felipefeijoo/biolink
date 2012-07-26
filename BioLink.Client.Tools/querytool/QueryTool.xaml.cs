@@ -176,7 +176,7 @@ namespace BioLink.Client.Tools {
             try {
                 var report = new QueryReport(User, _model, IsDistinct);
                 var results = new ReportResults(report);
-                PluginManager.Instance.AddDocumentContent(Owner, results, report.Name);            
+                PluginManager.Instance.AddDocumentContent(Owner, results, new DockableContentOptions { Title = report.Name, IsFloating = Preferences.OpenReportResultsInFloatingWindow.Value });
             } catch (Exception ex) {
                 ErrorMessage.Show(ex.Message);
             }

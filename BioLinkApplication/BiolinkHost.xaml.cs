@@ -97,13 +97,13 @@ namespace BioLinkApplication {
             }
         }
 
-        void _pluginManager_DocumentContentAdded(IBioLinkPlugin plugin, FrameworkElement content, string title, bool isClosable) {
+        void _pluginManager_DocumentContentAdded(IBioLinkPlugin plugin, FrameworkElement content, DockableContentOptions options) {
 
             var newContent = new BiolinkDocumentContent {
-                Title = title, 
+                Title = options.Title, 
                 Content = content,
                 FloatingWindowSize = new Size(600,500),
-                IsCloseable = isClosable
+                IsCloseable = options.IsClosable
             };
 
             newContent.Closed += new EventHandler((e,a) => {
@@ -112,9 +112,7 @@ namespace BioLinkApplication {
                 }
             });
 
-            bool addAsFloating = Config.GetUser(User, "client.dock.AddDocumentContentAsFloating", false);
-
-            newContent.Show(dockManager, addAsFloating);
+            newContent.Show(dockManager, options.IsFloating);
 
             newContent.BringIntoView();
             newContent.Focus();
@@ -307,6 +305,15 @@ namespace BioLinkApplication {
     public class BiolinkDocumentContent : DocumentContent {
 
         public BiolinkDocumentContent() {
+            Closed += new EventHandler(BiolinkDocumentContent_Closed);
+        }
+
+        void BiolinkDocumentContent_Closed(object sender, EventArgs e) {
+            var owner = PluginManager.Instance.ParentWindow;
+            if (owner != null) {
+                owner.BringIntoView();
+                owner.Focus();
+            }
         }
 
     }
