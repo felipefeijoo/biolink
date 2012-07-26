@@ -106,6 +106,15 @@ namespace BioLink.Client.Extensibility {
             if (!RequestClose()) {
                 e.Cancel = true;
             }
+
+            Window focusWindow = null;
+
+            focusWindow = this.Owner ?? PluginManager.Instance.ParentWindow;
+
+            if (focusWindow != null) {
+                focusWindow.BringIntoView();
+                focusWindow.Focus();
+            }
         }
 
         public void AddCustomButton(FrameworkElement element) {
