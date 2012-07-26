@@ -114,7 +114,7 @@ namespace BioLink.Client.Extensibility {
                 if (!string.IsNullOrWhiteSpace(htmlfile)) {
                     BioLinkCorePlugin core = GetExtensionsOfType<BioLinkCorePlugin>()[0];
                     var browser = new WebBrowser();
-                    AddDocumentContent(core, browser, "Welcome");
+                    AddDocumentContent(core, browser, new DockableContentOptions { Title = "Welcome" });
                     browser.Navigate(string.Format("file:///{0}", htmlfile));
                 }
 
@@ -212,10 +212,10 @@ namespace BioLink.Client.Extensibility {
             return extension;
         }
 
-        public void AddDocumentContent(IBioLinkPlugin plugin, FrameworkElement content, string title, bool closeable = true) {
+        public void AddDocumentContent(IBioLinkPlugin plugin, FrameworkElement content, DockableContentOptions options) {
 
             if (DocumentContentAdded != null) {
-                DocumentContentAdded(plugin, content, title, closeable);
+                DocumentContentAdded(plugin, content, options);
             }
 
         }
@@ -314,8 +314,8 @@ namespace BioLink.Client.Extensibility {
         public void RunReport(IBioLinkPlugin owner, IBioLinkReport report) {
 
             if (report.DisplayOptions(User, ParentWindow)) {
-                ReportResults results = new ReportResults(report);
-                AddDocumentContent(owner, results, report.Name);
+                var results = new ReportResults(report);
+                AddDocumentContent(owner, results, new DockableContentOptions { Title=report.Name, IsFloating = Preferences.OpenReportResultsInFloatingWindow.Value });
             }
         }
 
@@ -564,7 +564,7 @@ namespace BioLink.Client.Extensibility {
 
         public delegate void ShowDockableContributionDelegate(IBioLinkPlugin plugin, string name);
 
-        public delegate void AddDockableContentDelegate(IBioLinkPlugin plugin, FrameworkElement content, string title, bool closeable);
+        public delegate void AddDockableContentDelegate(IBioLinkPlugin plugin, FrameworkElement content, DockableContentOptions options);
 
         public delegate void CloseDockableContentDelegate(FrameworkElement content);
 
