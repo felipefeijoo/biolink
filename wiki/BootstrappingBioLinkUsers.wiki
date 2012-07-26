@@ -102,12 +102,14 @@ permission to edit them.
 Ensure the 'User can create other users' checkbox is checked
 Also make sure the user is in the newly created administrators group (Permissions are applied to groups, to which users can belong).
 
+You can supply a password here, but if you revert you database profile to use Windows authentication you will not need to enter this password, as it will use your (already logged in) Windows credentials to authenticate you. If don't use 'Integrated' or Windows authentication, you will need to use this password to log in.
+
 [http://biolink.googlecode.com/svn/wiki/BootStrap.attach/bootstrap_image018.png]
 
 16. Log out of BioLink, and modify the database profile again so that it uses Integrated (Windows or NT) Authentication.
 
 [http://biolink.googlecode.com/svn/wiki/BootStrap.attach/bootstrap_image019.png]
 
-17. You should now be able to log in, and have full update privileges.
+17. You should now be able to log in normally, and have full update privileges.
 
 [http://biolink.googlecode.com/svn/wiki/BootStrap.attach/bootstrap_image020.png]
