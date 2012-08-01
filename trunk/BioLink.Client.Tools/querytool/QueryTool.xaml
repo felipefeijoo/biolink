@@ -123,7 +123,20 @@
                             <DataGridCheckBoxColumn Header="Output" Binding="{Binding Output, UpdateSourceTrigger=PropertyChanged}" />
                             <DataGridTextColumn Header="Alias" Width="100" Binding="{Binding Alias, UpdateSourceTrigger=PropertyChanged}"/>
                             <DataGridComboBoxColumn Header="Sort" Width="100" TextBinding="{Binding Sort, Converter={StaticResource CriteriaSortConverter}, UpdateSourceTrigger=PropertyChanged}" x:Name="sortColumn" />
-                            <DataGridTextColumn Header="Formatting Options" Width="150" Binding="{Binding FormatOption, UpdateSourceTrigger=PropertyChanged}"/>
+
+                            <DataGridComboBoxColumn Header="Formatting Options" Width="150" SelectedValueBinding="{Binding Path=FormatOption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                <DataGridComboBoxColumn.ElementStyle>
+                                    <Style TargetType="ComboBox">
+                                        <Setter Property="ItemsSource" Value="{Binding Path=Field.AllowedOptions}"/>
+                                    </Style>
+                                </DataGridComboBoxColumn.ElementStyle>
+                                <DataGridComboBoxColumn.EditingElementStyle>
+                                    <Style TargetType="ComboBox">
+                                        <Setter Property="ItemsSource" Value="{Binding Path=Field.AllowedOptions}"/>
+                                    </Style>
+                                </DataGridComboBoxColumn.EditingElementStyle>
+                            </DataGridComboBoxColumn>
+                            
                         </DataGrid.Columns>                
                     </DataGrid>
                 </ScrollViewer>

@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:src ="clr-namespace:BioLink.Client.Extensibility.Export"
              mc:Ignorable="d" 
-             d:DesignHeight="240" d:DesignWidth="463" MinHeight="240" MinWidth="400" Height="281" Width="490" ResizeMode="CanResize" WindowStartupLocation="CenterOwner" Title="Delimited file options">
+             d:DesignHeight="240" d:DesignWidth="463" MinHeight="240" MinWidth="400" Height="307" Width="494" ResizeMode="CanResize" WindowStartupLocation="CenterOwner" Title="Delimited file options">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -14,10 +14,10 @@
         <Label Content="Export to file:" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" Name="lblFilename" VerticalAlignment="Top" Width="102" />
         <TextBox Height="23" Margin="120,14,98,0" Name="txtFilename" VerticalAlignment="Top" />
         <Button Content="Browse" Height="23" Margin="0,14,12,0" Name="btnBrowse" VerticalAlignment="Top" HorizontalAlignment="Right" Width="80" Click="btnBrowse_Click" />
-        <CheckBox Content="First row will contain column headings" Height="23" Margin="120,126,80,0" Name="chkFirstRowHeaders" VerticalAlignment="Top" IsChecked="True" />
+        <CheckBox Content="First row will contain column headings" Height="23" Margin="120,126,12,0" Name="chkFirstRowHeaders" VerticalAlignment="Top" IsChecked="True" />
         <Label Content="Delimiter:" Height="28" HorizontalAlignment="Left" Margin="12,46,0,0" Name="lblDelimiter" VerticalAlignment="Top" Width="102" />
         <ComboBox Height="23" Margin="120,51,0,0" Name="cmbDelimiter" VerticalAlignment="Top" IsEditable="True" DisplayMemberPath="DisplayName" HorizontalAlignment="Left" Width="101" />        
-        <CheckBox Content="Surround column values in quotes (&quot;)" Height="16" Margin="120,155,80,0" Name="chkQuoteValues" VerticalAlignment="Top" />
+        <CheckBox Content="Surround column values in quotes (&quot;)" Height="23" Margin="120,155,12,0" Name="chkQuoteValues" VerticalAlignment="Top" />
         <Label Content="Text encoding:" Height="28" HorizontalAlignment="Left" Margin="12,80,0,0" Name="label1" VerticalAlignment="Top" Width="102" />
         <ComboBox Height="23" Margin="120,85,98,0" Name="cmbEncoding" VerticalAlignment="Top" IsEditable="False" DisplayMemberPath="EncodingName"/>
         
@@ -26,5 +26,6 @@
             <Button Content="_OK" Height="23" HorizontalAlignment="Right" Margin="0,0,87,6" Name="btnOK" VerticalAlignment="Bottom" Width="75" IsDefault="True" Click="btnOK_Click" />
         </Grid>
         <Button Content="Code page" Height="23" HorizontalAlignment="Right" Margin="0,85,12,0" Name="btnCodePage" VerticalAlignment="Top" Width="80" Click="btnCodePage_Click" />
+        <CheckBox Content="Escape delimiters and embedded quotes with backslash ('\')" Height="23" HorizontalAlignment="Left" Margin="120,184,0,0" Name="chkEscapeSpecial" VerticalAlignment="Top" Width="340" IsChecked="True" />
     </Grid>
 </Window>

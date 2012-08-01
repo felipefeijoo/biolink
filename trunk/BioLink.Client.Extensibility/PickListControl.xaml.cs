@@ -133,7 +133,7 @@ namespace BioLink.Client.Extensibility {
                         phrase.PhraseCatID = phraseCategoryID;
                         phrase.PhraseText = newphrase;
                         // Save the new phrase value...
-                        service.AddPhrase(phrase);
+                        service.InsertPhrase(phrase);
                         return true;
                     };
                     break;

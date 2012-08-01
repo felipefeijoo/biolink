@@ -86,12 +86,19 @@ namespace BioLink.Client.Extensibility.Export {
                             var objValue = row[colIndex];
                             var value =  objValue == null ? "" : objValue.ToString();
 
+                            if (options.EscapeSpecial) {
+                                value = value.Replace("\"", "\\\"");
+                                value = value.Replace(options.Delimiter, "\\" + options.Delimiter);
+                            }
+
                             var quoteValue = options.QuoteValues || value.Contains(options.Delimiter);
 
                             if (quoteValue) {
                                 writer.Write(_quote);
                             }
+
                             writer.Write(value);
+
                             if (quoteValue) {
                                 writer.Write(_quote);
                             }
