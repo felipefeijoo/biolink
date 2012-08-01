@@ -173,13 +173,14 @@ namespace BioLink.Client.Extensibility {
                 sb.Append(Environment.NewLine);
             }
 
-            var formatter = new MatrixValueFormatter(Data);
+//            var formatter = new MatrixValueFormatter(Data);
 
-            Action<StringBuilder, int> append = (builder, row) => {
+            Action<StringBuilder, int> append = (builder, rowIndex) => {
+                var row = Data.Rows[rowIndex];
                 for (int i = 0; i < Data.Columns.Count; ++i) {
-                    var data = formatter.FormatValue(row, i);                    
+                    var data = row[i];                    
                     if (data != null) {
-                        string str = data.Trim();
+                        string str = data.ToString().Trim();
                         if (str.Contains(DELIM)) {
                             str = String.Format("{0}{1}{0}", STRING_DELIM, str);
                         }

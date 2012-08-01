@@ -1208,12 +1208,35 @@ namespace BioLink.Data {
 
         #region Query Tool
 
+        public void SetDefaultFormatOptions(QueryCriteria criteria) {
+
+            if (criteria != null && criteria.Field != null) {
+                var field = criteria.Field;
+                if (field.DataType.Equals("date", StringComparison.CurrentCultureIgnoreCase) || field.DataType.Equals("bldate", StringComparison.CurrentCultureIgnoreCase)) {
+                    criteria.FormatOption = "d MMM, yyyy";
+                } else if (field.DataType.Equals("Longitude", StringComparison.CurrentCultureIgnoreCase) || field.DataType.Equals("latitude", StringComparison.CurrentCultureIgnoreCase)) {
+                    criteria.FormatOption = "dms";
+                }
+            }
+
+        }
+
+        public void SaveQueryFile(IEnumerable<QueryCriteria> model, string filename) {
+            using (var writer = new StreamWriter(filename)) {
+                writer.WriteLine(string.Format("Field{0}Criteria{0}Output{0}Alias{0}Sort{0}FormatOptions", (char)2));
+                foreach (QueryCriteria c in model) {
+                    writer.WriteLine(string.Format("{1}.{2}{0}{3}{0}{4}{0}{5}{0}{6}{0}{7}", (char)2, c.Field.Category, c.Field.DisplayName, c.Criteria, c.Output ? "1" : "0", c.Alias, c.Sort, c.FormatOption));
+                }
+            }
+        }
+
+
         public ObservableCollection<QueryCriteria> LoadQueryFile(string filename) {
             var model = new ObservableCollection<QueryCriteria>();
             using (var reader = new StreamReader(filename)) {
                 string strLine = reader.ReadLine(); // Skip first line (contains header...);
                 string expected = string.Format("Field{0}Criteria{0}Output{0}Alias{0}Sort", (char)2);
-                if (strLine != expected) {
+                if (!strLine.StartsWith(expected)) {
                     throw new Exception("Invalid query file. Header mismatch.");
                 }
 
@@ -1224,7 +1247,7 @@ namespace BioLink.Data {
                     if (strLine.Trim().Length > 0) {
                         lineCount++;
                         String[] bits = strLine.Split((char)2);
-                        if (bits.Length != 5) {
+                        if (bits.Length < 5) {
                             throw new Exception("Invalid query file. Incorrect number of delimiters on line " + lineCount);
                         }
 
@@ -1232,6 +1255,17 @@ namespace BioLink.Data {
                         var field = FindFieldByLongName(bits[0], fields);
                         if (field != null) {
                             var c = new QueryCriteria { Field = field, Criteria = bits[1], Output = (bits[2].Trim() == "1"), Alias = bits[3], Sort = bits[4] };
+                            String formatOption = null;
+                            if (bits.Length > 5) {
+                                formatOption = bits[5];
+                            }
+
+                            if (String.IsNullOrEmpty(formatOption)) {
+                                SetDefaultFormatOptions(c);
+                            } else {
+                                c.FormatOption = formatOption;
+                            }
+
                             model.Add(c);
                         } else {
                             // Could not locate the field...what to do? Ignore or throw?
@@ -1311,55 +1345,22 @@ namespace BioLink.Data {
                 return "";
             }
 
-            if (string.IsNullOrEmpty(formatOption)) {
-                return dateObj;
+            if (dateObj.ToString().Equals("0")) {
+                return "";
             }
 
-            DateTime? dt = null;
-            int day = 0, month = 0;
-            bool isBLDate = false;
+            if (string.IsNullOrEmpty(formatOption)) {
+                formatOption = "d MMM, yyyy";
+            }
 
             if (Information.IsDate(dateObj)) {
-                dt = DateAndTime.DateValue(dateObj.ToString());
+                DateTime? dt = DateAndTime.DateValue(dateObj.ToString());
+                formatOption = formatOption.Replace("RM", DateUtils.RomanMonth(dt.Value.Month));
+                return string.Format("{0:" + formatOption + "}", dt);
             } else {
-                int year;
+                int day = 0, month = 0, year = 0;                
                 if (DateUtils.BLDateComponents(dateObj.ToString(), out day, out month, out year)) {
-                    isBLDate = true;
-                    dt = DateAndTime.DateValue(day + " " + DateUtils.MidMonth(month) + ", " + year);
-                }
-            }
-
-            // Can we use c# formatting?
-            if (formatOption.StartsWith("{0") && formatOption.EndsWith("}")) {
-                if (dt.HasValue) {
-                    return string.Format(formatOption, dt);
-                }
-            } else {
-                if (dt.HasValue) {
-                    string format = formatOption.Replace("RM", "" + (char)1);
-                    if (isBLDate) {
-                        // Determine from the date components if any are not specified. If any of these
-                        // are not specified, remove the potential formatting elements from the format
-                        // string. Actual day and month values need to be supplied in order to use the built in Format function                        
-                        if (day == 0) {
-                            format = format.Replace("d", "");
-                            format = format.Replace("w", "");
-                        }
-
-                        if (month == 0) {
-                            format = format.Replace("m", "");
-                            format = format.Replace("q", "");
-                        }
-
-                        format = format.Replace("\\", "\\\\");
-                        format = format.Replace(".", "\\.");
-                    }
-
-                    var final = Strings.Format(dt.Value, format);
-                    if (final.Contains((char)1)) {
-                        final = final.Replace("" + (char)1, DateUtils.RomanMonth(DateAndTime.Month(dt.Value)));
-                    }
-                    return final;
+                    return DateUtils.FormatBLDate(formatOption, day, month, year);
                 }
             }
 
@@ -1409,15 +1410,17 @@ namespace BioLink.Data {
                     alias = c.Field.DisplayName;
                 }
 
-                if (!string.IsNullOrEmpty(c.Field.Format) && !string.IsNullOrEmpty(formatOption)) {
+                if (!string.IsNullOrEmpty(c.Field.Format)) {
                     switch (c.Field.Format.ToLower()) {
                         case "date":
                             m[alias] = (value, reader) => FormatDate(value, formatOption);
                             break;
                         case "latitude":
                         case "longitude":
-                            var coordType = (CoordinateType)Enum.Parse(typeof(CoordinateType), c.Field.Format);
-                            m[alias] = (value, reader) => FormatCoordinate(value, formatOption, coordType);
+                            if (!string.IsNullOrEmpty(formatOption)) {
+                                var coordType = (CoordinateType) Enum.Parse(typeof (CoordinateType), c.Field.Format);
+                                m[alias] = (value, reader) => FormatCoordinate(value, formatOption, coordType);                                
+                            }
                             break;
                     }
                 }
