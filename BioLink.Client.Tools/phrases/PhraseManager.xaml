@@ -68,7 +68,7 @@
                     <ListView.View>
                         <GridView>
                             <GridView.Columns>
-                                <GridViewColumn Header="Phrase Category" Width="{Binding ElementName=lhsGrid, Path=Width}" />
+                                <GridViewColumn Header="Phrase Category" Width="300" />
                             </GridView.Columns>
                         </GridView>
                     </ListView.View>

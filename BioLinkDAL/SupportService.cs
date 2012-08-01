@@ -96,9 +96,9 @@ namespace BioLink.Data {
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Name Status", FieldName="vchrAvailableNameStatus", TableName="tblBiota", Category="Nomenclature", Description="Status of Available Names", Format="", UseInRDE=true, DataType="Text" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Storage Location", FieldName="vchrName", TableName="tblBiotaStorage", Category="Nomenclature", Description="Where specimens are stored", Format="", UseInRDE=true, DataType="Text" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Who Created", FieldName="vchrWhoCreated", TableName="tblBiota", Category="Nomenclature", Description="The username of the user who created the entry", Format="", UseInRDE=false, DataType="Text" });
-		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Date Created", FieldName="dtDateCreated", TableName="tblBiota", Category="Nomenclature", Description="The date the entry was created", Format="", UseInRDE=false, DataType="Date" });
+		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Date Created", FieldName="dtDateCreated", TableName="tblBiota", Category="Nomenclature", Description="The date the entry was created", Format="Date", UseInRDE=false, DataType="Date" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Who Last Updated", FieldName="vchrWhoLastUpdated", TableName="tblBiota", Category="Nomenclature", Description="The username of the user who last updated the entry", Format="", UseInRDE=false, DataType="Text" });
-		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Date Last Updated", FieldName="dtDateLastUpdated", TableName="tblBiota", Category="Nomenclature", Description="The date the entry was last updated", Format="", UseInRDE=false, DataType="Date" });
+		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Date Last Updated", FieldName="dtDateLastUpdated", TableName="tblBiota", Category="Nomenclature", Description="The date the entry was last updated", Format="Date", UseInRDE=false, DataType="Date" });
 
             FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Parent Kingdom", FieldName = "vchrParentKingdom", TableName = "tblBiota", Category = "Nomenclature", Description = "The parent taxonomic Kingdom", Format = "", UseInRDE = false, DataType = "Text" });
             FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Parent Phylum", FieldName = "vchrParentPhylum", TableName = "tblBiota", Category = "Nomenclature", Description = "The parent Phylum", Format = "", UseInRDE = false, DataType = "Text" });
@@ -124,9 +124,9 @@ namespace BioLink.Data {
             FieldDescriptors.Add(new FieldDescriptor { DisplayName = "State/Province", FieldName = "vchrParentPrimDiv ", TableName = "tblPoliticalRegion", Category = "PoliticalRegion", Description = "The state or province that this region exists in (if any)", Format = "", UseInRDE = false, DataType = "Text" });
             FieldDescriptors.Add(new FieldDescriptor { DisplayName = "County", FieldName = "vchrParentSecDiv ", TableName = "tblPoliticalRegion", Category = "PoliticalRegion", Description = "The county or shire that this region exists in (if any)", Format = "", UseInRDE = false, DataType = "Text" });
 
-		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Date Created", FieldName="dtDateCreated", TableName="tblPoliticalRegion", Category="PoliticalRegion", Description="The date the entry was created", Format="", UseInRDE=true, DataType="Date" });
+		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Date Created", FieldName="dtDateCreated", TableName="tblPoliticalRegion", Category="PoliticalRegion", Description="The date the entry was created", Format="Date", UseInRDE=true, DataType="Date" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Who Last Updated", FieldName="vchrWhoLastUpdated", TableName="tblPoliticalRegion", Category="PoliticalRegion", Description="The username of the user who last updated the entry", Format="", UseInRDE=true, DataType="Text" });
-		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Date Last Updated", FieldName="dtDateLastUpdated", TableName="tblPoliticalRegion", Category="PoliticalRegion", Description="The date the entry was last updated", Format="", UseInRDE=true, DataType="Date" });
+		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Date Last Updated", FieldName="dtDateLastUpdated", TableName="tblPoliticalRegion", Category="PoliticalRegion", Description="The date the entry was last updated", Format="Date", UseInRDE=true, DataType="Date" });
 
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Site Identifier", FieldName="intSiteID", TableName="tblSite", Category="Site", Description="Internal Database Identifier for this site", Format="", UseInRDE=true, DataType="ObjectID" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Site Name", FieldName="vchrSiteName", TableName="tblSite", Category="Site", Description="Identifier (name or code) for this site/station assigned by the collector (need not be unique)", Format="", UseInRDE=true, DataType="Text" });
@@ -168,9 +168,9 @@ namespace BioLink.Data {
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological Age Top", FieldName="vchrGeoAgeTop", TableName="tblSite", Category="Site", Description="Geological Age Top", Format="", UseInRDE=true, DataType="Text" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological Notes", FieldName="vchrGeoNotes", TableName="tblSite", Category="Site", Description="Geological Notes", Format="", UseInRDE=true, DataType="Text" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Who Created", FieldName="vchrWhoCreated", TableName="tblSite", Category="Site", Description="The username of the user who created the entry", Format="", UseInRDE=true, DataType="Text" });
-		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Date Created", FieldName="dtDateCreated", TableName="tblSite", Category="Site", Description="The date the entry was created", Format="", UseInRDE=true, DataType="Date" });
+		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Date Created", FieldName="dtDateCreated", TableName="tblSite", Category="Site", Description="The date the entry was created", Format="Date", UseInRDE=true, DataType="Date" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Who Last Updated", FieldName="vchrWhoLastUpdated", TableName="tblSite", Category="Site", Description="The username of the user who last updated the entry", Format="", UseInRDE=true, DataType="Text" });
-		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Date Last Updated", FieldName="dtDateLastUpdated", TableName="tblSite", Category="Site", Description="The date the entry was last updated", Format="", UseInRDE=true, DataType="Date" });
+		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Date Last Updated", FieldName="dtDateLastUpdated", TableName="tblSite", Category="Site", Description="The date the entry was last updated", Format="Date", UseInRDE=true, DataType="Date" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Visit Identifier", FieldName="intSiteVisitID", TableName="tblSiteVisit", Category="SiteVisit", Description="Internal Database Indentifier for the visit", Format="", UseInRDE=true, DataType="ObjectID" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Collector(s)", FieldName="vchrCollector", TableName="tblSiteVisit", Category="SiteVisit", Description="Persons collecting the material", Format="", UseInRDE=true, DataType="Text" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Start Date", FieldName="intDateStart", TableName="tblSiteVisit", Category="SiteVisit", Description="Date the collection took place or began", Format="Date", UseInRDE=true, DataType="BLDate" });
@@ -205,9 +205,9 @@ namespace BioLink.Data {
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Special label", FieldName="vchrSpecialLabel", TableName="tblMaterial", Category="Material", Description="Special text to appear on printed labels", Format="", UseInRDE=true, DataType="Text" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Original label", FieldName="vchrOriginalLabel", TableName="tblMaterial", Category="Material", Description="Special text to appear on printed labels", Format="", UseInRDE=true, DataType="Text" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Who Created", FieldName="vchrWhoCreated", TableName="tblMaterial", Category="Material", Description="The username of the user who created the entry", Format="", UseInRDE=true, DataType="Text" });
-		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Date Created", FieldName="dtDateCreated", TableName="tblMaterial", Category="Material", Description="The date the entry was created", Format="", UseInRDE=true, DataType="Date" });
+		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Date Created", FieldName="dtDateCreated", TableName="tblMaterial", Category="Material", Description="The date the entry was created", Format="Date", UseInRDE=true, DataType="Date" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Who Last Updated", FieldName="vchrWhoLastUpdated", TableName="tblMaterial", Category="Material", Description="The username of the user who last updated the entry", Format="", UseInRDE=true, DataType="Text" });
-		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Date Last Updated", FieldName="dtDateLastUpdated", TableName="tblMaterial", Category="Material", Description="The date the entry was last updated", Format="", UseInRDE=true, DataType="Date" });
+		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Date Last Updated", FieldName="dtDateLastUpdated", TableName="tblMaterial", Category="Material", Description="The date the entry was last updated", Format="Date", UseInRDE=true, DataType="Date" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Name", FieldName="vchrPartName", TableName="tblMaterialPart", Category="MaterialPart", Description="Name of the part", Format="", UseInRDE=true, DataType="Text" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Sample Type", FieldName="vchrSampleType", TableName="tblMaterialPart", Category="MaterialPart", Description="Sample type", Format="", UseInRDE=true, DataType="Text" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Number of Specimens", FieldName="intNoSpecimens", TableName="tblMaterialPart", Category="MaterialPart", Description="Number of specimens in the subpart", Format="", UseInRDE=true, DataType="Integer" });
@@ -621,7 +621,14 @@ namespace BioLink.Data {
             return StoredProcToList("spPhraseList", mapper, new SqlParameter("intCategory", categoryId));
         }
 
-        public void AddPhrase(Phrase phrase) {
+        public int InsertPhraseCategory(string category, bool @fixed) {
+            // Obviously a copy-pasta error in the Stored Proc, as the return value is called NewRegionID...oh well...
+            var retval = ReturnParam("NewRegionID");
+            StoredProcUpdate("spPhraseCategoryInsert", _P("vchrCategory", category), _P("bitFixed", @fixed), retval);            
+            return retval.Value == null ? 09 : (Int32) retval.Value;
+        }
+
+        public void InsertPhrase(Phrase phrase) {
             // Obviously a copy-pasta error in the Stored Proc, as the return value is called NewRegionID...oh well...
             var retval = ReturnParam("NewRegionID");
             StoredProcUpdate("spPhraseInsert", _P("intPhraseCatID", phrase.PhraseCatID), _P("vchrPhrase", phrase.PhraseText), retval);
@@ -641,6 +648,27 @@ namespace BioLink.Data {
         public void DeletePhraseCategory(int categoryId) {
             StoredProcUpdate("spPhraseCategoryDelete", _P("intCatID", categoryId));
         }
+
+        public void EnsurePhraseCategory(string category, bool @fixed, params string[] values) {
+            int id = GetPhraseCategoryId(category, true);
+            if (id <= 0) {
+                id = InsertPhraseCategory(category, @fixed);
+                if (id > 0) {
+                    values.ForEach(val => InsertPhrase(new Phrase {PhraseCatID = id, PhraseText = val}));
+                }
+            }
+
+        }
+
+        public List<String> GetPhraseValues(string category) {
+            var results = new List<String>();
+            var catId = GetPhraseCategoryId(category, true);
+            if (catId > 0) {
+                var phrases = GetPhrases(catId);
+                phrases.ForEach(phrase => results.Add(phrase.PhraseText));
+            }
+            return results;
+        } 
 
         #endregion
 
@@ -1212,13 +1240,31 @@ namespace BioLink.Data {
 
             if (criteria != null && criteria.Field != null) {
                 var field = criteria.Field;
-                if (field.DataType.Equals("date", StringComparison.CurrentCultureIgnoreCase) || field.DataType.Equals("bldate", StringComparison.CurrentCultureIgnoreCase)) {
+                if (field.DataType.Equals("bldate", StringComparison.CurrentCultureIgnoreCase)) {
                     criteria.FormatOption = "d MMM, yyyy";
                 } else if (field.DataType.Equals("Longitude", StringComparison.CurrentCultureIgnoreCase) || field.DataType.Equals("latitude", StringComparison.CurrentCultureIgnoreCase)) {
                     criteria.FormatOption = "dms";
                 }
             }
 
+        }
+
+        public List<String> GetAllowedOptionsForField(FieldDescriptor field) {
+            var results = new List<String>();
+            results.Add("");
+            if (field != null && field.Format != null) {
+                switch (field.Format.ToLower()) {
+                    case "date":
+                    case "bldate":
+                        results.AddRange(GetPhraseValues("QueryFormatOptions_Date"));
+                        break;
+                    case "latitude":
+                    case "longitude":
+                        results.AddRange(GetPhraseValues("QueryFormatOptions_Coordinate"));
+                        break;
+                }
+            }
+            return results;
         }
 
         public void SaveQueryFile(IEnumerable<QueryCriteria> model, string filename) {
@@ -1303,6 +1349,8 @@ namespace BioLink.Data {
             list.AddRange(ExtractTraits("SiteVisit", "SiteVisit", "tblSiteVisit"));
             list.AddRange(ExtractTraits("Material", "Material", "tblMaterial"));
 
+            list.ForEach(fd => fd.AllowedOptions = GetAllowedOptionsForField(fd));
+
             return list;
         }
 
@@ -1350,17 +1398,20 @@ namespace BioLink.Data {
             }
 
             if (string.IsNullOrEmpty(formatOption)) {
-                formatOption = "d MMM, yyyy";
+                return dateObj;
             }
 
             if (Information.IsDate(dateObj)) {
                 DateTime? dt = DateAndTime.DateValue(dateObj.ToString());
-                formatOption = formatOption.Replace("RM", DateUtils.RomanMonth(dt.Value.Month));
+                formatOption = formatOption.Replace("R", DateUtils.RomanMonth(dt.Value.Month));
                 return string.Format("{0:" + formatOption + "}", dt);
             } else {
                 int day = 0, month = 0, year = 0;                
                 if (DateUtils.BLDateComponents(dateObj.ToString(), out day, out month, out year)) {
-                    return DateUtils.FormatBLDate(formatOption, day, month, year);
+                    var formatted = DateUtils.FormatBLDate(formatOption, day, month, year);
+                    if (formatted != null) {
+                        return formatted;
+                    }
                 }
             }
 

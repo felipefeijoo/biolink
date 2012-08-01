@@ -16,6 +16,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using BioLink.Data;
+using BioLink.Data.Model;
 
 namespace BioLink.Client.Extensibility {
 
@@ -46,7 +48,14 @@ namespace BioLink.Client.Extensibility {
 
         void Instance_PluginsLoaded(PluginManager obj) {
             _pinboard.ContentControl.InitializePinBoard();
+            // Ensure that the default query results formatter phrase categories exist.
+
+            var service = new SupportService(User);
+            service.EnsurePhraseCategory("QueryFormatOptions_Date", true, "d MMM, yyyy", "yyyy-MM-dd", "d MMMM, yyyy", "dd/MM/yyyy", "MM/dd/yyyy");
+            service.EnsurePhraseCategory("QueryFormatOptions_Coordinate", true, "dms", "degrees decimal minutes", "decimal degrees");
+
         }
+
 
         public override bool RequestShutdown() {
             _pinboard.ContentControl.PersistPinnedItems();

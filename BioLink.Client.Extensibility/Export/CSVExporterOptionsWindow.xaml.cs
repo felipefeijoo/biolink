@@ -15,7 +15,6 @@
 using System;
 using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Documents;
 using BioLink.Client.Utilities;
 using System.Text;
 using System.Collections.ObjectModel;
@@ -28,25 +27,26 @@ namespace BioLink.Client.Extensibility.Export {
 
         public CSVExporterOptionsWindow() {
             InitializeComponent();
-            List<DelimiterItem> model = new List<DelimiterItem>();
-            model.Add(new DelimiterItem(",", ","));
-            model.Add(new DelimiterItem("Tab", "\t"));
-            model.Add(new DelimiterItem("|", "|"));
-            model.Add(new DelimiterItem(";", ";"));
+            var model = new List<DelimiterItem> {
+                new DelimiterItem(",", ","),
+                new DelimiterItem("Tab", "\t"),
+                new DelimiterItem("|", "|"),
+                new DelimiterItem(";", ";")
+            };
 
             cmbDelimiter.Items.Clear();
             cmbDelimiter.ItemsSource = model;
             cmbDelimiter.SelectedIndex = 0;
 
-            var encodings = new ObservableCollection<Encoding>();
-
-            encodings.Add(Encoding.GetEncoding(1252));
-            encodings.Add(Encoding.UTF8);
-            encodings.Add(Encoding.UTF7);
-            encodings.Add(Encoding.UTF32);
-            encodings.Add(Encoding.ASCII);
-            encodings.Add(Encoding.BigEndianUnicode);
-            encodings.Add(Encoding.Unicode);
+            var encodings = new ObservableCollection<Encoding> {
+                Encoding.GetEncoding(1252),
+                Encoding.UTF8,
+                Encoding.UTF7,
+                Encoding.UTF32,
+                Encoding.ASCII,
+                Encoding.BigEndianUnicode,
+                Encoding.Unicode
+            };
 
             cmbEncoding.ItemsSource = encodings;
             cmbEncoding.SelectedIndex = 0;
@@ -56,12 +56,14 @@ namespace BioLink.Client.Extensibility.Export {
         public CSVExporterOptions Options {
             get {
                 var item = cmbDelimiter.SelectedItem as DelimiterItem;
-                var options = new CSVExporterOptions();
-                options.Delimiter = (item == null ? cmbDelimiter.Text : item.Value);
-                options.ColumnHeadersAsFirstRow = chkFirstRowHeaders.IsChecked.GetValueOrDefault(false);
-                options.Filename = txtFilename.Text;
-                options.QuoteValues = chkQuoteValues.IsChecked.GetValueOrDefault(false);
-                options.Encoding = cmbEncoding.SelectedItem as Encoding;
+                var options = new CSVExporterOptions {
+                    Delimiter = (item == null ? cmbDelimiter.Text : item.Value),
+                    ColumnHeadersAsFirstRow = chkFirstRowHeaders.IsChecked.GetValueOrDefault(false),
+                    Filename = txtFilename.Text,
+                    QuoteValues = chkQuoteValues.IsChecked.GetValueOrDefault(false),
+                    Encoding = cmbEncoding.SelectedItem as Encoding,
+                    EscapeSpecial = chkEscapeSpecial.IsChecked.GetValueOrDefault(true)
+                };
                 return options;
             }
         }
@@ -83,14 +85,15 @@ namespace BioLink.Client.Extensibility.Export {
         }
 
         private void btnBrowse_Click(object sender, RoutedEventArgs e) {
-            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
-            dlg.FileName = "Export"; // Default file name
-            dlg.DefaultExt = ".txt"; // Default file extension
-            dlg.OverwritePrompt = false;
-            dlg.Filter = "Text documents (.txt)|*.txt|All files (*.*)|*.*"; // Filter files by extension            
-            Nullable<bool> result = dlg.ShowDialog();
-            if (result == true) {
+            var dlg = new Microsoft.Win32.SaveFileDialog {
+                FileName = "Export",
+                DefaultExt = ".txt",
+                OverwritePrompt = false,
+                Filter = "Text documents (.txt)|*.txt|All files (*.*)|*.*"
+            };
 
+            var result = dlg.ShowDialog();
+            if (result == true) {
                 txtFilename.Text = dlg.FileName;
             }
         }
@@ -138,6 +141,8 @@ namespace BioLink.Client.Extensibility.Export {
         public string Delimiter { get; set; }
         public bool ColumnHeadersAsFirstRow { get; set; }
         public bool QuoteValues { get; set; }
+        public bool EscapeSpecial { get; set; }
+
         public Encoding Encoding { get; set; }
     }
 }

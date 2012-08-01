@@ -357,7 +357,12 @@ namespace BioLink.Client.Utilities {
             var reader =new StringReader(formatOption);
             int intCh = reader.Read();
             var result = new StringBuilder();
-            var dt = new DateTime(year == 0 ? 2000 : year, month == 0 ? 1 : month, day == 0 ? 1 : day);
+            DateTime dt;
+            try {
+                dt = new DateTime(year < 1 ? 2000 : year, month < 1 ? 1 : month, day < 1 ? 1 : day);
+            } catch (Exception ex) {
+                return null;
+            }
 
             while (intCh > 0) {
                 var ch = (char) intCh;

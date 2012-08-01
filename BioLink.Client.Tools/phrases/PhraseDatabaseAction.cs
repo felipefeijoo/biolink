@@ -74,7 +74,7 @@ namespace BioLink.Client.Tools {
 
         protected override void ProcessImpl(User user) {
             var service = new SupportService(user);
-            service.AddPhrase(this.Phrase);
+            service.InsertPhrase(this.Phrase);
         }
 
         protected override void BindPermissions(PermissionBuilder required) {

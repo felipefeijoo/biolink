@@ -14,8 +14,6 @@
  ******************************************************************************/
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using BioLink.Client.Utilities;
 
 namespace BioLink.Data.Model {
@@ -30,6 +28,7 @@ namespace BioLink.Data.Model {
         public string Format { get; set; }
         public bool UseInRDE { get; set; }
         public string DataType { get; set; }
+        public List<String> AllowedOptions { get; set; }
         public Func<string, ConvertingValidatorResult, bool> Validate { get; set; }
 
         public override string ToString() {
