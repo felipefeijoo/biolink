@@ -126,5 +126,43 @@ namespace BioLink.Client.Utilities.tests {
             Assert.AreEqual("1681", result);
         }
 
+        [Test]
+        public void FormatBLDate1() {
+            var result = DateUtils.FormatBLDate("d MMM, yyyy", 15, 9, 1997);
+            Assert.AreEqual("15 Sep, 1997", result);
+        }
+
+        [Test]
+        public void FormatBLDate2() {
+            var result = DateUtils.FormatBLDate("yyyy-MM-dd", 10, 3, 2002);
+            Assert.AreEqual("2002-03-10", result);
+        }
+
+        [Test]
+        public void FormatBLDate3() {
+            var result = DateUtils.FormatBLDate("yyyy-MM-dd", 0, 3, 2002);
+            Assert.AreEqual("2002-03-", result);
+        }
+
+        [Test]
+        public void FormatBLDate4() {
+            var result = DateUtils.FormatBLDate("yyyy-MM-dd", 0, 0, 2002);
+            Assert.AreEqual("2002- -", result);
+        }
+
+        [Test]
+        public void FormatBLDate5() {
+            var result = DateUtils.FormatBLDate("d MMM, yyyy", 0, 3, 2002);
+            Assert.AreEqual("Mar, 2002", result);
+        }
+
+        [Test]
+        public void FormatBLDate6() {
+            var result = DateUtils.FormatBLDate("dd.R.yyyy", 12, 3, 2002);
+            Assert.AreEqual("12.iii.2002", result);
+        }
+
+
+
     }
 }

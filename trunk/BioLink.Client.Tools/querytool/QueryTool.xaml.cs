@@ -97,6 +97,8 @@ namespace BioLink.Client.Tools {
             var field = lvwFields.SelectedItem as FieldDescriptor;
             if (field != null) {
                 var c = new QueryCriteria { Field = field, Output = true };
+                new SupportService(User).SetDefaultFormatOptions(c);
+
                 _model.Add(c);
             }
         }
@@ -151,16 +153,7 @@ namespace BioLink.Client.Tools {
             var dlg = new Microsoft.Win32.SaveFileDialog {Title = "Save Query", FileName = "query", DefaultExt = "blq", OverwritePrompt = true, Filter = "Query Files (*.blq)|*.blq|All files (*.*)|*.*"};
             var result = dlg.ShowDialog();
             if (result == true) {
-                SaveQueryFile(_model, dlg.FileName);                
-            }
-        }
-
-        private void SaveQueryFile(IEnumerable<QueryCriteria> model, string filename) {
-            using (var writer = new StreamWriter(filename)) {
-                writer.WriteLine(string.Format("Field{0}Criteria{0}Output{0}Alias{0}Sort", (char)2));
-                foreach (QueryCriteria c in model) {
-                    writer.WriteLine(string.Format("{1}.{2}{0}{3}{0}{4}{0}{5}{0}{6}", (char)2, c.Field.Category, c.Field.DisplayName, c.Criteria, c.Output ? "1" : "0", c.Alias, c.Sort));
-                }
+                new SupportService(User).SaveQueryFile(_model, dlg.FileName);                
             }
         }
 

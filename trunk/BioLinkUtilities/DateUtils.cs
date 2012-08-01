@@ -15,6 +15,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using Microsoft.VisualBasic;
@@ -350,6 +352,79 @@ namespace BioLink.Client.Utilities {
             return false;
         }
 
+
+        public static String FormatBLDate(string formatOption, int day, int month, int year) {
+            var reader =new StringReader(formatOption);
+            int intCh = reader.Read();
+            var result = new StringBuilder();
+            var dt = new DateTime(year == 0 ? 2000 : year, month == 0 ? 1 : month, day == 0 ? 1 : day);
+
+            while (intCh > 0) {
+                var ch = (char) intCh;
+                
+                switch (ch) {
+                    case 'd':
+                        // days
+                        intCh = ProcessDatePart(reader, ch, day, dt, result);
+                        break;
+                    case 'M':
+                        // Months
+                        intCh = ProcessDatePart(reader, ch, month, dt, result);
+                        break;
+                        break;
+                    case 'y':
+                        intCh = ProcessDatePart(reader, ch, year, dt, result);
+                        // years
+                        break;
+                    case 'R':
+                        if (month > 0) {
+                            result.Append(DateUtils.RomanMonth(month));
+                        }
+                        intCh = reader.Read();
+                        break;
+                    default:
+                        result.Append(ch);
+                        // read next char
+                        intCh = reader.Read();
+                        break;
+                }
+            }
+            return result.ToString().Trim();
+        }
+
+        private static int ProcessDatePart(StringReader reader, char ch, int partValue, DateTime dt, StringBuilder builder) {
+            String token = "";
+            int intCh = ReadAll(reader, ch, out token);
+            if (token.Length == 1) {
+                token = "%" + token;
+            }
+            var format = "{0:" + token + "}";
+            builder.Append(FormatDatePart(format, partValue, dt));
+            return intCh;
+
+        }
+
+        private static String FormatDatePart(String formatString, int partValue, DateTime dt) {
+            if (partValue == 0) {
+                return " ";
+            }
+            return String.Format(formatString, dt);
+        }
+
+        private static int ReadAll(StringReader reader, char ch, out string token) {
+            var ret = new StringBuilder("" + ch);
+            int intCh = reader.Read();
+            while (intCh > 0) {
+                if (intCh == ch) {
+                    ret.Append(ch);
+                    intCh = reader.Read();
+                } else {
+                    break;
+                }                
+            }
+            token = ret.ToString();
+            return intCh;
+        }
     }
 
     

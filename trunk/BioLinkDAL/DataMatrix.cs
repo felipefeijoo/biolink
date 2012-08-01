@@ -202,47 +202,47 @@ namespace BioLink.Data {
         }
     }
 
-    public class MatrixValueFormatter {
-
-        private Func<Object, String>[] _columnFormatter; 
-
-        public MatrixValueFormatter(DataMatrix matrix) {
-            Matrix = matrix;
-            _columnFormatter = new Func<object, string>[matrix.Columns.Count];
-            for (int i = 0; i < matrix.Columns.Count; ++i) {
-                var column = matrix.Columns[i];
-                if (column.Name.EndsWith("Date") || column.Name.StartsWith("Date")) {
-                    _columnFormatter[i] = FormatBLDate;
-                } else {
-                    _columnFormatter[i] = FormatDefault;
-                }
-            }
-        }
-
-        private static String FormatBLDate(Object value) {
-            String dateStr = value != null ? value.ToString() : null;
-            if (dateStr != null) {
-                String message;
-                if (DateUtils.IsValidBLDate(dateStr, out message)) {
-                    return DateUtils.BLDateToStr(Int32.Parse(dateStr));
-                }
-            }
-            return FormatDefault(value);
-        }
-
-        private static String FormatDefault(Object value) {
-            return value == null ? "" : value.ToString();
-        }
-
-        public String FormatValue(int rowIndex, int colindex) {
-            var row = Matrix.Rows[rowIndex];
-            if (row == null || colindex < 0 || colindex >= Matrix.Columns.Count) {
-                return "";
-            }
-            return _columnFormatter[colindex](row[colindex]);
-        }
-
-        public DataMatrix Matrix { get; private set; }        
-    }
+//    public class MatrixValueFormatter {
+//
+//        private Func<Object, String>[] _columnFormatter; 
+//
+//        public MatrixValueFormatter(DataMatrix matrix) {
+//            Matrix = matrix;
+//            _columnFormatter = new Func<object, string>[matrix.Columns.Count];
+//            for (int i = 0; i < matrix.Columns.Count; ++i) {
+//                var column = matrix.Columns[i];
+//                if (column.Name.EndsWith("Date") || column.Name.StartsWith("Date")) {
+//                    _columnFormatter[i] = FormatBLDate;
+//                } else {
+//                    _columnFormatter[i] = FormatDefault;
+//                }
+//            }
+//        }
+//
+//        private static String FormatBLDate(Object value) {
+//            String dateStr = value != null ? value.ToString() : null;
+//            if (dateStr != null) {
+//                String message;
+//                if (DateUtils.IsValidBLDate(dateStr, out message)) {
+//                    return DateUtils.BLDateToStr(Int32.Parse(dateStr));
+//                }
+//            }
+//            return FormatDefault(value);
+//        }
+//
+//        private static String FormatDefault(Object value) {
+//            return value == null ? "" : value.ToString();
+//        }
+//
+//        public String FormatValue(int rowIndex, int colindex) {
+//            var row = Matrix.Rows[rowIndex];
+//            if (row == null || colindex < 0 || colindex >= Matrix.Columns.Count) {
+//                return "";
+//            }
+//            return _columnFormatter[colindex](row[colindex]);
+//        }
+//
+//        public DataMatrix Matrix { get; private set; }        
+//    }
 
 }

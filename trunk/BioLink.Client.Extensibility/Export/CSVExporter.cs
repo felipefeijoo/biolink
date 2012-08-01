@@ -77,13 +77,14 @@ namespace BioLink.Client.Extensibility.Export {
                 // Now emit each row...
                 var numRows = matrix.Rows.Count;
                 var currentRow = 0;
-                var formatter = new MatrixValueFormatter(matrix);
+                // var formatter = new MatrixValueFormatter(matrix);
 
-                for (int rowIndex = 0; rowIndex < matrix.Rows.Count; ++rowIndex) {                    
+                for (int rowIndex = 0; rowIndex < matrix.Rows.Count; ++rowIndex) {
+                    var row = matrix.Rows[rowIndex];
                     for (int colIndex = 0; colIndex < numCols; ++colIndex) {
                         if (!matrix.Columns[colIndex].IsHidden) {
-
-                            var value = formatter.FormatValue(rowIndex, colIndex);
+                            var objValue = row[colIndex];
+                            var value =  objValue == null ? "" : objValue.ToString();
 
                             var quoteValue = options.QuoteValues || value.Contains(options.Delimiter);
 
