@@ -3,6 +3,36 @@
 
 = Release Notes =
 
+== !BioLink Version 3.0.538 ==
+
+!BioLink 3.0.538 2 Aug 2012
+
+This is the fifth "fix" release for BioLink 3.0. It addresses issues reported since build 526.
+
+=== New Features ===
+
+ * Reference search results now include journal information, if applicable
+ * Reference search results can now be exported
+ * Query and Report results can be copied to the clipboard (right click)
+ * Query results now have formatting options (currently just for Date and Coordinate columns)
+ * Country, State and County are now query-able columns (only if the web extensions script has been applied!)
+
+=== Issues addressed in this release ===
+
+ * Issue 160	 Map symbol size selector should allow for text input as well slider	 
+ * Issue 161	 Line layers not honoring selected colour	 
+ * Issue 162	 Query results window is always behind other windows	 
+ * Issue 164	 Incorrect date format in delimited text exports	 
+ * Issue 165	 Closing a subordinate window sometimes fails to refocus on main BioLink Window	 
+ * Issue 166	 Cannot format dates or coordinates in query results	 
+ * Issue 167	 Exported CSV files should have the option to escape embedded delimiters and quotes with backslash	 
+ * Issue 168	 Map Legend Options font size is incorrectly reported	 
+ * Issue 169	 Apply button is always active, even when no changes are present	 
+ * Issue 170	 Country, State and County are not available fields in the query tool	 
+ * Issue 171	 Reference search results should include journal details if relevent	 
+ * Issue 172	 Copy/Paste results from tabular Query and Report Results	 
+ * Issue 173	 Can't easily export reference search results
+
 == !BioLink Version 3.0.526 ==
 
 !BioLink 3.0.526 22 May 2012
