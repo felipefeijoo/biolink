@@ -14,10 +14,13 @@
  ******************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Drawing;
 using System.IO;
 using System.Windows.Controls;
+using FontStyle = System.Drawing.FontStyle;
 
 namespace BioLink.Client.Utilities {
 
@@ -317,6 +320,29 @@ namespace BioLink.Client.Utilities {
             return font;
         }
 
+        public static double GetDPI(UIElement element) {
+            if (element != null) {
+                var presentationSource = PresentationSource.FromVisual(element);
+                if (presentationSource != null && presentationSource.CompositionTarget != null) {
+                    Matrix m = presentationSource.CompositionTarget.TransformToDevice;
+                    return m.M11 * 96.0;
+                }
+            }
+
+            // Most common dpi...
+            return 96.0;
+        }
+    
+        public static double PixelsToPoints(UIElement element, double pixels) {
+            var points = (pixels * 72) / GetDPI(element);
+            return points;
+        }
+
+        public static double PointsToPixel(UIElement element, double points) {
+            var pixels = GetDPI(element) * (points / 72.0);
+            return pixels;
+        }
+
         public static Font GetLegacyFont(TextBlock element) {
 
             System.Drawing.FontStyle style = 0;
@@ -333,7 +359,7 @@ namespace BioLink.Client.Utilities {
             }
 
             // Scale the font from 96 DPI to 72 DPI 
-            float size = (float)((element.FontSize * 72.0) / 96.0);
+            double size = PixelsToPoints(element, element.FontSize);
 
             if (element.FontWeight == System.Windows.FontWeights.Bold) {
                 style |= System.Drawing.FontStyle.Bold;
@@ -351,7 +377,7 @@ namespace BioLink.Client.Utilities {
                 style |= System.Drawing.FontStyle.Strikeout;
             }
             
-            var font = new Font(family, size, style);
+            var font = new Font(family, (float) size, style);
 
             return font;
         }
