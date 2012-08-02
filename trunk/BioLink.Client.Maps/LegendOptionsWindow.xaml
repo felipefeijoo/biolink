@@ -42,7 +42,7 @@
                     <ext:NumberUpDown Number="{Binding BorderWidth}" AllowNegative="False"  Grid.Row="2" Grid.Column="1" Height="23" Width="50" HorizontalAlignment="Left" />
                     
                     <Label Content="Title:" Grid.Row="3" />
-                    <TextBox Grid.Row="3" Grid.Column="1" Name="txtTitle" Text="{Binding LegendTitle}" Height="23" />
+                    <TextBox Grid.Row="3" Grid.Column="1" Name="txtTitle" Text="{Binding LegendTitle, UpdateSourceTrigger=PropertyChanged}" Height="23" />
 
                     <Label Content="Title Font:" Grid.Row="4"/>
                     <Grid Grid.Row="4" Grid.Column="1" >
@@ -109,7 +109,7 @@
                         <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding IsVisible, Mode=TwoWay}" VerticalAlignment="Center" />
 
                         <Label Content="Label:" Grid.Row="2"/>
-                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Title, Mode=TwoWay}" VerticalAlignment="Center" Height="23" />
+                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Height="23" />
 
                         <Label Content="Label colour:" Grid.Row="3"/>
                         <extToolkit:ColorPicker Grid.Row="3" Grid.Column="1" Height="23" Width="50" HorizontalAlignment="Left" Name="ctlLabelColor" SelectedColor="{Binding TitleColor, Converter={StaticResource ColorConverter}}"/>

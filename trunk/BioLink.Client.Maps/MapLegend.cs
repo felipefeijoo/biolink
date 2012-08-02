@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
@@ -299,5 +300,31 @@ namespace BioLink.Client.Maps {
         public bool IsVisible { get; set; }
         public String Title { get; set; }        
         public Color TitleColor { get; set; }
+    }
+
+    public class LegendItemDescriptorViewModel : GenericViewModelBase<LegendItemDescriptor> {
+
+        public LegendItemDescriptorViewModel(LegendItemDescriptor model) : base(model, () => 0) {}
+
+        public String LayerName {
+            get { return Model.LayerName; }
+            set { SetProperty(() => Model.LayerName, value); }
+        }
+
+        public bool IsVisible {
+            get { return Model.IsVisible; }
+            set { SetProperty(() => Model.IsVisible, value); }
+        }
+
+        public String Title {
+            get { return Model.Title; }
+            set { SetProperty(() => Model.Title, value); }
+        }
+
+        public Color TitleColor {
+            get { return Model.TitleColor; }
+            set { SetProperty(() => Model.TitleColor, value); }
+        }
+
     }
 }
