@@ -73,7 +73,12 @@ namespace BioLink.Client.Tools {
             BitmapEncoder encoder = new BmpBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(image));
             if (File.Exists(filename)) {
-                File.Delete(filename);
+                try {
+                    File.Delete(filename);
+                } catch (Exception) {
+                    // ignore
+                }
+
             }
 
             using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write)) {

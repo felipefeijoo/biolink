@@ -77,7 +77,6 @@ namespace BioLink.Client.Extensibility.Export {
                 // Now emit each row...
                 var numRows = matrix.Rows.Count;
                 var currentRow = 0;
-                // var formatter = new MatrixValueFormatter(matrix);
 
                 for (int rowIndex = 0; rowIndex < matrix.Rows.Count; ++rowIndex) {
                     var row = matrix.Rows[rowIndex];

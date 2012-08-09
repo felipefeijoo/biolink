@@ -237,7 +237,10 @@ namespace BioLink.Client.Maps {
                         var filename = (vl.DataSource as ShapeFile).Filename;
                         var desc = new LayerDescriptor {Filename = filename, HatchStyle = GraphicsUtils.GetHatchStyleFromBrush(vl.Style.Fill), FillColor = GraphicsUtils.GetColorFromBrush(vl.Style.Fill), DrawOutline = vl.Style.EnableOutline};
                         layers.Add(desc);
-                    }
+                    }                    
+                }
+                if (layer is IDisposable) {
+                    (layer as IDisposable).Dispose();
                 }
             }
 
