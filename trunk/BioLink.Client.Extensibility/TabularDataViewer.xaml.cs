@@ -173,8 +173,6 @@ namespace BioLink.Client.Extensibility {
                 sb.Append(Environment.NewLine);
             }
 
-//            var formatter = new MatrixValueFormatter(Data);
-
             Action<StringBuilder, int> append = (builder, rowIndex) => {
                 var row = Data.Rows[rowIndex];
                 for (int i = 0; i < Data.Columns.Count; ++i) {
