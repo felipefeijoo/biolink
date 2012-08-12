@@ -19,6 +19,8 @@ This is the fifth "fix" release for BioLink 3.0. It addresses issues reported si
 
 === Issues addressed in this release ===
 
+ * Issue 155       When launcing EGaz from the RDE or Site Details form, locality should be seeded in the egaz search box	 
+ * Issue 156       When egaz is in floating window mode it doesn't get brought to the front when selected
  * Issue 160	 Map symbol size selector should allow for text input as well slider	 
  * Issue 161	 Line layers not honoring selected colour	 
  * Issue 162	 Query results window is always behind other windows	 
