@@ -194,7 +194,7 @@
     <Compile Include="SpecializedMultimediaManager.xaml.cs">
       <DependentUpon>SpecializedMultimediaManager.xaml</DependentUpon>
     </Compile>
-    <Compile Include="tests\LoanFormTests.cs" />
+    <Compile Include="Reports\tests\LoanFormTests.cs" />
     <Compile Include="usermanager\PermissionProperties.xaml.cs">
       <DependentUpon>PermissionProperties.xaml</DependentUpon>
     </Compile>

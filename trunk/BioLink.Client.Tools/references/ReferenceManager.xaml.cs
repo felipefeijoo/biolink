@@ -200,14 +200,27 @@ namespace BioLink.Client.Tools {
         }
 
         public SelectionResult Select() {
-            var item = lvwResults.SelectedItem as ReferenceSearchResultViewModel;
+            
+            int? refId = null;
 
-            if (item != null) {
-                var res = new ReferenceSelectionResult(item.Model);
-                return res;
+            if (tabReferences.SelectedIndex == 0) {
+                var vm = lvwResults.SelectedItem as ReferenceSearchResultViewModel;
+                if (vm != null) {
+                    refId = vm.RefID;
+                }
+            } else if (tabReferences.SelectedIndex == 1) {
+                var pinnable = _favorites.SelectedPinnable;
+                if (pinnable != null) {
+                    refId = pinnable.ObjectID;
+                }
             }
-            return null;
 
+            if (refId.HasValue) {
+                var reference = Service.GetReference(refId.Value);
+                return new ReferenceSelectionResult(reference);
+            }
+
+            return null;
         }
 
         private ObservableCollection<ReferenceSearchResultViewModel> _searchModel;
@@ -269,7 +282,7 @@ namespace BioLink.Client.Tools {
 
     public class ReferenceSelectionResult : SelectionResult {
 
-        public ReferenceSelectionResult(ReferenceSearchResult data) {
+        public ReferenceSelectionResult(Reference data) {
             this.DataObject = data;
             this.Description = data.RefCode;
             this.ObjectID = data.RefID;

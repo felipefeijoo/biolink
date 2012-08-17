@@ -149,11 +149,17 @@ namespace BioLink.Client.Extensibility {
                 data.RefLinkID = -1;
                 data.RefLinkType = refLinkType;
                 data.IntraCatID = IntraCategoryID;
+                data.UseInReport = true;
+
                 RegisterPendingChange(new InsertRefLinkCommand(data, Category.ToString()));
 
                 var viewModel = new RefLinkViewModel(data);
                 viewModel.RefCode = NextNewName("<New {0}>", _model, () => viewModel.RefCode);
                 _model.Add(viewModel);
+
+                viewModel.DataChanged += new DataChangedHandler((changed) => {
+                    RegisterUniquePendingChange(new UpdateRefLinkCommand(viewModel.Model, Category.ToString()));
+                });
 
                 lstReferences.SelectedItem = viewModel;
                 lstReferences.ScrollIntoView(viewModel);

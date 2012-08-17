@@ -109,6 +109,8 @@ namespace BioLink.Client.Extensibility {
                 AddLookupItem(builder, LookupType.SiteVisit, "SiteVisitID", "intSiteVisitID", "Visit Identifier");
                 AddLookupItem(builder, LookupType.Material, "MaterialID", "intMaterialID", "Material Identifier");
                 AddLookupItem(builder, LookupType.Taxon, "BiotaID", "intBiotaID", "Taxon Identifier", "TaxonID");
+                AddLookupItem(builder, LookupType.Reference, "RefID", "intRefID", "ReferenceID", "Reference Identifier");
+                AddLookupItem(builder, LookupType.Journal, "JournalID", "intJournalID", "Journal Identifier");
 
                 string latColName = null;
                 string longColName = null;

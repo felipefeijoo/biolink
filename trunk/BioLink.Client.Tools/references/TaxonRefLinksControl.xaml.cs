@@ -49,6 +49,7 @@ namespace BioLink.Client.Tools {
             model.RefLinkID = -1;
             model.RefID = ReferenceID;
             model.RefLink = "<New Taxon Link>";
+            model.UseInReports = true;
             addAction = new InsertTaxonRefLinkCommand(model);
             return new TaxonRefLinkViewModel(model);
         }
