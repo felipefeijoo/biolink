@@ -299,6 +299,7 @@
     <Compile Include="ReportResults.xaml.cs">
       <DependentUpon>ReportResults.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Report\ReferencesReport.cs" />
     <Compile Include="ResourceTempFileManager.cs" />
     <Compile Include="RTFReportViewer.xaml.cs">
       <DependentUpon>RTFReportViewer.xaml</DependentUpon>
