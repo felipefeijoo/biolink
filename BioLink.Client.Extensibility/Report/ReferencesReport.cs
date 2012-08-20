@@ -25,7 +25,7 @@ namespace BioLink.Client.Extensibility {
 
             var service = new SupportService(User);
 
-            matrix.Columns.Add(new MatrixColumn { Name = IntraCategoryIDColumnName, IsHidden = true });
+            matrix.Columns.Add(new MatrixColumn { Name = IntraCategoryIdColumnName, IsHidden = true });
             matrix.Columns.Add(new MatrixColumn { Name = "RefID", IsHidden = true });            
             matrix.Columns.Add(new MatrixColumn { Name = "RefCode" });
             matrix.Columns.Add(new MatrixColumn { Name = "RefType" });
@@ -51,6 +51,7 @@ namespace BioLink.Client.Extensibility {
             matrix.Columns.Add(new MatrixColumn { Name = "Series" });
             matrix.Columns.Add(new MatrixColumn { Name = "Source" });
             matrix.Columns.Add(new MatrixColumn { Name = "FullText" });
+            matrix.Columns.Add(new MatrixColumn { Name = "FullRTF" });
             matrix.Columns.Add(new MatrixColumn { Name = "JournalAbbrevName" });
             matrix.Columns.Add(new MatrixColumn { Name = "JournalAbbrevName2" });
             matrix.Columns.Add(new MatrixColumn { Name = "JournalAlias" });
@@ -99,6 +100,7 @@ namespace BioLink.Client.Extensibility {
                 row[i++] = reference.Series;
                 row[i++] = reference.Source;
                 row[i++] = reference.FullText;
+                row[i++] = reference.FullRTF;
 
                 if (reference.JournalID.HasValue && reference.JournalID.Value > 0) {
                     var journal = service.GetJournal(reference.JournalID.Value);
@@ -118,11 +120,19 @@ namespace BioLink.Client.Extensibility {
 
         protected abstract List<RefLink> SelectReferences();
 
-        public abstract String IntraCategoryIDColumnName { get; }        
+        public abstract String IntraCategoryIdColumnName { get; }        
 
     }
 
     public class ReferenceReportOptions {
+
+        public ReferenceReportOptions() {
+            BibliographyTitle = "References";
+            HonourIncludeInReportsFlag = true;
+            IncludeQualification = true;
+        }
+
+        public string BibliographyTitle { get; set; }
         public bool HonourIncludeInReportsFlag { get; set; }
         public bool IncludeQualification { get; set; }
     }
@@ -133,6 +143,10 @@ namespace BioLink.Client.Extensibility {
             Taxon = taxon;
         }
 
+        public override string Name {
+            get { return string.Format("References for {0}", Taxon.TaxaFullName); }
+        }
+
         protected override List<RefLink> SelectReferences() {
             var service = new SupportService(User);
             var reflinks = service.GetReferenceLinks(TraitCategoryType.Taxon.ToString(), Taxon.TaxaID.Value);
@@ -141,7 +155,7 @@ namespace BioLink.Client.Extensibility {
 
         public Taxon Taxon { get; private set; }
 
-        public override string IntraCategoryIDColumnName {
+        public override string IntraCategoryIdColumnName {
             get { return "intTaxonID"; }
         }
 
@@ -157,32 +171,45 @@ namespace BioLink.Client.Extensibility {
 
             var options = (report as ReferencesReport).Options;
 
-            var viewer = new RTFReportViewer();
-            viewer.ReportName = report.Name;
-            RTFReportBuilder rtf = new RTFReportBuilder();
+            var viewer = new RTFReportViewer {ReportName = report.Name};
+            var rtf = new RTFReportBuilder();
             rtf.AppendFullHeader();
             rtf.ReportHeading("References");
 
-            int idx = 1;
-            int colIndex = reportData.IndexOf("RefID");
+            var idx = 1;
+            var colIndex = reportData.IndexOf("RefID");
 
-            var references = new List<Reference>();
-            var service = new SupportService(PluginManager.Instance.User);
-            foreach (MatrixRow row in reportData.Rows) {
-                var refId = (Int32)row[colIndex];
-                var reference = service.GetReference(refId);
-                references.Add(reference);
+            var refIds = new List<Int32>();
+            for (var i = 0; i < reportData.Rows.Count; ++i ) {
+                refIds.Add(i);
             }
 
-            references.Sort((r1, r2) => {
-                return r1.Author.CompareTo(r2.Author);
-            });
+            var sortField = "Author";
+            int sortColumnIdx = reportData.IndexOf(sortField);
 
-            foreach (var reference in references) {
+            refIds.Sort((idx1, idx2) => {
+                            var row1 = reportData.Rows[idx1];
+                            var row2 = reportData.Rows[idx2];
+                            var val1 = row1[sortColumnIdx];
+                            var val2 = row2[sortColumnIdx];
+                            val1 = val1 == null ? "" : val1.ToString();
+                            val2 = val2 == null ? "" : val2.ToString();
+                            return String.CompareOrdinal((String) val1, (String) val2);                            
+                        });
+
+
+            foreach (var rowIdx in refIds) {
+                var row = reportData.Rows[rowIdx];
                 rtf.Par();
                 rtf.Append(@"\fs20 [").Append(idx++).Append("] ");
-                rtf.Append(reference.FullRTF);
+                rtf.Append(row["FullRTF"]);
                 if (options.IncludeQualification) {
+                    var qual = row["LinkQualification"] as string;
+                    if (!String.IsNullOrEmpty(qual)) {
+                        rtf.Append(" (");
+                        rtf.Append(qual);
+                        rtf.Append(")");
+                    }
                 }
                 rtf.Par();
             }
