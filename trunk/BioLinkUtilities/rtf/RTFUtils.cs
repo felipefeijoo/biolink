@@ -33,7 +33,7 @@ namespace BioLink.Client.Utilities {
 			    return rtf;
 		    }
 
-		    FilteringRTFHandler handler = new FilteringRTFHandler(newLinesToSpace, allowedKeywords);
+		    PositiveVetFilteringRTFHandler handler = new PositiveVetFilteringRTFHandler(newLinesToSpace, allowedKeywords);
 		    RTFReader reader = new RTFReader(rtf, handler, strict);
 		    
 			reader.parse();
@@ -42,6 +42,18 @@ namespace BioLink.Client.Utilities {
 
         public static String StripMarkup(String rtf, bool newlinesToSpace = true) {
             return filter(rtf, newlinesToSpace, false);
+        }
+
+        public static String StripSpecficKeywords(String rtf, bool newLinesToSpace = true, params String[] disallowedKeywords) {
+            if (string.IsNullOrWhiteSpace(rtf)) {
+                return rtf;
+            }
+
+            var handler = new NegativeVetFilteringRTFHandler(newLinesToSpace, disallowedKeywords);
+            RTFReader reader = new RTFReader(rtf, handler, false);
+
+            reader.parse();
+            return handler.getFilteredText();
         }
 
         public static string EscapeUnicode(string value) {

@@ -124,19 +124,6 @@ namespace BioLink.Client.Extensibility {
 
     }
 
-    public class ReferenceReportOptions {
-
-        public ReferenceReportOptions() {
-            BibliographyTitle = "References";
-            HonourIncludeInReportsFlag = true;
-            IncludeQualification = true;
-        }
-
-        public string BibliographyTitle { get; set; }
-        public bool HonourIncludeInReportsFlag { get; set; }
-        public bool IncludeQualification { get; set; }
-    }
-
     public class TaxonReferencesReport : ReferencesReport {
 
         public TaxonReferencesReport(User user, Taxon taxon) : base(user) {
@@ -184,36 +171,72 @@ namespace BioLink.Client.Extensibility {
                 refIds.Add(i);
             }
 
-            var sortField = "Author";
-            int sortColumnIdx = reportData.IndexOf(sortField);
-
+            int sortColumnIdx = reportData.IndexOf(options.SortColumn);
+            int refTypeIndex = reportData.IndexOf("RefType");
             refIds.Sort((idx1, idx2) => {
-                            var row1 = reportData.Rows[idx1];
-                            var row2 = reportData.Rows[idx2];
-                            var val1 = row1[sortColumnIdx];
-                            var val2 = row2[sortColumnIdx];
-                            val1 = val1 == null ? "" : val1.ToString();
-                            val2 = val2 == null ? "" : val2.ToString();
-                            return String.CompareOrdinal((String) val1, (String) val2);                            
+                            // If grouping, first check the ref type
+                            if (options.GroupByReferenceType) {
+                                var refType1 = reportData.Rows[idx1][refTypeIndex] as String;
+                                var refType2 = reportData.Rows[idx2][refTypeIndex] as String;
+                                if (!refType1.Equals(refType2)) {
+                                    return String.CompareOrdinal(refType1, refType2);
+                                }
+                            }
+
+                            // then by the nominated sort column
+                            var objVal1 = reportData.Rows[idx1][sortColumnIdx];
+                            var objVal2 = reportData.Rows[idx2][sortColumnIdx];
+                            var val1 = objVal1 == null ? "" : objVal1.ToString();
+                            var val2 = objVal2 == null ? "" : objVal2.ToString();
+                            if (options.SortAscending) {
+                                return String.CompareOrdinal((String)val1, (String)val2);
+                            } else {
+                                return String.CompareOrdinal((String)val2, (String)val1);
+                            }
                         });
 
 
+            var lastRefType = "";
             foreach (var rowIdx in refIds) {
                 var row = reportData.Rows[rowIdx];
+
+                if (options.GroupByReferenceType) {
+                    var refType = row["RefType"] as String;
+                    if (!String.Equals(refType, lastRefType, StringComparison.CurrentCultureIgnoreCase)) {
+                        rtf.Par();
+                        rtf.Append(@" \pard\fs24\b\f1 ");
+                        rtf.Append(refType);
+                        rtf.Append(@" \b0");
+                        rtf.Par();
+                        lastRefType = refType;
+                    }
+                }
+
                 rtf.Par();
-                rtf.Append(@"\fs20 [").Append(idx++).Append("] ");
+                rtf.Append(@" \pard\fs20\f1 [");
+                switch (options.BibliographyIndexStyle) {
+                    case BibliographyIndexStyle.Number:
+                        rtf.Append(idx);
+                        break;
+                    case BibliographyIndexStyle.RefCode:
+                        rtf.Append(row["RefCode"]);
+                        break;
+                }
+                idx++;
+                rtf.Append("] ");
                 rtf.Append(row["FullRTF"]);
                 if (options.IncludeQualification) {
                     var qual = row["LinkQualification"] as string;
                     if (!String.IsNullOrEmpty(qual)) {
-                        rtf.Append(" (");
-                        rtf.Append(qual);
+                        rtf.Append(" (");                        
+                        rtf.Append(RTFUtils.StripSpecficKeywords(qual, true, "par").Trim());
                         rtf.Append(")");
                     }
                 }
                 rtf.Par();
             }
 
+            Console.WriteLine(rtf.RTF);
 
             viewer.rtf.Rtf = rtf.RTF;
 
@@ -221,6 +244,30 @@ namespace BioLink.Client.Extensibility {
         }
     }
 
+    public class ReferenceReportOptions {
 
+        public ReferenceReportOptions() {
+            BibliographyTitle = "References";
+            HonourIncludeInReportsFlag = true;
+            IncludeQualification = true;
+            SortColumn = "RefCode";
+            SortAscending = true;
+            BibliographyIndexStyle = BibliographyIndexStyle.RefCode;
+            GroupByReferenceType = true;
+        }
+
+        public string BibliographyTitle { get; set; }
+        public bool HonourIncludeInReportsFlag { get; set; }
+        public bool IncludeQualification { get; set; }
+        public string SortColumn { get; set; }
+        public bool SortAscending { get; set; }
+        public BibliographyIndexStyle BibliographyIndexStyle { get; set; }
+        public bool GroupByReferenceType { get; set; }
+    }
+
+    public enum BibliographyIndexStyle {
+        Number,
+        RefCode
+    }
 
 }

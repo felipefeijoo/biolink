@@ -22,14 +22,14 @@ namespace BioLink.Client.Utilities {
     /// <summary>
     /// Specialized RTF handler that strips out all control words that do not match a supplied list.
     /// </summary>
-    class FilteringRTFHandler : RTFHandler {
+    class PositiveVetFilteringRTFHandler : RTFHandler {
 
         private HashSet<String> _allowedKeywords = new HashSet<String>();
 
         private StringBuilder _buffer;
         private bool _newlinesToSpace;
 
-        public FilteringRTFHandler(bool newlinesToSpace, params String[] allowed) {
+        public PositiveVetFilteringRTFHandler(bool newlinesToSpace, params String[] allowed) {
             _newlinesToSpace = newlinesToSpace;
             foreach (String word in allowed) {
                 _allowedKeywords.Add(word);
@@ -84,6 +84,74 @@ namespace BioLink.Client.Utilities {
                 _buffer.Append(" "); // terminate the string of control words...
             }
         }
-
     }
+
+    /// <summary>
+    /// Specialized RTF handler that strips out all control words that do not match a supplied list.
+    /// </summary>
+    class NegativeVetFilteringRTFHandler : RTFHandler {
+
+        private HashSet<String> _disallowedKeywords = new HashSet<String>();
+
+        private StringBuilder _buffer;
+        private bool _newlinesToSpace;
+
+        public NegativeVetFilteringRTFHandler(bool newlinesToSpace, params String[] disallowed) {
+            _newlinesToSpace = newlinesToSpace;
+            foreach (String word in disallowed) {
+                _disallowedKeywords.Add(word);
+            }
+            _buffer = new StringBuilder();
+        }
+
+        public void startParse() {
+        }
+
+        public void onKeyword(String keyword, bool hasParam, int param) {
+
+            if (_newlinesToSpace && keyword.Equals("par")) {
+                _buffer.Append(" ");
+            }
+
+            if (!_disallowedKeywords.Contains(keyword)) {
+                _buffer.Append("\\").Append(keyword);
+                if (hasParam) {
+                    _buffer.Append(param);
+                }
+                _buffer.Append(" ");
+            }
+        }
+
+        public void onHeaderGroup(String group) {
+        }
+
+        public void onTextCharacter(char ch) {
+            _buffer.Append(ch);
+        }
+
+        public void endParse() {
+        }
+
+        public String getFilteredText() {
+            return _buffer.ToString();
+        }
+
+        public void onCharacterAttributeChange(List<AttributeValue> values) {
+            bool atLeastOneAllowed = false;
+            foreach (AttributeValue val in values) {
+                if (!_disallowedKeywords.Contains(val.Keyword)) {
+                    atLeastOneAllowed = true;
+                    _buffer.Append("\\").Append(val.Keyword);
+                    if (val.HasParam) {
+                        _buffer.Append(val.Param);
+                    }
+                }
+            }
+            if (atLeastOneAllowed) {
+                _buffer.Append(" "); // terminate the string of control words...
+            }
+        }
+    }
+
+
 }
