@@ -145,6 +145,22 @@ namespace BioLink.Data {
             set { _data[index] = value; }
         }
 
+        public Object this [string columnName] {
+            get { 
+                var index = _matrix.IndexOf(columnName);
+                if (index >= 0) {
+                    return this[index];
+                }
+                return null;
+            }
+            set {
+                var index = _matrix.IndexOf(columnName);
+                if (index >= 0) {
+                    this[index] = value;
+                }
+            }
+        }
+
         public int Count {
             get { return _matrix.Columns.Count; }
         }

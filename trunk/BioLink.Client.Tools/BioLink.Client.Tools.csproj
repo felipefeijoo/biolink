@@ -194,7 +194,6 @@
     <Compile Include="SpecializedMultimediaManager.xaml.cs">
       <DependentUpon>SpecializedMultimediaManager.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Reports\tests\LoanFormTests.cs" />
     <Compile Include="usermanager\PermissionProperties.xaml.cs">
       <DependentUpon>PermissionProperties.xaml</DependentUpon>
     </Compile>
@@ -506,6 +505,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="images\GridLayer.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Reports\tests\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
