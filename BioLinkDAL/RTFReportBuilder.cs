@@ -23,7 +23,7 @@ namespace BioLink.Data {
 
         private StringBuilder _rtf = new StringBuilder();
 
-        public const string RTF_HEADER = @"{\rtf1\ansi\deff0\deflang1033 {\fonttbl {\f0\fswiss\fcharset0 SYSTEM;}{\f1\froman\fcharset0 TIMES NEW ROMAN;}}";
+        public const string RTF_HEADER = @"{\rtf1\ansi\deff0\deflang1033 {\fonttbl {\f0\fswiss\fcharset0 SYSTEM;}{\f1\froman\fcharset0 TIMES NEW ROMAN;}{\f2\fswiss Arial;}}";
         public const string RTF_COLOUR_TABLE = @"{\colortbl \red0\green0\blue0}";
         public const string RTF_PRE_TEXT = @"\paperw11895 \margr0\margl0\ATXph0 \plain \fs20 \f1 ";
         public const string RTF_PARA = @"\par ";
