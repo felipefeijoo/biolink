@@ -1,0 +1,32 @@
+﻿<Window x:Class="BioLink.Client.Extensibility.ReferencesReportOptions"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="366" d:DesignWidth="389" SizeToContent="WidthAndHeight" Title="References Report Options">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="38" />
+        </Grid.RowDefinitions>
+        
+        <Grid Grid.Row="0">
+            <GroupBox Header="Bibliography Options" Margin="6,49,6,6" Name="grpRTFOptions">
+                <Grid>
+                    <Label Content="Heading:" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" Width="94" />
+                    <TextBox Height="23" Margin="106,11,6,0" Name="txtHeading" VerticalAlignment="Top" Text="{Binding Path=BibliographyTitle, Mode=TwoWay}" />
+                    <CheckBox Content="Group references by Reference Type" Height="16" Margin="106,49,6,0" Name="checkBox1" VerticalAlignment="Top" IsChecked="{Binding Path=GroupByReferenceType}"/>
+                    <CheckBox Content="Include qualification" Height="16" Margin="106,80,6,0" Name="checkBox2" VerticalAlignment="Top" IsChecked="{Binding Path=IncludeQualification}" />
+                </Grid>
+            </GroupBox>
+            <CheckBox Content="Include only those references with 'Use in Reports' checked" Height="16" Margin="6,17,6,0" Name="checkBox3" VerticalAlignment="Top" IsChecked="{Binding Path=HonourIncludeInReportsFlag}"/>
+        </Grid>
+
+        <Grid Grid.Row="1" Background="{x:Static SystemColors.ControlBrush}">
+            <Button Width="80" Height="23" Margin="0,6,6,6" HorizontalAlignment="Right" Name="btnCancel" IsCancel="True" Content="_Cancel" Click="btnCancel_Click" />
+            <Button Height="23" HorizontalAlignment="Right" Margin="0,7,92,6" Width="80" Name="btnOk" Content="OK" IsDefault="True" Click="btnOk_Click" />
+        </Grid>
+
+    </Grid>
+</Window>
