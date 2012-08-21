@@ -300,6 +300,9 @@
       <DependentUpon>ReportResults.xaml</DependentUpon>
     </Compile>
     <Compile Include="Report\ReferencesReport.cs" />
+    <Compile Include="Report\ReferencesReportOptions.xaml.cs">
+      <DependentUpon>ReferencesReportOptions.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ResourceTempFileManager.cs" />
     <Compile Include="RTFReportViewer.xaml.cs">
       <DependentUpon>RTFReportViewer.xaml</DependentUpon>
@@ -546,6 +549,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ReportResults.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Report\ReferencesReportOptions.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

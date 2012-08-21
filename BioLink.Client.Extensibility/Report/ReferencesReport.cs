@@ -13,11 +13,18 @@ namespace BioLink.Client.Extensibility {
         public ReferencesReport(User user) : base(user) {
             RegisterViewer(new TabularDataViewerSource());
             RegisterViewer(new  ReferenceBibliographyViewerSource());
-            Options = new ReferenceReportOptions { IncludeQualification = true, HonourIncludeInReportsFlag = true };
+            Options = new ReferencesReportOptions { IncludeQualification = true, HonourIncludeInReportsFlag = true };
         }
 
         public override string Name {
             get { return "References Report"; }
+        }
+
+        public override bool DisplayOptions(User user, System.Windows.Window parentWindow) {
+            if (Options.ShowDialog() == true) {
+                return true;
+            }
+            return false;
         }
 
         public override DataMatrix ExtractReportData(IProgressObserver progress) {
@@ -116,7 +123,7 @@ namespace BioLink.Client.Extensibility {
             return matrix;
         }
 
-        public ReferenceReportOptions Options { get; private set; }
+        public ReferencesReportOptions Options { get; private set; }
 
         protected abstract List<RefLink> SelectReferences();
 
@@ -179,7 +186,7 @@ namespace BioLink.Client.Extensibility {
                                 var refType1 = reportData.Rows[idx1][refTypeIndex] as String;
                                 var refType2 = reportData.Rows[idx2][refTypeIndex] as String;
                                 if (!refType1.Equals(refType2)) {
-                                    return String.CompareOrdinal(refType1, refType2);
+                                    return String.Compare(refType1, refType2, true);
                                 }
                             }
 
@@ -189,9 +196,9 @@ namespace BioLink.Client.Extensibility {
                             var val1 = objVal1 == null ? "" : objVal1.ToString();
                             var val2 = objVal2 == null ? "" : objVal2.ToString();
                             if (options.SortAscending) {
-                                return String.CompareOrdinal((String)val1, (String)val2);
+                                return String.Compare((String)val1, (String)val2, true);
                             } else {
-                                return String.CompareOrdinal((String)val2, (String)val1);
+                                return String.Compare((String)val2, (String)val1, true);
                             }
                         });
 
@@ -242,32 +249,6 @@ namespace BioLink.Client.Extensibility {
 
             return viewer;
         }
-    }
-
-    public class ReferenceReportOptions {
-
-        public ReferenceReportOptions() {
-            BibliographyTitle = "References";
-            HonourIncludeInReportsFlag = true;
-            IncludeQualification = true;
-            SortColumn = "RefCode";
-            SortAscending = true;
-            BibliographyIndexStyle = BibliographyIndexStyle.RefCode;
-            GroupByReferenceType = true;
-        }
-
-        public string BibliographyTitle { get; set; }
-        public bool HonourIncludeInReportsFlag { get; set; }
-        public bool IncludeQualification { get; set; }
-        public string SortColumn { get; set; }
-        public bool SortAscending { get; set; }
-        public BibliographyIndexStyle BibliographyIndexStyle { get; set; }
-        public bool GroupByReferenceType { get; set; }
-    }
-
-    public enum BibliographyIndexStyle {
-        Number,
-        RefCode
     }
 
 }
