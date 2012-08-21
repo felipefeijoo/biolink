@@ -5,7 +5,7 @@
 	<UsingTask TaskName="NUnitTeamCity" AssemblyFile="$(teamcity_dotnet_nunitlauncher_msbuild_task)" />
 	
 	<PropertyGroup>
-		<NSISPath>&quot;C:\Program Files\NSIS\makensis.exe&quot;</NSISPath>
+		<NSISPath>&quot;C:\Program Files (x86)\NSIS\makensis.exe&quot;</NSISPath>
 	</PropertyGroup>
 	<ItemGroup>
 		<AssemblyInfoFiles Include="../**/AssemblyInfo.cs" />
