@@ -77,6 +77,8 @@ namespace BioLink.Client.Extensibility {
             txtCriteria.KeyUp +=new KeyEventHandler(txtCriteria_KeyUp);
 
             this.Loaded += new RoutedEventHandler(FindMultimediaDialog_Loaded);
+
+            SelectedMultimedia = new List<MultimediaLinkViewModel>();
         }
 
         void FindMultimediaDialog_Loaded(object sender, RoutedEventArgs e) {
@@ -148,11 +150,17 @@ namespace BioLink.Client.Extensibility {
             this.Close();
         }
 
-        public MultimediaLinkViewModel SelectedMultimedia { get; private set; }
+        public List<MultimediaLinkViewModel> SelectedMultimedia { get; private set; }
 
         private void btnOK_Click(object sender, RoutedEventArgs e) {
-            SelectedMultimedia = lvw.SelectedItem as MultimediaLinkViewModel;
-            if (SelectedMultimedia != null) {
+            SelectedMultimedia.Clear();
+            foreach (var obj in lvw.SelectedItems) {
+                var mm = obj as MultimediaLinkViewModel;
+                if (mm != null) {
+                    SelectedMultimedia.Add(mm);
+                }
+            }
+            if (SelectedMultimedia.Count > 0) {
                 this.DialogResult = true;
                 this.Close();
             }

@@ -17,14 +17,19 @@
     <Grid>
         <Grid.RowDefinitions>            
             <RowDefinition />
-            <RowDefinition Height="23" />
+            <RowDefinition Height="28" />
         </Grid.RowDefinitions>
         
         <Grid Grid.Row="0" x:Name="reportContent"></Grid>
         
-        <StatusBar Grid.Row="1" Height="23" Name="statusBar" VerticalAlignment="Bottom">
+        <StatusBar Grid.Row="1" Height="28" Name="statusBar" VerticalAlignment="Bottom">
+            <StatusBarItem DockPanel.Dock="Left">
+                <Button Name="btnRerun" Click="Button_Click" ToolTip="Re-run this report">
+                    <Image Source="images/Run.png" Height="16" Width="16" SnapsToDevicePixels="True" UseLayoutRounding="True" Stretch="None"/>                    
+                </Button>
+            </StatusBarItem>
             <StatusBarItem DockPanel.Dock="Right">
-                <ProgressBar x:Name="progressBar" Minimum="0" Maximum="100" Value="0" Width="160" Height="16" HorizontalAlignment="Right" VerticalAlignment="Center" HorizontalContentAlignment="Left" />
+                <ProgressBar x:Name="progressBar" Minimum="0" Maximum="100" Value="0" Width="160" Height="20" HorizontalAlignment="Right" VerticalAlignment="Center" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"/>
             </StatusBarItem>
             <StatusBarItem>
                 <TextBlock x:Name="statusMessage" />

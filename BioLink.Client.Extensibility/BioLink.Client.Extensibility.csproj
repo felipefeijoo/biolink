@@ -299,8 +299,8 @@
     <Compile Include="ReportResults.xaml.cs">
       <DependentUpon>ReportResults.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Report\ReferencesReport.cs" />
-    <Compile Include="Report\ReferencesReportOptions.xaml.cs">
+    <Compile Include="References\ReferencesReport.cs" />
+    <Compile Include="References\ReferencesReportOptions.xaml.cs">
       <DependentUpon>ReferencesReportOptions.xaml</DependentUpon>
     </Compile>
     <Compile Include="ResourceTempFileManager.cs" />
@@ -552,7 +552,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Report\ReferencesReportOptions.xaml">
+    <Page Include="References\ReferencesReportOptions.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
