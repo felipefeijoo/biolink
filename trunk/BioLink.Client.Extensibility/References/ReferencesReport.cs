@@ -286,7 +286,7 @@ namespace BioLink.Client.Extensibility {
 
                 var bits = new List<String>();                
                 if (!String.IsNullOrWhiteSpace(row["LinkPage"] as String)) {
-                    bits.Add(String.Format("Page {0}", row["LinkPage"] as String));
+                    bits.Add(String.Format("page {0}", row["LinkPage"] as String));
                 }
                 
                 if (options.IncludeQualification) {

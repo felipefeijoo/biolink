@@ -295,7 +295,7 @@ namespace BioLink.Client.Tools {
             // Perform the type specific markup...
             switch (strRefType) {
                 case "J":
-                    strRTF.AppendFormat(@"\i {0} \i0 ", AtEnd(model.JournalName, "."));
+                    strRTF.AppendFormat(@"\i {0} \i0 ", AtEnd(model.JournalName, ","));
                     // Write the series if not blank.
                     if (!String.IsNullOrEmpty(model.Series)) {
                         strRTF.AppendFormat(@"\i ({0}) \i0 ", model.Series);
