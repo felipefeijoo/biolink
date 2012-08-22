@@ -40,8 +40,8 @@ namespace BioLink.Client.Utilities {
 		    return handler.getFilteredText();
 	    }
 
-        public static String StripMarkup(String rtf, bool newlinesToSpace = true) {
-            return filter(rtf, newlinesToSpace, false);
+        public static String StripMarkup(String rtf, bool newlinesToSpace = true) {            
+            return filter(rtf, newlinesToSpace, false);            
         }
 
         public static String StripSpecficKeywords(String rtf, bool newLinesToSpace = true, params String[] disallowedKeywords) {

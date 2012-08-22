@@ -166,7 +166,29 @@ namespace BioLink.Client.Extensibility {
                 menu.Items.Add(new Separator());
                 menu.Items.Add(builder.New("Delete").Handler(() => { DeleteSelectedMultimedia(); }).Enabled(!IsReadOnly).MenuItem);
                 menu.Items.Add(new Separator());
+                menu.Items.Add(builder.New("Show items linked to this multimedia...").Handler(() => { ShowLinkedItems(); }).MenuItem);
+                menu.Items.Add(new Separator());
                 menu.Items.Add(builder.New("Edit Details...").Handler(() => { ShowProperties(); }).MenuItem);
+            }
+        }
+
+        private void ShowLinkedItems() {
+            var selected = this.thumbList.SelectedItem as MultimediaLinkViewModel;
+            if (selected == null) {
+                return;
+            }
+            if (selected.MultimediaID < 0) {
+                ErrorMessage.Show("You must first apply the changes before editing the details of this item!");
+                return;
+            }
+            ShowLinkedItems(selected);
+        }
+
+        private void ShowLinkedItems(MultimediaLinkViewModel selected) {
+            if (selected != null) {
+                selected.Icon = GraphicsUtils.GenerateThumbnail(selected.TempFilename, 48);
+                var plugin = PluginManager.Instance.PluginByName("Tools");
+                PluginManager.Instance.AddNonDockableContent(plugin, new LinkedMultimediaItemsControl(selected), "Items linked to multimedia " + selected.MultimediaID, SizeToContent.Manual);
             }
         }
 
@@ -433,8 +455,10 @@ namespace BioLink.Client.Extensibility {
             var frm = new FindMultimediaDialog(User);
             frm.Owner = this.FindParentWindow();
             frm.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            if (frm.ShowDialog() == true) {                
-                AddNewLinkFromExternalLink(frm.SelectedMultimedia.Model);
+            if (frm.ShowDialog() == true) {
+                foreach (MultimediaLinkViewModel vm in frm.SelectedMultimedia) {
+                    AddNewLinkFromExternalLink(vm.Model);
+                }
             }
         }
 

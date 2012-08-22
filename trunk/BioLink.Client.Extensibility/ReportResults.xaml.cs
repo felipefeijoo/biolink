@@ -44,22 +44,28 @@ namespace BioLink.Client.Extensibility {
         void ReportResults_Loaded(object sender, RoutedEventArgs e) {
             if (!_ReportExecuted) {
                 _ReportExecuted = true;
-                JobExecutor.QueueJob(() => {
-                    try {
-                        this.WaitCursor();
-                        StatusMessage("Running report...");
-                        this.InvokeIfRequired(() => { DisplayLoading(); });
-                        DataMatrix data = Report.ExtractReportData(this);
-                        this.InvokeIfRequired(() => { DisplayReportResults(data); });                        
-                    } catch (Exception ex) {
-                        this.NormalCursor();
-                        this.ProgressEnd("An error occured executing the report");
-                        this.InvokeIfRequired(() => { DisplayException(ex); });
-                    } finally {                        
-                        this.NormalCursor();
-                    }
-                });
+                ExecuteReport();
             }
+        }
+
+        private void ExecuteReport() {
+            JobExecutor.QueueJob(() => {
+                try {
+                    this.WaitCursor();
+                    btnRerun.InvokeIfRequired(() => btnRerun.IsEnabled = false);
+                    StatusMessage("Running report...");
+                    this.InvokeIfRequired(() => { DisplayLoading(); });
+                    DataMatrix data = Report.ExtractReportData(this);
+                    this.InvokeIfRequired(() => { DisplayReportResults(data); });
+                } catch (Exception ex) {
+                    this.NormalCursor();
+                    this.ProgressEnd("An error occured executing the report");
+                    this.InvokeIfRequired(() => { DisplayException(ex); });
+                } finally {
+                    btnRerun.InvokeIfRequired(() => btnRerun.IsEnabled = true);
+                    this.NormalCursor();
+                }
+            });
         }
 
         private string _R(string key, params object[] args) {
@@ -200,6 +206,10 @@ namespace BioLink.Client.Extensibility {
                 }
 
             }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e) {
+            ExecuteReport();
         }
 
     }
