@@ -105,9 +105,13 @@ namespace BioLink.Client.Tools {
             int refId = -1;
             string refCode = null;
             if (selected is ReferenceFavoriteViewModel) {
-                var fav = selected as ReferenceFavoriteViewModel; 
-                refId = fav.RefID;
-                refCode = fav.RefCode;
+                var fav = selected as ReferenceFavoriteViewModel;
+                if (!fav.IsGroup) {
+                    refId = fav.RefID;
+                    refCode = fav.RefCode;
+                } else {
+                    builder.New("Run Bibliography Report").Handler(() => RunBibliographyReport(fav)).End();
+                }
             } else if (selected is ReferenceSearchResultViewModel) {
                 var vm = selected as ReferenceSearchResultViewModel;
                 refId = vm.RefID;
@@ -124,6 +128,11 @@ namespace BioLink.Client.Tools {
             }
 
             return builder.ContextMenu;
+        }
+
+        private void RunBibliographyReport(ReferenceFavoriteViewModel fav) {
+            var plugin = PluginManager.Instance.GetPluginByName("Tools");
+            PluginManager.Instance.RunReport(plugin, new ReferenceFavoriteReport(User, fav));
         }
 
         public FavoriteViewModel<ReferenceFavorite> CreateFavoriteViewModel(ReferenceSearchResultViewModel viewModel) {
@@ -154,5 +163,38 @@ namespace BioLink.Client.Tools {
 
         public ReferenceManager RefManager{ get; private set; }
 
+    }
+
+    public class ReferenceFavoriteReport : ReferencesReport {
+
+        private ReferenceFavoriteViewModel FavGroup { get; set; }
+
+        public ReferenceFavoriteReport(User user, ReferenceFavoriteViewModel model) : base(user) {
+            FavGroup = model;
+        }
+        protected override List<RefLink> SelectReferences(IProgressObserver progress) {
+            var service = new SupportService(User);
+            var links = new List<RefLink>();
+
+            if (!FavGroup.IsExpanded) {
+                FavGroup.IsExpanded = true;
+            }
+
+            foreach (var vm in FavGroup.Children) {
+                if (vm is ReferenceFavoriteViewModel) {                    
+                    var reference = service.GetReference((vm as ReferenceFavoriteViewModel).RefID);
+                    if (reference != null) {
+                        var link = new RefLink { RefID = reference.RefID, UseInReport = true, IntraCatID = -1, RefLinkType = FavGroup.GroupName };
+                        links.Add(link);
+                    }
+                }
+            }
+
+            return links;
+        }
+
+        public override string IntraCategoryIdColumnName {
+            get { return "HIDDEN"; }
+        }
     }
 }

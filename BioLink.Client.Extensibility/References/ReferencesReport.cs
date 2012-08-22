@@ -88,7 +88,7 @@ namespace BioLink.Client.Extensibility {
                     var row = matrix.AddRow();
                     row[i++] = link.IntraCatID.Value;
                     row[i++] = link.RefID;
-                    row[i++] = link.RefCode;
+                    row[i++] = reference.RefCode;
                     row[i++] = link.RefLinkType;
                     row[i++] = link.RefPage;
                     row[i++] = RTFUtils.StripMarkup(link.RefQual);

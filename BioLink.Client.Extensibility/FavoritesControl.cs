@@ -197,11 +197,11 @@ namespace BioLink.Client.Extensibility {
             if (global) {
                 _globalRoot.IsExpanded = true;
                 _globalRoot.Children.Add(favViewModel);
-                viewModel.Parent = _globalRoot;
+                favViewModel.Parent = _globalRoot;
             } else {
                 _userRoot.IsExpanded = true;
                 _userRoot.Children.Add(favViewModel);
-                viewModel.Parent = _userRoot;
+                favViewModel.Parent = _userRoot;
             }
 
             viewModel.IsSelected = true;
