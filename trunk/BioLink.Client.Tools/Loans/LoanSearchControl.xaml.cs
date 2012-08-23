@@ -249,7 +249,7 @@ namespace BioLink.Client.Tools {
         }
 
         private void btnExport_Click(object sender, RoutedEventArgs e) {
-            var report = new GenericModelReport<LoanViewModel>(User, "Loan report", _model, "LoanNumber", "RequestedBy", "ReceivedBy", "AuthorizedBy", "IsOverdue", "Status", "DateInitiated", "DateDue", "DateClosed", "PermitNumber" );
+            var report = new GenericModelReport<LoanViewModel>(User, "Loan report", () => _model, "LoanNumber", "RequestedBy", "ReceivedBy", "AuthorizedBy", "IsOverdue", "Status", "DateInitiated", "DateDue", "DateClosed", "PermitNumber" );
             PluginManager.Instance.RunReport(Plugin, report);
         }
 

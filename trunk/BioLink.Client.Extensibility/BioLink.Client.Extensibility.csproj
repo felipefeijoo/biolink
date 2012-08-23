@@ -290,16 +290,18 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="RadioButtonIntValueConverter.cs" />
+    <Compile Include="References\ReferenceLinksReport.cs" />
     <Compile Include="References\ReferencesControl.xaml.cs">
       <DependentUpon>ReferencesControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="References\ReferencesReport.cs" />
     <Compile Include="References\RefLinkDatabaseAction.cs" />
     <Compile Include="References\RefLinkViewModel.cs" />
     <Compile Include="ReportBase.cs" />
     <Compile Include="ReportResults.xaml.cs">
       <DependentUpon>ReportResults.xaml</DependentUpon>
     </Compile>
-    <Compile Include="References\ReferencesReport.cs" />
+    <Compile Include="References\TaxonReferencesReport.cs" />
     <Compile Include="References\ReferencesReportOptions.xaml.cs">
       <DependentUpon>ReferencesReportOptions.xaml</DependentUpon>
     </Compile>

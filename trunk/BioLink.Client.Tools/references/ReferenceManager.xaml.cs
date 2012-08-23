@@ -274,8 +274,7 @@ namespace BioLink.Client.Tools {
         }
 
         private void ExportSearchResults() {
-            var report = new GenericModelReport<ReferenceSearchResultViewModel>(User, "Reference Search Results", _searchModel, "RefCode[Ref Code]", "Author", "YearOfPub[Year]", "PlainTitle[Title]", "JournalName[Journal]", "Volume", "Pages");
-            PluginManager.Instance.RunReport(Owner, report);           
+            PluginManager.Instance.RunReport(Owner, new ReferencesReport(User, "Reference Search Results", _searchModel.Select(svm => svm.RefID)));
         }
 
     }
@@ -378,6 +377,12 @@ namespace BioLink.Client.Tools {
 
         public String PlainTitle {
             get { return RTFUtils.StripMarkup(Title); }
+        }
+
+        public Int32? JournalID {
+            get {
+                return Reference.JournalID;
+            }
         }
 
     }

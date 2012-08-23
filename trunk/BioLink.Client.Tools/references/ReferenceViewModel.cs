@@ -190,6 +190,12 @@ namespace BioLink.Client.Tools {
             get { return Model.JournalName; }
             set { SetProperty(() => Model.JournalName, value); }
         }
+
+        public String PlainTitle {
+            get {
+                return RTFUtils.StripMarkup(Title);
+            }
+        }
         
     }
 
