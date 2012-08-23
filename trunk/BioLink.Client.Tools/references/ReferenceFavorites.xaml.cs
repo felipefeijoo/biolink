@@ -199,36 +199,4 @@ namespace BioLink.Client.Tools {
 
     }
 
-    public class ReferenceFavoriteReport : ReferenceLinksReport {
-
-        private ReferenceFavoriteViewModel FavGroup { get; set; }
-
-        public ReferenceFavoriteReport(User user, ReferenceFavoriteViewModel model) : base(user) {
-            FavGroup = model;
-        }
-        protected override List<RefLink> SelectReferences(IProgressObserver progress) {
-            var service = new SupportService(User);
-            var links = new List<RefLink>();
-
-            if (!FavGroup.IsExpanded) {
-                FavGroup.IsExpanded = true;
-            }
-
-            foreach (var vm in FavGroup.Children) {
-                if (vm is ReferenceFavoriteViewModel) {                    
-                    var reference = service.GetReference((vm as ReferenceFavoriteViewModel).RefID);
-                    if (reference != null) {
-                        var link = new RefLink { RefID = reference.RefID, UseInReport = true, IntraCatID = -1, RefLinkType = FavGroup.GroupName };
-                        links.Add(link);
-                    }
-                }
-            }
-
-            return links;
-        }
-
-        public override string IntraCategoryIdColumnName {
-            get { return "HIDDEN"; }
-        }
-    }
 }
