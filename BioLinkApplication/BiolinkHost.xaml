@@ -25,6 +25,8 @@
                 <MenuItem Header="_Exit" x:Name="Exit" Click="Exit_Click" />
             </MenuItem>
             <MenuItem Header="_Help" x:Name="Help">
+                <MenuItem Header="Check for _Updates" x:Name="mnuCheckForUpdates" Click="CheckForUpdates_Click" />
+                <Separator/>
                 <MenuItem Header="_About" x:Name="About" Click="About_Click" />
             </MenuItem>
         </Menu>            
