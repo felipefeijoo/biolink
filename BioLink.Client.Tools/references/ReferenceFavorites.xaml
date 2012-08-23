@@ -42,7 +42,9 @@
 
                         <Setter Property="IsExpanded" Value="{Binding Path=IsExpanded, Mode=TwoWay}" />
                         <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
-
+                        
+                        <EventSetter Event="TreeViewItem.MouseRightButtonDown" Handler="TreeViewItem_MouseRightButtonDown"/>
+                        
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding Unverified}" Value="True">
                                 <Setter Property="Foreground" Value="Red" />

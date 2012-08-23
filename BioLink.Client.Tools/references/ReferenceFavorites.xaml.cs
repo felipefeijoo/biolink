@@ -110,7 +110,7 @@ namespace BioLink.Client.Tools {
                     refId = fav.RefID;
                     refCode = fav.RefCode;
                 } else {
-                    builder.New("Run Bibliography Report").Handler(() => RunBibliographyReport(fav)).End();
+                    builder.New("Export favorite group").Handler(() => ExportReferenceFavorite(fav)).End();
                 }
             } else if (selected is ReferenceSearchResultViewModel) {
                 var vm = selected as ReferenceSearchResultViewModel;
@@ -130,9 +130,43 @@ namespace BioLink.Client.Tools {
             return builder.ContextMenu;
         }
 
-        private void RunBibliographyReport(ReferenceFavoriteViewModel fav) {
+        public void GetFavoriteRefIds(ReferenceFavoriteViewModel fav, List<Int32> refIds) {
+            if (fav == null) {
+                return;
+            }
+
+            if (fav.IsGroup) {
+                if (!fav.IsExpanded) {
+                    fav.IsExpanded = true;
+                }
+                foreach (var vm in fav.Children) {
+                    GetFavoriteRefIds(vm as ReferenceFavoriteViewModel, refIds);
+                }
+            } else {
+                var refId = fav.RefID;
+                if (refId > 0 && !refIds.Contains(refId)) {
+                    refIds.Add(refId);
+                }
+            }
+
+        }
+
+        private void ExportReferenceFavorite(ReferenceFavoriteViewModel favorite) {
+
+            if (favorite == null) {
+                return;
+            }
+
             var plugin = PluginManager.Instance.GetPluginByName("Tools");
-            PluginManager.Instance.RunReport(plugin, new ReferenceFavoriteReport(User, fav));
+            var refIds = new List<Int32>();
+            GetFavoriteRefIds(favorite, refIds);
+
+            if (refIds.Count == 0) {
+                return;
+            }
+
+            var report = new ReferencesReport(User, favorite.DisplayLabel, refIds);
+            PluginManager.Instance.RunReport(plugin, report);
         }
 
         public FavoriteViewModel<ReferenceFavorite> CreateFavoriteViewModel(ReferenceSearchResultViewModel viewModel) {
@@ -165,7 +199,7 @@ namespace BioLink.Client.Tools {
 
     }
 
-    public class ReferenceFavoriteReport : ReferencesReport {
+    public class ReferenceFavoriteReport : ReferenceLinksReport {
 
         private ReferenceFavoriteViewModel FavGroup { get; set; }
 

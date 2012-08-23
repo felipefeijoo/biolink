@@ -409,6 +409,10 @@ namespace BioLink.Client.Extensibility {
 
             var list = new List<IBioLinkPlugin>();
 
+            if (objectID <= 0) {
+                return false;
+            }
+
             TraversePlugins((p) => {
                 if (p.CanEditObjectType(objectType)) {
                     list.Add(p);

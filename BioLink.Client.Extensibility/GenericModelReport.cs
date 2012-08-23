@@ -13,17 +13,18 @@ namespace BioLink.Client.Extensibility {
     /// <summary>
     /// A generic report model that accepts a ViewModel collection, and provides a convenient way to export a listview model as a report (and therefore to any other exportable format)
     /// 
-    /// Column names are expected to be either the name of a Model member, or in the format 'memberName[display name]'
+    /// Column names are expected to be either the name of a Model member, or in the format 'memberName[display name]'. 'memberName[hidden]' hides the column, and retains 'memberName' as the column name
+    /// super useful for object ids!
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class GenericModelReport<T> : ReportBase where T : ViewModelBase {
 
         private string _reportName;
 
-        public GenericModelReport(User user, string reportName, ICollection<T> model, params String[] columns) : base(user) {
+        public GenericModelReport(User user, string reportName,  Func<ICollection<T>> modelGenerator, params String[] columns) : base(user) {
             RegisterViewer(new TabularDataViewerSource());
             _reportName = reportName;
-            Model = model;
+            ModelGenerator = modelGenerator;
             Columns = columns;
         }
 
@@ -41,12 +42,17 @@ namespace BioLink.Client.Extensibility {
                 string memberName = colName;
 
                 var m = displayNameRegex.Match(colName);
+                var hidden = false;
                 if (m.Success) {
                     memberName = m.Groups[1].Value;
                     displayName = m.Groups[2].Value;
+                    if (displayName.Equals("hidden", StringComparison.CurrentCultureIgnoreCase)) {
+                        displayName = memberName;
+                        hidden = true;
+                    }
                 }
 
-                matrix.Columns.Add(new MatrixColumn { Name = displayName, IsHidden = false });
+                matrix.Columns.Add(new MatrixColumn { Name = displayName, IsHidden = hidden });
                 var p = typeof(T).GetProperty(memberName);
                 if (p != null) {
                     getters[colName] = p.GetGetMethod();
@@ -54,7 +60,9 @@ namespace BioLink.Client.Extensibility {
                 
             }
 
-            foreach (T vm in Model) {
+            var model = ModelGenerator();
+
+            foreach (T vm in model) {
                 var row = matrix.AddRow();
                 int i = 0;
                 foreach (String colName in Columns) {
@@ -69,7 +77,7 @@ namespace BioLink.Client.Extensibility {
             return matrix;
         }
 
-        protected ICollection<T> Model { get; private set; }
+        protected Func<ICollection<T>> ModelGenerator { get; set; }
 
         protected String[] Columns { get; private set; }
 

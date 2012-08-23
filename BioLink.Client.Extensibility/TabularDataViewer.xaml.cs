@@ -274,8 +274,18 @@ namespace BioLink.Client.Extensibility {
 
             if (index > -1) {
                 var row = lvw.SelectedItem as MatrixRow;
-                var enabled = row[index] != null;
-                builder.New("Edit " + lookupType.ToString()).Handler(() => { PluginManager.Instance.EditLookupObject(lookupType, (int)row[index]); }).Enabled(enabled).End();
+
+                int objectId = 0;
+                var enabled = false;
+                if (row[index] != null) {                    
+                    if (Int32.TryParse(row[index].ToString(), out objectId) && objectId > 0) {
+                        enabled = true;
+                    }                    
+                }
+
+                builder.New("Edit " + lookupType.ToString()).Handler(() => {
+                    PluginManager.Instance.EditLookupObject(lookupType, objectId);
+                }).Enabled(enabled).End();
             }
 
         }

@@ -54,6 +54,14 @@ namespace BioLink.Client.Extensibility {
             tvw.MouseRightButtonUp += new MouseButtonEventHandler(tvw_MouseRightButtonUp);
         }
 
+        protected void TreeViewItem_MouseRightButtonDown(object sender, MouseButtonEventArgs e) {
+            TreeViewItem item = sender as TreeViewItem;
+            if (item != null) {
+                item.Focus();
+                e.Handled = true;
+            }
+        }
+
         public PinnableObject SelectedPinnable {
             get {
                 return Provider.CreatePinnableObject(Provider.FavoritesTree.SelectedItem as FavoriteViewModel<T>);
