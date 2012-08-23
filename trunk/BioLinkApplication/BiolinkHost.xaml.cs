@@ -25,6 +25,9 @@ using AvalonDock;
 using BioLink.Client.Extensibility;
 using BioLink.Client.Utilities;
 using BioLink.Data;
+using System.ServiceModel.Syndication;
+using System.Xml;
+using System.Text.RegularExpressions;
 
 namespace BioLinkApplication {
     /// <summary>
@@ -298,6 +301,24 @@ namespace BioLinkApplication {
             frm.Owner = this.FindParentWindow();
             frm.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             frm.ShowDialog();
+        }
+
+        private void CheckForUpdates_Click(object sender, RoutedEventArgs e) {
+            CheckForUpdates();
+        }
+
+        private void CheckForUpdates() {
+            var checker = new UpdateChecker();
+            
+            var progress = new UpdateCheckWindow();
+            progress.Owner = MainWindow.Instance;
+            progress.Show();
+
+            JobExecutor.QueueJob(() => {
+                var results = checker.CheckForUpdates(progress);                
+                progress.InvokeIfRequired(()=>progress.ShowUpdateResults(results));                
+            });
+
         }
        
     }

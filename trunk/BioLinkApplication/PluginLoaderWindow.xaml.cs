@@ -28,7 +28,7 @@ namespace BioLinkApplication {
         }
 
         public void ProgressStart(string message, bool indeterminate) {
-            lblProgress.Content = message;
+            lblProgress.Content = message;            
         }
 
         public void ProgressMessage(string message, double? percentComplete) {
