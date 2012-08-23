@@ -16,13 +16,15 @@ namespace BioLink.Client.Extensibility {
         public UpdateCheckResults CheckForUpdates(IProgressObserver progress) {
 
             // Get the running apps version to compare...
-            var v = this.GetType().Assembly.GetName().Version;
-            var results = new UpdateCheckResults { CurrentMajor = v.Major, CurrentMinor = v.Minor, CurrentBuild = v.Revision, UpdateExists = false, UpdateLink = "" };
+            // We need to use the parent window because its the main application assembly version we want, not this plugin.
+            var v = PluginManager.Instance.ParentWindow.GetType().Assembly.GetName().Version;
+
+            var results = new UpdateCheckResults { CurrentMajor = v.Major, CurrentMinor = v.Minor, CurrentBuild = v.Revision, UpdateExists = false, UpdateLink = "" };            
             if (progress != null) {
                 progress.ProgressStart("Checking for updates...");
             }
             var updateURL = Config.GetGlobal("BioLink.UpdateURL", "http://code.google.com/feeds/p/biolink/downloads/basic");
-            bool updateExists = false;
+            
             try {
                 if (progress != null) {
                     progress.ProgressMessage("Contacting update site...");
@@ -39,18 +41,18 @@ namespace BioLink.Client.Extensibility {
                     foreach (var link in item.Links) {
                         var m = pattern.Match(link.Uri.AbsoluteUri);
                         if (m.Success) {
-
+                            bool updateExists = false;
                             var major = Int32.Parse(m.Groups[1].Value);
                             var minor = Int32.Parse(m.Groups[2].Value);
                             var build = Int32.Parse(m.Groups[3].Value);
 
-                            if (major > v.Major) {
+                            if (major > results.CurrentMajor) {
                                 updateExists = true;
-                            } else if (major == v.Major) {
-                                if (minor > v.Minor) {
+                            } else if (major == results.CurrentMajor) {
+                                if (minor > results.CurrentMinor) {
                                     updateExists = true;
-                                } else if (minor == v.Minor) {
-                                    updateExists = build > v.Revision;
+                                } else if (minor == results.CurrentMinor) {
+                                    updateExists = build > results.CurrentBuild;
                                 }
                             }
 
