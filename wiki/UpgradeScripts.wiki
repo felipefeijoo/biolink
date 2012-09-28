@@ -3,7 +3,7 @@
 
 <wiki:toc max_depth="2" />
 
-Typically BioLink databases that are at schema version 2.5 do not need to be upgraded. However, a small number of enhancements have been made to the BioLink database schema since version 2.5 which may benefit some users. Users who have BioLink databases that have not been updated to schema version 2.5 (any version of BioLink prior to 2.5, including version 1.0 and 1.5) will need to update the database schema to version 2.5 in order for version 3.0 of the BioLink client application to work correctly.
+Typically !BioLink databases that are at schema version 2.5 do not need to be upgraded. However, a small number of enhancements have been made to the !BioLink database schema since version 2.5 which may benefit some users. Users who have !BioLink databases that have not been updated to schema version 2.5 (any version of !BioLink prior to 2.5, including version 1.0 and 1.5) will need to update the database schema to version 2.5 in order for version 3.0 of the !BioLink client application to work correctly.
 
 In addition, an issue has been discovered in the stored procedure that is used to generate the Associates for Taxon report that can lead to incorrect or missing results, even though associates are known to exist. For this reason, there are a number of scripts available on the downloads page that could be applied depending on particular scenarios.
 
