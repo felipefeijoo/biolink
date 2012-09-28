@@ -3,7 +3,17 @@
 
 <wiki:toc max_depth="2" />
 
-A small number of enhancements have been made to the BioLink database schema since version 2.5. In addition, an issue has been discovered in the stored procedure that is used to generate the Associates for Taxon report that can lead to incorrect or missing results, even though associates are known to exist. 
+Typically BioLink databases that are at schema version 2.5 do not need to be upgraded. However, a small number of enhancements have been made to the BioLink database schema since version 2.5 which may benefit some users. Users who have BioLink databases that have not been updated to schema version 2.5 (any version of BioLink prior to 2.5, including version 1.0 and 1.5) will need to update the database schema to version 2.5 in order for version 3.0 of the BioLink client application to work correctly.
+
+In addition, an issue has been discovered in the stored procedure that is used to generate the Associates for Taxon report that can lead to incorrect or missing results, even though associates are known to exist. For this reason, there are a number of scripts available on the downloads page that could be applied depending on particular scenarios.
+
+Below is a table of common scenarios, and which scripts should be applied.
+
+|| Scenario || Upgrade script ||
+|| Last version of BioLink used was 1.0-2.0.x || [http://code.google.com/p/biolink/downloads/detail?name=Biolink_V2_5_0_Scripts.sql] Biolink_V2_5_0_Scripts.sql ||
+||                 || [http://code.google.com/p/biolink/downloads/detail?name=AssociateReportsPatch.sql] AssociateReportsPatch.sql ||
+|| Last version of BioLink used as 2.5 || [http://code.google.com/p/biolink/downloads/detail?name=AssociateReportsPatch.sql] AssociateReportsPatch.sql ||
+|| Recommended for users, but not mandatory || [http://code.google.com/p/biolink/downloads/detail?name=BioLink%20Web%20Extensions.sql] BioLink%20Web%20Extensions.sql||
 
 == How to execute the scripts ==
 
@@ -36,10 +46,6 @@ Check the results window for any errors or messages.
 
 
 
-
-
-
-
 == !BioLink Web Extensions ==
 
 *Priority:* _Optional_. Although this update is not necessary, it adds features that improve and simplify using the Query Tool.
@@ -55,3 +61,19 @@ This script adds:
 *Priority:* _Recommended_. It is highly likely that the Associates for Taxa report will not return any results unless this patch has been applied.
 
 This script addresses an issue in the stored procedure used by the Associates For Taxa report that, on some installations, will cause incorrect or no results to be returned.
+
+== !Biolink_V2_5_0_Scripts.sql ==
+*Priority:* _Required_ if your existing BioLink database schema is below version 2.5, _not required_ if your database schema is already at version 2.5
+
+In order to find out which version of the BioLink database schema you are using, using the SQL Server Management Studio, navigate the the correct BioLink database, and open a new Query window.
+
+Type the following SQL in the query window, click the Execute button
+{{{
+exec spVersion
+}}}
+
+The schema version should be displayed in the results section.
+
+This script updates and creates tables and stored procedures required by BioLink 3.0 
+
+
