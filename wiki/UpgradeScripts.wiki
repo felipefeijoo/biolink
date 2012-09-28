@@ -13,7 +13,7 @@ Below is a table of common scenarios, and which scripts should be applied.
 || Last version of !BioLink used was 1.0-2.0.x || [http://code.google.com/p/biolink/downloads/detail?name=!Biolink_V2_5_0_Scripts.sql Biolink_V2_5_0_Scripts.sql] ||
 ||                 || and [http://code.google.com/p/biolink/downloads/detail?name=AssociateReportsPatch.sql AssociateReportsPatch.sql] ||
 || Last version of BioLink used as 2.5 || [http://code.google.com/p/biolink/downloads/detail?name=AssociateReportsPatch.sql AssociateReportsPatch.sql] ||
-|| Recommended for users, but not mandatory || [http://code.google.com/p/biolink/downloads/detail?name=BioLink%20Web%20Extensions.sql BioLink%20Web%20Extensions.sql] ||
+|| Recommended for users, but not mandatory || [http://code.google.com/p/biolink/downloads/detail?name=BioLink%20Web%20Extensions.sql BioLink Web Extensions.sql] ||
 
 == How to execute the scripts ==
 
