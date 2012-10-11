@@ -3,6 +3,26 @@
 
 = Release Notes =
 
+== !BioLink Version 3.0.558 ==
+
+!BioLink 3.0.558 11 Oct 2012
+
+This is the sixth"fix" release for BioLink 3.0. It addresses issues reported since build 538.
+
+=== New Features ===
+ * Minor UI enhancements, particularly in reference management
+ * Experimental: There is now a "Check for updates" under the help menu that checks to see if there is a new version available for download from the Google code site
+
+=== Issues addressed in this issue ===
+
+ * Issue 175	"use in reports" don't work?	 
+ * Issue 176	Cannot see what other things are linked to an image from the multimedia control	 
+ * Issue 177	Cannot rerun a report directly from the report results window`	 
+ * Issue 178	RTF preview of a reference is sometimes very messy	 
+ * Issue 179	Dragging newly created favorite into a favorite group creates visual artefact until the apply button is pressed	 
+ * Issue 180	Exporting references from reference manager (search) only includes a subset of reference fields	 
+ * Issue 181	Would be good to be able to export a reference favorite group
+
 == !BioLink Version 3.0.538 ==
 
 !BioLink 3.0.538 2 Aug 2012
@@ -19,8 +39,8 @@ This is the fifth "fix" release for BioLink 3.0. It addresses issues reported si
 
 === Issues addressed in this release ===
 
- * Issue 155       When launcing EGaz from the RDE or Site Details form, locality should be seeded in the egaz search box	 
- * Issue 156       When egaz is in floating window mode it doesn't get brought to the front when selected
+ * Issue 155     When launcing EGaz from the RDE or Site Details form, locality should be seeded in the egaz search box	 
+ * Issue 156     When egaz is in floating window mode it doesn't get brought to the front when selected
  * Issue 160	 Map symbol size selector should allow for text input as well slider	 
  * Issue 161	 Line layers not honoring selected colour	 
  * Issue 162	 Query results window is always behind other windows	 
