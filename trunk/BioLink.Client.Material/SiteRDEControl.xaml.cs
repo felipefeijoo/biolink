@@ -52,8 +52,7 @@ namespace BioLink.Client.Material {
             this.DataContextChanged += new DependencyPropertyChangedEventHandler(SiteRDEControl_DataContextChanged);
 
             ctlPosition.LocationChanged += new LocationSelectedEvent(ctlPosition_LocationChanged);
-            ctlPosition.BeforeLocationSelection += new BeforeNamedPlaceSelectionEvent(ctlPosition_BeforeLocationSelection);
-            
+            ctlPosition.BeforeLocationSelection += new BeforeNamedPlaceSelectionEvent(ctlPosition_BeforeLocationSelection);            
         }
 
         void ctlPosition_BeforeLocationSelection(NamedPlaceSelectionOptions options) {
@@ -97,9 +96,18 @@ namespace BioLink.Client.Material {
                 _traits.BindModel(site.Traits, site);
                 _currentSite = site;
 
-                if (!site.Latitude.HasValue || !site.Longitude.HasValue || (site.Latitude.Value == 0 && site.Longitude.Value == 0) ) {
+                // There is a datacontext change cascade problem here.
+                // When the RDE frame advances/retreats its first changes the data context on the various RDE Panels (this one included)
+                // but our downstream dependents have yet to have their datacontexts changed (e.g. the position control, and it's descendants 
+                // still point to the old site). This means when we clear the control (several lines down), it was actually clearing the old site as well as the control
+                // text boxes. So the datacontext for the position control is explicitly set here so that it is correctly bound to the new site 
+                // when it is cleared.
+                // NOTE: have tried dispatching the call (kind of like invokeLater) and it didn't work.
+
+                ctlPosition.DataContext = site;                
+                if (!site.Latitude.HasValue || !site.Longitude.HasValue || (site.Latitude.Value == 0 && site.Longitude.Value == 0)) {
                     ctlPosition.Clear();
-                }
+                }                
             }
         }
 
