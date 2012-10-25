@@ -3,11 +3,28 @@
 
 = Release Notes =
 
+
+== !BioLink Version 3.0.560 ==
+
+!BioLink 3.0.560 25 Oct 2012
+
+This is the seventh "fix" release for BioLink 3.0. It addresses issues raised since build 558
+
+=== New Features ===
+
+No new features are introduced in this build.
+
+=== Issues addressed in this issue ===
+
+ * Issue 185	Regression: Map no longer shows 'edit site' on distribution map	 
+ * Issue 186	Added a trait to the query tool causes an exception	 
+ * Issue 187	Problem when adding new sites in RDE	
+
 == !BioLink Version 3.0.558 ==
 
 !BioLink 3.0.558 11 Oct 2012
 
-This is the sixth"fix" release for BioLink 3.0. It addresses issues reported since build 538.
+This is the sixth "fix" release for BioLink 3.0. It addresses issues reported since build 538.
 
 === New Features ===
  * Minor UI enhancements, particularly in reference management
