@@ -1238,9 +1238,9 @@ namespace BioLink.Data {
 
         public void SetDefaultFormatOptions(QueryCriteria criteria) {
 
-            if (criteria != null && criteria.Field != null) {
+            if (criteria != null && criteria.Field != null && criteria.Field.DataType != null) {
                 var field = criteria.Field;
-                if (field.DataType.Equals("bldate", StringComparison.CurrentCultureIgnoreCase)) {
+                if (field.DataType.Equals("bldate", StringComparison.CurrentCultureIgnoreCase)) {                
                     criteria.FormatOption = "d MMM, yyyy";
                 } else if (field.DataType.Equals("Longitude", StringComparison.CurrentCultureIgnoreCase) || field.DataType.Equals("latitude", StringComparison.CurrentCultureIgnoreCase)) {
                     criteria.FormatOption = "dms";

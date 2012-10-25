@@ -369,7 +369,7 @@ namespace BioLink.Client.Maps {
 
                     var siteIDs = FindIDs(rows, "SiteID");
                     if (siteIDs.Count > 0) {
-
+                        BuildMenuItem(menu, "Edit Site...", () => EditObject(siteIDs, LookupType.Site));
                     }
 
                     var siteVisitIDs = FindIDs(rows, "SiteVisitID");
