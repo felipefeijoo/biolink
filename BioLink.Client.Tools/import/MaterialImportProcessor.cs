@@ -109,6 +109,16 @@ namespace BioLink.Client.Tools {
 
         private int GetRegionNumber() {
 
+            // test to see if an internal number is present in the incoming dataset
+            var existingRegionId = Get("Region.ExistingRegionID");
+            if (!String.IsNullOrEmpty(existingRegionId)) {
+                var region = MaterialService.GetRegion(Int32.Parse(existingRegionId));
+                if (region != null) {
+                    return region.PoliticalRegionID;
+                }
+            }
+            // No existing region found? need to create it
+
             var politicalRegion = Get("Region.Region", "[Imported Data]");
             var strCountry = Get("Region.Country");
             var strState = Get("Region.State/Province");
@@ -139,6 +149,16 @@ namespace BioLink.Client.Tools {
         }
 
         private int GetSiteNumber(int regionId) {
+
+            // test to see if an internal number is present in the incoming dataset
+            var existingSiteId = Get("Site.ExistingSiteID");
+            if (!String.IsNullOrEmpty(existingSiteId)) {
+                var site = MaterialService.GetSite(Int32.Parse(existingSiteId));
+                if (site != null) {
+                    return site.SiteID;
+                }
+            }
+            // No existing site found? need to create it
 
             var strLocal = Get("Site.Locality");
             var strOffSetDis = Get("Site.Distance from place");
@@ -472,6 +492,17 @@ namespace BioLink.Client.Tools {
         }
 
         private int GetSiteVisitNumber(int siteId) {
+
+            // test to see if an internal visit number is present in the incoming dataset
+            var existingSiteVisitId = Get("SiteVisit.ExistingSiteVisitID");
+            if (!String.IsNullOrEmpty(existingSiteVisitId)) {
+                var visit = MaterialService.GetSiteVisit(Int32.Parse(existingSiteVisitId));
+                if (visit != null) {
+                    return visit.SiteVisitID;
+                }
+            }
+            // No existing visit found? need to create it
+
             var iDateType = FIXED_DATE;
             var strSiteVisitName = Get("SiteVisit.Visit Name");
             var strCollector = Get("SiteVisit.Collector(s)");
@@ -548,6 +579,16 @@ namespace BioLink.Client.Tools {
         }
 
         private int GetTaxonNumber() {
+
+            // test to see if an internal taxon id is present in the incoming dataset
+            var existingTaxonId = Get("Taxon.ExistingTaxonID");
+            if (!String.IsNullOrEmpty(existingTaxonId)) {
+                var existingTaxon = TaxaService.GetTaxon(Int32.Parse(existingTaxonId));
+                if (existingTaxon != null) {
+                    return existingTaxon.TaxaID.Value;
+                }
+            }
+            // No existing taxon found? need to create it
 
             var strLowestRank = LowestTaxonLevel();
 

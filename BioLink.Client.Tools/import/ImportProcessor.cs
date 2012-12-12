@@ -33,6 +33,8 @@ namespace BioLink.Client.Tools {
         protected ImportProcessor() {
             this.User = PluginManager.Instance.User;
             this.Service = new ImportService(User);
+            this.MaterialService = new MaterialService(User);
+            this.TaxaService = new TaxaService(User);
         }
 
         public void Import(Window parentWindow, ImportWizardContext context, IProgressObserver progress, Action<ImportStatusLevel, string> logFunc) {
@@ -168,8 +170,9 @@ namespace BioLink.Client.Tools {
                 string target = mapping.TargetColumn.ToLower();
                 int index = -1;
 
-                for (int i = 0; i < RowSource.ColumnCount - 1; ++i) {
-                    if (RowSource.ColumnName(i).Equals(mapping.SourceColumn, StringComparison.CurrentCultureIgnoreCase)) {
+                for (int i = 0; i <= RowSource.ColumnCount - 1; ++i) {
+                    var sourceColumnName = RowSource.ColumnName(i);
+                    if (sourceColumnName.Equals(mapping.SourceColumn, StringComparison.CurrentCultureIgnoreCase)) {
                         index = i;
                         break;
                     }
@@ -181,7 +184,7 @@ namespace BioLink.Client.Tools {
                     } else {
                         LogMsg("Source column {1} (index {2}) is not mapped to a target column.", mapping.TargetColumn, mapping.SourceColumn, index);
                     }
-                }
+                } 
             }
 
         }
@@ -332,7 +335,11 @@ namespace BioLink.Client.Tools {
 
         protected Window ParentWindow { get; set; }
 
+        protected MaterialService MaterialService { get; private set; }
+
         protected ImportService Service { get; private set; }
+
+        protected TaxaService TaxaService { get; private set; }
 
         protected IProgressObserver Progress { get; private set; }
 
