@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioLink.Client.Maps", "BioL
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseUtilities", "DatabaseUtilities\DatabaseUtilities.csproj", "{45E9AEDD-FABA-42C2-8E5E-1E4CA63882E9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BVPImportPlugin", "BVPImportPlugin\BVPImportPlugin.csproj", "{84C61A67-5AAC-448A-B7BA-CBD284D7291F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -143,6 +145,16 @@ Global
 		{45E9AEDD-FABA-42C2-8E5E-1E4CA63882E9}.Release|Mixed Platforms.Build.0 = Release|x86
 		{45E9AEDD-FABA-42C2-8E5E-1E4CA63882E9}.Release|x86.ActiveCfg = Release|x86
 		{45E9AEDD-FABA-42C2-8E5E-1E4CA63882E9}.Release|x86.Build.0 = Release|x86
+		{84C61A67-5AAC-448A-B7BA-CBD284D7291F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84C61A67-5AAC-448A-B7BA-CBD284D7291F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84C61A67-5AAC-448A-B7BA-CBD284D7291F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{84C61A67-5AAC-448A-B7BA-CBD284D7291F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{84C61A67-5AAC-448A-B7BA-CBD284D7291F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{84C61A67-5AAC-448A-B7BA-CBD284D7291F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84C61A67-5AAC-448A-B7BA-CBD284D7291F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84C61A67-5AAC-448A-B7BA-CBD284D7291F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{84C61A67-5AAC-448A-B7BA-CBD284D7291F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{84C61A67-5AAC-448A-B7BA-CBD284D7291F}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

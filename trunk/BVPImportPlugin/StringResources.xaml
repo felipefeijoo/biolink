@@ -1,0 +1,11 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib" 
+                    x:Name="ToolsResources">
+
+    <system:String x:Key="Button.Ok">_OK</system:String>
+    <system:String x:Key="Button.Cancel">_Cancel</system:String>
+    <system:String x:Key="Button.Apply">_Apply</system:String>    
+    <system:String x:Key="Tools.Menu.Tools">_Tools</system:String>    
+    
+</ResourceDictionary>

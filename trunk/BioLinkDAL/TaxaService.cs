@@ -127,8 +127,11 @@ namespace BioLink.Data {
         }
 
         public bool IsValidChild(TaxonRank src, TaxonRank dest) {
-            ISet<string> valid = SplitCSV(dest.ValidChildList);
-            return valid.Contains(src.Code, StringComparer.OrdinalIgnoreCase);
+            if (dest != null) {
+                ISet<string> valid = SplitCSV(dest.ValidChildList);
+                return valid.Contains(src.Code, StringComparer.OrdinalIgnoreCase);
+            }
+            return false;
         }
 
         private string RankKey(string kingdomCode, string rankCode) {
