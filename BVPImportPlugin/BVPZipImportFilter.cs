@@ -83,6 +83,12 @@ namespace BioLink.Client.BVPImport {
         public override List<string> GetColumnNames() {
             var columns = new List<String>();
             if (_options != null) {
+
+                if (_options.RowSource == null) {
+                    var builder = new BVPImportSourceBuilder(_options.Filename);
+                    _options.RowSource = builder.BuildRowSource();
+                }
+
                 for (int i = 0; i < _options.RowSource.ColumnCount; i++) {
                     columns.Add(_options.RowSource.ColumnName(i));
                 }

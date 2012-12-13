@@ -45,6 +45,10 @@ namespace BioLink.Client.Utilities {
         /* A regular expression used to match a BLDate */
         private static readonly Regex BLDateRegex = new Regex(@"^(\d\d\d\d)(\d\d)(\d\d)$");
 
+        private static Regex YearMonthDayRegex = new Regex(@"^(\d\d\d\d)[^\w](\d\d)[^\w](\d\d)$");
+        private static Regex YearMonthRegex = new Regex(@"^(\d\d\d\d)[^\w](\d\d)$");
+        private static Regex YearRegex = new Regex(@"^(\d\d\d\d)$");
+
         /// <summary>
         /// Returns string representing the supplied BLDate formatted with a Roman Numeral month
         /// </summary>
@@ -150,7 +154,10 @@ namespace BioLink.Client.Utilities {
         /// <param name="bldate">The BLDate to convert</param>
         /// <returns>A DateTime value</returns>
         public static DateTime MakeCompatibleBLDate(int bldate) {
-            var str = DateRomanMonth(bldate);
+            var str = BLDateToStr(bldate);
+            if (YearRegex.IsMatch(str)) {
+                str = String.Format("1 jan, {0}", str);
+            }
             return DateTime.Parse(str);
         }
 
@@ -234,6 +241,33 @@ namespace BioLink.Client.Utilities {
         /// <param name="date">The string to convert</param>
         /// <returns>An 8 digit string</returns>
         public static string DateStrToBLDate(string date) {
+
+            if (String.IsNullOrEmpty(date)) {
+                return date;
+            }
+
+            String message;
+            if (IsValidBLDate(date, out message)) {
+                return date;
+            }
+
+            // Try 'international' date format variants (YYYY-MM-dd, YYYY-MM or YYYY)
+            var matcher = YearMonthDayRegex.Match(date);
+            if (matcher.Success) {
+                return String.Format("{0}{1}{2}", matcher.Groups[1], matcher.Groups[2], matcher.Groups[3]);
+            }
+
+            matcher = YearMonthRegex.Match(date);
+            if (matcher.Success) {
+                return String.Format("{0}{1}00", matcher.Groups[1], matcher.Groups[2]);
+            }
+
+            matcher = YearRegex.Match(date);
+            if (matcher.Success) {
+                return String.Format("{0}0000", matcher.Groups[1]);
+            }
+
+            date = date.Trim();
             if (Information.IsDate(date)) {
                 var dt = DateAndTime.DateValue(date);
                 var regex = new Regex("^\\w+[^\\w]_\\w+$");

@@ -39,15 +39,19 @@ namespace BioLink.Client.BVPImport {
         }
 
         public override string ExtractValue(BVPImportColumnDefinition columnDef, GenericParserAdapter row, Dictionary<string, List<string>> extraData) {
-            foreach (Regex regex in Regexes) {
-                var matcher = regex.Match(row[columnDef.SourceColumnName]);
-                if (matcher.Success) {
-                    if (matcher.Groups.Count > 1) {
-                        return matcher.Groups[1].Value;
+            var value = Default(columnDef, row, extraData);
+            if (!String.IsNullOrEmpty(value)) {
+                value = value.Trim();
+                foreach (Regex regex in Regexes) {
+                    var matcher = regex.Match(value);
+                    if (matcher.Success) {
+                        if (matcher.Groups.Count > 1) {
+                            return matcher.Groups[1].Value;
+                        }
                     }
                 }
             }
-            return Default(columnDef, row, extraData);                
+            return value;
         }
     }
 
@@ -157,6 +161,49 @@ namespace BioLink.Client.BVPImport {
             }
             return value;
         }
+    }
+
+    public abstract class DateValueExtractor : ValueExtractor {
+
+        protected static Regex _BVPDateRegexFull = new Regex(@"^(\d\d\d\d)[-.](\d\d)[-.](\d\d)$");
+        protected static Regex _BVPDateRegexYearMonth = new Regex(@"^(\d\d\d\d)[-.](\d\d)$");
+        protected static Regex _BVPDateRegexYear = new Regex(@"^(\d\d\d\d)$");
+
+        public override string ExtractValue(BVPImportColumnDefinition coldef, GenericParserAdapter row, Dictionary<string, List<string>> extraData) {
+            var value = Default(coldef, row, extraData);
+            var dates = value.Split('/');
+            return ExtractDate(dates, value);
+        }
+
+        protected abstract String ExtractDate(String[] candidates, string @default);
+    }
+
+    public class StartDateValueExtractor : DateValueExtractor {
+
+        protected override string ExtractDate(String[] candidates, String @default) {
+            if (candidates.Length > 0) {
+                var bldate = DateUtils.DateStrToBLDate(candidates[0]);
+                if (!String.IsNullOrEmpty(bldate)) {
+                    return bldate;
+                }
+            }
+            return @default;
+        }
+
+    }
+
+    public class EndDateValueExtractor : DateValueExtractor {
+
+        protected override string ExtractDate(String[] candidates, String @default) {
+            if (candidates.Length > 1) {
+                var bldate = DateUtils.DateStrToBLDate(candidates[1]);
+                if (!String.IsNullOrEmpty(bldate)) {
+                    return bldate;
+                }
+            }
+            return null;
+        }
+
     }
 
 }

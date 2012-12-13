@@ -165,7 +165,7 @@ namespace BioLink.Client.Tools {
                 // First check to see if this field has been mapped already...
                 var targetName = string.Format("{0}.{1}", field.Category, field.DisplayName);
 
-                if (!field.DisplayName.Equals("other", StringComparison.CurrentCultureIgnoreCase)) {
+                if (!field.DisplayName.Equals("other", StringComparison.CurrentCultureIgnoreCase) && !field.DisplayName.Equals("notes", StringComparison.CurrentCultureIgnoreCase)) {
                     var existing = _model.FirstOrDefault((candidate) => {
                         return candidate.TargetColumn != null && candidate.TargetColumn.Equals(targetName);
                     });
