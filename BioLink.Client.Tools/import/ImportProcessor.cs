@@ -73,6 +73,8 @@ namespace BioLink.Client.Tools {
             DateTime timeStarted = DateTime.Now;
             DateTime lastCheck = timeStarted;
 
+            RowSource.Reset();
+
             while (RowSource.MoveNext() && !Cancelled) {
 
                 ImportCurrentRow(rowCount++, connection);

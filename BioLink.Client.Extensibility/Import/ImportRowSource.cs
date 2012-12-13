@@ -25,7 +25,7 @@ namespace BioLink.Client.Extensibility {
         public ImportRowSource(ImportStagingService service, int? rowcount) {
             this.Reader = service.GetImportReader();
             this.RowCount = rowcount;
-            this.Service = service;
+            this.Service = service;        
         }
 
         public bool MoveNext() {
@@ -52,6 +52,13 @@ namespace BioLink.Client.Extensibility {
 
         public void CopyToErrorTable(string message) {
             Service.CopyToErrorTable(this, message);
+        }
+
+        public void Reset() {
+            if (Reader != null && !Reader.IsClosed) {
+                Reader.Close();
+            }
+            Reader = Service.GetImportReader();
         }
 
         protected SQLiteDataReader Reader { get; private set; }
