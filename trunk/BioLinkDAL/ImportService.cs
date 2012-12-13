@@ -87,6 +87,7 @@ namespace BioLink.Data {
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological age top", Category = "Site", Description = "Stratigraphy Top Age", Validate = StringValidator });
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological notes", Category = "Site", Description = "...", Validate = StringValidator });
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Other", Category = "Site", Description = "Other user defined field", Validate = StringValidator });
+            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Notes", Category = "Site", Description = "Other user defined text", Validate = StringValidator });
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "ExistingSiteID", Category = "Site", Description = "Internal database id for an existing site (advanced)", Validate = IntegerValidator });
             #endregion
             #region Site Visit
@@ -99,6 +100,7 @@ namespace BioLink.Data {
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Field number", Category = "SiteVisit", Description = "Number assigned by collector(s) to material", Validate = StringValidator });
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Casual Date", Category = "SiteVisit", Description = "A casual date for the site visit", Validate = StringValidator });
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Other", Category = "SiteVisit", Description = "Other user defined field", Validate = StringValidator });
+            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Notes", Category = "SiteVisit", Description = "Other user defined text", Validate = StringValidator });
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "ExistingSiteVisitID", Category = "SiteVisit", Description = "Internal database id for an existing site visit (advanced)", Validate = IntegerValidator });
             #endregion
             #region Material
@@ -134,8 +136,9 @@ namespace BioLink.Data {
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Storage site", Category = "Material", Description = "The location within collection where specimen(s) is stored", Validate = StringValidator });
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Storage Method", Category = "Material", Description = "Location or type of storage used for specimen(s); can also indicate preparation method (e.g. on slide, pin, card, point, etc)", Validate = StringValidator });
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Curation status", Category = "Material", Description = "Current curation status of this material", Validate = StringValidator });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Notes", Category = "Material", Description = "Current curation status of this material", Validate = StringValidator });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Other", Category = "Material", Description = "Other user defined field", Validate = StringValidator });            
+            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Subpart Notes", Category = "Material", Description = "Notes for the material sub part", Validate = StringValidator });
+            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Other", Category = "Material", Description = "Other user defined field", Validate = StringValidator });
+            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Notes", Category = "Material", Description = "Other user defined text", Validate = StringValidator });            
             #endregion
             #region Taxon
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "KingdomType", Category = "Taxon", Description = "Defaults are P for Plantae, A for Animalia", Validate = StringValidator });
@@ -146,6 +149,7 @@ namespace BioLink.Data {
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Common Name", Category = "Taxon", Description = "Common name given to the taxa.", Validate = StringValidator });
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Name Status", Category = "Taxon", Description = "The status of the available names.", Validate = StringValidator });
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Other", Category = "Taxon", Description = "Other user defined field", Validate = StringValidator });
+            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Notes", Category = "Taxon", Description = "Other user defined text", Validate = StringValidator });
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "ExistingTaxonID", Category = "Taxon", Description = "Internal database id for an existing Taxon (advanced)", Validate = IntegerValidator });            
             #endregion
             // END Import Field Descriptors
@@ -340,6 +344,12 @@ namespace BioLink.Data {
                 _P("vchrAvailableNameStatus", availnamestatus)
             );
         }
+
+        public void ImportNote(string category, int intraCatID, string noteName, string noteText, string comment = "") {
+            var service = new SupportService(User);
+            service.InsertNote(category, intraCatID, noteName, noteText, "", "", false, 0, "");
+        }
+
 
         public void ImportTrait(string category, int intraCatID, string traitName, string traitValue, string comment = "") {
             StoredProcUpdate("spTraitImport",

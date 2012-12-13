@@ -43,8 +43,8 @@ namespace BioLink.Client.BVPImport {
             if (Enum.TryParse<DarwinCoreField>(dwcField, out dwc)) {
                 switch (dwc) {
                     case DarwinCoreField.scientificName:
-                        ColumnDefinitions.Add(new BVPImportColumnDefinition { OutputColumnName = "Genus", SourceColumnName = dwcField, SourceFilename = filename, ValueExtractor = new RegexCaptureValueExtractor(@"^(.*?)\s+.*$") });
-                        ColumnDefinitions.Add(new BVPImportColumnDefinition { OutputColumnName = "Species", SourceColumnName = dwcField, SourceFilename = filename, ValueExtractor = new RegexCaptureValueExtractor(@"^.*?\s+(.*)$") });
+                        ColumnDefinitions.Add(new BVPImportColumnDefinition { OutputColumnName = "Genus", SourceColumnName = dwcField, SourceFilename = filename, ValueExtractor = new RegexCaptureValueExtractor(@"^(.+?)\s+(?:.*)$") });
+                        ColumnDefinitions.Add(new BVPImportColumnDefinition { OutputColumnName = "Species", SourceColumnName = dwcField, SourceFilename = filename, ValueExtractor = new RegexCaptureValueExtractor(@"^(?:.+?)\s+(.*)$") });
                         break;
                     case DarwinCoreField.catalogNumber:
                         ColumnDefinitions.Add(new BVPImportColumnDefinition { OutputColumnName = MapDwCColumnName(dwcField), SourceColumnName = dwcField, SourceFilename = filename, ValueExtractor = new RegexCaptureValueExtractor(@"^ANIC[_-](.*)$") });
@@ -69,6 +69,13 @@ namespace BioLink.Client.BVPImport {
                                 {"Australian Capital Territory", "ACT"}
 
                             }) });
+                        break;
+                    case DarwinCoreField.eventDate:
+                        ColumnDefinitions.Add(new BVPImportColumnDefinition { OutputColumnName = "Start Date", SourceColumnName = dwcField, SourceFilename = filename, ValueExtractor = new StartDateValueExtractor() });
+                        ColumnDefinitions.Add(new BVPImportColumnDefinition { OutputColumnName = "End Date", SourceColumnName = dwcField, SourceFilename = filename, ValueExtractor = new EndDateValueExtractor() });
+                        break;
+                    case DarwinCoreField.dateIdentified:
+                        ColumnDefinitions.Add(new BVPImportColumnDefinition { OutputColumnName = MapDwCColumnName(dwcField), SourceColumnName = dwcField, SourceFilename = filename, ValueExtractor = new StartDateValueExtractor() });
                         break;
                     default:
                         ColumnDefinitions.Add(new BVPImportColumnDefinition { OutputColumnName = MapDwCColumnName(dwcField), SourceColumnName = dwcField, SourceFilename = filename });

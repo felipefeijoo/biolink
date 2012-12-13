@@ -801,7 +801,7 @@ namespace BioLink.Client.Tools {
                 StorageSite = Get("Material.Storage site"),
                 StorageMethod = Get("Material.Storage method"),
                 CurationStatus = Get("Material.Curation status"),
-                Notes = Get("Material.Notes")
+                Notes = Get("Material.Subpart Notes")
             };
 
             var matService = new MaterialService(User);

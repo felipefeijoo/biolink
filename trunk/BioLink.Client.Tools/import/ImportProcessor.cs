@@ -26,6 +26,8 @@ namespace BioLink.Client.Tools {
     public abstract class ImportProcessor {
 
         protected Regex _TraitRegex = new Regex("^(.*)[.]Other$");
+        protected Regex _NoteRegex = new Regex("^(.*)[.]Notes$");
+
         protected Dictionary<string, int> _fieldIndex = new Dictionary<string, int>();
         private int _errorCount;
         private int _successCount;
@@ -306,6 +308,34 @@ namespace BioLink.Client.Tools {
             return def;
         }
 
+        protected void InsertNotes(string category, int id) {
+            foreach (ImportFieldMapping mapping in Mappings) {
+                if (!string.IsNullOrWhiteSpace(mapping.TargetColumn)) {
+                    var match = _NoteRegex.Match(mapping.TargetColumn);
+                    if (match.Success) {
+                        var candiateCategory = match.Groups[1].Value;
+                        if (!string.IsNullOrWhiteSpace(candiateCategory) && candiateCategory.Equals(category, StringComparison.CurrentCultureIgnoreCase)) {
+
+                            var valueObj = RowSource[mapping.SourceColumn];
+                            string strValue = null;
+                            if (valueObj != null) {
+                                strValue = valueObj.ToString();
+                            }
+
+                            if (string.IsNullOrWhiteSpace(strValue)) {
+                                strValue = mapping.DefaultValue;
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(strValue)) {
+                                Service.ImportNote(category, id, mapping.SourceColumn, strValue);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
         protected void InsertTraits(string category, int id) {
             foreach (ImportFieldMapping mapping in Mappings) {
                 if (!string.IsNullOrWhiteSpace(mapping.TargetColumn)) {
@@ -332,8 +362,6 @@ namespace BioLink.Client.Tools {
                 }
             }
         }
-
-
 
         protected Window ParentWindow { get; set; }
 
