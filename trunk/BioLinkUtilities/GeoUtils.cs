@@ -150,14 +150,6 @@ namespace BioLink.Client.Utilities {
                 return DMSToDecDeg(degrees, minutes, seconds, dir);
             }
 
-            // try degrees decimal minutes (using sign as direction)
-            matcher = DegDecMNoDirRegex.Match(str);
-            if (matcher.Success) {
-                int degrees = Int32.Parse(matcher.Groups[1].Value);
-                double minutes = Double.Parse(matcher.Groups[2].Value);                
-                return DDecMToDecDeg(degrees, minutes);
-            }
-
             // try degrees decimal minutes with direction...
             matcher = DegDecMRegex.Match(str);
             if (matcher.Success) {
@@ -165,6 +157,14 @@ namespace BioLink.Client.Utilities {
                 double minutes = Double.Parse(matcher.Groups[2].Value);
                 string dir = matcher.Groups[3].Value;
                 return DDecMDirToDecDeg(degrees, minutes, dir);
+            }
+
+            // try degrees decimal minutes (using sign as direction)
+            matcher = DegDecMNoDirRegex.Match(str);
+            if (matcher.Success) {
+                int degrees = Int32.Parse(matcher.Groups[1].Value);
+                double minutes = Double.Parse(matcher.Groups[2].Value);                
+                return DDecMToDecDeg(degrees, minutes);
             }
 
             return null;
