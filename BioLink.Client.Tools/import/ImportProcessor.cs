@@ -245,6 +245,9 @@ namespace BioLink.Client.Tools {
                 Object value = null;
                 if (!mapping.IsFixed) {
                     value = RowSource[index];
+                    if (value != null && value is String) {
+                        value = ((String)value).Replace("\\n", "\n");
+                    }
                 } else {
                     value = mapping.DefaultValue;
                 }
@@ -333,6 +336,11 @@ namespace BioLink.Client.Tools {
                     }
                 }
             }
+        }
+
+        protected void InsertOneToManys(string category, int id) {
+            InsertTraits(category, id);
+            InsertNotes(category, id);
         }
 
 
