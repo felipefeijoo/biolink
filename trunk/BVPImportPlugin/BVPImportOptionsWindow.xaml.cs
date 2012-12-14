@@ -86,6 +86,7 @@ namespace BioLink.Client.BVPImport {
 
         private void txtFilename_FileSelected(string filename) {
             this.Filename = filename;
+            PreviewDataSet();
         }
 
         private object BuildColumnHeader(String name) {
@@ -94,10 +95,6 @@ namespace BioLink.Client.BVPImport {
             t.TextAlignment = TextAlignment.Left;            
             t.Text = name;
             return t;
-        }
-
-        private void btnPreview_Click(object sender, RoutedEventArgs e) {
-            PreviewDataSet();
         }
 
     }

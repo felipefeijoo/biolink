@@ -14,8 +14,7 @@
         
         <Grid Grid.Row="0">
             <Label Content="Choose file:" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" Width="84" />
-            <my:FilenameTextBox Margin="96,6,87,0" Name="txtFilename" VerticalAlignment="Top"  Filter="Zip Files (*.zip)|*.zip|All files (*.*)|*.*" FileSelected="txtFilename_FileSelected" Text="{Binding Path=Filename, Mode=TwoWay}" />
-            <Button Content="_Preview" Height="23" HorizontalAlignment="Right" Margin="0,6,6,0" Name="btnPreview" VerticalAlignment="Top" Width="75" Click="btnPreview_Click" />
+            <my:FilenameTextBox Margin="96,6,6,0" Name="txtFilename" VerticalAlignment="Top"  Filter="Zip Files (*.zip)|*.zip|All files (*.*)|*.*" FileSelected="txtFilename_FileSelected" Text="{Binding Path=Filename, Mode=TwoWay}" />
         </Grid>
         <Grid Grid.Row="1">
             <ListView Margin="6" x:Name="lvwPreview">

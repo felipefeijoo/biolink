@@ -14,7 +14,8 @@ namespace BioLink.Client.BVPImport {
         public abstract String ExtractValue(BVPImportColumnDefinition coldef, GenericParserAdapter row, Dictionary<String, List<String>> extraData);
 
         protected String Default(BVPImportColumnDefinition columnDef, GenericParserAdapter row, Dictionary<String, List<String>> extraData) {
-            return row[columnDef.SourceColumnName];
+            var value = row[columnDef.SourceColumnName];
+            return value;
         }
     }
 
@@ -102,14 +103,14 @@ namespace BioLink.Client.BVPImport {
 
         private Regex _pattern = new Regex(@"^((?:[A-Z][.\s,]+)+)\s*(.*)$");
 
-        public ANICCollectorNameFormattingValueExtractor() : base(", ") {
+        public ANICCollectorNameFormattingValueExtractor() : base(" & ") {
             this.ValueFormatter = FormatName;
         }
 
         protected String FormatName(String value) {
             var m = _pattern.Match(value);
             if (m.Success) {
-                value = String.Format("{0}, {1}", m.Groups[2].Value.Trim(), m.Groups[1].Value.Trim());
+                value = String.Format("{0},{1}", m.Groups[2].Value.Trim(), m.Groups[1].Value.Trim());
             }
             return value;
         }

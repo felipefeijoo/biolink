@@ -38,14 +38,22 @@ namespace BioLink.Client.Tools {
 
         private List<TaxonRankName> _ranks;
         private CachedRegion _lastRegion;
-        private CachedSite _lastSite;
+        // private CachedSite _lastSite;
         private CachedSiteVisit _lastSiteVisit;
         private TaxonCache _taxonCache = new TaxonCache();
+
+        private static int MAX_CACHED_ROWS = 1000;
+
+        private List<CachedSite> _siteCache = new List<CachedSite>();
 
         protected override void InitImportImpl() {
             LogMsg("Caching rank data...");
             var taxonService = new TaxaService(User);
             _ranks = taxonService.GetOrderedRanks();
+        }
+
+        public CachedSite FindCachedSite(string name, string locality, string offsetDist, string offsetDir, string informalLocality, int localityType, double? x1, double? y1, double? x2, double? y2) {           
+            return _siteCache.Find((cs) => cs.Equals(name, locality, offsetDist, offsetDir, informalLocality, localityType, x1, y1, x2, y2));
         }
 
         protected override void ImportRowImpl(int rowId, System.Data.Common.DbConnection connection) {
@@ -66,43 +74,43 @@ namespace BioLink.Client.Tools {
                 case ImportLevel.Site:
                     regionNumber = GetRegionNumber();
                     siteNumber = GetSiteNumber(regionNumber);
-                    InsertTraits("Site", siteNumber);
+                    InsertOneToManys("Site", siteNumber);
                     break;
                 case ImportLevel.Visit:
                     regionNumber = GetRegionNumber();
                     siteNumber = GetSiteNumber(regionNumber);
-                    InsertTraits("Site", siteNumber);
+                    InsertOneToManys("Site", siteNumber);
                     siteVisitNumber = GetSiteVisitNumber(siteNumber);
-                    InsertTraits("SiteVisit", siteVisitNumber);
+                    InsertOneToManys("SiteVisit", siteVisitNumber);
                     break;
                 case ImportLevel.MaterialWithTaxa:
                     regionNumber = GetRegionNumber();
                     siteNumber = GetSiteNumber(regionNumber);
-                    InsertTraits("Site", siteNumber);
+                    InsertOneToManys("Site", siteNumber);
                     siteVisitNumber = GetSiteVisitNumber(siteNumber);
-                    InsertTraits("SiteVisit", siteVisitNumber);
+                    InsertOneToManys("SiteVisit", siteVisitNumber);
                     taxonNumber = GetTaxonNumber();
-                    InsertTraits("Taxon", taxonNumber);
+                    InsertOneToManys("Taxon", taxonNumber);
                     InsertCommonName(taxonNumber);
                     materialNumber = AddMaterial(siteVisitNumber, taxonNumber);
-                    InsertTraits("Material", materialNumber);
+                    InsertOneToManys("Material", materialNumber);
                     materialPartNumber = AddMaterialPart(materialNumber);
                     break;
                 case ImportLevel.MaterialWithoutTaxa:
                     regionNumber = GetRegionNumber();
                     siteNumber = GetSiteNumber(regionNumber);
-                    InsertTraits("Site", siteNumber);
+                    InsertOneToManys("Site", siteNumber);
                     siteVisitNumber = GetSiteVisitNumber(siteNumber);
-                    InsertTraits("SiteVisit", siteVisitNumber);
+                    InsertOneToManys("SiteVisit", siteVisitNumber);
                     InsertCommonName(taxonNumber);
                     materialNumber = AddMaterial(siteVisitNumber, -1);
-                    InsertTraits("Material", materialNumber);
+                    InsertOneToManys("Material", materialNumber);
                     materialPartNumber = AddMaterialPart(materialNumber);
                     break;
                 case ImportLevel.TaxaOnly:
                     taxonNumber = GetTaxonNumber();
                     InsertCommonName(taxonNumber);
-                    InsertTraits("Taxon", taxonNumber);
+                    InsertOneToManys("Taxon", taxonNumber);
                     break;
             }
         }
@@ -257,8 +265,10 @@ namespace BioLink.Client.Tools {
             // An explicit units mapping will override an implicit one inferred from a range, but if not, keep the inferred one, if any
             elevUnits = Get("Site.Elevation units", elevUnits);
 
-            if (_lastSite != null && _lastSite.Equals(strName, strLocal, strOffSetDis, strOffsetDir, strInformal, iCoordinateType, x1, y1, x2, y2)) {
-                return _lastSite.SiteID;
+            var cachedSite = FindCachedSite(strName, strLocal, strOffSetDis, strOffsetDir, strInformal, iLocalType, x1, y1, x2, y2);
+
+            if (cachedSite != null) {
+                return cachedSite.SiteID;
             } else {
                 // Create the Site object from the source material....
                 var site = new Site {
@@ -304,7 +314,11 @@ namespace BioLink.Client.Tools {
                     GeoNotes = Get("Site.Geological notes")
                 };
                 var siteID = Service.ImportSite(site);
-                _lastSite = new CachedSite { Name = site.SiteName, Locality = site.Locality, OffsetDistance = site.DistanceFromPlace, OffsetDirection = site.DirFromPlace, InformalLocality = site.InformalLocal, X1 = site.PosX1, Y1 = site.PosY1, X2 = site.PosX2, Y2 = site.PosY2, LocalityType = iLocalType, SiteID = siteID };
+                _siteCache.Add(new CachedSite { Name = site.SiteName, Locality = site.Locality, OffsetDistance = site.DistanceFromPlace, OffsetDirection = site.DirFromPlace, InformalLocality = site.InformalLocal, X1 = site.PosX1, Y1 = site.PosY1, X2 = site.PosX2, Y2 = site.PosY2, LocalityType = site.LocalityType, SiteID = siteID });
+                if (_siteCache.Count > MAX_CACHED_ROWS) {
+                    // remove the oldest...
+                    _siteCache.RemoveAt(0);
+                }
                 return siteID;
             }
         }

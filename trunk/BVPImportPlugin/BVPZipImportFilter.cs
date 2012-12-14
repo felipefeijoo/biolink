@@ -30,29 +30,53 @@ namespace BioLink.Client.BVPImport {
         }
 
         private void PreloadMappings(ImportWizardContext context) {
-            //foreach (ImportFieldMappingViewModel mapping in _model) {
-            //    if (string.IsNullOrEmpty(mapping.TargetColumn)) {
-            //        var candidate = _fields.Find((field) => {
-            //            if (!string.IsNullOrEmpty(mapping.SourceColumn)) {
-            //                // First try a simple match of the name...
-            //                if (field.DisplayName.Equals(mapping.SourceColumn, StringComparison.CurrentCultureIgnoreCase)) {
-            //                    return true;
-            //                };
-            //                // Next convert all underscores to spaces and try that....
 
-            //                var test = mapping.SourceColumn.Replace("_", " ");
-            //                if (field.DisplayName.Equals(test, StringComparison.CurrentCultureIgnoreCase)) {
-            //                    return true;
-            //                }
-            //            }
-            //            return false;
-            //        });
-            //        if (candidate != null) {
-            //            mapping.TargetColumn = string.Format("{0}.{1}", candidate.Category, candidate.DisplayName);
-            //            mapping.DefaultValue = null;
-            //        }
-            //    }
-            //}
+            var service = new ImportService(PluginManager.Instance.User);
+            var fields = service.GetImportFields();
+
+            var mappings = new List<ImportFieldMapping>();
+
+            if (_options != null && _options.RowSource != null) {
+                _options.RowSource.Reset();
+                var columns = _options.RowSource.ColumnNames;
+                foreach (String colName in columns) {
+                    var candidate = fields.Find((field) => {
+                        if (!string.IsNullOrEmpty(colName)) {
+                            // First try a simple match of the name...
+                            if (field.DisplayName.Equals(colName, StringComparison.CurrentCultureIgnoreCase)) {
+                                return true;
+                            };
+                            // Next convert all underscores to spaces and try that....
+
+                            var test = colName.Replace("_", " ");
+                            if (field.DisplayName.Equals(test, StringComparison.CurrentCultureIgnoreCase)) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    });
+
+                    var mapping = new ImportFieldMapping { SourceColumn = colName, TargetColumn = "Material.Other", DefaultValue = null, IsFixed = false };
+                    if (candidate != null) {
+                        mapping.TargetColumn = string.Format("{0}.{1}", candidate.Category, candidate.DisplayName);
+                    } else {
+                        DarwinCoreField dwc;
+                        if (Enum.TryParse<DarwinCoreField>(colName, out dwc)) {
+
+                            switch (dwc) {
+                                case DarwinCoreField.fieldNotes:
+                                case DarwinCoreField.validatorNotes:
+                                case DarwinCoreField.transcriberNotes:
+                                    mapping.TargetColumn = "Material.Notes";
+                                    break;
+                            }
+                        }
+                    }
+                    mappings.Add(mapping);
+                }                    
+            }
+
+            context.FieldMappings = mappings;
         }
 
         public override ImportRowSource CreateRowSource() {

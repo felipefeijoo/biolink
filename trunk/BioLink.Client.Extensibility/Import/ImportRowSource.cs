@@ -61,6 +61,16 @@ namespace BioLink.Client.Extensibility {
             Reader = Service.GetImportReader();
         }
 
+        public List<String> ColumnNames {
+            get {
+                var names = new List<String>();
+                for (int i = 0; i < ColumnCount; ++i) {
+                    names.Add(ColumnName(i));
+                }
+                return names;
+            }
+        }
+
         protected SQLiteDataReader Reader { get; private set; }
 
         public ImportStagingService Service { get; private set; }
