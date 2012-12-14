@@ -20,6 +20,8 @@ using BioLink.Data.Model;
 using System.Text.RegularExpressions;
 using BioLink.Client.Utilities;
 using System.Data;
+using System.IO;
+using System.Net;
 
 namespace BioLink.Data {
 
@@ -88,6 +90,7 @@ namespace BioLink.Data {
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological notes", Category = "Site", Description = "...", Validate = StringValidator });
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Other", Category = "Site", Description = "Other user defined field", Validate = StringValidator });
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Notes", Category = "Site", Description = "Other user defined text", Validate = StringValidator });
+            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Multimedia", Category = "Site", Description = "Either a filename or a URL to upload as multimedia", Validate = StringValidator });
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "ExistingSiteID", Category = "Site", Description = "Internal database id for an existing site (advanced)", Validate = IntegerValidator });
             #endregion
             #region Site Visit
@@ -101,6 +104,7 @@ namespace BioLink.Data {
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Casual Date", Category = "SiteVisit", Description = "A casual date for the site visit", Validate = StringValidator });
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Other", Category = "SiteVisit", Description = "Other user defined field", Validate = StringValidator });
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Notes", Category = "SiteVisit", Description = "Other user defined text", Validate = StringValidator });
+            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Multimedia", Category = "SiteVisit", Description = "Either a filename or a URL to upload as multimedia", Validate = StringValidator });
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "ExistingSiteVisitID", Category = "SiteVisit", Description = "Internal database id for an existing site visit (advanced)", Validate = IntegerValidator });
             #endregion
             #region Material
@@ -138,7 +142,8 @@ namespace BioLink.Data {
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Curation status", Category = "Material", Description = "Current curation status of this material", Validate = StringValidator });
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Subpart Notes", Category = "Material", Description = "Notes for the material sub part", Validate = StringValidator });
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Other", Category = "Material", Description = "Other user defined field", Validate = StringValidator });
-            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Notes", Category = "Material", Description = "Other user defined text", Validate = StringValidator });            
+            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Notes", Category = "Material", Description = "Other user defined text", Validate = StringValidator });
+            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Multimedia", Category = "Material", Description = "Either a filename or a URL to upload as multimedia", Validate = StringValidator });
             #endregion
             #region Taxon
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "KingdomType", Category = "Taxon", Description = "Defaults are P for Plantae, A for Animalia", Validate = StringValidator });
@@ -150,6 +155,7 @@ namespace BioLink.Data {
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Name Status", Category = "Taxon", Description = "The status of the available names.", Validate = StringValidator });
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Other", Category = "Taxon", Description = "Other user defined field", Validate = StringValidator });
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Notes", Category = "Taxon", Description = "Other user defined text", Validate = StringValidator });
+            ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "Multimedia", Category = "Taxon", Description = "Either a filename or a URL to upload as multimedia", Validate = StringValidator });
             ImportFieldDescriptors.Add(new FieldDescriptor { DisplayName = "ExistingTaxonID", Category = "Taxon", Description = "Internal database id for an existing Taxon (advanced)", Validate = IntegerValidator });            
             #endregion
             // END Import Field Descriptors
@@ -573,6 +579,36 @@ namespace BioLink.Data {
 
         #endregion
 
+
+        public bool ImportMultimedia(string cat, int intraCatId, string name, string fileOrUrl) {
+            var service = new SupportService(User);
+
+            byte[] bytes = null;
+            string extension = "";
+
+            if (fileOrUrl.StartsWith("http://", StringComparison.CurrentCultureIgnoreCase)) {
+                // it's a url - attempt to download the content
+                var client = new WebClient();
+                bytes = client.DownloadData(fileOrUrl);                
+            } else {
+                // assume its a file               
+                var file = new FileInfo(name);
+                if (file.Exists) {
+                    bytes = SystemUtils.GetBytesFromFile(file.FullName);
+                    extension = file.Extension;
+                }
+            }
+
+            if (bytes != null && bytes.Length > 0) {
+                var mmId = service.InsertMultimedia(name, extension, bytes);
+                if (mmId >= 0) {
+                    var mml = service.InsertMultimediaLink(cat, intraCatId, name, mmId, "Imported Multimedia");
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 
     public class UnitRange {

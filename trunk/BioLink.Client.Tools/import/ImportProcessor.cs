@@ -27,6 +27,7 @@ namespace BioLink.Client.Tools {
 
         protected Regex _TraitRegex = new Regex("^(.*)[.]Other$");
         protected Regex _NoteRegex = new Regex("^(.*)[.]Notes$");
+        protected Regex _MultimediaRegex = new Regex("^(.*)[.]Multimedia$");
 
         protected Dictionary<string, int> _fieldIndex = new Dictionary<string, int>();
         private int _errorCount;
@@ -311,47 +312,19 @@ namespace BioLink.Client.Tools {
             return def;
         }
 
-        protected void InsertNotes(string category, int id) {
-            foreach (ImportFieldMapping mapping in Mappings) {
-                if (!string.IsNullOrWhiteSpace(mapping.TargetColumn)) {
-                    var match = _NoteRegex.Match(mapping.TargetColumn);
-                    if (match.Success) {
-                        var candiateCategory = match.Groups[1].Value;
-                        if (!string.IsNullOrWhiteSpace(candiateCategory) && candiateCategory.Equals(category, StringComparison.CurrentCultureIgnoreCase)) {
-
-                            var valueObj = RowSource[mapping.SourceColumn];
-                            string strValue = null;
-                            if (valueObj != null) {
-                                strValue = valueObj.ToString();
-                            }
-
-                            if (string.IsNullOrWhiteSpace(strValue)) {
-                                strValue = mapping.DefaultValue;
-                            }
-
-                            if (!string.IsNullOrWhiteSpace(strValue)) {
-                                Service.ImportNote(category, id, mapping.SourceColumn, strValue);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
         protected void InsertOneToManys(string category, int id) {
             InsertTraits(category, id);
             InsertNotes(category, id);
+            InsertMultimedia(category, id);
         }
 
-
-        protected void InsertTraits(string category, int id) {
+        private void InsertOneToMany(String category, int id, Regex regex, Action<string, int, string, string> importMethod) {
             foreach (ImportFieldMapping mapping in Mappings) {
                 if (!string.IsNullOrWhiteSpace(mapping.TargetColumn)) {
-                    var match = _TraitRegex.Match(mapping.TargetColumn);
+                    var match = regex.Match(mapping.TargetColumn);
                     if (match.Success) {
                         var candiateCategory = match.Groups[1].Value;
                         if (!string.IsNullOrWhiteSpace(candiateCategory) && candiateCategory.Equals(category, StringComparison.CurrentCultureIgnoreCase)) {
-
                             var valueObj = RowSource[mapping.SourceColumn];
                             string strValue = null;
                             if (valueObj != null) {
@@ -363,12 +336,31 @@ namespace BioLink.Client.Tools {
                             }
 
                             if (!string.IsNullOrWhiteSpace(strValue)) {
-                                Service.ImportTrait(category, id, mapping.SourceColumn, strValue);
+                                importMethod(category, id, mapping.SourceColumn, strValue);
                             }
                         }
                     }
                 }
             }
+
+        }
+
+        protected void InsertMultimedia(string category, int id) {
+            InsertOneToMany(category, id, _MultimediaRegex, (cat, intraCatId, columnName, value) => {
+                Service.ImportMultimedia(cat, intraCatId, columnName, value);
+            });
+        }
+
+        protected void InsertNotes(string category, int id) {
+            InsertOneToMany(category, id, _NoteRegex, (cat, intraCatId, columnName, value) => {
+                Service.ImportNote(cat, intraCatId, columnName, value);
+            });
+        }
+
+        protected void InsertTraits(string category, int id) {
+            InsertOneToMany(category, id, _TraitRegex, (cat, intraCatId, columnName, value) => {
+                Service.ImportTrait(cat, intraCatId, columnName, value);
+            });
         }
 
         protected Window ParentWindow { get; set; }

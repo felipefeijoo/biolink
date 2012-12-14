@@ -41,7 +41,7 @@ namespace BioLink.Client.BVPImport {
         public void ProcessDwCField(String dwcField, String filename) {
             DarwinCoreField dwc;
             if (Enum.TryParse<DarwinCoreField>(dwcField, out dwc)) {
-                switch (dwc) {
+                switch (dwc) {                    
                     case DarwinCoreField.scientificName:
                         ColumnDefinitions.Add(new BVPImportColumnDefinition { OutputColumnName = "Genus", SourceColumnName = dwcField, SourceFilename = filename, ValueExtractor = new RegexCaptureValueExtractor(@"^(.+?)\s+(?:.*)$") });
                         ColumnDefinitions.Add(new BVPImportColumnDefinition { OutputColumnName = "Species", SourceColumnName = dwcField, SourceFilename = filename, ValueExtractor = new RegexCaptureValueExtractor(@"^(?:.+?)\s+(.*)$") });
@@ -82,8 +82,11 @@ namespace BioLink.Client.BVPImport {
                         break;
                 }
             } else {
-                // Not a Darwin Core Field? Just pass it straight through as is
+                // Not a Darwin Core Field? Just pass it straight through as is                
                 ColumnDefinitions.Add(new BVPImportColumnDefinition { OutputColumnName = dwcField, SourceColumnName = dwcField, SourceFilename = filename, ValueExtractor = new PassThroughValueExtractor() });
+                if (dwcField.Equals("taskID", StringComparison.CurrentCultureIgnoreCase)) {
+                    ColumnDefinitions.Add(new BVPImportColumnDefinition { OutputColumnName = DarwinCoreField.associatedMedia.ToString(), SourceColumnName = dwcField, SourceFilename = filename, ValueExtractor = new BVPImageUrlExtractor() });
+                }
             }
 
         }

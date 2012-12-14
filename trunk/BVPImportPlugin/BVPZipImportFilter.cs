@@ -69,6 +69,9 @@ namespace BioLink.Client.BVPImport {
                                 case DarwinCoreField.transcriberNotes:
                                     mapping.TargetColumn = "Material.Notes";
                                     break;
+                                case DarwinCoreField.associatedMedia:
+                                    mapping.TargetColumn = "Material.Multimedia";
+                                    break;
                             }
                         }
                     }
