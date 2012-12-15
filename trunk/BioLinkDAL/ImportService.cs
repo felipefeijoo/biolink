@@ -584,10 +584,16 @@ namespace BioLink.Data {
             var service = new SupportService(User);
 
             byte[] bytes = null;
-            string extension = "";
+            string filename = "";
+            var comment = "";
 
-            if (fileOrUrl.StartsWith("http://", StringComparison.CurrentCultureIgnoreCase)) {
+            var urlRegex = new Regex(@"^((http[s]?|ftp):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(.*)?(#[\w\-]+)?$");
+            var m = urlRegex.Match(fileOrUrl);
+
+            if (m.Success) {
                 // it's a url - attempt to download the content
+                filename = m.Groups[6].Value;
+                comment = "Imported from " + fileOrUrl;
                 var client = new WebClient();
                 bytes = client.DownloadData(fileOrUrl);                
             } else {
@@ -595,14 +601,20 @@ namespace BioLink.Data {
                 var file = new FileInfo(name);
                 if (file.Exists) {
                     bytes = SystemUtils.GetBytesFromFile(file.FullName);
-                    extension = file.Extension;
+                    filename = file.Name;
                 }
             }
 
             if (bytes != null && bytes.Length > 0) {
-                var mmId = service.InsertMultimedia(name, extension, bytes);
+                var extension = "";
+                if (!string.IsNullOrEmpty(filename) && filename.Contains('.')) {
+                    extension = filename.Substring(filename.LastIndexOf(".") + 1);
+                    filename = filename.Substring(0, filename.LastIndexOf("."));
+                }
+
+                var mmId = service.InsertMultimedia(filename, extension, bytes);
                 if (mmId >= 0) {
-                    var mml = service.InsertMultimediaLink(cat, intraCatId, name, mmId, "Imported Multimedia");
+                    var linkId = service.InsertMultimediaLink(cat, intraCatId, name, mmId, "Imported Multimedia");
                     return true;
                 }
             }
