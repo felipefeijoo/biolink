@@ -120,10 +120,13 @@ namespace BioLink.Client.BVPImport {
                 foreach (ZipEntry entry in zipfile) {
                     if (entry.FileName.Equals("tasks.csv", StringComparison.OrdinalIgnoreCase)) {
                         GetTaskColumns(entry, columnBuilder);
-                    } else if (entry.FileName.Equals("recordedBy.csv", StringComparison.OrdinalIgnoreCase)) {
+                    } else if (entry.FileName.Equals("recordedBy.csv", StringComparison.CurrentCultureIgnoreCase)) {
                         AddToExtraData(entry, "recordedBy", extra);
                         var valueExtractor = new ANICCollectorNameFormattingValueExtractor();
                         columnBuilder.ColumnDefinitions.Add(new BVPImportColumnDefinition { OutputColumnName = "Collector(s)", SourceColumnName = "recordedBy", SourceFilename = entry.FileName, ValueExtractor = valueExtractor });
+                    } else if (entry.FileName.Equals("associatedMedia.csv", StringComparison.CurrentCultureIgnoreCase)) {
+                        AddToExtraData(entry, "associatedMedia", extra);
+                        columnBuilder.ColumnDefinitions.Add(new BVPImportColumnDefinition { OutputColumnName = "associatedMedia", SourceColumnName = "associatedMedia", SourceFilename = entry.FileName, ValueExtractor = new AssociatedMediaValueExtractor() });
                     }
                 }
             }
@@ -160,19 +163,17 @@ namespace BioLink.Client.BVPImport {
         private void AddToExtraData(ZipEntry entry, String columnName, Dictionary<int, Dictionary<String, List<String>>> data) {
             var rowCount = 0;            
             IterateOverCSVZipEntry(entry, (parser) => {
-                if (rowCount > 0) {                    
-                    var taskId = Int32.Parse(parser["taskID"]);
-                    if (!data.ContainsKey(taskId)) {
-                        data[taskId] = new Dictionary<string, List<string>>();
-                    }
-                    var fieldMap = data[taskId];
-                    if (!fieldMap.ContainsKey(columnName)) {
-                        fieldMap[columnName] = new List<string>();
-                    }
-                    var fieldValues = fieldMap[columnName];
-                    var fieldValue = parser[columnName];
-                    fieldValues.Add(fieldValue);
-                } 
+                var taskId = Int32.Parse(parser["taskID"]);
+                if (!data.ContainsKey(taskId)) {
+                    data[taskId] = new Dictionary<string, List<string>>();
+                }
+                var fieldMap = data[taskId];
+                if (!fieldMap.ContainsKey(columnName)) {
+                    fieldMap[columnName] = new List<string>();
+                }
+                var fieldValues = fieldMap[columnName];
+                var fieldValue = parser[columnName];
+                fieldValues.Add(fieldValue);
                 rowCount++;
                 return true;
             });
