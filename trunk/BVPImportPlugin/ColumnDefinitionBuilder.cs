@@ -84,9 +84,9 @@ namespace BioLink.Client.BVPImport {
             } else {
                 // Not a Darwin Core Field? Just pass it straight through as is                
                 ColumnDefinitions.Add(new BVPImportColumnDefinition { OutputColumnName = dwcField, SourceColumnName = dwcField, SourceFilename = filename, ValueExtractor = new PassThroughValueExtractor() });
-                if (dwcField.Equals("taskID", StringComparison.CurrentCultureIgnoreCase)) {
-                    ColumnDefinitions.Add(new BVPImportColumnDefinition { OutputColumnName = DarwinCoreField.associatedMedia.ToString(), SourceColumnName = dwcField, SourceFilename = filename, ValueExtractor = new BVPImageUrlExtractor() });
-                }
+                //if (dwcField.Equals("taskID", StringComparison.CurrentCultureIgnoreCase)) {
+                //    ColumnDefinitions.Add(new BVPImportColumnDefinition { OutputColumnName = DarwinCoreField.associatedMedia.ToString(), SourceColumnName = dwcField, SourceFilename = filename, ValueExtractor = new BVPImageUrlExtractor() });
+                //}
             }
 
         }

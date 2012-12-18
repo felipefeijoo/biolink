@@ -210,34 +210,13 @@ namespace BioLink.Client.BVPImport {
 
     }
 
-    public class BVPImageUrlExtractor : ValueExtractor {
+    public class AssociatedMediaValueExtractor : ValueExtractor {
 
         public override string ExtractValue(BVPImportColumnDefinition coldef, GenericParserAdapter row, Dictionary<string, List<string>> extraData) {
-            int taskId;
-            if (Int32.TryParse(row["taskID"], out taskId)) {
-                var infoUrl = "http://volunteer.ala.org.au/ajax/taskInfo?taskId=" + taskId;
-                var request = WebRequest.Create(infoUrl);
-                var response = request.GetResponse();
-                //get response-stream, and use a streamReader to read the content
-                using(Stream s = request.GetResponse().GetResponseStream()) {
-                    using(StreamReader sr = new StreamReader(s)) {
-                        var jsonData = sr.ReadToEnd();
-                        var serializer = new JavaScriptSerializer();
-                        var map = serializer.DeserializeObject(jsonData) as Dictionary<String, Object>;
-                        if (map != null) {
-                            if (map.ContainsKey("multimedia")) {
-                                var mm = map["multimedia"] as Object[];
-                                if (mm != null) {
-                                    if (mm.Length > 0) {
-                                        var mmInfo = mm[0] as Dictionary<String, Object>;
-                                        if (mmInfo != null) {
-                                            return mmInfo["url"] as string;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+            if (extraData != null && extraData.ContainsKey(coldef.SourceColumnName)) {
+                var mediaList = extraData[coldef.SourceColumnName];
+                if (mediaList != null && mediaList.Count > 0) {
+                    return mediaList[0];
                 }
             }
             return null;
