@@ -29,6 +29,7 @@ namespace BioLink.Client.BVPImport {
             { DarwinCoreField.sex, "Gender" },
             { DarwinCoreField.stateProvince, "State/Province"},
             { DarwinCoreField.typeStatus, "Name status"},
+            { DarwinCoreField.basisOfRecord, "Source" }
         };
 
 
@@ -59,16 +60,17 @@ namespace BioLink.Client.BVPImport {
                     case DarwinCoreField.stateProvince:
                         ColumnDefinitions.Add(new BVPImportColumnDefinition { OutputColumnName = MapDwCColumnName(dwcField), SourceColumnName = dwcField, SourceFilename = filename, 
                             ValueExtractor = new ValueMappingValueExtractor(new Dictionary<String, String> {
-                                {"Queensland", "QLD" },
-                                {"Victoria", "VIC" },
-                                {"Tasmania", "TAS" },
-                                {"Western australia", "WA" },
-                                {"Northern Territory", "NT" },
-                                {"South Australia", "SA" },
-                                {"New South Wales", "NSW" },
-                                {"Australian Capital Territory", "ACT"}
+                                {"QLD", "Queensland" },
+                                {"VIC", "Victoria" },
+                                {"TAS", "Tasmania"},
+                                {"WA", "Western Australia" },
+                                {"NT", "Northern Territory"},
+                                {"SA", "South Australia" },
+                                {"NSW", "New South Wales" },
+                                {"ACT", "Australian Capital Territory"}
 
-                            }) });
+                            }) 
+                        });
                         break;
                     case DarwinCoreField.eventDate:
                         ColumnDefinitions.Add(new BVPImportColumnDefinition { OutputColumnName = "Start Date", SourceColumnName = dwcField, SourceFilename = filename, ValueExtractor = new StartDateValueExtractor() });
