@@ -138,9 +138,6 @@ namespace BioLink.Client.BVPImport {
                     value = m.Groups[1].Value;
                 }
             }
-
-            
-
             return value;
         }
     }
