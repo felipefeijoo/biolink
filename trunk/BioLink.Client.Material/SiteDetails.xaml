@@ -194,9 +194,9 @@
                             <Label Content="Upper:" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label17" VerticalAlignment="Top" Width="63" />
                             <Label Content="Lower:" Height="28" HorizontalAlignment="Left" Margin="6,38,0,0" Name="label18" VerticalAlignment="Top" Width="63" />
                             <Label Content="Depth:" Height="28" HorizontalAlignment="Left" Margin="6,69,0,0" Name="lblDepth" VerticalAlignment="Top" Width="63" />
-                            <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="75,8,0,0" Name="txtElevUpper" VerticalAlignment="Top" Width="120" Text="{Binding ElevUpper}" />
-                            <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="75,40,0,0" Name="txtElevLower" VerticalAlignment="Top" Width="120" Text="{Binding ElevLower}" />
-                            <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="75,71,0,0" Name="txtElevDepth" VerticalAlignment="Top" Width="120" Text="{Binding ElevDepth}" />
+                            <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="75,8,0,0" Name="txtElevUpper" VerticalAlignment="Top" Width="120" Text="{Binding ElevUpper, TargetNullValue=''}" />
+                            <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="75,40,0,0" Name="txtElevLower" VerticalAlignment="Top" Width="120" Text="{Binding ElevLower, TargetNullValue=''}" />
+                            <ext:TextBox Height="23" HorizontalAlignment="Left" Margin="75,71,0,0" Name="txtElevDepth" VerticalAlignment="Top" Width="120" Text="{Binding ElevDepth, TargetNullValue=''}" />
                             <Label Content="Units:" Height="28" HorizontalAlignment="Left" Margin="201,6,0,0" Name="label20" VerticalAlignment="Top" Width="63" />
                             <Label Content="Source:" Height="28" HorizontalAlignment="Left" Margin="201,38,0,0" Name="label21" VerticalAlignment="Top" Width="63" />
                             <Label Content="Error:" Height="28" HorizontalAlignment="Left" Margin="201,69,0,0" Name="label22" VerticalAlignment="Top" Width="63" />

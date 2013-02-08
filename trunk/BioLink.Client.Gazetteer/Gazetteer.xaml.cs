@@ -103,10 +103,12 @@ namespace BioLink.Client.Gazetteer {
         }
 
         void Gazetteer_Loaded(object sender, RoutedEventArgs e) {
-            string lastFile = Config.GetUser(_owner.User, "gazetteer.lastFile", "");
-            if (!String.IsNullOrEmpty(lastFile)) {
-                var gazFile = FindOrAddToMRU(lastFile);
-                cmbFile.SelectedItem = gazFile;
+            if (_service == null || cmbFile.SelectedItem == null) {
+                string lastFile = Config.GetUser(_owner.User, "gazetteer.lastFile", "");
+                if (!String.IsNullOrEmpty(lastFile)) {
+                    var gazFile = FindOrAddToMRU(lastFile);
+                    cmbFile.SelectedItem = gazFile;
+                }
             }
         }
 
@@ -182,7 +184,8 @@ namespace BioLink.Client.Gazetteer {
                 var divisions = _service.GetDivisions();
                 cmbDivision.ItemsSource = divisions;
                 cmbDivision.SelectedIndex = 0;
-                AddFileToMRU(filename);                
+                AddFileToMRU(filename);
+                Config.SetUser(_owner.User, "gazetteer.lastFile", filename);
             } catch (Exception ex) {
                 ErrorMessage.Show(ex.ToString());
             }

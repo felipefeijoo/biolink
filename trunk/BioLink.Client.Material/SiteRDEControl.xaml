@@ -50,10 +50,10 @@
                     <ext:TextBox Grid.Column="9" Grid.Row="2" Height="23" Name="txtError" Text="{Binding LLError}" />
                     
                     <Label Content="Elev. Upper:" Grid.Row="3" />
-                    <ext:TextBox Height="23" Name="txtElevUpper" Text="{Binding ElevUpper}" Grid.Column="1" Grid.Row="3" />
+                    <ext:TextBox Height="23" Name="txtElevUpper" Text="{Binding ElevUpper, TargetNullValue=''}" Grid.Column="1" Grid.Row="3" />
                     
                     <Label Content="Lower:" Grid.Column="2" Grid.Row="3" />
-                    <ext:TextBox Height="23" Name="txtElevLower" Text="{Binding ElevLower}" Grid.Column="3" Grid.Row="3" />
+                    <ext:TextBox Height="23" Name="txtElevLower" Text="{Binding ElevLower, TargetNullValue=''}" Grid.Column="3" Grid.Row="3" />
 
                     <Label Content="Units:" Grid.Column="4" Grid.Row="3" />
                     <ext:PickListControl Height="23" Name="txtUnits" Text="{Binding ElevUnits}" Grid.Column="5" Grid.Row="3" />
