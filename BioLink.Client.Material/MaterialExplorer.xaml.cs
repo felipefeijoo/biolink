@@ -315,6 +315,9 @@ namespace BioLink.Client.Material {
                 case SiteExplorerNodeType.Trap:
                     mergeAction = new MergeTrapCommand(oldNode.Model, newNode.Model);
                     break;
+                case SiteExplorerNodeType.Region:
+                    mergeAction = new MergeRegionCommand(oldNode.Model, newNode.Model);
+                    break;
             }
 
             if (mergeAction != null) {

@@ -98,4 +98,24 @@ namespace BioLink.Client.Material {
 
     }
 
+    public class MergeRegionCommand : GenericDatabaseCommand<SiteExplorerNode> {
+
+        public MergeRegionCommand(SiteExplorerNode source, SiteExplorerNode dest) : base(source) {
+            Dest = dest;
+        }
+
+        protected override void ProcessImpl(User user) {
+            var service = new MaterialService(user);
+            service.MergeRegion(Model.ElemID, Dest.ElemID);
+        }
+
+        public SiteExplorerNode Dest { get; private set; }
+
+        protected override void BindPermissions(PermissionBuilder required) {
+            required.Add(PermissionCategory.SPARC_EXPLORER, PERMISSION_MASK.ALLOW);
+        }
+
+    }
+
+
 }

@@ -79,6 +79,9 @@ namespace BioLink.Client.BVPImport {
                     case DarwinCoreField.dateIdentified:
                         ColumnDefinitions.Add(new BVPImportColumnDefinition { OutputColumnName = MapDwCColumnName(dwcField), SourceColumnName = dwcField, SourceFilename = filename, ValueExtractor = new StartDateValueExtractor() });
                         break;
+                    case DarwinCoreField.identifiedBy:
+                        ColumnDefinitions.Add(new BVPImportColumnDefinition { OutputColumnName =  MapDwCColumnName(dwcField), SourceColumnName = dwcField, SourceFilename = filename, ValueExtractor = new ANICIdentifiedByValueExtractor() });
+                        break;
                     default:
                         ColumnDefinitions.Add(new BVPImportColumnDefinition { OutputColumnName = MapDwCColumnName(dwcField), SourceColumnName = dwcField, SourceFilename = filename });
                         break;

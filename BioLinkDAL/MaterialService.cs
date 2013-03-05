@@ -276,6 +276,10 @@ namespace BioLink.Data {
             StoredProcUpdate("spRegionMove", _P("intRegionID", regionId), _P("intNewParentID", newParentID));
         }
 
+        public void MergeRegion(int oldRegionId, int newRegionID) {
+            StoredProcUpdate("spRegionMerge", _P("intOldRegionID", oldRegionId), _P("intNewRegionID", newRegionID));
+        }
+
         #endregion
 
         #region Site Group
