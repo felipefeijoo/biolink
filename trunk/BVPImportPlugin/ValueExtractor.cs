@@ -102,20 +102,22 @@ namespace BioLink.Client.BVPImport {
 
     }
 
-    public class ANICCollectorNameFormattingValueExtractor : ConcatExtraDataFieldsValueExtractor {
+    public class ANICIdentifiedByValueExtractor : ValueExtractor {
 
-        private Regex _pattern = new Regex(@"^((?:[A-Z][.\s,]+)+)\s*(.*)$");
+        public override string ExtractValue(BVPImportColumnDefinition coldef, GenericParserAdapter row, Dictionary<string, List<string>> extraData) {
+            var value = row[coldef.SourceColumnName];
+            return ANICUtils.ConvertNameFormat(value);
+        }
+    }
+
+    public class ANICCollectorNameFormattingValueExtractor : ConcatExtraDataFieldsValueExtractor {
 
         public ANICCollectorNameFormattingValueExtractor() : base(" & ") {
             this.ValueFormatter = FormatName;
         }
 
         protected String FormatName(String value) {
-            var m = _pattern.Match(value);
-            if (m.Success) {
-                value = String.Format("{0},{1}", m.Groups[2].Value.Trim(), m.Groups[1].Value.Trim());
-            }
-            return value;
+            return ANICUtils.ConvertNameFormat(value);
         }
     }
 

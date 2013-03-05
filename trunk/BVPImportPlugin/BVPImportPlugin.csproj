@@ -53,7 +53,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ANICUtils.cs" />
     <Compile Include="BVPImportPlugin.cs" />
+    <Compile Include="BVPImportSourceBuilder.cs" />
     <Compile Include="BVPZipImportFilter.cs" />
     <Compile Include="ColumnDefinitionBuilder.cs" />
     <Compile Include="DarwinCoreField.cs" />
