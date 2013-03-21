@@ -3,6 +3,21 @@
 
 = Release Notes =
 
+== !BioLink Version 3.0.570 ==
+
+!BioLink 3.0.560 22 Mar 2013
+
+This is the eighth "fix" release for BioLink 3.0. It addresses issues raised since build 570
+
+=== New Features ===
+
+ * ALA Biodiversity Volunteer Portal import plugin - Allows data sourced from the ALA BVP to be easily imported into BioLink databases
+ * Added support to import multimedia via URL when importing specimen data
+
+=== Issues addressed in this issue ===
+
+ * Issue 188	Site Elevation will not accept an empty value	 
+ * Issue 189	eGaz loses track of its currently connected gazetteer when it loses focus
 
 == !BioLink Version 3.0.560 ==
 
