@@ -91,7 +91,12 @@ namespace BioLink.Client.Tools {
             var loanTraits = supportSevice.GetTraits(TraitCategoryType.Loan.ToString(), LoanID);
             var bytes = supportSevice.GetMultimediaBytes(mmID);
             var template = Encoding.ASCII.GetString(bytes);
-            var content = LoanFormGenerator.GenerateLoanForm(template, loan, loanMaterial, loanTraits);
+            
+            var originator = loan.OriginatorID != 0 ? service.GetContact(loan.OriginatorID) : null;
+            var requestor = loan.RequestorID != 0 ? service.GetContact(loan.RequestorID) : null;
+            var receiver = loan.ReceiverID != 0 ? service.GetContact(loan.ReceiverID) : null;
+
+            var content = LoanFormGenerator.GenerateLoanForm(template, loan, loanMaterial, loanTraits, originator, requestor, receiver);
 
             var filename = ChooseFilename(loan);
 

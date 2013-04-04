@@ -12,7 +12,7 @@ namespace BioLink.Client.Tools {
 
     public static class LoanFormGenerator {
 
-        public static string GenerateLoanForm(string template, Loan loan, List<LoanMaterial> material, List<Trait> traits) {
+        public static string GenerateLoanForm(string template, Loan loan, List<LoanMaterial> material, List<Trait> traits, Contact originator, Contact requestor, Contact receiver) {            
             var sb = new StringBuilder();
             var reader = new StringReader(template);
             int i;
@@ -24,7 +24,7 @@ namespace BioLink.Client.Tools {
                     if (ch == '<') {
                         var placeHolder = ReadPlaceHolder(reader, rtfbuffer);
                         if (!string.IsNullOrEmpty(placeHolder)) {
-                            var value = SubstitutePlaceHolder(placeHolder, loan, material, traits);
+                            var value = SubstitutePlaceHolder(placeHolder, loan, material, traits, originator, requestor, receiver);
                             if (!string.IsNullOrEmpty(value)) {
                                 if (rtfbuffer.Length > 0) {
                                     sb.Append(rtfbuffer.ToString());
@@ -114,7 +114,7 @@ namespace BioLink.Client.Tools {
             return null;
         }
 
-        private static string SubstitutePlaceHolder(string key, Loan loan, IEnumerable<LoanMaterial> material, IEnumerable<Trait> traits) {
+        private static string SubstitutePlaceHolder(string key, Loan loan, IEnumerable<LoanMaterial> material, IEnumerable<Trait> traits, Contact originator, Contact requestor, Contact receiver) {
             var sb = new StringBuilder();
 
             // Special placeholders
@@ -149,6 +149,32 @@ namespace BioLink.Client.Tools {
                         }
                     }
                 }
+            } else if (key.Contains(".")) {
+                // is a property of a linked object (currently just the three different contacts attached to the loan)
+                // e.g. receiver.EMail
+                var bits = key.Split('.');
+
+                if (bits.Length > 0) {
+                    Object srcObject = null;
+                    switch (bits[0].ToLower()) {
+                        case "receiver":
+                            srcObject = receiver;
+                            break;
+                        case "requestor":
+                            srcObject = requestor;
+                            break;
+                        case "originator":
+                            srcObject = originator;
+                            break;
+                    }
+
+                    if (srcObject != null) {
+                        var value = GetPropertyValue(srcObject, bits[1]);
+                        if (!string.IsNullOrEmpty(value)) {
+                            sb.Append(RTFUtils.EscapeUnicode(value));
+                        }
+                    }
+                }
 
             } else {
                 // single value from the Loan model...
@@ -160,6 +186,15 @@ namespace BioLink.Client.Tools {
             return sb.ToString();
         }
 
+        /// <summary>
+        /// This function attempts to extract the value of the named property from an object.
+        /// It first tries the name as it is passed in. If no such property can be found, it then
+        /// checks to see if the property passed starts with a known database column type prefix (e.g. vchr), and if it does,
+        /// it strips that off, and tries again. In this manner vchrName and Name will both retrieve the 'Name' property (if it exists) of the object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="propertyName"></param>
+        /// <returns></returns>
         private static string GetPropertyValue(object obj, string propertyName) {
 
             var p = obj.GetType().GetProperty(propertyName);
