@@ -288,7 +288,7 @@ namespace BioLink.Data {
                         strWorkingClause += " LEFT OUTER JOIN ";
                         strWorkingClause += " vwAssociateText " + GetTableAlias(strTABLE_ASSOC);
                         strWorkingClause += " ON (" + GetTableAlias(strTABLE_BIOTA) + ".intBiotaID = " + GetTableAlias(strTABLE_ASSOC) + ".FromBiotaID";
-                        strWorkingClause += " AND " + GetTableAlias(strTABLE_MATERIAL) + ".intMaterialID = " + GetTableAlias(strTABLE_ASSOC) + ".FromMaterialID))";
+                        strWorkingClause += " OR " + GetTableAlias(strTABLE_MATERIAL) + ".intMaterialID = " + GetTableAlias(strTABLE_ASSOC) + ".FromMaterialID))";
                         lngLevels++;
                     } else if (TableRequired(strTABLE_BIOTA)) {
                         strWorkingClause += "\r\n\t";

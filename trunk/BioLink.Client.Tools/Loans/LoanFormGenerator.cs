@@ -5,46 +5,45 @@ using System.Text;
 using BioLink.Data;
 using BioLink.Data.Model;
 using System.IO;
+using BioLink.Client.Extensibility;
 using BioLink.Client.Utilities;
 using System.Text.RegularExpressions;
 
 namespace BioLink.Client.Tools {
 
-    public static class LoanFormGenerator {
+    public static class LoanFormGeneratorFactory {
 
-        public static string GenerateLoanForm(string template, Loan loan, List<LoanMaterial> material, List<Trait> traits, Contact originator, Contact requestor, Contact receiver) {            
-            var sb = new StringBuilder();
-            var reader = new StringReader(template);
-            int i;
-            var rtfbuffer = new StringBuilder();
-            while ((i = reader.Read()) >= 0) {
-                char? ch = (char)i;
-                if (ch == '<') {
-                    ch = SkipRTF(reader, rtfbuffer);
-                    if (ch == '<') {
-                        var placeHolder = ReadPlaceHolder(reader, rtfbuffer);
-                        if (!string.IsNullOrEmpty(placeHolder)) {
-                            var value = SubstitutePlaceHolder(placeHolder, loan, material, traits, originator, requestor, receiver);
-                            if (!string.IsNullOrEmpty(value)) {
-                                if (rtfbuffer.Length > 0) {
-                                    sb.Append(rtfbuffer.ToString());
-                                    rtfbuffer.Clear();
-                                }
-                                sb.Append(value);
-                            }
-                        }
-                    } else {
-                        sb.AppendFormat("<{0}{1}", rtfbuffer, ch);
-                    }
-                } else {
-                    sb.Append(ch);
-                }
-            }
+        public static AbstractLoanFormGenerator GetLoanFormGenerator(Multimedia template) {
 
-            return sb.ToString();
+            var extension = (template == null ? "" : (template.FileExtension == null ? "" : template.FileExtension));
+
+            if (extension.Equals("docx", StringComparison.CurrentCultureIgnoreCase)) {
+                // Do OpenXML template substitution
+                return new OpenXMLLoanFormGenerator();                
+            } else if (extension.Equals("rtf", StringComparison.CurrentCultureIgnoreCase)) {
+                // Old fashioned RTF field substitution
+                return new RTFLoanFormGenerator();                
+            } 
+
+            return null;
         }
 
-        private static int CountTotalSpecimens(IEnumerable<LoanMaterial> material) {
+    }
+
+    public abstract class AbstractLoanFormGenerator {
+
+        public abstract FileInfo GenerateLoanForm(Multimedia template, Loan loan, List<LoanMaterial> material, List<Trait> traits, Contact originator, Contact requestor, Contact receiver);
+
+        protected abstract String NewLineSequence { get; }
+
+        protected SupportService SupportService {
+            get {
+                var user = PluginManager.Instance.User;
+                return new SupportService(user);
+            }
+        }
+
+        protected int CountTotalSpecimens(IEnumerable<LoanMaterial> material) {
             // Count the total number of specimens currently attached to this loan. Sometimes specimen counts are represented as "1 x adult" etc,
             // so we be a bit liberal in our interpretation.
             var specimenCountRegex = new Regex(@"[^\d]*(\d+)[^\d]*");
@@ -62,59 +61,10 @@ namespace BioLink.Client.Tools {
                 return subtotal;
             });
 
-            return (int) dblTotal;
+            return (int)dblTotal;
         }
 
-        private static string ReadPlaceHolder(TextReader reader, StringBuilder rtfbuffer) {
-            var sb = new StringBuilder();
-            char? ch;
-
-            while ((ch = SkipRTF(reader, rtfbuffer)).HasValue) {
-                if (ch == '>') {
-                    ch = SkipRTF(reader, rtfbuffer);
-                    if (ch.HasValue && ch == '>') {
-                        break;
-                    } 
-                    sb.AppendFormat("<{0}", ch);                    
-                } else if (ch != '\n' && ch != '\r') {
-                    sb.Append(ch);
-                } 
-            }
-
-            return sb.ToString();
-        }
-
-        private static char? SkipRTF(TextReader reader, StringBuilder rtfbuffer) {
-            int i;
-            var incontrolword = false;
-            while ((i = reader.Read()) >= 0) {
-                var ch = (char)i;
-                if (ch == '}' || ch == '{') {
-                    incontrolword = false;
-                    rtfbuffer.Append(ch);
-                    continue;
-                }
-
-                if (ch == '\\') {
-                    rtfbuffer.Append(ch);
-                    incontrolword = true;
-                    continue;
-                }
-
-                if (incontrolword) {
-                    rtfbuffer.Append(ch);
-                    if (ch == ' ') {
-                        incontrolword = false;
-                    }
-                    continue;
-                }
-
-                return ch;
-            }
-            return null;
-        }
-
-        private static string SubstitutePlaceHolder(string key, Loan loan, IEnumerable<LoanMaterial> material, IEnumerable<Trait> traits, Contact originator, Contact requestor, Contact receiver) {
+        protected string SubstitutePlaceHolder(string key, Loan loan, IEnumerable<LoanMaterial> material, IEnumerable<Trait> traits, Contact originator, Contact requestor, Contact receiver) {
             var sb = new StringBuilder();
 
             // Special placeholders
@@ -145,7 +95,7 @@ namespace BioLink.Client.Tools {
                             if (!string.IsNullOrEmpty(value)) {
                                 sb.Append(RTFUtils.EscapeUnicode(value));
                             }
-                            sb.Append(++i < fields.Length ? ", " : ". \\par\\pard ");
+                            sb.Append(++i < fields.Length ? ", " : String.Format(". {0}", NewLineSequence));
                         }
                     }
                 }
@@ -195,8 +145,7 @@ namespace BioLink.Client.Tools {
         /// <param name="obj"></param>
         /// <param name="propertyName"></param>
         /// <returns></returns>
-        private static string GetPropertyValue(object obj, string propertyName) {
-
+        protected string GetPropertyValue(object obj, string propertyName) {
             var p = obj.GetType().GetProperty(propertyName);
             if (p == null) {
                 var prefixes = MapperBase.KNOWN_TYPE_PREFIXES.Split(',');
