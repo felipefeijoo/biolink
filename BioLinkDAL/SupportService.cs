@@ -1244,6 +1244,8 @@ namespace BioLink.Data {
                     criteria.FormatOption = "d MMM, yyyy";
                 } else if (field.DataType.Equals("Longitude", StringComparison.CurrentCultureIgnoreCase) || field.DataType.Equals("latitude", StringComparison.CurrentCultureIgnoreCase)) {
                     criteria.FormatOption = "dms";
+                } else if ("rtf".Equals(field.Format)) {
+                    criteria.FormatOption = "RTF";
                 }
             }
 
@@ -1263,8 +1265,8 @@ namespace BioLink.Data {
                         results.AddRange(GetPhraseValues("QueryFormatOptions_Coordinate"));
                         break;
                     case "rtf":
-                        results.Add("raw");
-                        results.Add("plain");
+                        results.Add("RTF");
+                        results.Add("Plain");
                         break;
                 }
             }
@@ -1353,7 +1355,12 @@ namespace BioLink.Data {
             list.AddRange(ExtractTraits("SiteVisit", "SiteVisit", "tblSiteVisit"));
             list.AddRange(ExtractTraits("Material", "Material", "tblMaterial"));
 
+            // And Note fields for key nouns
             list.AddRange(ExtractNotes("Taxon", "Nomenclature", "tblBiota"));
+            list.AddRange(ExtractNotes("Region", "PoliticalRegion", "tblPoliticalRegion"));
+            list.AddRange(ExtractNotes("Site", "Site", "tblSite"));
+            list.AddRange(ExtractNotes("SiteVisit", "SiteVisit", "tblSiteVisit"));
+            list.AddRange(ExtractNotes("Material", "Material", "tblMaterial"));
 
             list.ForEach(fd => fd.AllowedOptions = GetAllowedOptionsForField(fd));
 
@@ -1365,7 +1372,7 @@ namespace BioLink.Data {
             var list = new List<FieldDescriptor>();
 
             StoredProcReaderForEach("spNoteTypeListForCategory", reader => {
-                var desc = new FieldDescriptor { TableName = String.Format("note.{0}.{1}.{2}", table, reader["ID"], reader["CategoryID"]), FieldName = reader["Note"] as string, Category = fieldCategory };
+                var desc = new FieldDescriptor { TableName = String.Format("note.{0}.{1}.{2}", table, reader["ID"], reader["CategoryID"]), FieldName = reader["Note"] as string, Category = fieldCategory, DataType = "Text" };
                 desc.DisplayName = "[Note] " + desc.FieldName;
                 desc.Description = "Note category";
                 desc.Format = "rtf";
@@ -1496,7 +1503,7 @@ namespace BioLink.Data {
                             }
                             break;
                         case "rtf":
-                            if ("plain".Equals(formatOption)) {
+                            if ("plain".Equals(formatOption, StringComparison.CurrentCultureIgnoreCase)) {
                                 m[alias] = (value, reader) => {
                                     return RTFUtils.StripMarkup(value as String);
                                 };
