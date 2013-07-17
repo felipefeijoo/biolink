@@ -1262,6 +1262,10 @@ namespace BioLink.Data {
                     case "longitude":
                         results.AddRange(GetPhraseValues("QueryFormatOptions_Coordinate"));
                         break;
+                    case "rtf":
+                        results.Add("raw");
+                        results.Add("plain");
+                        break;
                 }
             }
             return results;
@@ -1349,18 +1353,36 @@ namespace BioLink.Data {
             list.AddRange(ExtractTraits("SiteVisit", "SiteVisit", "tblSiteVisit"));
             list.AddRange(ExtractTraits("Material", "Material", "tblMaterial"));
 
+            list.AddRange(ExtractNotes("Taxon", "Nomenclature", "tblBiota"));
+
             list.ForEach(fd => fd.AllowedOptions = GetAllowedOptionsForField(fd));
 
             return list;
         }
+
+        private IEnumerable<FieldDescriptor> ExtractNotes(string noteCategory, string fieldCategory, string table) {
+
+            var list = new List<FieldDescriptor>();
+
+            StoredProcReaderForEach("spNoteTypeListForCategory", reader => {
+                var desc = new FieldDescriptor { TableName = String.Format("note.{0}.{1}.{2}", table, reader["ID"], reader["CategoryID"]), FieldName = reader["Note"] as string, Category = fieldCategory };
+                desc.DisplayName = "[Note] " + desc.FieldName;
+                desc.Description = "Note category";
+                desc.Format = "rtf";
+                list.Add(desc);
+            }, _P("vchrCategory", noteCategory));
+
+            return list;
+        }
+
 
         private IEnumerable<FieldDescriptor> ExtractTraits(string traitCategory, string fieldCategory, string table) {
 
             var list = new List<FieldDescriptor>();
 
             StoredProcReaderForEach("spTraitTypeListForCategory", reader => {
-                                                                      var desc = new FieldDescriptor {TableName = String.Format("{0}.{1}.{2}", table, reader["ID"], reader["CategoryID"]), FieldName = reader["Trait"] as string, Category = fieldCategory};
-                                                                      desc.DisplayName = desc.FieldName;
+                var desc = new FieldDescriptor {TableName = String.Format("trait.{0}.{1}.{2}", table, reader["ID"], reader["CategoryID"]), FieldName = reader["Trait"] as string, Category = fieldCategory};
+                desc.DisplayName = "[Trait] " + desc.FieldName;
                 desc.Description = "Trait category";
 
                 list.Add(desc);
@@ -1458,7 +1480,7 @@ namespace BioLink.Data {
                 string alias = c.Alias;
                 var formatOption = c.FormatOption;
                 if (string.IsNullOrEmpty(alias)) {
-                    alias = c.Field.DisplayName;
+                    alias = QuerySQLGenerator.NormaliseAlias(c.Field.DisplayName);
                 }
 
                 if (!string.IsNullOrEmpty(c.Field.Format)) {
@@ -1471,6 +1493,13 @@ namespace BioLink.Data {
                             if (!string.IsNullOrEmpty(formatOption)) {
                                 var coordType = (CoordinateType) Enum.Parse(typeof (CoordinateType), c.Field.Format);
                                 m[alias] = (value, reader) => FormatCoordinate(value, formatOption, coordType);                                
+                            }
+                            break;
+                        case "rtf":
+                            if ("plain".Equals(formatOption)) {
+                                m[alias] = (value, reader) => {
+                                    return RTFUtils.StripMarkup(value as String);
+                                };
                             }
                             break;
                     }

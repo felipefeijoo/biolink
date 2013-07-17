@@ -77,6 +77,7 @@ namespace BioLink.Data {
         private List<String> _hiddenFieldList = new List<String>();
 
         private List<string> _traitClauses = new List<string>();
+        private List<string> _noteClauses = new List<string>();
 
 
         private List<String> _whereClause = new List<String>();
@@ -126,6 +127,16 @@ namespace BioLink.Data {
                         where += " AND ";
                     }
                     where += trait.Substring(trait.IndexOf((char)1) + 1);
+                }
+            }
+
+            foreach (String note in _noteClauses) {
+                if (note.Contains((char)1)) {
+                    // Add the joining 'and' if the WHERE clause has contents.
+                    if (where != "") {
+                        where += " AND ";
+                    }
+                    where += note.Substring(note.IndexOf((char)1) + 1);
                 }
             }
 
@@ -371,6 +382,15 @@ namespace BioLink.Data {
                 lngLevels++;
             }
 
+            // Add the notes
+            foreach (string note in _noteClauses) {
+                if (note.IndexOf((char)1) > 0) {
+                    strWorkingClause += "\r\n\t" + " " + note.Substring(0, note.IndexOf((char)1)) + ")";
+                } else {
+                    strWorkingClause += "\r\n\t" + " " + note + ")";
+                }
+                lngLevels++;
+            }
 
             // add the beginning parenthesis.
             for (int i = 0; i < lngLevels; ++i) {
@@ -380,27 +400,50 @@ namespace BioLink.Data {
             return strWorkingClause;
         }
 
+        private static Regex DISPLAY_NAME_FILTER_REGEX = new Regex("^[\\[]\\w+[\\]](.*)$");
+
+        public static String NormaliseAlias(String alias) {
+            var matcher = DISPLAY_NAME_FILTER_REGEX.Match(alias);
+            if (matcher.Success) {
+                alias = matcher.Groups[1].Value.Trim();
+            }
+            return alias;
+        }
+
         private void SplitField(QueryCriteria c) {
             string traitID, traitCatID, traitTableName, traitTableAlias = null;
             bool isTrait = IsTrait(c.Field, out traitID, out traitCatID, out traitTableName);
+            bool isNote = false;
             if (isTrait) {
                 traitTableAlias = string.Format("T{0}", _traitClauses.Count + 1);
                 AddToTraitList(traitTableAlias, traitID, traitCatID, traitTableName, FleshCriteria(c.Criteria, "", traitTableAlias + ".vchrValue"));
                 AddTable(traitTableName);
             } else {
-                AddTable(c.Field.TableName);
+                isNote = IsNote(c.Field, out traitID, out traitCatID, out traitTableName);
+                if (isNote) {
+                    traitTableAlias = string.Format("N{0}", _noteClauses.Count + 1);
+                    AddToNoteList(traitTableAlias, traitID, traitCatID, traitTableName, FleshCriteria(c.Criteria, "", traitTableAlias + ".txtNote"));
+                    AddTable(traitTableName);
+                } else {
+                    AddTable(c.Field.TableName);
+                }
             }
 
             string alias = c.Alias;
             if (string.IsNullOrEmpty(alias)) {
-                alias = c.Field.DisplayName;
+                alias = NormaliseAlias(c.Field.DisplayName);
             }
 
             if (isTrait) {
-
                 AddTraitToFieldList(c.Field.FieldName, c.Output, traitTableAlias, alias, traitID, traitCatID, traitTableName);
                 if (!String.IsNullOrEmpty(c.Sort)) {
                     AddToSortList(c.Sort, traitTableAlias, "vchrValue");
+                }
+
+            } else if (isNote) {
+                AddNoteToFieldList(c.Field.FieldName, c.Output, traitTableAlias, alias, traitID, traitCatID, traitTableName);
+                if (!String.IsNullOrEmpty(c.Sort)) {
+                    AddToSortList(c.Sort, traitTableAlias, "txtNote");
                 }
             } else {
                 // Add the field to the list.
@@ -451,6 +494,20 @@ namespace BioLink.Data {
                     _fieldList.Add(pstrTraitTableAlias + ".vchrValue AS [" + pstrAlias + "]");
                 }
 
+            }
+        }
+
+        private void AddNoteToFieldList(string pstrFieldName, bool pbOutput, string pstrTraitTableAlias, string pstrAlias, string pstrTraitID, string pstrTraitCatID, string pstrTraitDBTable) {
+
+            // Add the current note details to the list for processing later.
+            // Add the field definition.
+            if (pbOutput) {
+                // Add to select clause.                
+                if (String.IsNullOrWhiteSpace(pstrAlias)) {
+                    _fieldList.Add(pstrTraitTableAlias + ".txtNote");
+                } else {
+                    _fieldList.Add(pstrTraitTableAlias + ".txtNote AS [" + pstrAlias + "]");
+                }
             }
         }
 
@@ -517,6 +574,32 @@ namespace BioLink.Data {
     
             // Add the current criteria to the trait, including the OR if it is not the first.
             _traitClauses.Add(strTraitFromWhereClause);
+        }
+
+        private void AddToNoteList(string pstrNoteAlias, string pstrNoteID, string pstrNoteCatID, string pstrNoteDBTable, string pstrCriteria) {
+            // extract the alias for the table when used in queries.
+            var strTableAlias = GetTableAlias(pstrNoteDBTable);
+            // Extract the table field used to link the table to the traits
+            var strTableNoteKeyField = GetTableTraitKeyField(pstrNoteDBTable);
+            // Build the portion of the web clause.
+            var strColKey = strTableAlias + "." + strTableNoteKeyField;
+
+            // Look to see if the table has been placed in the collection and if not,
+            // insert it.
+            string strNoteFromWhereClause = "";
+            if (!string.IsNullOrWhiteSpace(pstrCriteria)) {
+                strNoteFromWhereClause = "INNER JOIN ";  // if we havce a criteria, we can get away with an inner join
+            } else {
+                strNoteFromWhereClause = "LEFT OUTER JOIN ";
+            }
+            strNoteFromWhereClause += " tblNote " + pstrNoteAlias + " ON (" + strColKey + " = " + pstrNoteAlias + ".intIntraCatID AND " + pstrNoteAlias + ".intNoteTypeID = " + pstrNoteID + ")";
+
+            if (pstrCriteria != "") {
+                strNoteFromWhereClause += (char)1 + pstrCriteria;
+            }
+
+            // Add the current criteria to the trait, including the OR if it is not the first.
+            _noteClauses.Add(strNoteFromWhereClause);
         }
 
         private string FleshCriteria(string criteria, string table, string fname) {
@@ -777,22 +860,30 @@ namespace BioLink.Data {
             return 0;
         }
 
-
-        private bool IsTrait(FieldDescriptor f, out string traitID, out string catID, out string tableName) {
+        private bool IsOneToMany(string oneToManyType, FieldDescriptor f, out string ID, out string catID, out string tableName) {
             var s = f.TableName.Split('.');
-            if (s.Length == 3) {
-                traitID = s[1];
-                catID = s[2];
-                tableName = s[0];
+            if (s.Length == 4 && s[0].Equals(oneToManyType)) {
+                ID = s[2];
+                catID = s[3];
+                tableName = s[1];
                 return true;
             }
 
-            traitID = null;
+            ID = null;
             catID = null;
             tableName = null;
 
             return false;
         }
+
+        private bool IsTrait(FieldDescriptor f, out string traitID, out string catID, out string tableName) {
+            return IsOneToMany("trait", f, out traitID, out catID, out tableName);
+        }
+
+        private bool IsNote(FieldDescriptor f, out string noteID, out string catID, out string tableName) {
+            return IsOneToMany("note", f, out noteID, out catID, out tableName);
+        }
+
 
         public static QueryComponents GenerateSQL(User user, IEnumerable<QueryCriteria> criteria, bool distinct) {
             var instance = new QuerySQLGenerator(user, criteria, distinct);
