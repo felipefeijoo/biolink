@@ -9,7 +9,7 @@ namespace BioLink.Data.tests {
     /// </summary>
     public static class TestProperties {
 
-        public const bool RunDatabaseTests = true;
+        public const bool RunDatabaseTests = false;
 
         public const string Server = @"OCALA-BE\SQLEXPRESS";
         public const string Username = "sa";

@@ -34,6 +34,10 @@
     <Reference Include="Accessibility">
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.0.5022.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\shared\lib\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Newtonsoft.Json, Version=3.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -88,6 +92,8 @@
     </Compile>
     <Compile Include="LabelSetReport.cs" />
     <Compile Include="Loans\LoanFormGenerator.cs" />
+    <Compile Include="Loans\OpenXMLLoanFormGenerator.cs" />
+    <Compile Include="Loans\RTFLoanFormGenerator.cs" />
     <Compile Include="MaterialByUserWindow.xaml.cs">
       <DependentUpon>MaterialByUserWindow.xaml</DependentUpon>
     </Compile>

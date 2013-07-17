@@ -89,28 +89,33 @@ namespace BioLink.Client.Tools {
 
             var supportSevice = new SupportService(User);
             var loanTraits = supportSevice.GetTraits(TraitCategoryType.Loan.ToString(), LoanID);
-            var bytes = supportSevice.GetMultimediaBytes(mmID);
-            var template = Encoding.ASCII.GetString(bytes);
             
             var originator = loan.OriginatorID != 0 ? service.GetContact(loan.OriginatorID) : null;
             var requestor = loan.RequestorID != 0 ? service.GetContact(loan.RequestorID) : null;
             var receiver = loan.ReceiverID != 0 ? service.GetContact(loan.ReceiverID) : null;
 
-            var content = LoanFormGenerator.GenerateLoanForm(template, loan, loanMaterial, loanTraits, originator, requestor, receiver);
+            var template = supportSevice.GetMultimedia(mmID);
+            
+            var generator = LoanFormGeneratorFactory.GetLoanFormGenerator(template);
 
-            var filename = ChooseFilename(loan);
+            if (generator != null) {
+                var outputFile = generator.GenerateLoanForm(template, loan, loanMaterial, loanTraits, originator, requestor, receiver);
+                if (outputFile != null) {
+                    var filename = ChooseFilename(loan, template);
+                    if (!string.IsNullOrWhiteSpace(filename)) {
+                        outputFile.CopyTo(filename, true);
+                        SystemUtils.ShellExecute(filename);
+                        Close();
+                    }
+                }
 
-            if (!string.IsNullOrWhiteSpace(filename)) {            
-                File.WriteAllText(filename, content);
-                SystemUtils.ShellExecute(filename);
-
-                Close();
+            } else {
+                ErrorMessage.Show("Unable to generate loan form - unrecognized template extension: {0}", template.FileExtension);
             }
+
         }
 
-        private string ChooseFilename(Loan loan) {
-
-            
+        private string ChooseFilename(Loan loan, Multimedia template) {           
             var dlg = new SaveFileDialog();
             var defaultDir = Config.GetUser(User, "Loans.Forms.DefaultOutputDirectory", dlg.InitialDirectory);
             if (!string.IsNullOrWhiteSpace(defaultDir)) {
@@ -121,7 +126,7 @@ namespace BioLink.Client.Tools {
             }
 
             var borrowerName = LoanService.FormatName("", loan.RequestorGivenName, loan.RequestorName);
-            dlg.FileName = SystemUtils.StripIllegalFilenameChars(string.Format("{0}_{1}_{2:yyyy-MM-dd}.rtf", loan.LoanNumber, borrowerName, DateTime.Now));
+            dlg.FileName = SystemUtils.StripIllegalFilenameChars(string.Format("{0}_{1}_{2:yyyy-MM-dd}.{3}", loan.LoanNumber, borrowerName, DateTime.Now, template.FileExtension));
             if (dlg.ShowDialog() == true) {
                 var finfo = new FileInfo(dlg.FileName);
                 Config.SetUser(User, "Loans.Forms.DefaultOutputDirectory", finfo.DirectoryName);
