@@ -276,6 +276,17 @@ namespace BioLink.Data {
             return StoredProcToList("spTraitList", mapper, _P("vchrCategory", category), _P("vchrIntraCatID", intraCategoryID + ""));
         }
 
+        public List<String> GetTraitValues(string traitName, string category) {
+            // Look for a phrase that may override these values...
+            string phraseCategoryName = String.Format("{0}_{1}", traitName, category);
+            var phraseCategoryId = GetPhraseCategoryId(phraseCategoryName, false);
+            if (phraseCategoryId > 0) {
+                return GetPhraseValues(phraseCategoryName, false);
+            } else {
+                return GetTraitDistinctValues(traitName, category);
+            }            
+        }
+
         public List<String> GetTraitDistinctValues(string traitName, string category) {
             var results = new List<string>();
             StoredProcReaderForEach("spTraitDistinctValues", reader => results.Add(reader[0] as string), _P("vchrTraitType", traitName), _P("vchrCategory", category));
@@ -625,7 +636,7 @@ namespace BioLink.Data {
             // Obviously a copy-pasta error in the Stored Proc, as the return value is called NewRegionID...oh well...
             var retval = ReturnParam("NewRegionID");
             StoredProcUpdate("spPhraseCategoryInsert", _P("vchrCategory", category), _P("bitFixed", @fixed), retval);            
-            return retval.Value == null ? 09 : (Int32) retval.Value;
+            return retval.Value == null ? 0 : (Int32) retval.Value;
         }
 
         public void InsertPhrase(Phrase phrase) {
@@ -660,9 +671,9 @@ namespace BioLink.Data {
 
         }
 
-        public List<String> GetPhraseValues(string category) {
+        public List<String> GetPhraseValues(string category, bool @fixed = true) {
             var results = new List<String>();
-            var catId = GetPhraseCategoryId(category, true);
+            var catId = GetPhraseCategoryId(category, @fixed);
             if (catId > 0) {
                 var phrases = GetPhrases(catId);
                 phrases.ForEach(phrase => results.Add(phrase.PhraseText));
