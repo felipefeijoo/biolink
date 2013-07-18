@@ -139,7 +139,7 @@ namespace BioLink.Client.Extensibility {
                     break;
                 case PickListType.DistinctTraitList:
                     caption = String.Format("Values for '{0}'", categoryName);
-                    itemsFunc = () => service.GetTraitDistinctValues(categoryName, traitCategory.ToString());
+                    itemsFunc = () => service.GetTraitValues(categoryName, traitCategory.ToString());
                     break;
                 case PickListType.DistinctList:
                     

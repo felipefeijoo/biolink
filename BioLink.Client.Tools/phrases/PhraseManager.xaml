@@ -46,6 +46,12 @@
                                 <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/Delete.png" Stretch="None" SnapsToDevicePixels="True" />
                             </Button.Content>
                         </Button>
+                        <Button x:Name="btnAddCategory" Width="24" Click="btnAddCategory_Click" ToolTip="Add a new phrase category">
+                            <Button.Content>
+                                <Image Source="pack://application:,,,/BioLink.Client.Extensibility;component/Images/AddNew.png" Stretch="None" SnapsToDevicePixels="True" />
+                            </Button.Content>
+                        </Button>
+
                         <Label Content="Filter:" VerticalContentAlignment="Center"/>                        
                     </ToolBar>
                     <ext:DelayedTriggerTextbox Height="23" x:Name="txtFilter" TypingPaused="txtFilter_TypingPaused" TextChanged="txtFilter_TextChanged" KeyUp="txtFilter_KeyUp" Margin="106,6,20,0" VerticalAlignment="Top" />

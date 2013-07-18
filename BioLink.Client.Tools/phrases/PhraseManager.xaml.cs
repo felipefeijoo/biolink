@@ -251,9 +251,8 @@ namespace BioLink.Client.Tools {
             ContextMenu menu = new ContextMenu();
 
             MenuItemBuilder builder = new MenuItemBuilder();
-            menu.Items.Add(builder.New("Delete Category").Handler(() => {
-                DeleteCategory(category);
-            }).MenuItem);
+            menu.Items.Add(builder.New("Delete Category").Handler(() => { DeleteCategory(category); }).MenuItem);
+            menu.Items.Add(builder.New("Add New Category").Handler(() => { AddPhraseCategory(); }).MenuItem);
             lvwCategories.ContextMenu = menu;
         }
 
@@ -301,11 +300,21 @@ namespace BioLink.Client.Tools {
             }
         }
 
-        //public bool HasChanges {
-        //    get { return HasPendingChanges; }
-        //}
-
         protected SupportService Service { get { return new SupportService(User); } }
+
+        private void btnAddCategory_Click(object sender, RoutedEventArgs e) {
+            AddPhraseCategory();
+        }
+
+        private void AddPhraseCategory() {
+            var frm = new AddPhraseCategory();
+            frm.Owner = this.FindParentWindow();
+            frm.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            if (frm.ShowDialog().ValueOrFalse()) {
+                ReloadModel();                
+            }
+        }
+
     }
 
 }

@@ -196,6 +196,9 @@
     <Compile Include="Modelling\SpeciesRichnessOptions.xaml.cs">
       <DependentUpon>SpeciesRichnessOptions.xaml</DependentUpon>
     </Compile>
+    <Compile Include="phrases\AddPhraseCategory.xaml.cs">
+      <DependentUpon>AddPhraseCategory.xaml</DependentUpon>
+    </Compile>
     <Compile Include="QueryCriteriaViewModel.cs" />
     <Compile Include="SpecializedMultimediaManager.xaml.cs">
       <DependentUpon>SpecializedMultimediaManager.xaml</DependentUpon>
@@ -420,6 +423,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Modelling\SpeciesRichnessOptions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="phrases\AddPhraseCategory.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
