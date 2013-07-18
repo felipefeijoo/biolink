@@ -30,6 +30,9 @@
             <Style TargetType="{x:Type ext:TraitControl}">
                 <Setter Property="IsReadOnly" Value="{Binding Locked}" />
             </Style>
+            <Style TargetType="{x:Type ext:MultimediaControl}">
+                <Setter Property="IsReadOnly" Value="{Binding Locked}" />
+            </Style>
             <Style TargetType="{x:Type ext:EllipsisTextBox}">
                 <Setter Property="IsReadOnly" Value="{Binding Locked}" />
             </Style>

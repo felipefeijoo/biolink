@@ -347,6 +347,7 @@ namespace BioLink.Client.Material {
             return new ObservableCollection<ViewModelBase>(material.Select(m => {
                 var vm = new RDEMaterialViewModel(m);
                 vm.Traits = supportService.GetTraits(TraitCategoryType.Material.ToString(), vm.MaterialID);
+                vm.Multimedia = supportService.GetMultimediaItems(TraitCategoryType.Material.ToString(), vm.MaterialID);
                 vm.DataChanged += MaterialViewModelDataChanged;
                 vm.SiteVisit = siteVisit;
                 vm.SiteVisitID = siteVisit.SiteVisitID;

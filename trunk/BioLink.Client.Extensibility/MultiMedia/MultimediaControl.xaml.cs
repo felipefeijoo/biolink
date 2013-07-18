@@ -52,7 +52,7 @@ namespace BioLink.Client.Extensibility {
         }
         #endregion
 
-        public MultimediaControl(User user, TraitCategoryType category, ViewModelBase owner) : base(user, "Multimedia:" + category.ToString() + ":" + owner.ObjectID.Value) {
+        public MultimediaControl(User user, TraitCategoryType category, ViewModelBase owner) : base(user, "Multimedia:" + category.ToString() + ":" + (owner == null ? -1 : owner.ObjectID.Value)) {
 
             this.CategoryType = category;
             this.Owner = owner;
@@ -77,15 +77,22 @@ namespace BioLink.Client.Extensibility {
 
         void thumbList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             var item = thumbList.SelectedItem as MultimediaLinkViewModel;
-            if (item != null) {
-                detailGrid.DataContext = item;
-                detailGrid.IsEnabled = true;
-            }
+            detailGrid.DataContext = item;
+            detailGrid.IsEnabled = (item != null) && !IsReadOnly;
         }
 
-        public void Populate() {
-            List<MultimediaLink> data = Service.GetMultimediaItems(CategoryType.ToString(), Owner.ObjectID.Value);
-            JobExecutor.QueueJob(() => {                
+        public void BindModel(List<MultimediaLink> multimedia, ViewModelBase owner) {
+            this.Owner = owner;
+
+            if (multimedia == null) {
+                multimedia = new List<MultimediaLink>();
+            }
+
+            ReloadMultimediaPanel(multimedia);
+        }
+
+        private void ReloadMultimediaPanel(List<MultimediaLink> data) {
+            JobExecutor.QueueJob(() => {
                 _model = new ObservableCollection<MultimediaLinkViewModel>(data.ConvertAll((item) => {
                     MultimediaLinkViewModel viewmodel = null;
                     this.InvokeIfRequired(() => {
@@ -106,7 +113,20 @@ namespace BioLink.Client.Extensibility {
                     });
                 }
             });
-            IsPopulated = true;
+        }
+
+        public List<MultimediaLink> GetModel() {
+            var list = new List<MultimediaLink>();
+            _model.ForEach(vm => list.Add(vm.Model));
+            return list;
+        }
+
+        public void Populate() {
+            if (Owner != null) {
+                List<MultimediaLink> data = Service.GetMultimediaItems(CategoryType.ToString(), Owner.ObjectID.Value);
+                ReloadMultimediaPanel(data);
+                IsPopulated = true;
+            }
         }
 
         private void GenerateThumbnail(MultimediaLinkViewModel item, int maxDimension) {
@@ -168,7 +188,7 @@ namespace BioLink.Client.Extensibility {
                 menu.Items.Add(new Separator());
                 menu.Items.Add(builder.New("Show items linked to this multimedia...").Handler(() => { ShowLinkedItems(); }).MenuItem);
                 menu.Items.Add(new Separator());
-                menu.Items.Add(builder.New("Edit Details...").Handler(() => { ShowProperties(); }).MenuItem);
+                menu.Items.Add(builder.New("Edit Details...").Handler(() => { ShowProperties(); }).Enabled(!IsReadOnly).MenuItem);
             }
         }
 
@@ -476,6 +496,7 @@ namespace BioLink.Client.Extensibility {
 
                 control.btnAdd.IsEnabled = !readOnly;
                 control.btnDelete.IsEnabled = !readOnly;
+                control.btnProperties.IsEnabled = !readOnly;
                 control.btnLinkToExisting.IsEnabled = !readOnly;
                 control.txtCaption.IsReadOnly = readOnly;
                 control.txtMultimediaType.IsReadOnly = readOnly;

@@ -107,6 +107,11 @@
                     <RotateTransform Angle="90"/>
                 </TabItem.LayoutTransform>
             </TabItem>
+            <TabItem Header="_Multimedia" x:Name="tabMultimedia">
+                <TabItem.LayoutTransform>
+                    <RotateTransform Angle="90"/>
+                </TabItem.LayoutTransform>
+            </TabItem>
 
         </TabControl>
     </Grid>
