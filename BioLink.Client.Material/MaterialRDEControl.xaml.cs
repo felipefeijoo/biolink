@@ -40,6 +40,7 @@ namespace BioLink.Client.Material {
         private TraitControl _traits;        
         private RDEMaterialViewModel _currentMaterial;
         private MaterialPartsControl _subpartsFull;
+        private MultimediaControl _multimedia;
         private OneToManyControl _associates;
 
         public MaterialRDEControl(User user) {
@@ -69,6 +70,10 @@ namespace BioLink.Client.Material {
 
             _associates = new OneToManyControl(new AssociatesOneToManyController(user, TraitCategoryType.Material, null), true);
             tabAssociates.Content = _associates;
+
+            _multimedia = new MultimediaControl(User, TraitCategoryType.Material, null);
+            tabMultimedia.Content = _multimedia;
+
             this.IsEnabled = false;
             this.DataContextChanged += new DependencyPropertyChangedEventHandler(MaterialRDEControl_DataContextChanged);
         }
@@ -81,9 +86,11 @@ namespace BioLink.Client.Material {
                     // although the database actions are registered for new/modified traits, we need to keep track of them so we can
                     // redisplay them as the user flips around the different material.
                     _currentMaterial.Traits = _traits.GetModel();
+                    _currentMaterial.Multimedia = _multimedia.GetModel();
                 }
                 _traits.BindModel(mat.Traits, mat);
                 _currentMaterial = mat;
+                _multimedia.BindModel(mat.Multimedia, mat);
 
                 grpSubParts.Items = _currentMaterial.SubParts;
                 _subpartsFull.SetModel(_currentMaterial, _currentMaterial.SubParts);

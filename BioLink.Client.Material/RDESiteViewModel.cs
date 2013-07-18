@@ -29,6 +29,7 @@ namespace BioLink.Client.Material {
 
         public RDEViewModel(T model, Expression<Func<int>> objectIDExpr) : base(model, objectIDExpr) {
             Traits = new List<Trait>();
+            Multimedia = new List<MultimediaLink>();
         }
 
         public int? TemplateID {
@@ -66,6 +67,7 @@ namespace BioLink.Client.Material {
         }
 
         public List<Trait> Traits { get; set; }
+        public List<MultimediaLink> Multimedia { get; set; }
 
     }
 
