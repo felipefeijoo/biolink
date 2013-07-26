@@ -1,0 +1,6 @@
+#summary Download links to gazetteer files in the new eGaz format
+#labels Phase-Support
+
+= Introduction =
+
+|| Australia (Auslig) || https://code.google.com/p/biolink/source/browse/trunk/DataFiles/Gazetteer/Australian%20Gazetteer%20(Auslig).gaz ||
