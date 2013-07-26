@@ -5,3 +5,12 @@
 
 || Australia (Auslig) || [https://biolink.googlecode.com/svn/trunk/DataFiles/Gazetteer/Australian%20Gazetteer%20(Auslig).gaz Download] ||
 || Central America || [https://biolink.googlecode.com/svn/trunk/DataFiles/Gazetteer/Central%20American%20Gazetteer.gaz Download] ||
+|| France || [https://biolink.googlecode.com/svn/trunk/DataFiles/Gazetteer/France.gaz Download] ||
+|| Indonesia || [https://biolink.googlecode.com/svn/trunk/DataFiles/Gazetteer/Indonesian%20Gazetteer.gaz Download] ||
+|| New Caledonia || [https://biolink.googlecode.com/svn/trunk/DataFiles/Gazetteer/New%20Caledonia%20Gazetteer.gaz Download] ||
+|| New Zealand || [https://biolink.googlecode.com/svn/trunk/DataFiles/Gazetteer/New%20Zealand%20Gazetteer.gaz Download] ||
+|| Papua New Guinea || [https://biolink.googlecode.com/svn/trunk/DataFiles/Gazetteer/Papua%20New%20Guinea%20Gazetteer.gaz Download] ||
+|| Solomon Islands || [https://biolink.googlecode.com/svn/trunk/DataFiles/Gazetteer/Solomon%20Islands%20Gazetteer.gaz Download] ||
+|| United Kingdom || [https://biolink.googlecode.com/svn/trunk/DataFiles/Gazetteer/United%20Kingdom.gaz Download] ||
+|| Vanuatu || [https://biolink.googlecode.com/svn/trunk/DataFiles/Gazetteer/Vanuatu%20Gazetteer.gaz Download] ||
+|| World || [https://biolink.googlecode.com/svn/trunk/DataFiles/Gazetteer/WorldGaz.gaz Download] ||
