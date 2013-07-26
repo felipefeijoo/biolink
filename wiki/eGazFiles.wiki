@@ -3,4 +3,4 @@
 
 = Introduction =
 
-|| Australia (Auslig) || https://code.google.com/p/biolink/source/browse/trunk/DataFiles/Gazetteer/Australian%20Gazetteer%20(Auslig).gaz ||
+|| Australia (Auslig) || [https://biolink.googlecode.com/svn/trunk/DataFiles/Gazetteer/Australian%20Gazetteer%20(Auslig).gaz Download]||
