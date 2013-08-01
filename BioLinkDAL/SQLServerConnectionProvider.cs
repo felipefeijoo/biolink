@@ -48,9 +48,9 @@ namespace BioLink.Data {
             } else {
                 var mangledPassword = password;
                 if (oldMangleRoutine) {
-                    mangledPassword = PasswordUtitlites.OldManglePassword(username, password);
+                    mangledPassword = PasswordUtilities.OldManglePassword(username, password);
                 } else {
-                    mangledPassword = PasswordUtitlites.ManglePassword(username, password);
+                    mangledPassword = PasswordUtilities.ManglePassword(username, password);
                 }
 
                 s.Append(String.Format("Data Source={0};User Id={2};Password=\'{3}\';Initial Catalog={1};", profile.Server, profile.Database, username, mangledPassword));
@@ -120,7 +120,58 @@ namespace BioLink.Data {
             if (String.IsNullOrEmpty(user.Username)) {
                 return false;
             }
-            return user.Username.Equals("sa", StringComparison.CurrentCultureIgnoreCase);
+            bool isSysAdmin = false;
+            // try and connect to find out...
+            try {
+                Command(user, (con, cmd) => {
+                    cmd.CommandType = CommandType.Text;
+                    cmd.CommandText = "SELECT IS_SRVROLEMEMBER('sysadmin') as IsSysAdmin;";
+                    using (var reader = cmd.ExecuteReader()) {
+                        while (reader.Read()) {
+                            var result = reader[0] as Int32?;
+                            isSysAdmin = result.HasValue && result.Value == 1;
+                        }
+                    }
+                });
+            } catch (Exception) {
+                isSysAdmin = false;
+            }
+
+            if (!isSysAdmin) {
+                isSysAdmin = user.Username.Equals("sa", StringComparison.CurrentCultureIgnoreCase);
+            }
+
+            return isSysAdmin;
+        }
+
+        protected void Command(User user, ServiceCommandAction action) {
+            // If no action dont' bother with the connection or command
+            if (action == null) {
+                return;
+            }
+
+            // Get a connection
+
+            var connection = user.GetConnection();
+
+            // and create a command instance
+            try {
+                using (DbCommand command = connection.CreateCommand()) {
+
+                    if (user.ConnectionProfile.Timeout.GetValueOrDefault(-1) > 0) {
+                        if (user.ConnectionProfile.Timeout != null) {
+                            command.CommandTimeout = user.ConnectionProfile.Timeout.Value;
+                        }
+                    }
+
+                    // invoke the action with the command
+                    action(connection, command);
+                }
+            } finally {
+                if (!user.InTransaction) {
+                    connection.Dispose();
+                }
+            }
         }
 
         public DbParameter CreateParameter(string name, object value) {
@@ -128,7 +179,7 @@ namespace BioLink.Data {
         }
     }
 
-    public static class PasswordUtitlites {
+    public static class PasswordUtilities {
         /// <summary>
         /// New Mangle Password routine that uses SHA256 + Salt to create a hash of the user password to be used as the actual password.
         /// This prevents the user from being able to use the password they selected to access the sql server database directly. Note that

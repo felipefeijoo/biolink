@@ -50,10 +50,10 @@ namespace BioLink.Client.Tools {
             ReloadModel();
 
             grpUsers.IsEnabled = User.HasPermission(PermissionCategory.USERMANAGER_USER, PERMISSION_MASK.READ);
-            grpUsers.Header = "Users " + User.MaskStr(user.GetPermissionMask(PermissionCategory.USERMANAGER_USER), user.Username);
+            grpUsers.Header = "Users " + User.MaskStr(user.GetPermissionMask(PermissionCategory.USERMANAGER_USER), user);
     
             grpGroups.IsEnabled = User.HasPermission(PermissionCategory.USERMANAGER_GROUP, PERMISSION_MASK.READ);
-            grpGroups.Header = "Groups " + User.MaskStr(user.GetPermissionMask(PermissionCategory.USERMANAGER_GROUP), user.Username);
+            grpGroups.Header = "Groups " + User.MaskStr(user.GetPermissionMask(PermissionCategory.USERMANAGER_GROUP), user);
     
             btnDelete.IsEnabled = User.HasPermission(PermissionCategory.USERMANAGER_USER, PERMISSION_MASK.DELETE);
 

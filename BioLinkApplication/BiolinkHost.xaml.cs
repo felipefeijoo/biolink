@@ -59,8 +59,7 @@ namespace BioLinkApplication {
 
             });
 
-            txtProfile.Text = String.Format("Connected to {0}\\{1} ({2})", User.ConnectionProfile.Server, User.ConnectionProfile.Database, User.Username);
-
+            txtProfile.Text = String.Format("Connected to {0}\\{1} ({2})", User.ConnectionProfile.Server, User.ConnectionProfile.Database, User.IsSysAdmin ? User.Username + " - SysAdmin" : User.Username);
         }
 
         private void LoadPluginsAsync(IProgressObserver monitor, Action finished) {
