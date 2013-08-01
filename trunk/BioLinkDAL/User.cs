@@ -218,8 +218,9 @@ namespace BioLink.Data {
 
         public ConnectionProfile ConnectionProfile { get; private set; }
 
-        public static string MaskStr(int mask, string username) {
-            if (!string.IsNullOrEmpty(username) && username.Equals("sa", StringComparison.CurrentCultureIgnoreCase)) {
+        public static string MaskStr(int mask, User user) {
+            
+            if (user != null && user.IsSysAdmin) {
                 return "[All Rights - Sys Admin]";
             }
 
@@ -265,7 +266,7 @@ namespace BioLink.Data {
 
         public int GetPermissionMask(PermissionCategory PermissionID) {
 
-            if (Username.Equals("sa", StringComparison.CurrentCultureIgnoreCase)) {
+            if (IsSysAdmin) {
                 return 0xFFFFFF;
             }
 

@@ -167,7 +167,7 @@ namespace BioLink.Data {
                 case strTABLE_SITEVISIT:
                     return TableInList(strTABLE_REGION, strTABLE_SITE) && TableInList(strTABLE_MATERIAL, strTABLE_MATERIALPART, strTABLE_BIOTA, strTABLE_BIOTA_RANK, strTABLE_BIOTA_RANK, strTABLE_COMMON_NAME, strTABLE_BIOTA_DIST, strTABLE_DIST_REGION, strTABLE_ASSOC, strTABLE_BIOTA_STORAGE);    
                 case strTABLE_MATERIAL:
-                    return TableInList(strTABLE_REGION, strTABLE_SITE, strTABLE_SITEVISIT) &&  TableInList(strTABLE_MATERIALPART, strTABLE_BIOTA, strTABLE_BIOTA_RANK, strTABLE_COMMON_NAME, strTABLE_BIOTA_DIST, strTABLE_DIST_REGION, strTABLE_BIOTA_STORAGE);
+                    return (TableInList(strTABLE_REGION, strTABLE_SITE, strTABLE_SITEVISIT) && TableInList(strTABLE_MATERIALPART, strTABLE_BIOTA, strTABLE_BIOTA_RANK, strTABLE_COMMON_NAME, strTABLE_BIOTA_DIST, strTABLE_DIST_REGION, strTABLE_BIOTA_STORAGE)) || (TableInList(strTABLE_MATERIALPART) && TableInList(strTABLE_BIOTA));
                 case strTABLE_MATERIALPART:
                     return false;    
                 case strTABLE_BIOTA:
