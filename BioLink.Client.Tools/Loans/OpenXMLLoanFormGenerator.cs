@@ -22,7 +22,7 @@ namespace BioLink.Client.Tools {
         private enum MergeStatus { None, HaveOld, HaveNew, HaveBegin, HaveName, HaveSeperator, HaveData };
 
         protected override string NewLineSequence {
-            get { return "&#13;" ; }
+            get { return "\\par " ; }
         }
 
         public override FileInfo GenerateLoanForm(Multimedia template, Loan loan, List<LoanMaterial> material, List<Trait> traits, Contact originator, Contact requestor, Contact receiver) {

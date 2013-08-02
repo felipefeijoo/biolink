@@ -89,6 +89,7 @@
     <Compile Include="Model\LoanMaterial.cs" />
     <Compile Include="Model\LoanReminder.cs" />
     <Compile Include="Model\MultimediaLinkedItem.cs" />
+    <Compile Include="Model\SiteGroup.cs" />
     <Compile Include="Model\StorageLocation.cs" />
     <Compile Include="Model\TaxonStatistics.cs" />
     <Compile Include="Model\XMLImportALN.cs" />

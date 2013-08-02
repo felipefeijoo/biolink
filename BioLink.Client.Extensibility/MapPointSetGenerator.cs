@@ -16,6 +16,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.IO;
+using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Extensibility {
 
@@ -41,5 +44,56 @@ namespace BioLink.Client.Extensibility {
             }
             return null;
         }
+    }
+
+    public class XYFileMapPointSetGenerator : IMapPointSetGenerator {
+
+        public XYFileMapPointSetGenerator(String filename) {
+            this.Filename = filename;
+        }
+
+        public MapPointSet GeneratePoints(bool showOptions) {
+
+            FileInfo f = new FileInfo(Filename);
+
+            if (!f.Exists) {
+                return null;
+            }
+
+            StreamReader reader = new StreamReader(f.FullName);
+            string line;
+            var set = new ListMapPointSet(Path.GetFileNameWithoutExtension(f.FullName));
+            int lineNumber = 1;
+            while ((line = reader.ReadLine()) != null) {
+                double? lon = null;
+                double? lat = null;
+                String label = "";
+                // Try splitting the line up by ',' and seeing if the components are in any of the Degrees Minutes Seconds format...
+                var bits = line.Split(',','\t');
+                if (bits.Length > 1) {
+                    lon = GeoUtils.ParseCoordinate(bits[0].Trim());
+                    lat = GeoUtils.ParseCoordinate(bits[1].Trim());
+                    if (bits.Length > 2) {
+                        label = bits[2].Trim();
+                    }
+                }
+
+                // were we able to extract values?
+                if (lon.HasValue && lat.HasValue) {
+                    var point = new MapPoint { Longitude = lon.Value, Latitude = lat.Value, Label = label };
+                    set.Add(point);
+                } else {
+                    if (line.Trim().Length > 0) {
+                        String message = String.Format("On line {0}\n\n{1}", lineNumber, line);
+                        InfoBox.Show(message, "Problem with coordinate pair!", PluginManager.Instance.ParentWindow);
+                    }
+                }
+                lineNumber++;
+            }
+            return set;
+        }
+
+        public String Filename { get; private set; }
+
     }
 }

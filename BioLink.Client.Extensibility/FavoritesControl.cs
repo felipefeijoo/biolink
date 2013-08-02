@@ -111,10 +111,14 @@ namespace BioLink.Client.Extensibility {
                 return;
             }
 
-            bool isGlobal = false;
+            bool? isGlobal = false;
 
             if (parent is ViewModelPlaceholder) {
-                isGlobal = (bool)(parent as ViewModelPlaceholder).Tag;
+                var pvm = parent as ViewModelPlaceholder;
+                if (pvm.Tag != null) {
+                    isGlobal = (bool?)(pvm).Tag;
+                }
+
             } else if (parent is FavoriteViewModel<T>) {
                 var parentViewModel = parent as FavoriteViewModel<T>;
                 isGlobal = parentViewModel.IsGlobal;
@@ -125,7 +129,7 @@ namespace BioLink.Client.Extensibility {
 
             model.IsGroup = true;
             model.GroupName = "<New Folder>";
-            model.IsGlobal = isGlobal;
+            model.IsGlobal = isGlobal.HasValue && isGlobal.Value;
             model.FavoriteParentID = parentGroupID;
 
             FavoriteViewModel<T> viewModel = Provider.CreateFavoriteViewModel(model);
