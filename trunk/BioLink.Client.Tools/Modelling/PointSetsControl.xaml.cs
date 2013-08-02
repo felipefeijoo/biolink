@@ -246,30 +246,14 @@ namespace BioLink.Client.Tools {
             LoadPointFile();
         }
 
-        private Regex _pointLineRegex = new Regex(@"^(-?[\d.]+)[^\d.-]+(-?[\d.]+)\s*(.*)$");
-
         private void LoadPointFile() {
             var frm = new OpenFileDialog();
             frm.Filter = "XY Files (*.xy)|*.xy|All Files (*.*)|*.*";
             if (frm.ShowDialog(this.FindParentWindow()) == true) {
-                StreamReader reader = new StreamReader(frm.FileName);
-                string line;
-                var set = new ListMapPointSet(frm.SafeFileName);
-                while ((line = reader.ReadLine()) != null) {
-                    var m = _pointLineRegex.Match(line);
-                    if (m.Success) {
-                        var lon = double.Parse(m.Groups[1].Value);
-                        var lat = double.Parse(m.Groups[2].Value);
-                        var label = m.Groups[3].Value;
-                        var point = new MapPoint { Longitude = lon, Latitude = lat, Label = label };
-                        set.Add(point);
-                    }                    
-                }
-
+                var generator = new XYFileMapPointSetGenerator(frm.FileName);
+                var set = generator.GeneratePoints(false);
                 AddPointSet(set);
             }
-
-            
         }
 
         private void Button_Click_5(object sender, RoutedEventArgs e) {

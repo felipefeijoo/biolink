@@ -17,8 +17,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SharpMap.Layers;
+using SharpMap.Geometries;
+using SharpMap.Data;
 using SharpMap.Data.Providers;
 using BioLink.Client.Utilities;
+using BioLink.Client.Extensibility;
+using System.Data;
+using System.Drawing.Drawing2D;
 
 namespace BioLink.Client.Maps {
 
@@ -30,6 +35,7 @@ namespace BioLink.Client.Maps {
             _layerFactoryCatalog[".shp"] = new ShapeFileLayerFactory();
             // _layerFactoryCatalog[".png"] = new RasterFileLayerFactory();
             _layerFactoryCatalog[".bmp"] = new RasterFileLayerFactory();
+            _layerFactoryCatalog[".xy"] = new XYPointFileLayerFactory();
         }
 
         public static ILayer LoadLayer(string filename) {
@@ -64,6 +70,37 @@ namespace BioLink.Client.Maps {
             shapeFileLayer.Style.Outline = new System.Drawing.Pen(new System.Drawing.SolidBrush(System.Drawing.Color.Black), 1);
             shapeFileLayer.Style.Enabled = true;
             shapeFileLayer.Style.EnableOutline = true;
+
+            return shapeFileLayer;
+        }
+
+    }
+
+    public class XYPointFileLayerFactory : ILayerFactory {
+
+        public ILayer Create(string layerName, string connectionInfo) {
+
+            var generator = new XYFileMapPointSetGenerator(connectionInfo);
+            var points = generator.GeneratePoints(false);
+
+            var table = new FeatureDataTable();
+            table.Columns.Add(new DataColumn("Label", typeof(string)));
+            table.Columns.Add(new DataColumn("SiteID", typeof(int)));
+            table.Columns.Add(new DataColumn("SiteVisitID", typeof(int)));
+            table.Columns.Add(new DataColumn("MaterialID", typeof(int)));
+
+            foreach (MapPoint mp in points) {
+                var row = table.NewRow();
+                row.Geometry = new Point(mp.Longitude, mp.Latitude);
+                row["Label"] = mp.Label;
+                row["SiteID"] = mp.SiteID;
+                row["SiteVisitID"] = mp.SiteVisitID;
+                row["MaterialID"] = mp.MaterialID;
+
+                table.AddRow(row);
+            }
+            string labelLayerName = string.Format("{0} Labels", points.Name);
+            var shapeFileLayer = new VectorLayer(points.Name, new GeometryFeatureProvider(table)) { SmoothingMode = SmoothingMode.AntiAlias, Style = { Symbol = MapSymbolGenerator.GetSymbolForPointSet(points), PointSize = points.Size } };
 
             return shapeFileLayer;
         }

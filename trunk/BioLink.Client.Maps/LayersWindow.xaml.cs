@@ -140,7 +140,7 @@ namespace BioLink.Client.Maps {
         }
 
         private void AddNewLayer() {
-            var dlg = new OpenFileDialog {Filter = "Shape Files (*.shp)|*.shp|All files (*.*)|*.*"};
+            var dlg = new OpenFileDialog {Filter = "Shape Files (*.shp)|*.shp|Point Files (*.xy)|*.xy|All files (*.*)|*.*"};
             if (dlg.ShowDialog().ValueOrFalse()) {
                 ILayer layer = LayerFileLoader.LoadLayer(dlg.FileName);
                 if (layer != null && layer is VectorLayer) {

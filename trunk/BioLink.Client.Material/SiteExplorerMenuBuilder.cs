@@ -179,6 +179,14 @@ namespace BioLink.Client.Material {
                     }
                 }).End();
 
+                if (explorer.tabMaterial.SelectedIndex != 0) {
+                    builder.Separator();
+                    builder.New("Show in Contents").Handler(() => {
+                        explorer.ShowInContents(node);
+                    }).End();
+                    builder.Separator();
+                }
+
                 var rdeNodeTypes = new List<SiteExplorerNodeType>(new SiteExplorerNodeType[] { SiteExplorerNodeType.Material, SiteExplorerNodeType.Site, SiteExplorerNodeType.SiteVisit });
                 if (node != null && rdeNodeTypes.Contains(node.NodeType)) {
                     builder.New("Open in Rapid Data Entry...").Handler(() => { explorer.EditRDE(node); }).Enabled(!node.IsTemplate).End();

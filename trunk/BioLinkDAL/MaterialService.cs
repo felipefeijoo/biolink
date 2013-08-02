@@ -176,6 +176,92 @@ namespace BioLink.Data {
             return GetExplorerElementsForParent(parentId, parentType);
         }
 
+        public SiteExplorerNodeWithParentType GetSiteExplorerNode(int elemId, SiteExplorerNodeType nodeType) {
+            var childList = GetExplorerElementsForParent(elemId, nodeType);
+            switch (nodeType) {
+                case SiteExplorerNodeType.Material:
+                    var m = GetMaterial(elemId);
+                    if (m != null) {
+                        var site = GetSite(m.SiteID);
+                        return new SiteExplorerNodeWithParentType {ParentNodeType = SiteExplorerNodeType.SiteVisit, ElemID = elemId, ElemType = nodeType.ToString(), IsTemplate = m.IsTemplate, Name = m.MaterialName, NumChildren = childList.Count, ParentID = m.SiteVisitID, RegionID = site.PoliticalRegionID, RegionName = site.PoliticalRegion  };
+                    }
+                    break;
+                case SiteExplorerNodeType.SiteVisit:
+                    var visit = GetSiteVisit(elemId);
+                    if (visit != null) {
+                        var site = GetSite(visit.SiteID);
+                        if (site != null) {
+                            return new SiteExplorerNodeWithParentType {ParentNodeType = SiteExplorerNodeType.Site, ElemID = elemId, ElemType = nodeType.ToString(), IsTemplate = visit.IsTemplate, Name = visit.SiteVisitName, NumChildren = childList.Count, ParentID = visit.SiteID, RegionID = site.PoliticalRegionID, RegionName = site.PoliticalRegion };
+                        }
+                    }
+                    break;
+                case SiteExplorerNodeType.Site:
+                    var site2 = GetSite(elemId);
+                    if (site2 != null) {
+                        var parentType = site2.SiteGroupID > 0 ? SiteExplorerNodeType.SiteGroup : SiteExplorerNodeType.Region;
+                        return new SiteExplorerNodeWithParentType { ParentNodeType = parentType, ElemID = elemId, ElemType = nodeType.ToString(), IsTemplate = site2.IsTemplate, Name = site2.SiteName, NumChildren = childList.Count, ParentID = site2.SiteGroupID > 0 ? site2.SiteGroupID : site2.PoliticalRegionID, RegionID = site2.PoliticalRegionID, RegionName = site2.PoliticalRegion };
+                    }
+                    break;
+                case SiteExplorerNodeType.Trap:
+                    var trap = GetTrap(elemId);
+                    if (trap != null) {
+                        var site3 = GetSite(elemId);
+                        if (site3 != null) {
+                            var parentType = SiteExplorerNodeType.Site;
+                            return new SiteExplorerNodeWithParentType { ParentNodeType = parentType, ElemID = elemId, ElemType = nodeType.ToString(), IsTemplate = false, Name = trap.TrapName, NumChildren = childList.Count, ParentID = trap.SiteID, RegionID = site3.PoliticalRegionID, RegionName = site3.PoliticalRegion };
+                        }
+                    }
+                    break;
+                case SiteExplorerNodeType.Region:
+                    var region = GetRegion(elemId);
+                    if (region != null) {
+                        var parentId = GetRegionParentID(region);
+                        return new SiteExplorerNodeWithParentType { ParentNodeType = SiteExplorerNodeType.Region, ElemID = elemId, ElemType = nodeType.ToString(), IsTemplate = false, Name = region.Name, NumChildren = childList.Count, ParentID = parentId, RegionID = region.PoliticalRegionID, RegionName = region.Name };
+                    }
+                    break;
+                case SiteExplorerNodeType.SiteGroup:
+                    var group = GetSiteGroup(elemId);
+                    if (group != null) {
+                        var parentType = group.ParentType == 2 ? SiteExplorerNodeType.SiteGroup : SiteExplorerNodeType.Region;
+                        int parentId = parentType == SiteExplorerNodeType.SiteGroup ? group.ParentID : group.PoliticalRegionID;
+                        return new SiteExplorerNodeWithParentType { ParentNodeType = parentType, ElemID = elemId, ElemType = nodeType.ToString(), IsTemplate = false, Name = group.SiteGroupName, NumChildren = childList.Count, ParentID = parentId, RegionID = group.PoliticalRegionID, RegionName = "" };
+                    }
+                    break;
+            }
+
+            return null;
+        }
+
+        public SiteGroup GetSiteGroup(int siteGroupId) {
+            SiteGroup result = null;
+            var mapper = new GenericMapperBuilder<SiteGroup>().build();
+            SQLReaderForEach("SELECT * FROM tblSiteGroup where intSiteGroupID = @groupId", (reader) => {                
+                result = mapper.Map(reader);
+            }, _P("groupId", siteGroupId));
+            return result;
+        }
+
+        private int GetRegionParentID(Region region) {
+            var bits = region.Parentage.Split('\\');
+            if (bits.Length > 1) {
+                if (bits[bits.Length - 2].IsInteger()) {
+                    return Int32.Parse(bits[bits.Length - 2]);
+                }
+            }
+            return 0;
+        }
+
+        public List<SiteExplorerNode> GetSiteExplorerNodeParentage(int elemId, SiteExplorerNodeType nodeType) {
+            var results = new List<SiteExplorerNode>();
+            var node = GetSiteExplorerNode(elemId, nodeType);
+            while (node != null) {
+                results.Insert(0, node);
+                node = GetSiteExplorerNode(node.ParentID, node.ParentNodeType);
+            }
+
+            return results;
+        }
+
         public List<SiteExplorerNode> GetExplorerElementsForParent(int parentID, SiteExplorerNodeType parentElemType) {
             return GetExplorerElementsForParent(parentID, parentElemType.ToString());
         }
@@ -1053,4 +1139,9 @@ namespace BioLink.Data {
         public String A { get; set; }
         public String B { get; set; }
     }
+
+    public class SiteExplorerNodeWithParentType : SiteExplorerNode {
+        public SiteExplorerNodeType ParentNodeType { get; set; }
+    }
+
 }

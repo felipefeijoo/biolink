@@ -9,7 +9,7 @@
  * 
  * Software distributed under the License is distributed on an "AS
  * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
- * implied. See the License for the specific language governing
+ * implied. See the License for the specific language governingm
  * rights and limitations under the License.
  ******************************************************************************/
 using System;
@@ -389,6 +389,40 @@ namespace BioLink.Client.Material {
                 }
 
             });
+        }
+
+        public void ShowInContents(SiteExplorerNodeViewModel node) {
+
+            if (node == null) {
+                return;
+            }
+
+            var parentage = new MaterialService(User).GetSiteExplorerNodeParentage(node.ElemID, node.NodeType);
+            var childlist = RegionsModel;
+
+            tvwMaterial.InvokeIfRequired(() => {
+
+                tabMaterial.SelectedIndex = 0; // ensure contents tab is showing
+
+                HierarchicalViewModelBase child = null;
+                foreach (SiteExplorerNode element in parentage) {
+                    child = childlist.FirstOrDefault((vm) => vm.ObjectID.Value == element.ElemID);
+                    if (child == null) {
+                        break;
+                    }
+                    if (child.Parent != null && !child.Parent.IsExpanded) {
+                        child.Parent.IsExpanded = true;
+
+                    }
+                    tvwMaterial.BringModelToView(child);
+                    child.IsExpanded = true;
+                    child.IsSelected = true;
+                    childlist = child.Children;
+                }
+                
+            });
+
+            tvwMaterial.Focus();
         }
 
         private void LoadExplorerModel() {
