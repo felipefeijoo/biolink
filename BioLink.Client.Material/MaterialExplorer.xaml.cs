@@ -400,13 +400,18 @@ namespace BioLink.Client.Material {
             var parentage = new MaterialService(User).GetSiteExplorerNodeParentage(node.ElemID, node.NodeType);
             var childlist = RegionsModel;
 
-            tvwMaterial.InvokeIfRequired(() => {
-
+            tabMaterial.InvokeIfRequired(() => {
                 tabMaterial.SelectedIndex = 0; // ensure contents tab is showing
+            });
 
+            tvwMaterial.InvokeIfRequired(() => {                
+                tvwMaterial.Focus();
+            });
+
+            tvwMaterial.InvokeIfRequired(() => {
                 HierarchicalViewModelBase child = null;
                 foreach (SiteExplorerNode element in parentage) {
-                    child = childlist.FirstOrDefault((vm) => vm.ObjectID.Value == element.ElemID);
+                    child = childlist.FirstOrDefault((vm) => (vm.ObjectID.HasValue ? vm.ObjectID.Value : 0) == element.ElemID);
                     if (child == null) {
                         break;
                     }
@@ -414,15 +419,19 @@ namespace BioLink.Client.Material {
                         child.Parent.IsExpanded = true;
 
                     }
-                    tvwMaterial.BringModelToView(child);
-                    child.IsExpanded = true;
-                    child.IsSelected = true;
+
+                    child.IsExpanded = true;                    
                     childlist = child.Children;
+                }
+
+                if (child != null) {
+                    tvwMaterial.BringModelToView(child, regionsNode);
+                    child.IsSelected = true;
                 }
                 
             });
 
-            tvwMaterial.Focus();
+
         }
 
         private void LoadExplorerModel() {
@@ -431,6 +440,7 @@ namespace BioLink.Client.Material {
             // Region explorer...
             var list = service.GetTopLevelExplorerItems();
             RegionsModel = BuildExplorerModel(list, false);
+
             regionsNode.ItemsSource = RegionsModel;
             regionsNode.IsExpanded = true;
 

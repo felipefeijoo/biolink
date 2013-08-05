@@ -105,6 +105,13 @@ namespace BioLink.Client.Material {
 
             ContextMenuBuilder builder = new ContextMenuBuilder(null);
 
+            if (explorer.tabMaterial.SelectedIndex != 0) {
+                builder.New("Show in Contents").Handler(() => {
+                    explorer.ShowInContents(node);
+                }).End();
+                builder.Separator();
+            }
+
             builder.New("Refresh").Handler(() => { explorer.Refresh(); }).End();
 
             builder.Separator();
@@ -178,14 +185,6 @@ namespace BioLink.Client.Material {
                             throw new Exception("[Details] Unhandled site explorer element type: " + node.ElemType);
                     }
                 }).End();
-
-                if (explorer.tabMaterial.SelectedIndex != 0) {
-                    builder.Separator();
-                    builder.New("Show in Contents").Handler(() => {
-                        explorer.ShowInContents(node);
-                    }).End();
-                    builder.Separator();
-                }
 
                 var rdeNodeTypes = new List<SiteExplorerNodeType>(new SiteExplorerNodeType[] { SiteExplorerNodeType.Material, SiteExplorerNodeType.Site, SiteExplorerNodeType.SiteVisit });
                 if (node != null && rdeNodeTypes.Contains(node.NodeType)) {

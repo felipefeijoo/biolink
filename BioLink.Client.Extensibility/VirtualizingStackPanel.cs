@@ -96,8 +96,8 @@ namespace BioLink.Client.Extensibility {
 
     public static class TreeViewExtensions {
 
-        public static void BringModelToView(this TreeView tvw, HierarchicalViewModelBase item) {
-            ItemsControl itemsControl = tvw;
+        public static void BringModelToView(this TreeView tvw, HierarchicalViewModelBase item, ItemsControl rootItemsControl = null) {
+            ItemsControl itemsControl = rootItemsControl != null ? rootItemsControl : tvw;
 
             // Get the stack of parentages...
             var stack = item.GetParentStack();
@@ -110,11 +110,9 @@ namespace BioLink.Client.Extensibility {
                     model.IsExpanded = true;
                 }
 
-                bool foundContainer = false;
-
                 int index = 0;
                 if (model.Parent == null) {
-                    var itemSource = tvw.ItemsSource as System.Collections.IList;
+                    var itemSource = itemsControl.ItemsSource as System.Collections.IList;
                     if (itemSource != null) {
                         index = itemSource.IndexOf(model);
                     }
@@ -123,18 +121,26 @@ namespace BioLink.Client.Extensibility {
                 }
 
                 // Access the custom VSP that exposes BringIntoView
+                bool foundContainer = false;
                 if (index >= 0) {
                     BLVirtualizingStackPanel itemsHost = FindVisualChild<BLVirtualizingStackPanel>(itemsControl);
                     if (itemsHost != null) {
                         // Due to virtualization, BringIntoView may not predict the offset correctly the first time.
                         ItemsControl nextItemsControl = null;
-                        while (nextItemsControl == null) {
+                        int iterCount = 0;
+                        while (nextItemsControl == null && iterCount < 1000) {
                             foundContainer = true;
+                            itemsHost.UpdateLayout();
                             itemsHost.BringIntoView(index);
                             tvw.Dispatcher.Invoke(DispatcherPriority.Background, (DispatcherOperationCallback)delegate(object unused) {
                                 nextItemsControl = (ItemsControl)itemsControl.ItemContainerGenerator.ContainerFromIndex(index);
                                 return null;
                             }, null);
+                            iterCount++;    // Sometimes this thing can spin on forever...
+                        }
+
+                        if (nextItemsControl != null) {
+                            nextItemsControl.Focus();
                         }
 
                         itemsControl = nextItemsControl;
