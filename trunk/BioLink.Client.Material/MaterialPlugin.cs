@@ -208,15 +208,15 @@ namespace BioLink.Client.Material {
 
             if (obj is SiteExplorerNodeViewModel) {
                 var node = obj as SiteExplorerNodeViewModel;
-
-                // list.Add(new Command("Show in explorer", (dataobj) => { _explorer.ShowInExplorer(node.ElemID); }));
-                // list.Add(new CommandSeparator());
+                list.Add(new Command("Show in Site Explorer", (dataobj) => {
+                    PluginManager.EnsureVisible(this, "MaterialExplorer");
+                    _explorer.ShowInContents(node);
+                }));
+                list.Add(new CommandSeparator());                
                 list.Add(new Command("Edit details...", (dataobj) => { _explorer.EditNode(node); }));
                 if (node.NodeType == SiteExplorerNodeType.Site || node.NodeType == SiteExplorerNodeType.SiteVisit || node.NodeType == SiteExplorerNodeType.Material) {
                     list.Add(new Command("Edit in Rapid Data Entry...", (dataobj) => { _explorer.EditRDE(node); }));                    
                 }
-                list.Add(new Command("Show in Contents", (dataobj) => { _explorer.ShowInContents(node); }));
-
             }
 
             return list;

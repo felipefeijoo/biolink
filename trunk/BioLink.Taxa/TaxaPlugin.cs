@@ -156,8 +156,11 @@ namespace BioLink.Client.Taxa {
 
             var taxon = selected[0] as TaxonViewModel;
             if (taxon != null) {
-                
-                list.Add(new Command("Show in explorer", dataobj => _explorer.ContentControl.ShowInExplorer(taxon.TaxaID)));
+
+                list.Add(new Command("Show in explorer", dataobj => {
+                    PluginManager.EnsureVisible(this, "TaxonExplorer");
+                    _explorer.ContentControl.ShowInExplorer(taxon.TaxaID); 
+                }));
 
                 var reports = GetReportsForTaxon(selected.ConvertAll(vm => vm as TaxonViewModel));
                 if (reports.Count > 0) {
