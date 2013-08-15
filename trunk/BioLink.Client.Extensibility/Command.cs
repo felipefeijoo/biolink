@@ -24,20 +24,23 @@ namespace BioLink.Client.Extensibility {
 
     public class Command {
 
-        public Command(string caption, Action<object> action) {
+        public Command(string caption, Action<object> action, bool isDefault = false) {
             Caption = caption;
             CommandAction = action;
+            IsDefaultCommand = isDefault;
         }
 
-        public Command(string caption, BitmapSource icon, Action<object> action) {
+        public Command(string caption, BitmapSource icon, Action<object> action, bool isDefault = false) {
             Caption = caption;
             Icon = icon;
             CommandAction = action;
+            IsDefaultCommand = isDefault;
         }
 
         public string Caption { get; set; }
         public BitmapSource Icon { get; set; }
         public Action<object> CommandAction { get; set; }
+        public Boolean IsDefaultCommand { get; set; }
     }
 
     // Placeholder class to indicate some kind of seperator between adjacent command when displayed visually (e.g. as menu items or tool bar items).

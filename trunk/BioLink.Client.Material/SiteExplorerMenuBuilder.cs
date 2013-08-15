@@ -170,20 +170,7 @@ namespace BioLink.Client.Material {
             if (type != SiteExplorerNodeType.SiteGroup) {
                 builder.Separator();
                 builder.New("Edit Details...").Handler(() => {
-                    switch (type) {
-                        case SiteExplorerNodeType.Region: explorer.EditRegion(node);
-                            break;
-                        case SiteExplorerNodeType.Site: explorer.EditSite(node);
-                            break;
-                        case SiteExplorerNodeType.SiteVisit: explorer.EditSiteVisit(node);
-                            break;
-                        case SiteExplorerNodeType.Trap: explorer.EditTrap(node);
-                            break;
-                        case SiteExplorerNodeType.Material: explorer.EditMaterial(node);
-                            break;
-                        default:
-                            throw new Exception("[Details] Unhandled site explorer element type: " + node.ElemType);
-                    }
+                    explorer.EditNode(node);
                 }).End();
 
                 var rdeNodeTypes = new List<SiteExplorerNodeType>(new SiteExplorerNodeType[] { SiteExplorerNodeType.Material, SiteExplorerNodeType.Site, SiteExplorerNodeType.SiteVisit });

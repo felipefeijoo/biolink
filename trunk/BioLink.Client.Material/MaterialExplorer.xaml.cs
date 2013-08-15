@@ -152,6 +152,24 @@ namespace BioLink.Client.Material {
             tabMaterial.AddTabItem("Favorites", _favorites);
 
             txtFind.PreviewKeyDown += new KeyEventHandler(txtFind_PreviewKeyDown);
+
+            tvwFind.MouseDoubleClick +=new MouseButtonEventHandler((sender,e) => PerformDefaultAction(sender as TreeView) );
+            tvwMaterial.MouseDoubleClick += new MouseButtonEventHandler((sender, e) => PerformDefaultAction(sender as TreeView));
+        }
+
+        private void PerformDefaultAction(TreeView sender) {
+            if (Preferences.ExplorerDoubleClickEditsItem.Value) {
+                if (sender == null) {
+                    return;
+                }
+
+                var selected = sender.SelectedItem as SiteExplorerNodeViewModel;
+                if (selected == null) {
+                    return;
+                }
+
+                EditNode(selected);
+            }
         }
 
         void cmbFindScope_PreviewKeyDown(object sender, KeyEventArgs e) {
@@ -545,9 +563,6 @@ namespace BioLink.Client.Material {
                     }
                 }
             }
-        }
-
-        private void TreeViewItem_MouseRightButtonDown(object sender, MouseEventArgs e) {
         }
 
         private TreeView GetCurrentTree() {
