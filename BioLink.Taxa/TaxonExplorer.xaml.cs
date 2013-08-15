@@ -82,9 +82,20 @@ namespace BioLink.Client.Taxa {
             btnLock.Checked += new RoutedEventHandler(btnLock_Checked);          
             btnLock.Unchecked += new RoutedEventHandler(btnLock_Unchecked);
 
-            
+            tvwAllTaxa.MouseDoubleClick += new MouseButtonEventHandler((sender, e) => PerformDefaultAction(sender as TreeView));
+            tvwResults.MouseDoubleClick += new MouseButtonEventHandler((sender, e) => PerformDefaultAction(sender as TreeView));
 
             favorites.BindUser(User, this);
+        }
+
+        private void PerformDefaultAction(TreeView sender) {
+            if (Preferences.ExplorerDoubleClickEditsItem.Value) {
+                var tvw = sender as TreeView;
+                TaxonViewModel item = tvw.SelectedItem as TaxonViewModel;
+                if (item != null) {
+                    EditTaxonDetails(item.TaxaID);
+                }
+            }
         }
 
         void TaxonExplorer_PreviewKeyDown(object sender, KeyEventArgs e) {

@@ -212,8 +212,8 @@ namespace BioLink.Client.Material {
                     PluginManager.EnsureVisible(this, "MaterialExplorer");
                     _explorer.ShowInContents(node);
                 }));
-                list.Add(new CommandSeparator());                
-                list.Add(new Command("Edit details...", (dataobj) => { _explorer.EditNode(node); }));
+                list.Add(new CommandSeparator());
+                list.Add(new Command("Edit details...", (dataobj) => { _explorer.EditNode(node); }) { IsDefaultCommand = true });
                 if (node.NodeType == SiteExplorerNodeType.Site || node.NodeType == SiteExplorerNodeType.SiteVisit || node.NodeType == SiteExplorerNodeType.Material) {
                     list.Add(new Command("Edit in Rapid Data Entry...", (dataobj) => { _explorer.EditRDE(node); }));                    
                 }

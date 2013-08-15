@@ -50,6 +50,7 @@ namespace BioLink.Client.Taxa {
             this.ChangeRegistered += new Action<IList<DatabaseCommand>>((changes) => {
                 EnableButtons();
             });
+            tvwFavorites.MouseDoubleClick +=new MouseButtonEventHandler((sender, e) => PerformDefaultAction(sender as TreeView));
         }
 
         void tvwFavorites_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
@@ -314,6 +315,19 @@ namespace BioLink.Client.Taxa {
                 item.Children.Add(child);
             }
 
+        }
+
+        private void PerformDefaultAction(TreeView sender) {
+            if (sender == null) {
+                return;
+            }
+            var model = sender.SelectedItem as HierarchicalViewModelBase;
+            if (model != null) {
+                var fav = model as TaxonFavoriteViewModel;
+                if (!fav.IsGroup) {
+                    TaxonExplorer.EditTaxonDetails(fav.TaxaID);
+                }
+            }
         }
 
         private void TreeViewItem_MouseRightButtonDown(object sender, MouseEventArgs e) {

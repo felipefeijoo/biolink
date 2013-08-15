@@ -170,7 +170,7 @@ namespace BioLink.Client.Taxa {
 
                 list.Add(new CommandSeparator());
                 list.Add(new Command("Edit Name...", dataobj => _explorer.ContentControl.EditTaxonName(taxon)));
-                list.Add(new Command("Edit Details...", dataobj => _explorer.ContentControl.EditTaxonDetails(taxon.TaxaID)));
+                list.Add(new Command("Edit Details...", dataobj => _explorer.ContentControl.EditTaxonDetails(taxon.TaxaID)) { IsDefaultCommand = true });
             }
 
             if (selected[0] is DistributionRegionViewModel) {

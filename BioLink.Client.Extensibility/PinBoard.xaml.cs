@@ -55,6 +55,7 @@ namespace BioLink.Client.Extensibility {
             this.DataContext = _model;
             lvw.ItemsSource = _model;
             lvw.MouseRightButtonUp +=new MouseButtonEventHandler((s,e) => { ShowPopupMenu(); } );
+            lvw.MouseDoubleClick +=new MouseButtonEventHandler((s,e) => { PerformDefaultCommand(); });
             this.AllowDrop = true;
 
             _dragHelper = new ListViewDragHelper(lvw, CreateDragData);
@@ -107,6 +108,23 @@ namespace BioLink.Client.Extensibility {
             } else {
                 e.Effects = DragDropEffects.None;
                 e.Handled = true;
+            }
+        }
+
+        private void PerformDefaultCommand() {
+            ViewModelBase viewmodel = lvw.SelectedItem as ViewModelBase;
+
+            if (viewmodel == null) {
+                return;
+            }
+            // Get a list of available commands for this object
+            var list = new List<ViewModelBase>();
+            list.Add(viewmodel);
+            var commands = PluginManager.Instance.SolicitCommandsForObjects(list);
+            // Now look through the list and see if there is a default command
+            var defaultCommand = commands.FirstOrDefault(cmd => cmd.IsDefaultCommand);
+            if (defaultCommand != null) {
+                defaultCommand.CommandAction(viewmodel);
             }
         }
 

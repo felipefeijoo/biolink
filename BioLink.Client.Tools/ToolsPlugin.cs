@@ -326,18 +326,18 @@ namespace BioLink.Client.Tools {
             var list = new List<Command>();
 
             if (obj is ReferenceViewModel) {
-                
+
                 list.Add(new Command("Edit details...", (vm) => {
                     var r = vm as ReferenceViewModel;
                     EditReference(r.RefID);
-                }));
+                }) { IsDefaultCommand = true });
             }
 
             if (obj is JournalViewModel) {
                 list.Add(new Command("Edit details...", (vm) => {
                     var j = vm as JournalViewModel;
                     EditJournal(j.JournalID);
-                }));
+                }) { IsDefaultCommand = true});
             }
 
             if (obj is ContactViewModel) {
@@ -345,7 +345,7 @@ namespace BioLink.Client.Tools {
 
                 list.Add(new Command("Edit details...", (vm) => {
                     EditContact(c.ContactID);
-                }));
+                }) { IsDefaultCommand = true });
 
                 list.Add(new Command("Show Loans ...", (vm) => {
                     ShowLoansForContact(c.ContactID);
@@ -357,7 +357,7 @@ namespace BioLink.Client.Tools {
                 var loan = obj as LoanViewModel;
                 list.Add(new Command("Edit details...", (vm) => {
                     EditLoan(loan.LoanID);
-                }));
+                }) { IsDefaultCommand = true });
             }
 
             return list;

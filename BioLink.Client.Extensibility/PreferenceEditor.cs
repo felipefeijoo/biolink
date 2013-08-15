@@ -24,6 +24,8 @@ namespace BioLink.Client.Extensibility {
         public static PreferenceEditor<bool> UseLoanPermitNumberTrait = new PreferenceEditor<bool>("Loans.UsePermitNumberTrait", "Seed a loans permit number from the borrowers permit number trait?", PreferenceScope.Profile, true);
 
         public static PreferenceEditor<bool> OpenReportResultsInFloatingWindow = new PreferenceEditor<bool>("Reports.OpenInFloatingWindow", "Show report and query results in a floating window?", PreferenceScope.Profile, false);
+
+        public static PreferenceEditor<bool> ExplorerDoubleClickEditsItem = new PreferenceEditor<bool>("Explorers.DoubleClickEditsItem", "Double clicking an item in the Taxon Explorer or Site Explorer edits that item?", PreferenceScope.Profile, true);
         
     }
 
