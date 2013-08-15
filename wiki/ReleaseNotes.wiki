@@ -3,11 +3,37 @@
 
 = Release Notes =
 
+== !BioLink Version 3.0.582 ==
+
+This is the ninth "fix" release for BioLink 3.0. It addresses issues raised since build 570
+
+=== New Features ===
+
+ * Issue 190	There is currently no way through the application to add phrase categories	 
+ * Issue 194	Not possible to retrieve notes in query tool	 
+ * Issue 195	Multimedia tab in RDE	 
+ * Issue 203	Double clicking on sites, material, visits or taxa should edit that item
+ * Issue 201	Cannot find Material/Visits or Sites in the contents tree	 
+
+In addition Loan Form templates can now be formatted using Microsoft Word DOCX format using MERGEFIELD fields, rather then the rather error prone RTF format. The field names to use with the MERGEFIELD fields remains the same as per the Loan forms documentation.
+
+=== Issues addressed in this release ===
+
+ * Issue 193	Query Associates does not return expected results	 
+ * Issue 196	Loan Form templates often fail due to bad formatting	 
+ * Issue 197	Cannot add ranks after adding Sub-Kingdon in Plantae	 
+ * Issue 198	Trait values are no longer able to be selected from phrase categories	 
+ * Issue 199	Query tool will not return material parts unless a material field is explicitly selected	 
+ * Issue 200	No easy way to plot a set of arbitrary points on the map tool	 
+ * Issue 202	Non-SA users that have the SQL Server SysAdmin role should be treated as if they are the 'sa' user	 
+	 
+ 
+
 == !BioLink Version 3.0.570 ==
 
-!BioLink 3.0.560 22 Mar 2013
+!BioLink 3.0.570 22 Mar 2013
 
-This is the eighth "fix" release for BioLink 3.0. It addresses issues raised since build 570
+This is the eighth "fix" release for BioLink 3.0. It addresses issues raised since build 560
 
 === New Features ===
 
@@ -29,7 +55,7 @@ This is the seventh "fix" release for BioLink 3.0. It addresses issues raised si
 
 No new features are introduced in this build.
 
-=== Issues addressed in this issue ===
+=== Issues addressed in this release ===
 
  * Issue 185	Regression: Map no longer shows 'edit site' on distribution map	 
  * Issue 186	Added a trait to the query tool causes an exception	 
@@ -45,7 +71,7 @@ This is the sixth "fix" release for BioLink 3.0. It addresses issues reported si
  * Minor UI enhancements, particularly in reference management
  * Experimental: There is now a "Check for updates" under the help menu that checks to see if there is a new version available for download from the Google code site
 
-=== Issues addressed in this issue ===
+=== Issues addressed in this release ===
 
  * Issue 175	"use in reports" don't work?	 
  * Issue 176	Cannot see what other things are linked to an image from the multimedia control	 
