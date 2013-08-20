@@ -5,6 +5,8 @@
 
 == !BioLink Version 3.0.582 ==
 
+!BioLink 3.0.582 14 Aug 2013
+
 This is the ninth "fix" release for BioLink 3.0. It addresses issues raised since build 570
 
 === New Features ===
