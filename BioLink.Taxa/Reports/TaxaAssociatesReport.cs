@@ -77,7 +77,7 @@ namespace BioLink.Client.Taxa {
                 ids[i++] = vm.TaxaID.Value;
             }
 
-            var matrix = Service.GetAssociatesForTaxa(RegionID, ids);
+            var matrix = Service.GetAssociatesForTaxa(RegionID, this.StripRTF, ids);
 
             var index = matrix.IndexOf("AssociateID");
             if (index >= 0) {
@@ -189,6 +189,7 @@ namespace BioLink.Client.Taxa {
             frm.Owner = parentWindow;
             if (frm.ShowDialog().ValueOrFalse()) {
                 this.RegionID = frm.txtRegion.ObjectID.GetValueOrDefault(-1);
+                this.StripRTF = frm.chkStripRTF.IsChecked.GetValueOrDefault(true);
                 return true;
             }
 
@@ -196,6 +197,8 @@ namespace BioLink.Client.Taxa {
         }
 
         protected int RegionID { get; private set; }
+
+        protected bool StripRTF { get; private set; }
 
         protected List<TaxonViewModel> Taxa { get; private set; }
 

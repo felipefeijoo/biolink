@@ -127,14 +127,21 @@ namespace BioLink.Client.Extensibility {
 
                         // Create the first view straight away...
                         if (count == 0) {
-                            tabItem.Content = viewerSource.ConstructView(Report, data, this);
+                            var scroller = new ScrollViewer();
+                            scroller.Content = viewerSource.ConstructView(Report, data, this);
+                            tabItem.Content = scroller;
                         } else {
                             tabItem.RequestBringIntoView += new RequestBringIntoViewEventHandler((s, e) => {
+
                                 if (tabItem.Content == null) {
-                                    tabItem.Content = viewerSource.ConstructView(Report, data, this);
+                                    var scroller = new ScrollViewer();
+                                    scroller.Content = viewerSource.ConstructView(Report, data, this);
+                                    tabItem.Content = scroller;
                                 }
                             });
                         }
+                        
+
                         tab.Items.Add(tabItem);
                         count++;
                     }                    

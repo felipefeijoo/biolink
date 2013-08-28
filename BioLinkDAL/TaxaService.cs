@@ -309,10 +309,15 @@ namespace BioLink.Data {
             return StoredProcDataMatrix("spBiotaListTypes", null, _P("BiotaID", taxonId));
         }
 
-        public DataMatrix GetAssociatesForTaxa(int regionID, params int[] taxonIds) {
+        public DataMatrix GetAssociatesForTaxa(int regionID, bool stripRTF, params int[] taxonIds) {
             var strTaxonIDS = taxonIds.Join(",");
+
+            var formatters = new Dictionary<String, ColumnDataFormatter>();
+            if (stripRTF) {
+                formatters["Notes"] = (value, reader) => RTFUtils.StripMarkup(value as String);
+            }
             
-            return StoredProcDataMatrix("spAssociatesListForTaxon", null, _P("intPoliticalRegionID", regionID), _P("vchrBiotaID", strTaxonIDS));
+            return StoredProcDataMatrix("spAssociatesListForTaxon", formatters, _P("intPoliticalRegionID", regionID), _P("vchrBiotaID", strTaxonIDS));
         }
 
         public List<Kingdom> GetKingdomList() {
