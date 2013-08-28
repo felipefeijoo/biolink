@@ -53,7 +53,7 @@ namespace BioLink.Client.Taxa {
             this.Close();
         }
 
-        private void btnCnacel_Click(object sender, RoutedEventArgs e) {
+        private void btnCancel_Click(object sender, RoutedEventArgs e) {
             this.DialogResult = false;
             this.Close();
         }

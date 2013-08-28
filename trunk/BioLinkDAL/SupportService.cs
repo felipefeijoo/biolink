@@ -134,7 +134,7 @@ namespace BioLink.Data {
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Locality", FieldName="vchrLocal", TableName="tblSite", Category="Site", Description="Place name and optional offset where the material was found", Format="", UseInRDE=true, DataType="Text" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Distance from Place", FieldName="vchrDistanceFromPlace", TableName="tblSite", Category="Site", Description="Distance from the locality", Format="", UseInRDE=true, DataType="Text" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Direction from Place", FieldName="vchrDirFromPlace", TableName="tblSite", Category="Site", Description="Direction from the locality", Format="", UseInRDE=true, DataType="Text" });
-		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Informal locality", FieldName="vchrInformalLocal", TableName="tblSite", Category="Site", Description="Informal locality", Format="", UseInRDE=true, DataType="Text" });
+		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Informal locality", FieldName="vchrInformalLocal", TableName="tblSite", Category="Site", Description="Informal locality", Format="rtf", UseInRDE=true, DataType="Text" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Position Area Type", FieldName="tintPosAreaType", TableName="tblSite", Category="Site", Description="Integer representing the type of position data (1=point 2=line 3=bounding box)", Format="", UseInRDE=true, DataType="IntCode[1=Point,2=Line,3=Bounding box]" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Position Coordinate Type", FieldName="tintPosCoordinates", TableName="tblSite", Category="Site", Description="Integer representing the type of coordinates used (1=Lat/Long 2=Easting/Northings)", Format="", UseInRDE=true, DataType="IntCode[1=Lat/Long,2=Eastings/Northings]" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Longitude", FieldName="fltPosX1", TableName="tblSite", Category="Site", Description="Latitude in decimal degrees", Format="Longitude", UseInRDE=true, DataType="Longitude" });
@@ -166,7 +166,7 @@ namespace BioLink.Data {
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological Name", FieldName="vchrGeoName", TableName="tblSite", Category="Site", Description="Geological Name", Format="", UseInRDE=true, DataType="Text" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological Age Bottom", FieldName="vchrGeoAgeBottom", TableName="tblSite", Category="Site", Description="Geological Age Bottom", Format="", UseInRDE=true, DataType="Text" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological Age Top", FieldName="vchrGeoAgeTop", TableName="tblSite", Category="Site", Description="Geological Age Top", Format="", UseInRDE=true, DataType="Text" });
-		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological Notes", FieldName="vchrGeoNotes", TableName="tblSite", Category="Site", Description="Geological Notes", Format="", UseInRDE=true, DataType="Text" });
+		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Geological Notes", FieldName="vchrGeoNotes", TableName="tblSite", Category="Site", Description="Geological Notes", Format="rtf", UseInRDE=true, DataType="Text" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Who Created", FieldName="vchrWhoCreated", TableName="tblSite", Category="Site", Description="The username of the user who created the entry", Format="", UseInRDE=true, DataType="Text" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Date Created", FieldName="dtDateCreated", TableName="tblSite", Category="Site", Description="The date the entry was created", Format="Date", UseInRDE=true, DataType="Date" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Who Last Updated", FieldName="vchrWhoLastUpdated", TableName="tblSite", Category="Site", Description="The username of the user who last updated the entry", Format="", UseInRDE=true, DataType="Text" });
@@ -195,7 +195,7 @@ namespace BioLink.Data {
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Identification method", FieldName="vchrIDMethod", TableName="tblMaterial", Category="Material", Description="The method used to make the identification", Format="", UseInRDE=true, DataType="Text" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Identification accuracy", FieldName="vchrIDAccuracy", TableName="tblMaterial", Category="Material", Description="Likelihood that ID is correct: (0) unchecked by any authority, (1) compared with other named specimens, (2) determined by authority based on existing classification or named material, (3) determined by authority during revision, (4) part of type series", Format="", UseInRDE=true, DataType="Text" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Identification name qualifier", FieldName="vchrIDNameQual", TableName="tblMaterial", Category="Material", Description="An indication that the cited name is uncertain.  Includes cf (compare with), near, incorrect (current name is incorrect but true name is unknown), ? (questionable)", Format="", UseInRDE=true, DataType="Text" });
-		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Identification notes", FieldName="vchrIDNotes", TableName="tblMaterial", Category="Material", Description="Assorted notes on this identification", Format="", UseInRDE=true, DataType="Text" });
+		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Identification notes", FieldName="vchrIDNotes", TableName="tblMaterial", Category="Material", Description="Assorted notes on this identification", Format="rtf", UseInRDE=true, DataType="Text" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Institute", FieldName="vchrInstitution", TableName="tblMaterial", Category="Material", Description="Institute where material is held", Format="", UseInRDE=true, DataType="Text" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Collection method", FieldName="vchrCollectionMethod", TableName="tblMaterial", Category="Material", Description="Method used to collect material", Format="", UseInRDE=true, DataType="Text" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Abundance", FieldName="vchrAbundance", TableName="tblMaterial", Category="Material", Description="Abundance or frequency of material", Format="", UseInRDE=true, DataType="Text" });
@@ -219,7 +219,7 @@ namespace BioLink.Data {
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Storage Site", FieldName="vchrStorageSite", TableName="tblMaterialPart", Category="MaterialPart", Description="Where is the subpart stored", Format="", UseInRDE=true, DataType="Text" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Storage Method", FieldName="vchrStorageMethod", TableName="tblMaterialPart", Category="MaterialPart", Description="How is the subpart stored", Format="", UseInRDE=true, DataType="Text" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Curation Status", FieldName="vchrCurationStatus", TableName="tblMaterialPart", Category="MaterialPart", Description="Curation status of the part", Format="", UseInRDE=true, DataType="Text" });
-		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Notes", FieldName="txtNotes", TableName="tblMaterialPart", Category="MaterialPart", Description="Notes", Format="", UseInRDE=true, DataType="Text" });
+		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Notes", FieldName="txtNotes", TableName="tblMaterialPart", Category="MaterialPart", Description="Notes", Format="rtf", UseInRDE=true, DataType="Text" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "On Loan", FieldName="tintOnLoan", TableName="tblMaterialPart", Category="MaterialPart", Description="= 1 if on loan", Format="", UseInRDE=true, DataType="Boolean" });
             // END FIELD DESCRIPTORS
 
@@ -1256,7 +1256,7 @@ namespace BioLink.Data {
                 } else if (field.DataType.Equals("Longitude", StringComparison.CurrentCultureIgnoreCase) || field.DataType.Equals("latitude", StringComparison.CurrentCultureIgnoreCase)) {
                     criteria.FormatOption = "dms";
                 } else if ("rtf".Equals(field.Format)) {
-                    criteria.FormatOption = "RTF";
+                    criteria.FormatOption = "Plain";
                 }
             }
 
