@@ -163,7 +163,7 @@ namespace BioLink.Client.Maps {
                 if (viewModel is RDESiteViewModel) {
                     var site = viewModel as RDESiteViewModel;
                     builder.New("Edit Site...").Handler(() => { PluginManager.Instance.EditLookupObject(LookupType.Site, site.SiteID); }).End();
-                } else if (viewModel is RDESiteViewModel) {
+                } else if (viewModel is RDESiteVisitViewModel) {
                     var visit = viewModel as RDESiteVisitViewModel;
                     builder.New("Edit Site...").Handler(() => { PluginManager.Instance.EditLookupObject(LookupType.Site, visit.SiteID); }).End();
                     builder.New("Edit Site Visit...").Handler(() => { PluginManager.Instance.EditLookupObject(LookupType.SiteVisit, visit.SiteVisitID); }).End();

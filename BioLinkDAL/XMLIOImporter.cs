@@ -155,6 +155,10 @@ namespace BioLink.Data {
         }
 
         private bool ImportAvailableNameData(XmlElement TaxonNode, int TaxonID , bool isAvailableName, bool isLiteratureName, string RankCategory) {
+
+            if (RankCategory == null) {
+                RankCategory = "";
+            }
     
             if (isAvailableName) {
                 // Could be SAN, GAN or ALN depending on Rank Category...
@@ -766,6 +770,10 @@ namespace BioLink.Data {
 
                 var strDelimiter = XMLRegionNode.GetAttributeValue("PATHSEPARATOR", "\\");
                 var strPath = GetNodeValue<string>(XMLRegionNode, "FULLPATH");
+                if (String.IsNullOrWhiteSpace(strPath)) {
+                    strPath = strDelimiter;
+                }
+
                 var lngRegionID = ImportDistributionRegion(strPath, strDelimiter);
                 if (lngRegionID < 0) {
                     Log("Failed to map/add Region Path to RegionID ! - " + strPath);
@@ -773,8 +781,8 @@ namespace BioLink.Data {
                     var dist = new XMLImportDistribution(XMLRegionNode) { TaxonID = TaxonID, RegionID = lngRegionID };
                     GenerateUpdateString(XMLRegionNode, "DistributionItem", dist, "intBiotaID=" + TaxonID + ", intDistributionRegionID=" + lngRegionID, "intBiotaID, intDistributionRegionID", TaxonID + ", " + lngRegionID);
                     list.Add(dist);
-
                 }
+
             }
 
             if (list.Count > 0) {

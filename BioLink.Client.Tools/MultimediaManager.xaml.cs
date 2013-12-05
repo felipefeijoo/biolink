@@ -230,7 +230,7 @@ namespace BioLink.Client.Tools {
             if (this.Question(string.Format("Are you sure you wish to permanently delete '{0}'?", selected.Name), "Delete multimedia?")) {
                 var index = _model.IndexOf(selected);
                 _model.Remove(selected);
-                if (index >= 0) {
+                if (index >= 0 && _model.Count > 0) {
                     _model[index].IsSelected = true;
                 }
 

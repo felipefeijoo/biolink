@@ -1259,7 +1259,7 @@ namespace BioLink.Data {
             }
 
             if (XMLRegionNode == null) { // No political region, so add it directly under the Material Root
-                XMLSiteNode = _xmlDoc.CreateNode(_xmlDoc.MaterialRoot, "SITE");
+                XMLSiteNode = _xmlDoc.CreateNode(_xmlDoc.MaterialRoot, "SITE", site.GUID.ToString());
             } else {
                 XMLSiteNode = _xmlDoc.CreateNode(XMLRegionNode, "SITE", site.GUID.ToString());
             }
@@ -1408,9 +1408,10 @@ namespace BioLink.Data {
         }
 
         private void AddAvailableNameData(XmlElement taxonNode, Taxon taxon, TaxonRank rank) {
-            Log("Exporting Available name data (TaxonID={0}) Rank Category='{1}'", taxon.TaxaID.Value, rank.Category);
 
-            if (taxon.AvailableName.ValueOrFalse()) {
+            Log("Exporting Available name data (TaxonID={0}) Rank Category='{1}'", taxon.TaxaID.Value, rank == null ? "<no rank>" : rank.Category);
+
+            if (taxon.AvailableName.ValueOrFalse() && rank != null) {
                 switch (rank.Category.ToLower()) {
                     case "s":        // Species Available Name
                         AddSANData(taxonNode, taxon);
@@ -1689,22 +1690,26 @@ namespace BioLink.Data {
                 if (IsCancelled) {
                     break;
                 }
-                var alias = t.Name;
-                var mangled = MangleName(alias);
+                var alias = t.Name;                
+                var mangled = MangleName(alias); // The name is not really that important - as long as the alias is preserved.
+                if (String.IsNullOrWhiteSpace(mangled)) {
+                    mangled = "_";
+                }
+
                 var XMLTraitItem = _xmlDoc.CreateNode(ParentNode, mangled);
                 XMLTraitItem.AddAttribute("ALIAS", alias);
                 XMLTraitItem.InnerText = t.Value;
             }
         }
 
-        private string MangleName(string name) {
-            var strReplace = " <>&:/\\" + (char)34;
+        private string MangleName(string name) {            
+            var strAllowed = "-_";
             var sb = new StringBuilder();
             foreach (char ch in name) {
-                if (strReplace.IndexOf(ch) >= 0) {
-                    sb.Append("_");
-                } else {
+                if (Char.IsLetterOrDigit(ch) || strAllowed.IndexOf(ch) >= 0) {
                     sb.Append(ch);
+                } else {
+                    sb.Append("_");
                 }
             }
             return sb.ToString().ToUpper();
