@@ -114,7 +114,12 @@ namespace BioLink.Data {
         }
 
         public TaxonRank GetTaxonRank(Taxon taxon) {
-            return GetTaxonRank(taxon.ElemType, taxon.KingdomCode);
+            // If there is no kingdom code, assume Animalia
+            var kingdomCode = taxon.KingdomCode;
+            if (String.IsNullOrEmpty(kingdomCode)) {
+                kingdomCode = "A";
+            }
+            return GetTaxonRank(taxon.ElemType, kingdomCode);
         }
 
         public TaxonRank GetTaxonRank(string elemType, string kingdomCode) {
@@ -143,7 +148,7 @@ namespace BioLink.Data {
         }
 
         private string RankKey(Taxon taxon) {
-            return RankKey(taxon.KingdomCode, taxon.ElemType);
+            return RankKey(taxon.KingdomCode == null ? "A" : taxon.KingdomCode, taxon.ElemType);
         }
 
         public List<TaxonRank> GetChildRanks(TaxonRank targetRank) {
