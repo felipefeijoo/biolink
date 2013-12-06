@@ -63,6 +63,15 @@ namespace BioLink.Client.Extensibility {
             return result;
         }
 
+        public PinnableObject GetPinnableForLookupType(LookupType lookupType, int? objectId) {
+            var plugin = GetLookupTypeOwner(lookupType);
+            if (plugin != null && objectId.HasValue) {
+                var pinnable = new PinnableObject(plugin.Name, lookupType, objectId.Value);
+                return pinnable;
+            }
+            return null;
+        }
+
         private PluginManager(User user, Window parentWindow) {
             User = user;            
             _extensions = new List<IBioLinkExtension>();

@@ -283,9 +283,46 @@ namespace BioLink.Client.Extensibility {
                     }                    
                 }
 
-                builder.New("Edit " + lookupType.ToString()).Handler(() => {
-                    PluginManager.Instance.EditLookupObject(lookupType, objectId);
-                }).Enabled(enabled).End();
+                var pinnable = PluginManager.Instance.GetPinnableForLookupType(lookupType, objectId);
+
+                var commands =new List<Command>();
+
+                if (pinnable != null) {
+                    var vm = PluginManager.Instance.GetViewModel(pinnable);
+                    if (vm != null) {
+                        var selected = new List<ViewModelBase>();
+                        selected.Add(vm);
+                        commands.AddRange(PluginManager.Instance.SolicitCommandsForObjects(selected));
+                    }
+                }
+
+                if (commands.Count > 0) {
+
+                    MenuItemBuilder b = new MenuItemBuilder();
+                    
+                    var typeItem = b.New(lookupType.ToString()).MenuItem;
+
+                    typeItem.Items.Add(b.New("Pin {0} to pinboard", lookupType).Handler(() => {
+                        PluginManager.Instance.PinObject(pinnable);
+                    }).Enabled(enabled).MenuItem);
+                    typeItem.Items.Add(new Separator());
+
+                    commands.ForEach((cmd) => {
+                        if (cmd is CommandSeparator) {
+                            typeItem.Items.Add(new Separator());
+                        } else {
+                            typeItem.Items.Add(b.New(cmd.Caption).Handler(() => {
+                                cmd.CommandAction(pinnable);
+                            }).Enabled(enabled).MenuItem);
+                        }
+                    });
+
+                    builder.AddMenuItem(typeItem);
+                } else {
+                    builder.New("Edit " + lookupType.ToString()).Handler(() => {
+                        PluginManager.Instance.EditLookupObject(lookupType, objectId);
+                    }).Enabled(enabled).End();
+                }
             }
 
         }

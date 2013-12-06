@@ -63,12 +63,14 @@ namespace BioLink.Client.Taxa {
                 chkChangedCombination.Visibility = System.Windows.Visibility.Hidden;
                 if (taxon.AvailableName.ValueOrFalse()) {
                     TaxonRank rank = service.GetTaxonRank(taxon);
-                
-                    switch (rank.Category.ToLower()) {
-                        case "g": phraseCategory = "GAN Name Status";
-                            break;
-                        case "s": phraseCategory = "SAN Name Status";
-                            break;
+                    
+                    if (rank != null) {
+                        switch (rank.Category.ToLower()) {
+                            case "g": phraseCategory = "GAN Name Status";
+                                break;
+                            case "s": phraseCategory = "SAN Name Status";
+                                break;
+                        }
                     }
                 }
 
