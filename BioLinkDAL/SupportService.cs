@@ -100,6 +100,8 @@ namespace BioLink.Data {
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Who Last Updated", FieldName="vchrWhoLastUpdated", TableName="tblBiota", Category="Nomenclature", Description="The username of the user who last updated the entry", Format="", UseInRDE=false, DataType="Text" });
 		    FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Date Last Updated", FieldName="dtDateLastUpdated", TableName="tblBiota", Category="Nomenclature", Description="The date the entry was last updated", Format="Date", UseInRDE=false, DataType="Date" });
 
+            FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Kingdom Code", FieldName = "chrKingdomCode", TableName = "tblBiota", Category = "Nomenclature", Description = "The Kingdom Code (A=Animalia, P=Plantae)", UseInRDE = false, DataType = "Text" });
+
             FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Parent Kingdom", FieldName = "vchrParentKingdom", TableName = "tblBiota", Category = "Nomenclature", Description = "The parent taxonomic Kingdom", Format = "", UseInRDE = false, DataType = "Text" });
             FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Parent Phylum", FieldName = "vchrParentPhylum", TableName = "tblBiota", Category = "Nomenclature", Description = "The parent Phylum", Format = "", UseInRDE = false, DataType = "Text" });
             FieldDescriptors.Add(new FieldDescriptor { DisplayName = "Parent Class", FieldName = "vchrParentClass", TableName = "tblBiota", Category = "Nomenclature", Description = "The parent taxonomic Class", Format = "", UseInRDE = false, DataType = "Text" });
