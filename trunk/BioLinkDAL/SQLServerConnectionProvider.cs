@@ -124,6 +124,11 @@ namespace BioLink.Data {
             // try and connect to find out...
             try {
                 Command(user, (con, cmd) => {
+
+                    if (user.InTransaction && user.CurrentTransaction != null) {
+                        cmd.Transaction = user.CurrentTransaction;
+                    }
+                    
                     cmd.CommandType = CommandType.Text;
                     cmd.CommandText = "SELECT IS_SRVROLEMEMBER('sysadmin') as IsSysAdmin;";
                     using (var reader = cmd.ExecuteReader()) {
