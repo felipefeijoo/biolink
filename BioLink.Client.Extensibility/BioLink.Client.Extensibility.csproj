@@ -694,6 +694,7 @@
     <Resource Include="images\Target.png" />
     <Resource Include="images\Relationship.png" />
     <Resource Include="images\Description.png" />
+    <Resource Include="images\Import.png" />
     <Content Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>

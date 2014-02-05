@@ -935,6 +935,10 @@ namespace BioLink.Client.Maps {
         /// <param name="list"></param>
         private void FindTopMostSelectedRegions(RegionTreeNode root, List<RegionDescriptor> list) {
 
+            if (root == null) {
+                return;
+            }
+
             if (root.IsSelected && root.Parent != null) {
                 // Create a new region descriptor for this top-most selected item...
                 list.Add(new RegionDescriptor(root.Path, root.IsThroughoutRegion));
@@ -970,6 +974,10 @@ namespace BioLink.Client.Maps {
         /// </summary>
         /// <param name="root"></param>
         private void NormalizeSelection(RegionTreeNode root) {
+
+            if (root == null) {
+                return;
+            }
 
             // No children, we've hit the bottom, so start returning back up
             if (root.Children.Count == 0) {

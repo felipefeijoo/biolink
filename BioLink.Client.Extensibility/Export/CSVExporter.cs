@@ -66,7 +66,7 @@ namespace BioLink.Client.Extensibility.Export {
                             if (options.QuoteValues) {
                                 writer.Write(_quote);
                             }
-                            if (colIndex <= numCols - 1) {
+                            if (colIndex < numCols - 1) {
                                 writer.Write(options.Delimiter);
                             }
                         }
@@ -101,7 +101,7 @@ namespace BioLink.Client.Extensibility.Export {
                             if (quoteValue) {
                                 writer.Write(_quote);
                             }
-                            if (colIndex <= numCols - 1) {
+                            if (colIndex < numCols - 1) {
                                 writer.Write(options.Delimiter);
                             }
                         }
