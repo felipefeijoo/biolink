@@ -1875,6 +1875,11 @@ namespace BioLink.Data {
             return StoredProcToList("spDistRegionFind", mapper, _P("vchrDistRegionToFind", filter));
         }
 
+        // Will return id from given region path, and will insert regions that do not exist.
+        public int GetDistributionIdFromPath(String fullPath) {
+            return StoredProcReturnVal("spDistRegionGetID", _P("vchrFullPath", fullPath));
+        }
+
         #endregion
 
         public List<Associate> GetAssociatesById(List<int> idList) {                        

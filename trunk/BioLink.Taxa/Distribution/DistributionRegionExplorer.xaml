@@ -7,7 +7,11 @@
              xmlns:src="clr-namespace:BioLink.Client.Taxa"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid Margin="6">
+    <Grid Margin="6" UseLayoutRounding="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
         <Grid.Resources>
             <HierarchicalDataTemplate x:Name="AllTaxaDataTemplate" DataType="{x:Type src:DistributionRegionViewModel}" ItemsSource="{Binding Path=Children}">
                 <StackPanel Orientation="Horizontal" ToolTip="{Binding Path=TooltipContent}" ToolTipService.ShowDuration="30000">
@@ -48,11 +52,40 @@
             </Style>
 
         </Grid.Resources>
-        <TabControl>
+        <ToolBar Grid.Row="0">
+            
+            <Button x:Name="btnAdd" ToolTip="Add region below the currently selected region" Click="btnAdd_Click">
+                <Button.Content>
+                    <Image Source="/BioLink.Client.Extensibility;component/images/AddNew.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" />
+                </Button.Content>
+            </Button>
+
+            <Button x:Name="btnDelete" ToolTip="Delete the currently selected region" Click="btnDelete_Click">
+                <Button.Content>
+                    <Image Source="/BioLink.Client.Extensibility;component/images/Delete.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True"/>
+                </Button.Content>
+            </Button>
+
+            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+            
+            <Button x:Name="btnExport" ToolTip="Export all regions to a text file" Click="btnExport_Click">
+                <Button.Content>
+                    <Image Source="/BioLink.Client.Extensibility;component/images/Export.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True"/>
+                </Button.Content>
+            </Button>
+
+            <Button x:Name="btnImport" ToolTip="Import regions from a text file" Click="btnImport_Click">
+                <Button.Content>
+                    <Image Source="/BioLink.Client.Extensibility;component/images/Import.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" StretchDirection="Both" />
+                </Button.Content>
+            </Button>
+
+        </ToolBar>
+        <TabControl Grid.Row="1">
             <TabItem Header="C_ontents">
                 <Grid>
                     <ext:DragDropScrollViewer ScrollViewer.HorizontalScrollBarVisibility="Auto">
-                        <ext:VTreeView x:Name="tvwRegions" Margin="0,0,0,0" BorderThickness="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" MouseRightButtonUp="TreeView_MouseRightButtonUp" AutoExpandTopLevel="False">
+                        <ext:VTreeView x:Name="tvwRegions" Margin="0,0,0,0" BorderThickness="0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" MouseRightButtonUp="TreeView_MouseRightButtonUp" AutoExpandTopLevel="True">
                             <TreeView.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <!-- This custom VSP exposes BringIntoView -->
@@ -60,9 +93,16 @@
                                 </ItemsPanelTemplate>
                             </TreeView.ItemsPanel>
 
-                            <TreeViewItem>
-                                <TreeViewItem.Header>Loading...</TreeViewItem.Header>
-                            </TreeViewItem>
+                            <ext:VTreeViewItem x:Name="regionsNode" IsExpanded="True">
+                                <TreeViewItem.Header>
+                                    <TextBlock FontWeight="Bold" Text="All Regions" />
+                                </TreeViewItem.Header>
+                                <TreeViewItem.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <ext:BLVirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </TreeViewItem.ItemsPanel>
+                            </ext:VTreeViewItem>
                         </ext:VTreeView>
                     </ext:DragDropScrollViewer>
 

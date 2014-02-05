@@ -37,6 +37,7 @@ namespace BioLink.Client.Taxa {
     /// </summary>
     public partial class DistributionRegionExplorer : DatabaseCommandControl, ISelectionHostControl {
 
+
         public DistributionRegionExplorer(TaxaPlugin plugin, User user) : base(user, "Distribution Region Explorer") {
 
             InitializeComponent();
@@ -45,14 +46,16 @@ namespace BioLink.Client.Taxa {
 
             Loaded += new RoutedEventHandler(DistributionRegionExplorer_Loaded);
             this.Unloaded += new RoutedEventHandler(DistributionRegionExplorer_Unloaded);
-
             ChangesCommitted += new PendingChangesCommittedHandler(DistributionRegionExplorer_ChangesCommitted);
 
             TreeViewDragHelper.Bind(tvwRegions, TreeViewDragHelper.CreatePinnableGenerator(plugin.Name, LookupType.DistributionRegion));
             TreeViewDragHelper.Bind(tvwFind, TreeViewDragHelper.CreatePinnableGenerator(plugin.Name, LookupType.DistributionRegion));
 
             txtFind.PreviewKeyDown += new KeyEventHandler(txtFind_PreviewKeyDown);
+        }
 
+        void ExportRegions() {
+            PluginManager.Instance.RunReport(Plugin, new ExportDistributionRegionsReport(User));
         }
 
         void txtFind_PreviewKeyDown(object sender, KeyEventArgs e) {
@@ -71,8 +74,44 @@ namespace BioLink.Client.Taxa {
             }
         }
 
+        public List<string> GetExpandedParentages(ObservableCollection<HierarchicalViewModelBase> model) {
+            List<string> list = new List<string>();
+            CollectExpandedParentages(model, list);
+            return list;
+        }
+
+        private void CollectExpandedParentages(ObservableCollection<HierarchicalViewModelBase> model, List<string> list) {
+            foreach (DistributionRegionViewModel tvm in model) {
+                if (tvm.IsExpanded) {
+                    list.Add(tvm.GetParentage());
+                    if (tvm.Children != null && tvm.Children.Count > 0) {
+                        CollectExpandedParentages(tvm.Children, list);
+                    }
+                }
+            }
+        }
+
+        public void ExpandParentages(ObservableCollection<HierarchicalViewModelBase> model, List<string> expanded) {
+            
+            if (expanded != null && expanded.Count > 0) {
+                var todo = new Stack<HierarchicalViewModelBase>(model);
+                while (todo.Count > 0) {
+                    var vm = todo.Pop();
+                    if (vm is DistributionRegionViewModel) {
+                        var tvm = vm as DistributionRegionViewModel;
+                        string parentage = tvm.GetParentage();
+                        if (expanded.Contains(parentage)) {
+                            tvm.IsExpanded = true;
+                            expanded.Remove(parentage);
+                            tvm.Children.ForEach(child => todo.Push(child));
+                        }
+                    }
+                }                
+            }
+        }
+
         void DistributionRegionExplorer_Unloaded(object sender, RoutedEventArgs e) {
-            var expanded = tvwRegions.GetExpandedParentages();
+            var expanded = GetExpandedParentages(RegionsModel);
             Config.SetUser(User, "DistributionRegion.LastExpanded", expanded);
         }
 
@@ -81,35 +120,40 @@ namespace BioLink.Client.Taxa {
         }
 
         private void ReloadModel() {
-            var expanded = tvwRegions.GetExpandedParentages();
+            var expanded = GetExpandedParentages(RegionsModel);
             LoadModel();
-            tvwRegions.ExpandParentages(expanded);
+            ExpandParentages(RegionsModel, expanded);
         }
+
+        protected ObservableCollection<HierarchicalViewModelBase> RegionsModel { get; set; }
 
         private void LoadModel() {
             using (new OverrideCursor(Cursors.Wait)) {
                 var service = new SupportService(User);
                 var rootList = service.GetDistributionRegions(0);
-                var model = new ObservableCollection<DistributionRegionViewModel>(rootList.Select((m) => {
+                RegionsModel = new ObservableCollection<HierarchicalViewModelBase>(rootList.Select((m) => {
                     var vm = new DistributionRegionViewModel(m);
                     vm.LazyLoadChildren += new HierarchicalViewModelAction(vm_LazyLoadChildren);
                     vm.Children.Add(new ViewModelPlaceholder("Loading..."));
                     return vm;
                 }));
                 
-                tvwRegions.ItemsSource = model;
+                regionsNode.ItemsSource = RegionsModel;                
+                regionsNode.IsExpanded = true;
 
                 var expanded = Config.GetUser<List<String>>(User, "DistributionRegion.LastExpanded", null);
                 if (expanded != null) {
-                    tvwRegions.ExpandParentages(expanded);
+                    ExpandParentages(RegionsModel, expanded);                    
                 }
             }
 
         }
 
         void DistributionRegionExplorer_Loaded(object sender, RoutedEventArgs e) {
-            tvwRegions.Items.Clear();
-            LoadModel();
+            tvwRegions.InvokeIfRequired(() => {
+                regionsNode.Items.Clear();
+                LoadModel();
+            });
         }
 
         void vm_LazyLoadChildren(HierarchicalViewModelBase item) {
@@ -158,11 +202,9 @@ namespace BioLink.Client.Taxa {
         private void TreeView_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
             var tvw = sender as TreeView;
             var item = tvw.SelectedItem as DistributionRegionViewModel;
+            var builder = new ContextMenuBuilder(null);
             if (item != null) {
-
-                var builder = new ContextMenuBuilder(null);
-
-                builder.New("Add region").Handler(() => { AddRegion(item);}).End();
+                builder.New("Add region").Handler(() => { AddRegion(item); }).End();
                 builder.Separator();
                 builder.New("Delete region").Handler(() => { DeleteRegion(item); }).End();
                 builder.New("Rename region").Handler(() => { RenameRegion(item); }).End();
@@ -170,10 +212,12 @@ namespace BioLink.Client.Taxa {
                 builder.New("Expand all").Handler(() => { ExpandAll(item); }).End();
                 builder.Separator();
                 builder.New("Taxa for Distribution Region").Handler(() => { RunTaxaForDistRegionReport(item); }).End();
-
-                tvw.ContextMenu = builder.ContextMenu;
-
+            } else {
+                builder.New("Add region").Handler(() => { AddRegion(item); }).End();
+                builder.Separator();
+                builder.New("Expand all").Handler(() => { ExpandAll(item); }).End();                
             }
+            tvw.ContextMenu = builder.ContextMenu;
         }
 
         private void RunTaxaForDistRegionReport(DistributionRegionViewModel selected) {
@@ -187,6 +231,12 @@ namespace BioLink.Client.Taxa {
                 if (selected != null) {
                     selected.Traverse((child) => {
                         child.IsExpanded = true;
+                    });
+                } else {
+                    RegionsModel.ForEach((vm) => {
+                        vm.Traverse((child) => {
+                            child.IsExpanded = true;
+                        });                
                     });
                 }
             }
@@ -226,7 +276,17 @@ namespace BioLink.Client.Taxa {
                 newVm.IsRenaming = true;
 
                 RegisterPendingChange(new InsertDistributionRegionCommand(newRegion, parent.Model));
+            } else {
+                var newRegion = new DistributionRegion { DistRegionName = "<New Region", DistRegionParentID = 0, DistRegionID = -1 };
+                var newVm = new DistributionRegionViewModel(newRegion);
+                RegionsModel.Add(newVm);
+
+                newVm.IsSelected = true;
+                newVm.IsRenaming = true;
+
+                RegisterPendingChange(new InsertDistributionRegionCommand(newRegion, null));
             }
+
         }
 
         private void btnFind_Click(object sender, RoutedEventArgs e) {
@@ -268,6 +328,31 @@ namespace BioLink.Client.Taxa {
         }
 
         protected TaxaPlugin Plugin { get; private set; }
+
+        private void btnAdd_Click(object sender, RoutedEventArgs e) {
+            var item = CurrentTreeView.SelectedItem as DistributionRegionViewModel;
+            AddRegion(item);
+        }
+
+        private void btnDelete_Click(object sender, RoutedEventArgs e) {
+            var item = CurrentTreeView.SelectedItem as DistributionRegionViewModel;
+            DeleteRegion(item);
+        }
+
+        private void btnExport_Click(object sender, RoutedEventArgs e) {
+            ExportRegions();
+        }
+
+        private void btnImport_Click(object sender, RoutedEventArgs e) {
+            ImportRegions();
+        }
+
+        private void ImportRegions() {
+            var window = new ImportDistributionRegionsWindow(User);
+            window.Owner = PluginManager.Instance.ParentWindow;
+            window.ShowDialog();
+            ReloadModel();
+        }
 
     }
 
