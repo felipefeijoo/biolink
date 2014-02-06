@@ -68,7 +68,7 @@
 
             <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
             
-            <Button x:Name="btnExport" ToolTip="Export all regions to a text file" Click="btnExport_Click">
+            <Button x:Name="btnExport" ToolTip="Run the Distribution Regions report for export" Click="btnExport_Click">
                 <Button.Content>
                     <Image Source="/BioLink.Client.Extensibility;component/images/Export.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True"/>
                 </Button.Content>

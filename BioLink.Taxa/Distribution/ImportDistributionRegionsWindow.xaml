@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             Height="239" Width="638" xmlns:my="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility" Title="Import Distribution Regions" WindowStartupLocation="CenterOwner">
+             Height="284" Width="631" xmlns:my="clr-namespace:BioLink.Client.Extensibility;assembly=BioLink.Client.Extensibility" Title="Import Distribution Regions" WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -14,11 +14,11 @@
             <Button Content="_Cancel" Height="23" HorizontalAlignment="Right" Margin="0,7,6,0" Name="btnCancel" VerticalAlignment="Top" Width="75" IsCancel="True" Click="btnCancel_Click" />
             <Button Content="_Import" Height="23" HorizontalAlignment="Right" IsCancel="False" Margin="0,7,87,0" Name="btnOK" VerticalAlignment="Top" Width="75" IsDefault="True" IsEnabled="{Binding Path=CanSelect}" Click="btnOK_Click" />
         </Grid>
-        <my:FilenameTextBox Margin="56,68,12,0" Name="txtFilename" VerticalAlignment="Top" Filter="CSV Files (*.csv,*.txt)|*.txt;*.csv|All files (*.*)|*.*" />
-        <TextBlock Text="Select a file to import regions from. The file should contain a full region path per row in the format: " Height="25" Margin="12,12,12,0" Name="label1" VerticalAlignment="Top" TextWrapping="WrapWithOverflow"/>
-        <CheckBox Content="First row contains column headers" Height="16" Margin="56,97,12,0" Name="chkFirstRowHeaders" VerticalAlignment="Top" />
-        <Label Content="&quot;region1\subregion\sub-subregion&quot;" Height="28" Margin="12,34,12,0" Name="label2" VerticalAlignment="Top" FontFamily="Courier New" />
-        <Label Content="File:" Height="28" HorizontalAlignment="Left" Margin="12,63,0,0" Name="label3" VerticalAlignment="Top" Width="38" />
-        <Label Height="28" Margin="56,119,12,0" Name="lblProgress" VerticalAlignment="Top" HorizontalContentAlignment="Center" />
+        <my:FilenameTextBox Margin="56,0,12,62" Name="txtFilename" VerticalAlignment="Bottom" Filter="CSV Files (*.csv,*.txt)|*.txt;*.csv|All files (*.*)|*.*" />
+        <TextBlock Text="Select a CSV file to import regions from. If the file contains just one column then each row should contain the full path of a region, with subregions separated by backslash (\). If the file contains multiple columns then all columns in a row will be concatenated to form a full path. Column ordering is therefore significant, and region 'ranks' should descend from left to right. (e.g. 'Continent,Country,State')." Height="72" Margin="12,12,12,0" Name="label1" VerticalAlignment="Top" TextWrapping="WrapWithOverflow"/>
+        <CheckBox Content="First row contains column headers" Margin="56,0,12,40" Name="chkFirstRowHeaders" Height="16" VerticalAlignment="Bottom" />
+        <Label Content="&quot;Oceania\Australia\New South Wales&quot; OR &quot;Oceania,Australia,New South Wales&quot;" Height="28" Margin="0,90,12,0" Name="label2" VerticalAlignment="Top" FontFamily="Courier New" HorizontalAlignment="Right" Width="585" />
+        <Label Content="File:" Height="28" HorizontalAlignment="Left" Margin="12,0,0,57" Name="label3" VerticalAlignment="Bottom" Width="38" />
+        <Label Height="28" Margin="56,0,12,6" Name="lblProgress" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" />
     </Grid>
 </Window>

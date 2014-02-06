@@ -267,7 +267,7 @@ namespace BioLink.Client.Taxa {
                     parent.IsExpanded = true;
                 }
 
-                var newRegion = new DistributionRegion { DistRegionName = "<New Region", DistRegionParentID = parent.DistRegionID, DistRegionID = -1 };
+                var newRegion = new DistributionRegion { DistRegionName = "<New Distribution Region>", DistRegionParentID = parent.DistRegionID, DistRegionID = -1 };
                 var newVm = new DistributionRegionViewModel(newRegion);
                 newVm.Parent = parent;
                 parent.Children.Add(newVm);
@@ -277,7 +277,7 @@ namespace BioLink.Client.Taxa {
 
                 RegisterPendingChange(new InsertDistributionRegionCommand(newRegion, parent.Model));
             } else {
-                var newRegion = new DistributionRegion { DistRegionName = "<New Region", DistRegionParentID = 0, DistRegionID = -1 };
+                var newRegion = new DistributionRegion { DistRegionName = "<New Distribution Region>", DistRegionParentID = 0, DistRegionID = -1 };
                 var newVm = new DistributionRegionViewModel(newRegion);
                 RegionsModel.Add(newVm);
 
