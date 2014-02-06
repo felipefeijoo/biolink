@@ -79,14 +79,19 @@ namespace BioLink.Client.Taxa {
                         values.Add(parser[i]);
                     }
 
-                    if (values.Count > 0) {
-                        service.GetDistributionIdFromPath(values[0]);
+                    String strFullPath = null;
+                    if (values.Count == 0) {
+                        strFullPath = values[0];
+                    } else {
+                        strFullPath = values.Join("\\");
+                    }
 
+                    if (!String.IsNullOrWhiteSpace(strFullPath)) {
+                        service.GetDistributionIdFromPath(strFullPath);
                         lblProgress.InvokeIfRequired(() => {
-                            lblProgress.Content = values[0];
+                            lblProgress.Content = strFullPath;
                             lblProgress.UpdateLayout();
                         });
-
                         rowCount++;
                     }
                 }
