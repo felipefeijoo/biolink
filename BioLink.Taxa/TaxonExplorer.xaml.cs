@@ -834,7 +834,8 @@ namespace BioLink.Client.Taxa {
                         viewModel.Epithet = changedModel.Epithet;
                         viewModel.Author = changedModel.Author;
                         viewModel.YearOfPub = changedModel.YearOfPub;
-                        viewModel.SuspendChangeMonitoring = false;
+                        viewModel.ChgComb = changedModel.ChgComb;
+                        viewModel.SuspendChangeMonitoring = false;                        
                         viewModel.RegenerateLabel();
                     } else if (vm is TaxonFavoriteViewModel) {
                         var viewModel = vm as TaxonFavoriteViewModel;
@@ -842,8 +843,10 @@ namespace BioLink.Client.Taxa {
                         viewModel.Unverified = changedModel.Unverified.Value;
                         viewModel.Epithet = changedModel.Epithet;                        
                         viewModel.YearOfPub = changedModel.YearOfPub;
+                        viewModel.ChgComb = changedModel.ChgComb.ValueOrFalse();
                         viewModel.SuspendChangeMonitoring = false;
                         viewModel.TaxonLabel = changedModel.TaxonLabel;
+                        
                     }
                 }
             );
