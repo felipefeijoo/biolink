@@ -3,6 +3,22 @@
 
 = Release Notes =
 
+== !BioLink Version 3.0.591 ==
+
+This is build 591 of BioLink version 3.  It addresses issues raised since build 582
+
+=== New Features ===
+ * Users whose SQL Credentials have 'sysadmin' will have full rights via the BioLink application in much the same way 'sa' does. This should make things easier for single user installs
+ * Query tool results (and other table based reports) now get enhanced menu options depending on what kind of results are being displayed. For example, if the data returned contains Material id's then a complete list of commands for material will be available. Likewise for taxa, sites and site visits. If a row contains different kinds of data (e.g. both taxa and material), menu options will appear for each type.
+
+=== Issues Addressed in this release ===
+
+ * Issue 214	Import regions	 
+ * Issue 215	Cannot create new top level Distribution Regions in Region Explorer	 
+ * Issue 216	Cannot import or export Distribution Regions	 
+ * Issue 217	Export CSV puts extraneous commas at the end of each line
+ * Issue 218	Changing Change Combination status does not get reflected in Taxon explorer
+
 == !BioLink Version 3.0.582 ==
 
 !BioLink 3.0.582 14 Aug 2013
