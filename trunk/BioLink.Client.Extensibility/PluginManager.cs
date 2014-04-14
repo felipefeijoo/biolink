@@ -378,6 +378,21 @@ namespace BioLink.Client.Extensibility {
             return list;
         }
 
+        public List<Command> SolicitCommandsForObjectSet(List<int> objectIds, LookupType type) {
+            var list = new List<Command>();
+
+            if (objectIds != null && objectIds.Count > 0) {
+                TraversePlugins((p) => {
+                    var l = p.GetCommandsForObjectSet(objectIds, type);
+                    if (l != null) {
+                        list.AddRange(l);
+                    }
+                });
+            }
+
+            return list;
+        }
+
         public void TraversePlugins(PluginAction action) {
             _extensions.ForEach(ext => {
                 if (ext is IBioLinkPlugin) {

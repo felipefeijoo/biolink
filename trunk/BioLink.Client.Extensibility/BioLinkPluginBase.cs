@@ -108,6 +108,10 @@ namespace BioLink.Client.Extensibility {
             return null;
         }
 
+        public virtual List<Command> GetCommandsForObjectSet(List<int> objectIds, LookupType type) {
+            return null;
+        }
+
         public Window ParentWindow {
             get;
             set;

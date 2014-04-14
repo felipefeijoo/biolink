@@ -36,6 +36,7 @@ namespace BioLink.Client.Extensibility {
         bool RequestShutdown();
         ViewModelBase CreatePinnableViewModel(PinnableObject pinnable);
         List<Command> GetCommandsForSelected(List<ViewModelBase> selected);
+        List<Command> GetCommandsForObjectSet(List<int> objectIds, LookupType type);
         List<IWorkspaceContribution> GetContributions();
 
         T GetAdaptorForPinnable<T>(PinnableObject pinnable);

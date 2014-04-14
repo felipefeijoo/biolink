@@ -222,6 +222,19 @@ namespace BioLink.Client.Material {
             return list;
         }
 
+        public override List<Command> GetCommandsForObjectSet(List<int> objectIds, LookupType type) {
+            var list = new List<Command>();
+            switch (type) {
+                case LookupType.Material:
+                    list.Add(new Command("Darwin Core report for material", (dataobj) => {
+                        PluginManager.RunReport(this, new MaterialSetDarwinCoreReport(User, dataobj as List<int>));
+                    }));
+                    break;
+            }
+
+            return list;
+        }
+
         public void ShowRDE() {            
             _explorer.EditRDE(null);
         }
