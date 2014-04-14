@@ -79,6 +79,17 @@ namespace BioLink.Client.Extensibility {
             return list;
         }
 
+        private void AddMaterialItems(ContextMenuBuilder builder, params string[] colAliases) {
+            foreach (string col in colAliases) {
+                if (Data.ContainsColumn(col)) {
+                    if (builder.ContextMenu.HasItems) {
+                        builder.Separator();
+                    }                    
+                }
+            }
+        }
+
+
         private void AddMapItems(ContextMenuBuilder builder, params string[] colAliases) {
             foreach (string colpair in colAliases) {
                 var bits = colpair.Split(',');
@@ -111,6 +122,7 @@ namespace BioLink.Client.Extensibility {
                 AddLookupItem(builder, LookupType.Taxon, "BiotaID", "intBiotaID", "Taxon Identifier", "TaxonID");
                 AddLookupItem(builder, LookupType.Reference, "RefID", "intRefID", "ReferenceID", "Reference Identifier");
                 AddLookupItem(builder, LookupType.Journal, "JournalID", "intJournalID", "Journal Identifier");
+                
 
                 string latColName = null;
                 string longColName = null;
@@ -126,6 +138,7 @@ namespace BioLink.Client.Extensibility {
                 }
 
                 AddMapItems(builder, "Lat,Long", "Latitude,Longitude", "Y,X", "Y1,X1");
+                AddMaterialItems(builder, "materialID", "intMaterialID");
 
                 if (builder.ContextMenu.HasItems) {
                     builder.Separator();
@@ -253,6 +266,54 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
+        private void addSetOperations(ContextMenuBuilder builder, LookupType type, params string[] idColAliases) {
+            int index = -1;
+            foreach (string alias in idColAliases) {
+                var field = alias;
+
+                for (int i = 0; i < Data.Columns.Count; ++i) {
+                    var col = Data.Columns[i];
+                    if (col.Name.Contains(alias)) {
+                        index = i;
+                        break;
+                    }
+                }
+
+                if (index >= 0) {
+                    break;
+                }
+            }
+
+            if (index > -1) {                
+                List<int> idSet = new List<int>();
+                Data.Rows.ForEach(row => {
+                    var objectIndex = row[index];
+                    if (objectIndex is int) {
+                        idSet.Add((int) row[index]);
+                    }
+                });
+
+                if (idSet.Count > 0) {
+                    var commands = PluginManager.Instance.SolicitCommandsForObjectSet(idSet, type);
+                    if (commands != null && commands.Count > 0) {
+                        MenuItemBuilder b = new MenuItemBuilder();
+
+                        var typeItem = b.New(type.ToString() + " Set").MenuItem;
+                        commands.ForEach((cmd) => {
+                            if (cmd is CommandSeparator) {
+                                typeItem.Items.Add(new Separator());
+                            } else {
+                                typeItem.Items.Add(b.New(cmd.Caption).Handler(() => {
+                                    cmd.CommandAction(idSet);
+                                }).MenuItem);
+                            }
+                        });
+                        builder.AddMenuItem(typeItem);
+                    }
+                }
+            }        
+        }
+            
         private void AddLookupItem(ContextMenuBuilder builder, LookupType lookupType, params String[] aliases) {
 
             int index = -1;
@@ -285,7 +346,7 @@ namespace BioLink.Client.Extensibility {
 
                 var pinnable = PluginManager.Instance.GetPinnableForLookupType(lookupType, objectId);
 
-                var commands =new List<Command>();
+                var commands = new List<Command>();
 
                 if (pinnable != null) {
                     var vm = PluginManager.Instance.GetViewModel(pinnable);
@@ -324,6 +385,8 @@ namespace BioLink.Client.Extensibility {
                     }).Enabled(enabled).End();
                 }
             }
+
+            addSetOperations(builder, lookupType, aliases);
 
         }
 

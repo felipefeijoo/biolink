@@ -92,6 +92,7 @@
     <Compile Include="RDESubPartControl.xaml.cs">
       <DependentUpon>RDESubPartControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="reports\MaterialSetDarwinCoreReport.cs" />
     <Compile Include="SiteCompare.xaml.cs">
       <DependentUpon>SiteCompare.xaml</DependentUpon>
     </Compile>
