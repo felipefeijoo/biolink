@@ -192,6 +192,59 @@ namespace BioLink.Data {
 
         public const string HIDDEN_COLUMN_PREFIX = "HIDDEN_";
 
+        public DataMatrix SQLReaderDataMatrix(string sql, Dictionary<string, ColumnDataFormatter> formatterMap, List<MatrixColumn> additionalColumns, params DbParameter[] @params) {
+            DataMatrix[] matrix = { null };
+            ColumnDataFormatter[] formatters = null;
+
+            var defaultFormatter = new ColumnDataFormatter((value, rdr) => value);
+
+            SQLReaderForEach(sql, (reader) => {
+                if (matrix[0] == null) {
+                    // Set up formatter array...
+                    formatters = new ColumnDataFormatter[reader.FieldCount];
+
+                    matrix[0] = new DataMatrix();
+                    for (int i = 0; i < reader.FieldCount; ++i) {
+                        var columnName = reader.GetName(i);
+
+                        bool hidden = false;
+                        if (columnName.StartsWith(HIDDEN_COLUMN_PREFIX)) {
+                            columnName = columnName.Substring(HIDDEN_COLUMN_PREFIX.Length);
+                            hidden = true;
+                        }
+
+                        matrix[0].Columns.Add(new MatrixColumn { Name = columnName, IsHidden = hidden });
+                        if (formatterMap != null && formatterMap.ContainsKey(columnName)) {
+                            formatters[i] = formatterMap[columnName];
+                        } else {
+                            formatters[i] = defaultFormatter;
+                        }
+                    }
+                }
+
+                if (additionalColumns != null && additionalColumns.Count > 0) {
+                    foreach (MatrixColumn col in additionalColumns) {
+                        matrix[0].Columns.Add(col);
+                    }
+                }
+
+                MatrixRow row = matrix[0].AddRow();
+                for (int i = 0; i < reader.FieldCount; ++i) {
+                    if (!reader.IsDBNull(i)) {
+                        row[i] = formatters[i](reader[i], reader);
+                    }
+                }
+
+
+            }, @params);
+
+            if (matrix[0] == null) {
+                matrix[0] = new DataMatrix();
+            }
+
+            return matrix[0];
+        }
+
         internal DataMatrix StoredProcDataMatrix(string proc, Dictionary<string, ColumnDataFormatter> formatterMap, params DbParameter[] @params) {
             return StoredProcDataMatrix(proc, formatterMap, null, @params);
         }

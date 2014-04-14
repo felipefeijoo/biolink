@@ -185,7 +185,7 @@ namespace BioLink.Client.Taxa {
         }
 
         public List<IBioLinkReport> GetReportsForTaxon(List<TaxonViewModel> taxa) {
-            var list = new List<IBioLinkReport> {new MaterialForTaxonReport(User, taxa[0]), new TypeListReport(User, taxa[0]), new TaxaAssociatesReport(User, taxa), new SiteForTaxaReport(User, taxa[0]), new ChecklistReport(User, taxa[0]), new TaxonStatisticsReport(User, taxa[0]), new MultimediaReport(User, taxa[0], TraitCategoryType.Taxon), new TaxonReferencesReport(User, taxa[0].Taxon) };
+            var list = new List<IBioLinkReport> {new MaterialForTaxonReport(User, taxa[0]), new TypeListReport(User, taxa[0]), new TaxaAssociatesReport(User, taxa), new SiteForTaxaReport(User, taxa[0]), new ChecklistReport(User, taxa[0]), new TaxonStatisticsReport(User, taxa[0]), new MultimediaReport(User, taxa[0], TraitCategoryType.Taxon), new TaxonReferencesReport(User, taxa[0].Taxon), new DarwinCoreReportForTaxon(User, taxa[0]) };
 
             return list;
         }

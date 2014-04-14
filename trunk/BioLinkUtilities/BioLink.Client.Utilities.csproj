@@ -123,6 +123,7 @@
     <Compile Include="rtf\RTFReader.cs" />
     <Compile Include="rtf\RTFUtils.cs" />
     <Compile Include="StringIntConverter.cs" />
+    <Compile Include="StringUtils.cs" />
     <Compile Include="SystemUtils.cs" />
     <Compile Include="TempFileManager.cs" />
     <Compile Include="tests\ByteConverterTests.cs" />
