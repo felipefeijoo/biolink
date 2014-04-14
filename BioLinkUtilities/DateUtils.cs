@@ -386,6 +386,11 @@ namespace BioLink.Client.Utilities {
             return false;
         }
 
+        public static String FormatBLDate(string formatOption, int bldate) {
+            int day, month, year;
+            BLDateComponents(bldate.ToString(), out day, out month, out year);
+            return FormatBLDate(formatOption, day, month, year);
+        }
 
         public static String FormatBLDate(string formatOption, int day, int month, int year) {
             var reader =new StringReader(formatOption);

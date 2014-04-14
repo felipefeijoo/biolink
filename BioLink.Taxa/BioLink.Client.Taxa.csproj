@@ -88,6 +88,7 @@
       <DependentUpon>GenusAvailableNameControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Reports\ChecklistReport.cs" />
+    <Compile Include="Reports\DarwinCoreReportForTaxon.cs" />
     <Compile Include="Reports\MaterialForTaxonReport.cs" />
     <Compile Include="NameControls\GenusAvailableNameDatabaseAction.cs" />
     <Compile Include="NameControls\GenusAvailableNameViewModel.cs" />

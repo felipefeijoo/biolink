@@ -23,7 +23,9 @@ namespace BioLink.Client.Extensibility {
             if (progress != null) {
                 progress.ProgressStart("Checking for updates...");
             }
-            var updateURL = Config.GetGlobal("BioLink.UpdateURL", "http://code.google.com/feeds/p/biolink/downloads/basic");
+            Config.SetGlobal("BioLink.UpdateURL", "http://downloads.ala.org.au/feed/p/biolink");
+
+            var updateURL = Config.GetGlobal("BioLink.UpdateURL", "http://downloads.ala.org.au/feed/p/biolink");
             
             try {
                 if (progress != null) {

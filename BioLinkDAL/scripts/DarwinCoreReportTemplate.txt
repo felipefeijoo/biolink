@@ -1,0 +1,46 @@
+﻿SELECT CONVERT(datetime, GETDATE(),126) AS modified,
+	'{InstitutionCode}' AS institutionCode, 
+	'{CollectionCode}' AS collectionCode, 
+	tblMaterial.vchrAccessionNo AS catalogNumber, 
+	tblBiota.vchrFullName AS scientificName, 
+	'PreservedSpecimen' AS basisOfRecord,
+	tblBiota.vchrParentKingdom AS kingdom, 
+	tblBiota.vchrParentPhylum AS phylum, 
+	tblBiota.vchrParentClass AS class, 
+	tblBiota.vchrParentOrder AS [order], 
+	tblBiota.vchrParentFamily AS family, 
+	tblBiota.vchrParentGenus AS genus, 
+	tblBiota.vchrParentSpecies AS species, 
+	tblBiota.vchrParentSubspecies AS subspecies,
+	tblBiota.vchrFullName AS scientificNameAuthorship,
+	tblMaterial.vchrIDBy AS identifiedBy,
+	tblMaterial.dtIDDate AS dateIdentified, 
+	tblMaterial.vchrCollectorNo AS recordNumber,
+	tblSiteVisit.vchrFieldNumber AS fieldNumber, 
+	tblSiteVisit.vchrCollector AS recordedBy, 
+	CAST(tblSiteVisit.intDateStart AS VARCHAR(8)) + '/' + CAST(tblSiteVisit.intDateEnd AS VARCHAR(8)) AS eventDate,
+	tblPoliticalRegion.vchrParentCountry AS country, 
+	tblPoliticalRegion.vchrParentPrimDiv AS stateProvince,
+	tblPoliticalRegion.vchrParentSecDiv AS county,
+	tblSite.vchrLocal AS locality, 
+	tblSite.fltPosX1 AS decimalLongitude, 
+	tblSite.fltPosY1 AS decimalLatitude, 
+	tblSite.vchrPosError AS coordinatePrecision, 	
+	CAST(tblSite.fltElevLower as VARCHAR(20)) + tblSite.vchrElevUnits AS minimumElevation,
+	CAST(tblSite.fltElevUpper as VARCHAR(20)) + tblSite.vchrElevUnits AS maximumElevation,
+	CAST(tblSite.fltElevDepth as VARCHAR(20)) + tblSite.vchrElevUnits AS minimumDepth,	
+	tblMaterialPart.vchrGender AS sex,
+	tblMaterialPart.vchrStorageMethod AS preparations,
+	tblMaterialPart.intNoSpecimens AS individualCount,	
+	tblMaterialPart.txtNotes AS occurrenceRemarks,
+	tblBiota.intBiotaID as [HIDDEN_BiotaID],
+	tblMaterial.intMaterialID as [HIDDEN_MaterialID],
+	tblSiteVisit.intSiteVisitID as [HIDDEN_SiteVisitID],
+	tblSite.intSiteID as [HIDDEN_SiteID]
+FROM tblBiota 
+	INNER JOIN tblMaterial ON tblBiota.intBiotaID = tblMaterial.intBiotaID 
+	INNER JOIN tblMaterialPart ON tblMaterial.intMaterialID = tblMaterialPart.intMaterialID
+	INNER JOIN tblSiteVisit ON tblMaterial.intSiteVisitID = tblSiteVisit.intSiteVisitID 
+	INNER JOIN tblSite ON tblSiteVisit.intSiteID = tblSite.intSiteID 
+	LEFT OUTER JOIN tblPoliticalRegion ON tblSite.intPoliticalRegionID = tblPoliticalRegion.intPoliticalRegionID
+WHERE {where};	
