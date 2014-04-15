@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:data="clr-namespace:BioLink.Data.Model;assembly=BioLink.Data"
-        Title="Title" Height="255" Width="417" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+        Title="Title" Height="280" Width="431" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -37,6 +37,6 @@
             <Button Content="{StaticResource Button.Cancel}" Height="23" HorizontalAlignment="Right" Name="btnCancel" VerticalAlignment="Bottom" Width="75" IsCancel="True" Margin="0,0,12,12" />
             <Button Content="{StaticResource Button.Ok}" Margin="0,0,93,12" Name="btnOk" IsDefault="True" Height="23" VerticalAlignment="Bottom" Click="btnOk_Click" Grid.Column="1" HorizontalAlignment="Right" Width="75" />
         </Grid>
-        
+        <CheckBox Content="Create a &lt;type&gt; available name under &lt;target&gt;" Height="16" Margin="35,64,12,0" Name="chkCreateAvailable" VerticalAlignment="Top" />
     </Grid>
 </Window>

@@ -1060,8 +1060,8 @@ namespace BioLink.Client.Taxa {
             }
         }
 
-        internal void AddAvailableName(TaxonViewModel parent) {
-            AddNewTaxon(parent, parent.ElemType, (newChild) => {
+        internal TaxonViewModel AddAvailableName(TaxonViewModel parent, bool startRename = true, bool selectWhenFinished = true) {
+            return AddNewTaxon(parent, parent.ElemType, (newChild) => {
                 switch (parent.ElemType) {
                     case TaxonRank.INCERTAE_SEDIS:
                     case TaxonRank.SPECIES_INQUIRENDA:
@@ -1072,7 +1072,7 @@ namespace BioLink.Client.Taxa {
                         break;
                 }
                 newChild.AvailableName = true;
-            });
+            }, startRename, selectWhenFinished);
         }
 
         #endregion

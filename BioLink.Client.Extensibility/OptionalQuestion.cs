@@ -21,7 +21,7 @@ using System.Windows;
 namespace BioLink.Client.Extensibility {
 
     /// <summary>
-    /// Optional questions are those that the use can nominate not to be asked again. The answer to the question is saved in the configuration store.
+    /// Optional questions are those that the user can nominate not to be asked again. The answer to the question is saved in the configuration store.
     /// 
     /// </summary>
     public class OptionalQuestion {

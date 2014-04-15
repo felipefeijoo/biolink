@@ -259,6 +259,10 @@ namespace BioLink.Client.Taxa {
 
         }
 
+        public TaxonExplorer TaxonExplorer { 
+            get { return _explorer.Content as TaxonExplorer; } 
+        }
+
     }
 
     public delegate void TaxonViewModelAction(TaxonViewModel taxon);
