@@ -86,7 +86,7 @@ namespace BioLink.Client.Taxa {
             }
 
             chkCreateAvailable.Visibility = Visibility.Visible;
-            chkCreateAvailable.Content = String.Format("Make '{0}' an available name of '{1}'", context.Source.DisplayLabel.Trim(), context.Target.DisplayLabel.Trim());
+            chkCreateAvailable.Content = String.Format("Make '{0}' a {2} Available Name of '{1}'", context.Source.DisplayLabel.Trim(), context.Target.DisplayLabel.Trim(), context.TargetRank.LongName);
 
         }
 
