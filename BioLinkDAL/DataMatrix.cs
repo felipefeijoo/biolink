@@ -109,6 +109,15 @@ namespace BioLink.Data {
 
             return null;
         }
+
+        public void AppendMatrix(DataMatrix chunk) {            
+            chunk.Rows.ForEach(row => {
+                var newrow = this.AddRow();
+                for (int colIndex = 0; colIndex < Columns.Count; colIndex++) {
+                    newrow[colIndex] = row[colIndex];
+                }
+            });
+        }
     }
 
     public class MatrixRow {
