@@ -24,12 +24,11 @@ namespace BioLink.Client.Material {
         public override DataMatrix ExtractReportData(IProgressObserver progress) {
             var service = new TaxaService(User);
 
-            progress.ProgressStart("Extracting darwin core records...");
-
+            progress.ProgressStart(String.Format("Preparing Darwin Core records for {0} specimens...", _idSet.Count));
 
             DataMatrix result = null;
             var idSet = new LinkedList<int>(_idSet);
-            int chunkSize = 1000;
+            int chunkSize = 2000;
             var helper = new DarwinCoreReportHelper();
             var chunk = new List<int>();
             var count = 0;
@@ -38,23 +37,21 @@ namespace BioLink.Client.Material {
                 idSet.RemoveFirst();
                 count++;
                 if (chunk.Count >= chunkSize || idSet.Count == 0) {
-                    progress.ProgressMessage(String.Format("Extracting darwin core records {0}", count));
+
+                    var percentComplete = ((double) count / (double) _idSet.Count) * 100;
+
+                    progress.ProgressMessage(String.Format("Preparing Darwin Core records {0} of {1}", count, _idSet.Count), percentComplete);
                     var where = "tblMaterial.intMaterialID in (" + chunk.Join(",") + ")";
                     var dataChunk = helper.RunDwcQuery(service, where);
                     if (result == null) {
                         result = dataChunk;
                     } else {
-                        dataChunk.Rows.ForEach(row => {
-                            var newrow = result.AddRow();
-                            row.ForEach((index, value) => {
-                                newrow[index] = value;
-                                return true;
-                            });
-                        });
+                        result.AppendMatrix(dataChunk);
                     }
                     chunk = new List<int>();
                 }
             }
+            progress.ProgressEnd(String.Format("{0} Darwin Core records retrieved."));
 
             return result;
         }
