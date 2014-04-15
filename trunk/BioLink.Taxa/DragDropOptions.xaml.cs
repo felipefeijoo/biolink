@@ -25,6 +25,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using BioLink.Data.Model;
+using BioLink.Client.Extensibility;
+using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Taxa {
     /// <summary>
@@ -55,6 +57,7 @@ namespace BioLink.Client.Taxa {
             optConvert.IsChecked = true;
             cmbRanks.ItemsSource = choices;
             cmbRanks.SelectedIndex = 0;
+
             if (ShowDialog().GetValueOrDefault(false)) {
                 return cmbRanks.SelectedItem as TaxonRank;
             }
@@ -64,6 +67,28 @@ namespace BioLink.Client.Taxa {
         private static GridLength Star = new GridLength(1, GridUnitType.Star);
         private static GridLength Zero = new GridLength(0);
         private static GridLength Forty = new GridLength(40);
+
+        private void PrepareAutoSynonymy(TaxonDropContext context) {
+            bool showAutoSynonymy = Preferences.PromptForAvailableWhenSynonymizing.Value;
+
+            if (context.Target == null || context.Source == null) {
+                showAutoSynonymy = false;
+            } else {
+                if (!context.TargetRank.AvailableNameAllowed.HasValue || !context.TargetRank.AvailableNameAllowed.Value) {
+                    showAutoSynonymy = false;
+                }
+            }
+
+            if (!showAutoSynonymy) {
+                chkCreateAvailable.IsChecked = false;
+                chkCreateAvailable.Visibility = Visibility.Hidden;
+                return;
+            }
+
+            chkCreateAvailable.Visibility = Visibility.Visible;
+            chkCreateAvailable.Content = String.Format("Make '{0}' an available name of '{1}'", context.Source.DisplayLabel.Trim(), context.Target.DisplayLabel.Trim());
+
+        }
 
         internal DragDropAction ShowChooseMergeOrConvert(TaxonDropContext context) {
 
@@ -99,10 +124,19 @@ namespace BioLink.Client.Taxa {
 
             DragDropAction result = null;
 
+            PrepareAutoSynonymy(context);
+
             optMerge.IsChecked = true;
             if (ShowDialog().GetValueOrDefault(false)) {
                 if (optMerge.IsChecked.GetValueOrDefault(false)) {
                     result = new MergeDropAction(context, chkCreateIDRecord.IsChecked.GetValueOrDefault(false));
+                    if (chkCreateAvailable.IsChecked.HasValue && chkCreateAvailable.IsChecked.Value) {
+                        var availableName = _owner.TaxonExplorer.AddAvailableName(context.Target, false, false);
+                        availableName.Epithet = context.Source.Epithet;
+                        availableName.Author = context.Source.Author;
+                        availableName.YearOfPub = context.Source.YearOfPub;
+                        availableName.ChgComb = context.Source.ChgComb;                          
+                    }
                 } else {
 
                     TaxonRank convertToRank = null;
