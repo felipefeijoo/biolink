@@ -51,7 +51,7 @@ namespace BioLink.Client.Material {
                     chunk = new List<int>();
                 }
             }
-            progress.ProgressEnd(String.Format("{0} Darwin Core records retrieved."));
+            progress.ProgressEnd(String.Format("{0} Darwin Core records retrieved.", count));
 
             return result;
         }

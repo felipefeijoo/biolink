@@ -14,6 +14,7 @@ namespace BioLink.Data {
         public DataMatrix RunDwcQuery(BioLinkService service, String whereClause) {
 
             Assembly assembly = Assembly.GetExecutingAssembly();
+
             TextReader inputStream = new StreamReader(assembly.GetManifestResourceStream("BioLink.Data.scripts.DarwinCoreReportTemplate.txt"));
             string sql = inputStream.ReadToEnd();
 
