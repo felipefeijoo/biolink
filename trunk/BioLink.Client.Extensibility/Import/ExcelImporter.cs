@@ -77,7 +77,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         public override string Name {
-            get { return "Excel worksheet"; }
+            get { return "Excel worksheet (*.xls)"; }
         }
 
         public override string Description {
