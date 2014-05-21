@@ -1,0 +1,41 @@
+[Import]
+ProfileStr=ImportProfile?Filename=C:\Users\baird\Documents\Dev\BioLink\DataFiles\References.xlsx&Worksheet=References
+ImportFilter=Excel 2007/2010 (*.xlsx)
+FieldCount=34
+
+[Mappings]
+Field0=intRefID?Mapping=&Default=&IsFixed=False
+Field1=vchrRefCode?Mapping=References.ReferenceCode&Default=&IsFixed=False
+Field2=vchrAuthor?Mapping=References.Author(s)&Default=&IsFixed=False
+Field3=vchrTitle?Mapping=References.Article title&Default=&IsFixed=False
+Field4=vchrBookTitle?Mapping=References.Book title&Default=&IsFixed=False
+Field5=vchrEditor?Mapping=References.Editor&Default=&IsFixed=False
+Field6=vchrRefType?Mapping=&Default=&IsFixed=False
+Field7=vchrYearOfPub?Mapping=References.Year of publication&Default=&IsFixed=False
+Field8=vchrActualDate?Mapping=References.Actual publication date&Default=&IsFixed=False
+Field9=intJournalID?Mapping=&Default=&IsFixed=False
+Field10=vchrPartNo?Mapping=References.Part Number&Default=&IsFixed=False
+Field11=vchrSeries?Mapping=References.Series Number&Default=&IsFixed=False
+Field12=vchrPublisher?Mapping=References.Book Publisher&Default=&IsFixed=False
+Field13=vchrPlace?Mapping=References.Book Place of publication&Default=&IsFixed=False
+Field14=vchrVolume?Mapping=References.Volume&Default=&IsFixed=False
+Field15=vchrPages?Mapping=References.Pages&Default=&IsFixed=False
+Field16=vchrTotalPages?Mapping=References.Total pages&Default=&IsFixed=False
+Field17=vchrPossess?Mapping=References.Possession&Default=&IsFixed=False
+Field18=vchrSource?Mapping=References.Source&Default=&IsFixed=False
+Field19=vchrEdition?Mapping=References.Edition&Default=&IsFixed=False
+Field20=vchrISBN?Mapping=References.ISBN&Default=&IsFixed=False
+Field21=vchrISSN?Mapping=References.ISSN&Default=&IsFixed=False
+Field22=txtQual?Mapping=References.Qualification&Default=&IsFixed=False
+Field23=txtDateQual?Mapping=References.Qualification-date&Default=&IsFixed=False
+Field24=txtFullText?Mapping=&Default=&IsFixed=False
+Field25=txtFullRTF?Mapping=&Default=&IsFixed=False
+Field26=intStartPage?Mapping=&Default=&IsFixed=False
+Field27=intEndPage?Mapping=&Default=&IsFixed=False
+Field28=txtAbstract?Mapping=&Default=&IsFixed=False
+Field29=GUID?Mapping=&Default=&IsFixed=False
+Field30=vchrWhoCreated?Mapping=&Default=&IsFixed=False
+Field31=dtDateCreated?Mapping=&Default=&IsFixed=False
+Field32=vchrWhoLastUpdated?Mapping=&Default=&IsFixed=False
+Field33=dtDateLastUpdated?Mapping=&Default=&IsFixed=False
+

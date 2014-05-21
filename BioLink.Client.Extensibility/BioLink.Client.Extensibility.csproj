@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EPPlus">
+      <HintPath>..\shared\lib\EPPlus.dll</HintPath>
+    </Reference>
     <Reference Include="GenericParsing">
       <HintPath>..\shared\lib\GenericParsing.dll</HintPath>
     </Reference>
@@ -135,6 +138,10 @@
     </Compile>
     <Compile Include="IIconHolder.cs" />
     <Compile Include="ILabelSetItemTarget.cs" />
+    <Compile Include="Import\Excel2010ImporterOptionsWindow.xaml.cs">
+      <DependentUpon>Excel2010ImporterOptionsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Import\Excel2010Importer.cs" />
     <Compile Include="IPreferredSizeHolder.cs" />
     <Compile Include="MultimediaThumbnailViewer.xaml.cs">
       <DependentUpon>MultimediaThumbnailViewer.xaml</DependentUpon>
@@ -415,6 +422,10 @@
     <Page Include="GoogleEarthGeoTag.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Import\Excel2010ImporterOptionsWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="MultimediaThumbnailViewer.xaml">
       <SubType>Designer</SubType>
