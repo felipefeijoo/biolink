@@ -18,6 +18,7 @@ using System.Windows.Media.Imaging;
 using BioLink.Client.Utilities;
 using BioLink.Data;
 using System;
+using System.Windows.Input;
 
 namespace BioLink.Client.Extensibility {
 
@@ -35,7 +36,6 @@ namespace BioLink.Client.Extensibility {
                 this.ExportImpl(parentWindow, matrix, datasetName, options);
                 ProgressEnd("");
             });
-
         }
 
         protected string Escape(string str) {

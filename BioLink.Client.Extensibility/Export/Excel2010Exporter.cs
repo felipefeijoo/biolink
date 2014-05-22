@@ -22,6 +22,7 @@ using BioLink.Client.Utilities;
 using System.IO;
 using BioLink.Data;
 using OfficeOpenXml;
+using OfficeOpenXml.Style;
 
 namespace BioLink.Client.Extensibility.Export {
 
@@ -54,18 +55,18 @@ namespace BioLink.Client.Extensibility.Export {
 
             int totalRows = matrix.Rows.Count;
 
-            using (ExcelPackage p = new ExcelPackage()) {
+            using (ExcelPackage p = new ExcelPackage(new FileInfo(options.Filename))) {
                 //Here setting some document properties
                 var v = this.GetType().Assembly.GetName().Version;
                 var version = String.Format("Version {0}.{1} (build {2})", v.Major, v.Minor, v.Revision);
                 p.Workbook.Properties.Author = "BioLink " + version;
-                p.Workbook.Properties.Title = datasetName;
-                p.Workbook.Worksheets.Add(datasetName);
-                ExcelWorksheet ws = p.Workbook.Worksheets[1];
-               
+                var name = StringUtils.RemoveAll(datasetName, '&', '\'','"','<','>');
+                p.Workbook.Properties.Title = name;
+                var ws = p.Workbook.Worksheets.Add(name);                
+
                 // Column headings...
                 int colIndex = 1;
-                matrix.Columns.ForEach(column => {                    
+                matrix.Columns.ForEach(column => {
                     var cell = ws.Cells[1, colIndex++].Value = column.Name;
                 });
 
@@ -77,14 +78,16 @@ namespace BioLink.Client.Extensibility.Export {
                             String strValue = (val == null ? "" : val.ToString());
                             ws.SetValue(rowIndex + 2, i + 1, strValue);
                         }
-                    }                    
+                    }
                     if (rowIndex++ % 1000 == 0) {
-                        double percent = ((double) rowIndex / (double) totalRows) * 100.0;
+                        double percent = ((double)rowIndex / (double)totalRows) * 100.0;
                         ProgressMessage(String.Format("Exported {0} of {1} rows...", rowIndex, totalRows), percent);
                     }
                 }
 
-                p.SaveAs(new FileInfo(options.Filename));
+                ProgressMessage(String.Format("Exported {0} of {1} rows. Saving file '{2}'", rowIndex, totalRows, options.Filename), 100);
+
+                p.Save();
             }
 
             ProgressEnd(String.Format("{0} rows exported.", totalRows));
