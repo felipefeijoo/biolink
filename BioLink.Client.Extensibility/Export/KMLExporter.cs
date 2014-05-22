@@ -58,7 +58,7 @@ namespace BioLink.Client.Extensibility.Export {
             return null;
         }
 
-        public override void ExportImpl(System.Windows.Window parentWindow, Data.DataMatrix matrix, object options) {
+        public override void ExportImpl(System.Windows.Window parentWindow, Data.DataMatrix matrix, string datasetName, object options) {
             var opt = options as KMLExporterOptions;
             if (opt != null) {
                 var filename = opt.Filename;

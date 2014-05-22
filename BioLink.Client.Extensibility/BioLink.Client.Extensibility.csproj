@@ -120,6 +120,7 @@
       <DependentUpon>EllipsisTextBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="EllipsoidViewModel.cs" />
+    <Compile Include="Export\Excel2010Exporter.cs" />
     <Compile Include="Export\CSVExporter.cs" />
     <Compile Include="DelayedTriggerTextbox.xaml.cs">
       <DependentUpon>DelayedTriggerTextbox.xaml</DependentUpon>

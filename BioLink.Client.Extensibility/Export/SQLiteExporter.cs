@@ -38,7 +38,7 @@ namespace BioLink.Client.Extensibility.Export {
             return null;
         }
 
-        public override void ExportImpl(Window parentWindow, Data.DataMatrix matrix, object optionsObj) {
+        public override void ExportImpl(Window parentWindow, Data.DataMatrix matrix, string datasetName, object optionsObj) {
             ExcelExporterOptions options = optionsObj as ExcelExporterOptions;
 
             if (options == null) {

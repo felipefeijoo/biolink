@@ -451,7 +451,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void Export() {
-            var exporter = new ExportData(Data, _progress);
+            var exporter = new ExportData(Data, _report.Name, _progress);
             exporter.Owner = PluginManager.Instance.ParentWindow;
             bool ok = exporter.ShowDialog().GetValueOrDefault(false);
         }

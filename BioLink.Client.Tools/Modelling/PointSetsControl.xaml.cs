@@ -236,7 +236,7 @@ namespace BioLink.Client.Tools {
             var selected = GetSelectedPointSet();
             if (selected != null) {
                 var Data = BuildPointSetMatrix(selected);
-                ExportData exporter = new ExportData(Data, null);
+                ExportData exporter = new ExportData(Data, selected.Name, null);
                 exporter.Owner = PluginManager.Instance.ParentWindow;
                 exporter.ShowDialog();
             }
