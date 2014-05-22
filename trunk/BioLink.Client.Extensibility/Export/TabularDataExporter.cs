@@ -28,11 +28,11 @@ namespace BioLink.Client.Extensibility {
 
         public IProgressObserver ProgressObserver { get; set; }
 
-        public void Export(Window parentWindow, DataMatrix matrix, IProgressObserver progress) {
+        public void Export(Window parentWindow, DataMatrix matrix, String datasetName, IProgressObserver progress) {
             this.ProgressObserver = progress;
             object options = GetOptions(parentWindow, matrix);
             JobExecutor.QueueJob(() => {
-                this.ExportImpl(parentWindow, matrix, options);
+                this.ExportImpl(parentWindow, matrix, datasetName, options);
                 ProgressEnd("");
             });
 
@@ -76,7 +76,7 @@ namespace BioLink.Client.Extensibility {
 
         protected abstract object GetOptions(Window parentWindow, DataMatrix matrix);
 
-        public abstract void ExportImpl(Window parentWindow, DataMatrix matrix, object options);
+        public abstract void ExportImpl(Window parentWindow, DataMatrix matrix, String datasetName, object options);
 
         public abstract void Dispose();
 

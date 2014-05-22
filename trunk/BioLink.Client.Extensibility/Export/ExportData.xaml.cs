@@ -12,6 +12,7 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  ******************************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -27,6 +28,7 @@ namespace BioLink.Client.Extensibility {
     public partial class ExportData : Window {
 
         private DataMatrix _data;
+        private string _dataSetName;
         private IProgressObserver _progress;
 
         #region designer ctor
@@ -35,9 +37,10 @@ namespace BioLink.Client.Extensibility {
         }
         #endregion
 
-        public ExportData(DataMatrix data, IProgressObserver progress) {
+        public ExportData(DataMatrix data, string dataSetName, IProgressObserver progress) {
             InitializeComponent();
             _data = data;
+            _dataSetName = dataSetName;
             _progress = progress;
             var candidates = PluginManager.Instance.GetExtensionsOfType<TabularDataExporter>();
             var exporters = candidates.FindAll((exporter) => {
@@ -64,7 +67,7 @@ namespace BioLink.Client.Extensibility {
 
         private void ExportUsingSelectedExporter() {
             TabularDataExporter exporter = listBox.SelectedItem as TabularDataExporter;
-            exporter.Export(this.Owner, _data, _progress);
+            exporter.Export(this.Owner, _data, _dataSetName, _progress);
             this.DialogResult = true;
         }
 

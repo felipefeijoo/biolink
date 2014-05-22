@@ -73,7 +73,7 @@ namespace BioLink.Client.Utilities {
         /// <param name="action">The action</param>
         public static void InvokeIfRequired(this DispatcherObject control, Action action) {
             if (control.Dispatcher.Thread != Thread.CurrentThread) {
-                control.Dispatcher.Invoke(action);
+                control.Dispatcher.Invoke(DispatcherPriority.Normal, action);
             } else {
                 action();
             }

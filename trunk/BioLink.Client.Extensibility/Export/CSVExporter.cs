@@ -39,7 +39,7 @@ namespace BioLink.Client.Extensibility.Export {
             return null;
         }
 
-        public override void ExportImpl(Window parentWindow, DataMatrix matrix, object optionsObj) {
+        public override void ExportImpl(Window parentWindow, DataMatrix matrix, string datasetName, object optionsObj) {
 
             var options = optionsObj as CSVExporterOptions;
 

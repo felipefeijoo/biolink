@@ -21,15 +21,15 @@ using System.Windows.Media.Imaging;
 using BioLink.Client.Utilities;
 using System.IO;
 using BioLink.Data;
-
+using OfficeOpenXml;
 
 namespace BioLink.Client.Extensibility.Export {
 
-    public class Excel2003Exporter : TabularDataExporter {
+    public class Excel2010Exporter : TabularDataExporter {
 
         protected override object GetOptions(Window parentWindow, DataMatrix matrix) {
 
-            var filename = PromptForFilename(".txt", "XML Excel Workbook (.xml)|*.xml");
+            var filename = PromptForFilename(".txt", "Excel 2007/2010 Workbook (.xlsx)|*.xlsx");
             if (!String.IsNullOrEmpty(filename)) {
                 ExcelExporterOptions options = new ExcelExporterOptions();
                 options.Filename = filename;
@@ -54,33 +54,37 @@ namespace BioLink.Client.Extensibility.Export {
 
             int totalRows = matrix.Rows.Count;
 
-            using (StreamWriter writer = new StreamWriter(options.Filename)) {
-                writer.WriteLine("<?xml version=\"1.0\"?><ss:Workbook xmlns:ss=\"urn:schemas-microsoft-com:office:spreadsheet\">");
-                writer.WriteLine("<ss:Worksheet ss:Name=\"" + datasetName + "\">");
-                writer.WriteLine("<ss:Table>");
-                int currentRow = 0;                
-                foreach (MatrixRow row in matrix.Rows) {                    
-                    writer.WriteLine("<ss:Row>");
+            using (ExcelPackage p = new ExcelPackage()) {
+                //Here setting some document properties
+                var v = this.GetType().Assembly.GetName().Version;
+                var version = String.Format("Version {0}.{1} (build {2})", v.Major, v.Minor, v.Revision);
+                p.Workbook.Properties.Author = "BioLink " + version;
+                p.Workbook.Properties.Title = datasetName;
+                p.Workbook.Worksheets.Add(datasetName);
+                ExcelWorksheet ws = p.Workbook.Worksheets[1];
+               
+                // Column headings...
+                int colIndex = 1;
+                matrix.Columns.ForEach(column => {                    
+                    var cell = ws.Cells[1, colIndex++].Value = column.Name;
+                });
+
+                int rowIndex = 0;
+                foreach (MatrixRow row in matrix.Rows) {
                     for (int i = 0; i < matrix.Columns.Count; ++i) {
                         if (!matrix.Columns[i].IsHidden) {
                             object val = row[i];
-                            writer.Write("<ss:Cell><ss:Data ss:Type=\"String\">");
-                            String str = (val == null ? "" : val.ToString());
-                            writer.Write(Escape(str));
-                            writer.Write("</ss:Data></ss:Cell>");
+                            String strValue = (val == null ? "" : val.ToString());
+                            ws.SetValue(rowIndex + 2, i + 1, strValue);
                         }
+                    }                    
+                    if (rowIndex++ % 1000 == 0) {
+                        double percent = ((double) rowIndex / (double) totalRows) * 100.0;
+                        ProgressMessage(String.Format("Exported {0} of {1} rows...", rowIndex, totalRows), percent);
                     }
-                    if (++currentRow % 1000 == 0) {
-                        double percent = ((double)currentRow / (double)totalRows) * 100.0;
-                        ProgressMessage(String.Format("Exported {0} of {1} rows...", currentRow, totalRows), percent);
-                    }
-
-                    writer.WriteLine("</ss:Row>");
                 }
 
-                writer.WriteLine("</ss:Table>");
-                writer.WriteLine("</ss:Worksheet>");
-                writer.WriteLine("</ss:Workbook>");
+                p.SaveAs(new FileInfo(options.Filename));
             }
 
             ProgressEnd(String.Format("{0} rows exported.", totalRows));
@@ -92,16 +96,16 @@ namespace BioLink.Client.Extensibility.Export {
         #region Properties
 
         public override string Description {
-            get { return "Export data as a Microsoft Excel 2003 XML Worksheet"; }
+            get { return "Export data as a Microsoft Excel 2007/2010 Open XML Worksheet (*.xlsx)"; }
         }
 
         public override string Name {
-            get { return "Excel 2003 XML"; }
+            get { return "Excel 2007/2010 XLSX"; }
         }
 
         public override BitmapSource Icon {
             get {
-                return ImageCache.GetPackedImage("images/excel2003_exporter.png", GetType().Assembly.GetName().Name);
+                return ImageCache.GetPackedImage("images/excel2007_exporter.png", GetType().Assembly.GetName().Name);
             }
         }
 
@@ -114,9 +118,4 @@ namespace BioLink.Client.Extensibility.Export {
     }
 
 
-    public class ExcelExporterOptions {
-
-        public string Filename { get; set; }
-
-    }
 }
