@@ -8,6 +8,19 @@ namespace BioLink.Client.Utilities {
 
     public static class StringUtils {
 
+        public static String RemoveAll(String source, params char[] chars) {
+            var sb = new StringBuilder();
+            var list = new List<char>(chars);
+
+            foreach (char ch in source) {
+                if (!list.Contains(ch)) {
+                    sb.Append(ch);
+                }
+            }
+
+            return sb.ToString();
+        }
+
         public static string SubstitutePlaceholders(string text, Dictionary<String, String> values) {
             var sb = new StringBuilder();
             bool inBrace = false;
