@@ -31,7 +31,7 @@ namespace BioLink.Client.Extensibility.Export {
             new Pair<string,string>("Y1", "X1"),
         };
 
-        public override bool CanExport(Data.DataMatrix matrix) {
+        public override bool CanExport(Data.DataMatrix matrix, String datasetName) {
             foreach (Pair<string,string> p in _recognizedColumns) {
                 if (matrix.ContainsColumn(p.First) && matrix.ContainsColumn(p.Second)) {
                     return true;
@@ -40,13 +40,13 @@ namespace BioLink.Client.Extensibility.Export {
             return false;            
         }
 
-        protected override object GetOptions(System.Windows.Window parentWindow, DataMatrix matrix) {
+        protected override object GetOptions(System.Windows.Window parentWindow, DataMatrix matrix, String datasetName) {
 
             var frm = new MatrixColumnChooser(matrix, "Select the label column for each point:");
             frm.Owner = parentWindow;
             if (frm.ShowDialog().ValueOrFalse()) {
 
-                var filename = PromptForFilename(".kml", "KML Files (*.kml)|*.kml");
+                var filename = PromptForFilename(".kml", "KML Files (*.kml)|*.kml", datasetName);
                 if (!string.IsNullOrEmpty(filename)) {
                     KMLExporterOptions options = new KMLExporterOptions();                    
                     options.Filename = filename;

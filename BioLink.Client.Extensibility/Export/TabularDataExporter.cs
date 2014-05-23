@@ -31,7 +31,7 @@ namespace BioLink.Client.Extensibility {
 
         public void Export(Window parentWindow, DataMatrix matrix, String datasetName, IProgressObserver progress) {
             this.ProgressObserver = progress;
-            object options = GetOptions(parentWindow, matrix);
+            object options = GetOptions(parentWindow, matrix, datasetName);
             JobExecutor.QueueJob(() => {
                 this.ExportImpl(parentWindow, matrix, datasetName, options);
                 ProgressEnd("");
@@ -72,9 +72,9 @@ namespace BioLink.Client.Extensibility {
             return false;
         }
 
-        public abstract bool CanExport(DataMatrix matrix);
+        public abstract bool CanExport(DataMatrix matrix, String datasetName);
 
-        protected abstract object GetOptions(Window parentWindow, DataMatrix matrix);
+        protected abstract object GetOptions(Window parentWindow, DataMatrix matrix, String datasetName);
 
         public abstract void ExportImpl(Window parentWindow, DataMatrix matrix, String datasetName, object options);
 
@@ -98,9 +98,12 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        protected string PromptForFilename(string extension, string filter) {
+        protected string PromptForFilename(string extension, string filter, String defaultName = null) {
             Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
-            dlg.FileName = "Export"; // Default file name
+
+            var name = String.IsNullOrEmpty(defaultName) ? "Export" : defaultName;
+            name = SystemUtils.StripIllegalFilenameChars(name);
+            dlg.FileName = name; // Default file name
             dlg.DefaultExt = extension; // Default file extension
             dlg.OverwritePrompt = false;
             dlg.Filter = filter + "|All files (*.*)|*.*"; // Filter files by extension
