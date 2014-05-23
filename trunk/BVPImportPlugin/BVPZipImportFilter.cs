@@ -82,7 +82,7 @@ namespace BioLink.Client.BVPImport {
             context.FieldMappings = mappings;
         }
 
-        public override ImportRowSource CreateRowSource() {
+        public override ImportRowSource CreateRowSource(IProgressObserver progress) {
             if (_options != null) {
                 if (_options.RowSource == null) {
                     var builder = new BVPImportSourceBuilder(_options.Filename);

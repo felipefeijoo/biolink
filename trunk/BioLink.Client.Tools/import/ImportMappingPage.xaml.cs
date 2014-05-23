@@ -72,6 +72,9 @@ namespace BioLink.Client.Tools {
         }
 
         public override void OnPageEnter(WizardDirection fromdirection) {
+
+            var progress = new ProgressWindow(this.FindParentWindow(), "Extracting column information from data source...", true);
+
             _fields = _fieldSource();
             lvwFields.ItemsSource = _fields;
 
@@ -79,25 +82,37 @@ namespace BioLink.Client.Tools {
             PropertyGroupDescription groupDescription = new PropertyGroupDescription("Category");
             myView.GroupDescriptions.Add(groupDescription);
             var model = new List<ImportFieldMapping>();
-            var columns = ImportContext.Importer.GetColumnNames();
-            var existingMappings = ImportContext.FieldMappings;
 
-            if (existingMappings != null && existingMappings.Count() > 0) {
-                foreach (ImportFieldMapping mapping in existingMappings) {
-                    model.Add(mapping);
+            JobExecutor.QueueJob(() => {
+
+                List<String> columns = null;
+                columns = ImportContext.Importer.GetColumnNames();
+
+                var existingMappings = ImportContext.FieldMappings;
+                if (existingMappings != null && existingMappings.Count() > 0) {
+                    foreach (ImportFieldMapping mapping in existingMappings) {
+                        model.Add(mapping);
+                    }
+                } else {
+                    foreach (string columnName in columns) {
+                        var mapping = new ImportFieldMapping { SourceColumn = columnName };
+                        model.Add(mapping);
+                    }
                 }
-            } else {
-                foreach (string columnName in columns) {
-                    var mapping = new ImportFieldMapping { SourceColumn = columnName };
-                    model.Add(mapping);
-                }
-            }
 
-            _model = new ObservableCollection<ImportFieldMappingViewModel>(model.Select((m) => {
-                return new ImportFieldMappingViewModel(m);
-            }));
+                _model = new ObservableCollection<ImportFieldMappingViewModel>(model.Select((m) => {
+                    return new ImportFieldMappingViewModel(m);
+                }));
 
-            lvwMappings.ItemsSource = _model;
+                lvwMappings.InvokeIfRequired(() => {
+                    lvwMappings.ItemsSource = _model;
+                });
+
+                progress.InvokeIfRequired(() => {
+                    progress.Dispose();
+                });
+
+            });
 
         }
 

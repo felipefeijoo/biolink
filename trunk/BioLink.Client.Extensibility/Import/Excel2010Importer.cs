@@ -39,37 +39,45 @@ namespace BioLink.Client.Extensibility {
             return false;
         }
 
-        public override ImportRowSource CreateRowSource() {
+        public override ImportRowSource CreateRowSource(IProgressObserver progress) {
 
             if (_options == null) {
                 throw new Exception("Null or incorrect options type received!");
             }
 
             ImportRowSource rowsource = null;
-
-            var columnNames = GetColumnNames();
             var service = new ImportStagingService();
-            service.CreateImportTable(columnNames);
+            int rowCount = 0;
+            var values = new List<string>();
 
-            ExcelDataTable(_options.Filename, _options.Worksheet, 0, dt => {
+            if (progress != null) {
+                progress.ProgressMessage(String.Format("Importing data - Stage 1 Connecting to input source...", rowCount));
+            }
 
-                service.BeginTransaction();
-                var values = new List<string>();
-                int rowcount = 0;
-                foreach (DataRow row in dt.Rows) {
-                    values.Clear();
-                    foreach (DataColumn col in dt.Columns) {
-                        var value = row[col];
-                        values.Add((value == null ? "" : value.ToString()));
+            WithExcelWorksheetRows(_options.Filename, _options.Worksheet, 0, row => {
+                if (rowCount == 0) {
+                    var columnNames = new List<String>();
+                    foreach (DataColumn column in row.Table.Columns) {
+                        columnNames.Add(column.ColumnName);
                     }
-                    service.InsertImportRow(values);
-                    rowcount++;
+                    service.CreateImportTable(columnNames);
+                    service.BeginTransaction();
                 }
-                service.CommitTransaction();
-
-                rowsource = new ImportRowSource(service, rowcount);
+                values.Clear();
+                foreach (DataColumn col in row.Table.Columns) {
+                    var value = row[col];
+                    values.Add((value == null ? "" : value.ToString()));
+                }
+                service.InsertImportRow(values);
+                if (++rowCount % 1000 == 0) {
+                    if (progress != null) {
+                        progress.ProgressMessage(String.Format("Importing data - Stage 1 {0} rows copied to staging database...", rowCount));
+                    }
+                };
             });
 
+            service.CommitTransaction();
+            rowsource = new ImportRowSource(service, rowCount);
             return rowsource;
         }
 
@@ -112,16 +120,12 @@ namespace BioLink.Client.Extensibility {
         public static List<String> GetWorksheetNames(String filename, Boolean suppressException = false) {
 
             var sheetNames = new List<string>();
-
             try {
-                var stream = new FileStream(filename, FileMode.Open);
-                using (IExcelDataReader excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream)) {
-                    using (DataSet result = excelReader.AsDataSet()) {
-                        if (result != null) {
-                            foreach (DataTable tbl in result.Tables) {
-                                sheetNames.Add(tbl.TableName);
-                            }
-                        }
+                using (var stream = new FileStream(filename, FileMode.Open)) {
+                    using (IExcelDataReader excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream)) {                        
+                        do {
+                            sheetNames.Add(excelReader.Name);
+                        } while (excelReader.NextResult());
                     }
                 }
             } catch (Exception ex) {
@@ -131,47 +135,85 @@ namespace BioLink.Client.Extensibility {
             return sheetNames;            
         }
 
-        public static void ExcelDataTable(String filename, String worksheet, int maxRows, Action<DataTable> action) {
-
+        public static void WithExcelWorksheetRows(String filename, String worksheet, int maxRows, Action<DataRow> action) {
             if (String.IsNullOrEmpty(filename) || String.IsNullOrEmpty(worksheet)) {
                 return;
             }
 
-            var stream = new FileStream(filename, FileMode.Open);
-            using (IExcelDataReader excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream)) {
-                excelReader.IsFirstRowAsColumnNames = true;
+            using (var stream = new FileStream(filename, FileMode.Open)) {
+                using (IExcelDataReader excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream)) {
+                    excelReader.IsFirstRowAsColumnNames = true;
+                    do {
+                        if (excelReader.Name.Equals(worksheet, StringComparison.CurrentCultureIgnoreCase)) {
+                            int rowCount = 0;
+                            int bufferSize = 1000;
+                            using (DataTable bufferTable = new DataTable(excelReader.Name)) {
+                                while (excelReader.Read()) {
+                                    if (rowCount == 0) {
+                                        for (int i = 0; i < excelReader.FieldCount; ++i) {
+                                            var column = bufferTable.Columns.Add(excelReader.GetString(i), typeof(string));
+                                        }
+                                    } else {
+                                        
+                                        var rowData = new String[bufferTable.Columns.Count];
+                                        for (int i = 0; i < excelReader.FieldCount; ++i) {
+                                            rowData[i] = excelReader.GetString(i);
+                                        }
 
-                do {
-                    if (excelReader.Name.Equals(worksheet, StringComparison.CurrentCultureIgnoreCase)) {
-                        int row = 0;
-                        DataTable dt = new DataTable(excelReader.Name);
-                        while (excelReader.Read()) {
+                                        var row = bufferTable.Rows.Add(rowData);
 
-                            if (row == 0) {
-                                for (int i = 0; i < excelReader.FieldCount; ++i) {
-                                    var column = dt.Columns.Add(excelReader.GetString(i), typeof(string));
+                                        if (action != null && row != null) {                                            
+                                            action(row);
+                                        }
+                                    }
+                                    rowCount++;
+
+                                    if (maxRows > 0 && rowCount > maxRows) { // remember the first row always has header labels
+                                        if (bufferTable.Rows.Count > 0 && action != null) {
+                                            foreach (DataRow row in bufferTable.Rows) {
+                                                action(row);
+                                            }
+                                        }
+                                        break;
+                                    }
+
+                                    if (rowCount % bufferSize == 0) {
+                                        if (action != null) {
+                                            foreach (DataRow row in bufferTable.Rows) {
+                                                action(row);
+                                            }                                            
+                                        }
+                                        bufferTable.Rows.Clear();
+                                    }
                                 }
-                            } else {
-                                var rowData = new String[dt.Columns.Count];
-                                for (int i = 0; i < excelReader.FieldCount; ++i) {
-                                    rowData[i] = excelReader.GetString(i);
-                                }
-                                dt.Rows.Add(rowData);
                             }
-                            if (row++ > maxRows) {
-                                break;
-                            }
-                        }
-                        if (action != null) {
-                            action(dt);
-                        }
 
-                        break;
-                    }
-                } while (excelReader.NextResult());
+                            break;
+                        }
+                    } while (excelReader.NextResult());
+                }
 
             }
+        }
 
+        public static void ExcelDataTable(String filename, String worksheet, int maxRows, Action<DataTable> action) {
+
+            using (DataTable dt = new DataTable()) {
+                int rowCount = 0;
+                WithExcelWorksheetRows(filename, worksheet, maxRows, row => {
+                    if (rowCount == 0) {
+                        dt.TableName = row.Table.TableName;
+                        foreach (DataColumn column in row.Table.Columns) {
+                            dt.Columns.Add(column.ColumnName, column.DataType);
+                        }
+                    }
+                    dt.Rows.Add(row.ItemArray);
+                    rowCount++;
+                });
+                if (action != null) {
+                    action(dt);
+                }
+            }
         }
     }
 

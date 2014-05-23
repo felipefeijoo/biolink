@@ -82,7 +82,11 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void button2_Click(object sender, RoutedEventArgs e) {
-            cmbSheet.ItemsSource = GetExcelSheetNames(txtFilename.Text, false);
+            var columnNames = GetExcelSheetNames(txtFilename.Text, false);
+            cmbSheet.ItemsSource = columnNames;
+            if (columnNames != null && columnNames.Count > 0) {
+                cmbSheet.SelectedIndex = 0;
+            }
         }
 
         private bool Validate() {

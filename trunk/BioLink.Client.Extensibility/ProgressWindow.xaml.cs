@@ -31,10 +31,18 @@ namespace BioLink.Client.Extensibility {
     /// <summary>
     /// Interaction logic for ProgressWindow.xaml
     /// </summary>
-    public partial class ProgressWindow : Window, IProgressObserver {
+    public partial class ProgressWindow : Window, IProgressObserver, IDisposable {
 
         public ProgressWindow() {
             InitializeComponent();
+        }
+
+        public ProgressWindow(Window parentWindow, String message, bool indeterminate = false) {
+            InitializeComponent();
+            this.Owner = parentWindow;
+            this.Title = "Please wait...";
+            this.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;            
+            ProgressStart(message, indeterminate);
         }
 
         public void ProgressStart(string message, bool indeterminate = false) {
@@ -64,5 +72,11 @@ namespace BioLink.Client.Extensibility {
             });
         }
 
+
+        public void Dispose() {
+            if (this.IsVisible) {
+                this.Hide();
+            }
+        }
     }
 }

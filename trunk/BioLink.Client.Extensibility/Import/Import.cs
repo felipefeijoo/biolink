@@ -59,7 +59,7 @@ namespace BioLink.Client.Extensibility {
             return null;
         }
 
-        public abstract ImportRowSource CreateRowSource();
+        public abstract ImportRowSource CreateRowSource(IProgressObserver progress);
 
         #region Properties
 

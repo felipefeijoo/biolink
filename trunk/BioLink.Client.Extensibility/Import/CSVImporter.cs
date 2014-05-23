@@ -44,7 +44,7 @@ namespace BioLink.Client.Extensibility.Import {
             return false;
         }
 
-        public override ImportRowSource CreateRowSource() {
+        public override ImportRowSource CreateRowSource(IProgressObserver progress) {
 
             if (_options == null) {
                 throw new Exception("Null or incorrect options type received!");
