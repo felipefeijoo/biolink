@@ -40,14 +40,7 @@ namespace BioLink.Client.Extensibility {
             if (options != null) {
                 txtFilename.Text = options.Filename;
                 cmbSheet.Text = options.Worksheet;
-            }
-            txtFilename.TextChanged += new TextChangedHandler(txtFilename_TextChanged);
-        }
-
-        void txtFilename_TextChanged(object source, string value) {
-            //using (new OverrideCursor(Cursors.Wait)) {
-            //    cmbSheet.ItemsSource = GetExcelSheetNames(txtFilename.Text, true);
-            //}
+            }            
         }
 
         public String Filename {

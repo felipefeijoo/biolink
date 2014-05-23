@@ -334,8 +334,29 @@ namespace BioLink.Client.Tools {
                 builder.Separator();
                 builder.New("_Set default value").Handler(() => { SetDefaultValue(); }).Enabled(!isFixed).End();
                 builder.New("_Clear default value").Handler(() => { ClearDefaultValue(); }).Enabled(!isFixed).End();
+                builder.Separator();
+                builder.New("Edit transformations").Handler(() => { EditTransformations(); }).End();
+                builder.New("Clear transformations").Handler(() => { ClearTransformations(); }).Enabled(selected.Transformer != null).End();
 
                 lvwMappings.ContextMenu = builder.ContextMenu;
+            }
+        }
+
+        private void ClearTransformations() {
+            var selected = lvwMappings.SelectedItem as ImportFieldMappingViewModel;
+            if (selected != null) {
+                selected.Transformer = null;
+            }
+        }
+
+        private void EditTransformations() {
+            var selected = lvwMappings.SelectedItem as ImportFieldMappingViewModel;
+            if (selected != null) {
+                if (selected.Transformer == null) {
+                    selected.Transformer = new TransformationPipline();                    
+                }
+                // selected.Transformer.AddTransformer(new UpperCaseTransformer());
+                selected.RefreshTransformer();
             }
         }
 
@@ -355,7 +376,7 @@ namespace BioLink.Client.Tools {
             if (selected != null && selected.IsFixed) {
                 InputBox.Show(this.FindParentWindow(), "Edit fixed column", "Enter the value you wish to fix:", (string) selected.DefaultValue, (val) => {
                     selected.DefaultValue = val;
-                });
+                });                
             }
         }
 
