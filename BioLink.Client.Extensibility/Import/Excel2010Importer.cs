@@ -20,7 +20,7 @@ using BioLink.Client.Utilities;
 using BioLink.Data;
 using System.Data;
 using System.IO;
-using OfficeOpenXml;
+using Excel;
 
 namespace BioLink.Client.Extensibility {
 
@@ -110,24 +110,25 @@ namespace BioLink.Client.Extensibility {
         }
 
         public static List<String> GetWorksheetNames(String filename, Boolean suppressException = false) {
+
             var sheetNames = new List<string>();
+
             try {
-                if (!string.IsNullOrEmpty(filename)) {
-                    var package = new ExcelPackage();
-                    package.Load(new FileInfo(filename).OpenRead());
-                    package.Workbook.Worksheets.ForEach((ExcelWorksheet ws) => {
-                        sheetNames.Add(ws.Name);
-                    });
-                    package.Dispose();
+                var stream = new FileStream(filename, FileMode.Open);
+                using (IExcelDataReader excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream)) {
+                    using (DataSet result = excelReader.AsDataSet()) {
+                        if (result != null) {
+                            foreach (DataTable tbl in result.Tables) {
+                                sheetNames.Add(tbl.TableName);
+                            }
+                        }
+                    }
                 }
-                return sheetNames;
             } catch (Exception ex) {
-                if (!suppressException) {
-                    ErrorMessage.Show("An error occurred open the selected file: {0}", ex.Message);
-                }
-                return null;
-            } finally {
+                ErrorMessage.Show("An error occurred trying to open the selected file: {0}", ex.Message);
             }
+
+            return sheetNames;            
         }
 
         public static void ExcelDataTable(String filename, String worksheet, int maxRows, Action<DataTable> action) {
@@ -136,32 +137,41 @@ namespace BioLink.Client.Extensibility {
                 return;
             }
 
-            using (var pck = new OfficeOpenXml.ExcelPackage()) {
-                using (var stream = File.OpenRead(filename)) {
-                    pck.Load(stream);
-                }
-                var ws = pck.Workbook.Worksheets.First(w => w.Name.Equals(worksheet));
+            var stream = new FileStream(filename, FileMode.Open);
+            using (IExcelDataReader excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream)) {
+                excelReader.IsFirstRowAsColumnNames = true;
 
-                DataTable tbl = new DataTable();
-                bool hasHeader = true;
-                foreach (var firstRowCell in ws.Cells[1, 1, 1, ws.Dimension.End.Column]) {
-                    tbl.Columns.Add(hasHeader ? firstRowCell.Text : string.Format("Column {0}", firstRowCell.Start.Column));
-                }
-                var startRow = hasHeader ? 2 : 1;
-                var endRow = maxRows <= 0 ? ws.Dimension.End.Row : maxRows;
-                for (var rowNum = startRow; rowNum <= endRow; rowNum++) {
-                    var wsRow = ws.Cells[rowNum, 1, rowNum, ws.Dimension.End.Column];
-                    var row = tbl.NewRow();
-                    foreach (var cell in wsRow) {
-                        row[cell.Start.Column - 1] = cell.Text;
+                do {
+                    if (excelReader.Name.Equals(worksheet, StringComparison.CurrentCultureIgnoreCase)) {
+                        int row = 0;
+                        DataTable dt = new DataTable(excelReader.Name);
+                        while (excelReader.Read()) {
+
+                            if (row == 0) {
+                                for (int i = 0; i < excelReader.FieldCount; ++i) {
+                                    var column = dt.Columns.Add(excelReader.GetString(i), typeof(string));
+                                }
+                            } else {
+                                var rowData = new String[dt.Columns.Count];
+                                for (int i = 0; i < excelReader.FieldCount; ++i) {
+                                    rowData[i] = excelReader.GetString(i);
+                                }
+                                dt.Rows.Add(rowData);
+                            }
+                            if (row++ > maxRows) {
+                                break;
+                            }
+                        }
+                        if (action != null) {
+                            action(dt);
+                        }
+
+                        break;
                     }
-                    tbl.Rows.Add(row);
-                }
+                } while (excelReader.NextResult());
 
-                if (action != null) {
-                    action(tbl);
-                }
             }
+
         }
     }
 

@@ -13,7 +13,7 @@
         </Grid.RowDefinitions>
                 
         <Label Content="Enter/Select the Excel file to import from:" Height="28" Name="label1" VerticalAlignment="Top" Margin="12,0" />
-        <my:FilenameTextBox Margin="12,25,93,0" x:Name="txtFilename" VerticalAlignment="Top" Filter="Excel file (*.xls)|*.xls|All files (*.*)|*.*" />
+        <my:FilenameTextBox Margin="12,25,93,0" x:Name="txtFilename" VerticalAlignment="Top" Filter="Excel file (*.xls)|*.xls|Excel 2007/2010 file (*.xlsx)|*.xlsx|All files (*.*)|*.*" />
         <Label Content="Worksheet:" Height="28" Margin="12,54,0,0" Name="label2" VerticalAlignment="Top" HorizontalAlignment="Left" Width="73" />
         <ComboBox Height="23" Margin="91,54,93,0" Name="cmbSheet" VerticalAlignment="Top" IsEditable="True" />
         <Button Content="_View file" Height="23" HorizontalAlignment="Right" Margin="0,25,12,0" Name="button1" VerticalAlignment="Top" Width="75" Click="button1_Click" />

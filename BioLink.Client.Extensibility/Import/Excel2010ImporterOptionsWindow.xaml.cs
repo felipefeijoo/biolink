@@ -28,7 +28,6 @@ using System.Windows.Shapes;
 using System.Data;
 using BioLink.Client.Utilities;
 using System.IO;
-using OfficeOpenXml;
 
 namespace BioLink.Client.Extensibility {
     /// <summary>
@@ -46,9 +45,9 @@ namespace BioLink.Client.Extensibility {
         }
 
         void txtFilename_TextChanged(object source, string value) {
-            using (new OverrideCursor(Cursors.Wait)) {
-                cmbSheet.ItemsSource = GetExcelSheetNames(txtFilename.Text, true);
-            }
+            //using (new OverrideCursor(Cursors.Wait)) {
+            //    cmbSheet.ItemsSource = GetExcelSheetNames(txtFilename.Text, true);
+            //}
         }
 
         public String Filename {
