@@ -50,7 +50,7 @@ namespace BioLink.Client.Extensibility {
             var service = new ImportStagingService();
             service.CreateImportTable(columnNames);
 
-            if (WorksheetDataTable(string.Format("SELECT * FROM [{0}]", _options.Worksheet), (dt) => {
+            if (WithWorksheetDataTable(_options.Filename, string.Format("SELECT * FROM [{0}]", _options.Worksheet), (dt) => {
 
                 service.BeginTransaction();
                 var values = new List<string>();
@@ -88,41 +88,27 @@ namespace BioLink.Client.Extensibility {
             get { return ImageCache.GetPackedImage("images/excel2003_exporter.png", GetType().Assembly.GetName().Name); }
         }
 
-        private bool WorksheetDataTable(string sql, Action<DataTable> action) {
-
+        public static bool WithSpreadsheetConnection(String filename, Boolean suppressExceptions, Func<OleDbConnection, bool> action) {
             OleDbConnection conn = null;
             DataTable dt = null;
 
             try {
-                String connString = string.Format("Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=Excel 8.0;", _options.Filename);
+                String connString = string.Format("Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=Excel 8.0;", filename);
+                if (filename.ToLower().EndsWith(".xlsx")) {
+                    connString = String.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0}; Extended Properties=\"Excel 12.0 Xml;HDR=YES\";", filename);
+                }
 
                 conn = new OleDbConnection(connString);
                 conn.Open();
-                OleDbCommand cmd = new OleDbCommand(sql, conn);
-                OleDbDataAdapter dbAdapter = new OleDbDataAdapter();
-
-                dbAdapter.SelectCommand = cmd;
-
-                DataSet ds = new DataSet();
-                dbAdapter.Fill(ds);
-                if (ds.Tables.Count == 0) {
-                    return false;
-                }
-                dt = ds.Tables[0];
-                conn.Close();
-
-                if (dt == null) {
-                    return false;
-                }
 
                 if (action != null) {
-                    action(dt);
-                }
-
-                return true;
-
+                    return action(conn);
+                } 
+                
             } catch (Exception ex) {
-                ErrorMessage.Show("An error occurred whilst attempting to read the worksheet: {0}", ex.Message);
+                if (!suppressExceptions) {
+                    ErrorMessage.Show("An error occurred whilst attempting to connect to file: {0}", ex.Message);
+                }
                 return false;
             } finally {
                 if (conn != null) {
@@ -134,12 +120,65 @@ namespace BioLink.Client.Extensibility {
                 }
             }
 
+            return false;
         }
 
+        public static bool WithWorksheetDataTable(String filename, String sql, Action<DataTable> action) {
+
+            return WithSpreadsheetConnection(filename, false, con => {
+
+                OleDbCommand cmd = new OleDbCommand(sql, con);
+                OleDbDataAdapter dbAdapter = new OleDbDataAdapter();
+
+                dbAdapter.SelectCommand = cmd;
+
+                using (DataSet ds = new DataSet()) {
+                    dbAdapter.Fill(ds);
+                    if (ds.Tables.Count == 0) {
+                        return false;
+                    }
+                    using (DataTable dt = ds.Tables[0]) {
+                        if (dt == null) {
+                            return false;
+                        }
+
+                        if (action != null) {
+                            action(dt);
+                        }
+                    }
+                }
+               
+                return true;
+            });
+
+        }
+
+        public static List<string> GetExcelSheetNames(string filename, bool suppressException = false) {
+            var sheetNames = new List<string>();
+            WithSpreadsheetConnection(filename, suppressException, conn => {                
+                DataTable dt = conn.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, null);
+                if (dt != null) {
+                    foreach (DataRow row in dt.Rows) {
+                        sheetNames.Add(row["TABLE_NAME"].ToString());
+                    }
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+
+            return sheetNames;
+        }
+
+
         public override List<string> GetColumnNames() {
+            return GetColumnNamesFromWorksheet(_options.Filename, _options.Worksheet);
+        }
+
+        public static List<String> GetColumnNamesFromWorksheet(String filename, String worksheetName) {
             var columns = new List<string>();
 
-            if (WorksheetDataTable(string.Format("SELECT TOP 1 * FROM [{0}]", _options.Worksheet), (dt) => {
+            if (WithWorksheetDataTable(filename, string.Format("SELECT TOP 1 * FROM [{0}]", worksheetName), (dt) => {
                 foreach (DataColumn col in dt.Columns) {
                     columns.Add(col.ColumnName);
                 }

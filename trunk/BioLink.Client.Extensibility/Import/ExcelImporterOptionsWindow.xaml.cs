@@ -46,22 +46,21 @@ namespace BioLink.Client.Extensibility {
         }
 
         void txtFilename_TextChanged(object source, string value) {
-            ListSheetNames(txtFilename.Text, true);
+            // ListSheetNames(txtFilename.Text, true);
         }
 
         private void ListSheetNames(string filename, bool suppressErrorMessages) {
             if (!string.IsNullOrEmpty(filename)) {
-                List<String> sheetNames = null;
-                JobExecutor.QueueJob(() => {
-                    sheetNames = GetExcelSheetNames(filename, true);
+                using (new OverrideCursor(Cursors.Wait)) {
+                    List<String> sheetNames = null;
+                    sheetNames = ExcelImporter.GetExcelSheetNames(filename, true);
                     cmbSheet.InvokeIfRequired(() => {
                         cmbSheet.ItemsSource = sheetNames;
                         if (sheetNames != null && sheetNames.Count > 0) {
                             cmbSheet.Text = sheetNames[0];
                         }
                     });
-                });
-
+                }
             } else {
                 cmbSheet.ItemsSource = null;
             }
@@ -75,90 +74,16 @@ namespace BioLink.Client.Extensibility {
             get { return cmbSheet.Text; }
         }
 
-        private List<string> GetExcelSheetNames(string filename, bool suppressException = false) {
-
-            OleDbConnection objConn = null;
-            DataTable dt = null;
-
-            try {
-                String connString = string.Format("Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=Excel 8.0;", filename);
-
-                objConn = new OleDbConnection(connString);
-                objConn.Open();
-                dt = objConn.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, null);
-
-                if (dt == null) {
-                    return null;
-                }
-
-                var sheetNames = new List<string>();                
-                foreach (DataRow row in dt.Rows) {
-                    sheetNames.Add(row["TABLE_NAME"].ToString());
-                }
-
-                return sheetNames;
-            } catch (Exception ex) {
-                if (!suppressException) {
-                    ErrorMessage.Show("An error occurred open the selected file: {0}", ex.Message);
-                }
-                return null;
-            } finally {
-                if (objConn != null) {
-                    objConn.Close();
-                    objConn.Dispose();
-                }
-                if (dt != null) {
-                    dt.Dispose();
-                }
-            }
-        }
-
         private void btnPreview_Click(object sender, RoutedEventArgs e) {
             Preview();
         }
 
         private void Preview() {
-
-            OleDbConnection conn = null;
-            DataTable dt = null;
-
-            
-            try {
-                String connString = string.Format("Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=Excel 8.0;", Filename);
-
-                conn = new OleDbConnection(connString);
-                conn.Open();
-                OleDbCommand cmd = new OleDbCommand(string.Format("SELECT TOP 50 * FROM [{0}]", Worksheet), conn);
-                OleDbDataAdapter dbAdapter = new OleDbDataAdapter();
-
-                dbAdapter.SelectCommand = cmd;
-
-                DataSet ds = new DataSet();
-                dbAdapter.Fill(ds);
-                if (ds.Tables.Count == 0) {
-                    return;
-                }
-                dt = ds.Tables[0];
-                conn.Close(); 
-
-                if (dt == null) {
-                    return;
-                }
-
-                previewGrid.ItemsSource = dt.DefaultView;
-                
-            } catch (Exception ex) {                
-                ErrorMessage.Show("An error occurred open the selected file: {0}", ex.Message);
-            } finally {
-                if (conn != null) {
-                    conn.Close();
-                    conn.Dispose();
-                }
-                if (dt != null) {
-                    dt.Dispose();
-                }
+            using (new OverrideCursor(Cursors.Wait)) {
+                ExcelImporter.WithWorksheetDataTable(Filename, String.Format("SELECT TOP 50 * FROM [{0}]", Worksheet), dt => {
+                    previewGrid.ItemsSource = dt.DefaultView;
+                });
             }
-
         }
 
         private void button2_Click(object sender, RoutedEventArgs e) {

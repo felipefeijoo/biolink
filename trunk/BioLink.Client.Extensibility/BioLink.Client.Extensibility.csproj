@@ -34,6 +34,9 @@
     <Reference Include="EPPlus">
       <HintPath>..\shared\lib\EPPlus.dll</HintPath>
     </Reference>
+    <Reference Include="Excel">
+      <HintPath>..\shared\lib\Excel.dll</HintPath>
+    </Reference>
     <Reference Include="GenericParsing">
       <HintPath>..\shared\lib\GenericParsing.dll</HintPath>
     </Reference>
