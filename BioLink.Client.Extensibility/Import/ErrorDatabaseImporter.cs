@@ -40,7 +40,7 @@ namespace BioLink.Client.Extensibility {
             return false;
         }
 
-        public override ImportRowSource CreateRowSource() {
+        public override ImportRowSource CreateRowSource(IProgressObserver progress) {
             var errorSource = new ImportStagingService(_options.Filename);
 
             var service = new ImportStagingService();

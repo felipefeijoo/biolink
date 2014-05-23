@@ -57,7 +57,7 @@ namespace BioLink.Client.Tools {
                 return;
             }
 
-            ProgressMsg("Importing rows - Stage 1", 0);
+            ProgressMsg("Importing data - Stage 1", 0);
             if (!DoStage1()) {
                 return;
             }
@@ -69,7 +69,7 @@ namespace BioLink.Client.Tools {
 
             var connection = User.GetConnection();
 
-            LogMsg("Importing rows - Stage 2", 10);
+            LogMsg("Importing data - Stage 2", 10);
             int rowCount = 0;
             int lastPercent = 0;
 
@@ -140,9 +140,9 @@ namespace BioLink.Client.Tools {
 
         private bool DoStage1() {
 
-            LogMsg("Stage 1 - preparing staging database");
-            LogMsg("Stage 1 - Preprocessing rows...");
-            this.RowSource = Importer.CreateRowSource();
+            LogMsg("Stage 1 - Preparing staging database");
+            LogMsg("Stage 1 - Populating staging database...");
+            this.RowSource = Importer.CreateRowSource(Progress);
             LogMsg("Stage 1 Complete, {0} rows staged for import.", RowSource.RowCount);
 
             return true;
