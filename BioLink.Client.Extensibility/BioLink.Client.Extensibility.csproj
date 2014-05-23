@@ -36,6 +36,7 @@
     </Reference>
     <Reference Include="Excel">
       <HintPath>..\shared\lib\Excel.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="GenericParsing">
       <HintPath>..\shared\lib\GenericParsing.dll</HintPath>
@@ -146,6 +147,7 @@
       <DependentUpon>Excel2010ImporterOptionsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Import\Excel2010Importer.cs" />
+    <Compile Include="Import\ImportFieldMapping.cs" />
     <Compile Include="IPreferredSizeHolder.cs" />
     <Compile Include="MultimediaThumbnailViewer.xaml.cs">
       <DependentUpon>MultimediaThumbnailViewer.xaml</DependentUpon>
@@ -350,6 +352,9 @@
       <DependentUpon>TraitElementControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Traits\TraitViewModel.cs" />
+    <Compile Include="Transform\IValueTransformer.cs" />
+    <Compile Include="Transform\TransformationPipline.cs" />
+    <Compile Include="Transform\UpperCaseTransformer.cs" />
     <Compile Include="TreeViewDragHelper.cs" />
     <Compile Include="UpdateChecker.cs" />
     <Compile Include="ViewModelBase.cs" />

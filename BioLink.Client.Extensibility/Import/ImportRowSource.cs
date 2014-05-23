@@ -20,7 +20,15 @@ using System.Data.SQLite;
 
 namespace BioLink.Client.Extensibility {
 
-    public class ImportRowSource {
+    public interface IRowSource {
+        object this[int index] { get; }
+        object this[string columnname] { get; }
+        int? ColumnCount { get; }
+        string ColumnName(int index);
+        List<String> ColumnNames { get; }
+    }
+
+    public class ImportRowSource : IRowSource {
 
         public ImportRowSource(ImportStagingService service, int? rowcount) {
             this.Reader = service.GetImportReader();

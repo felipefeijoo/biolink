@@ -21,6 +21,7 @@
                         <GridViewColumn Header="Source column (import)" Width="150" DisplayMemberBinding="{Binding DisplayLabel}" />
                         <GridViewColumn Header="Destination" Width="150" DisplayMemberBinding="{Binding TargetColumn}" />
                         <GridViewColumn Header="Default value" Width="100" DisplayMemberBinding="{Binding DefaultValue}" />
+                        <GridViewColumn Header="Transform" Width="200" DisplayMemberBinding="{Binding Transformer}" />
                     </GridView.Columns>
                 </GridView>
             </ListView.View>

@@ -252,8 +252,15 @@ namespace BioLink.Client.Tools {
                 } else {
                     value = mapping.DefaultValue;
                 }
+
                 var defaultValue = string.IsNullOrWhiteSpace(mapping.DefaultValue) ? def : mapping.DefaultValue;
-                return value == null ? defaultValue : value.ToString();
+                String finalValue = value == null ? defaultValue : value.ToString();
+
+                if (mapping.Transformer != null) {
+                    finalValue = mapping.Transformer.transform(finalValue, RowSource);
+                }
+
+                return finalValue;
             }
 
             return def;
