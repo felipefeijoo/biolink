@@ -44,7 +44,7 @@ namespace BioLink.Client.Extensibility {
             _progress = progress;
             var candidates = PluginManager.Instance.GetExtensionsOfType<TabularDataExporter>();
             var exporters = candidates.FindAll((exporter) => {
-                return exporter.CanExport(data);
+                return exporter.CanExport(data, dataSetName);
             });
 
             listBox.ItemsSource = exporters;

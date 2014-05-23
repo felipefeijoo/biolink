@@ -27,7 +27,7 @@ namespace BioLink.Client.Extensibility.Export {
 
     public class Excel2003Exporter : TabularDataExporter {
 
-        protected override object GetOptions(Window parentWindow, DataMatrix matrix) {
+        protected override object GetOptions(Window parentWindow, DataMatrix matrix, String datasetName) {
 
             var filename = PromptForFilename(".txt", "XML Excel Workbook (.xml)|*.xml");
             if (!String.IsNullOrEmpty(filename)) {
@@ -108,7 +108,7 @@ namespace BioLink.Client.Extensibility.Export {
         #endregion
 
 
-        public override bool CanExport(DataMatrix matrix) {
+        public override bool CanExport(DataMatrix matrix, String datasetName) {
             return true;
         }
     }

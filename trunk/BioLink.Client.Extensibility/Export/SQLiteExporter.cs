@@ -26,9 +26,9 @@ using BioLink.Data;
 namespace BioLink.Client.Extensibility.Export {
     public class SQLiteExporter : TabularDataExporter {
 
-        protected override object GetOptions(Window parentWindow, DataMatrix matrix) {
+        protected override object GetOptions(Window parentWindow, DataMatrix matrix, String datasetName) {
 
-            string filename = PromptForFilename(".sqlite", "SQLite database (.sqlite)|*.sqlite");
+            string filename = PromptForFilename(".sqlite", "SQLite database (.sqlite)|*.sqlite", datasetName);
             if (!String.IsNullOrEmpty(filename)) {
                 ExcelExporterOptions options = new ExcelExporterOptions();
                 options.Filename = filename;
@@ -94,7 +94,7 @@ namespace BioLink.Client.Extensibility.Export {
 
         #endregion
 
-        public override bool CanExport(DataMatrix matrix) {
+        public override bool CanExport(DataMatrix matrix, String datasetName) {
             return true;
         }
     }

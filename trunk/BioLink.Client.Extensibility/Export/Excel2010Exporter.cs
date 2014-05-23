@@ -28,9 +28,9 @@ namespace BioLink.Client.Extensibility.Export {
 
     public class Excel2010Exporter : TabularDataExporter {
 
-        protected override object GetOptions(Window parentWindow, DataMatrix matrix) {
+        protected override object GetOptions(Window parentWindow, DataMatrix matrix, String datasetName) {
 
-            var filename = PromptForFilename(".txt", "Excel 2007/2010 Workbook (.xlsx)|*.xlsx");
+            var filename = PromptForFilename(".txt", "Excel 2007/2010 Workbook (.xlsx)|*.xlsx", datasetName);
             if (!String.IsNullOrEmpty(filename)) {
                 ExcelExporterOptions options = new ExcelExporterOptions();
                 options.Filename = filename;
@@ -62,7 +62,7 @@ namespace BioLink.Client.Extensibility.Export {
                 p.Workbook.Properties.Author = "BioLink " + version;
                 var name = StringUtils.RemoveAll(datasetName, '&', '\'','"','<','>');
                 p.Workbook.Properties.Title = name;
-                var ws = p.Workbook.Worksheets.Add(name);                
+                var ws = p.Workbook.Worksheets.Add("DwC");
 
                 // Column headings...
                 int colIndex = 1;
@@ -115,7 +115,7 @@ namespace BioLink.Client.Extensibility.Export {
         #endregion
 
 
-        public override bool CanExport(DataMatrix matrix) {
+        public override bool CanExport(DataMatrix matrix, String datasetName) {
             return true;
         }
     }
