@@ -356,6 +356,10 @@ namespace BioLink.Client.Tools {
                     selected.Transformer = new TransformationPipline();                    
                 }
                 // selected.Transformer.AddTransformer(new UpperCaseTransformer());
+                var frm = new EditTransformationPipelineWindow(selected.Transformer);
+                frm.Owner = this.FindParentWindow();
+                frm.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                frm.ShowDialog();
                 selected.RefreshTransformer();
             }
         }

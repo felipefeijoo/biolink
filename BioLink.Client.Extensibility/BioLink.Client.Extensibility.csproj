@@ -352,11 +352,17 @@
       <DependentUpon>TraitElementControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Traits\TraitViewModel.cs" />
-    <Compile Include="Transform\EditTransformationPipeline.xaml.cs">
-      <DependentUpon>EditTransformationPipeline.xaml</DependentUpon>
+    <Compile Include="Transform\EditTransformationPipelineWindow.xaml.cs">
+      <DependentUpon>EditTransformationPipelineWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Transform\IValueTransformer.cs" />
+    <Compile Include="Transform\TransformationPipelineOutputControl.xaml.cs">
+      <DependentUpon>TransformationPipelineOutputControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Transform\TransformationPipline.cs" />
+    <Compile Include="Transform\TransformationPiplineStartControl.xaml.cs">
+      <DependentUpon>TransformationPiplineStartControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Transform\UpperCaseTransformer.cs" />
     <Compile Include="Transform\ValueTransformerControl.xaml.cs">
       <DependentUpon>ValueTransformerControl.xaml</DependentUpon>
@@ -381,7 +387,15 @@
     <Folder Include="lib\" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Transform\EditTransformationPipeline.xaml">
+    <Page Include="Transform\EditTransformationPipelineWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Transform\TransformationPipelineOutputControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Transform\TransformationPiplineStartControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

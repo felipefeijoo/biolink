@@ -1,19 +1,47 @@
-﻿<UserControl x:Class="BioLink.Client.Extensibility.Transform.ValueTransformerControl"
+﻿<UserControl x:Class="BioLink.Client.Extensibility.ValueTransformerControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             Height="60" Width="300">
-    <Border BorderThickness="4" CornerRadius="15">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="40" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="40" />                
-            </Grid.ColumnDefinitions>
+             Height="90" d:DesignWidth="600">
+    <Grid Margin="10 0 10 0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="25" />
+        </Grid.RowDefinitions>
+        <Border BorderThickness="4" CornerRadius="10" BorderBrush="DarkGray">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="100" />                
+                </Grid.ColumnDefinitions>        
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Label VerticalAlignment="top" Foreground="DarkGray"> Input: xxxx</Label>
+                    <Label Grid.Row="1" VerticalAlignment="Bottom" Foreground="DarkGray">Output: xxxx</Label>
+                </Grid>
+                <Label Grid.Column="1" Content="{Binding Name}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" FontWeight="Bold" />
+                <Grid Grid.Column="2" Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Button Content="Remove" Height="22" />
+                    <Button Grid.Row="1" Content="Options" Height="22" />
+
+                </Grid>
+
+            </Grid>
             
-            <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center" Height="30" FontSize="14" />
+        </Border>
+        <Grid Grid.Row="1">
+            <Label HorizontalAlignment="Center" FontSize="14" FontWeight="Bold">▼</Label>
         </Grid>
-    </Border>
+
+    </Grid>
 </UserControl>

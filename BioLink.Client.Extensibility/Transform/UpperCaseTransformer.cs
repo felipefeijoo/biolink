@@ -7,15 +7,15 @@ namespace BioLink.Client.Extensibility {
 
     public class UpperCaseTransformer : IValueTransformer {
 
-        public string name {
+        public string Name {
             get { return "Convert to uppercase"; }
         }
 
-        public string description {
+        public string Description {
             get { return "Converts all characters in input value to uppercase"; }
         }
 
-        public string transform(string value, IRowSource row) {
+        public string Transform(string value, IRowSource row) {
             if (!string.IsNullOrEmpty(value)) {
                 return value.ToUpper();
             }

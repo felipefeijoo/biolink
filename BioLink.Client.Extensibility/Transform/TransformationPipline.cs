@@ -16,7 +16,7 @@ namespace BioLink.Client.Extensibility {
         public String transform(String value, IRowSource row) {
             String transformed = value;
             foreach (IValueTransformer t in _pipeline) {
-                transformed = t.transform(transformed, row);
+                transformed = t.Transform(transformed, row);
             }
             return transformed;
         }
@@ -33,8 +33,7 @@ namespace BioLink.Client.Extensibility {
         public override String ToString() {            
             List<String> l = new List<String>();            
             foreach (IValueTransformer t in _pipeline) {
-                l.Add(t.name);
-                
+                l.Add(t.Name);                
             }
             return l.Join(" → ");
         }

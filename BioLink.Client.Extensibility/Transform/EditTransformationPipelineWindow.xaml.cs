@@ -15,30 +15,32 @@ using BioLink.Client.Utilities;
 using BioLink.Client.Extensibility;
 using BioLink.Data;
 
-namespace BioLink.Client.Extensibility.Transform {
+namespace BioLink.Client.Extensibility {
     /// <summary>
     /// Interaction logic for EditTransformationPipeline.xaml
     /// </summary>
-    public partial class EditTransformationPipeline : Window {
+    public partial class EditTransformationPipelineWindow : Window {
 
-        public EditTransformationPipeline() {
+        public EditTransformationPipelineWindow() {
             InitializeComponent();
         }
 
-        public EditTransformationPipeline(TransformationPipline transform) {
+        public EditTransformationPipelineWindow(TransformationPipline transform) {
             InitializeComponent();
             this.TransformationPipeline = transform;
-            RenderTransforms();
+            RedrawPipeline();
         }
 
-        private void RenderTransforms() {
+        private void RedrawPipeline() {
             transformersPanel.Children.Clear();
+            transformersPanel.Children.Add(new TransformationPiplineStartControl());
             if (TransformationPipeline != null) {
                 foreach (IValueTransformer t in TransformationPipeline.Transformers) {
                     var tt = new ValueTransformerControl(t);
                     transformersPanel.Children.Add(tt);
                 }
             }
+            transformersPanel.Children.Add(new TransformationPipelineOutputControl());
         }
 
 
@@ -54,6 +56,11 @@ namespace BioLink.Client.Extensibility.Transform {
 
         private void btnOK_Click(object sender, RoutedEventArgs e) {
 
+        }
+
+        private void btnAddTransform_Click(object sender, RoutedEventArgs e) {
+            this.TransformationPipeline.AddTransformer(new UpperCaseTransformer());
+            RedrawPipeline();
         }
 
     }
