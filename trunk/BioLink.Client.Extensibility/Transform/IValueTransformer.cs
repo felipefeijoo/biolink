@@ -6,9 +6,9 @@ using System.Text;
 namespace BioLink.Client.Extensibility {
 
     public interface IValueTransformer {
-        String name { get; }
-        String description { get; }
-        String transform(String value, IRowSource row);
+        String Name { get; }
+        String Description { get; }
+        String Transform(String value, IRowSource row);
     }
 
 }

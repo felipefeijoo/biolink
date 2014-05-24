@@ -14,18 +14,11 @@ using System.Windows.Shapes;
 
 namespace BioLink.Client.Extensibility {
     /// <summary>
-    /// Interaction logic for ValueTransformerControl.xaml
+    /// Interaction logic for TransformationPiplineStartControl.xaml
     /// </summary>
-    public partial class ValueTransformerControl : UserControl {
-
-        public ValueTransformerControl() {
-            InitializeComponent();            
-        }
-
-        public ValueTransformerControl(IValueTransformer transformer) {
+    public partial class TransformationPiplineStartControl : UserControl {
+        public TransformationPiplineStartControl() {
             InitializeComponent();
-            this.DataContext = transformer;            
         }
-
     }
 }
