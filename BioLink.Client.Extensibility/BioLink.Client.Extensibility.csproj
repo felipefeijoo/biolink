@@ -352,9 +352,15 @@
       <DependentUpon>TraitElementControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Traits\TraitViewModel.cs" />
+    <Compile Include="Transform\EditTransformationPipeline.xaml.cs">
+      <DependentUpon>EditTransformationPipeline.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Transform\IValueTransformer.cs" />
     <Compile Include="Transform\TransformationPipline.cs" />
     <Compile Include="Transform\UpperCaseTransformer.cs" />
+    <Compile Include="Transform\ValueTransformerControl.xaml.cs">
+      <DependentUpon>ValueTransformerControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TreeViewDragHelper.cs" />
     <Compile Include="UpdateChecker.cs" />
     <Compile Include="ViewModelBase.cs" />
@@ -375,6 +381,14 @@
     <Folder Include="lib\" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Transform\EditTransformationPipeline.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Transform\ValueTransformerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Resource Include="Themes\EditSmall.png" />
     <Page Include="Associates\AssociateReportsViewer.xaml">
       <SubType>Designer</SubType>
