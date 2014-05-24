@@ -1,0 +1,19 @@
+﻿<UserControl x:Class="BioLink.Client.Extensibility.Transform.ValueTransformerControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             Height="60" Width="300">
+    <Border BorderThickness="4" CornerRadius="15">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="40" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="40" />                
+            </Grid.ColumnDefinitions>
+            
+            <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center" Height="30" FontSize="14" />
+        </Grid>
+    </Border>
+</UserControl>
