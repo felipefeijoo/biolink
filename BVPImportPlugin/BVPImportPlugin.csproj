@@ -58,7 +58,6 @@
     <Compile Include="BVPImportSourceBuilder.cs" />
     <Compile Include="BVPZipImportFilter.cs" />
     <Compile Include="ColumnDefinitionBuilder.cs" />
-    <Compile Include="DarwinCoreField.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BVPImportOptionsWindow.xaml.cs">
       <DependentUpon>BVPImportOptionsWindow.xaml</DependentUpon>
