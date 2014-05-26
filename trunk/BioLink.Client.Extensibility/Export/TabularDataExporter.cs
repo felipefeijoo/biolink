@@ -101,6 +101,10 @@ namespace BioLink.Client.Extensibility {
         protected string PromptForFilename(string extension, string filter, String defaultName = null) {
             Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
 
+            if (defaultName != null) {
+                defaultName = SystemUtils.StripIllegalFilenameChars(defaultName);
+            }
+
             var name = String.IsNullOrEmpty(defaultName) ? "Export" : defaultName;
             name = SystemUtils.StripIllegalFilenameChars(name);
             dlg.FileName = name; // Default file name
