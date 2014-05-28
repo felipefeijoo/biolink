@@ -24,7 +24,21 @@ namespace BioLink.Client.Extensibility {
 
         public ValueTransformerControl(IValueTransformer transformer) {
             InitializeComponent();
-            this.DataContext = transformer;            
+            this.ValueTransformer = transformer;
+            this.DataContext = transformer;
+            if (ValueTransformer != null) {
+                btnShowOptions.IsEnabled = ValueTransformer.HasOptions;
+            }
+        }
+
+        public IValueTransformer ValueTransformer { get; private set; }
+    
+        public event RoutedEventHandler RemoveClicked;
+
+        private void btnRemove_Click(object sender, RoutedEventArgs e) {
+            if (this.RemoveClicked != null) {
+                RemoveClicked(this, e);
+            }
         }
 
     }

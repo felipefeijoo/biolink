@@ -8,6 +8,26 @@ namespace BioLink.Client.Utilities {
 
     public static class StringUtils {
 
+        public static byte[] GetStringBytes(String str) {
+            byte[] bytes = new byte[str.Length * sizeof(char)];
+            System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
+            return bytes;
+        }
+
+        public static String BytesAsString(byte[] bytes) {
+            char[] chars = new char[bytes.Length / sizeof(char)];
+            System.Buffer.BlockCopy(bytes, 0, chars, 0, bytes.Length);
+            return new string(chars);
+        }
+
+        public static String ToBase64String(String data) {
+            return Convert.ToBase64String(GetStringBytes(data));
+        }
+
+        public static String FromBase64String(String base64) {
+            return BytesAsString(Convert.FromBase64String(base64));
+        }
+
         public static String RemoveAll(String source, params char[] chars) {
             var sb = new StringBuilder();
             var list = new List<char>(chars);
