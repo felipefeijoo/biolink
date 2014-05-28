@@ -31,8 +31,8 @@
                         <RowDefinition Height="*" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <Button Content="Remove" Height="22" />
-                    <Button Grid.Row="1" Content="Options" Height="22" />
+                    <Button Content="Remove" Height="22" Name="btnRemove" Click="btnRemove_Click" />
+                    <Button Grid.Row="1" Content="Options" Height="22" Name="btnShowOptions" />
 
                 </Grid>
 

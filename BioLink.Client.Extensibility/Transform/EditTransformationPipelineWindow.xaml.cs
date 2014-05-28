@@ -27,15 +27,17 @@ namespace BioLink.Client.Extensibility {
 
         public EditTransformationPipelineWindow(TransformationPipline transform) {
             InitializeComponent();
-            this.TransformationPipeline = transform;
+            // We need to take a copy so that we can cancel out without making any changes...
+            Pipeline = TransformationPipline.BuildFromState(transform.GetState());
+            
             RedrawPipeline();
         }
 
         private void RedrawPipeline() {
             transformersPanel.Children.Clear();
             transformersPanel.Children.Add(new TransformationPiplineStartControl());
-            if (TransformationPipeline != null) {
-                foreach (IValueTransformer t in TransformationPipeline.Transformers) {
+            if (Pipeline != null) {
+                foreach (IValueTransformer t in Pipeline.Transformers) {
                     var tt = new ValueTransformerControl(t);
                     transformersPanel.Children.Add(tt);
                 }
@@ -44,7 +46,7 @@ namespace BioLink.Client.Extensibility {
         }
 
 
-        public TransformationPipline TransformationPipeline { get; private set; }
+        public TransformationPipline Pipeline { get; private set; }
 
         public User User {
             get { return PluginManager.Instance.User; }
@@ -59,7 +61,7 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void btnAddTransform_Click(object sender, RoutedEventArgs e) {
-            this.TransformationPipeline.AddTransformer(new UpperCaseTransformer());
+            this.Pipeline.AddTransformer(new UpperCaseTransformer());
             RedrawPipeline();
         }
 

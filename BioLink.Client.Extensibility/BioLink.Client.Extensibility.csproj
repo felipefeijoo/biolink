@@ -367,6 +367,7 @@
     <Compile Include="Transform\TransformationPiplineStartControl.xaml.cs">
       <DependentUpon>TransformationPiplineStartControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Transform\TransformFactory.cs" />
     <Compile Include="Transform\UpperCaseTransformer.cs" />
     <Compile Include="Transform\ValueTransformerControl.xaml.cs">
       <DependentUpon>ValueTransformerControl.xaml</DependentUpon>

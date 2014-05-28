@@ -7,6 +7,10 @@ namespace BioLink.Client.Extensibility {
 
     public class UpperCaseTransformer : IValueTransformer {
 
+        public string Key {
+            get { return "toUpperCase"; }
+        }
+
         public string Name {
             get { return "Convert to uppercase"; }
         }
@@ -22,5 +26,23 @@ namespace BioLink.Client.Extensibility {
             return value;
         }
 
+        public bool HasOptions {
+            get { return false; }
+        }
+
+        public void ShowOptions() {
+            throw new NotImplementedException();
+        }
+
+        public object GetConfiguration() {
+            return new UpperCaseTransformerConfig { };
+        }
+
+        public void RestoreFromConfiguration(object config) {
+            var c = config as UpperCaseTransformerConfig;
+        }
+    }
+
+    public class UpperCaseTransformerConfig {        
     }
 }
