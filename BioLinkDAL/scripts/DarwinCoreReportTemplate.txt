@@ -1,5 +1,4 @@
-﻿SELECT 
-	tblMaterial.intMaterialID as recordNumber,
+﻿SELECT 	
 	CONVERT(datetime, GETDATE(),126) AS modified,
 	'{InstitutionCode}' AS institutionCode, 
 	'{CollectionCode}' AS collectionCode, 

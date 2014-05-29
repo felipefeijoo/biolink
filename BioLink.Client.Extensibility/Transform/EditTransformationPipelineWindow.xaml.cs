@@ -20,6 +20,7 @@ namespace BioLink.Client.Extensibility {
     /// Interaction logic for EditTransformationPipeline.xaml
     /// </summary>
     public partial class EditTransformationPipelineWindow : Window {
+        
 
         public EditTransformationPipelineWindow() {
             InitializeComponent();
@@ -34,15 +35,76 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void RedrawPipeline() {
+            String testValue = "";
+
+            if (InputPanel != null) {
+                testValue = InputPanel.txtTestValue.Text;
+            }
+
             transformersPanel.Children.Clear();
-            transformersPanel.Children.Add(new TransformationPiplineStartControl());
+            InputPanel = new TransformationPiplineStartControl();
+            InputPanel.txtTestValue.Text = testValue;
+            InputPanel.TestClicked += new RoutedEventHandler(start_TestClicked);
+            transformersPanel.Children.Add(InputPanel);
+            ControlPipeline = new List<ValueTransformerControl>();
             if (Pipeline != null) {
-                foreach (IValueTransformer t in Pipeline.Transformers) {
+                foreach (ValueTransformer t in Pipeline.Transformers) {
                     var tt = new ValueTransformerControl(t);
                     transformersPanel.Children.Add(tt);
+                    tt.RemoveClicked += new RoutedEventHandler(tt_RemoveClicked);
+                    tt.MoveUpClicked += new RoutedEventHandler(tt_MoveUpClicked);
+                    tt.MoveDownClicked += new RoutedEventHandler(tt_MoveDownClicked);
+                    ControlPipeline.Add(tt);
                 }
             }
-            transformersPanel.Children.Add(new TransformationPipelineOutputControl());
+            this.OutputPanel = new TransformationPipelineOutputControl();
+            transformersPanel.Children.Add(OutputPanel);
+
+            if (!String.IsNullOrEmpty(testValue)) {
+                TestPipeline(testValue);
+            }
+        }
+
+        protected TransformationPiplineStartControl InputPanel { get; private set; }
+        protected TransformationPipelineOutputControl OutputPanel { get; private set; }
+        protected List<ValueTransformerControl> ControlPipeline { get; private set; }
+
+        void start_TestClicked(object sender, RoutedEventArgs e) {
+            var start = sender as TransformationPiplineStartControl;
+            if (start != null) {
+                TestPipeline(start.TestValue);
+            }            
+        }
+
+        private void TestPipeline(String testValue) {            
+            foreach (ValueTransformerControl ctl in ControlPipeline) {
+                testValue = ctl.Test(testValue);
+            }
+            OutputPanel.lblOutput.Content = testValue;
+        }
+
+        void tt_MoveDownClicked(object sender, RoutedEventArgs e) {
+            var ctl = sender as ValueTransformerControl;
+            if (ctl != null) {
+                Pipeline.MoveTransformerDown(ctl.ValueTransformer);
+                RedrawPipeline();
+            }
+        }
+
+        void tt_MoveUpClicked(object sender, RoutedEventArgs e) {
+            var ctl = sender as ValueTransformerControl;
+            if (ctl != null) {
+                Pipeline.MoveTransformerUp(ctl.ValueTransformer);
+                RedrawPipeline();
+            }
+        }
+
+        void tt_RemoveClicked(object sender, RoutedEventArgs e) {
+            var ctl = sender as ValueTransformerControl;
+            if (ctl != null) {
+                Pipeline.RemoveTransformer(ctl.ValueTransformer);
+                RedrawPipeline();
+            }
         }
 
 
@@ -53,15 +115,26 @@ namespace BioLink.Client.Extensibility {
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e) {
-
+            this.Hide();
         }
 
         private void btnOK_Click(object sender, RoutedEventArgs e) {
-
+            this.DialogResult = true;
         }
 
         private void btnAddTransform_Click(object sender, RoutedEventArgs e) {
-            this.Pipeline.AddTransformer(new UpperCaseTransformer());
+            var frm = new SelectTransformWindow();
+            frm.Owner = this;
+            frm.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
+            if (frm.ShowDialog().GetValueOrDefault()) {
+                if (frm.SelectedValueTransformerKey != null) {
+                    var transform = TransformFactory.CreateTransform(frm.SelectedValueTransformerKey, null);
+                    if (transform != null) {
+                        this.Pipeline.AddTransformer(transform);
+                    }
+                }
+            }
+            
             RedrawPipeline();
         }
 

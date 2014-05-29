@@ -9,31 +9,57 @@ namespace BioLink.Client.Extensibility {
 
     public class TransformationPipline {
 
-        private List<IValueTransformer> _pipeline = new List<IValueTransformer>();
+        private List<ValueTransformer> _pipeline = new List<ValueTransformer>();
 
         public TransformationPipline() {
         }
 
         public String transform(String value, IRowSource row) {
             String transformed = value;
-            foreach (IValueTransformer t in _pipeline) {
+            foreach (ValueTransformer t in _pipeline) {
                 transformed = t.Transform(transformed, row);
             }
             return transformed;
         }
 
-        public void AddTransformer(IValueTransformer transform) {
+        public void AddTransformer(ValueTransformer transform) {
             _pipeline.Add(transform);
         }
 
-        public List<IValueTransformer> Transformers {
+        public void RemoveTransformer(ValueTransformer transform) {
+            if (_pipeline.Contains(transform)) {
+                _pipeline.Remove(transform);
+            }
+        }
+
+        public void MoveTransformerUp(ValueTransformer transform) {
+            if (_pipeline.Contains(transform)) {
+                var index = _pipeline.IndexOf(transform);
+                if (index > 0) {
+                    _pipeline.Remove(transform);
+                    _pipeline.Insert(index - 1, transform);
+                }
+            }
+        }
+
+        public void MoveTransformerDown(ValueTransformer transform) {
+            if (_pipeline.Contains(transform)) {
+                var index = _pipeline.IndexOf(transform);
+                if (index < _pipeline.Count - 1) {
+                    _pipeline.Remove(transform);
+                    _pipeline.Insert(index + 1, transform);
+                }
+            }
+        }
+
+        public List<ValueTransformer> Transformers {
             get { return _pipeline; }
         }
 
 
         public override String ToString() {            
             List<String> l = new List<String>();            
-            foreach (IValueTransformer t in _pipeline) {
+            foreach (ValueTransformer t in _pipeline) {
                 l.Add(t.Name);                
             }
             return l.Join(" → ");
@@ -41,7 +67,7 @@ namespace BioLink.Client.Extensibility {
 
         public String GetState() {
             var state = new List<Dictionary<String, object>>();
-            foreach (IValueTransformer t in _pipeline) {
+            foreach (ValueTransformer t in _pipeline) {
                 var config = t.GetConfiguration();
                 var entry = new Dictionary<String, object>();
                 entry.Add("key", t.Key);
