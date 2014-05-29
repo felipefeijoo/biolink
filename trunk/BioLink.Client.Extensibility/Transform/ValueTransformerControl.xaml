@@ -13,20 +13,34 @@
         <Border BorderThickness="4" CornerRadius="10" BorderBrush="DarkGray">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="80" />                    
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="100" />                
-                </Grid.ColumnDefinitions>        
+                    <ColumnDefinition Width="80" />                
+                </Grid.ColumnDefinitions>
                 <Grid Grid.Column="0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <Label VerticalAlignment="top" Foreground="DarkGray"> Input: xxxx</Label>
-                    <Label Grid.Row="1" VerticalAlignment="Bottom" Foreground="DarkGray">Output: xxxx</Label>
+                    <Button Name="btnMoveUp" Margin="10 3 3 3" Click="btnMoveUp_Click" Width="24" HorizontalAlignment="Left">
+                        <Image Source="../images/UpArrowSmall.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" />
+                    </Button>
+                    <Button Grid.Row="1" Name="btnMoveDown" Click="btnMoveDown_Click" Margin="10 3 3 3" Width="24" HorizontalAlignment="Left">
+                        <Image Source="../images/DownArrowSmall.png" Stretch="None" SnapsToDevicePixels="True" UseLayoutRounding="True" />
+                    </Button>
+
                 </Grid>
-                <Label Grid.Column="1" Content="{Binding Name}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" FontWeight="Bold" />
-                <Grid Grid.Column="2" Margin="5">
+
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Column="2" Content="{Binding Name}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14" FontWeight="Bold" />                    
+                    <Label Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="DarkGray" Name="lblOutput"></Label>
+                </Grid>
+                
+                <Grid Grid.Column="3" Margin="5">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
                         <RowDefinition Height="*" />

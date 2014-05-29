@@ -20,5 +20,17 @@ namespace BioLink.Client.Extensibility {
         public TransformationPiplineStartControl() {
             InitializeComponent();
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e) {
+            if (this.TestClicked != null) {
+                TestClicked(this, e);
+            }
+        }
+
+        public String TestValue {
+            get { return txtTestValue.Text; }
+        }
+
+        public event RoutedEventHandler TestClicked;
     }
 }

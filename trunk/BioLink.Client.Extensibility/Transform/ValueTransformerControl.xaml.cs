@@ -22,7 +22,7 @@ namespace BioLink.Client.Extensibility {
             InitializeComponent();            
         }
 
-        public ValueTransformerControl(IValueTransformer transformer) {
+        public ValueTransformerControl(ValueTransformer transformer) {
             InitializeComponent();
             this.ValueTransformer = transformer;
             this.DataContext = transformer;
@@ -31,15 +31,37 @@ namespace BioLink.Client.Extensibility {
             }
         }
 
-        public IValueTransformer ValueTransformer { get; private set; }
-    
-        public event RoutedEventHandler RemoveClicked;
+        public ValueTransformer ValueTransformer { get; private set; }
 
         private void btnRemove_Click(object sender, RoutedEventArgs e) {
             if (this.RemoveClicked != null) {
                 RemoveClicked(this, e);
             }
         }
+
+        private void btnMoveDown_Click(object sender, RoutedEventArgs e) {
+            if (this.MoveDownClicked != null) {
+                MoveDownClicked(this, e);
+            }
+        }
+
+        private void btnMoveUp_Click(object sender, RoutedEventArgs e) {
+            if (this.MoveUpClicked != null) {
+                MoveUpClicked(this, e);
+            }
+        }
+
+        public String Test(String testValue) {
+            var output = ValueTransformer.Transform(testValue, null);
+            lblOutput.Content = output;
+            return output;
+        }
+
+        public event RoutedEventHandler RemoveClicked;
+
+        public event RoutedEventHandler MoveUpClicked;
+
+        public event RoutedEventHandler MoveDownClicked;
 
     }
 }

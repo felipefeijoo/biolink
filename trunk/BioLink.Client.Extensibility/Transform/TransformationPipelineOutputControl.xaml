@@ -4,12 +4,27 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             Height="70" d:DesignWidth="600">    
+             Height="90" d:DesignWidth="600">    
     <Border Margin="10 0 10 10" BorderThickness="5" BorderBrush="DarkGray">
         <Grid>
-            <Label HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" FontWeight="Bold">
-                Output value
-            </Label>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="80"/>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="80"/>                
+            </Grid.ColumnDefinitions>
+            
+            <Label Foreground="LightGray" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20">End</Label>
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+            
+                <Label Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14" FontWeight="Bold">
+                    Output value
+                </Label>
+                <Label Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Name="lblOutput">Output Value</Label>
+            </Grid>                
         </Grid>
     </Border>
 </UserControl>

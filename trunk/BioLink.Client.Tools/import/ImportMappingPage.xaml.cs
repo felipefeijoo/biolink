@@ -359,7 +359,9 @@ namespace BioLink.Client.Tools {
                 var frm = new EditTransformationPipelineWindow(selected.Transformer);
                 frm.Owner = this.FindParentWindow();
                 frm.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                frm.ShowDialog();
+                if (frm.ShowDialog().GetValueOrDefault()) {
+                    selected.Transformer = frm.Pipeline;
+                }
                 selected.RefreshTransformer();
             }
         }

@@ -360,6 +360,10 @@
       <DependentUpon>EditTransformationPipelineWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Transform\IValueTransformer.cs" />
+    <Compile Include="Transform\LowerCaseTransformer.cs" />
+    <Compile Include="Transform\SelectTransformWindow.xaml.cs">
+      <DependentUpon>SelectTransformWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Transform\TransformationPipelineOutputControl.xaml.cs">
       <DependentUpon>TransformationPipelineOutputControl.xaml</DependentUpon>
     </Compile>
@@ -393,6 +397,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Transform\EditTransformationPipelineWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Transform\SelectTransformWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
