@@ -1,0 +1,34 @@
+﻿<Window x:Class="BioLink.Client.Extensibility.ParseDateTransformerOptionsWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             Height="301" Width="459" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="36" />
+        </Grid.RowDefinitions>
+        <Label Content="Input date format:" Height="28" HorizontalAlignment="Left" Margin="28,30,0,0" Name="label1" VerticalAlignment="Top" Width="121" />
+        <TextBox Height="23" Margin="155,32,0,0" Name="txtFormat" VerticalAlignment="Top" HorizontalAlignment="Left" Width="158" />
+        <TextBlock Height="21" Margin="28,102,38,0" Name="label2" VerticalAlignment="Top" TextWrapping="Wrap" FontWeight="Bold" Text="Where:" />
+        
+        <TextBlock Margin="63,120,0,0" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" Width="105" Text="d,dd" FontStyle="Normal" FontFamily="Courier New" />
+        <TextBlock Height="23" Margin="0,120,12,0" Name="textBlock1" Text="Day of the month" VerticalAlignment="Top" HorizontalAlignment="Right" Width="244" />
+        
+        <TextBlock FontFamily="Courier New" FontStyle="Normal" Height="18" HorizontalAlignment="Left" Margin="63,143,0,0" Text="M,MM" VerticalAlignment="Top" Width="105" />
+        <TextBlock Height="23" Margin="174,143,12,0" Name="textBlock2" Text="Month number" VerticalAlignment="Top" />
+        <TextBlock FontFamily="Courier New" FontStyle="Normal" Height="18" Margin="63,188,0,0" Text="yy,yyyy" VerticalAlignment="Top" HorizontalAlignment="Left" Width="105" />
+        <TextBlock Height="23" Margin="174,188,12,0" Name="textBlock3" Text="Year" VerticalAlignment="Top" />
+        <TextBlock FontFamily="Courier New" FontStyle="Normal" Height="18" HorizontalAlignment="Left" Margin="63,164,0,0" Text="MMM,MMMM" VerticalAlignment="Top" Width="105" />
+        <TextBlock Height="23" Margin="0,164,12,0" Name="textBlock4" Text="Month name" VerticalAlignment="Top" HorizontalAlignment="Right" Width="244" />
+
+        <Grid Grid.Row="1" Background="{x:Static SystemColors.ControlBrush}">
+            <Button Content="_Cancel" Height="23" HorizontalAlignment="Right" Margin="0,7,6,0" Name="btnCancel" VerticalAlignment="Top" Width="75" IsCancel="True" Click="btnCancel_Click" />
+            <Button Content="_OK" Height="23" HorizontalAlignment="Right" Margin="0,7,87,0" Name="btnOK" VerticalAlignment="Top" Width="75" IsDefault="True" Click="btnOK_Click" />
+
+        </Grid>
+        <CheckBox Content="Try to automatically detect date format" Height="27" Margin="155,69,38,0" Name="chkGuess" VerticalAlignment="Top" />
+    </Grid>
+</Window>

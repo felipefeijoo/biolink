@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows;
 
 namespace BioLink.Client.Extensibility {
 
@@ -30,7 +31,7 @@ namespace BioLink.Client.Extensibility {
             get { return false; }
         }
 
-        public override void ShowOptions() {
+        public override void ShowOptions(Window options) {
             throw new NotImplementedException();
         }
 

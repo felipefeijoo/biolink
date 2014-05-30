@@ -16,9 +16,9 @@
         <ListBox Grid.Row="1" Name="listBox" MouseDoubleClick="listBox_MouseDoubleClick">
             <ListBox.Resources>
                 <DataTemplate DataType="{x:Type src:ValueTransformer}">
-                    <StackPanel Orientation="Horizontal">                        
-                        <TextBlock Text="{Binding Path=Name}" VerticalAlignment="Center" Width="200"/>
-                        <TextBlock Text="{Binding Path=Description}" VerticalAlignment="Center" />
+                    <StackPanel Orientation="Horizontal" Height="24"> 
+                        <TextBlock Text="{Binding Path=Name}" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" Width="200"/>
+                        <TextBlock Text="{Binding Path=Description}" VerticalAlignment="Center" TextWrapping="Wrap"/>
                     </StackPanel>
                 </DataTemplate>
             </ListBox.Resources>

@@ -54,6 +54,7 @@ namespace BioLink.Client.Extensibility {
                     tt.RemoveClicked += new RoutedEventHandler(tt_RemoveClicked);
                     tt.MoveUpClicked += new RoutedEventHandler(tt_MoveUpClicked);
                     tt.MoveDownClicked += new RoutedEventHandler(tt_MoveDownClicked);
+                    tt.OptionsClicked += new RoutedEventHandler(tt_OptionsClicked);
                     ControlPipeline.Add(tt);
                 }
             }
@@ -63,6 +64,17 @@ namespace BioLink.Client.Extensibility {
             if (!String.IsNullOrEmpty(testValue)) {
                 TestPipeline(testValue);
             }
+        }
+
+        void tt_OptionsClicked(object sender, RoutedEventArgs e) {
+            var ctl = sender as ValueTransformerControl;
+            if (ctl != null) {
+                if (ctl.ValueTransformer.HasOptions) {
+                    ctl.ValueTransformer.ShowOptions(this);
+                    RedrawPipeline();
+                }                
+            }
+
         }
 
         protected TransformationPiplineStartControl InputPanel { get; private set; }

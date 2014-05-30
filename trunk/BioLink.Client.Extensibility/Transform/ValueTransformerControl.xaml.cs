@@ -63,5 +63,13 @@ namespace BioLink.Client.Extensibility {
 
         public event RoutedEventHandler MoveDownClicked;
 
+        public event RoutedEventHandler OptionsClicked;
+
+        private void btnShowOptions_Click(object sender, RoutedEventArgs e) {
+            if (this.OptionsClicked != null) {
+                OptionsClicked(this, e);
+            }
+        }
+
     }
 }
