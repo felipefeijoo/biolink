@@ -39,7 +39,7 @@
 	tblSite.intSiteID as [HIDDEN_SiteID]
 FROM tblBiota 
 	INNER JOIN tblMaterial ON tblBiota.intBiotaID = tblMaterial.intBiotaID 
-	INNER JOIN tblMaterialPart ON tblMaterial.intMaterialID = tblMaterialPart.intMaterialID
+	LEFT OUTER JOIN tblMaterialPart ON tblMaterial.intMaterialID = tblMaterialPart.intMaterialID
 	INNER JOIN tblSiteVisit ON tblMaterial.intSiteVisitID = tblSiteVisit.intSiteVisitID 
 	INNER JOIN tblSite ON tblSiteVisit.intSiteID = tblSite.intSiteID 
 	LEFT OUTER JOIN tblPoliticalRegion ON tblSite.intPoliticalRegionID = tblPoliticalRegion.intPoliticalRegionID

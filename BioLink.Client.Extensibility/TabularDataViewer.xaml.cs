@@ -137,7 +137,7 @@ namespace BioLink.Client.Extensibility {
                     }
                 }
 
-                AddMapItems(builder, "Lat,Long", "Latitude,Longitude", "Y,X", "Y1,X1");
+                AddMapItems(builder, "Lat,Long", "Latitude,Longitude", "Y,X", "Y1,X1", "decimalLatitude,decimalLongitude");
                 AddMaterialItems(builder, "materialID", "intMaterialID");
 
                 if (builder.ContextMenu.HasItems) {

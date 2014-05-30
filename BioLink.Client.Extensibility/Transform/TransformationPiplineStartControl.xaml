@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             Height="100" d:DesignWidth="600">
+             Height="110" d:DesignWidth="600">
     <Grid Margin="10 10 10 0">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -29,8 +29,8 @@
                         </Label>
                         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
                             <Label>Test value:</Label>
-                            <TextBox Name="txtTestValue" Width="100" Height="20" />
-                            <Button Height="20" Width="50" Margin="3 0 0 0" Click="Button_Click">Test</Button>
+                            <TextBox Name="txtTestValue" Width="100" Height="23" />
+                            <Button Height="23" Width="50" Margin="3 0 0 0" Click="Button_Click">Test</Button>
                         </StackPanel>
 
                     </Grid>

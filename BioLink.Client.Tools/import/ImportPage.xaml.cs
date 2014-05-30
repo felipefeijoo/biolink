@@ -72,8 +72,10 @@ namespace BioLink.Client.Tools {
                     ep.AddParameter("Mapping", mapping.TargetColumn);
                     ep.AddParameter("Default", mapping.DefaultValue);
                     ep.AddParameter("IsFixed", mapping.IsFixed.ToString());
+                    inifile.SetValue("Mappings", string.Format("Field{0}", i), ep.ToString());
 
-                    inifile.SetValue("Mappings", string.Format("Field{0}", i++), ep.ToString());
+                    inifile.SetValue("Transformations", string.Format("Field{0}", i), mapping.Transformer == null ? "" : mapping.Transformer.GetState());
+                    ++i;
                 }
 
                 inifile.Save(dlg.FileName);

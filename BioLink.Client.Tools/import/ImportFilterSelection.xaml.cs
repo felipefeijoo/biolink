@@ -122,12 +122,20 @@ namespace BioLink.Client.Tools {
                 // Now the mappings...
                 var colCount = inifile.GetInt("Import", "FieldCount");
                 for (int i = 0; i < colCount; ++i) {
-                    var mapStr = inifile.GetValue("Mappings", string.Format("Field{0}", i));
+                    String fieldKey = string.Format("Field{0}", i);
+                    var mapStr = inifile.GetValue("Mappings", fieldKey);
                     if (!string.IsNullOrWhiteSpace(mapStr)) {
                         var mapEp = EntryPoint.Parse(mapStr);
                         var mapping = new ImportFieldMapping { SourceColumn = mapEp.Name, TargetColumn = mapEp["Mapping"], DefaultValue = mapEp["Default", null], IsFixed = Boolean.Parse(mapEp["IsFixed", "false"]) };
                         mappings.Add(mapping);
+
+                        var transformStr = inifile.GetValue("Transformations", fieldKey);
+                        if (!string.IsNullOrWhiteSpace(transformStr)) {
+                            mapping.Transformer = TransformationPipline.BuildFromState(transformStr);
+                        }
+
                     }
+
                 }
                 ImportContext.FieldMappings = mappings;
 

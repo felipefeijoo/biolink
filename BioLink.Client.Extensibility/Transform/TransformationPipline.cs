@@ -60,7 +60,7 @@ namespace BioLink.Client.Extensibility {
         public override String ToString() {            
             List<String> l = new List<String>();            
             foreach (ValueTransformer t in _pipeline) {
-                l.Add(t.Name);                
+                l.Add(t.DisplayString);                
             }
             return l.Join(" → ");
         }

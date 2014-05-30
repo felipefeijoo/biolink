@@ -361,6 +361,10 @@
     </Compile>
     <Compile Include="Transform\IValueTransformer.cs" />
     <Compile Include="Transform\LowerCaseTransformer.cs" />
+    <Compile Include="Transform\ParseDateTransformer.cs" />
+    <Compile Include="Transform\ParseDateTransformerOptionsWindow.xaml.cs">
+      <DependentUpon>ParseDateTransformerOptionsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Transform\SelectTransformWindow.xaml.cs">
       <DependentUpon>SelectTransformWindow.xaml</DependentUpon>
     </Compile>
@@ -397,6 +401,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Transform\EditTransformationPipelineWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Transform\ParseDateTransformerOptionsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

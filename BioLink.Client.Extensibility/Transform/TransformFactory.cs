@@ -15,6 +15,7 @@ namespace BioLink.Client.Extensibility {
             // Register all the diffrent types of transformers
             register(new UpperCaseTransformer());
             register(new LowerCaseTransformer());
+            register(new ParseDateTransformer());
         }
 
         static void register(ValueTransformer prototype) {
