@@ -13,9 +13,14 @@ namespace BioLink.Client.Extensibility {
         static TransformFactory() {
             _registry = new Dictionary<string, ValueTransformer>();
             // Register all the diffrent types of transformers
-            register(new UpperCaseTransformer());
-            register(new LowerCaseTransformer());
-            register(new ParseDateTransformer());
+            var transformers = PluginManager.Instance.GetExtensionsOfType<ValueTransformer>();
+            transformers.ForEach(t => {
+                register(t);
+            });
+            
+            //register(new UpperCaseTransformer());
+            //register(new LowerCaseTransformer());
+            //register(new ParseDateTransformer());
         }
 
         static void register(ValueTransformer prototype) {

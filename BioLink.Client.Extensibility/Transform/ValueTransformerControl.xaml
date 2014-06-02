@@ -36,8 +36,8 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <Label Grid.Column="2" Content="{Binding DisplayString}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14" FontWeight="Bold" />                    
-                    <Label Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="DarkGray" Name="lblOutput"></Label>
+                    <TextBlock Grid.Column="2" Text="{Binding DisplayString}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14" FontWeight="Bold" />                    
+                    <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="DarkGray" Name="lblOutput"/>
                 </Grid>
                 
                 <Grid Grid.Column="3" Margin="5">

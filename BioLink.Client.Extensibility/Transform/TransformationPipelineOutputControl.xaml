@@ -23,7 +23,7 @@
                 <Label Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14" FontWeight="Bold">
                     Output value
                 </Label>
-                <Label Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Name="lblOutput">Output Value</Label>
+                <TextBlock Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Name="lblOutput">Output Value</TextBlock>
             </Grid>                
         </Grid>
     </Border>

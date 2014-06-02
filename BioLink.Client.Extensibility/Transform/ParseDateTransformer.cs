@@ -8,13 +8,13 @@ using BioLink.Client.Utilities;
 
 namespace BioLink.Client.Extensibility {
 
-    class ParseDateTransformer : ValueTransformer {
+    public class ParseDateTransformer : ValueTransformer {
 
         public ParseDateTransformer() {
-            Options = new ParseDateTransformerOptions { InputFormat = "yyyy-MM-dd", AutoDetectFormat = true };
+            Options = new ParseDateTransformerConfig { InputFormat = "yyyy-MM-dd", AutoDetectFormat = true };
         }
 
-        protected ParseDateTransformerOptions Options { get; set; }
+        protected ParseDateTransformerConfig Options { get; set; }
 
         public override string Key {
             get { return "toBLDate"; }
@@ -86,12 +86,12 @@ namespace BioLink.Client.Extensibility {
         }
 
         public override void RestoreFromConfiguration(object config) {
-            Options = config as ParseDateTransformerOptions;
+            Options = config as ParseDateTransformerConfig;
         }
 
     }
 
-    public class ParseDateTransformerOptions {
+    public class ParseDateTransformerConfig {
         public String InputFormat { get; set; }
         public bool AutoDetectFormat { get; set; }
     }

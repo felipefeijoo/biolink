@@ -7,7 +7,7 @@ using System.Windows;
 
 namespace BioLink.Client.Extensibility {
 
-    public abstract class ValueTransformer {
+    public abstract class ValueTransformer : IBioLinkExtension {
         public abstract String Key { get; }
         public abstract String Name { get; }
         public abstract String Description { get; }
@@ -20,6 +20,10 @@ namespace BioLink.Client.Extensibility {
         public virtual String DisplayString {
             get { return Name; }
         }
+
+        public virtual void Dispose() {
+        }
+
     }
 
 }

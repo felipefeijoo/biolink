@@ -92,7 +92,7 @@ namespace BioLink.Client.Extensibility {
             foreach (ValueTransformerControl ctl in ControlPipeline) {
                 testValue = ctl.Test(testValue);
             }
-            OutputPanel.lblOutput.Content = testValue;
+            OutputPanel.lblOutput.Text = testValue;
         }
 
         void tt_MoveDownClicked(object sender, RoutedEventArgs e) {

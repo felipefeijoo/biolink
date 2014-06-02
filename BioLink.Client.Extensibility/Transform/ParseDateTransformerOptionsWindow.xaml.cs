@@ -22,7 +22,7 @@ namespace BioLink.Client.Extensibility {
             InitializeComponent();
         }
 
-        public ParseDateTransformerOptionsWindow(ParseDateTransformerOptions options) {
+        public ParseDateTransformerOptionsWindow(ParseDateTransformerConfig options) {
             InitializeComponent();
             txtFormat.Text = options.InputFormat;
             chkGuess.IsChecked = options.AutoDetectFormat;

@@ -365,6 +365,10 @@
     <Compile Include="Transform\ParseDateTransformerOptionsWindow.xaml.cs">
       <DependentUpon>ParseDateTransformerOptionsWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Transform\RegExCaptureTransformer.cs" />
+    <Compile Include="Transform\RegExCaptureTransformerOptionsWindow.xaml.cs">
+      <DependentUpon>RegExCaptureTransformerOptionsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Transform\SelectTransformWindow.xaml.cs">
       <DependentUpon>SelectTransformWindow.xaml</DependentUpon>
     </Compile>
@@ -405,6 +409,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Transform\ParseDateTransformerOptionsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Transform\RegExCaptureTransformerOptionsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
