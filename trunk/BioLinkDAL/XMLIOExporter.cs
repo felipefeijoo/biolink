@@ -675,12 +675,16 @@ namespace BioLink.Data {
                 }
 
                 var XMLUnplaced = _xmlDoc.UnplacedTaxaRoot;
-                foreach (KeyValuePair<string, int> kvp in _unplacedTaxon) {
+                // Do in a while loop as the AddTaxonElement can add new elements to unplaced
+                while (_unplacedTaxon.Count > 0) {
+                    var kvp = _unplacedTaxon.First();
                     var lngTaxonID = kvp.Value;
                     var strGUID = kvp.Key;
                     // Do not add material for unplaced items...
                     var taxon = TaxaService.GetTaxon(lngTaxonID);
                     AddTaxonElement(XMLUnplaced, taxon, false, false);
+                    // Need to remove from the list.
+                    _unplacedTaxon.Remove(kvp.Key);
                 }
             }
         }

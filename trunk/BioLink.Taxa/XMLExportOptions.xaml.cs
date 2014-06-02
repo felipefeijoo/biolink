@@ -52,7 +52,8 @@ namespace BioLink.Client.Taxa {
                     if (taxon != null) {
                         var f = new FileInfo(lastFile);
                         var directory = f.DirectoryName;
-                        txtFilename.Text = System.IO.Path.Combine(f.DirectoryName, SystemUtils.StripIllegalFilenameChars(taxon.TaxaFullName) + ".xml");
+                        var taxaName = taxon.TaxaFullName == null ? "Unnamed" : taxon.TaxaFullName;
+                        txtFilename.Text = System.IO.Path.Combine(f.DirectoryName, SystemUtils.StripIllegalFilenameChars(taxaName) + ".xml");
                     }
                 } else {
                     txtFilename.Text = lastFile;
