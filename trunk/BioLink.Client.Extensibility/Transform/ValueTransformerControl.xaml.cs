@@ -53,7 +53,7 @@ namespace BioLink.Client.Extensibility {
 
         public String Test(String testValue) {
             var output = ValueTransformer.Transform(testValue, null);
-            lblOutput.Content = output;
+            lblOutput.Text = output;
             return output;
         }
 
