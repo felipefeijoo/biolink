@@ -3,6 +3,23 @@
 
 = Release Notes =
 
+== !BioLink Version 3.0.615 ==
+
+This is build 615 of BioLink version 3.  It addresses issues raised since build 591 and adds several new features
+
+=== New Features ===
+
+ * New Darwin Core report for taxa and material result sets
+ * New Darwin Core Archive exporter (only available for darwin core reports)
+ * Importer now has the ability to perform a chain of (limited) data transformations during the import. These are editable on the field mapping page of the import wizard
+ * Auto-synonymy - when merging two taxa an option is now available to automatically make the merge source an available name of the target
+
+=== Issues Addressed in this release ===
+
+ * Issue 210	Darwin Core Report for taxa (and maybe a material result set in the query tool)	 
+ * Issue 219	Requested Enhancement to Import: xlsx	 
+ * Issue 220	Error during XML Export
+
 == !BioLink Version 3.0.591 ==
 
 This is build 591 of BioLink version 3.  It addresses issues raised since build 582
