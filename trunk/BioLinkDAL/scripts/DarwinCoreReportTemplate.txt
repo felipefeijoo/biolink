@@ -1,7 +1,4 @@
-﻿SELECT 	
-	CONVERT(datetime, GETDATE(),126) AS modified,
-	'{InstitutionCode}' AS institutionCode, 
-	'{CollectionCode}' AS collectionCode, 
+﻿SELECT 		
 	tblMaterial.vchrAccessionNo AS catalogNumber, 
 	tblBiota.vchrFullName AS scientificName, 
 	'PreservedSpecimen' AS basisOfRecord,

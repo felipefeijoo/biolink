@@ -6,6 +6,7 @@ using BioLink.Client.Utilities;
 using BioLink.Data;
 using Ionic.Zip;
 using System.IO;
+using System.Xml.Linq;
 
 namespace BioLink.Client.Extensibility {
 
@@ -51,30 +52,54 @@ namespace BioLink.Client.Extensibility {
 
             var columnNames = new List<String>();
 
+            matrix.Columns.ForEach(col => {
+                if (!col.IsHidden) {
+                    columnNames.Add(col.Name);
+                }
+            });
+
             datasetName = SystemUtils.StripIllegalFilenameChars(datasetName);
 
             using (ZipFile archive = new ZipFile(opts.Filename)) {
-
-                
 
                 archive.AddEntry(String.Format("{0}\\occurrence.txt", datasetName), (String name, Stream stream) => {
                     ExportToCSV(matrix, stream, opts, true);
                 });
 
-
-                //archive.AddEntry(String.Format("{0}\\meta.xml", datasetName), (String name, Stream stream) => {
-                //    WriteMetaXml(stream, opts, columnNames);
-                //});
+                archive.AddEntry(String.Format("{0}\\meta.xml", datasetName), (String name, Stream stream) => {
+                    WriteMetaXml(stream, opts, columnNames);
+                });
 
                 archive.Save();
             }
         }
 
         private void WriteMetaXml(Stream stream, DarwinCoreExporterOptions options, List<String> columnNames) {
+
+            // new XAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance"), new XAttribute("xsi:schemaLocation", "http://rs.tdwg.org/dwc/text/   http://rs.tdwg.org/dwc/text/tdwg_dwc_text.xsd")
+
+            XNamespace ns = @"http://rs.tdwg.org/dwc/text/";
+
+            var core = new XElement(ns + "core", new XAttribute("encoding", "UTF-8"), new XAttribute("fieldsTerminatedBy", ","), new XAttribute("linesTerminatedBy", "\r\n"), new XAttribute("fieldsEnclosedBy", "\""), new XAttribute("ignoreHeaderLines", "1"), new XAttribute("rowType", "http://rs.tdwg.org/dwc/terms/Occurrence"));
+                
+            var xml = new XDocument(new XDeclaration("1.0", "utf-8", "yes"),
+                new XElement(ns + "archive", new XAttribute("xmlns", ns), core)
+            );
+
+            var idIndex = columnNames.IndexOf("catalogNumber");
+
+            core.Add(
+                new XElement(ns + "files", new XElement(ns + "location", new XText("occurrence.txt"))),
+                new XElement(ns + "id", new XAttribute("index", String.Format("{0}", idIndex)))
+            );
+
+            for (int i = 0; i < columnNames.Count; ++i) {
+                var columnName = columnNames[i];
+                core.Add(new XElement( ns + "field", new XAttribute("index", i.ToString()), new XAttribute("term", String.Format("http://rs.tdwg.org/dwc/terms/{0}", columnName))));
+            }
+
             using (var writer = new StreamWriter(stream)) {
-                writer.WriteLine("<?xml version=\"1.0\"?>");
-                writer.WriteLine("<archive xmlsn=\"http://rs.tdwg.org/dwc/text/\" metadata=\"eml.xml\">");
-                writer.WriteLine("</archive>");
+                writer.Write(xml.ToString());
             }
         }
 
