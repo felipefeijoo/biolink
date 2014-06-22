@@ -3,7 +3,7 @@
 
 = Getting started with !BioLink 3.0 =
 
-The latest published build of !BioLink 3.0 can be downloaded from [http://downloads.ala.com/p/biolink here].
+The latest published build of !BioLink 3.0 can be downloaded from [http://downloads.ala.org.au/p/biolink here].
 
 [ReleaseNotes Release Notes]
 
