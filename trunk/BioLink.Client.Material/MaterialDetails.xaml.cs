@@ -101,6 +101,12 @@ namespace BioLink.Client.Material {
 
         public override bool Validate(List<string> messages) {
 
+            if (Preferences.AccessionNumberIsMandatory.Value) {
+                if (string.IsNullOrWhiteSpace(_viewModel.AccessionNumber)) {
+                    messages.Add("You must provide an Accession number. (See Tools -> Settings -> Preferences to turn off mandatory accession numbers)");
+                }
+            }
+
             if (Preferences.UniqueAccessionNumbers.Value) {            
                 if (!string.IsNullOrWhiteSpace(_viewModel.AccessionNumber)) {
 
