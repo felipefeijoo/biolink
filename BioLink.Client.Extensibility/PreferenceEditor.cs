@@ -28,6 +28,8 @@ namespace BioLink.Client.Extensibility {
         public static PreferenceEditor<bool> ExplorerDoubleClickEditsItem = new PreferenceEditor<bool>("Explorers.DoubleClickEditsItem", "Double clicking an item in the Taxon Explorer or Site Explorer edits that item?", PreferenceScope.Profile, true);
 
         public static PreferenceEditor<bool> PromptForAvailableWhenSynonymizing = new PreferenceEditor<bool>("Taxa.PromptForAvailableWhenSynonymizing", "When merging two species or genus prompt to automatically create an available name?", PreferenceScope.Global, true);
+
+        public static PreferenceEditor<bool> AccessionNumberIsMandatory = new PreferenceEditor<bool>("Material.AccessionNumbersAreMandatory", "Accession numbers are mandatory when creating or editing Material records?", PreferenceScope.Global, false);
         
     }
 

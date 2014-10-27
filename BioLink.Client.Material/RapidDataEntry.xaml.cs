@@ -69,14 +69,27 @@ namespace BioLink.Client.Material {
         }
 
         public override bool Validate(List<string> messages) {
+
+            var material = new List<RDEMaterialViewModel>(grpMaterial.Items.Select(vm => vm as RDEMaterialViewModel));
+
+            if (Preferences.AccessionNumberIsMandatory.Value) {
+
+                foreach (RDEMaterialViewModel m in material) {
+                    if (String.IsNullOrWhiteSpace(m.AccessionNo)) {
+                        messages.Add("At least one piece of material is missing an Accession Number. Please review and provide an Accession number for each piece of material. (See Tools -> Settings -> Preferences to turn off mandatory accession numbers)");
+                        break;
+                    }
+                }
+
+            }
+
             if (Preferences.UniqueAccessionNumbers.Value) {
-                if (MaterialControl != null) {
-                    var material = new List<RDEMaterialViewModel>(grpMaterial.Items.Select(vm => vm as RDEMaterialViewModel));
+                if (MaterialControl != null) {                    
                     if (material.Count() > 0) {
                         var service = new MaterialService(User);
                         var accessionNumbers = new List<String>();
 
-                        foreach (RDEMaterialViewModel m in material) {                                   
+                        foreach (RDEMaterialViewModel m in material) {
                             // Check only new material
                             if (m.MaterialID < 0 && !string.IsNullOrWhiteSpace(m.AccessionNo)) {
                                 if (accessionNumbers.Contains(m.AccessionNo)) {
