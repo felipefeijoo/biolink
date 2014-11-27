@@ -37,8 +37,7 @@ namespace BioLink.Client.Tools {
         public const int CASUAL_DATE = 2;
 
         private List<TaxonRankName> _ranks;
-        private CachedRegion _lastRegion;
-        // private CachedSite _lastSite;
+        private CachedRegion _lastRegion;        
         private CachedSiteVisit _lastSiteVisit;
         private TaxonCache _taxonCache = new TaxonCache();
 
@@ -56,7 +55,26 @@ namespace BioLink.Client.Tools {
             return _siteCache.Find((cs) => cs.Equals(name, locality, offsetDist, offsetDir, informalLocality, localityType, x1, y1, x2, y2));
         }
 
+        protected override void RollbackRow(int rowId) {
+
+            // The current row has been rolled back, so we need to invalidate any cached objects that originated from this row.
+            if (_lastRegion.SourceRowID == rowId) {
+                _lastRegion = null;
+            }
+
+            if (_lastSiteVisit.SourceRowID == rowId) {
+                _lastSiteVisit = null;
+            }
+
+            _siteCache.RemoveAll((cachedSite) => cachedSite.SourceRowID == rowId);
+            _taxonCache.RemoveAll((cachedTaxon) => cachedTaxon.SourceRowID == rowId);
+        }
+
+        private int CurrentRowId { get; set; }
+
         protected override void ImportRowImpl(int rowId, System.Data.Common.DbConnection connection) {
+
+            CurrentRowId = rowId;
 
             int regionNumber = -1;
             int siteNumber = -1;
@@ -150,7 +168,7 @@ namespace BioLink.Client.Tools {
                     lngRegionID = Service.ImportRegion(strCounty, lngRegionID, "County");
                 }
 
-                _lastRegion = new CachedRegion { RegionID = lngRegionID, PoliticalRegion = politicalRegion, Country = strCountry, State = strState, County = strCounty };
+                _lastRegion = new CachedRegion { SourceRowID = CurrentRowId, RegionID = lngRegionID, PoliticalRegion = politicalRegion, Country = strCountry, State = strState, County = strCounty };
 
                 return lngRegionID;
             }
@@ -314,7 +332,7 @@ namespace BioLink.Client.Tools {
                     GeoNotes = Get("Site.Geological notes")
                 };
                 var siteID = Service.ImportSite(site);
-                _siteCache.Add(new CachedSite { Name = site.SiteName, Locality = site.Locality, OffsetDistance = site.DistanceFromPlace, OffsetDirection = site.DirFromPlace, InformalLocality = site.InformalLocal, X1 = site.PosX1, Y1 = site.PosY1, X2 = site.PosX2, Y2 = site.PosY2, LocalityType = site.LocalityType, SiteID = siteID });
+                _siteCache.Add(new CachedSite { SourceRowID = CurrentRowId, Name = site.SiteName, Locality = site.Locality, OffsetDistance = site.DistanceFromPlace, OffsetDirection = site.DirFromPlace, InformalLocality = site.InformalLocal, X1 = site.PosX1, Y1 = site.PosY1, X2 = site.PosX2, Y2 = site.PosY2, LocalityType = site.LocalityType, SiteID = siteID });
                 if (_siteCache.Count > MAX_CACHED_ROWS) {
                     // remove the oldest...
                     _siteCache.RemoveAt(0);
@@ -587,7 +605,7 @@ namespace BioLink.Client.Tools {
                 };
 
                 var siteVisitID = Service.ImportSiteVisit(visit);
-                _lastSiteVisit = new CachedSiteVisit { SiteVisitID = siteVisitID, SiteID = siteId, Collector = strCollector, FieldNumber = strFieldNumber, SiteVisitName = strSiteVisitName, DateEnd = endDate, DateStart = startDate, TimeEnd = timeEnd, TimeStart = timeStart, CasualDate = strCasualDate };
+                _lastSiteVisit = new CachedSiteVisit { SourceRowID = CurrentRowId, SiteVisitID = siteVisitID, SiteID = siteId, Collector = strCollector, FieldNumber = strFieldNumber, SiteVisitName = strSiteVisitName, DateEnd = endDate, DateStart = startDate, TimeEnd = timeEnd, TimeStart = timeStart, CasualDate = strCasualDate };
                 return siteVisitID;
             }
         }
@@ -614,6 +632,7 @@ namespace BioLink.Client.Tools {
                     elementID = AddElementID(elementID, name, strLowestRank);
                 }
                 taxon.TaxonID = elementID;
+                taxon.SourceRowID = CurrentRowId;
                 _taxonCache.AddToCache(taxon);
             }
 
