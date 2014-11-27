@@ -3,6 +3,10 @@
 
 = Release Notes =
 
+== !BioLink Version 3.0.619 ==
+
+!BioLink 3.0.619 28th November 2014
+
 This is build 619 for BioLink version 3. It address issues discovered since build 615.
 
 === Issues addressed in this release ===
@@ -12,6 +16,8 @@ This is build 619 for BioLink version 3. It address issues discovered since buil
  * issue 225	No warning is given when deleting taxa that material or associates may be orphaned.
 
 == !BioLink Version 3.0.615 ==
+
+!BioLink 3.0.615 5th June 2014
 
 This is build 615 of BioLink version 3.  It addresses issues raised since build 591 and adds several new features
 
