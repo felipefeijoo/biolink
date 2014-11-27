@@ -34,6 +34,7 @@ namespace BioLink.Client.BVPImport {
             this.DataContext = this;
             this.User = user;
             this.Options = options;
+            Filename = "";
             if (options != null && !String.IsNullOrEmpty(options.Filename)) {
                 Filename = options.Filename;
             }

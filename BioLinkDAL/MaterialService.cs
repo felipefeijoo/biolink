@@ -813,6 +813,24 @@ namespace BioLink.Data {
             StoredProcUpdate("spMaterialDelete", _P("intMaterialID", materialID));
         }
 
+        public int DeleteMaterialSet(List<int> materialIds) {
+            int count = 0;
+            User.BeginTransaction();
+            try {
+                foreach (int materialId in materialIds) {
+                    DeleteMaterial(materialId);
+                    count++;
+                }
+                User.CommitTransaction();
+            } catch (Exception ex) {
+                User.RollbackTransaction();
+                RaiseServiceMessage("Failed to delete material set: {0}", ex.Message);                
+                return 0;
+            } 
+
+            return count;
+        }
+
         public Material GetMaterial(int materialID) {
             var mapper = new GenericMapperBuilder<Material>().Override(new TintToBoolConvertingMapper("tintTemplate")).build();
             Material result = null;

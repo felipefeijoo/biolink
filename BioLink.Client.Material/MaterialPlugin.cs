@@ -16,6 +16,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows;
+using System.Windows.Input;
 using BioLink.Client.Extensibility;
 using BioLink.Client.Utilities;
 using BioLink.Data;
@@ -212,6 +214,7 @@ namespace BioLink.Client.Material {
                     PluginManager.EnsureVisible(this, "MaterialExplorer");
                     _explorer.ShowInContents(node);
                 }));
+
                 list.Add(new CommandSeparator());
                 list.Add(new Command("Edit details...", (dataobj) => { _explorer.EditNode(node); }) { IsDefaultCommand = true });
                 if (node.NodeType == SiteExplorerNodeType.Site || node.NodeType == SiteExplorerNodeType.SiteVisit || node.NodeType == SiteExplorerNodeType.Material) {
@@ -228,6 +231,29 @@ namespace BioLink.Client.Material {
                 case LookupType.Material:
                     list.Add(new Command("Darwin Core report for material", (dataobj) => {
                         PluginManager.RunReport(this, new MaterialSetDarwinCoreReport(User, dataobj as List<int>));
+                    }));
+
+                    list.Add(new Command(String.Format("Delete material", objectIds.Count), (dataobj) => {
+                        if (_explorer.Question(String.Format("Are you sure you wish to permanently delete these {0} pieces of material?", objectIds.Count), "Delete material set?", System.Windows.MessageBoxImage.Exclamation)) {
+
+                            StringBuilder sb = new StringBuilder();
+                            var serviceMessageHandler = new ServiceMessageDelegate((msg) => {
+                                sb.Append(msg).Append(" ");
+                            });
+
+                            var service = new MaterialService(User);
+                            service.ServiceMessage += serviceMessageHandler;
+                            var count = 0;
+                            using (new OverrideCursor(Cursors.Wait)) {
+                                count = service.DeleteMaterialSet(objectIds);
+                            }
+
+                            if (count == 0) {
+                                ErrorMessage.Show("Something went wrong trying to delete {0} material items. {1}", objectIds.Count, sb.ToString());
+                            } else {
+                                InfoBox.Show(String.Format("{0} material records deleted.", count), "Material deleted", PluginManager.ParentWindow);
+                            }                                
+                        }
                     }));
                     break;
             }
