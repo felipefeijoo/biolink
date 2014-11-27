@@ -20,7 +20,11 @@ using BioLink.Data.Model;
 
 namespace BioLink.Client.Tools {
 
-    public class CachedRegion {
+    public abstract class CachedImportObject {
+        public int SourceRowID { get; set; }
+    }
+
+    public class CachedRegion : CachedImportObject {
 
         public int RegionID { get; set; }
 
@@ -40,7 +44,7 @@ namespace BioLink.Client.Tools {
 
     }
 
-    public class CachedSite {
+    public class CachedSite : CachedImportObject {
 
         public int SiteID { get; set; }
 
@@ -72,7 +76,9 @@ namespace BioLink.Client.Tools {
 
     }
 
-    public class CachedSiteVisit {
+    public class CachedSiteVisit : CachedImportObject {
+
+        public int SourceRowID { get; set; }
 
         public int SiteVisitID { get; set; }
 
@@ -118,7 +124,7 @@ namespace BioLink.Client.Tools {
 
     }
 
-    public class CachedTaxon {
+    public class CachedTaxon : CachedImportObject {
 
         public CachedTaxon(List<TaxonRankValue> rankValues) {
             this.Ranks = rankValues;
@@ -175,6 +181,10 @@ namespace BioLink.Client.Tools {
 
         public void AddToCache(CachedTaxon taxon) {
             _cache.Add(taxon);
+        }
+
+        public void RemoveAll(Predicate<CachedTaxon> p) {
+            _cache.RemoveAll(p);
         }
 
     }

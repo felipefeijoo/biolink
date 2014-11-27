@@ -26,6 +26,9 @@ namespace BioLink.Client.Tools {
         protected override void InitImportImpl() {
         }
 
+        protected override void RollbackRow(int rowId) {
+        } 
+
         protected override void ImportRowImpl(int rowId, System.Data.Common.DbConnection connection) {
 
             var service = new ImportService(User);

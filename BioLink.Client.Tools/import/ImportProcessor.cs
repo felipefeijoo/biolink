@@ -222,6 +222,8 @@ namespace BioLink.Client.Tools {
 
         protected abstract void InitImportImpl();
 
+        protected abstract void RollbackRow(int rowId);
+
         protected void ProgressMsg(string message, double? percent = null) {
             if (Progress != null) {
                 Progress.ProgressMessage(message, percent);
