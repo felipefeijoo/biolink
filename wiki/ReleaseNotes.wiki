@@ -17,7 +17,7 @@ This is build 619 for BioLink version 3. It address issues discovered since buil
 
 == !BioLink Version 3.0.615 ==
 
-!BioLink 3.0.615 5th June 2014
+!BioLink 3.0.615 27th October 2014
 
 This is build 615 of BioLink version 3.  It addresses issues raised since build 591 and adds several new features
 
@@ -35,6 +35,8 @@ This is build 615 of BioLink version 3.  It addresses issues raised since build 
  * Issue 220	Error during XML Export
 
 == !BioLink Version 3.0.591 ==
+
+!BioLink 3.0.591 10th April 2014
 
 This is build 591 of BioLink version 3.  It addresses issues raised since build 582
 
