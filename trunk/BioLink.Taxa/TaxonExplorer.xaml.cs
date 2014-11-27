@@ -465,7 +465,7 @@ namespace BioLink.Client.Taxa {
                 if (!string.IsNullOrEmpty(npex.DeniedMessage)) {
                     txt = npex.DeniedMessage;
                 }
-                string caption = string.Format("Permission Error [{0} {1}]", npex.PermissionCategory, npex.RequestedMask);
+                string caption = string.Format("Permission Error [{0} {1}]", npex.PermissionCategory, npex.RequestedMask);                
                 MessageBox.Show(txt, caption, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return false;
             }
@@ -1093,6 +1093,8 @@ namespace BioLink.Client.Taxa {
 
         internal void DeleteTaxon(TaxonViewModel taxon) {
             if (this.Question(_R("TaxonExplorer.prompt.DeleteTaxon", taxon.DisplayLabel), _R("TaxonExplorer.prompt.DeleteTaxon.Caption"))) {
+                // Check to see if the taxon is safe to delete.
+
                 // schedule the database bit...                                
                 RegisterPendingChange(new DeleteTaxonDatabaseCommand(taxon), this);
                 // and the update the UI

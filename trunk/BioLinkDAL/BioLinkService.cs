@@ -70,7 +70,7 @@ namespace BioLink.Data {
         }
 
         internal void SQLReaderForEach(string SQL, ServiceReaderAction action, params DbParameter[] @params) {
-            Message("Executing query...");
+            RaiseServiceMessage("Executing query...");
             using (new CodeTimer(String.Format("SQLReaderForEach '{0}'", SQL))) {
                 Logger.Debug("Calling stored procedure (reader): {0}({1})", SQL, GetParamsString(@params));
                 Command((con, cmd) => {
@@ -84,14 +84,14 @@ namespace BioLink.Data {
                     }
 
                     using (var reader = cmd.ExecuteReader()) {
-                        Message("Fetching records...");
+                        RaiseServiceMessage("Fetching records...");
                         int count = 0;
                         while (reader.Read()) {
                             if (action != null) {
                                 action(reader);
                             }
                             if (++count % 1000 == 0) {
-                                Message("{0} records retrieved", count);
+                                RaiseServiceMessage("{0} records retrieved", count);
                             }
                         }
                     }
@@ -108,11 +108,11 @@ namespace BioLink.Data {
         /// <param name="action">The action to take with the reader</param>
         /// <param name="params">A params array for the arguments of the stored proc</param>
         internal void StoredProcReaderForEach(string proc, ServiceReaderAction action, params DbParameter[] @params) {
-            Message("Executing query...");
+            RaiseServiceMessage("Executing query...");
             using (new CodeTimer(String.Format("StoredProcReaderForEach '{0}'", proc))) {
                 Logger.Debug("Calling stored procedure (reader): {0}({1})", proc, GetParamsString(@params));
                 Command((con, cmd) => {
-                    User.ConnectionProvider.StoredProcReaderForEach(User, cmd, proc, action, (msg) => Message(msg), @params);
+                    User.ConnectionProvider.StoredProcReaderForEach(User, cmd, proc, action, (msg) => RaiseServiceMessage(msg), @params);
                 });
             }
         }
@@ -121,7 +121,7 @@ namespace BioLink.Data {
             using (new CodeTimer(String.Format("StoredProcReaderFirst '{0}'", proc))) {
                 Logger.Debug("Calling stored procedure (reader): {0}({1})", proc, GetParamsString(@params));
                 Command((con, cmd) => {
-                    User.ConnectionProvider.StoredProcReaderFirst(User, cmd, proc, action, (msg) => Message(msg), @params);
+                    User.ConnectionProvider.StoredProcReaderFirst(User, cmd, proc, action, (msg) => RaiseServiceMessage(msg), @params);
                 });
             }
         }
@@ -345,7 +345,7 @@ namespace BioLink.Data {
             return param;
         }
 
-        private void Message(string format, params object[] args) {
+        protected void RaiseServiceMessage(string format, params object[] args) {
             if (ServiceMessage != null) {
                 ServiceMessage(String.Format(format, args));
             }

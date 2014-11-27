@@ -139,6 +139,8 @@ namespace BioLink.Data {
             return false;
         }
 
+
+
         private string RankKey(string kingdomCode, string rankCode) {
             return kingdomCode + "_" + rankCode;
         }
@@ -188,6 +190,15 @@ namespace BioLink.Data {
 
         public void MoveTaxon(int taxonId, int newParentId) {
             StoredProcUpdate("spBiotaMove", _P("intTaxaID", taxonId), _P("intNewParentID", newParentId));           
+        }
+
+        public bool SafeToDeleteTaxon(int taxonId) {
+            var numDependents = 0;
+            var sql = "SELECT (SELECT COUNT(*) FROM tblMaterial where intBiotaID = @intTaxonId) + (SELECT COUNT(*) FROM tblAssociate WHERE intFromIntraCatID = @intTaxonId or intToIntraCatID = @intTaxonId) as dependants;";
+            SQLReaderForEach(sql, (reader) => {
+                numDependents = reader.GetInt32(0);
+            }, _P("intTaxonId", taxonId));
+            return numDependents <= 0;
         }
 
         private GenericMapper<Taxon> BuildTaxonMapper() {
@@ -921,6 +932,7 @@ namespace BioLink.Data {
 
             return rtf.GetAsMatrix();
         }
+
     }
 
     public class DataValidationResult {

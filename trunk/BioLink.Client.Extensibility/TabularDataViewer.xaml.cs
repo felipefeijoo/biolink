@@ -270,7 +270,6 @@ namespace BioLink.Client.Extensibility {
             int index = -1;
             foreach (string alias in idColAliases) {
                 var field = alias;
-
                 for (int i = 0; i < Data.Columns.Count; ++i) {
                     var col = Data.Columns[i];
                     if (col.Name.Contains(alias)) {
@@ -285,20 +284,31 @@ namespace BioLink.Client.Extensibility {
             }
 
             if (index > -1) {                
+
                 List<int> idSet = new List<int>();
-                Data.Rows.ForEach(row => {
-                    var objectIndex = row[index];
-                    if (objectIndex is int) {
-                        idSet.Add((int) row[index]);
+
+                if (lvw.SelectedItems.Count > 1) {                    
+                    foreach (object selected in lvw.SelectedItems) {
+                        var row = selected as MatrixRow;
+                        var selectedRow = Data.Rows.IndexOf(row);
+                        idSet.Add((int)row[selectedRow]);
                     }
-                });
+                } else {
+                    Data.Rows.ForEach(row => {
+                        var objectIndex = row[index];
+                        if (objectIndex is int) {
+                            idSet.Add((int)row[index]);
+                        }
+                    });
+                }
 
                 if (idSet.Count > 0) {
                     var commands = PluginManager.Instance.SolicitCommandsForObjectSet(idSet, type);
                     if (commands != null && commands.Count > 0) {
                         MenuItemBuilder b = new MenuItemBuilder();
 
-                        var typeItem = b.New(type.ToString() + " Set").MenuItem;
+                        var typeItem = b.New(type.ToString() + String.Format(" Set ({0} items)", idSet.Count)).MenuItem;
+
                         commands.ForEach((cmd) => {
                             if (cmd is CommandSeparator) {
                                 typeItem.Items.Add(new Separator());

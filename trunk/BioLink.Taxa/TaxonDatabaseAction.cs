@@ -170,6 +170,13 @@ namespace BioLink.Client.Taxa {
             required.AddBiota(Taxon.TaxaID.Value, PERMISSION_MASK.DELETE);
         }
 
+        public override void Validate(ValidationMessages messages) {
+            var service = new TaxaService(PluginManager.Instance.User);
+            if (!service.SafeToDeleteTaxon(Taxon.TaxaID.Value)) {
+                messages.Warn("There are material and or associations that will be orphaned if you delete this taxon.");
+            }
+        }
+
     }
 
     public class InsertTaxonDatabaseCommand : TaxonDatabaseCommand {
